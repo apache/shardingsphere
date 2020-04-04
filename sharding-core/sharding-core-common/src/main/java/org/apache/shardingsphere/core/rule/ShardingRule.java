@@ -346,26 +346,6 @@ public class ShardingRule implements TablesAggregationRule {
     }
     
     /**
-     * Find actual default data source name.
-     *
-     * <p>If use master-slave rule, return master data source name.</p>
-     *
-     * @return actual default data source name
-     */
-    public Optional<String> findActualDefaultDataSourceName() {
-        String defaultDataSourceName = shardingDataSourceNames.getDefaultDataSourceName();
-        if (Strings.isNullOrEmpty(defaultDataSourceName)) {
-            return Optional.empty();
-        }
-        Optional<String> masterDefaultDataSourceName = findMasterDataSourceName(defaultDataSourceName);
-        return masterDefaultDataSourceName.isPresent() ? masterDefaultDataSourceName : Optional.of(defaultDataSourceName);
-    }
-    
-    private Optional<String> findMasterDataSourceName(final String masterSlaveRuleName) {
-        return masterSlaveRules.stream().filter(each -> each.getName().equalsIgnoreCase(masterSlaveRuleName)).map(e -> Optional.of(e.getMasterDataSourceName())).findFirst().orElse(Optional.empty());
-    }
-    
-    /**
      * Find master slave rule.
      *
      * @param dataSourceName data source name

@@ -36,7 +36,6 @@ import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParamet
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDataLoader;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.AlterTableStatementContext;
@@ -51,18 +50,13 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateIndexStateme
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
@@ -75,39 +69,23 @@ public final class ShardingSchema extends LogicSchema {
     
     private ShardingRule shardingRule;
     
-    private final ShardingSphereMetaData physicalMetaData;
-    
     private final ShardingSphereMetaData metaData;
     
     public ShardingSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources,
                           final ShardingRuleConfiguration shardingRuleConfig, final boolean isUsingRegistry) throws SQLException {
         super(name, dataSources);
         shardingRule = createShardingRule(shardingRuleConfig, dataSources.keySet(), isUsingRegistry);
-        int maxConnectionsSizePerQuery = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        physicalMetaData = createPhysicalMetaData(maxConnectionsSizePerQuery);
-        metaData = createAndMergeShardingMetaData(physicalMetaData.getSchema().getConfiguredSchemaMetaData());
+        metaData = createShardingSphereMetaData();
     }
     
     private ShardingRule createShardingRule(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames, final boolean isUsingRegistry) {
         return isUsingRegistry ? new OrchestrationShardingRule(shardingRuleConfig, dataSourceNames) : new ShardingRule(shardingRuleConfig, dataSourceNames);
     }
     
-    private ShardingSphereMetaData createPhysicalMetaData(final int maxConnectionsSizePerQuery) throws SQLException {
-        Optional<String> actualDefaultDataSourceName = shardingRule.findActualDefaultDataSourceName();
-        DatabaseType databaseType = LogicSchemas.getInstance().getDatabaseType();
-        Map<String, DataSource> dataSourceMap = getBackendDataSource().getDataSources();
-        SchemaMetaData schemaMetaData = actualDefaultDataSourceName.isPresent()
-                ? SchemaMetaDataLoader.load(dataSourceMap.get(actualDefaultDataSourceName.get()), maxConnectionsSizePerQuery, databaseType.getName())
-                : new SchemaMetaData(Collections.emptyMap());
-        DataSourceMetas dataSourceMetas = new DataSourceMetas(LogicSchemas.getInstance().getDatabaseType(), getDatabaseAccessConfigurationMap());
-        return new ShardingSphereMetaData(dataSourceMetas, new RuleSchemaMetaData(schemaMetaData, new HashMap<>()));
-    }
-    
-    private ShardingSphereMetaData createAndMergeShardingMetaData(final SchemaMetaData physical) throws SQLException {
+    private ShardingSphereMetaData createShardingSphereMetaData() throws SQLException {
         DataSourceMetas dataSourceMetas = new DataSourceMetas(LogicSchemas.getInstance().getDatabaseType(), getDatabaseAccessConfigurationMap());
         RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(shardingRule.toRules());
         RuleSchemaMetaData ruleSchemaMetaData = loader.load(LogicSchemas.getInstance().getDatabaseType(), getBackendDataSource().getDataSources(), ShardingProxyContext.getInstance().getProperties());
-        ruleSchemaMetaData.getConfiguredSchemaMetaData().merge(physical);
         return new ShardingSphereMetaData(dataSourceMetas, ruleSchemaMetaData);
     }
     
