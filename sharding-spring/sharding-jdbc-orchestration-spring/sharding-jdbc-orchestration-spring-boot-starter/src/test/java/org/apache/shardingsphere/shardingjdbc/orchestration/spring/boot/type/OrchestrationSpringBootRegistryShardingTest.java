@@ -86,7 +86,6 @@ public class OrchestrationSpringBootRegistryShardingTest {
             + "- t_order_item\n"
             + "broadcastTables:\n"
             + "- t_config\n"
-            + "defaultDataSourceName: ds\n"
             + "defaultDatabaseStrategy:\n"
             + "  inline:\n"
             + "    algorithmExpression: ds_${user_id % 2}\n"

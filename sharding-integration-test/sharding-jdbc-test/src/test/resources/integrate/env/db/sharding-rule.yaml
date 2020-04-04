@@ -36,4 +36,3 @@ shardingRule:
         column: item_id
   bindingTables:
     - t_order,t_order_item
-  defaultDataSourceName: db_0

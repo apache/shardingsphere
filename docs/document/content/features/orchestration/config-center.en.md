@@ -111,9 +111,9 @@ bindingTables:
   - t_order,t_order_item
 broadcastTables:
   - t_config
-  
+
 defaultDataSourceName: ds_0
-    
+
 masterSlaveRules: {}
 ```
 

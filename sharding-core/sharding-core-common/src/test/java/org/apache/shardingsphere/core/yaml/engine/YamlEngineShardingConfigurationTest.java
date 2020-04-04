@@ -68,7 +68,6 @@ public final class YamlEngineShardingConfigurationTest {
         assertTOrderItem(actual);
         assertBindingTable(actual);
         assertBroadcastTable(actual);
-        assertShardingRuleDefault(actual);
         assertMasterSlaveRules(actual);
         assertProps(actual);
     }
@@ -121,13 +120,6 @@ public final class YamlEngineShardingConfigurationTest {
     private void assertBroadcastTable(final YamlRootShardingConfiguration actual) {
         assertThat(actual.getShardingRule().getBroadcastTables().size(), is(1));
         assertThat(actual.getShardingRule().getBroadcastTables().iterator().next(), is("t_config"));
-    }
-    
-    private void assertShardingRuleDefault(final YamlRootShardingConfiguration actual) {
-        assertThat(actual.getShardingRule().getDefaultDataSourceName(), is("default_ds"));
-        assertThat(actual.getShardingRule().getDefaultDatabaseStrategy().getInline().getShardingColumn(), is("order_id"));
-        assertThat(actual.getShardingRule().getDefaultDatabaseStrategy().getInline().getAlgorithmExpression(), is("ds_${order_id % 2}"));
-        assertNotNull(actual.getShardingRule().getDefaultTableStrategy().getNone());
     }
     
     private void assertMasterSlaveRules(final YamlRootShardingConfiguration actual) {
