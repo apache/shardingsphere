@@ -28,7 +28,6 @@ import java.util.Collection;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public final class ShardingDataSourceNamesTest {
@@ -41,34 +40,6 @@ public final class ShardingDataSourceNamesTest {
                 new MasterSlaveRuleConfiguration("ms_ds", "master_ds", Collections.singletonList("slave_ds"), new LoadBalanceStrategyConfiguration("ROUND_ROBIN")));
         Collection<String> actual = new ShardingDataSourceNames(shardingRuleConfig, Arrays.asList("default_ds", "master_ds", "slave_ds")).getDataSourceNames();
         assertThat(actual, is(Sets.newLinkedHashSet(Arrays.asList("default_ds", "ms_ds"))));
-    }
-    
-    @Test
-    public void assertGetDefaultDataSourceNameWithDefaultDataSourceName() {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.setDefaultDataSourceName("default_ds");
-        shardingRuleConfig.getMasterSlaveRuleConfigs().add(
-                new MasterSlaveRuleConfiguration("ms_ds", "master_ds", Collections.singletonList("slave_ds"), new LoadBalanceStrategyConfiguration("ROUND_ROBIN")));
-        String actual = new ShardingDataSourceNames(shardingRuleConfig, Arrays.asList("default_ds", "master_ds", "slave_ds")).getDefaultDataSourceName();
-        assertThat(actual, is("default_ds"));
-    }
-    
-    @Test
-    public void assertGetDefaultDataSourceNameWithoutDefaultDataSourceName() {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getMasterSlaveRuleConfigs().add(
-                new MasterSlaveRuleConfiguration("ms_ds", "master_ds", Collections.singletonList("slave_ds"), new LoadBalanceStrategyConfiguration("ROUND_ROBIN")));
-        String actual = new ShardingDataSourceNames(shardingRuleConfig, Arrays.asList("default_ds", "master_ds", "slave_ds")).getDefaultDataSourceName();
-        assertNull(actual);
-    }
-    
-    @Test
-    public void assertGetDefaultDataSourceNameWithOnlyOneDataSourceName() {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getMasterSlaveRuleConfigs().add(
-                new MasterSlaveRuleConfiguration("ms_ds", "master_ds", Collections.singletonList("slave_ds"), new LoadBalanceStrategyConfiguration("ROUND_ROBIN")));
-        String actual = new ShardingDataSourceNames(shardingRuleConfig, Arrays.asList("master_ds", "slave_ds")).getDefaultDataSourceName();
-        assertThat(actual, is("ms_ds"));
     }
     
     @Test

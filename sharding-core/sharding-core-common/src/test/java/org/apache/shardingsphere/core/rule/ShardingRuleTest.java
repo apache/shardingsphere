@@ -279,21 +279,6 @@ public final class ShardingRuleTest {
     }
     
     @Test
-    public void assertDataSourceNameFromDefaultDataSourceName() {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.setDefaultDataSourceName("ds_3");
-        ShardingRule actual = new ShardingRule(shardingRuleConfig, createDataSourceNames());
-        assertThat(actual.getShardingDataSourceNames().getDefaultDataSourceName(), is("ds_3"));
-    }
-    
-    @Test
-    public void assertDataSourceNameFromDataSourceNames() {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.setDefaultDataSourceName("ds_3");
-        assertThat(new ShardingRule(shardingRuleConfig, Collections.singletonList("ds_0")).getShardingDataSourceNames().getDefaultDataSourceName(), is("ds_0"));
-    }
-    
-    @Test
     public void assertGetDataNodeByLogicTable() {
         assertThat(createMaximumShardingRule().getDataNode("logic_table"), is(new DataNode("ds_0.table_0")));
     }
