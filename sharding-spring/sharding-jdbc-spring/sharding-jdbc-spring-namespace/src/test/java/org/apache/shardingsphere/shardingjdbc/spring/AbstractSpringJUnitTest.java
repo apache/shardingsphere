@@ -93,19 +93,9 @@ public abstract class AbstractSpringJUnitTest extends AbstractJUnit4SpringContex
     
     @SneakyThrows
     private Method getCreateMetaDataMethod() {
-        Method method = shardingDataSource.getRuntimeContext().getClass().getSuperclass().getDeclaredMethod("createMetaData", Map.class, DatabaseType.class);
-        method.setAccessible(true);
-        return method;
-    }
-    
-    @SneakyThrows
-    private Object getFieldValue(final Object object, final String name) {
-        Optional<Field> field = getField(object, name);
-        if (field.isPresent()) {
-            field.get().setAccessible(true);
-            return field.get().get(object);
-        }
-        return null;
+        Method result = shardingDataSource.getRuntimeContext().getClass().getSuperclass().getDeclaredMethod("createMetaData", Map.class, DatabaseType.class);
+        result.setAccessible(true);
+        return result;
     }
     
     @SneakyThrows

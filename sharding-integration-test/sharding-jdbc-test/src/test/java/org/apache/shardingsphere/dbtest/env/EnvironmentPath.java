@@ -41,21 +41,21 @@ public final class EnvironmentPath {
     /**
      * Get database environment resource File.
      * 
-     * @param shardingRuleType Sharding rule type
+     * @param ruleType rule type
      * @return database environment resource file
      */
-    public static String getDatabaseEnvironmentResourceFile(final String shardingRuleType) {
-        return getResourceFile(DATABASE_ENVIRONMENT_RESOURCES_PATH, shardingRuleType);
+    public static String getDatabaseEnvironmentResourceFile(final String ruleType) {
+        return getResourceFile(DATABASE_ENVIRONMENT_RESOURCES_PATH, ruleType);
     }
     
     /**
      * Get data initialize resource File.
      *
-     * @param shardingRuleType Sharding rule type
+     * @param ruleType rule type
      * @return data initialize resource file
      */
-    public static String getDataInitializeResourceFile(final String shardingRuleType) {
-        return getResourceFile(DATA_INITIALIZE_RESOURCES_PATH, shardingRuleType);
+    public static String getDataInitializeResourceFile(final String ruleType) {
+        return getResourceFile(DATA_INITIALIZE_RESOURCES_PATH, ruleType);
     }
     
     /**

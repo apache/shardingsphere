@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDataLoader;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
@@ -35,7 +34,6 @@ import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +67,6 @@ public final class ShardingMetaDataLoader implements RuleMetaDataLoader<Sharding
                 load(databaseType, dataSourceMap, each.getLogicTable(), shardingRule, properties).ifPresent(tableMetaData -> result.put(each.getLogicTable(), tableMetaData));
             }
         }
-        result.merge(loadDefaultSchemaMetaData(databaseType, dataSourceMap, shardingRule, properties));
         return result;
     }
     
@@ -114,15 +111,6 @@ public final class ShardingMetaDataLoader implements RuleMetaDataLoader<Sharding
         });
         executorService.shutdownNow();
         return actualTableMetaDataMap;
-    }
-    
-    private SchemaMetaData loadDefaultSchemaMetaData(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
-                                                     final ShardingRule shardingRule, final ConfigurationProperties properties) throws SQLException {
-        int maxConnectionsSizePerQuery = properties.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        Optional<String> actualDefaultDataSourceName = shardingRule.findActualDefaultDataSourceName();
-        return actualDefaultDataSourceName.isPresent()
-                ? SchemaMetaDataLoader.load(dataSourceMap.get(actualDefaultDataSourceName.get()), maxConnectionsSizePerQuery, databaseType.getName())
-                : new SchemaMetaData(Collections.emptyMap());
     }
     
     private TableMetaData loadTableByDataNode(final DataNode dataNode, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {

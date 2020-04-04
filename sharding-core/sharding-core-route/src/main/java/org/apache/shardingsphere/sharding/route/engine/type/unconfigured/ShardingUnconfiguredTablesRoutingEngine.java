@@ -15,36 +15,55 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.type.defaultdb;
+package org.apache.shardingsphere.sharding.route.engine.type.unconfigured;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
-import org.apache.shardingsphere.underlying.route.context.RouteResult;
-import org.apache.shardingsphere.underlying.route.context.RouteMapper;
-import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
+import org.apache.shardingsphere.underlying.route.context.RouteMapper;
+import org.apache.shardingsphere.underlying.route.context.RouteResult;
+import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
- * Sharding default datasource engine.
+ * Sharding unconfigured tables engine.
  */
 @RequiredArgsConstructor
-public final class ShardingDefaultDatabaseRoutingEngine implements ShardingRouteEngine {
+public final class ShardingUnconfiguredTablesRoutingEngine implements ShardingRouteEngine {
     
     private final Collection<String> logicTables;
     
+    private final Map<String, SchemaMetaData> unconfiguredSchemaMetaDataMap;
+    
     @Override
     public RouteResult route(final ShardingRule shardingRule) {
+        Optional<String> dataSourceName = findDataSourceName();
+        if (!dataSourceName.isPresent()) {
+            throw new ShardingSphereException("Can not route tables for `%s`, please make sure the tables are in same schema.", logicTables);
+        }
         RouteResult result = new RouteResult();
         List<RouteMapper> routingTables = new ArrayList<>(logicTables.size());
         for (String each : logicTables) {
             routingTables.add(new RouteMapper(each, each));
         }
-        String dataSourceName = shardingRule.getShardingDataSourceNames().getDefaultDataSourceName();
-        result.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), routingTables));
+        result.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName.get(), dataSourceName.get()), routingTables));
         return result;
+    }
+    
+    private Optional<String> findDataSourceName() {
+        for (Entry<String, SchemaMetaData> entry : unconfiguredSchemaMetaDataMap.entrySet()) {
+            if (entry.getValue().getAllTableNames().containsAll(logicTables)) {
+                return Optional.of(entry.getKey());
+            }
+        }
+        return Optional.empty();
     }
 }
