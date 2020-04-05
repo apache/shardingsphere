@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.connection;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.EncryptRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.EncryptRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.EncryptPreparedStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.EncryptStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationConnection;

@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
+package org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.AbstractRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
@@ -35,7 +36,7 @@ import java.util.Properties;
  * Runtime context for master-slave.
  */
 @Getter
-public final class MasterSlaveRuntimeContext extends MultipleDataSourcesRuntimeContext<MasterSlaveRule> {
+public final class MasterSlaveRuntimeContext extends AbstractRuntimeContext<MasterSlaveRule> {
     
     private final CachedDatabaseMetaData cachedDatabaseMetaData;
     

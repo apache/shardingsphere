@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.refreh;
 
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
 import java.sql.SQLException;

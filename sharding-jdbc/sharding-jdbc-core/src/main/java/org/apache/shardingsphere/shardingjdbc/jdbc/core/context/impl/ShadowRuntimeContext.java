@@ -15,24 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
+package org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.rule.ShadowRule;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.AbstractRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Properties;
 
 /**
  * Runtime context for shadow.
  */
 @Getter
-public final class ShadowRuntimeContext extends SingleDataSourceRuntimeContext<ShadowRule> {
+public final class ShadowRuntimeContext extends AbstractRuntimeContext<ShadowRule> {
     
     private final DataSource actualDataSource;
     
@@ -41,8 +45,8 @@ public final class ShadowRuntimeContext extends SingleDataSourceRuntimeContext<S
     private final ShadowType shadowType;
     
     public ShadowRuntimeContext(final DataSource actualDataSource, final DataSource shadowDataSource, 
-                                final ShadowRule rule, final Properties props, final DatabaseType databaseType) throws SQLException {
-        super(actualDataSource, rule, props, databaseType);
+                                final ShadowRule shadowRule, final Properties props, final DatabaseType databaseType) throws SQLException {
+        super(actualDataSource, shadowRule, props, databaseType);
         this.actualDataSource = actualDataSource;
         this.shadowDataSource = shadowDataSource;
         shadowType = getShadowType(actualDataSource);
@@ -59,6 +63,11 @@ public final class ShadowRuntimeContext extends SingleDataSourceRuntimeContext<S
             return ShadowType.ENCRYPT;
         }
         return ShadowType.RAW;
+    }
+    
+    @Override
+    protected Collection<BaseRule> getRules() {
+        return Collections.singletonList(getRule());
     }
     
     public enum ShadowType {

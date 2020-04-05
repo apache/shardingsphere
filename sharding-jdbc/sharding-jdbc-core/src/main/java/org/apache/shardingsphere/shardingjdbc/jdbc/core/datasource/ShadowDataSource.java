@@ -22,7 +22,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShadowConnection;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShadowRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShadowRuntimeContext;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.refresh;
 
 import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;

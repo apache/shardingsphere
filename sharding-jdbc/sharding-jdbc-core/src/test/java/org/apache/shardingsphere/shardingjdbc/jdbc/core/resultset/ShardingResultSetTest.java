@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteCallback
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
 import org.apache.shardingsphere.sharding.execute.sql.prepare.SQLExecutePrepareTemplate;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;

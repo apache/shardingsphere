@@ -22,7 +22,7 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionConstant;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.EncryptRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.EncryptRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.EncryptResultSet;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationStatement;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
