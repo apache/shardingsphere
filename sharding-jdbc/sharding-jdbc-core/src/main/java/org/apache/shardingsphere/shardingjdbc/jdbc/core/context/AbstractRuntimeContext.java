@@ -78,14 +78,7 @@ public abstract class AbstractRuntimeContext<T extends BaseRule> implements Runt
     }
     
     public AbstractRuntimeContext(final DataSource dataSource, final T rule, final Properties props, final DatabaseType databaseType) throws SQLException {
-        this.rule = rule;
-        properties = new ConfigurationProperties(null == props ? new Properties() : props);
-        this.databaseType = databaseType;
-        executorEngine = new ExecutorEngine(properties.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
-        sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(databaseType));
-        metaData = createMetaData(ImmutableMap.of("ds", dataSource), databaseType);
-        ConfigurationLogger.log(rule.getRuleConfiguration());
-        ConfigurationLogger.log(props);
+        this(ImmutableMap.of("ds", dataSource), rule, props, databaseType);
     }
     
     protected abstract Collection<BaseRule> getRules();
