@@ -35,7 +35,7 @@ import java.util.Properties;
  * Runtime context for master-slave.
  */
 @Getter
-public final class MasterSlaveRuntimeContext extends MultipleDataSourcesRuntimeContext<MasterSlaveRule> {
+public final class MasterSlaveRuntimeContext extends AbstractRuntimeContext<MasterSlaveRule> {
     
     private final CachedDatabaseMetaData cachedDatabaseMetaData;
     

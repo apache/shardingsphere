@@ -35,7 +35,7 @@ import java.util.Properties;
  * Runtime context for sharding.
  */
 @Getter
-public final class ShardingRuntimeContext extends MultipleDataSourcesRuntimeContext<ShardingRule> {
+public final class ShardingRuntimeContext extends AbstractRuntimeContext<ShardingRule> {
     
     private final CachedDatabaseMetaData cachedDatabaseMetaData;
     

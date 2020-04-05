@@ -35,7 +35,7 @@ import java.util.Properties;
  * Runtime context for shadow.
  */
 @Getter
-public final class ShadowRuntimeContext extends MultipleDataSourcesRuntimeContext<ShadowRule> {
+public final class ShadowRuntimeContext extends AbstractRuntimeContext<ShadowRule> {
     
     private final DataSource actualDataSource;
     

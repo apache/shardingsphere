@@ -30,7 +30,7 @@ import java.util.Properties;
 /**
  * Runtime context for encrypt.
  */
-public final class EncryptRuntimeContext extends MultipleDataSourcesRuntimeContext<EncryptRule> {
+public final class EncryptRuntimeContext extends AbstractRuntimeContext<EncryptRule> {
     
     public EncryptRuntimeContext(final DataSource dataSource, final EncryptRule encryptRule, final Properties props, final DatabaseType databaseType) throws SQLException {
         super(dataSource, encryptRule, props, databaseType);
