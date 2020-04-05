@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
+import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
@@ -51,6 +52,11 @@ public abstract class MultipleDataSourcesRuntimeContext<T extends BaseRule> exte
     protected MultipleDataSourcesRuntimeContext(final Map<String, DataSource> dataSourceMap, final T rule, final Properties props, final DatabaseType databaseType) throws SQLException {
         super(rule, props, databaseType);
         metaData = createMetaData(dataSourceMap, databaseType);
+    }
+    
+    protected MultipleDataSourcesRuntimeContext(final DataSource dataSource, final T rule, final Properties props, final DatabaseType databaseType) throws SQLException {
+        super(rule, props, databaseType);
+        metaData = createMetaData(ImmutableMap.of("ds", dataSource), databaseType);
     }
     
     private ShardingSphereMetaData createMetaData(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) throws SQLException {
