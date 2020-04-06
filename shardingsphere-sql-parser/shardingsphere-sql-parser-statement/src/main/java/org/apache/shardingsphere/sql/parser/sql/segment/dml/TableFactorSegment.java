@@ -52,7 +52,7 @@ public final class TableFactorSegment implements SQLSegment {
         }
         if (null != tableReferences && !tableReferences.isEmpty()) {
             for (TableReferenceSegment each: tableReferences) {
-                tables.addAll(each.getTables());
+                tables.addAll(each.getSimpleTableSegments());
             }
         }
         return tables;
