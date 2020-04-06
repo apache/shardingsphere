@@ -19,7 +19,7 @@ package org.apache.shardingsphere.underlying.pluggble.prepare;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
-import org.apache.shardingsphere.sql.parser.SQLParserEngine;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
@@ -61,24 +61,25 @@ public abstract class BasePrepareEngine {
     
     private final SQLRewriteEntry rewriter;
     
-    public BasePrepareEngine(final Collection<BaseRule> rules, final ConfigurationProperties properties, final ShardingSphereMetaData metaData, final SQLParserEngine parser) {
+    public BasePrepareEngine(final Collection<BaseRule> rules, final ConfigurationProperties properties, final ShardingSphereMetaData metaData) {
         this.rules = rules;
         this.properties = properties;
         this.metaData = metaData;
-        router = new DataNodeRouter(metaData, properties, parser);
+        router = new DataNodeRouter(metaData, properties);
         rewriter = new SQLRewriteEntry(metaData.getSchema().getConfiguredSchemaMetaData(), properties);
     }
     
     /**
      * Prepare to execute.
      *
+     * @param sqlStatement SQL statement
      * @param sql SQL
      * @param parameters SQL parameters
      * @return execution context
      */
-    public ExecutionContext prepare(final String sql, final List<Object> parameters) {
+    public ExecutionContext prepare(final SQLStatement sqlStatement, final String sql, final List<Object> parameters) {
         List<Object> clonedParameters = cloneParameters(parameters);
-        RouteContext routeContext = executeRoute(sql, clonedParameters);
+        RouteContext routeContext = executeRoute(sqlStatement, sql, clonedParameters);
         ExecutionContext result = new ExecutionContext(routeContext.getSqlStatementContext());
         result.getExecutionUnits().addAll(executeRewrite(sql, clonedParameters, routeContext));
         if (properties.<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
@@ -89,12 +90,12 @@ public abstract class BasePrepareEngine {
     
     protected abstract List<Object> cloneParameters(List<Object> parameters);
     
-    private RouteContext executeRoute(final String sql, final List<Object> clonedParameters) {
+    private RouteContext executeRoute(final SQLStatement sqlStatement, final String sql, final List<Object> clonedParameters) {
         OrderedSPIRegistry.getRegisteredServices(rules, RouteDecorator.class).forEach(router::registerDecorator);
-        return route(router, sql, clonedParameters);
+        return route(router, sqlStatement, sql, clonedParameters);
     }
     
-    protected abstract RouteContext route(DataNodeRouter dataNodeRouter, String sql, List<Object> parameters);
+    protected abstract RouteContext route(DataNodeRouter dataNodeRouter, SQLStatement sqlStatement, String sql, List<Object> parameters);
     
     private Collection<ExecutionUnit> executeRewrite(final String sql, final List<Object> parameters, final RouteContext routeContext) {
         OrderedSPIRegistry.getRegisteredServices(rules, SQLRewriteContextDecorator.class).forEach(rewriter::registerDecorator);

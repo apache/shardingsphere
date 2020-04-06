@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.underlying.route;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
@@ -46,8 +45,6 @@ public final class DataNodeRouter {
     
     private final ConfigurationProperties properties;
     
-    private final SQLParserEngine parserEngine;
-    
     private final Map<BaseRule, RouteDecorator> decorators = new LinkedHashMap<>();
     
     private SPIRoutingHook routingHook = new SPIRoutingHook();
@@ -65,15 +62,15 @@ public final class DataNodeRouter {
     /**
      * Route SQL.
      *
+     * @param sqlStatement SQL statement
      * @param sql SQL
      * @param parameters SQL parameters
-     * @param useCache whether cache SQL parse result
      * @return route context
      */
-    public RouteContext route(final String sql, final List<Object> parameters, final boolean useCache) {
+    public RouteContext route(final SQLStatement sqlStatement, final String sql, final List<Object> parameters) {
         routingHook.start(sql);
         try {
-            RouteContext result = executeRoute(sql, parameters, useCache);
+            RouteContext result = executeRoute(sqlStatement, sql, parameters);
             routingHook.finishSuccess(result, metaData.getSchema().getConfiguredSchemaMetaData());
             return result;
             // CHECKSTYLE:OFF
@@ -85,16 +82,15 @@ public final class DataNodeRouter {
     }
     
     @SuppressWarnings("unchecked")
-    private RouteContext executeRoute(final String sql, final List<Object> parameters, final boolean useCache) {
-        RouteContext result = createRouteContext(sql, parameters, useCache);
+    private RouteContext executeRoute(final SQLStatement sqlStatement, final String sql, final List<Object> parameters) {
+        RouteContext result = createRouteContext(sqlStatement, sql, parameters);
         for (Entry<BaseRule, RouteDecorator> entry : decorators.entrySet()) {
             result = entry.getValue().decorate(result, metaData, entry.getKey(), properties);
         }
         return result;
     }
     
-    private RouteContext createRouteContext(final String sql, final List<Object> parameters, final boolean useCache) {
-        SQLStatement sqlStatement = parserEngine.parse(sql, useCache);
+    private RouteContext createRouteContext(final SQLStatement sqlStatement, final String sql, final List<Object> parameters) {
         try {
             SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getSchema().getConfiguredSchemaMetaData(), sql, parameters, sqlStatement);
             return new RouteContext(sqlStatementContext, parameters, new RouteResult());

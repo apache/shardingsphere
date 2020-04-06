@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.underlying.pluggble.prepare;
 
-import org.apache.shardingsphere.sql.parser.SQLParserEngine;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
@@ -40,8 +40,8 @@ import java.util.List;
  */
 public final class SimpleQueryPrepareEngine extends BasePrepareEngine {
     
-    public SimpleQueryPrepareEngine(final Collection<BaseRule> rules, final ConfigurationProperties properties, final ShardingSphereMetaData metaData, final SQLParserEngine sqlParserEngine) {
-        super(rules, properties, metaData, sqlParserEngine);
+    public SimpleQueryPrepareEngine(final Collection<BaseRule> rules, final ConfigurationProperties properties, final ShardingSphereMetaData metaData) {
+        super(rules, properties, metaData);
     }
     
     @Override
@@ -50,7 +50,7 @@ public final class SimpleQueryPrepareEngine extends BasePrepareEngine {
     }
     
     @Override
-    protected RouteContext route(final DataNodeRouter dataNodeRouter, final String sql, final List<Object> parameters) {
-        return dataNodeRouter.route(sql, Collections.emptyList(), false);
+    protected RouteContext route(final DataNodeRouter dataNodeRouter, final SQLStatement sqlStatement, final String sql, final List<Object> parameters) {
+        return dataNodeRouter.route(sqlStatement, sql, Collections.emptyList());
     }
 }
