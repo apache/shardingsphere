@@ -32,9 +32,9 @@ import java.util.List;
  * Prepare engine for simple query.
  * 
  * <pre>
- *     Simple query:  
- *       for JDBC is Statement; 
- *       for MyQL is COM_QUERY; 
+ *     Simple query: 
+ *       for JDBC is Statement;
+ *       for MyQL is COM_QUERY;
  *       for PostgreSQL is Simple Query;
  * </pre>
  */

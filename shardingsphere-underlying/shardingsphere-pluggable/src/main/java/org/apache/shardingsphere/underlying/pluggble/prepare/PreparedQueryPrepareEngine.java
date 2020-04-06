@@ -32,9 +32,9 @@ import java.util.List;
  * Prepare engine for prepared query.
  * 
  * <pre>
- *     Prepared query:  
- *       for JDBC is PreparedStatement; 
- *       for MyQL is COM_STMT; 
+ *     Prepared query: 
+ *       for JDBC is PreparedStatement;
+ *       for MyQL is COM_STMT;
  *       for PostgreSQL is Extended Query;
  * </pre>
  */
