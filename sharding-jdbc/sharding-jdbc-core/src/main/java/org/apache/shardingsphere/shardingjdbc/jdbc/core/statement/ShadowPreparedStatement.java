@@ -36,6 +36,7 @@ import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteEngine;
 
+import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -141,6 +142,11 @@ public final class ShadowPreparedStatement extends AbstractShardingPreparedState
     public void addBatch() {
         sqlUnits.add(getSQLUnit(sql));
         clearParameters();
+    }
+    
+    @Override
+    public ParameterMetaData getParameterMetaData() throws SQLException {
+        return preparedStatement.getParameterMetaData();
     }
     
     @Override
