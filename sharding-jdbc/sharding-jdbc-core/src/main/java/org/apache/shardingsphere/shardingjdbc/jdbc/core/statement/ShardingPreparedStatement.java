@@ -103,7 +103,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         this.sql = sql;
         ShardingRuntimeContext runtimeContext = connection.getRuntimeContext();
         parameterMetaData = new ShardingParameterMetaData(runtimeContext.getSqlParserEngine(), sql);
-        prepareEngine = new PreparedQueryPrepareEngine(runtimeContext.getRule().toRules(), runtimeContext.getProperties(), runtimeContext.getMetaData(), runtimeContext.getSqlParserEngine());
+        prepareEngine = new PreparedQueryPrepareEngine(runtimeContext.getRule().toRules(), runtimeContext.getProperties(), runtimeContext.getMetaData());
         preparedStatementExecutor = new PreparedStatementExecutor(resultSetType, resultSetConcurrency, resultSetHoldability, returnGeneratedKeys, connection);
         batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(resultSetType, resultSetConcurrency, resultSetHoldability, returnGeneratedKeys, connection);
     }
@@ -180,7 +180,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     }
     
     private void prepare() {
-        executionContext = prepareEngine.prepare(sql, getParameters());
+        executionContext = prepareEngine.prepare(connection.getRuntimeContext().getSqlParserEngine().parse(sql, true), sql, getParameters());
         findGeneratedKey().ifPresent(generatedKey -> generatedValues.add(generatedKey.getGeneratedValues().getLast()));
     }
     

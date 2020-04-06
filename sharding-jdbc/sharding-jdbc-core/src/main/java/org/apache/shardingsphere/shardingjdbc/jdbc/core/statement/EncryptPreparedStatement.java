@@ -162,9 +162,8 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     
     @SuppressWarnings("unchecked")
     private SQLUnit getSQLUnit(final String sql) {
-        PreparedQueryPrepareEngine prepareEngine = new PreparedQueryPrepareEngine(
-                Collections.singletonList(runtimeContext.getRule()), runtimeContext.getProperties(), runtimeContext.getMetaData(), runtimeContext.getSqlParserEngine());
-        ExecutionContext executionContext = prepareEngine.prepare(sql, getParameters());
+        PreparedQueryPrepareEngine prepareEngine = new PreparedQueryPrepareEngine(Collections.singletonList(runtimeContext.getRule()), runtimeContext.getProperties(), runtimeContext.getMetaData());
+        ExecutionContext executionContext = prepareEngine.prepare(runtimeContext.getSqlParserEngine().parse(sql, true), sql, getParameters());
         Preconditions.checkArgument(1 == executionContext.getExecutionUnits().size());
         sqlStatementContext = executionContext.getSqlStatementContext();
         return executionContext.getExecutionUnits().iterator().next().getSqlUnit();

@@ -75,23 +75,22 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     }
     
     private ExecutionContext doShardingRoute(final String sql) {
-        SimpleQueryPrepareEngine prepareEngine = new SimpleQueryPrepareEngine(
-                logicSchema.getShardingRule().toRules(), ShardingProxyContext.getInstance().getProperties(), logicSchema.getMetaData(), logicSchema.getSqlParserEngine());
-        return prepareEngine.prepare(sql, Collections.emptyList());
+        SimpleQueryPrepareEngine prepareEngine = new SimpleQueryPrepareEngine(logicSchema.getShardingRule().toRules(), ShardingProxyContext.getInstance().getProperties(), logicSchema.getMetaData());
+        return prepareEngine.prepare(logicSchema.getSqlParserEngine().parse(sql, false), sql, Collections.emptyList());
     }
     
     @SuppressWarnings("unchecked")
     private ExecutionContext doMasterSlaveRoute(final String sql) {
-        SimpleQueryPrepareEngine prepareEngine = new SimpleQueryPrepareEngine(Collections.singletonList(((MasterSlaveSchema) logicSchema).getMasterSlaveRule()),
-                SHARDING_PROXY_CONTEXT.getProperties(), logicSchema.getMetaData(), logicSchema.getSqlParserEngine());
-        return prepareEngine.prepare(sql, Collections.emptyList());
+        SimpleQueryPrepareEngine prepareEngine = new SimpleQueryPrepareEngine(
+                Collections.singletonList(((MasterSlaveSchema) logicSchema).getMasterSlaveRule()), SHARDING_PROXY_CONTEXT.getProperties(), logicSchema.getMetaData());
+        return prepareEngine.prepare(logicSchema.getSqlParserEngine().parse(sql, false), sql, Collections.emptyList());
     }
     
     @SuppressWarnings("unchecked")
     private ExecutionContext doEncryptRoute(final String sql) {
-        SimpleQueryPrepareEngine prepareEngine = new SimpleQueryPrepareEngine(Collections.singletonList(((EncryptSchema) logicSchema).getEncryptRule()), 
-                SHARDING_PROXY_CONTEXT.getProperties(), logicSchema.getMetaData(), logicSchema.getSqlParserEngine());
-        return prepareEngine.prepare(sql, Collections.emptyList());
+        SimpleQueryPrepareEngine prepareEngine = new SimpleQueryPrepareEngine(
+                Collections.singletonList(((EncryptSchema) logicSchema).getEncryptRule()), SHARDING_PROXY_CONTEXT.getProperties(), logicSchema.getMetaData());
+        return prepareEngine.prepare(logicSchema.getSqlParserEngine().parse(sql, false), sql, Collections.emptyList());
     }
     
     private ExecutionContext doShadowRoute(final String sql) {
