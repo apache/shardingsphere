@@ -77,7 +77,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     private Collection<InputGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<BatchRouteUnit> batchRouteUnits) throws SQLException {
         return getSqlExecutePrepareTemplate().getExecuteUnitGroups(new ArrayList<>(batchRouteUnits).stream().map(BatchRouteUnit::getExecutionUnit).collect(Collectors.toList()), 
                 new SQLExecutePrepareCallback() {
-            
+                
                 @Override
                 public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
                     return BatchPreparedStatementExecutor.super.getConnection().getConnections(connectionMode, dataSourceName, connectionSize);

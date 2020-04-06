@@ -31,6 +31,7 @@ import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
 import org.apache.shardingsphere.underlying.pluggble.prepare.PreparedQueryPrepareEngine;
 
+import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -152,6 +153,11 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     public void addBatch() {
         sqlUnits.add(getSQLUnit(sql));
         clearParameters();
+    }
+    
+    @Override
+    public ParameterMetaData getParameterMetaData() throws SQLException {
+        return preparedStatement.getParameterMetaData();
     }
     
     @SuppressWarnings("unchecked")
