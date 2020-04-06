@@ -27,7 +27,6 @@ import java.net.URL;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
-import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLXML;
@@ -39,11 +38,6 @@ import java.util.Calendar;
  * Master-slave adapter for {@code PreparedStatement}.
  */
 public abstract class AbstractMasterSlavePreparedStatementAdapter extends AbstractUnsupportedOperationPreparedStatement {
-    
-    @Override
-    public final ParameterMetaData getParameterMetaData() throws SQLException {
-        return getTargetPreparedStatement().getParameterMetaData();
-    }
     
     @Override
     public final void setNull(final int parameterIndex, final int sqlType) throws SQLException {

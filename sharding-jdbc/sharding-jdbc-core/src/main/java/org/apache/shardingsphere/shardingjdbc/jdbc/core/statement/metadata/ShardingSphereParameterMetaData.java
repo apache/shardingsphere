@@ -19,20 +19,18 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.metadata;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationParameterMetaData;
-import org.apache.shardingsphere.sql.parser.SQLParserEngine;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 /**
- * Sharding parameter meta data.
+ * ShardingSphere parameter meta data.
  */
 @RequiredArgsConstructor
-public final class ShardingParameterMetaData extends AbstractUnsupportedOperationParameterMetaData {
+public final class ShardingSphereParameterMetaData extends AbstractUnsupportedOperationParameterMetaData {
     
-    private final SQLParserEngine sqlParserEngine;
-    
-    private final String sql;
+    private final SQLStatement sqlStatement;
     
     @Override
     public int getParameterCount() {
-        return sqlParserEngine.parse(sql, true).getParameterCount();
+        return sqlStatement.getParameterCount();
     }
 }
