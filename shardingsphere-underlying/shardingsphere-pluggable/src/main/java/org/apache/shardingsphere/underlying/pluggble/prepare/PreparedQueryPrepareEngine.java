@@ -21,9 +21,7 @@ import org.apache.shardingsphere.underlying.common.config.properties.Configurati
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Prepare engine for prepared query.
@@ -39,10 +37,5 @@ public final class PreparedQueryPrepareEngine extends BasePrepareEngine {
     
     public PreparedQueryPrepareEngine(final Collection<BaseRule> rules, final ConfigurationProperties properties, final ShardingSphereMetaData metaData) {
         super(rules, properties, metaData);
-    }
-    
-    @Override
-    protected List<Object> cloneParameters(final List<Object> parameters) {
-        return new ArrayList<>(parameters);
     }
 }

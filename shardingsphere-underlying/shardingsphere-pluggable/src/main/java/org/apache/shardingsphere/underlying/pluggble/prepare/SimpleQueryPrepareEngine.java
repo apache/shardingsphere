@@ -22,8 +22,6 @@ import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaDa
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Prepare engine for simple query.
@@ -39,10 +37,5 @@ public final class SimpleQueryPrepareEngine extends BasePrepareEngine {
     
     public SimpleQueryPrepareEngine(final Collection<BaseRule> rules, final ConfigurationProperties properties, final ShardingSphereMetaData metaData) {
         super(rules, properties, metaData);
-    }
-    
-    @Override
-    protected List<Object> cloneParameters(final List<Object> parameters) {
-        return Collections.emptyList();
     }
 }
