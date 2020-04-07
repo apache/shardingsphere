@@ -92,10 +92,8 @@ public abstract class BasePrepareEngine {
     
     private RouteContext executeRoute(final SQLStatement sqlStatement, final String sql, final List<Object> clonedParameters) {
         OrderedSPIRegistry.getRegisteredServices(rules, RouteDecorator.class).forEach(router::registerDecorator);
-        return route(router, sqlStatement, sql, clonedParameters);
+        return router.route(sqlStatement, sql, clonedParameters);
     }
-    
-    protected abstract RouteContext route(DataNodeRouter dataNodeRouter, SQLStatement sqlStatement, String sql, List<Object> parameters);
     
     private Collection<ExecutionUnit> executeRewrite(final String sql, final List<Object> parameters, final RouteContext routeContext) {
         OrderedSPIRegistry.getRegisteredServices(rules, SQLRewriteContextDecorator.class).forEach(rewriter::registerDecorator);
