@@ -34,8 +34,8 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
+import org.apache.shardingsphere.underlying.merge.MergeEntry;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
-import org.apache.shardingsphere.underlying.pluggble.merge.MergeEngine;
 import org.apache.shardingsphere.underlying.pluggble.prepare.PrepareEngine;
 
 import java.sql.ResultSet;
@@ -229,9 +229,9 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {
         ShardingRuntimeContext runtimeContext = connection.getRuntimeContext();
-        MergeEngine mergeEngine = new MergeEngine(runtimeContext.getRule().toRules(), 
-                runtimeContext.getProperties(), runtimeContext.getDatabaseType(), runtimeContext.getMetaData().getSchema().getConfiguredSchemaMetaData());
-        return mergeEngine.merge(queryResults, executionContext.getSqlStatementContext());
+        MergeEntry mergeEntry = new MergeEntry(runtimeContext.getDatabaseType(), 
+                runtimeContext.getMetaData().getSchema().getConfiguredSchemaMetaData(), runtimeContext.getProperties(), runtimeContext.getRule().toRules());
+        return mergeEntry.process(queryResults, executionContext.getSqlStatementContext());
     }
     
     @SuppressWarnings("MagicConstant")

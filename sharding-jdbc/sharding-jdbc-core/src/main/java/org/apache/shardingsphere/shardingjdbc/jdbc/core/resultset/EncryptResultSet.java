@@ -21,8 +21,8 @@ import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQuery
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.EncryptRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.underlying.merge.MergeEntry;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
-import org.apache.shardingsphere.underlying.pluggble.merge.MergeEngine;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -69,9 +69,9 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     }
     
     private MergedResult createMergedResult(final EncryptRuntimeContext runtimeContext, final ResultSet resultSet) throws SQLException {
-        MergeEngine mergeEngine = new MergeEngine(Collections.singletonList(runtimeContext.getRule()), 
-                runtimeContext.getProperties(), runtimeContext.getDatabaseType(), runtimeContext.getMetaData().getSchema().getConfiguredSchemaMetaData());
-        return mergeEngine.merge(Collections.singletonList(new StreamQueryResult(resultSet)), sqlStatementContext);
+        MergeEntry mergeEntry = new MergeEntry(runtimeContext.getDatabaseType(), 
+                runtimeContext.getMetaData().getSchema().getConfiguredSchemaMetaData(), runtimeContext.getProperties(), Collections.singletonList(runtimeContext.getRule()));
+        return mergeEntry.process(Collections.singletonList(new StreamQueryResult(resultSet)), sqlStatementContext);
     }
     
     private Map<String, Integer> createColumnLabelAndIndexMap(final ResultSetMetaData resultSetMetaData) throws SQLException {

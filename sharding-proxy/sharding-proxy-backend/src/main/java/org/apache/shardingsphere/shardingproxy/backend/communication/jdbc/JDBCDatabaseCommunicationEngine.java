@@ -44,8 +44,8 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
+import org.apache.shardingsphere.underlying.merge.MergeEntry;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
-import org.apache.shardingsphere.underlying.pluggble.merge.MergeEngine;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -128,9 +128,9 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private MergedResult mergeQuery(final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
-        MergeEngine mergeEngine = new MergeEngine(logicSchema.getShardingRule().toRules(), 
-                ShardingProxyContext.getInstance().getProperties(), LogicSchemas.getInstance().getDatabaseType(), logicSchema.getMetaData().getSchema().getConfiguredSchemaMetaData());
-        return mergeEngine.merge(queryResults, sqlStatementContext);
+        MergeEntry mergeEntry = new MergeEntry(LogicSchemas.getInstance().getDatabaseType(), 
+                logicSchema.getMetaData().getSchema().getConfiguredSchemaMetaData(), ShardingProxyContext.getInstance().getProperties(), logicSchema.getShardingRule().toRules());
+        return mergeEntry.process(queryResults, sqlStatementContext);
     }
     
     @Override

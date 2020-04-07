@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.underlying.merge;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
+import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.engine.ResultProcessEngine;
@@ -33,6 +33,7 @@ import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import org.apache.shardingsphere.underlying.merge.result.impl.transparent.TransparentMergedResult;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +43,6 @@ import java.util.Optional;
 /**
  * Merge entry.
  */
-@RequiredArgsConstructor
 public final class MergeEntry {
     
     private final DatabaseType databaseType;
@@ -53,14 +53,11 @@ public final class MergeEntry {
     
     private final Map<BaseRule, ResultProcessEngine> engines = new LinkedHashMap<>();
     
-    /**
-     * Register result process engine.
-     *
-     * @param rule rule
-     * @param processEngine result process engine
-     */
-    public void registerProcessEngine(final BaseRule rule, final ResultProcessEngine processEngine) {
-        engines.put(rule, processEngine);
+    public MergeEntry(final DatabaseType databaseType, final SchemaMetaData schemaMetaData, final ConfigurationProperties properties, final Collection<BaseRule> rules) {
+        this.databaseType = databaseType;
+        this.schemaMetaData = schemaMetaData;
+        this.properties = properties;
+        OrderedSPIRegistry.getRegisteredServices(rules, ResultProcessEngine.class).forEach(engines::put);
     }
     
     /**
