@@ -47,10 +47,10 @@ import java.util.List;
 import java.util.Map.Entry;
 
 /**
- * Base prepare engine.
+ * Prepare engine.
  */
 @RequiredArgsConstructor
-public abstract class BasePrepareEngine {
+public final class PrepareEngine {
     
     private final Collection<BaseRule> rules;
     
@@ -62,7 +62,7 @@ public abstract class BasePrepareEngine {
     
     private final SQLRewriteEntry rewriter;
     
-    public BasePrepareEngine(final Collection<BaseRule> rules, final ConfigurationProperties properties, final ShardingSphereMetaData metaData) {
+    public PrepareEngine(final Collection<BaseRule> rules, final ConfigurationProperties properties, final ShardingSphereMetaData metaData) {
         this.rules = rules;
         this.properties = properties;
         this.metaData = metaData;

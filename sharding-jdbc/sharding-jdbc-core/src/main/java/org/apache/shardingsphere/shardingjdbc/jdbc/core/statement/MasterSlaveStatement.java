@@ -28,7 +28,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionCon
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.MasterSlaveRuntimeContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
-import org.apache.shardingsphere.underlying.pluggble.prepare.SimpleQueryPrepareEngine;
+import org.apache.shardingsphere.underlying.pluggble.prepare.PrepareEngine;
 import org.apache.shardingsphere.underlying.route.DataNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
@@ -83,7 +83,7 @@ public final class MasterSlaveStatement extends AbstractStatementAdapter {
         }
         clearPrevious();
         MasterSlaveRuntimeContext runtimeContext = connection.getRuntimeContext();
-        SimpleQueryPrepareEngine prepareEngine = new SimpleQueryPrepareEngine(Collections.singletonList(runtimeContext.getRule()), runtimeContext.getProperties(), runtimeContext.getMetaData());
+        PrepareEngine prepareEngine = new PrepareEngine(Collections.singletonList(runtimeContext.getRule()), runtimeContext.getProperties(), runtimeContext.getMetaData());
         ExecutionContext executionContext = prepareEngine.prepare(runtimeContext.getSqlParserEngine().parse(sql, false), sql, Collections.emptyList());
         ExecutionUnit executionUnit = executionContext.getExecutionUnits().iterator().next();
         Preconditions.checkState(1 == executionContext.getExecutionUnits().size(), "Cannot support executeQuery for DML or DDL");
