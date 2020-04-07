@@ -39,7 +39,7 @@ public class DropTableStatementMetaDataRefreshStrategyTest extends AbstractMetaD
         dropTableStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         DropTableStatementContext dropTableStatementContext = new DropTableStatementContext(dropTableStatement);
         metaDataRefreshStrategy.refreshMetaData(getMetaData(), dropTableStatementContext, tableName -> null);
-        assertThat(getMetaData().getSchema().containsTable("t_order"), is(false));
+        assertThat(getMetaData().getSchema().getConfiguredSchemaMetaData().containsTable("t_order"), is(false));
     }
 }
 

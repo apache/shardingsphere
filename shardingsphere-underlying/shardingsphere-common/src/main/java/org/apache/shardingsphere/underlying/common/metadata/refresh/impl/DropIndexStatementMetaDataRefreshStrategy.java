@@ -41,12 +41,12 @@ public final class DropIndexStatementMetaDataRefreshStrategy implements MetaData
         DropIndexStatement dropIndexStatement = sqlStatementContext.getSqlStatement();
         Collection<String> indexNames = getIndexNames(dropIndexStatement);
         String tableName = dropIndexStatement.getTable().getTableName().getIdentifier().getValue();
-        TableMetaData tableMetaData = metaData.getSchema().get(tableName);
+        TableMetaData tableMetaData = metaData.getSchema().getConfiguredSchemaMetaData().get(tableName);
         if (null != dropIndexStatement.getTable()) {
             indexNames.forEach(each -> tableMetaData.getIndexes().remove(each));
         }
         for (String each : indexNames) {
-            if (findLogicTableName(metaData.getSchema(), each).isPresent()) {
+            if (findLogicTableName(metaData.getSchema().getConfiguredSchemaMetaData(), each).isPresent()) {
                 tableMetaData.getIndexes().remove(each);
             }
         }

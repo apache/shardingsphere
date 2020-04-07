@@ -30,6 +30,7 @@ import org.apache.shardingsphere.underlying.common.metadata.refresh.impl.AlterTa
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -42,10 +43,10 @@ public class AlterTableStatementMetaDataRefreshStrategyTest extends AbstractMeta
         MetaDataRefreshStrategy<AlterTableStatementContext> metaDataRefreshStrategy = new AlterTableStatementMetaDataRefreshStrategy();
         AlterTableStatement alterTableStatement = new AlterTableStatement(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         AlterTableStatementContext alterTableStatementContext = new AlterTableStatementContext(alterTableStatement);
-        metaDataRefreshStrategy.refreshMetaData(getMetaData(), alterTableStatementContext, tableName -> new TableMetaData(
+        metaDataRefreshStrategy.refreshMetaData(getMetaData(), alterTableStatementContext, tableName -> Optional.of(new TableMetaData(
                 Collections.singletonList(new ColumnMetaData("order_id", 1, "String", true, false, false)),
-                Collections.singletonList(new IndexMetaData("index_alter"))));
-        assertThat(getMetaData().getSchema().get("t_order").getIndexes().containsKey("index_alter"), is(true));
+                Collections.singletonList(new IndexMetaData("index_alter")))));
+        assertThat(getMetaData().getSchema().getConfiguredSchemaMetaData().get("t_order").getIndexes().containsKey("index_alter"), is(true));
     }
 }
 

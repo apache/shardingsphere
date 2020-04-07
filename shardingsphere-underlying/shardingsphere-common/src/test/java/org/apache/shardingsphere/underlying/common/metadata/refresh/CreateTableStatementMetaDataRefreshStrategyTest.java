@@ -30,6 +30,7 @@ import org.apache.shardingsphere.underlying.common.metadata.refresh.impl.CreateT
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -42,9 +43,9 @@ public class CreateTableStatementMetaDataRefreshStrategyTest extends AbstractMet
         MetaDataRefreshStrategy<CreateTableStatementContext> metaDataRefreshStrategy = new CreateTableStatementMetaDataRefreshStrategy();
         CreateTableStatement createTableStatement = new CreateTableStatement(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_0"))));
         CreateTableStatementContext createTableStatementContext = new CreateTableStatementContext(createTableStatement);
-        metaDataRefreshStrategy.refreshMetaData(getMetaData(), createTableStatementContext, tableName -> new TableMetaData(
+        metaDataRefreshStrategy.refreshMetaData(getMetaData(), createTableStatementContext, tableName -> Optional.of(new TableMetaData(
                 Collections.singletonList(new ColumnMetaData("order_id", 1, "String", true, false, false)),
-                Collections.singletonList(new IndexMetaData("index"))));
-        assertThat(getMetaData().getSchema().containsTable("t_order_0"), is(true));
+                Collections.singletonList(new IndexMetaData("index")))));
+        assertThat(getMetaData().getSchema().getConfiguredSchemaMetaData().containsTable("t_order_0"), is(true));
     }
 }

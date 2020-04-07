@@ -37,6 +37,6 @@ public final class CreateIndexStatementMetaDataRefreshStrategy implements MetaDa
         }
         String indexName = createIndexStatement.getIndex().getIdentifier().getValue();
         String tableName = createIndexStatement.getTable().getTableName().getIdentifier().getValue();
-        metaData.getSchema().get(tableName).getIndexes().put(indexName, new IndexMetaData(indexName));
+        metaData.getSchema().getConfiguredSchemaMetaData().get(tableName).getIndexes().put(indexName, new IndexMetaData(indexName));
     }
 }

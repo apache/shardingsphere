@@ -20,6 +20,7 @@ package org.apache.shardingsphere.underlying.common.metadata.refresh;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 
 import java.sql.SQLException;
+import java.util.Optional;
 
 /**
  * Table meta data loader callback.
@@ -33,6 +34,6 @@ public interface TableMetaDataLoaderCallback {
      * @return table meta data
      * @throws SQLException SQL exception
      */
-    TableMetaData load(String tableName) throws SQLException;
+    Optional<TableMetaData> load(String tableName) throws SQLException;
 }
 

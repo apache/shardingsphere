@@ -29,7 +29,7 @@ public final class DropTableStatementMetaDataRefreshStrategy implements MetaData
     
     @Override
     public void refreshMetaData(final ShardingSphereMetaData metaData, final DropTableStatementContext sqlStatementContext, final TableMetaDataLoaderCallback callback) {
-        sqlStatementContext.getSqlStatement().getTables().forEach(each -> metaData.getSchema().remove(each.getTableName().getIdentifier().getValue()));
+        sqlStatementContext.getSqlStatement().getTables().forEach(each -> metaData.getSchema().getConfiguredSchemaMetaData().remove(each.getTableName().getIdentifier().getValue()));
     }
 }
 
