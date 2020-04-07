@@ -41,9 +41,9 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * Merge entry.
+ * Merge engine.
  */
-public final class MergeEntry {
+public final class MergeEngine {
     
     private final DatabaseType databaseType;
     
@@ -53,7 +53,7 @@ public final class MergeEntry {
     
     private final Map<BaseRule, ResultProcessEngine> engines = new LinkedHashMap<>();
     
-    public MergeEntry(final DatabaseType databaseType, final SchemaMetaData schemaMetaData, final ConfigurationProperties properties, final Collection<BaseRule> rules) {
+    public MergeEngine(final DatabaseType databaseType, final SchemaMetaData schemaMetaData, final ConfigurationProperties properties, final Collection<BaseRule> rules) {
         this.databaseType = databaseType;
         this.schemaMetaData = schemaMetaData;
         this.properties = properties;
@@ -61,21 +61,21 @@ public final class MergeEntry {
     }
     
     /**
-     * Process query results.
+     * Merge.
      *
      * @param queryResults query results
      * @param sqlStatementContext SQL statement context
      * @return merged result
      * @throws SQLException SQL exception
      */
-    public MergedResult process(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
-        Optional<MergedResult> mergedResult = merge(queryResults, sqlStatementContext);
+    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
+        Optional<MergedResult> mergedResult = merge0(queryResults, sqlStatementContext);
         Optional<MergedResult> result = mergedResult.isPresent() ? Optional.of(decorate(mergedResult.get(), sqlStatementContext)) : decorate(queryResults.get(0), sqlStatementContext);
         return result.orElseGet(() -> new TransparentMergedResult(queryResults.get(0)));
     }
     
     @SuppressWarnings("unchecked")
-    private Optional<MergedResult> merge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
+    private Optional<MergedResult> merge0(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
         for (Entry<BaseRule, ResultProcessEngine> entry : engines.entrySet()) {
             if (entry.getValue() instanceof ResultMergerEngine) {
                 ResultMerger resultMerger = ((ResultMergerEngine) entry.getValue()).newInstance(databaseType, entry.getKey(), properties, sqlStatementContext);
