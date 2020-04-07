@@ -15,27 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.jdbc.refreh.impl;
+package org.apache.shardingsphere.underlying.common.metadata.refresh.impl;
 
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
-import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateIndexStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateIndexStatement;
+import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategy;
+import org.apache.shardingsphere.underlying.common.metadata.refresh.TableMetaDataLoaderCallback;
 
 /**
  * Create index statement meta data refresh strategy.
  */
 public final class CreateIndexStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<CreateIndexStatementContext> {
-   
+    
     @Override
-    public void refreshMetaData(final ShardingRuntimeContext shardingRuntimeContext, final CreateIndexStatementContext sqlStatementContext) {
+    public void refreshMetaData(final ShardingSphereMetaData metaData, final CreateIndexStatementContext sqlStatementContext, final TableMetaDataLoaderCallback callback) {
         CreateIndexStatement createIndexStatement = sqlStatementContext.getSqlStatement();
         if (null == createIndexStatement.getIndex()) {
             return;
         }
         String indexName = createIndexStatement.getIndex().getIdentifier().getValue();
         String tableName = createIndexStatement.getTable().getTableName().getIdentifier().getValue();
-        shardingRuntimeContext.getMetaData().getSchema().getConfiguredSchemaMetaData().get(tableName).getIndexes().put(indexName, new IndexMetaData(indexName));
+        metaData.getSchema().getConfiguredSchemaMetaData().get(tableName).getIndexes().put(indexName, new IndexMetaData(indexName));
     }
 }

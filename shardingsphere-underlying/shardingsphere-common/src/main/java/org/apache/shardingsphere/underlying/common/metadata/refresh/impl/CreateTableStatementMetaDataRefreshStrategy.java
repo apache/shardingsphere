@@ -15,16 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.jdbc.refreh.impl;
+package org.apache.shardingsphere.underlying.common.metadata.refresh.impl;
 
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
-import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.MetaDataRefreshStrategy;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateTableStatementContext;
-import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
+import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategy;
+import org.apache.shardingsphere.underlying.common.metadata.refresh.TableMetaDataLoaderCallback;
 
 import java.sql.SQLException;
-import java.util.Optional;
 
 /**
  * Create table statement meta data refresh strategy.
@@ -32,13 +30,8 @@ import java.util.Optional;
 public final class CreateTableStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<CreateTableStatementContext> {
     
     @Override
-    public void refreshMetaData(final ShardingRuntimeContext shardingRuntimeContext, final CreateTableStatementContext sqlStatementContext) throws SQLException {
+    public void refreshMetaData(final ShardingSphereMetaData metaData, final CreateTableStatementContext sqlStatementContext, final TableMetaDataLoaderCallback callback) throws SQLException {
         String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
-        loadTableMetaData(tableName, shardingRuntimeContext).ifPresent(tableMetaData -> shardingRuntimeContext.getMetaData().getSchema().getConfiguredSchemaMetaData().put(tableName, tableMetaData));
-    }
-    
-    private Optional<TableMetaData> loadTableMetaData(final String tableName, final ShardingRuntimeContext shardingRuntimeContext) throws SQLException {
-        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(shardingRuntimeContext.getRule().toRules());
-        return loader.load(shardingRuntimeContext.getDatabaseType(), shardingRuntimeContext.getDataSourceMap(), tableName, shardingRuntimeContext.getProperties());
+        callback.load(tableName).ifPresent(tableMetaData -> metaData.getSchema().getConfiguredSchemaMetaData().put(tableName, tableMetaData));
     }
 }

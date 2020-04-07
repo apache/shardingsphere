@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.jdbc.refresh;
+package org.apache.shardingsphere.underlying.common.metadata.refresh;
 
-import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.AlterIndexStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.AlterTableStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateIndexStatementContext;
@@ -34,7 +33,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MetaDataRefreshStrategyFactoryTest {
+public final class MetaDataRefreshStrategyFactoryTest {
     
     @Mock
     private CreateTableStatementContext createTableStatementContext;

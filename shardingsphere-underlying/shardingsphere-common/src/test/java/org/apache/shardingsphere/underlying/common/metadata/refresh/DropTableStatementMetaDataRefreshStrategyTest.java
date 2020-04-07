@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.jdbc.refresh;
+package org.apache.shardingsphere.underlying.common.metadata.refresh;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.MetaDataRefreshStrategy;
-import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.impl.DropTableStatementMetaDataRefreshStrategy;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.DropTableStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.underlying.common.metadata.refresh.impl.DropTableStatementMetaDataRefreshStrategy;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class DropTableStatementMetaDataRefreshStrategyTest extends AbstractMetaDataRefreshStrategyTest {
+public final class DropTableStatementMetaDataRefreshStrategyTest extends AbstractMetaDataRefreshStrategyTest {
     
     @SneakyThrows
     @Test
@@ -39,8 +38,8 @@ public class DropTableStatementMetaDataRefreshStrategyTest extends AbstractMetaD
         DropTableStatement dropTableStatement = new DropTableStatement();
         dropTableStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         DropTableStatementContext dropTableStatementContext = new DropTableStatementContext(dropTableStatement);
-        metaDataRefreshStrategy.refreshMetaData(getRuntimeContext(), dropTableStatementContext);
-        assertThat(getRuntimeContext().getMetaData().getSchema().getConfiguredSchemaMetaData().containsTable("t_order"), is(false));
+        metaDataRefreshStrategy.refreshMetaData(getMetaData(), dropTableStatementContext, tableName -> null);
+        assertThat(getMetaData().getSchema().getConfiguredSchemaMetaData().containsTable("t_order"), is(false));
     }
 }
 
