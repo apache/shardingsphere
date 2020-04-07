@@ -15,26 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.jdbc.refreh;
+package org.apache.shardingsphere.underlying.common.metadata.refresh;
 
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 
 import java.sql.SQLException;
 
 /**
- * Meta data refresh strategy.
- * 
- * @param <T> type of SQL statement context
+ * Table meta data loader callback.
  */
-public interface MetaDataRefreshStrategy<T extends SQLStatementContext> {
+public interface TableMetaDataLoaderCallback {
     
     /**
-     * Refresh meta data.
+     * Load table meta data.
      *
-     * @param shardingRuntimeContext sharding runtime context
-     * @param sqlStatementContext SQL statement context
+     * @param tableName table name
+     * @return table meta data
      * @throws SQLException SQL exception
      */
-    void refreshMetaData(ShardingRuntimeContext shardingRuntimeContext, T sqlStatementContext) throws SQLException;
+    TableMetaData load(String tableName) throws SQLException;
 }
+

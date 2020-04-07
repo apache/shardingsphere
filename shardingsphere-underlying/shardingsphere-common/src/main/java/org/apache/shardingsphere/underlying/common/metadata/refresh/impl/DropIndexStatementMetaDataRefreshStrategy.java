@@ -15,14 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.jdbc.refreh.impl;
+package org.apache.shardingsphere.underlying.common.metadata.refresh.impl;
 
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
-import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.DropIndexStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
+
+import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategy;
+import org.apache.shardingsphere.underlying.common.metadata.refresh.TableMetaDataLoaderCallback;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -35,16 +37,16 @@ import java.util.stream.Collectors;
 public final class DropIndexStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<DropIndexStatementContext> {
     
     @Override
-    public void refreshMetaData(final ShardingRuntimeContext shardingRuntimeContext, final DropIndexStatementContext sqlStatementContext) {
+    public void refreshMetaData(final ShardingSphereMetaData metaData, final DropIndexStatementContext sqlStatementContext, final TableMetaDataLoaderCallback callback) {
         DropIndexStatement dropIndexStatement = sqlStatementContext.getSqlStatement();
         Collection<String> indexNames = getIndexNames(dropIndexStatement);
         String tableName = dropIndexStatement.getTable().getTableName().getIdentifier().getValue();
-        TableMetaData tableMetaData = shardingRuntimeContext.getMetaData().getSchema().getConfiguredSchemaMetaData().get(tableName);
+        TableMetaData tableMetaData = metaData.getSchema().get(tableName);
         if (null != dropIndexStatement.getTable()) {
             indexNames.forEach(each -> tableMetaData.getIndexes().remove(each));
         }
         for (String each : indexNames) {
-            if (findLogicTableName(shardingRuntimeContext.getMetaData().getSchema().getConfiguredSchemaMetaData(), each).isPresent()) {
+            if (findLogicTableName(metaData.getSchema(), each).isPresent()) {
                 tableMetaData.getIndexes().remove(each);
             }
         }
@@ -58,3 +60,4 @@ public final class DropIndexStatementMetaDataRefreshStrategy implements MetaData
         return schemaMetaData.getAllTableNames().stream().filter(each -> schemaMetaData.get(each).getIndexes().containsKey(logicIndexName)).findFirst();
     }
 }
+
