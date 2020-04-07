@@ -35,7 +35,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
-import org.apache.shardingsphere.underlying.pluggble.prepare.PreparedQueryPrepareEngine;
+import org.apache.shardingsphere.underlying.pluggble.prepare.PrepareEngine;
 import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteEngine;
@@ -78,22 +78,20 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     }
     
     private ExecutionContext doShardingRoute(final String sql) {
-        PreparedQueryPrepareEngine prepareEngine = new PreparedQueryPrepareEngine(
-                logicSchema.getShardingRule().toRules(), ShardingProxyContext.getInstance().getProperties(), logicSchema.getMetaData());
+        PrepareEngine prepareEngine = new PrepareEngine(logicSchema.getShardingRule().toRules(), ShardingProxyContext.getInstance().getProperties(), logicSchema.getMetaData());
         return prepareEngine.prepare(logicSchema.getSqlParserEngine().parse(sql, true), sql, parameters);
     }
     
     @SuppressWarnings("unchecked")
     private ExecutionContext doMasterSlaveRoute(final String sql) {
-        PreparedQueryPrepareEngine prepareEngine = new PreparedQueryPrepareEngine(
+        PrepareEngine prepareEngine = new PrepareEngine(
                 Collections.singletonList(((MasterSlaveSchema) logicSchema).getMasterSlaveRule()), SHARDING_PROXY_CONTEXT.getProperties(), logicSchema.getMetaData());
         return prepareEngine.prepare(logicSchema.getSqlParserEngine().parse(sql, true), sql, parameters);
     }
     
     @SuppressWarnings("unchecked")
     private ExecutionContext doEncryptRoute(final String sql) {
-        PreparedQueryPrepareEngine prepareEngine = new PreparedQueryPrepareEngine(
-                Collections.singletonList(((EncryptSchema) logicSchema).getEncryptRule()), SHARDING_PROXY_CONTEXT.getProperties(), logicSchema.getMetaData());
+        PrepareEngine prepareEngine = new PrepareEngine(Collections.singletonList(((EncryptSchema) logicSchema).getEncryptRule()), SHARDING_PROXY_CONTEXT.getProperties(), logicSchema.getMetaData());
         return prepareEngine.prepare(logicSchema.getSqlParserEngine().parse(sql, true), sql, parameters);
     }
     
