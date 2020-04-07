@@ -36,8 +36,7 @@ import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import org.apache.shardingsphere.underlying.pluggble.merge.MergeEngine;
-import org.apache.shardingsphere.underlying.pluggble.prepare.BasePrepareEngine;
-import org.apache.shardingsphere.underlying.pluggble.prepare.SimpleQueryPrepareEngine;
+import org.apache.shardingsphere.underlying.pluggble.prepare.PrepareEngine;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -220,7 +219,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     private ExecutionContext prepare(final String sql) throws SQLException {
         statementExecutor.clear();
         ShardingRuntimeContext runtimeContext = connection.getRuntimeContext();
-        BasePrepareEngine prepareEngine = new SimpleQueryPrepareEngine(runtimeContext.getRule().toRules(), runtimeContext.getProperties(), runtimeContext.getMetaData());
+        PrepareEngine prepareEngine = new PrepareEngine(runtimeContext.getRule().toRules(), runtimeContext.getProperties(), runtimeContext.getMetaData());
         SQLStatement sqlStatement = runtimeContext.getSqlParserEngine().parse(sql, false);
         ExecutionContext result = prepareEngine.prepare(sqlStatement, sql, Collections.emptyList());
         statementExecutor.init(result);

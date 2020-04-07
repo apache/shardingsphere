@@ -31,7 +31,7 @@ import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
-import org.apache.shardingsphere.underlying.pluggble.prepare.PreparedQueryPrepareEngine;
+import org.apache.shardingsphere.underlying.pluggble.prepare.PrepareEngine;
 
 import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
@@ -166,7 +166,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     
     @SuppressWarnings("unchecked")
     private SQLUnit getSQLUnit(final String sql) {
-        PreparedQueryPrepareEngine prepareEngine = new PreparedQueryPrepareEngine(Collections.singletonList(runtimeContext.getRule()), runtimeContext.getProperties(), runtimeContext.getMetaData());
+        PrepareEngine prepareEngine = new PrepareEngine(Collections.singletonList(runtimeContext.getRule()), runtimeContext.getProperties(), runtimeContext.getMetaData());
         ExecutionContext executionContext = prepareEngine.prepare(runtimeContext.getSqlParserEngine().parse(sql, true), sql, getParameters());
         Preconditions.checkArgument(1 == executionContext.getExecutionUnits().size());
         sqlStatementContext = executionContext.getSqlStatementContext();

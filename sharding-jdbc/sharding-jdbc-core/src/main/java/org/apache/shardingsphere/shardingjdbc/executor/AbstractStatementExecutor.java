@@ -35,7 +35,6 @@ import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMet
 import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
 import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -66,8 +65,6 @@ public abstract class AbstractStatementExecutor {
     
     private final SQLExecuteTemplate sqlExecuteTemplate;
     
-    private final Collection<Connection> connections = new LinkedList<>();
-    
     private final List<List<Object>> parameterSets = new LinkedList<>();
     
     private final List<Statement> statements = new LinkedList<>();
@@ -86,9 +83,8 @@ public abstract class AbstractStatementExecutor {
         this.resultSetHoldability = resultSetHoldability;
         this.connection = shardingConnection;
         int maxConnectionsSizePerQuery = connection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        ExecutorEngine executorEngine = connection.getRuntimeContext().getExecutorEngine();
         sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(maxConnectionsSizePerQuery);
-        sqlExecuteTemplate = new SQLExecuteTemplate(executorEngine, connection.isHoldTransaction());
+        sqlExecuteTemplate = new SQLExecuteTemplate(connection.getRuntimeContext().getExecutorEngine(), connection.isHoldTransaction());
     }
     
     protected final void cacheStatements() {
@@ -134,7 +130,6 @@ public abstract class AbstractStatementExecutor {
         clearStatements();
         statements.clear();
         parameterSets.clear();
-        connections.clear();
         resultSets.clear();
         inputGroups.clear();
     }
