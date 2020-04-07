@@ -33,7 +33,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MetaDataRefreshStrategyFactoryTest {
+public final class MetaDataRefreshStrategyFactoryTest {
     
     @Mock
     private CreateTableStatementContext createTableStatementContext;
