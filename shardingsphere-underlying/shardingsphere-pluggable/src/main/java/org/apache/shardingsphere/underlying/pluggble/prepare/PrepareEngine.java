@@ -19,7 +19,6 @@ package org.apache.shardingsphere.underlying.pluggble.prepare;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
@@ -34,12 +33,9 @@ import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDec
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteEngine;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRouteRewriteEngine;
-import org.apache.shardingsphere.underlying.route.DataNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
-import org.apache.shardingsphere.underlying.route.decorator.RouteDecorator;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -58,40 +54,30 @@ public final class PrepareEngine {
     
     private final ShardingSphereMetaData metaData;
     
-    private final DataNodeRouter router;
-    
     private final SQLRewriteEntry rewriter;
     
     public PrepareEngine(final Collection<BaseRule> rules, final ConfigurationProperties properties, final ShardingSphereMetaData metaData) {
         this.rules = rules;
         this.properties = properties;
         this.metaData = metaData;
-        router = new DataNodeRouter(metaData, properties);
         rewriter = new SQLRewriteEntry(metaData.getSchema().getConfiguredSchemaMetaData(), properties);
     }
     
     /**
      * Prepare to execute.
      *
-     * @param sqlStatement SQL statement
      * @param sql SQL
      * @param parameters SQL parameters
+     * @param routeContext route context
      * @return execution context
      */
-    public ExecutionContext prepare(final SQLStatement sqlStatement, final String sql, final List<Object> parameters) {
-        List<Object> clonedParameters = new ArrayList<>(parameters);
-        RouteContext routeContext = executeRoute(sqlStatement, sql, clonedParameters);
+    public ExecutionContext prepare(final String sql, final List<Object> parameters, final RouteContext routeContext) {
         ExecutionContext result = new ExecutionContext(routeContext.getSqlStatementContext());
-        result.getExecutionUnits().addAll(executeRewrite(sql, clonedParameters, routeContext));
+        result.getExecutionUnits().addAll(executeRewrite(sql, parameters, routeContext));
         if (properties.<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
             SQLLogger.logSQL(sql, properties.<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), result.getSqlStatementContext(), result.getExecutionUnits());
         }
         return result;
-    }
-    
-    private RouteContext executeRoute(final SQLStatement sqlStatement, final String sql, final List<Object> clonedParameters) {
-        OrderedSPIRegistry.getRegisteredServices(rules, RouteDecorator.class).forEach(router::registerDecorator);
-        return router.route(sqlStatement, sql, clonedParameters);
     }
     
     private Collection<ExecutionUnit> executeRewrite(final String sql, final List<Object> parameters, final RouteContext routeContext) {

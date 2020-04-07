@@ -37,6 +37,8 @@ import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.merge.MergeEngine;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import org.apache.shardingsphere.underlying.pluggble.prepare.PrepareEngine;
+import org.apache.shardingsphere.underlying.route.DataNodeRouter;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -221,7 +223,9 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         ShardingRuntimeContext runtimeContext = connection.getRuntimeContext();
         PrepareEngine prepareEngine = new PrepareEngine(runtimeContext.getRule().toRules(), runtimeContext.getProperties(), runtimeContext.getMetaData());
         SQLStatement sqlStatement = runtimeContext.getSqlParserEngine().parse(sql, false);
-        ExecutionContext result = prepareEngine.prepare(sqlStatement, sql, Collections.emptyList());
+        RouteContext routeContext = new DataNodeRouter(
+                runtimeContext.getMetaData(), runtimeContext.getProperties(), runtimeContext.getRule().toRules()).route(sqlStatement, sql, Collections.emptyList());
+        ExecutionContext result = prepareEngine.prepare(sql, Collections.emptyList(), routeContext);
         statementExecutor.init(result);
         statementExecutor.getStatements().forEach(this::replayMethodsInvocation);
         return result;

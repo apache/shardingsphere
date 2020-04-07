@@ -40,6 +40,8 @@ import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.merge.MergeEngine;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import org.apache.shardingsphere.underlying.pluggble.prepare.PrepareEngine;
+import org.apache.shardingsphere.underlying.route.DataNodeRouter;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
@@ -183,7 +185,9 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     }
     
     private void prepare() {
-        executionContext = prepareEngine.prepare(sqlStatement, sql, getParameters());
+        ShardingRuntimeContext runtimeContext = connection.getRuntimeContext();
+        RouteContext routeContext = new DataNodeRouter(runtimeContext.getMetaData(), runtimeContext.getProperties(), runtimeContext.getRule().toRules()).route(sqlStatement, sql, getParameters());
+        executionContext = prepareEngine.prepare(sql, new ArrayList<>(getParameters()), routeContext);
         findGeneratedKey().ifPresent(generatedKey -> generatedValues.add(generatedKey.getGeneratedValues().getLast()));
     }
     

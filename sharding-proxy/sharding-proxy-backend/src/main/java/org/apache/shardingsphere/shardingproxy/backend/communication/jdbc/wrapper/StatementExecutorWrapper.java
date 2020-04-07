@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementC
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
@@ -40,10 +41,13 @@ import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteEngine;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
+import org.apache.shardingsphere.underlying.route.DataNodeRouter;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 
@@ -75,21 +79,29 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     }
     
     private ExecutionContext doShardingRoute(final String sql) {
-        PrepareEngine prepareEngine = new PrepareEngine(logicSchema.getShardingRule().toRules(), ShardingProxyContext.getInstance().getProperties(), logicSchema.getMetaData());
-        return prepareEngine.prepare(logicSchema.getSqlParserEngine().parse(sql, false), sql, Collections.emptyList());
+        Collection<BaseRule> rules = logicSchema.getShardingRule().toRules();
+        SQLStatement sqlStatement = logicSchema.getSqlParserEngine().parse(sql, false);
+        RouteContext routeContext = new DataNodeRouter(logicSchema.getMetaData(), SHARDING_PROXY_CONTEXT.getProperties(), rules).route(sqlStatement, sql, Collections.emptyList());
+        PrepareEngine prepareEngine = new PrepareEngine(rules, ShardingProxyContext.getInstance().getProperties(), logicSchema.getMetaData());
+        return prepareEngine.prepare(sql, Collections.emptyList(), routeContext);
     }
     
     @SuppressWarnings("unchecked")
     private ExecutionContext doMasterSlaveRoute(final String sql) {
-        PrepareEngine prepareEngine = new PrepareEngine(
-                Collections.singletonList(((MasterSlaveSchema) logicSchema).getMasterSlaveRule()), SHARDING_PROXY_CONTEXT.getProperties(), logicSchema.getMetaData());
-        return prepareEngine.prepare(logicSchema.getSqlParserEngine().parse(sql, false), sql, Collections.emptyList());
+        Collection<BaseRule> rules = Collections.singletonList(((MasterSlaveSchema) logicSchema).getMasterSlaveRule());
+        SQLStatement sqlStatement = logicSchema.getSqlParserEngine().parse(sql, false);
+        RouteContext routeContext = new DataNodeRouter(logicSchema.getMetaData(), SHARDING_PROXY_CONTEXT.getProperties(), rules).route(sqlStatement, sql, Collections.emptyList());
+        PrepareEngine prepareEngine = new PrepareEngine(rules, SHARDING_PROXY_CONTEXT.getProperties(), logicSchema.getMetaData());
+        return prepareEngine.prepare(sql, Collections.emptyList(), routeContext);
     }
     
     @SuppressWarnings("unchecked")
     private ExecutionContext doEncryptRoute(final String sql) {
-        PrepareEngine prepareEngine = new PrepareEngine(Collections.singletonList(((EncryptSchema) logicSchema).getEncryptRule()), SHARDING_PROXY_CONTEXT.getProperties(), logicSchema.getMetaData());
-        return prepareEngine.prepare(logicSchema.getSqlParserEngine().parse(sql, false), sql, Collections.emptyList());
+        Collection<BaseRule> rules = Collections.singletonList(((EncryptSchema) logicSchema).getEncryptRule());
+        SQLStatement sqlStatement = logicSchema.getSqlParserEngine().parse(sql, false);
+        RouteContext routeContext = new DataNodeRouter(logicSchema.getMetaData(), SHARDING_PROXY_CONTEXT.getProperties(), rules).route(sqlStatement, sql, Collections.emptyList());
+        PrepareEngine prepareEngine = new PrepareEngine(rules, SHARDING_PROXY_CONTEXT.getProperties(), logicSchema.getMetaData());
+        return prepareEngine.prepare(sql, Collections.emptyList(), routeContext);
     }
     
     private ExecutionContext doShadowRoute(final String sql) {
