@@ -72,7 +72,7 @@ try (Connection connection = dataSource.getConnection()) { // dataSource type is
 </dependency>
 ```
 
-### Config Spring transaction manager
+### Config Spring-namespace transaction manager
 
 ```xml
 <!-- ShardingDataSource configuration -->
