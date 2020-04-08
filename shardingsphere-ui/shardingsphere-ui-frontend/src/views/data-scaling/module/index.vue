@@ -291,7 +291,7 @@
             >
               <el-card shadow="hover" style="margin-bottom: 10px">
                 {{ item.id }}
-                <v-chart :option="getOption(item)" :styles="{width: '300px', height: '200px'}" />
+                <v-chart :options="getOption(item)" />
               </el-card>
             </el-col>
           </el-row>
@@ -354,7 +354,7 @@
 <script>
 import yaml from 'js-yaml'
 import Vue from 'vue'
-import IEcharts from 'vue-echarts-v3'
+import ChartBase from '@/components/ChartBase'
 import moment from 'moment'
 import clone from 'lodash/clone'
 import isEmpty from 'lodash/isEmpty'
@@ -394,7 +394,7 @@ let timer = null
 export default {
   name: 'DataScalingIndex',
   components: {
-    'v-chart': IEcharts
+    'v-chart': ChartBase
   },
   data() {
     return {
