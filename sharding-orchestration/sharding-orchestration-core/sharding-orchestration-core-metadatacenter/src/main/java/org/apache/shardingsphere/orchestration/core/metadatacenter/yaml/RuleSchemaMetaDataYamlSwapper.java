@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 /**
  * Rule Schema Metadata configuration YAML swapper.
  */
-public class RuleSchemaMetaDataYamlSwapper implements YamlSwapper<YamlRuleSchemaMetaData, RuleSchemaMetaData> {
+public final class RuleSchemaMetaDataYamlSwapper implements YamlSwapper<YamlRuleSchemaMetaData, RuleSchemaMetaData> {
 
     @Override
     public YamlRuleSchemaMetaData swap(final RuleSchemaMetaData metaData) {

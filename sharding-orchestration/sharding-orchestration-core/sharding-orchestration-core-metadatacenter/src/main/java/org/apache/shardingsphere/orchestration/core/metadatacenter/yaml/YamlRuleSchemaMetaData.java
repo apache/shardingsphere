@@ -28,7 +28,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public class YamlRuleSchemaMetaData implements YamlConfiguration {
+public final class YamlRuleSchemaMetaData implements YamlConfiguration {
 
     private YamlSchemaMetaData configuredSchemaMetaData;
 

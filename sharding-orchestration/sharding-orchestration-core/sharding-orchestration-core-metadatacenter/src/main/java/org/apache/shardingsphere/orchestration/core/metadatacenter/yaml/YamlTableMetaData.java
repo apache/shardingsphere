@@ -28,7 +28,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public class YamlTableMetaData implements YamlConfiguration {
+public final class YamlTableMetaData implements YamlConfiguration {
     
     private Map<String, YamlColumnMetaData> columns;
     

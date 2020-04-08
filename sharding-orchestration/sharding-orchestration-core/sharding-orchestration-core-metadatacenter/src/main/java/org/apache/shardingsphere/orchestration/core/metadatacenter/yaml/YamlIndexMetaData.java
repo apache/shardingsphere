@@ -26,7 +26,7 @@ import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration
  */
 @Getter
 @Setter
-public class YamlIndexMetaData implements YamlConfiguration {
+public final class YamlIndexMetaData implements YamlConfiguration {
     
     private String name;
 }

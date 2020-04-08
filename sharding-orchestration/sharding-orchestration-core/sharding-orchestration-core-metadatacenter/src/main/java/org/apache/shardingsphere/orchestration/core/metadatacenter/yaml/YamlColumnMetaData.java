@@ -26,7 +26,7 @@ import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration
  */
 @Getter
 @Setter
-public class YamlColumnMetaData implements YamlConfiguration {
+public final class YamlColumnMetaData implements YamlConfiguration {
 
     private String name;
 
