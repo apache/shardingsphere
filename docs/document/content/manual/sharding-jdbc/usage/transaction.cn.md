@@ -43,6 +43,7 @@ try (Connection connection = dataSource.getConnection()) { // dataSource的类�
     connection.commit();
 }
 ```
+
 ## 使用Spring-namespace
 
 ### 引入Maven依赖
@@ -174,6 +175,7 @@ ShardingSphere默认的XA事务管理器为Atomikos，在项目的logs目录中�
 1.按照[seata-work-shop](https://github.com/seata/seata-workshop)中的步骤，下载并启动seata server，参考 Step6 和 Step7即可。
 
 2.在每一个分片数据库实例中执创建undo_log表（以MySQL为例）
+
 ```conf
 CREATE TABLE IF NOT EXISTS `undo_log`
 (
