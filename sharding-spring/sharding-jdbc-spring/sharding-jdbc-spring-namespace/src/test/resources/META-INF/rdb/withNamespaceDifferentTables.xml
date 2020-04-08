@@ -31,7 +31,7 @@
     <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item_${order_id % 4}" />
     
     <sharding:data-source id="shardingDataSource">
-        <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1" default-data-source-name="dbtbl_0">
+        <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1">
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_0.t_order_${0..3}, dbtbl_1.t_order_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" />
                 <sharding:table-rule logic-table="t_order_item" actual-data-nodes="dbtbl_0.t_order_item_${0..3}, dbtbl_1.t_order_item_${0..3}" database-strategy-ref="databaseStrategy"  table-strategy-ref="orderItemTableStrategy" />

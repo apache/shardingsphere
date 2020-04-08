@@ -23,7 +23,7 @@ import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.core.strategy.route.inline.InlineShardingStrategy;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry.TestCenterRepository;
@@ -86,7 +86,6 @@ public class OrchestrationSpringBootRegistryShardingTest {
             + "- t_order_item\n"
             + "broadcastTables:\n"
             + "- t_config\n"
-            + "defaultDataSourceName: ds\n"
             + "defaultDatabaseStrategy:\n"
             + "  inline:\n"
             + "    algorithmExpression: ds_${user_id % 2}\n"

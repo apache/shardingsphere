@@ -84,16 +84,19 @@ public final class MySQLBinlogTableMapEventPacket extends AbstractMySQLBinlogEve
             case MYSQL_TYPE_DECIMAL:
             case MYSQL_TYPE_NEWDECIMAL:
                 return payload.getByteBuf().readUnsignedShort();
+            case MYSQL_TYPE_BIT:
             case MYSQL_TYPE_VAR_STRING:
             case MYSQL_TYPE_VARCHAR:
             case MYSQL_TYPE_ENUM:
                 return payload.readInt2();
             case MYSQL_TYPE_BLOB:
+            case MYSQL_TYPE_TINY_BLOB:
             case MYSQL_TYPE_DOUBLE:
             case MYSQL_TYPE_FLOAT:
             case MYSQL_TYPE_TIME2:
             case MYSQL_TYPE_TIMESTAMP2:
             case MYSQL_TYPE_DATETIME2:
+            case MySQL_TYPE_JSON:
                 return payload.readInt1();
             default:
                 return 0;

@@ -61,9 +61,6 @@ public final class ShardingDataSourceGroupBroadcastRoutingEngine implements Shar
         for (TableRule each : shardingRule.getTableRules()) {
             result.add(each.getDataNodeGroups().keySet());
         }
-        if (null != shardingRule.getShardingDataSourceNames().getDefaultDataSourceName()) {
-            result.add(Sets.newHashSet(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName()));
-        }
         return result;
     }
     

@@ -150,7 +150,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
         UpdateStatement result = new UpdateStatement();
         CollectionValue<TableReferenceSegment> tableReferences = (CollectionValue<TableReferenceSegment>) visit(ctx.tableReferences());
         for (TableReferenceSegment each : tableReferences.getValue()) {
-            result.getTables().addAll(each.getTables());
+            result.getTables().addAll(each.getSimpleTableSegments());
         }
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         if (null != ctx.whereClause()) {
@@ -225,7 +225,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
         CollectionValue<SimpleTableSegment> result = new CollectionValue<>();
         CollectionValue<TableReferenceSegment> tableReferences = (CollectionValue<TableReferenceSegment>) visit(ctx.tableReferences());
         for (TableReferenceSegment each : tableReferences.getValue()) {
-            result.getValue().addAll(each.getTables());
+            result.getValue().addAll(each.getSimpleTableSegments());
         }
         return result;
     }

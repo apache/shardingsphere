@@ -30,7 +30,7 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UnsupportedOperationParameterMetaTest extends AbstractShardingJDBCDatabaseAndTableTest {
+public final class UnsupportedOperationParameterMetaTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
     private static final String SQL = "SELECT user_id AS usr_id FROM t_order WHERE status = 'init'";
     

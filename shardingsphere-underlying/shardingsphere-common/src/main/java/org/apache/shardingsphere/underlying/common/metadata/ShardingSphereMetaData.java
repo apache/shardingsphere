@@ -19,8 +19,8 @@ package org.apache.shardingsphere.underlying.common.metadata;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
 
 /**
  * ShardingSphere meta data.
@@ -31,5 +31,5 @@ public final class ShardingSphereMetaData {
     
     private final DataSourceMetas dataSources;
     
-    private final SchemaMetaData schema;
+    private final RuleSchemaMetaData schema;
 }

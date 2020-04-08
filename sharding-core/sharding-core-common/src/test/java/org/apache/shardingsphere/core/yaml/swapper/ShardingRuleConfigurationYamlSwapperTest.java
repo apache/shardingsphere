@@ -92,7 +92,6 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
         assertThat(actual.getTables().size(), is(1));
         assertTrue(actual.getBindingTables().isEmpty());
         assertTrue(actual.getBroadcastTables().isEmpty());
-        assertNull(actual.getDefaultDataSourceName());
         assertNull(actual.getDefaultDatabaseStrategy());
         assertNull(actual.getDefaultTableStrategy());
         assertNull(actual.getDefaultKeyGenerator());
@@ -105,7 +104,6 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
         shardingRuleConfiguration.getTableRuleConfigs().add(mock(TableRuleConfiguration.class));
         shardingRuleConfiguration.getBindingTableGroups().add("tbl, sub_tbl");
         shardingRuleConfiguration.getBroadcastTables().add("dict");
-        shardingRuleConfiguration.setDefaultDataSourceName("ds");
         shardingRuleConfiguration.setDefaultDatabaseShardingStrategyConfig(mock(ShardingStrategyConfiguration.class));
         shardingRuleConfiguration.setDefaultTableShardingStrategyConfig(mock(ShardingStrategyConfiguration.class));
         shardingRuleConfiguration.setDefaultKeyGeneratorConfig(mock(KeyGeneratorConfiguration.class));
@@ -116,7 +114,6 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
         assertThat(actual.getBindingTables().iterator().next(), is("tbl, sub_tbl"));
         assertThat(actual.getBroadcastTables().size(), is(1));
         assertThat(actual.getBroadcastTables().iterator().next(), is("dict"));
-        assertThat(actual.getDefaultDataSourceName(), is("ds"));
         assertNotNull(actual.getDefaultDatabaseStrategy());
         assertNotNull(actual.getDefaultTableStrategy());
         assertNotNull(actual.getDefaultKeyGenerator());
@@ -131,7 +128,6 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
         assertThat(actual.getTableRuleConfigs().size(), is(1));
         assertTrue(actual.getBindingTableGroups().isEmpty());
         assertTrue(actual.getBroadcastTables().isEmpty());
-        assertNull(actual.getDefaultDataSourceName());
         assertNull(actual.getDefaultDatabaseShardingStrategyConfig());
         assertNull(actual.getDefaultTableShardingStrategyConfig());
         assertNull(actual.getDefaultKeyGeneratorConfig());
@@ -144,7 +140,6 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
         yamlConfiguration.getTables().put("tbl", mock(YamlTableRuleConfiguration.class));
         yamlConfiguration.getBindingTables().add("tbl, sub_tbl");
         yamlConfiguration.getBroadcastTables().add("dict");
-        yamlConfiguration.setDefaultDataSourceName("ds");
         yamlConfiguration.setDefaultDatabaseStrategy(mock(YamlShardingStrategyConfiguration.class));
         yamlConfiguration.setDefaultTableStrategy(mock(YamlShardingStrategyConfiguration.class));
         yamlConfiguration.setDefaultKeyGenerator(mock(YamlKeyGeneratorConfiguration.class));
@@ -155,7 +150,6 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
         assertThat(actual.getBindingTableGroups().iterator().next(), is("tbl, sub_tbl"));
         assertThat(actual.getBroadcastTables().size(), is(1));
         assertThat(actual.getBroadcastTables().iterator().next(), is("dict"));
-        assertThat(actual.getDefaultDataSourceName(), is("ds"));
         assertNotNull(actual.getDefaultDatabaseShardingStrategyConfig());
         assertNotNull(actual.getDefaultTableShardingStrategyConfig());
         assertNotNull(actual.getDefaultKeyGeneratorConfig());

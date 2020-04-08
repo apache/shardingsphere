@@ -26,13 +26,8 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.orchestration.core.common.event.EncryptRuleChangedEvent;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
-import org.apache.shardingsphere.shardingproxy.backend.schema.MetaDataInitializedLogicSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
-import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -42,23 +37,16 @@ import java.util.Map;
  * Encrypt schema.
  */
 @Getter
-public final class EncryptSchema extends MetaDataInitializedLogicSchema {
+public final class EncryptSchema extends LogicSchema {
     
     private final ShardingRule shardingRule;
     
     private EncryptRule encryptRule;
     
     public EncryptSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final EncryptRuleConfiguration encryptRuleConfiguration) throws SQLException {
-        super(name, dataSources);
+        super(name, dataSources, Collections.singletonList(new EncryptRule(encryptRuleConfiguration)));
         encryptRule = new EncryptRule(encryptRuleConfiguration);
         shardingRule = new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet());
-    }
-    
-    @Override
-    public ShardingSphereMetaData getMetaData() throws SQLException {
-        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(Collections.singletonList(encryptRule));
-        SchemaMetaData schemaMetaData = loader.load(LogicSchemas.getInstance().getDatabaseType(), getBackendDataSource().getDataSources(), ShardingProxyContext.getInstance().getProperties());
-        return new ShardingSphereMetaData(getPhysicalMetaData().getDataSources(), schemaMetaData);
     }
     
     /**

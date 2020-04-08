@@ -94,7 +94,6 @@ shardingRule:
     - t_order, t_order_item
   broadcastTables:
     - t_config
-  defaultDataSourceName: default_ds
   defaultDatabaseStrategy: 
     inline:
       shardingColumn: order_id

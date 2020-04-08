@@ -22,7 +22,6 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractStatementAdap
 import java.io.Reader;
 import java.sql.Array;
 import java.sql.NClob;
-import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
 import java.sql.Ref;
 import java.sql.ResultSet;
@@ -43,17 +42,6 @@ public abstract class AbstractUnsupportedOperationPreparedStatement extends Abst
     @Override
     public final ResultSetMetaData getMetaData() throws SQLException {
         throw new SQLFeatureNotSupportedException("getMetaData");
-    }
-    
-    /**
-     * Get parameter meta data.
-     *
-     * @return parameter metadata
-     * @throws SQLException SQL exception
-     */
-    @Override
-    public ParameterMetaData getParameterMetaData() throws SQLException {
-        throw new SQLFeatureNotSupportedException("ParameterMetaData");
     }
     
     @Override

@@ -74,18 +74,6 @@ public final class TableRule {
     
     private final Map<String, Collection<String>> datasourceToTablesMap = new HashMap<>();
     
-    public TableRule(final String defaultDataSourceName, final String logicTableName) {
-        logicTable = logicTableName.toLowerCase();
-        actualDataNodes = Collections.singletonList(new DataNode(defaultDataSourceName, logicTableName));
-        actualTables = getActualTables();
-        cacheActualDatasourcesAndTables();
-        dataNodeIndexMap = Collections.emptyMap();
-        databaseShardingStrategy = null;
-        tableShardingStrategy = null;
-        generateKeyColumn = null;
-        keyGenerateAlgorithm = null;
-    }
-    
     public TableRule(final Collection<String> dataSourceNames, final String logicTableName) {
         logicTable = logicTableName.toLowerCase();
         dataNodeIndexMap = new HashMap<>(dataSourceNames.size(), 1);
@@ -110,13 +98,6 @@ public final class TableRule {
         generateKeyColumn = null != keyGeneratorConfiguration && !Strings.isNullOrEmpty(keyGeneratorConfiguration.getColumn()) ? keyGeneratorConfiguration.getColumn() : defaultGenerateKeyColumn;
         keyGenerateAlgorithm = containsKeyGenerateAlgorithm(tableRuleConfig) ? tableRuleConfig.getKeyGeneratorConfig().getKeyGenerateAlgorithm() : null;
         checkRule(dataNodes);
-    }
-    
-    private void cacheActualDatasourcesAndTables() {
-        for (DataNode each : actualDataNodes) {
-            actualDatasourceNames.add(each.getDataSourceName());
-            addActualTable(each.getDataSourceName(), each.getTableName());
-        }
     }
     
     private Set<String> getActualTables() {

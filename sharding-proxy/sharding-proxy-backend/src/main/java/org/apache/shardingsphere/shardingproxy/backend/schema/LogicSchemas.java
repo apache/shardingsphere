@@ -67,17 +67,6 @@ public final class LogicSchemas {
     /**
      * Initialize proxy context.
      *
-     * @param schemaDataSources data source map
-     * @param schemaRules schema rule map
-     * @throws SQLException SQL exception
-     */
-    public void init(final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources, final Map<String, RuleConfiguration> schemaRules) throws SQLException {
-        init(schemaRules.keySet(), schemaDataSources, schemaRules, false);
-    }
-    
-    /**
-     * Initialize proxy context.
-     *
      * @param localSchemaNames local schema names
      * @param schemaDataSources data source map
      * @param schemaRules schema rule map

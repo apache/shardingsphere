@@ -20,29 +20,24 @@ package org.apache.shardingsphere.shardingproxy.backend.schema.impl;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.shardingproxy.backend.schema.MetaDataInitializedLogicSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
-import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Map;
 
 /**
  * Transparent schema.
  */
 @Getter
-public final class TransparentSchema extends MetaDataInitializedLogicSchema {
+public final class TransparentSchema extends LogicSchema {
     
     private final ShardingRule shardingRule;
     
     public TransparentSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources) throws SQLException {
-        super(name, dataSources);
+        super(name, dataSources, Collections.emptyList());
         // TODO we should remove it after none-sharding parsingEngine completed.
         shardingRule = new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet());
-    }
-    
-    @Override
-    public ShardingSphereMetaData getMetaData() {
-        return getPhysicalMetaData();
     }
 }

@@ -19,3 +19,4 @@ org.apache.shardingsphere.shardingjdbc.orchestration.fixture.FirstTestConfigCent
 org.apache.shardingsphere.shardingjdbc.orchestration.fixture.SecondTestConfigCenterRepository
 org.apache.shardingsphere.shardingjdbc.orchestration.fixture.ThirdTestConfigCenterRepository
 org.apache.shardingsphere.shardingjdbc.orchestration.fixture.FourthTestConfigCenterRepository
+org.apache.shardingsphere.shardingjdbc.orchestration.fixture.FirstTestMetaDataCenterRepository

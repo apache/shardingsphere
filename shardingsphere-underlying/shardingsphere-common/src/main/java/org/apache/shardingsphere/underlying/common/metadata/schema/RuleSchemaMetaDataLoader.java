@@ -21,8 +21,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDataLoader;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleMetaDataDecorator;
 import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleMetaDataLoader;
@@ -52,40 +54,49 @@ public final class RuleSchemaMetaDataLoader {
     private final Collection<BaseRule> rules;
     
     /**
-     * Load schema meta data.
+     * Load rule schema meta data.
      * 
      * @param databaseType database type
      * @param dataSourceMap data source map
      * @param properties configuration properties
-     * @return schema meta data
+     * @return rule schema meta data
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("unchecked")
-    public SchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final ConfigurationProperties properties) throws SQLException {
-        SchemaMetaData result = new SchemaMetaData(new HashMap<>());
+    public RuleSchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final ConfigurationProperties properties) throws SQLException {
         Collection<String> excludedTableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        SchemaMetaData configuredSchemaMetaData = new SchemaMetaData(new HashMap<>());
         for (Entry<BaseRule, RuleMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataLoader.class).entrySet()) {
             SchemaMetaData schemaMetaData = entry.getValue().load(databaseType, dataSourceMap, entry.getKey(), properties, excludedTableNames);
             excludedTableNames.addAll(schemaMetaData.getAllTableNames());
             if (entry.getKey() instanceof TablesAggregationRule) {
                 excludedTableNames.addAll(((TablesAggregationRule) entry.getKey()).getAllActualTables());
             }
-            result.merge(schemaMetaData);
+            configuredSchemaMetaData.merge(schemaMetaData);
         }
-        // TODO load remain tables
-        return decorate(result);
+        configuredSchemaMetaData = decorate(configuredSchemaMetaData);
+        Map<String, SchemaMetaData> unconfiguredSchemaMetaDataMap = new HashMap<>(dataSourceMap.size(), 1);
+        int maxConnectionCount = properties.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        // TODO use multiple threads for different data sources
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            SchemaMetaData schemaMetaData = SchemaMetaDataLoader.load(entry.getValue(), maxConnectionCount, databaseType.getName(), excludedTableNames);
+            if (!schemaMetaData.getAllTableNames().isEmpty()) {
+                unconfiguredSchemaMetaDataMap.put(entry.getKey(), schemaMetaData);
+            }
+        }
+        return new RuleSchemaMetaData(configuredSchemaMetaData, unconfiguredSchemaMetaDataMap);
     }
     
     /**
-     * Load schema meta data.
+     * Load rule schema meta data.
      *
      * @param databaseType database type
      * @param dataSource data source
      * @param properties configuration properties
-     * @return schema meta data
+     * @return rule schema meta data
      * @throws SQLException SQL exception
      */
-    public SchemaMetaData load(final DatabaseType databaseType, final DataSource dataSource, final ConfigurationProperties properties) throws SQLException {
+    public RuleSchemaMetaData load(final DatabaseType databaseType, final DataSource dataSource, final ConfigurationProperties properties) throws SQLException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put("ds", dataSource);
         return load(databaseType, dataSourceMap, properties);

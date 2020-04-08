@@ -38,6 +38,17 @@ orchestration:
       timeToLiveSeconds: 10
       maxRetries: 10
       operationTimeoutMilliseconds: 10
+  test_encrypt_metadata_name:
+    orchestrationType: metadata_center
+    instanceType: FirstTestMetaDataCenter
+    serverLists: localhost:3181
+    namespace: test_encrypt_metadata_no
+    props:
+      overwrite: true
+      retryIntervalMilliseconds: 10
+      timeToLiveSeconds: 10
+      maxRetries: 10
+      operationTimeoutMilliseconds: 10
 
 dataSource: !!org.apache.commons.dbcp2.BasicDataSource
   driverClassName: org.h2.Driver
