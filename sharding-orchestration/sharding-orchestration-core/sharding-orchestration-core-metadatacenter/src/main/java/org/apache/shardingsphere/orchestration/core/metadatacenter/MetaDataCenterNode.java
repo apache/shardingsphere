@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class MetaDataCenterNode {
     
-    private static final String ROOT = "metadatas";
+    private static final String ROOT = "metadata";
     
     private final String name;
     
