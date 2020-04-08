@@ -54,7 +54,12 @@ public class FirstTestRegistryCenterRepository implements CenterRepository {
     @Override
     public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
     }
-
+    
+    @Override
+    public void delete(final String key) {
+    
+    }
+    
     @Override
     public void close() {
     }
