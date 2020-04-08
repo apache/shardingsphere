@@ -152,6 +152,13 @@ public final class NacosCenterRepositoryTest {
         assertThat(actualType[0], is(ChangedType.UPDATED));
     }
     
+    @Test
+    @SneakyThrows
+    public void assertDelete() {
+        configCenterRepository.delete("/sharding/test");
+        verify(configService).removeConfig("sharding.test", group);
+    }
+    
     private VoidAnswer3 getListenerAnswer(final String expectValue) {
         return (VoidAnswer3<String, String, Listener>) (dataId, group, listener) -> listener.receiveConfigInfo(expectValue);
     }

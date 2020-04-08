@@ -66,6 +66,11 @@ public final class TestCenterRepository implements RegistryCenterRepository, Con
     }
     
     @Override
+    public void delete(final String key) {
+    
+    }
+    
+    @Override
     public void close() {
         REGISTRY_DATA.clear();
     }

@@ -227,6 +227,19 @@ public final class CuratorZookeeperCenterRepository implements ConfigCenterRepos
         });
     }
     
+    @Override
+    public void delete(final String key) {
+        try {
+            if (isExisted(key)) {
+                client.delete().deletingChildrenIfNeeded().forPath(key);
+            }
+            // CHECKSTYLE:OFF
+        } catch (Exception ex) {
+            // CHECKSTYLE:ON
+            CuratorZookeeperExceptionHandler.handleException(ex);
+        }
+    }
+    
     private DataChangedEvent.ChangedType getChangedType(final TreeCacheEvent event) {
         switch (event.getType()) {
             case NODE_UPDATED:

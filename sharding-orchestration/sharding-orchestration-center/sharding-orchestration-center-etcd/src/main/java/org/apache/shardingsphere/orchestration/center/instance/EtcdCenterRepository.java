@@ -112,6 +112,11 @@ public final class EtcdCenterRepository implements ConfigCenterRepository, Regis
         client.getWatchClient().watch(ByteSequence.from(key, Charsets.UTF_8), listener);
     }
     
+    @Override
+    public void delete(final String key) {
+        client.getKVClient().delete(ByteSequence.from(key, Charsets.UTF_8));
+    }
+    
     private DataChangedEvent.ChangedType getEventChangedType(final WatchEvent event) {
         switch (event.getEventType()) {
             case PUT:
