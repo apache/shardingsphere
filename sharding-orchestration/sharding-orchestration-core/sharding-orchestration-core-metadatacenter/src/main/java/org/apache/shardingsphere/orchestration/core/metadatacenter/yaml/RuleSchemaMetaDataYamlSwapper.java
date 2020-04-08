@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Rule Schema Metadata configuration YAML swapper.
+ * Rule schema meta data configuration YAML swapper.
  */
 public final class RuleSchemaMetaDataYamlSwapper implements YamlSwapper<YamlRuleSchemaMetaData, RuleSchemaMetaData> {
 
