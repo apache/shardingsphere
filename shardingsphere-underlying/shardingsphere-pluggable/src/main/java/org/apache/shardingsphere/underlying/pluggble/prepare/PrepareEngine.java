@@ -27,10 +27,7 @@ import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
 import org.apache.shardingsphere.underlying.executor.log.SQLLogger;
 import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
-import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
-import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteEngine;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
-import org.apache.shardingsphere.underlying.rewrite.engine.SQLRouteRewriteEngine;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 
@@ -38,6 +35,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -62,28 +60,26 @@ public final class PrepareEngine {
      */
     public ExecutionContext prepare(final String sql, final List<Object> parameters, final RouteContext routeContext) {
         ExecutionContext result = new ExecutionContext(routeContext.getSqlStatementContext());
-        result.getExecutionUnits().addAll(executeRewrite(sql, parameters, routeContext));
+        result.getExecutionUnits().addAll(rewrite(sql, parameters, routeContext));
         if (properties.<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
             SQLLogger.logSQL(sql, properties.<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), result.getSqlStatementContext(), result.getExecutionUnits());
         }
         return result;
     }
     
-    private Collection<ExecutionUnit> executeRewrite(final String sql, final List<Object> parameters, final RouteContext routeContext) {
-        SQLRewriteEntry rewriter = new SQLRewriteEntry(metaData.getSchema().getConfiguredSchemaMetaData(), properties, rules);
-        SQLRewriteContext sqlRewriteContext = rewriter.createSQLRewriteContext(sql, parameters, routeContext.getSqlStatementContext(), routeContext);
-        return routeContext.getRouteResult().getRouteUnits().isEmpty() ? rewrite(sqlRewriteContext) : rewrite(routeContext, sqlRewriteContext);
+    private Collection<ExecutionUnit> rewrite(final String sql, final List<Object> parameters, final RouteContext routeContext) {
+        Map<RouteUnit, SQLRewriteResult> sqlRewriteResults = new SQLRewriteEntry(metaData.getSchema().getConfiguredSchemaMetaData(), properties, rules).rewrite(sql, parameters, routeContext);
+        return routeContext.getRouteResult().getRouteUnits().isEmpty() ? getExecutionUnit(sqlRewriteResults.values().iterator().next()) : getExecutionUnit(sqlRewriteResults);
     }
     
-    private Collection<ExecutionUnit> rewrite(final SQLRewriteContext sqlRewriteContext) {
-        SQLRewriteResult sqlRewriteResult = new SQLRewriteEngine().rewrite(sqlRewriteContext);
+    private Collection<ExecutionUnit> getExecutionUnit(final SQLRewriteResult sqlRewriteResult) {
         String dataSourceName = metaData.getDataSources().getAllInstanceDataSourceNames().iterator().next();
         return Collections.singletonList(new ExecutionUnit(dataSourceName, new SQLUnit(sqlRewriteResult.getSql(), sqlRewriteResult.getParameters())));
     }
     
-    private Collection<ExecutionUnit> rewrite(final RouteContext routeContext, final SQLRewriteContext sqlRewriteContext) {
+    private Collection<ExecutionUnit> getExecutionUnit(final Map<RouteUnit, SQLRewriteResult> sqlRewriteResults) {
         Collection<ExecutionUnit> result = new LinkedHashSet<>();
-        for (Entry<RouteUnit, SQLRewriteResult> entry : new SQLRouteRewriteEngine().rewrite(sqlRewriteContext, routeContext.getRouteResult()).entrySet()) {
+        for (Entry<RouteUnit, SQLRewriteResult> entry : sqlRewriteResults.entrySet()) {
             result.add(new ExecutionUnit(entry.getKey().getDataSourceMapper().getActualName(), new SQLUnit(entry.getValue().getSql(), entry.getValue().getParameters())));
         }
         return result;
