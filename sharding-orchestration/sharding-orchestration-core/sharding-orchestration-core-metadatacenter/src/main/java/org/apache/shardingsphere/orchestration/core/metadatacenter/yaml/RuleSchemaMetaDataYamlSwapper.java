@@ -76,7 +76,7 @@ public final class RuleSchemaMetaDataYamlSwapper implements YamlSwapper<YamlRule
     }
     
     private YamlSchemaMetaData convertYamlSchema(final SchemaMetaData schema) {
-        Map<String, YamlTableMetaData> tables = schema.getAllTableNames().stream().collect(Collectors.toMap(entry -> entry, entry -> convertYamlTable(schema.get(entry))));
+        Map<String, YamlTableMetaData> tables = schema.getAllTableNames().stream().collect(Collectors.toMap(each -> each, each -> convertYamlTable(schema.get(each))));
         YamlSchemaMetaData result = new YamlSchemaMetaData();
         result.setTables(tables);
         return result;
