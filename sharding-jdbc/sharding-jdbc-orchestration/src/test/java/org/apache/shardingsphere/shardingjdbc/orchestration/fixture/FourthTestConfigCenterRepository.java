@@ -61,7 +61,6 @@ public final class FourthTestConfigCenterRepository implements ConfigCenterRepos
     
     @Override
     public void delete(final String key) {
-    
     }
     
     @Override

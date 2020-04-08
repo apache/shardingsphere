@@ -57,7 +57,6 @@ public class FirstTestRegistryCenterRepository implements CenterRepository {
     
     @Override
     public void delete(final String key) {
-    
     }
     
     @Override

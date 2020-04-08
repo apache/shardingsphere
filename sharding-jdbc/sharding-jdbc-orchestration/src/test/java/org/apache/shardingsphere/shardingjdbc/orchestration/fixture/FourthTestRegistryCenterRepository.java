@@ -68,7 +68,6 @@ public final class FourthTestRegistryCenterRepository implements RegistryCenterR
     
     @Override
     public void delete(final String key) {
-    
     }
     
     @Override

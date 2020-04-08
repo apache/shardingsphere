@@ -61,7 +61,6 @@ public final class ThirdTestConfigCenterRepository implements ConfigCenterReposi
     
     @Override
     public void delete(final String key) {
-    
     }
     
     @Override
