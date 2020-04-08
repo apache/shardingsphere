@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.underlying.rewrite;
 
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,23 +35,23 @@ import java.util.Map;
 /**
  * SQL rewrite entry.
  */
-@RequiredArgsConstructor
 public final class SQLRewriteEntry {
     
     private final SchemaMetaData schemaMetaData;
     
     private final ConfigurationProperties properties;
     
-    private final Map<BaseRule, SQLRewriteContextDecorator> decorators = new LinkedHashMap<>();
+    private final Map<BaseRule, SQLRewriteContextDecorator> decorators;
     
-    /**
-     * Register route decorator.
-     *
-     * @param rule rule
-     * @param decorator SQL rewrite context decorator
-     */
-    public void registerDecorator(final BaseRule rule, final SQLRewriteContextDecorator decorator) {
-        decorators.put(rule, decorator);
+    static {
+        ShardingSphereServiceLoader.register(SQLRewriteContextDecorator.class);
+    }
+    
+    public SQLRewriteEntry(final SchemaMetaData schemaMetaData, final ConfigurationProperties properties, final Collection<BaseRule> rules) {
+        this.schemaMetaData = schemaMetaData;
+        this.properties = properties;
+        decorators = new LinkedHashMap<>();
+        OrderedSPIRegistry.getRegisteredServices(rules, SQLRewriteContextDecorator.class).forEach(decorators::put);
     }
     
     /**

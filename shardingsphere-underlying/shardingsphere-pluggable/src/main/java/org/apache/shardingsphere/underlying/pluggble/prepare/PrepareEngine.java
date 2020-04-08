@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.underlying.pluggble.prepare;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
@@ -29,7 +28,6 @@ import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
 import org.apache.shardingsphere.underlying.executor.log.SQLLogger;
 import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
-import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteEngine;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRouteRewriteEngine;
@@ -54,15 +52,6 @@ public final class PrepareEngine {
     
     private final ShardingSphereMetaData metaData;
     
-    private final SQLRewriteEntry rewriter;
-    
-    public PrepareEngine(final Collection<BaseRule> rules, final ConfigurationProperties properties, final ShardingSphereMetaData metaData) {
-        this.rules = rules;
-        this.properties = properties;
-        this.metaData = metaData;
-        rewriter = new SQLRewriteEntry(metaData.getSchema().getConfiguredSchemaMetaData(), properties);
-    }
-    
     /**
      * Prepare to execute.
      *
@@ -81,7 +70,7 @@ public final class PrepareEngine {
     }
     
     private Collection<ExecutionUnit> executeRewrite(final String sql, final List<Object> parameters, final RouteContext routeContext) {
-        OrderedSPIRegistry.getRegisteredServices(rules, SQLRewriteContextDecorator.class).forEach(rewriter::registerDecorator);
+        SQLRewriteEntry rewriter = new SQLRewriteEntry(metaData.getSchema().getConfiguredSchemaMetaData(), properties, rules);
         SQLRewriteContext sqlRewriteContext = rewriter.createSQLRewriteContext(sql, parameters, routeContext.getSqlStatementContext(), routeContext);
         return routeContext.getRouteResult().getRouteUnits().isEmpty() ? rewrite(sqlRewriteContext) : rewrite(routeContext, sqlRewriteContext);
     }

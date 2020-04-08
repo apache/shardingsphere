@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.shadow.rewrite.context.ShadowSQLRewriteContextDecorator;
 import org.apache.shardingsphere.shadow.rewrite.judgement.ShadowJudgementEngine;
 import org.apache.shardingsphere.shadow.rewrite.judgement.impl.SimpleJudgementEngine;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractStatementAdapter;
@@ -180,8 +179,8 @@ public final class ShadowStatement extends AbstractStatementAdapter {
     }
     
     private String rewriteSQL(final String sql) {
-        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(connection.getRuntimeContext().getMetaData().getSchema().getConfiguredSchemaMetaData(), connection.getRuntimeContext().getProperties());
-        sqlRewriteEntry.registerDecorator(connection.getRuntimeContext().getRule(), new ShadowSQLRewriteContextDecorator());
+        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(connection.getRuntimeContext().getMetaData().getSchema().getConfiguredSchemaMetaData(), 
+                connection.getRuntimeContext().getProperties(), Collections.singletonList(connection.getRuntimeContext().getRule()));
         SQLRewriteContext sqlRewriteContext = sqlRewriteEntry.createSQLRewriteContext(sql, Collections.emptyList(), sqlStatementContext, null);
         String result = new SQLRewriteEngine().rewrite(sqlRewriteContext).getSql();
         showSQL(result);

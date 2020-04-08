@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shadow.rewrite.context.ShadowSQLRewriteContextDecorator;
 import org.apache.shardingsphere.shadow.rewrite.judgement.ShadowJudgementEngine;
 import org.apache.shardingsphere.shadow.rewrite.judgement.impl.SimpleJudgementEngine;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
@@ -113,8 +112,8 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
         String dataSourceName = shadowJudgementEngine.isShadowSQL()
                 ? shadowSchema.getShadowRule().getRuleConfiguration().getShadowMappings().get(logicSchema.getDataSources().keySet().iterator().next())
                 : logicSchema.getDataSources().keySet().iterator().next();
-        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(logicSchema.getMetaData().getSchema().getConfiguredSchemaMetaData(), ShardingProxyContext.getInstance().getProperties());
-        sqlRewriteEntry.registerDecorator(shadowSchema.getShadowRule(), new ShadowSQLRewriteContextDecorator());
+        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(
+                logicSchema.getMetaData().getSchema().getConfiguredSchemaMetaData(), ShardingProxyContext.getInstance().getProperties(), Collections.singletonList(shadowSchema.getShadowRule()));
         SQLRewriteContext sqlRewriteContext = sqlRewriteEntry.createSQLRewriteContext(sql, Collections.emptyList(), sqlStatementContext, null);
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEngine().rewrite(sqlRewriteContext);
         ExecutionContext result = new ExecutionContext(sqlStatementContext);
