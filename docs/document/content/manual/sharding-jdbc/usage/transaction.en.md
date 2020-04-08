@@ -33,20 +33,9 @@ For detailed configuration rules, please refer to the [official documentation](h
 
 ## BASE Transaction
 
-Currently, we have integrated saga and seata into shardingsphere.
+Currently, we have integrated Seata-AT into shardingsphere.
 
 ### Introduce Maven Dependency
-
-```xml
-<!-- saga transaction -->
-<dependency>
-    <groupId>io.shardingsphere</groupId>
-    <artifactId>sharding-transaction-base-saga</artifactId>
-    <version>${shardingsphere-spi-impl.version}</version>
-</dependency>
-```
-
-`${shardingsphere-spi-impl.version}` mentioned has not been posted to the central maven repository, so you need to install it by yourself.Project Address: [shardingsphere-spi-impl](https://github.com/sharding-sphere/shardingsphere-spi-impl)
 
 ```xml
 <!-- seata at transaction -->
@@ -62,44 +51,6 @@ Currently, we have integrated saga and seata into shardingsphere.
  ```java
  TransactionTypeHolder.set(TransactionType.BASE);
  ```
-
-#### Saga Configuration
-
-You can add `saga.properties` in the project classpath to customize Saga configurations. When `saga.persistence.enabled=true`, Saga engine will persist event log through JDBC.  
-Configuration properties and explanations are as follow:
-
-| **Property**                                        | **Default Value**| **Explanation**                                              |
-| --------------------------------------------------- | ---------------- | ------------------------------------------------------------ |
-| saga.actuator.executor.size                         | 5                | Saga actuator thread pool size                               |
-| saga.actuator.transaction.max.retries               | 5                | Maximum retry times                                          |
-| saga.actuator.compensation.max.retries              | 5                | Maximum compensation times                                   |
-| saga.actuator.transaction.retry.delay.milliseconds  | 5000             | Retry interval                                               |
-| saga.actuator.compensation.retry.delay.milliseconds | 3000             | Compensation interval                                        |
-| saga.persistence.enabled                            | false            | Persistence for event log                                    |
-| saga.persistence.ds.url                             | No               | JDBC url                         |
-| saga.persistence.ds.username                        | No               | User name                        |
-| saga.persistence.ds.password                        | No               | Password                         |
-| saga.persistence.ds.max.pool.size                   | 50               | Maximum connection               |
-| saga.persistence.ds.min.pool.size                   | 1                | Minimum connection               |
-| saga.persistence.ds.max.life.time.milliseconds      | 0 (unrestricted) | Maximum life time (millisecond)  |
-| saga.persistence.ds.idle.timeout.milliseconds       | 60 * 1000        | Idle timeout (millisecond)       |
-| saga.persistence.ds.connection.timeout.milliseconds | 30 * 1000        | Connection timeout (millisecond) |
-
-Saga event log table structure
-
-```sql
--- MySQL init table SQL
-
-CREATE TABLE IF NOT EXISTS saga_event(
-  id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  saga_id VARCHAR(255) null,
-  type VARCHAR(255) null,
-  content_json TEXT null,
-  create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  INDEX saga_id_index(saga_id)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8
-```
-`saga_event` table will be created automatically when your put this DDL into `schema-init.sql` located in classpath.
 
 #### Seata Configuration
 
