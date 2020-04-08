@@ -29,7 +29,7 @@
         <prop key="operation-timeout-milliseconds">1000</prop>
     </util:properties>
 
-    <orchestraion:instance id="regCenter" orchestration-type="registry_center,config_center" instance-type="TestRegistry" server-lists="localhost:3181" namespace="orchestration-spring-namespace-test" props-ref="instance-props"/>
+    <orchestraion:instance id="regCenter" orchestration-type="registry_center,config_center,metadata_center" instance-type="TestRegistry" server-lists="localhost:3181" namespace="orchestration-spring-namespace-test" props-ref="instance-props"/>
 
     <orchestraion:encrypt-data-source id="encryptDataSourceOrchestration" data-source-ref="encryptDataSource" instance-ref="regCenter"/>
 </beans>

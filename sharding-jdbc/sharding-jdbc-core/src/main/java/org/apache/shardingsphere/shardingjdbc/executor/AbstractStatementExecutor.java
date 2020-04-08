@@ -25,15 +25,15 @@ import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate
 import org.apache.shardingsphere.sharding.execute.sql.prepare.SQLExecutePrepareTemplate;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
-import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.MetaDataRefreshStrategy;
-import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.MetaDataRefreshStrategyFactory;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
-import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
+import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategy;
+import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategyFactory;
+import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
 import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -64,8 +64,6 @@ public abstract class AbstractStatementExecutor {
     
     private final SQLExecuteTemplate sqlExecuteTemplate;
     
-    private final Collection<Connection> connections = new LinkedList<>();
-    
     private final List<List<Object>> parameterSets = new LinkedList<>();
     
     private final List<Statement> statements = new LinkedList<>();
@@ -84,9 +82,8 @@ public abstract class AbstractStatementExecutor {
         this.resultSetHoldability = resultSetHoldability;
         this.connection = shardingConnection;
         int maxConnectionsSizePerQuery = connection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        ExecutorEngine executorEngine = connection.getRuntimeContext().getExecutorEngine();
         sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(maxConnectionsSizePerQuery);
-        sqlExecuteTemplate = new SQLExecuteTemplate(executorEngine, connection.isHoldTransaction());
+        sqlExecuteTemplate = new SQLExecuteTemplate(connection.getRuntimeContext().getExecutorEngine(), connection.isHoldTransaction());
     }
     
     protected final void cacheStatements() {
@@ -132,7 +129,6 @@ public abstract class AbstractStatementExecutor {
         clearStatements();
         statements.clear();
         parameterSets.clear();
-        connections.clear();
         resultSets.clear();
         inputGroups.clear();
     }
@@ -150,7 +146,12 @@ public abstract class AbstractStatementExecutor {
         }
         Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
         if (refreshStrategy.isPresent()) {
-            refreshStrategy.get().refreshMetaData(runtimeContext, sqlStatementContext);
+            refreshStrategy.get().refreshMetaData(runtimeContext.getMetaData(), sqlStatementContext, this::loadTableMetaData);
         }
+    }
+    
+    private Optional<TableMetaData> loadTableMetaData(final String tableName) throws SQLException {
+        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(connection.getRuntimeContext().getRule().toRules());
+        return loader.load(databaseType, connection.getDataSourceMap(), tableName, connection.getRuntimeContext().getProperties());
     }
 }

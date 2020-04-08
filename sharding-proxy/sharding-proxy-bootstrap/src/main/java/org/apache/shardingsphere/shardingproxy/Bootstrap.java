@@ -115,32 +115,39 @@ public final class Bootstrap {
     }
     
     private static void startWithoutRegistryCenter(final Map<String, YamlProxyRuleConfiguration> ruleConfigs,
-                                                   final YamlAuthenticationConfiguration authentication, final Properties prop, final int port) throws SQLException {
-        Authentication authenticationConfiguration = getAuthentication(authentication);
-        ConfigurationLogger.log(authenticationConfiguration);
-        ConfigurationLogger.log(prop);
-        ShardingProxyContext.getInstance().init(authenticationConfiguration, prop);
-        LogicSchemas.getInstance().init(getDataSourceParameterMap(ruleConfigs), getRuleConfiguration(ruleConfigs));
-        initOpenTracing();
-        ShardingProxy.getInstance().start(port);
+                                                   final YamlAuthenticationConfiguration yamlAuthenticationConfig, final Properties properties, final int port) throws SQLException {
+        Authentication authentication = new AuthenticationYamlSwapper().swap(yamlAuthenticationConfig);
+        logAndInitContext(authentication, properties);
+        Map<String, Map<String, YamlDataSourceParameter>> schemaRules = getDataSourceParameterMap(ruleConfigs);
+        startProxy(schemaRules.keySet(), port, schemaRules,
+                getRuleConfiguration(ruleConfigs), false);
     }
     
-    private static void startWithRegistryCenter(final YamlProxyServerConfiguration serverConfig,
-                                                final Collection<String> shardingSchemaNames, final Map<String, YamlProxyRuleConfiguration> ruleConfigs, final int port) {
+    private static void startWithRegistryCenter(final YamlProxyServerConfiguration serverConfig, final Collection<String> shardingSchemaNames,
+                                                final Map<String, YamlProxyRuleConfiguration> ruleConfigs, final int port) throws SQLException {
         try (ShardingOrchestrationFacade shardingOrchestrationFacade = new ShardingOrchestrationFacade(
                 new OrchestrationConfigurationYamlSwapper().swap(new YamlOrchestrationConfiguration(serverConfig.getOrchestration())), shardingSchemaNames)) {
             initShardingOrchestrationFacade(serverConfig, ruleConfigs, shardingOrchestrationFacade);
             Authentication authentication = shardingOrchestrationFacade.getConfigCenter().loadAuthentication();
             Properties properties = shardingOrchestrationFacade.getConfigCenter().loadProperties();
-            ConfigurationLogger.log(authentication);
-            ConfigurationLogger.log(properties);
-            ShardingProxyContext.getInstance().init(authentication, properties);
-            LogicSchemas.getInstance().init(shardingSchemaNames, getSchemaDataSourceParameterMap(shardingOrchestrationFacade), getSchemaRules(shardingOrchestrationFacade), true);
-            initOpenTracing();
-            ShardingProxy.getInstance().start(port);
-        } catch (SQLException e) {
-            e.printStackTrace();
+            logAndInitContext(authentication, properties);
+            startProxy(shardingSchemaNames, port, getSchemaDataSourceParameterMap(shardingOrchestrationFacade),
+                    getSchemaRules(shardingOrchestrationFacade), true);
         }
+    }
+    
+    private static void logAndInitContext(final Authentication authentication, final Properties properties) {
+        ConfigurationLogger.log(authentication);
+        ConfigurationLogger.log(properties);
+        ShardingProxyContext.getInstance().init(authentication, properties);
+    }
+
+    private static void startProxy(final Collection<String> shardingSchemaNames, final int port,
+                                   final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources,
+                                   final Map<String, RuleConfiguration> schemaRules, final boolean isUsingRegistry) throws SQLException {
+        LogicSchemas.getInstance().init(shardingSchemaNames, schemaDataSources, schemaRules, isUsingRegistry);
+        initOpenTracing();
+        ShardingProxy.getInstance().start(port);
     }
     
     private static Map<String, Map<String, YamlDataSourceParameter>> getSchemaDataSourceParameterMap(final ShardingOrchestrationFacade shardingOrchestrationFacade) {
@@ -173,7 +180,7 @@ public final class Bootstrap {
             shardingOrchestrationFacade.init();
         } else {
             shardingOrchestrationFacade.init(getDataSourceConfigurationMap(ruleConfigs),
-                    getRuleConfiguration(ruleConfigs), getAuthentication(serverConfig.getAuthentication()), serverConfig.getProps());
+                    getRuleConfiguration(ruleConfigs), new AuthenticationYamlSwapper().swap(serverConfig.getAuthentication()), serverConfig.getProps());
         }
     }
     
@@ -213,10 +220,6 @@ public final class Bootstrap {
             }
         }
         return result;
-    }
-    
-    private static Authentication getAuthentication(final YamlAuthenticationConfiguration yamlAuthenticationConfig) {
-        return new AuthenticationYamlSwapper().swap(yamlAuthenticationConfig);
     }
     
     /**

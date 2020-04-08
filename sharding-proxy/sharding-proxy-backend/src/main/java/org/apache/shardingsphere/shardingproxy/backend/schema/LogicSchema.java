@@ -22,6 +22,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
+import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
@@ -61,14 +62,17 @@ public abstract class LogicSchema {
         this.name = name;
         sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(LogicSchemas.getInstance().getDatabaseType()));
         backendDataSource = new JDBCBackendDataSource(dataSources);
-        metaData = createMetaData(rules);
+        metaData = createMetaData(name, rules);
         ShardingOrchestrationEventBus.getInstance().register(this);
     }
     
-    private ShardingSphereMetaData createMetaData(final Collection<BaseRule> rules) throws SQLException {
+    private ShardingSphereMetaData createMetaData(final String name, final Collection<BaseRule> rules) throws SQLException {
         DatabaseType databaseType = LogicSchemas.getInstance().getDatabaseType();
         DataSourceMetas dataSourceMetas = new DataSourceMetas(databaseType, getDatabaseAccessConfigurationMap());
         RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataLoader(rules).load(databaseType, getBackendDataSource().getDataSources(), ShardingProxyContext.getInstance().getProperties());
+        if (null != ShardingOrchestrationFacade.getInstance()) {
+            ShardingOrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(name, ruleSchemaMetaData);
+        }
         return new ShardingSphereMetaData(dataSourceMetas, ruleSchemaMetaData);
     }
     
