@@ -25,12 +25,12 @@ import static org.junit.Assert.assertThat;
 public final class ConfigKeyUtilsTest {
     
     @Test
-    public void assertPath2Key() {
+    public void assertPathToKey() {
         assertThat(ConfigKeyUtils.pathToKey("/orchestration_ds/config/schema/test/rule"), is("orchestration_ds.config.schema.test.rule"));
     }
     
     @Test
-    public void assertKey2Path() {
+    public void assertKeyToPath() {
         assertThat(ConfigKeyUtils.keyToPath("orchestration_ds.config.schema.test.rule"), is("/orchestration_ds/config/schema/test/rule"));
     }
 }
