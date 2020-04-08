@@ -146,10 +146,8 @@ public final class RuleSchemaMetaDataLoader {
         Map<String, TableMetaData> result = new HashMap<>(schemaMetaData.getAllTableNames().size(), 1);
         Map<BaseRule, RuleMetaDataDecorator> decorators = OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataDecorator.class);
         for (String each : schemaMetaData.getAllTableNames()) {
-            TableMetaData decoratorMetaData = null;
             for (Entry<BaseRule, RuleMetaDataDecorator> entry : decorators.entrySet()) {
-                decoratorMetaData = entry.getValue().decorate(each, Optional.ofNullable(decoratorMetaData).orElse(schemaMetaData.get(each)), entry.getKey());
-                result.put(each, decoratorMetaData);
+                result.put(each, entry.getValue().decorate(each, result.getOrDefault(each, schemaMetaData.get(each)), entry.getKey()));
             }
         }
         return new SchemaMetaData(result);
