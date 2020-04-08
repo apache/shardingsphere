@@ -87,3 +87,14 @@ orchestration:
       timeToLiveSeconds: 10
       maxRetries: 10
       operationTimeoutMilliseconds: 10
+  test_sharding_ms_metadata_name:
+    orchestrationType: metadata_center
+    instanceType: FirstTestMetaDataCenter
+    serverLists: localhost:3181
+    namespace: test_sharding_ms_metadata
+    props:
+      overwrite: true
+      retryIntervalMilliseconds: 10
+      timeToLiveSeconds: 10
+      maxRetries: 10
+      operationTimeoutMilliseconds: 10

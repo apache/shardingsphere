@@ -32,6 +32,7 @@
         <module>sharding-orchestration-core-common</module>
         <module>sharding-orchestration-core-configcenter</module>
         <module>sharding-orchestration-core-registrycenter</module>
+        <module>sharding-orchestration-core-metadatacenter</module>
         <module>sharding-orchestration-core-facade</module>
     </modules>
 </project>
