@@ -24,13 +24,13 @@ import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration
 import java.util.Map;
 
 /**
- * Rule schema meta data configuration for YAML.
+ * Table meta data configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlRuleSchemaMetaData implements YamlConfiguration {
-
-    private YamlSchemaMetaData configuredSchemaMetaData;
-
-    private Map<String, YamlSchemaMetaData> unconfiguredSchemaMetaDataMap;
+public final class YamlTableMetaData implements YamlConfiguration {
+    
+    private Map<String, YamlColumnMetaData> columns;
+    
+    private Map<String, YamlIndexMetaData> indexes;
 }

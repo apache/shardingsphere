@@ -24,7 +24,7 @@ import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMet
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
 /**
- * Read/Write metadata from CenterRepository.
+ * Read/Write meta data from center repository.
  */
 public final class MetaDataCenter {
     
@@ -38,20 +38,20 @@ public final class MetaDataCenter {
     }
     
     /**
-     * Persist RuleSchemaMetaData to center repository.
+     * Persist rule schema meta data to center repository.
      *
      * @param schemaName schema name
-     * @param ruleSchemaMetaData RuleSchemaMetaData of the schema
+     * @param ruleSchemaMetaData rule schema meta data of the schema
      */
     public void persistMetaDataCenterNode(final String schemaName, final RuleSchemaMetaData ruleSchemaMetaData) {
         repository.persist(node.getMetaDataCenterNodeFullPath(schemaName), YamlEngine.marshal(new RuleSchemaMetaDataYamlSwapper().swap(ruleSchemaMetaData)));
     }
 
     /**
-     * Load RuleSchemaMetaData from center repository.
+     * Load rule schema meta data from center repository.
      *
-     * @param schemaName  schema name
-     * @return RuleSchemaMetaData of the schema
+     * @param schemaName schema name
+     * @return rule schema meta data of the schema
      */
     public RuleSchemaMetaData loadRuleSchemaMetaData(final String schemaName) {
         return new RuleSchemaMetaDataYamlSwapper().swap(YamlEngine.unmarshal(repository.get(node.getMetaDataCenterNodeFullPath(schemaName)), YamlRuleSchemaMetaData.class));

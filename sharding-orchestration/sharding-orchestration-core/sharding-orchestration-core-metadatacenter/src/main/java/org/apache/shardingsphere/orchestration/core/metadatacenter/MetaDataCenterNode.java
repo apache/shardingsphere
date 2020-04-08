@@ -21,20 +21,20 @@ import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
 
 /**
- * MetaData node.
+ * Meta data node.
  */
 @RequiredArgsConstructor
 public final class MetaDataCenterNode {
     
-    private static final String ROOT = "metadatas";
+    private static final String ROOT = "metadata";
     
     private final String name;
     
     /**
-     * Get metadata node full path.
+     * Get meta data node full path.
      *
      * @param schemaName schema name
-     * @return metadata node full path
+     * @return meta data node full path
      */
     public String getMetaDataCenterNodeFullPath(final String schemaName) {
         return Joiner.on("/").join("", name, ROOT, schemaName);

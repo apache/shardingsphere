@@ -21,16 +21,12 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
 
-import java.util.Map;
-
 /**
- * Rule schema meta data configuration for YAML.
+ * Index meta data configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlRuleSchemaMetaData implements YamlConfiguration {
-
-    private YamlSchemaMetaData configuredSchemaMetaData;
-
-    private Map<String, YamlSchemaMetaData> unconfiguredSchemaMetaDataMap;
+public final class YamlIndexMetaData implements YamlConfiguration {
+    
+    private String name;
 }
