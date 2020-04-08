@@ -89,7 +89,7 @@ try (Connection connection = dataSource.getConnection()) { // dataSource的类�
 
 ```
 
-### 业务代码中使用分布事务
+### 业务代码中使用分布式事务
 
 ```java
 @Transactional
@@ -148,7 +148,7 @@ public class TransactionConfiguration {
 }
 ```
 
-### 业务代码中使用分布事务
+### 业务代码中使用分布式事务
 
 ```java
 @Transactional
