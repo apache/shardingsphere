@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
@@ -38,7 +39,9 @@ public final class JoinSpecificationSegment implements SQLSegment {
     
     private PredicateSegment predicateSegment;
     
-    private Collection<ColumnSegment> usingColumns = new LinkedList<>();
+    private final Collection<AndPredicate> andPredicates = new LinkedList<>();
+    
+    private final Collection<ColumnSegment> usingColumns = new LinkedList<>();
     
     /**
      * get tables.

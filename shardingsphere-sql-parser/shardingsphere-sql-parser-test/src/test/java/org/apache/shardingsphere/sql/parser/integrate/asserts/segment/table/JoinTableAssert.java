@@ -27,7 +27,9 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.JoinedTableSegment;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertNull;
 
 /**
  * JoinTable assert.
@@ -44,14 +46,21 @@ public final class JoinTableAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final JoinedTableSegment actual, final ExpectedJoinTable expected) {
         TableFactorAssert.assertIs(assertContext, actual.getTableFactor(), expected.getTableFactor());
-        JoinSpecificationAssert.assertIs(assertContext, actual.getJoinSpecification(), expected.getJoinSpecification());
+        if (null != actual.getJoinSpecification()) {
+            JoinSpecificationAssert.assertIs(assertContext, actual.getJoinSpecification(), expected.getJoinSpecification());
+        }
     }
     
     public static void assertIs(final SQLCaseAssertContext assertContext, final List<JoinedTableSegment> actual, final List<ExpectedJoinTable> expected) {
         assertThat(assertContext.getText("JoinTable size assert error"), actual.size(), is(null == expected ? 0 : expected.size()));
         for (int i = 0; i < actual.size(); i++) {
             TableFactorAssert.assertIs(assertContext, actual.get(i).getTableFactor(), expected.get(i).getTableFactor());
-            JoinSpecificationAssert.assertIs(assertContext, actual.get(i).getJoinSpecification(), expected.get(i).getJoinSpecification());
+            if (null != expected.get(i).getJoinSpecification()) {
+                assertNotNull(assertContext.getText("Actual JoinSpecification segment should exist."), actual.get(i).getJoinSpecification());
+                JoinSpecificationAssert.assertIs(assertContext, actual.get(i).getJoinSpecification(), expected.get(i).getJoinSpecification());
+            } else {
+                assertNull(assertContext.getText("Actual JoinSpecification segment should not exist."), actual.get(i).getJoinSpecification());
+            }
         }
     }
 }
