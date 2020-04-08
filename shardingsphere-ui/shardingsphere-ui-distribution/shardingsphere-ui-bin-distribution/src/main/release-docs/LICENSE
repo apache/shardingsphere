@@ -216,7 +216,8 @@ The following components are provided under the Apache License. See project link
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
     groovy 2.4.5-indy: https://github.com/apache/groovy, Apache 2.0
-
+    echarts: https://github.com/apache/incubator-echarts, Apache 2.0
+    
 ========================================================================
 Apache 2.0 licenses
 ========================================================================
@@ -242,7 +243,6 @@ The text of each license is the standard Apache 2.0 license.
     spring-framework 4.3.24.RELEASE: https://raw.githubusercontent.com/spring-projects/spring-framework, Apache 2.0
     tomcat 8.5.40: http://svn.apache.org/repos/asf/tomcat, Apache 2.0
     gson 2.8.5: https://github.com/google/gson, Apache 2.0
-    echarts: https://github.com/apache/incubator-echarts, Apache 2.0
 
 ========================================================================
 BSD licenses
