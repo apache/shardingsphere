@@ -51,59 +51,59 @@ public class RuleSchemaMetaDataYamlSwapper implements YamlSwapper<YamlRuleSchema
         return new RuleSchemaMetaData(configured, unconfigured);
     }
 
-    private SchemaMetaData convertSchema(YamlSchemaMetaData schema) {
+    private SchemaMetaData convertSchema(final YamlSchemaMetaData schema) {
         return new SchemaMetaData(schema.getTables().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> convertTable(e.getValue()))));
     }
 
-    private TableMetaData convertTable(YamlTableMetaData table) {
-        return new TableMetaData(convertColumns(table.getColumns()),convertIndexes(table.getIndexes()));
+    private TableMetaData convertTable(final YamlTableMetaData table) {
+        return new TableMetaData(convertColumns(table.getColumns()), convertIndexes(table.getIndexes()));
     }
 
-    private Collection<IndexMetaData> convertIndexes(Map<String, YamlIndexMetaData> indexes) {
+    private Collection<IndexMetaData> convertIndexes(final Map<String, YamlIndexMetaData> indexes) {
         return indexes.values().stream().map(this::convertIndex).collect(Collectors.toList());
     }
 
-    private IndexMetaData convertIndex(YamlIndexMetaData index) {
+    private IndexMetaData convertIndex(final YamlIndexMetaData index) {
         return new IndexMetaData(index.getName());
     }
 
-    private Collection<ColumnMetaData> convertColumns(Map<String, YamlColumnMetaData> indexes) {
+    private Collection<ColumnMetaData> convertColumns(final Map<String, YamlColumnMetaData> indexes) {
         return indexes.values().stream().map(this::convertColumn).collect(Collectors.toList());
     }
 
-    private ColumnMetaData convertColumn(YamlColumnMetaData column) {
+    private ColumnMetaData convertColumn(final YamlColumnMetaData column) {
         return new ColumnMetaData(column.getName(), column.getDataType(), column.getDataTypeName(), column.isPrimaryKey(), column.isGenerated(), column.isCaseSensitive());
     }
     
-    private YamlSchemaMetaData convertYamlSchema(SchemaMetaData schema) {
+    private YamlSchemaMetaData convertYamlSchema(final SchemaMetaData schema) {
         Map<String, YamlTableMetaData> tables = schema.getAllTableNames().stream().collect(Collectors.toMap(e -> e, e -> convertYamlTable(schema.get(e))));
         YamlSchemaMetaData result = new YamlSchemaMetaData();
         result.setTables(tables);
         return result;
     }
 
-    private YamlTableMetaData convertYamlTable(TableMetaData table) {
+    private YamlTableMetaData convertYamlTable(final TableMetaData table) {
         YamlTableMetaData result = new YamlTableMetaData();
         result.setColumns(convertYamlColumns(table.getColumns()));
         result.setIndexes(convertYamlIndexes(table.getIndexes()));
         return result;
     }
 
-    private Map<String, YamlIndexMetaData> convertYamlIndexes(Map<String, IndexMetaData> indexes) {
+    private Map<String, YamlIndexMetaData> convertYamlIndexes(final Map<String, IndexMetaData> indexes) {
         return indexes.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> convertYamlIndex(e.getValue())));
     }
 
-    private YamlIndexMetaData convertYamlIndex(IndexMetaData index) {
+    private YamlIndexMetaData convertYamlIndex(final IndexMetaData index) {
         YamlIndexMetaData result = new YamlIndexMetaData();
         result.setName(index.getName());
         return result;
     }
 
-    private Map<String, YamlColumnMetaData> convertYamlColumns(Map<String, ColumnMetaData> columns) {
+    private Map<String, YamlColumnMetaData> convertYamlColumns(final Map<String, ColumnMetaData> columns) {
         return columns.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> convertYamlColumn(e.getValue())));
     }
 
-    private YamlColumnMetaData convertYamlColumn(ColumnMetaData column) {
+    private YamlColumnMetaData convertYamlColumn(final ColumnMetaData column) {
         YamlColumnMetaData result = new YamlColumnMetaData();
         result.setName(column.getName());
         result.setCaseSensitive(column.isCaseSensitive());
