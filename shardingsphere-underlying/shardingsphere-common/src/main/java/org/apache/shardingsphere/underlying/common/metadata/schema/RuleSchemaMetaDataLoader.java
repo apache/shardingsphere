@@ -147,7 +147,7 @@ public final class RuleSchemaMetaDataLoader {
         Map<BaseRule, RuleMetaDataDecorator> decorators = OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataDecorator.class);
         for (String each : schemaMetaData.getAllTableNames()) {
             for (Entry<BaseRule, RuleMetaDataDecorator> entry : decorators.entrySet()) {
-                result.put(each, entry.getValue().decorate(each, schemaMetaData.get(each), entry.getKey()));
+                result.put(each, entry.getValue().decorate(each, result.getOrDefault(each, schemaMetaData.get(each)), entry.getKey()));
             }
         }
         return new SchemaMetaData(result);
