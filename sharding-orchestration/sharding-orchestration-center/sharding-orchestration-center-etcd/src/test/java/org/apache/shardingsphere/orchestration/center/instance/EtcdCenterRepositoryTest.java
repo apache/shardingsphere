@@ -159,4 +159,10 @@ public final class EtcdCenterRepositoryTest {
         });
         verify(watch).watch(any(ByteSequence.class), any(Watch.Listener.class));
     }
+    
+    @Test
+    public void assertDelete() {
+        centerRepository.delete("key");
+        verify(kv).delete(ByteSequence.from("key", Charsets.UTF_8));
+    }
 }

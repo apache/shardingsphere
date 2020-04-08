@@ -66,6 +66,10 @@ public final class FirstTestRegistryCenterRepository implements RegistryCenterRe
     }
     
     @Override
+    public void delete(final String key) {
+    }
+    
+    @Override
     public void close() {
         REGISTRY_DATA.clear();
     }

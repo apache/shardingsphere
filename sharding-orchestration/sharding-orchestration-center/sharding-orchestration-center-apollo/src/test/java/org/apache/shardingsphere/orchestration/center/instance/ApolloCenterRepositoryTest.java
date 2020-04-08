@@ -39,6 +39,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 public final class ApolloCenterRepositoryTest {
     
@@ -119,5 +120,11 @@ public final class ApolloCenterRepositoryTest {
         assertThat(changeEvent.getKey(), is(key));
         assertThat(changeEvent.getValue(), is(newVaule));
         assertThat(changeEvent.getChangedType(), is(DataChangedEvent.ChangedType.UPDATED));
+    }
+    
+    @Test
+    public void assertDelete() {
+        configCenterRepository.delete("/test/children/2");
+        verify(openApiWrapper).remove(ConfigKeyUtils.path2Key("/test/children/2"));
     }
 }

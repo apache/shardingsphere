@@ -60,6 +60,10 @@ public final class SecondTestRegistryCenterRepository implements RegistryCenterR
     }
     
     @Override
+    public void delete(final String key) {
+    }
+    
+    @Override
     public void close() {
     }
     

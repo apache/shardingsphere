@@ -186,4 +186,15 @@ public final class CuratorZookeeperCenterRepositoryTest {
         customCenterRepository.persist("/test/children/1", "value1");
         assertThat(customCenterRepository.get("/test/children/1"), is("value1"));
     }
+    
+    @Test
+    public void assertDelete() {
+        centerRepository.persist("/test/children/1", "value1");
+        centerRepository.persist("/test/children/2", "value2");
+        assertThat(centerRepository.get("/test/children/1"), is("value1"));
+        assertThat(centerRepository.get("/test/children/2"), is("value2"));
+        centerRepository.delete("/test/children");
+        assertNull(centerRepository.get("/test/children/1"));
+        assertNull(centerRepository.get("/test/children/2"));
+    }
 }

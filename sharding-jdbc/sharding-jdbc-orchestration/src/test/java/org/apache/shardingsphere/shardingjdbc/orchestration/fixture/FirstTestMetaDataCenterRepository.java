@@ -64,6 +64,10 @@ public final class FirstTestMetaDataCenterRepository implements ConfigCenterRepo
     }
     
     @Override
+    public void delete(final String key) {
+    }
+    
+    @Override
     public void close() {
         REGISTRY_DATA.clear();
     }

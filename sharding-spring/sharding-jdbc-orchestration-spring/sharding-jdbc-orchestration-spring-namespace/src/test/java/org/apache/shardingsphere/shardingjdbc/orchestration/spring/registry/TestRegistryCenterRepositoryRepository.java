@@ -60,6 +60,10 @@ public final class TestRegistryCenterRepositoryRepository implements RegistryCen
     }
     
     @Override
+    public void delete(final String key) {
+    }
+    
+    @Override
     public void close() {
     }
     

@@ -60,6 +60,10 @@ public final class ThirdTestConfigCenterRepository implements ConfigCenterReposi
     }
     
     @Override
+    public void delete(final String key) {
+    }
+    
+    @Override
     public void close() {
         REGISTRY_DATA.clear();
     }

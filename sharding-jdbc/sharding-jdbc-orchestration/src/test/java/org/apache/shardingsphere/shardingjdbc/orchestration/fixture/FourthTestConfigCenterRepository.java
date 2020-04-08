@@ -60,6 +60,10 @@ public final class FourthTestConfigCenterRepository implements ConfigCenterRepos
     }
     
     @Override
+    public void delete(final String key) {
+    }
+    
+    @Override
     public void close() {
         REGISTRY_DATA.clear();
     }

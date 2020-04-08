@@ -103,6 +103,11 @@ public final class ApolloCenterRepository implements ConfigCenterRepository {
         configWrapper.addChangeListener(listener, Collections.singleton(apolloKey), Collections.singleton(apolloKey));
     }
     
+    @Override
+    public void delete(final String key) {
+        openApiWrapper.remove(ConfigKeyUtils.path2Key(key));
+    }
+    
     private DataChangedEvent.ChangedType getChangedType(final PropertyChangeType changeType) {
         switch (changeType) {
             case ADDED:

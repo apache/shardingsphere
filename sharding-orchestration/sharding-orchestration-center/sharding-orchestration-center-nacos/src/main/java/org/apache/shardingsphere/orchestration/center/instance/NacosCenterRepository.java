@@ -143,6 +143,16 @@ public final class NacosCenterRepository implements ConfigCenterRepository {
     }
     
     @Override
+    public void delete(final String key) {
+        try {
+            String dataId = ConfigKeyUtils.path2Key(key);
+            configService.removeConfig(dataId, nacosProperties.getValue(NacosPropertyKey.GROUP));
+        } catch (NacosException ex) {
+            log.debug("Nacos remove config exception for: {}", ex.toString());
+        }
+    }
+    
+    @Override
     public void close() {
     }
     
