@@ -19,19 +19,25 @@ package org.apache.shardingsphere.orchestration.core.metadatacenter.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
 
-import java.util.Map;
-
 /**
- * Rule Schema Metadata configuration for yaml.
+ * Column Metadata configuration for yaml.
  */
 @Getter
 @Setter
-public class YamlRuleSchemaMetaData implements YamlConfiguration {
+public class YamlColumnMetaData implements YamlConfiguration {
 
-    private YamlSchemaMetaData configuredSchemaMetaData;
+    private String name;
 
-    private Map<String, YamlSchemaMetaData> unconfiguredSchemaMetaDataMap;
+    private int dataType;
+
+    private String dataTypeName;
+
+    private boolean primaryKey;
+
+    private boolean generated;
+    
+    private boolean caseSensitive;
+    
 }
