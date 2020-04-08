@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.orchestration.core.metadatacenter;
 
 import org.apache.shardingsphere.orchestration.center.CenterRepository;
+import org.apache.shardingsphere.orchestration.core.metadatacenter.yaml.RuleSchemaMetaDataYamlSwapper;
+import org.apache.shardingsphere.orchestration.core.metadatacenter.yaml.YamlRuleSchemaMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
@@ -42,7 +44,7 @@ public final class MetaDataCenter {
      * @param ruleSchemaMetaData RuleSchemaMetaData of the schema
      */
     public void persistMetaDataCenterNode(final String schemaName, final RuleSchemaMetaData ruleSchemaMetaData) {
-        repository.persist(node.getMetaDataCenterNodeFullPath(schemaName), YamlEngine.marshal(ruleSchemaMetaData));
+        repository.persist(node.getMetaDataCenterNodeFullPath(schemaName), YamlEngine.marshal(new RuleSchemaMetaDataYamlSwapper().swap(ruleSchemaMetaData)));
     }
 
     /**
@@ -52,6 +54,6 @@ public final class MetaDataCenter {
      * @return RuleSchemaMetaData of the schema
      */
     public RuleSchemaMetaData loadRuleSchemaMetaData(final String schemaName) {
-        return YamlEngine.unmarshal(repository.get(node.getMetaDataCenterNodeFullPath(schemaName)), RuleSchemaMetaData.class);
+        return new RuleSchemaMetaDataYamlSwapper().swap(YamlEngine.unmarshal(repository.get(node.getMetaDataCenterNodeFullPath(schemaName)), YamlRuleSchemaMetaData.class));
     }
 }
