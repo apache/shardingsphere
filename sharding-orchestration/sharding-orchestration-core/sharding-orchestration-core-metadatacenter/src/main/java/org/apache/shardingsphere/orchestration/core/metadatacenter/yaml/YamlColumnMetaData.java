@@ -39,5 +39,4 @@ public class YamlColumnMetaData implements YamlConfiguration {
     private boolean generated;
     
     private boolean caseSensitive;
-    
 }

@@ -29,5 +29,4 @@ import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration
 public class YamlIndexMetaData implements YamlConfiguration {
     
     private String name;
-    
 }

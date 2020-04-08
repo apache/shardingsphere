@@ -31,5 +31,4 @@ import java.util.Map;
 public class YamlSchemaMetaData implements YamlConfiguration {
     
     private Map<String, YamlTableMetaData> tables;
-    
 }
