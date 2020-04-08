@@ -115,7 +115,7 @@ public final class ApolloCenterRepositoryTest {
     private void assertWatchUpdateChangedType(final String key, final String newVaule) {
         final SettableFuture<DataChangedEvent> future = SettableFuture.create();
         configCenterRepository.watch(key, future::set);
-        embeddedApollo.addOrModifyProperty("orchestration", ConfigKeyUtils.path2Key(key), newVaule);
+        embeddedApollo.addOrModifyProperty("orchestration", ConfigKeyUtils.pathToKey(key), newVaule);
         DataChangedEvent changeEvent = future.get(5, TimeUnit.SECONDS);
         assertThat(changeEvent.getKey(), is(key));
         assertThat(changeEvent.getValue(), is(newVaule));
@@ -125,6 +125,6 @@ public final class ApolloCenterRepositoryTest {
     @Test
     public void assertDelete() {
         configCenterRepository.delete("/test/children/2");
-        verify(openApiWrapper).remove(ConfigKeyUtils.path2Key("/test/children/2"));
+        verify(openApiWrapper).remove(ConfigKeyUtils.pathToKey("/test/children/2"));
     }
 }

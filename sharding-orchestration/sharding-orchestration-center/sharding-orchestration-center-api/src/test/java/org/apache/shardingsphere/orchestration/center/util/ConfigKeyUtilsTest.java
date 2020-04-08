@@ -26,11 +26,11 @@ public final class ConfigKeyUtilsTest {
     
     @Test
     public void assertPath2Key() {
-        assertThat(ConfigKeyUtils.path2Key("/orchestration_ds/config/schema/test/rule"), is("orchestration_ds.config.schema.test.rule"));
+        assertThat(ConfigKeyUtils.pathToKey("/orchestration_ds/config/schema/test/rule"), is("orchestration_ds.config.schema.test.rule"));
     }
     
     @Test
     public void assertKey2Path() {
-        assertThat(ConfigKeyUtils.key2Path("orchestration_ds.config.schema.test.rule"), is("/orchestration_ds/config/schema/test/rule"));
+        assertThat(ConfigKeyUtils.keyToPath("orchestration_ds.config.schema.test.rule"), is("/orchestration_ds/config/schema/test/rule"));
     }
 }

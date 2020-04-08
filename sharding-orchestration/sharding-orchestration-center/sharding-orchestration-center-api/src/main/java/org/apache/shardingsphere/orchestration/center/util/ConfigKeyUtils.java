@@ -32,7 +32,7 @@ public final class ConfigKeyUtils {
      * @param path config path
      * @return config key
      */
-    public static String path2Key(final String path) {
+    public static String pathToKey(final String path) {
         String key = path.replace(PATH_SEPARATOR, DOT_SEPARATOR);
         return key.substring(key.indexOf(DOT_SEPARATOR) + 1);
     }
@@ -43,7 +43,7 @@ public final class ConfigKeyUtils {
      * @param key config key
      * @return config path
      */
-    public static String key2Path(final String key) {
+    public static String keyToPath(final String key) {
         return PATH_SEPARATOR + key.replace(DOT_SEPARATOR, PATH_SEPARATOR);
     }
 }
