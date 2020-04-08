@@ -4,40 +4,25 @@ title = "分布式事务"
 weight = 5
 +++
 
-ShardingDataSource已经整合了分布式事务的功能，因此不需要用户进行额外的配置，每次获取ShardingConnection前，通过修改`TransactionTypeHolder`，可以对事务类型进行切换。
-
-## XA事务
+## 不使用Spring
 
 ### 引入Maven依赖
 
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>sharding-jdbc-core</artifactId>
+    <version>${sharding-sphere.version}</version>
+</dependency>
+
+<!-- 使用XA事务时，需要引入此模块 -->
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-transaction-xa-core</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
-```
 
-### JAVA编码方式设置事务类型
-
- ```java
- TransactionTypeHolder.set(TransactionType.XA);
- ```
-
-### XA事务管理器参数配置（可选）
-
-ShardingSphere默认的XA事务管理器为Atomikos，在项目的logs目录中会生成`xa_tx.log`, 这是XA崩溃恢复时所需的日志，请勿删除。
-
-也可以通过在项目的classpath中添加`jta.properties`来定制化Atomikos配置项。具体的配置规则请参考Atomikos的[官方文档](https://www.atomikos.com/Documentation/JtaProperties)。
-
-## BASE（柔性）事务
-
-ShardingSphere中已经整合了Seata-AT柔性事务
-
-### 引入Maven依赖
-
-```xml
-<!-- seata柔性事务 -->
+<!-- 使用BASE事务时，需要引入此模块 -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-transaction-base-seata-at</artifactId>
@@ -45,42 +30,178 @@ ShardingSphere中已经整合了Seata-AT柔性事务
 </dependency>
 ```
 
-### JAVA编码方式设置事务类型
+### 基于Java编码方式使用分布式事务
 
- ```java
- TransactionTypeHolder.set(TransactionType.BASE);
- ```
- 
-#### Seata配置
-
-1.按照[seata-work-shop](https://github.com/seata/seata-workshop)中的步骤，下载并启动seata server，参考 Step6 和 Step7即可。
-
-2.在每一个分片数据库实例中执创建undo_log表（目前只支持Mysql）
-```sql
-CREATE TABLE IF NOT EXISTS `undo_log` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `branch_id` bigint(20) NOT NULL,
-  `xid` varchar(100) NOT NULL,
-  `rollback_info` longblob NOT NULL,
-  `log_status` int(11) NOT NULL,
-  `log_created` datetime NOT NULL,
-  `log_modified` datetime NOT NULL,
-  `ext` varchar(100) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `ux_undo_log` (`xid`,`branch_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+```java
+TransactionTypeHolder.set(TransactionType.XA); // 支持TransactionType.LOCAL, TransactionType.XA, TransactionType.BASE
+try (Connection connection = dataSource.getConnection()) { // dataSource的类型为ShardingDataSource
+    connection.setAutoCommit(false);
+    PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO t_order (user_id, status) VALUES (?, ?)");
+    preparedStatement.setObject(1, i);
+    preparedStatement.setObject(2, "init");
+    preparedStatement.executeUpdate();
+    connection.commit();
+}
 ```
-3.在classpath中修改seata.conf
+## 使用Spring-namespace
 
-```conf
-client {
-    application.id = raw-jdbc   ## 应用唯一id
-    transaction.service.group = raw-jdbc-group   ## 所属事务组
+### 引入Maven依赖
+
+```xml
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>sharding-jdbc-spring-namespace</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+
+<!-- 使用XA事务时，需要引入此模块 -->
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>sharding-transaction-xa-core</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+
+<!-- 使用BASE事务时，需要引入此模块 -->
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>sharding-transaction-base-seata-at</artifactId>
+    <version>${sharding-sphere.version}</version>
+</dependency>
+```
+
+### 配置spring-namespace的事务管理器
+
+```xml
+<!-- 进行ShardingDataSource的相关配置 -->
+...
+
+<!-- 开启自动扫描@ShardingTransactionType注解，使用Spring原生的AOP在类和方法上进行增强 -->
+<sharding:tx-type-annotation-driven />
+
+<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <property name="dataSource" ref="shardingDataSource" />
+</bean>
+<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+    <property name="dataSource" ref="shardingDataSource" />
+</bean>
+<tx:annotation-driven />
+
+```
+
+### 业务代码中使用分布事务
+
+```java
+@Transactional
+@ShardingTransactionType(TransactionType.XA)  // 支持TransactionType.LOCAL, TransactionType.XA, TransactionType.BASE
+public void insert() {
+    jdbcTemplate.execute("INSERT INTO t_order (user_id, status) VALUES (?, ?)", (PreparedStatementCallback<Object>) preparedStatement -> {
+        preparedStatement.setObject(1, i);
+        preparedStatement.setObject(2, "init");
+        preparedStatement.executeUpdate();
+    });
 }
 ```
 
+## 使用Spring-boot
+
+### 引入Maven依赖
+
+```xml
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>sharding-jdbc-spring-boot-starter</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+
+<!-- 使用XA事务时，需要引入此模块 -->
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>sharding-transaction-xa-core</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+
+<!-- 使用BASE事务时，需要引入此模块 -->
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>sharding-transaction-base-seata-at</artifactId>
+    <version>${sharding-sphere.version}</version>
+</dependency>
+```
+
+### 配置spring-boot的事务管理器
+
+```java
+@Configuration
+@EnableTransactionManagement
+public class TransactionConfiguration {
+    
+    @Bean
+    public PlatformTransactionManager txManager(final DataSource dataSource) {
+        return new DataSourceTransactionManager(dataSource);
+    }
+    
+    @Bean
+    public JdbcTemplate jdbcTemplate(final DataSource dataSource) {
+        return new JdbcTemplate(dataSource);
+    }
+}
+```
+
+### 业务代码中使用分布事务
+
+```java
+@Transactional
+@ShardingTransactionType(TransactionType.XA)  // 支持TransactionType.LOCAL, TransactionType.XA, TransactionType.BASE
+public void insert() {
+    jdbcTemplate.execute("INSERT INTO t_order (user_id, status) VALUES (?, ?)", (PreparedStatementCallback<Object>) preparedStatement -> {
+        preparedStatement.setObject(1, i);
+        preparedStatement.setObject(2, "init");
+        preparedStatement.executeUpdate();
+    });
+}
+```
+
+## 分布式事务管理器的特有配置
+
+### XA事务管理器参数配置（可选）
+
+ShardingSphere默认的XA事务管理器为Atomikos，在项目的logs目录中会生成`xa_tx.log`, 这是XA崩溃恢复时所需的日志，请勿删除。
+
+也可以通过在项目的classpath中添加`jta.properties`来定制化Atomikos配置项。具体的配置规则请参考Atomikos的[官方文档](https://www.atomikos.com/Documentation/JtaProperties)。
+
+#### BASE柔性事务管理器（SEATA-AT配置）
+
+1.按照[seata-work-shop](https://github.com/seata/seata-workshop)中的步骤，下载并启动seata server，参考 Step6 和 Step7即可。
+
+2.在每一个分片数据库实例中执创建undo_log表（以MySQL为例）
+```conf
+CREATE TABLE IF NOT EXISTS `undo_log`
+(
+  `id`            BIGINT(20)   NOT NULL AUTO_INCREMENT COMMENT 'increment id',
+  `branch_id`     BIGINT(20)   NOT NULL COMMENT 'branch transaction id',
+  `xid`           VARCHAR(100) NOT NULL COMMENT 'global transaction id',
+  `context`       VARCHAR(128) NOT NULL COMMENT 'undo_log context,such as serialization',
+  `rollback_info` LONGBLOB     NOT NULL COMMENT 'rollback info',
+  `log_status`    INT(11)      NOT NULL COMMENT '0:normal status,1:defense status',
+  `log_created`   DATETIME     NOT NULL COMMENT 'create datetime',
+  `log_modified`  DATETIME     NOT NULL COMMENT 'modify datetime',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `ux_undo_log` (`xid`, `branch_id`)
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 1
+  DEFAULT CHARSET = utf8 COMMENT ='AT transaction mode undo table';
+```
+3.在classpath中增加seata.conf
+
+```conf
+client {
+    application.id = example    ## 应用唯一id
+    transaction.service.group = my_test_tx_group   ## 所属事务组
+}
+```
+
+4.根据实际场景修改seata的file.conf和registry.conf文件
+
 ## 分布式事务example
 
-* [官方example](https://github.com/apache/incubator-shardingsphere-example/tree/dev/sharding-jdbc-example/transaction-example)
-
-* [第三方example（含spring配置）](https://github.com/OpenSharding/shardingsphere-spi-impl-example/tree/master/transaction-example)
+* [官方example](https://github.com/apache/incubator-shardingsphere/tree/master/examples/sharding-jdbc-example/sharding-example)
