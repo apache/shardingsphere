@@ -19,6 +19,7 @@ package org.apache.shardingsphere.orchestration.core.facade;
 
 import org.apache.shardingsphere.orchestration.core.facade.listener.ShardingOrchestrationListenerManager;
 import org.apache.shardingsphere.orchestration.core.facade.util.FieldUtil;
+import org.apache.shardingsphere.orchestration.core.metadatacenter.MetaDataCenter;
 import org.apache.shardingsphere.orchestration.core.registrycenter.RegistryCenter;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
@@ -59,6 +60,9 @@ public final class ShardingOrchestrationFacadeTest {
     private RegistryCenter registryCenter;
     
     @Mock
+    private MetaDataCenter metaDataCenter;
+    
+    @Mock
     private ShardingOrchestrationListenerManager listenerManager;
     
     @Before
@@ -72,13 +76,17 @@ public final class ShardingOrchestrationFacadeTest {
         configuration2.setOrchestrationType("config_center");
         configuration2.setNamespace("namespace_2");
         instanceConfigurationMap.put("test_name_2", configuration2);
+        CenterConfiguration configuration3 = new CenterConfiguration("FirstTestConfigCenter");
+        configuration3.setOrchestrationType("metadata_center");
+        configuration3.setNamespace("namespace_3");
+        instanceConfigurationMap.put("test_name_3", configuration3);
         OrchestrationConfiguration orchestrationConfiguration = new OrchestrationConfiguration(instanceConfigurationMap);
         shardingOrchestrationFacade = new ShardingOrchestrationFacade(orchestrationConfiguration, Arrays.asList("sharding_db", "masterslave_db"));
         FieldUtil.setField(shardingOrchestrationFacade, "registryCenterRepository", registryCenterRepository);
         FieldUtil.setField(shardingOrchestrationFacade, "configCenter", configCenter);
         FieldUtil.setField(shardingOrchestrationFacade, "registryCenter", registryCenter);
+        FieldUtil.setField(shardingOrchestrationFacade, "metaDataCenter", metaDataCenter);
         FieldUtil.setField(shardingOrchestrationFacade, "listenerManager", listenerManager);
-
     }
     
     @Test

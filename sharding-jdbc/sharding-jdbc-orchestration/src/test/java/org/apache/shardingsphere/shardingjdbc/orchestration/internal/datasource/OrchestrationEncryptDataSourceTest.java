@@ -69,6 +69,7 @@ public final class OrchestrationEncryptDataSourceTest {
         Map<String, CenterConfiguration> instanceConfigurationMap = new HashMap<>();
         instanceConfigurationMap.put("test_encrypt_registry_name", getRegistryCenterConfiguration());
         instanceConfigurationMap.put("test_encrypt_config_name", getConfigCenterConfiguration());
+        instanceConfigurationMap.put("test_encrypt_metadata_name", getMetaDataCenterConfiguration());
         return new OrchestrationConfiguration(instanceConfigurationMap);
     }
     
@@ -88,6 +89,14 @@ public final class OrchestrationEncryptDataSourceTest {
         return result;
     }
     
+    private CenterConfiguration getMetaDataCenterConfiguration() {
+        CenterConfiguration result = new CenterConfiguration("FirstTestMetaDataCenter");
+        result.setOrchestrationType(CenterType.METADATA_CENTER.getValue());
+        result.setNamespace("test_encrypt_metadata");
+        result.setServerLists("localhost:3181");
+        return result;
+    }
+
     @Test
     public void assertInitializeOrchestrationEncryptDataSource() throws SQLException {
         DataSource dataSource = new OrchestrationEncryptDataSource(getOrchestrationConfiguration());
