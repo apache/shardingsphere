@@ -25,7 +25,7 @@ import org.apache.shardingsphere.shardingscaling.core.exception.SyncTaskExecuteE
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.AbstractSyncExecutor;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.Channel;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPosition;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.LogReader;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.LogDumper;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.shardingscaling.postgresql.wal.LogicalReplication;
 import org.apache.shardingsphere.shardingscaling.postgresql.wal.WalEventConverter;
@@ -41,9 +41,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * PostgreSQL WAL reader.
+ * PostgreSQL WAL dumper.
  */
-public final class PostgreSQLWalReader extends AbstractSyncExecutor implements LogReader {
+public final class PostgreSQLWalDumper extends AbstractSyncExecutor implements LogDumper {
     
     private final WalPosition walPosition;
     
@@ -58,10 +58,10 @@ public final class PostgreSQLWalReader extends AbstractSyncExecutor implements L
     @Setter
     private Channel channel;
     
-    public PostgreSQLWalReader(final RdbmsConfiguration rdbmsConfiguration, final LogPosition logPosition) {
+    public PostgreSQLWalDumper(final RdbmsConfiguration rdbmsConfiguration, final LogPosition logPosition) {
         walPosition = (WalPosition) logPosition;
         if (!JDBCDataSourceConfiguration.class.equals(rdbmsConfiguration.getDataSourceConfiguration().getClass())) {
-            throw new UnsupportedOperationException("PostgreSQLWalReader only support JDBCDataSourceConfiguration");
+            throw new UnsupportedOperationException("PostgreSQLWalDumper only support JDBCDataSourceConfiguration");
         }
         this.rdbmsConfiguration = rdbmsConfiguration;
         walEventConverter = new WalEventConverter(rdbmsConfiguration);
@@ -70,11 +70,11 @@ public final class PostgreSQLWalReader extends AbstractSyncExecutor implements L
     @Override
     public void run() {
         start();
-        read(channel);
+        dump(channel);
     }
     
     @Override
-    public void read(final Channel channel) {
+    public void dump(final Channel channel) {
         try {
             PGConnection pgConnection = logicalReplication.createPgConnection((JDBCDataSourceConfiguration) rdbmsConfiguration.getDataSourceConfiguration());
             decodingPlugin = new TestDecodingPlugin(((Connection) pgConnection).unwrap(PgConnection.class).getTimestampUtils());

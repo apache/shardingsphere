@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingscaling.postgresql;
 
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.AbstractJDBCReader;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.AbstractJDBCDumper;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 
 import java.sql.Connection;
@@ -27,11 +27,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * PostgreSQL JDBC reader.
+ * PostgreSQL JDBC dumper.
  */
-public final class PostgreSQLJdbcReader extends AbstractJDBCReader {
+public final class PostgreSQLJdbcDumper extends AbstractJDBCDumper {
     
-    public PostgreSQLJdbcReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
+    public PostgreSQLJdbcDumper(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
         super(rdbmsConfiguration, dataSourceManager);
     }
     

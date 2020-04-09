@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.execute.executor.reader;
+package org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -27,60 +27,60 @@ import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntryLoader;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 
 /**
- * Reader factory.
+ * Dumper factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReaderFactory {
+public final class DumperFactory {
     
     /**
-     * New instance of JDBC reader.
+     * New instance of JDBC dumper.
      *
      * @param rdbmsConfiguration rdbms configuration
      * @param dataSourceManager data source factory
-     * @return JDBC reader
+     * @return JDBC dumper
      */
     @SneakyThrows
-    public static JDBCReader newInstanceJdbcReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
-        return newInstanceJdbcReader(rdbmsConfiguration.getDataSourceConfiguration().getDatabaseType().getName(), rdbmsConfiguration, dataSourceManager);
+    public static JDBCDumper newInstanceJdbcDumper(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
+        return newInstanceJdbcDumper(rdbmsConfiguration.getDataSourceConfiguration().getDatabaseType().getName(), rdbmsConfiguration, dataSourceManager);
     }
     
     /**
-     * New instance of JDBC reader.
+     * New instance of JDBC dumper.
      *
      * @param databaseType database type
      * @param rdbmsConfiguration rdbms configuration
      * @param dataSourceManager data source factory
-     * @return JDBC reader
+     * @return JDBC dumper
      */
     @SneakyThrows
-    public static JDBCReader newInstanceJdbcReader(final String databaseType, final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
+    public static JDBCDumper newInstanceJdbcDumper(final String databaseType, final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
-        return scalingEntry.getJdbcReaderClass().getConstructor(RdbmsConfiguration.class, DataSourceManager.class).newInstance(rdbmsConfiguration, dataSourceManager);
+        return scalingEntry.getJdbcDumperClass().getConstructor(RdbmsConfiguration.class, DataSourceManager.class).newInstance(rdbmsConfiguration, dataSourceManager);
     }
     
     /**
-     * New instance of log reader.
+     * New instance of log dumper.
      *
      * @param rdbmsConfiguration rdbms configuration
      * @param position log position
-     * @return log reader
+     * @return log dumper
      */
     @SneakyThrows
-    public static LogReader newInstanceLogReader(final RdbmsConfiguration rdbmsConfiguration, final LogPosition position) {
-        return newInstanceLogReader(rdbmsConfiguration.getDataSourceConfiguration().getDatabaseType().getName(), rdbmsConfiguration, position);
+    public static LogDumper newInstanceLogDumper(final RdbmsConfiguration rdbmsConfiguration, final LogPosition position) {
+        return newInstanceLogDumper(rdbmsConfiguration.getDataSourceConfiguration().getDatabaseType().getName(), rdbmsConfiguration, position);
     }
     
     /**
-     * New instance of log reader.
+     * New instance of log dumper.
      *
      * @param databaseType database type
      * @param rdbmsConfiguration rdbms configuration
      * @param position log position
-     * @return log reader
+     * @return log dumper
      */
     @SneakyThrows
-    public static LogReader newInstanceLogReader(final String databaseType, final RdbmsConfiguration rdbmsConfiguration, final LogPosition position) {
+    public static LogDumper newInstanceLogDumper(final String databaseType, final RdbmsConfiguration rdbmsConfiguration, final LogPosition position) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
-        return scalingEntry.getLogReaderClass().getConstructor(RdbmsConfiguration.class, LogPosition.class).newInstance(rdbmsConfiguration, position);
+        return scalingEntry.getLogDumperClass().getConstructor(RdbmsConfiguration.class, LogPosition.class).newInstance(rdbmsConfiguration, position);
     }
 }

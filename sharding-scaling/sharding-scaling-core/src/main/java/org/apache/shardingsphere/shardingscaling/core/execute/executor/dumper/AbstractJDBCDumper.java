@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.execute.executor.reader;
+package org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -42,10 +42,10 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 /**
- * Abstract JDBC reader implement.
+ * Abstract JDBC dumper implement.
  */
 @Slf4j
-public abstract class AbstractJDBCReader extends AbstractSyncExecutor implements JDBCReader {
+public abstract class AbstractJDBCDumper extends AbstractSyncExecutor implements JDBCDumper {
     
     @Getter(AccessLevel.PROTECTED)
     private final RdbmsConfiguration rdbmsConfiguration;
@@ -57,9 +57,9 @@ public abstract class AbstractJDBCReader extends AbstractSyncExecutor implements
     @Setter
     private Channel channel;
     
-    public AbstractJDBCReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
+    public AbstractJDBCDumper(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
         if (!JDBCDataSourceConfiguration.class.equals(rdbmsConfiguration.getDataSourceConfiguration().getClass())) {
-            throw new UnsupportedOperationException("AbstractJDBCReader only support JDBCDataSourceConfiguration");
+            throw new UnsupportedOperationException("AbstractJDBCDumper only support JDBCDataSourceConfiguration");
         }
         this.rdbmsConfiguration = rdbmsConfiguration;
         this.dataSourceManager = dataSourceManager;
@@ -74,11 +74,11 @@ public abstract class AbstractJDBCReader extends AbstractSyncExecutor implements
     @Override
     public final void run() {
         start();
-        read(channel);
+        dump(channel);
     }
     
     @Override
-    public final void read(final Channel channel) {
+    public final void dump(final Channel channel) {
         try (Connection conn = dataSourceManager.getDataSource(rdbmsConfiguration.getDataSourceConfiguration()).getConnection()) {
             String sql = String.format("SELECT * FROM %s %s", rdbmsConfiguration.getTableName(), rdbmsConfiguration.getWhereCondition());
             PreparedStatement ps = createPreparedStatement(conn, sql);

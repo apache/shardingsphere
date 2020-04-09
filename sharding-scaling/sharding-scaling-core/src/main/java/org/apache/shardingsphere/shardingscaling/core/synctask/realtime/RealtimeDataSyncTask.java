@@ -28,8 +28,8 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncExecu
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.DistributionChannel;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManagerFactory;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.Reader;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.ReaderFactory;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.Dumper;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.DumperFactory;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Writer;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.WriterFactory;
@@ -53,7 +53,7 @@ public final class RealtimeDataSyncTask implements SyncTask {
     
     private LogPositionManager logPositionManager;
     
-    private Reader reader;
+    private Dumper dumper;
     
     private long delayMillisecond;
     
@@ -85,15 +85,15 @@ public final class RealtimeDataSyncTask implements SyncTask {
     }
     
     private void instanceSyncExecutors(final SyncExecutorGroup syncExecutorGroup) {
-        reader = ReaderFactory.newInstanceLogReader(syncConfiguration.getReaderConfiguration(), logPositionManager.getCurrentPosition());
+        dumper = DumperFactory.newInstanceLogDumper(syncConfiguration.getReaderConfiguration(), logPositionManager.getCurrentPosition());
         List<Writer> writers = instanceWriters();
         DistributionChannel channel = instanceChannel(writers);
-        reader.setChannel(channel);
+        dumper.setChannel(channel);
         for (Writer each : writers) {
             each.setChannel(channel);
         }
         syncExecutorGroup.setChannel(channel);
-        syncExecutorGroup.addSyncExecutor(reader);
+        syncExecutorGroup.addSyncExecutor(dumper);
         syncExecutorGroup.addAllSyncExecutor(writers);
     }
     
@@ -115,9 +115,9 @@ public final class RealtimeDataSyncTask implements SyncTask {
     
     @Override
     public void stop() {
-        if (null != reader) {
-            reader.stop();
-            reader = null;
+        if (null != dumper) {
+            dumper.stop();
+            dumper = null;
         }
     }
     

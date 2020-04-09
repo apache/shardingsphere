@@ -28,8 +28,8 @@ import org.apache.shardingsphere.shardingscaling.core.exception.SyncTaskExecuteE
 import org.apache.shardingsphere.shardingscaling.core.execute.engine.SyncTaskExecuteCallback;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncExecutorGroup;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.MemoryChannel;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.Reader;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.ReaderFactory;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.Dumper;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.DumperFactory;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Writer;
@@ -59,7 +59,7 @@ public final class HistoryDataSyncTask implements SyncTask {
     
     private AtomicLong syncedRows = new AtomicLong();
     
-    private Reader reader;
+    private Dumper dumper;
     
     public HistoryDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
         this.syncConfiguration = syncConfiguration;
@@ -101,13 +101,13 @@ public final class HistoryDataSyncTask implements SyncTask {
     
     private void instanceSyncExecutors(final SyncExecutorGroup syncExecutorGroup) {
         syncConfiguration.getReaderConfiguration().setTableNameMap(syncConfiguration.getTableNameMap());
-        reader = ReaderFactory.newInstanceJdbcReader(syncConfiguration.getReaderConfiguration(), dataSourceManager);
+        dumper = DumperFactory.newInstanceJdbcDumper(syncConfiguration.getReaderConfiguration(), dataSourceManager);
         Writer writer = WriterFactory.newInstance(syncConfiguration.getWriterConfiguration(), dataSourceManager);
         MemoryChannel channel = instanceChannel();
-        reader.setChannel(channel);
+        dumper.setChannel(channel);
         writer.setChannel(channel);
         syncExecutorGroup.setChannel(channel);
-        syncExecutorGroup.addSyncExecutor(reader);
+        syncExecutorGroup.addSyncExecutor(dumper);
         syncExecutorGroup.addSyncExecutor(writer);
     }
     
@@ -125,9 +125,9 @@ public final class HistoryDataSyncTask implements SyncTask {
     
     @Override
     public void stop() {
-        if (null != reader) {
-            reader.stop();
-            reader = null;
+        if (null != dumper) {
+            dumper.stop();
+            dumper = null;
         }
     }
     
