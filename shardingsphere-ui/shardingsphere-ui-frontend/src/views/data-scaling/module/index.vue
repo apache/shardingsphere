@@ -354,7 +354,7 @@
 <script>
 import yaml from 'js-yaml'
 import Vue from 'vue'
-import ECharts from 'vue-echarts'
+import ChartBase from '@/components/ChartBase'
 import moment from 'moment'
 import clone from 'lodash/clone'
 import isEmpty from 'lodash/isEmpty'
@@ -394,7 +394,7 @@ let timer = null
 export default {
   name: 'DataScalingIndex',
   components: {
-    'v-chart': ECharts
+    'v-chart': ChartBase
   },
   data() {
     return {
