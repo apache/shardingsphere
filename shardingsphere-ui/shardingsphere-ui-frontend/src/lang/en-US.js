@@ -62,7 +62,8 @@ export default {
       delSucMessage: 'Delete Succeeded',
       delFailMessage: 'Delete Failed',
       updateCompletedMessage: 'Update Completed',
-      updateFaildMessage: 'Update Faild'
+      updateFaildMessage: 'Update Faild',
+      confirmDelOperator: 'Confirm delete'
     },
     loginOut: 'Sign Out',
     dropdownList: [
@@ -84,7 +85,8 @@ export default {
   btn: {
     submit: 'Submit',
     reset: 'Reset',
-    cancel: 'Cancel'
+    cancel: 'Cancel',
+    confirm: 'Confirm'
   },
   input: {
     pUserName: 'Please enter user name',

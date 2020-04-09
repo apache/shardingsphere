@@ -62,7 +62,8 @@ export default {
       delSucMessage: '删除成功',
       delFailMessage: '删除失败',
       updateCompletedMessage: '更新成功',
-      updateFaildMessage: '更新失败'
+      updateFaildMessage: '更新失败',
+      confirmDelOperator: '确认删除'
     },
     loginOut: '退出登录',
     dropdownList: [
@@ -84,7 +85,8 @@ export default {
   btn: {
     submit: '提交',
     reset: '重置',
-    cancel: '取消'
+    cancel: '取消',
+    confirm: '确定'
   },
   input: {
     pUserName: '请输入用户名',

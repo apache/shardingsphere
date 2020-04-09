@@ -80,6 +80,17 @@ public final class ShardingSchemaServiceImpl implements ShardingSchemaService {
         persistSchemaName(schemaName);
     }
     
+    @Override
+    public void deleteSchemaConfiguration(final String schemaName) {
+        ConfigCenterRepository configCenterRepository = configCenterService.getActivatedConfigCenter();
+        String schemaNamePath = configCenterService.getActivateConfigurationNode().getSchemaNamePath(schemaName);
+        configCenterRepository.delete(schemaNamePath);
+        String schemaNames = configCenterRepository.get(configCenterService.getActivateConfigurationNode().getSchemaPath());
+        List<String> schemaNameList = new ArrayList<>(Splitter.on(",").splitToList(schemaNames));
+        schemaNameList.remove(schemaName);
+        configCenterRepository.persist(configCenterService.getActivateConfigurationNode().getSchemaPath(), Joiner.on(",").join(schemaNameList));
+    }
+    
     private void checkRuleConfiguration(final String configData) {
         try {
             if (configData.contains("encryptors:\n")) {
