@@ -105,9 +105,9 @@ public void insert() {
 }
 ```
 
-## 使用Spring-boot
+## Use Spring-boot
 
-### 引入Maven依赖
+### Introduce Maven Dependency
 
 ```xml
 <dependency>
@@ -172,9 +172,7 @@ Default ShardingSphere XA transaction manager is Atomikos. `xa_tx.log` generated
 Or you can add `jta.properties` in `classpath` of the program to customize Atomikos configurations. 
 For detailed configuration rules, please refer to the [official documentation](https://www.atomikos.com/Documentation/JtaProperties) of Atomikos.
 
-## BASE Transaction (SEATA-AT)
-
-#### Seata Configuration
+### BASE Transaction (SEATA-AT)
 
 1.Download seata server according to [seata-work-shop](https://github.com/seata/seata-workshop), refer to step6 and step7 is OK.
 
