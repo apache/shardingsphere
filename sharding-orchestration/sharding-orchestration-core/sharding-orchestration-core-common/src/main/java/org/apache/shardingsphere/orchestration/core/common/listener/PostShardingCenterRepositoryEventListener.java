@@ -19,7 +19,7 @@ package org.apache.shardingsphere.orchestration.core.common.listener;
 
 import com.google.common.eventbus.EventBus;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.center.CenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.ChangedType;
 import org.apache.shardingsphere.orchestration.core.common.event.ShardingOrchestrationEvent;
@@ -32,11 +32,11 @@ import java.util.Collection;
  * Post sharding orchestration event listener.
  */
 @RequiredArgsConstructor
-public abstract class PostShardingConfigCenterEventListener implements ShardingOrchestrationListener {
+public abstract class PostShardingCenterRepositoryEventListener implements ShardingOrchestrationListener {
     
     private final EventBus eventBus = ShardingOrchestrationEventBus.getInstance();
     
-    private final ConfigCenterRepository configCenterRepository;
+    private final CenterRepository centerRepository;
     
     private final Collection<String> watchKeys;
     
@@ -49,7 +49,7 @@ public abstract class PostShardingConfigCenterEventListener implements ShardingO
     }
     
     private void watch(final String watchKey, final Collection<ChangedType> watchedChangedTypeList) {
-        configCenterRepository.watch(watchKey, dataChangedEvent -> {
+        centerRepository.watch(watchKey, dataChangedEvent -> {
             if (watchedChangedTypeList.contains(dataChangedEvent.getChangedType())) {
                 eventBus.post(createShardingOrchestrationEvent(dataChangedEvent));
             }

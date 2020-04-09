@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.core.common.listener;
 
-import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
+import org.apache.shardingsphere.orchestration.center.CenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.ShardingOrchestrationEvent;
 import org.junit.Test;
@@ -26,26 +26,42 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Arrays;
+
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class PostShardingRegistryCenterRepositoryEventListenerTest {
+public final class PostShardingCenterRepositoryEventListenerTest {
     
     @Mock
-    private RegistryCenterRepository regCenter;
+    private CenterRepository centerRepository;
     
     @Test
     public void assertWatch() {
-        PostShardingRegistryCenterEventListener postShardingRegistryCenterEventListener = new PostShardingRegistryCenterEventListener(regCenter, "test") {
+        PostShardingCenterRepositoryEventListener postShardingCenterRepositoryEventListener = new PostShardingCenterRepositoryEventListener(centerRepository, Arrays.asList("test")) {
             
             @Override
             protected ShardingOrchestrationEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
                 return mock(ShardingOrchestrationEvent.class);
             }
         };
-        postShardingRegistryCenterEventListener.watch();
-        verify(regCenter).watch(eq("test"), ArgumentMatchers.any());
+        postShardingCenterRepositoryEventListener.watch();
+        verify(centerRepository).watch(eq("test"), ArgumentMatchers.any());
+    }
+    
+    @Test
+    public void assertWatchMultipleKey() {
+        PostShardingCenterRepositoryEventListener postShardingCenterRepositoryEventListener = new PostShardingCenterRepositoryEventListener(centerRepository, Arrays.asList("test", "dev")) {
+            
+            @Override
+            protected ShardingOrchestrationEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
+                return mock(ShardingOrchestrationEvent.class);
+            }
+        };
+        postShardingCenterRepositoryEventListener.watch();
+        verify(centerRepository).watch(eq("test"), ArgumentMatchers.any());
+        verify(centerRepository).watch(eq("dev"), ArgumentMatchers.any());
     }
 }
