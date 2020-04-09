@@ -38,6 +38,7 @@ import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
 import org.apache.shardingsphere.underlying.pluggble.prepare.PrepareEngine;
 import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.underlying.rewrite.engine.result.GenericSQLRewriteResult;
+import org.apache.shardingsphere.underlying.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.underlying.rewrite.engine.result.SQLRewriteUnit;
 import org.apache.shardingsphere.underlying.route.DataNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
@@ -85,8 +86,10 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         Collection<BaseRule> rules = logicSchema.getShardingRule().toRules();
         SQLStatement sqlStatement = logicSchema.getSqlParserEngine().parse(sql, true);
         RouteContext routeContext = new DataNodeRouter(logicSchema.getMetaData(), SHARDING_PROXY_CONTEXT.getProperties(), rules).route(sqlStatement, sql, parameters);
-        PrepareEngine prepareEngine = new PrepareEngine(rules, ShardingProxyContext.getInstance().getProperties(), logicSchema.getMetaData());
-        return prepareEngine.prepare(sql, new ArrayList<>(parameters), routeContext);
+        SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(logicSchema.getMetaData().getSchema().getConfiguredSchemaMetaData(),
+                SHARDING_PROXY_CONTEXT.getProperties(), rules).rewrite(sql, new ArrayList<>(parameters), routeContext);
+        PrepareEngine prepareEngine = new PrepareEngine(ShardingProxyContext.getInstance().getProperties(), logicSchema.getMetaData());
+        return prepareEngine.prepare(sql, routeContext.getSqlStatementContext(), sqlRewriteResult);
     }
     
     @SuppressWarnings("unchecked")
@@ -94,8 +97,10 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         Collection<BaseRule> rules = Collections.singletonList(((MasterSlaveSchema) logicSchema).getMasterSlaveRule());
         SQLStatement sqlStatement = logicSchema.getSqlParserEngine().parse(sql, true);
         RouteContext routeContext = new DataNodeRouter(logicSchema.getMetaData(), SHARDING_PROXY_CONTEXT.getProperties(), rules).route(sqlStatement, sql, parameters);
-        PrepareEngine prepareEngine = new PrepareEngine(rules, SHARDING_PROXY_CONTEXT.getProperties(), logicSchema.getMetaData());
-        return prepareEngine.prepare(sql, new ArrayList<>(parameters), routeContext);
+        SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(logicSchema.getMetaData().getSchema().getConfiguredSchemaMetaData(),
+                SHARDING_PROXY_CONTEXT.getProperties(), rules).rewrite(sql, new ArrayList<>(parameters), routeContext);
+        PrepareEngine prepareEngine = new PrepareEngine(SHARDING_PROXY_CONTEXT.getProperties(), logicSchema.getMetaData());
+        return prepareEngine.prepare(sql, routeContext.getSqlStatementContext(), sqlRewriteResult);
     }
     
     @SuppressWarnings("unchecked")
@@ -103,8 +108,10 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         Collection<BaseRule> rules = Collections.singletonList(((EncryptSchema) logicSchema).getEncryptRule());
         SQLStatement sqlStatement = logicSchema.getSqlParserEngine().parse(sql, true);
         RouteContext routeContext = new DataNodeRouter(logicSchema.getMetaData(), SHARDING_PROXY_CONTEXT.getProperties(), rules).route(sqlStatement, sql, parameters);
-        PrepareEngine prepareEngine = new PrepareEngine(rules, SHARDING_PROXY_CONTEXT.getProperties(), logicSchema.getMetaData());
-        return prepareEngine.prepare(sql, new ArrayList<>(parameters), routeContext);
+        SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(logicSchema.getMetaData().getSchema().getConfiguredSchemaMetaData(),
+                SHARDING_PROXY_CONTEXT.getProperties(), rules).rewrite(sql, new ArrayList<>(parameters), routeContext);
+        PrepareEngine prepareEngine = new PrepareEngine(SHARDING_PROXY_CONTEXT.getProperties(), logicSchema.getMetaData());
+        return prepareEngine.prepare(sql, routeContext.getSqlStatementContext(), sqlRewriteResult);
     }
     
     private ExecutionContext doShadowRoute(final String sql) {

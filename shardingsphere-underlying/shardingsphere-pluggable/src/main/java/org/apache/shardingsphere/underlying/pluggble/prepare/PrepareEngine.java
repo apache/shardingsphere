@@ -18,27 +18,20 @@
 package org.apache.shardingsphere.underlying.pluggble.prepare;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContextBuilder;
-import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.log.SQLLogger;
-import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
-import org.apache.shardingsphere.underlying.route.context.RouteContext;
-
-import java.util.Collection;
-import java.util.List;
+import org.apache.shardingsphere.underlying.rewrite.engine.result.SQLRewriteResult;
 
 /**
  * Prepare engine.
  */
 @RequiredArgsConstructor
 public final class PrepareEngine {
-    
-    private final Collection<BaseRule> rules;
     
     private final ConfigurationProperties properties;
     
@@ -48,20 +41,16 @@ public final class PrepareEngine {
      * Prepare to execute.
      *
      * @param sql SQL
-     * @param parameters SQL parameters
-     * @param routeContext route context
+     * @param sqlStatementContext SQL statement context
+     * @param sqlRewriteResult SQL rewrite result
      * @return execution context
      */
-    public ExecutionContext prepare(final String sql, final List<Object> parameters, final RouteContext routeContext) {
-        ExecutionContext result = new ExecutionContext(routeContext.getSqlStatementContext());
-        result.getExecutionUnits().addAll(rewrite(sql, parameters, routeContext));
+    public ExecutionContext prepare(final String sql, final SQLStatementContext sqlStatementContext, final SQLRewriteResult sqlRewriteResult) {
+        ExecutionContext result = new ExecutionContext(sqlStatementContext);
+        result.getExecutionUnits().addAll(ExecutionContextBuilder.build(metaData, sqlRewriteResult));
         if (properties.<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
             SQLLogger.logSQL(sql, properties.<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), result.getSqlStatementContext(), result.getExecutionUnits());
         }
         return result;
-    }
-    
-    private Collection<ExecutionUnit> rewrite(final String sql, final List<Object> parameters, final RouteContext routeContext) {
-        return ExecutionContextBuilder.build(metaData, new SQLRewriteEntry(metaData.getSchema().getConfiguredSchemaMetaData(), properties, rules).rewrite(sql, parameters, routeContext));
     }
 }

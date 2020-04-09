@@ -40,6 +40,8 @@ import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.merge.MergeEngine;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import org.apache.shardingsphere.underlying.pluggble.prepare.PrepareEngine;
+import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
+import org.apache.shardingsphere.underlying.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.underlying.route.DataNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
@@ -108,7 +110,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         ShardingRuntimeContext runtimeContext = connection.getRuntimeContext();
         sqlStatement = runtimeContext.getSqlParserEngine().parse(sql, true);
         parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
-        prepareEngine = new PrepareEngine(runtimeContext.getRule().toRules(), runtimeContext.getProperties(), runtimeContext.getMetaData());
+        prepareEngine = new PrepareEngine(runtimeContext.getProperties(), runtimeContext.getMetaData());
         preparedStatementExecutor = new PreparedStatementExecutor(resultSetType, resultSetConcurrency, resultSetHoldability, returnGeneratedKeys, connection);
         batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(resultSetType, resultSetConcurrency, resultSetHoldability, returnGeneratedKeys, connection);
     }
@@ -187,7 +189,9 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     private void prepare() {
         ShardingRuntimeContext runtimeContext = connection.getRuntimeContext();
         RouteContext routeContext = new DataNodeRouter(runtimeContext.getMetaData(), runtimeContext.getProperties(), runtimeContext.getRule().toRules()).route(sqlStatement, sql, getParameters());
-        executionContext = prepareEngine.prepare(sql, new ArrayList<>(getParameters()), routeContext);
+        SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(runtimeContext.getMetaData().getSchema().getConfiguredSchemaMetaData(), 
+                runtimeContext.getProperties(), runtimeContext.getRule().toRules()).rewrite(sql, new ArrayList<>(getParameters()), routeContext);
+        executionContext = prepareEngine.prepare(sql, routeContext.getSqlStatementContext(), sqlRewriteResult);
         findGeneratedKey().ifPresent(generatedKey -> generatedValues.add(generatedKey.getGeneratedValues().getLast()));
     }
     

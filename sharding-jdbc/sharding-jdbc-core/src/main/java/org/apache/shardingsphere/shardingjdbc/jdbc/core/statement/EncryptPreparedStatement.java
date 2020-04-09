@@ -29,9 +29,12 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.EncryptResultS
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.metadata.ShardingSphereParameterMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
 import org.apache.shardingsphere.underlying.pluggble.prepare.PrepareEngine;
+import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
+import org.apache.shardingsphere.underlying.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.underlying.route.DataNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
@@ -169,10 +172,12 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     
     @SuppressWarnings("unchecked")
     private SQLUnit getSQLUnit(final String sql) {
-        RouteContext routeContext = new DataNodeRouter(runtimeContext.getMetaData(), runtimeContext.getProperties(), 
-                Collections.singletonList(runtimeContext.getRule())).route(sqlStatement, sql, getParameters());
-        PrepareEngine prepareEngine = new PrepareEngine(Collections.singletonList(runtimeContext.getRule()), runtimeContext.getProperties(), runtimeContext.getMetaData());
-        ExecutionContext executionContext = prepareEngine.prepare(sql, new ArrayList<>(getParameters()), routeContext);
+        Collection<BaseRule> rules = Collections.singletonList(runtimeContext.getRule());
+        RouteContext routeContext = new DataNodeRouter(runtimeContext.getMetaData(), runtimeContext.getProperties(), rules).route(sqlStatement, sql, getParameters());
+        SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(
+                runtimeContext.getMetaData().getSchema().getConfiguredSchemaMetaData(), runtimeContext.getProperties(), rules).rewrite(sql, new ArrayList<>(getParameters()), routeContext);
+        PrepareEngine prepareEngine = new PrepareEngine(runtimeContext.getProperties(), runtimeContext.getMetaData());
+        ExecutionContext executionContext = prepareEngine.prepare(sql, routeContext.getSqlStatementContext(), sqlRewriteResult);
         Preconditions.checkArgument(1 == executionContext.getExecutionUnits().size());
         sqlStatementContext = executionContext.getSqlStatementContext();
         return executionContext.getExecutionUnits().iterator().next().getSqlUnit();

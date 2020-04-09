@@ -37,6 +37,8 @@ import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.merge.MergeEngine;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import org.apache.shardingsphere.underlying.pluggble.prepare.PrepareEngine;
+import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
+import org.apache.shardingsphere.underlying.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.underlying.route.DataNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
@@ -221,11 +223,13 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     private ExecutionContext prepare(final String sql) throws SQLException {
         statementExecutor.clear();
         ShardingRuntimeContext runtimeContext = connection.getRuntimeContext();
-        PrepareEngine prepareEngine = new PrepareEngine(runtimeContext.getRule().toRules(), runtimeContext.getProperties(), runtimeContext.getMetaData());
+        PrepareEngine prepareEngine = new PrepareEngine(runtimeContext.getProperties(), runtimeContext.getMetaData());
         SQLStatement sqlStatement = runtimeContext.getSqlParserEngine().parse(sql, false);
         RouteContext routeContext = new DataNodeRouter(
                 runtimeContext.getMetaData(), runtimeContext.getProperties(), runtimeContext.getRule().toRules()).route(sqlStatement, sql, Collections.emptyList());
-        ExecutionContext result = prepareEngine.prepare(sql, Collections.emptyList(), routeContext);
+        SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(runtimeContext.getMetaData().getSchema().getConfiguredSchemaMetaData(),
+                runtimeContext.getProperties(), runtimeContext.getRule().toRules()).rewrite(sql, Collections.emptyList(), routeContext);
+        ExecutionContext result = prepareEngine.prepare(sql, routeContext.getSqlStatementContext(), sqlRewriteResult);
         statementExecutor.init(result);
         statementExecutor.getStatements().forEach(this::replayMethodsInvocation);
         return result;
