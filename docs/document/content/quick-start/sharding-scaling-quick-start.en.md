@@ -9,7 +9,7 @@ weight = 3
 
 ### Deployment
 
-1. Execute the following command to compile and generate the sharding-scaling binary package:
+#### 1. Execute the following command to compile and generate the sharding-scaling binary package:
 
 ```
 git clone https://github.com/apache/incubator-shardingsphere.git；
@@ -19,7 +19,7 @@ mvn clean install -Prelease;
 
 The binary package's directory is:`/sharding-distribution/sharding-scaling-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-scaling-bin.tar.gz`。
 
-2. Unzip the distribution package, modify the configuration file `conf/server.yaml`, we should ensure the port does not conflict with others, and other values can be left as default:
+#### 2. Unzip the distribution package, modify the configuration file `conf/server.yaml`, we should ensure the port does not conflict with others, and other values can be left as default:
 
 ```
 port: 8888
@@ -28,7 +28,7 @@ pushTimeout: 1000
 workerThread: 30
 ```
 
-3. start up sharding-scaling:
+#### 3. start up sharding-scaling:
 
 ```
 sh bin/start.sh
@@ -38,7 +38,7 @@ sh bin/start.sh
 If the backend database is MySQL, download [MySQL Connector/J](https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.47.tar.gz) 
 and decompress, then copy mysql-connector-java-5.1.47.jar to ${sharding-scaling}\lib directory.
 
-4. See the log file `logs/stdout.log`，ensure successful startup.
+#### 4. See the log file `logs/stdout.log`，ensure successful startup.
 
 ### Start scaling job
 

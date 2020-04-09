@@ -15,12 +15,34 @@ weight = 2
 
 | 源端       | 目标端         | 是否支持 |
 | ---------- | -------------- | -------- |
-| MySQL      | sharding-proxy | 支持     |
-| PostgreSQL | sharding-proxy | 支持     |
+| MySQL(5.1.15 ~ 5.7.x)      | sharding-proxy | 支持     |
+| PostgreSQL(9.4 ~ ) | sharding-proxy | 支持     |
 
 **注意**：
 如果后端连接MySQL数据库，需要下载[MySQL Connector/J](https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.47.tar.gz)，
 解压缩后，将mysql-connector-java-5.1.47.jar拷贝到${sharding-scaling}\lib目录。
+
+### 权限要求
+
+MySQL 需要开启`binlog`，`binlog format`为Row模式，且迁移时所使用用户需要赋予Replication相关权限。
+
+```
++-----------------------------------------+---------------------------------------+
+| Variable_name                           | Value                                 |
++-----------------------------------------+---------------------------------------+
+| log_bin                                 | ON                                    |
+| binlog_format                           | ROW                                   |
++-----------------------------------------+---------------------------------------+
+
++------------------------------------------------------------------------------+
+|Grants for ${username}@${host}                                                |
++------------------------------------------------------------------------------+
+|GRANT REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO ${username}@${host}     |
+|.......                                                                       |
++------------------------------------------------------------------------------+
+```
+
+PostgreSQL 需要开启[test_decoding](https://www.postgresql.org/docs/9.4/test-decoding.html)
 
 ### API接口
 
