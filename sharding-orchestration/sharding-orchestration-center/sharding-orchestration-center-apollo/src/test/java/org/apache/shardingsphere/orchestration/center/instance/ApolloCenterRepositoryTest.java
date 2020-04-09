@@ -70,13 +70,13 @@ public final class ApolloCenterRepositoryTest {
     
     @Test
     public void assertGet() {
-        assertThat(configCenterRepository.get("/test/children/2"), is("value2"));
+        assertThat(configCenterRepository.get("/test/children/0"), is("value0"));
     }
     
     @Test
     @SneakyThrows
     public void assertWatch() {
-        assertWatchUpdateChangedType("/test/children/1", "value3");
+        assertWatchUpdateChangedType("/test/children/1", "newValue");
     }
     
     @Test
@@ -88,23 +88,28 @@ public final class ApolloCenterRepositoryTest {
     @Test
     @SneakyThrows
     public void assertWatchUpdateChangedTypeWithExistedKey() {
-        assertWatchUpdateChangedType("/test/children/1", "newValue1");
-        assertThat(configCenterRepository.get("/test/children/1"), is("newValue1"));
+        assertWatchUpdateChangedType("/test/children/4", "newValue4");
+        assertThat(configCenterRepository.get("/test/children/4"), is("newValue4"));
     }
     
     @Test
     @SneakyThrows
-    public void assertWatchDeletedChangedType() {
+    public void assertWatchDeletedChangedTypeWithExistedKey() {
+        assertWatchDeletedChangedType("/test/children/3");
+    }
+
+    @SneakyThrows
+    private void assertWatchDeletedChangedType(final String key) {
         final SettableFuture<DataChangedEvent> future = SettableFuture.create();
-        configCenterRepository.watch("/test/children/1", future::set);
-        embeddedApollo.deleteProperty("orchestration", "test.children.1");
+        configCenterRepository.watch(key, future::set);
+        embeddedApollo.deleteProperty("orchestration", ConfigKeyUtils.pathToKey(key));
         DataChangedEvent changeEvent = future.get(5, TimeUnit.SECONDS);
-        assertThat(changeEvent.getKey(), is("/test/children/1"));
+        assertThat(changeEvent.getKey(), is(key));
         assertNull(changeEvent.getValue());
         assertThat(changeEvent.getChangedType(), is(DataChangedEvent.ChangedType.DELETED));
-        assertNull(configCenterRepository.get("/test/children/1"));
+        assertNull(configCenterRepository.get(key));
     }
-    
+
     @Test
     @SneakyThrows
     public void assertWatchUpdateChangedTypeWithNotExistedKey() {
