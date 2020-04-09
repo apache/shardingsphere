@@ -27,7 +27,7 @@ import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMet
  */
 @RequiredArgsConstructor
 @Getter
-public class MetaDataChangedEvent implements ShardingOrchestrationEvent {
+public final class MetaDataChangedEvent implements ShardingOrchestrationEvent {
 
     private final String schemaName;
 

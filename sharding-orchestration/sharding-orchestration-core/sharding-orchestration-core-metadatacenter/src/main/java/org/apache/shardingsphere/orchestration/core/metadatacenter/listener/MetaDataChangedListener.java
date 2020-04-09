@@ -33,7 +33,7 @@ import java.util.Collections;
 /**
  * Meta data changed listener.
  */
-public class MetaDataChangedListener extends PostShardingCenterRepositoryEventListener {
+public final class MetaDataChangedListener extends PostShardingCenterRepositoryEventListener {
 
     private final String schemaName;
 
