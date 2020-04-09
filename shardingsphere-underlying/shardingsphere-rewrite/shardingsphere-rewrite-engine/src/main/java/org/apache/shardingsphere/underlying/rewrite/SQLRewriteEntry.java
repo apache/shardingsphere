@@ -25,7 +25,7 @@ import org.apache.shardingsphere.underlying.common.config.properties.Configurati
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
-import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteEngine;
+import org.apache.shardingsphere.underlying.rewrite.engine.SQLGenericRewriteEngine;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRouteRewriteEngine;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
@@ -73,7 +73,7 @@ public final class SQLRewriteEntry {
     }
     
     private Map<RouteUnit, SQLRewriteResult> rewrite(final SQLRewriteContext sqlRewriteContext) {
-        return Collections.singletonMap(null, new SQLRewriteEngine().rewrite(sqlRewriteContext));
+        return Collections.singletonMap(null, new SQLGenericRewriteEngine().rewrite(sqlRewriteContext));
     }
     
     private Map<RouteUnit, SQLRewriteResult> rewrite(final RouteContext routeContext, final SQLRewriteContext sqlRewriteContext) {
