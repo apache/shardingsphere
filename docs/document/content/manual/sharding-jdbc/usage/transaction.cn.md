@@ -170,7 +170,7 @@ ShardingSphere默认的XA事务管理器为Atomikos，在项目的logs目录中�
 
 也可以通过在项目的classpath中添加`jta.properties`来定制化Atomikos配置项。具体的配置规则请参考Atomikos的[官方文档](https://www.atomikos.com/Documentation/JtaProperties)。
 
-#### BASE柔性事务管理器（SEATA-AT配置）
+### BASE柔性事务管理器（SEATA-AT配置）
 
 1.按照[seata-work-shop](https://github.com/seata/seata-workshop)中的步骤，下载并启动seata server，参考 Step6 和 Step7即可。
 
