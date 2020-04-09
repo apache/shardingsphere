@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.execute.executor.reader;
+package org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper;
 
 /**
- * JDBC reader.
+ * Log dumper.
  */
-public interface JDBCReader extends Reader {
+public interface LogDumper extends Dumper {
 }

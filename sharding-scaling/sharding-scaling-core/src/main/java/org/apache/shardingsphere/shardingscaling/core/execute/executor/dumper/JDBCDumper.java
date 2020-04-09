@@ -15,27 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.execute.executor.reader;
-
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.Channel;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncExecutor;
+package org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper;
 
 /**
- * Reader interface.
+ * JDBC dumper.
  */
-public interface Reader extends SyncExecutor {
-    
-    /**
-     * Set channel.
-     *
-     * @param channel channel
-     */
-    void setChannel(Channel channel);
-    
-    /**
-     * Read Record to channel.
-     *
-     * @param channel channel
-     */
-    void read(Channel channel);
+public interface JDBCDumper extends Dumper {
 }

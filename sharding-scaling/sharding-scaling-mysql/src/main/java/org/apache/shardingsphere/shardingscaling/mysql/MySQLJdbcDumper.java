@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingscaling.mysql;
 
 import org.apache.shardingsphere.shardingscaling.core.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.AbstractJDBCReader;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.AbstractJDBCDumper;
 import org.apache.shardingsphere.shardingscaling.core.metadata.JdbcUri;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 
@@ -31,11 +31,11 @@ import java.sql.Types;
 import java.util.Map;
 
 /**
- * MySQL JDBC Reader.
+ * MySQL JDBC Dumper.
  */
-public final class MySQLJdbcReader extends AbstractJDBCReader {
+public final class MySQLJdbcDumper extends AbstractJDBCDumper {
     
-    public MySQLJdbcReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
+    public MySQLJdbcDumper(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
         super(rdbmsConfiguration, dataSourceManager);
         JDBCDataSourceConfiguration jdbcDataSourceConfiguration = (JDBCDataSourceConfiguration) getRdbmsConfiguration().getDataSourceConfiguration();
         jdbcDataSourceConfiguration.setJdbcUrl(fixMySQLUrl(jdbcDataSourceConfiguration.getJdbcUrl()));

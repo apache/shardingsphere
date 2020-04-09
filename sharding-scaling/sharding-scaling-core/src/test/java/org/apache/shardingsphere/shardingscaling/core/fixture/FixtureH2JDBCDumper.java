@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.shardingscaling.core.fixture;
 
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.AbstractJDBCReader;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.AbstractJDBCDumper;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public final class FixtureH2JDBCReader extends AbstractJDBCReader {
+public final class FixtureH2JDBCDumper extends AbstractJDBCDumper {
     
-    public FixtureH2JDBCReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
+    public FixtureH2JDBCDumper(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
         super(rdbmsConfiguration, dataSourceManager);
     }
     

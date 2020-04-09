@@ -23,7 +23,7 @@ import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceFacto
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.AbstractSyncExecutor;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.Channel;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPosition;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.LogReader;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.LogDumper;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.NopLogPosition;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.DataRecord;
@@ -47,10 +47,10 @@ import java.io.Serializable;
 import java.util.Random;
 
 /**
- * MySQL binlog reader.
+ * MySQL binlog dumper.
  */
 @Slf4j
-public final class MySQLBinlogReader extends AbstractSyncExecutor implements LogReader {
+public final class MySQLBinlogDumper extends AbstractSyncExecutor implements LogDumper {
     
     private final BinlogPosition binlogPosition;
     
@@ -61,10 +61,10 @@ public final class MySQLBinlogReader extends AbstractSyncExecutor implements Log
     @Setter
     private Channel channel;
     
-    public MySQLBinlogReader(final RdbmsConfiguration rdbmsConfiguration, final LogPosition binlogPosition) {
+    public MySQLBinlogDumper(final RdbmsConfiguration rdbmsConfiguration, final LogPosition binlogPosition) {
         this.binlogPosition = (BinlogPosition) binlogPosition;
         if (!JDBCDataSourceConfiguration.class.equals(rdbmsConfiguration.getDataSourceConfiguration().getClass())) {
-            throw new UnsupportedOperationException("MySQLBinlogReader only support JDBCDataSourceConfiguration");
+            throw new UnsupportedOperationException("MySQLBinlogDumper only support JDBCDataSourceConfiguration");
         }
         this.rdbmsConfiguration = rdbmsConfiguration;
         this.metaDataManager = new MetaDataManager(new DataSourceFactory().newInstance(rdbmsConfiguration.getDataSourceConfiguration()));
@@ -73,11 +73,11 @@ public final class MySQLBinlogReader extends AbstractSyncExecutor implements Log
     @Override
     public void run() {
         start();
-        read(channel);
+        dump(channel);
     }
     
     @Override
-    public void read(final Channel channel) {
+    public void dump(final Channel channel) {
         JDBCDataSourceConfiguration jdbcDataSourceConfiguration = (JDBCDataSourceConfiguration) rdbmsConfiguration.getDataSourceConfiguration();
         final JdbcUri uri = new JdbcUri(jdbcDataSourceConfiguration.getJdbcUrl());
         MySQLClient client = new MySQLClient(new Random().nextInt(), uri.getHostname(), uri.getPort(), jdbcDataSourceConfiguration.getUsername(), jdbcDataSourceConfiguration.getPassword());
