@@ -62,11 +62,11 @@ public final class HistoryDataSyncTaskGroupTest {
     @Before
     public void setUp() {
         RdbmsConfiguration readerConfig = mockReaderConfig();
-        RdbmsConfiguration writerConfig = new RdbmsConfiguration();
+        RdbmsConfiguration importerConfig = new RdbmsConfiguration();
         Map<String, String> tableMap = new HashMap<>();
         tableMap.put("t_order", "t_order");
         syncConfiguration = new SyncConfiguration(3, tableMap,
-                readerConfig, writerConfig);
+                readerConfig, importerConfig);
         dataSourceManager = new DataSourceManager();
     }
     
@@ -77,7 +77,7 @@ public final class HistoryDataSyncTaskGroupTest {
     
     @Test
     public void assertPrepareWithIntPrimaryRangeSplit() throws NoSuchFieldException, IllegalAccessException {
-        initIntPrimaryEnvironment(syncConfiguration.getReaderConfiguration());
+        initIntPrimaryEnvironment(syncConfiguration.getDumperConfiguration());
         HistoryDataSyncTaskGroup historyDataSyncTaskGroup = new HistoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
         historyDataSyncTaskGroup.prepare();
         List<SyncTask> syncTasks = ReflectionUtil.getFieldValueFromClass(historyDataSyncTaskGroup, "syncTasks", List.class);
@@ -87,7 +87,7 @@ public final class HistoryDataSyncTaskGroupTest {
     
     @Test
     public void assertPrepareWithCharPrimaryRangeSplit() throws NoSuchFieldException, IllegalAccessException {
-        initCharPrimaryEnvironment(syncConfiguration.getReaderConfiguration());
+        initCharPrimaryEnvironment(syncConfiguration.getDumperConfiguration());
         HistoryDataSyncTaskGroup historyDataSyncTaskGroup = new HistoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
         historyDataSyncTaskGroup.prepare();
         List<SyncTask> syncTasks = ReflectionUtil.getFieldValueFromClass(historyDataSyncTaskGroup, "syncTasks", List.class);
@@ -97,7 +97,7 @@ public final class HistoryDataSyncTaskGroupTest {
     
     @Test
     public void assertPrepareWithUnionPrimaryRangeSplit() throws NoSuchFieldException, IllegalAccessException {
-        initUnionPrimaryEnvironment(syncConfiguration.getReaderConfiguration());
+        initUnionPrimaryEnvironment(syncConfiguration.getDumperConfiguration());
         HistoryDataSyncTaskGroup historyDataSyncTaskGroup = new HistoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
         historyDataSyncTaskGroup.prepare();
         List<SyncTask> syncTasks = ReflectionUtil.getFieldValueFromClass(historyDataSyncTaskGroup, "syncTasks", List.class);
@@ -107,7 +107,7 @@ public final class HistoryDataSyncTaskGroupTest {
     
     @Test
     public void assertPrepareWithoutPrimaryRangeSplit() throws NoSuchFieldException, IllegalAccessException {
-        initNoPrimaryEnvironment(syncConfiguration.getReaderConfiguration());
+        initNoPrimaryEnvironment(syncConfiguration.getDumperConfiguration());
         HistoryDataSyncTaskGroup historyDataSyncTaskGroup = new HistoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
         historyDataSyncTaskGroup.prepare();
         List<SyncTask> syncTasks = ReflectionUtil.getFieldValueFromClass(historyDataSyncTaskGroup, "syncTasks", List.class);

@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.shardingscaling.mysql;
 
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.AbstractJDBCWriter;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.AbstractSqlBuilder;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.importer.AbstractJDBCImporter;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.importer.AbstractSqlBuilder;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 
 /**
- * MySQL writer.
+ * MySQL importer.
  */
-public final class MySQLWriter extends AbstractJDBCWriter {
+public final class MySQLImporter extends AbstractJDBCImporter {
     
-    public MySQLWriter(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
+    public MySQLImporter(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
         super(rdbmsConfiguration, dataSourceManager);
     }
     

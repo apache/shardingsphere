@@ -32,8 +32,8 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.Du
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.DumperFactory;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Writer;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.WriterFactory;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.importer.Importer;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.importer.ImporterFactory;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTask;
 import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
 
@@ -64,7 +64,7 @@ public final class HistoryDataSyncTask implements SyncTask {
     public HistoryDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
         this.syncConfiguration = syncConfiguration;
         this.dataSourceManager = dataSourceManager;
-        syncTaskId = generateSyncTaskId(syncConfiguration.getReaderConfiguration());
+        syncTaskId = generateSyncTaskId(syncConfiguration.getDumperConfiguration());
     }
     
     private String generateSyncTaskId(final RdbmsConfiguration readerConfiguration) {
@@ -86,11 +86,11 @@ public final class HistoryDataSyncTask implements SyncTask {
     }
     
     private void getEstimatedRows() {
-        DataSource dataSource = dataSourceManager.getDataSource(syncConfiguration.getReaderConfiguration().getDataSourceConfiguration());
+        DataSource dataSource = dataSourceManager.getDataSource(syncConfiguration.getDumperConfiguration().getDataSourceConfiguration());
         try (Connection connection = dataSource.getConnection()) {
             ResultSet resultSet = connection.prepareStatement(String.format("SELECT COUNT(*) FROM %s %s",
-                    syncConfiguration.getReaderConfiguration().getTableName(),
-                    syncConfiguration.getReaderConfiguration().getWhereCondition()))
+                    syncConfiguration.getDumperConfiguration().getTableName(),
+                    syncConfiguration.getDumperConfiguration().getWhereCondition()))
                     .executeQuery();
             resultSet.next();
             estimatedRows = resultSet.getInt(1);
@@ -100,15 +100,15 @@ public final class HistoryDataSyncTask implements SyncTask {
     }
     
     private void instanceSyncExecutors(final SyncExecutorGroup syncExecutorGroup) {
-        syncConfiguration.getReaderConfiguration().setTableNameMap(syncConfiguration.getTableNameMap());
-        dumper = DumperFactory.newInstanceJdbcDumper(syncConfiguration.getReaderConfiguration(), dataSourceManager);
-        Writer writer = WriterFactory.newInstance(syncConfiguration.getWriterConfiguration(), dataSourceManager);
+        syncConfiguration.getDumperConfiguration().setTableNameMap(syncConfiguration.getTableNameMap());
+        dumper = DumperFactory.newInstanceJdbcDumper(syncConfiguration.getDumperConfiguration(), dataSourceManager);
+        Importer importer = ImporterFactory.newInstance(syncConfiguration.getImporterConfiguration(), dataSourceManager);
         MemoryChannel channel = instanceChannel();
         dumper.setChannel(channel);
-        writer.setChannel(channel);
+        importer.setChannel(channel);
         syncExecutorGroup.setChannel(channel);
         syncExecutorGroup.addSyncExecutor(dumper);
-        syncExecutorGroup.addSyncExecutor(writer);
+        syncExecutorGroup.addSyncExecutor(importer);
     }
     
     private MemoryChannel instanceChannel() {

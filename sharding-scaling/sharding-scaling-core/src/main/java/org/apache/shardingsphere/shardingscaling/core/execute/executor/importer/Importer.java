@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.execute.executor.writer;
+package org.apache.shardingsphere.shardingscaling.core.execute.executor.importer;
 
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncExecutor;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.Channel;
 
 /**
- * Writer.
+ * Importer.
  */
-public interface Writer extends SyncExecutor {
+public interface Importer extends SyncExecutor {
     
     /**
      * Set channel.

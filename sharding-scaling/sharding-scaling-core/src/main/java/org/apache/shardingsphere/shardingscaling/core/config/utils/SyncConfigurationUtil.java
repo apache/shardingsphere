@@ -52,9 +52,9 @@ public final class SyncConfigurationUtil {
         Map<String, Map<String, String>> dataSourceTableNameMap = toDataSourceTableNameMap(sourceRule, sourceDatasource.keySet());
         for (String each : dataSourceTableNameMap.keySet()) {
             RdbmsConfiguration readerConfiguration = createReaderConfiguration(sourceDatasource.get(each));
-            RdbmsConfiguration writerConfiguration = createWriterConfiguration(scalingConfiguration);
+            RdbmsConfiguration importerConfiguration = createImporterConfiguration(scalingConfiguration);
             Map<String, String> tableNameMap = dataSourceTableNameMap.get(each);
-            result.add(new SyncConfiguration(scalingConfiguration.getJobConfiguration().getConcurrency(), tableNameMap, readerConfiguration, writerConfiguration));
+            result.add(new SyncConfiguration(scalingConfiguration.getJobConfiguration().getConcurrency(), tableNameMap, readerConfiguration, importerConfiguration));
         }
         return result;
     }
@@ -110,13 +110,13 @@ public final class SyncConfigurationUtil {
         return result;
     }
     
-    private static RdbmsConfiguration createWriterConfiguration(final ScalingConfiguration scalingConfiguration) {
+    private static RdbmsConfiguration createImporterConfiguration(final ScalingConfiguration scalingConfiguration) {
         RdbmsConfiguration result = new RdbmsConfiguration();
-        JDBCDataSourceConfiguration writerDataSourceConfiguration = new JDBCDataSourceConfiguration(
+        JDBCDataSourceConfiguration importerDataSourceConfiguration = new JDBCDataSourceConfiguration(
                 scalingConfiguration.getRuleConfiguration().getDestinationDataSources().getUrl(),
                 scalingConfiguration.getRuleConfiguration().getDestinationDataSources().getUsername(),
                 scalingConfiguration.getRuleConfiguration().getDestinationDataSources().getPassword());
-        result.setDataSourceConfiguration(writerDataSourceConfiguration);
+        result.setDataSourceConfiguration(importerDataSourceConfiguration);
         return result;
     }
 }

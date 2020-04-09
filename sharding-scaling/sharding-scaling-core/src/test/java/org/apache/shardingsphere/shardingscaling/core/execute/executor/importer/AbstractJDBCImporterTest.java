@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.execute.executor.writer;
+package org.apache.shardingsphere.shardingscaling.core.execute.executor.importer;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingscaling.core.config.DataSourceConfiguration;
@@ -43,7 +43,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class AbstractJDBCWriterTest {
+public final class AbstractJDBCImporterTest {
     
     private static final String TABLE_NAME = "test_table";
     
@@ -74,18 +74,18 @@ public final class AbstractJDBCWriterTest {
     @Mock
     private PreparedStatement preparedStatement;
     
-    private AbstractJDBCWriter jdbcWriter;
+    private AbstractJDBCImporter jdbcImporter;
     
     @Before
     public void setUp() throws Exception {
-        jdbcWriter = new AbstractJDBCWriter(getRdbmsConfiguration(), dataSourceManager) {
+        jdbcImporter = new AbstractJDBCImporter(getRdbmsConfiguration(), dataSourceManager) {
             
             @Override
             protected AbstractSqlBuilder createSqlBuilder() {
                 return sqlBuilder;
             }
         };
-        jdbcWriter.setChannel(channel);
+        jdbcImporter.setChannel(channel);
         when(dataSourceManager.getDataSource(dataSourceConfiguration)).thenReturn(dataSource);
         when(dataSource.getConnection()).thenReturn(connection);
     }
@@ -97,7 +97,7 @@ public final class AbstractJDBCWriterTest {
         when(sqlBuilder.buildInsertSQL(insertRecord)).thenReturn(INSERT_SQL);
         when(connection.prepareStatement(INSERT_SQL)).thenReturn(preparedStatement);
         when(channel.fetchRecords(100, 3)).thenReturn(mockRecords(insertRecord));
-        jdbcWriter.run();
+        jdbcImporter.run();
         verify(preparedStatement).setObject(1, 1);
         verify(preparedStatement).setObject(2, 10);
         verify(preparedStatement).setObject(3, "INSERT");
@@ -110,7 +110,7 @@ public final class AbstractJDBCWriterTest {
         when(sqlBuilder.buildDeleteSQL(deleteRecord)).thenReturn(DELETE_SQL);
         when(connection.prepareStatement(DELETE_SQL)).thenReturn(preparedStatement);
         when(channel.fetchRecords(100, 3)).thenReturn(mockRecords(deleteRecord));
-        jdbcWriter.run();
+        jdbcImporter.run();
         verify(preparedStatement).setObject(1, 1);
         verify(preparedStatement).execute();
     }
@@ -121,7 +121,7 @@ public final class AbstractJDBCWriterTest {
         when(sqlBuilder.buildUpdateSQL(updateRecord)).thenReturn(UPDATE_SQL);
         when(connection.prepareStatement(UPDATE_SQL)).thenReturn(preparedStatement);
         when(channel.fetchRecords(100, 3)).thenReturn(mockRecords(updateRecord));
-        jdbcWriter.run();
+        jdbcImporter.run();
         verify(preparedStatement).setObject(1, 10);
         verify(preparedStatement).setObject(2, "UPDATE");
         verify(preparedStatement).setObject(3, 1);

@@ -66,7 +66,7 @@ public final class HistoryDataSyncTaskGroup implements SyncTask {
     public HistoryDataSyncTaskGroup(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
         this.syncConfiguration = syncConfiguration;
         this.dataSourceManager = dataSourceManager;
-        DataSourceMetaData dataSourceMetaData = syncConfiguration.getReaderConfiguration().getDataSourceConfiguration().getDataSourceMetaData();
+        DataSourceMetaData dataSourceMetaData = syncConfiguration.getDumperConfiguration().getDataSourceConfiguration().getDataSourceMetaData();
         syncTaskId = String.format("historyGroup-%s", null != dataSourceMetaData.getCatalog() ? dataSourceMetaData.getCatalog() : dataSourceMetaData.getSchema());
     }
     
@@ -83,10 +83,10 @@ public final class HistoryDataSyncTaskGroup implements SyncTask {
     
     private List<SyncConfiguration> split(final SyncConfiguration syncConfiguration) {
         List<SyncConfiguration> result = new LinkedList<>();
-        DataSource dataSource = dataSourceManager.getDataSource(syncConfiguration.getReaderConfiguration().getDataSourceConfiguration());
+        DataSource dataSource = dataSourceManager.getDataSource(syncConfiguration.getDumperConfiguration().getDataSourceConfiguration());
         MetaDataManager metaDataManager = new MetaDataManager(dataSource);
         for (SyncConfiguration each : splitByTable(syncConfiguration)) {
-            if (isSpiltByPrimaryKeyRange(each.getReaderConfiguration(), metaDataManager)) {
+            if (isSpiltByPrimaryKeyRange(each.getDumperConfiguration(), metaDataManager)) {
                 result.addAll(splitByPrimaryKeyRange(each, metaDataManager, dataSource));
             } else {
                 result.add(each);
@@ -98,10 +98,10 @@ public final class HistoryDataSyncTaskGroup implements SyncTask {
     private Collection<SyncConfiguration> splitByTable(final SyncConfiguration syncConfiguration) {
         Collection<SyncConfiguration> result = new LinkedList<>();
         for (String each : syncConfiguration.getTableNameMap().keySet()) {
-            RdbmsConfiguration readerConfig = RdbmsConfiguration.clone(syncConfiguration.getReaderConfiguration());
+            RdbmsConfiguration readerConfig = RdbmsConfiguration.clone(syncConfiguration.getDumperConfiguration());
             readerConfig.setTableName(each);
             result.add(new SyncConfiguration(syncConfiguration.getConcurrency(), syncConfiguration.getTableNameMap(),
-                    readerConfig, RdbmsConfiguration.clone(syncConfiguration.getWriterConfiguration())));
+                    readerConfig, RdbmsConfiguration.clone(syncConfiguration.getImporterConfiguration())));
         }
         return result;
     }
@@ -132,7 +132,7 @@ public final class HistoryDataSyncTaskGroup implements SyncTask {
     private Collection<SyncConfiguration> splitByPrimaryKeyRange(final SyncConfiguration syncConfiguration, final MetaDataManager metaDataManager, final DataSource dataSource) {
         int concurrency = syncConfiguration.getConcurrency();
         Collection<SyncConfiguration> result = new LinkedList<>();
-        RdbmsConfiguration readerConfiguration = syncConfiguration.getReaderConfiguration();
+        RdbmsConfiguration readerConfiguration = syncConfiguration.getDumperConfiguration();
         String primaryKey = metaDataManager.getTableMetaData(readerConfiguration.getTableName()).getPrimaryKeyColumns().get(0);
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement ps = connection.prepareStatement(String.format("SELECT MIN(%s),MAX(%s) FROM %s LIMIT 1", primaryKey, primaryKey, readerConfiguration.getTableName()));
@@ -151,7 +151,7 @@ public final class HistoryDataSyncTaskGroup implements SyncTask {
                 }
                 splitReaderConfig.setSpiltNum(i);
                 result.add(new SyncConfiguration(concurrency, syncConfiguration.getTableNameMap(),
-                        splitReaderConfig, RdbmsConfiguration.clone(syncConfiguration.getWriterConfiguration())));
+                        splitReaderConfig, RdbmsConfiguration.clone(syncConfiguration.getImporterConfiguration())));
             }
         } catch (SQLException e) {
             throw new RuntimeException("getTableNames error", e);

@@ -51,10 +51,10 @@ public final class HistoryDataSyncTaskTest {
     
     @Before
     public void setUp() {
-        RdbmsConfiguration readerConfig = mockReaderConfig();
-        RdbmsConfiguration writerConfig = mockWriterConfig();
+        RdbmsConfiguration dumperConfig = mockDumperConfig();
+        RdbmsConfiguration importerConfig = mockImporterConfig();
         ScalingContext.getInstance().init(new ServerConfiguration());
-        syncConfiguration = new SyncConfiguration(3, Collections.EMPTY_MAP, readerConfig, writerConfig);
+        syncConfiguration = new SyncConfiguration(3, Collections.EMPTY_MAP, dumperConfig, importerConfig);
         dataSourceManager = new DataSourceManager();
     }
     
@@ -65,7 +65,7 @@ public final class HistoryDataSyncTaskTest {
     
     @Test
     public void assertGetProgress() {
-        initTableData(syncConfiguration.getReaderConfiguration());
+        initTableData(syncConfiguration.getDumperConfiguration());
         HistoryDataSyncTask historyDataSyncTask = new HistoryDataSyncTask(syncConfiguration, dataSourceManager);
         historyDataSyncTask.start(event -> { });
         assertThat(((HistoryDataSyncTaskProgress) historyDataSyncTask.getProgress()).getEstimatedRows(), is(2L));
@@ -82,7 +82,7 @@ public final class HistoryDataSyncTaskTest {
         }
     }
     
-    private RdbmsConfiguration mockReaderConfig() {
+    private RdbmsConfiguration mockDumperConfig() {
         DataSourceConfiguration dataSourceConfiguration = new JDBCDataSourceConfiguration(dataSourceUrl, userName, password);
         RdbmsConfiguration result = new RdbmsConfiguration();
         result.setDataSourceConfiguration(dataSourceConfiguration);
@@ -90,7 +90,7 @@ public final class HistoryDataSyncTaskTest {
         return result;
     }
     
-    private RdbmsConfiguration mockWriterConfig() {
+    private RdbmsConfiguration mockImporterConfig() {
         DataSourceConfiguration dataSourceConfiguration = new JDBCDataSourceConfiguration(dataSourceUrl, userName, password);
         RdbmsConfiguration result = new RdbmsConfiguration();
         result.setDataSourceConfiguration(dataSourceConfiguration);

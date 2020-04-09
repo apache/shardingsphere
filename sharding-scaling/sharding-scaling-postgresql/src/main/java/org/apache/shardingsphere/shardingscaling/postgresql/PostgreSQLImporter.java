@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.shardingscaling.postgresql;
 
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.AbstractJDBCWriter;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.AbstractSqlBuilder;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.importer.AbstractJDBCImporter;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.importer.AbstractSqlBuilder;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 
 /**
- * postgreSQL writer.
+ * postgreSQL importer.
  */
-public final class PostgreSQLWriter extends AbstractJDBCWriter {
+public final class PostgreSQLImporter extends AbstractJDBCImporter {
     
-    public PostgreSQLWriter(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
+    public PostgreSQLImporter(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
         super(rdbmsConfiguration, dataSourceManager);
     }
     

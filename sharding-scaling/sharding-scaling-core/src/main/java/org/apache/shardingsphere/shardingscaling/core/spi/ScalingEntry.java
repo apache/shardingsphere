@@ -21,7 +21,7 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.D
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.JDBCDumper;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.LogDumper;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Writer;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.importer.Importer;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypeAwareSPI;
 
 /**
@@ -51,11 +51,11 @@ public interface ScalingEntry extends DatabaseTypeAwareSPI {
     Class<? extends LogPositionManager> getLogPositionManager();
     
     /**
-     * Get writer type.
+     * Get importer type.
      *
-     * @return writer type
+     * @return importer type
      */
-    Class<? extends Writer> getWriterClass();
+    Class<? extends Importer> getImporterClass();
 
     /**
      * Get checker type.
