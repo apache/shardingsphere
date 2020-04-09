@@ -112,7 +112,7 @@ public abstract class LogicSchema {
     @Subscribe
     public final synchronized void renew(final MetaDataChangedEvent event) throws Exception {
         if (name.equals(event.getSchemaName())) {
-            this.metaData = new ShardingSphereMetaData(this.metaData.getDataSources(), event.getRuleSchemaMetaData());
+            metaData = new ShardingSphereMetaData(metaData.getDataSources(), event.getRuleSchemaMetaData());
         }
     }
     
