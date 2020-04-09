@@ -21,7 +21,7 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.D
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.JDBCDumper;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.LogDumper;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Writer;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.importer.Importer;
 import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntry;
 
 /**
@@ -45,8 +45,8 @@ public final class MySQLScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public Class<? extends Writer> getWriterClass() {
-        return MySQLWriter.class;
+    public Class<? extends Importer> getImporterClass() {
+        return MySQLImporter.class;
     }
     
     @Override

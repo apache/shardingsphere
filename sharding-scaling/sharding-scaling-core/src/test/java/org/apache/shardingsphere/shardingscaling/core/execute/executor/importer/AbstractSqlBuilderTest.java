@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.execute.executor.writer;
+package org.apache.shardingsphere.shardingscaling.core.execute.executor.importer;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.NopLogPosition;

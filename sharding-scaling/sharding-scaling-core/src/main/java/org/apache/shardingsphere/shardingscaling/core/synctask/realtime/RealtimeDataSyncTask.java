@@ -31,8 +31,8 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.Dumper;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.DumperFactory;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Writer;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.WriterFactory;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.importer.Importer;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.importer.ImporterFactory;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTask;
 import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
 
@@ -60,7 +60,7 @@ public final class RealtimeDataSyncTask implements SyncTask {
     public RealtimeDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
         this.syncConfiguration = syncConfiguration;
         this.dataSourceManager = dataSourceManager;
-        DataSourceMetaData dataSourceMetaData = syncConfiguration.getReaderConfiguration().getDataSourceConfiguration().getDataSourceMetaData();
+        DataSourceMetaData dataSourceMetaData = syncConfiguration.getDumperConfiguration().getDataSourceConfiguration().getDataSourceMetaData();
         syncTaskId = String.format("realtime-%s", null != dataSourceMetaData.getCatalog() ? dataSourceMetaData.getCatalog() : dataSourceMetaData.getSchema());
     }
     
@@ -72,41 +72,41 @@ public final class RealtimeDataSyncTask implements SyncTask {
     
     private LogPositionManager instanceLogPositionManager() {
         return LogPositionManagerFactory.newInstanceLogManager(
-                syncConfiguration.getReaderConfiguration().getDataSourceConfiguration().getDatabaseType().getName(),
-                dataSourceManager.getDataSource(syncConfiguration.getReaderConfiguration().getDataSourceConfiguration()));
+                syncConfiguration.getDumperConfiguration().getDataSourceConfiguration().getDatabaseType().getName(),
+                dataSourceManager.getDataSource(syncConfiguration.getDumperConfiguration().getDataSourceConfiguration()));
     }
     
     @Override
     public void start(final ReportCallback callback) {
-        syncConfiguration.getReaderConfiguration().setTableNameMap(syncConfiguration.getTableNameMap());
+        syncConfiguration.getDumperConfiguration().setTableNameMap(syncConfiguration.getTableNameMap());
         SyncExecutorGroup syncExecutorGroup = new SyncExecutorGroup(new SyncTaskExecuteCallback(this.getClass().getSimpleName(), syncTaskId, callback));
         instanceSyncExecutors(syncExecutorGroup);
         ScalingContext.getInstance().getSyncTaskExecuteEngine().submitGroup(syncExecutorGroup);
     }
     
     private void instanceSyncExecutors(final SyncExecutorGroup syncExecutorGroup) {
-        dumper = DumperFactory.newInstanceLogDumper(syncConfiguration.getReaderConfiguration(), logPositionManager.getCurrentPosition());
-        List<Writer> writers = instanceWriters();
-        DistributionChannel channel = instanceChannel(writers);
+        dumper = DumperFactory.newInstanceLogDumper(syncConfiguration.getDumperConfiguration(), logPositionManager.getCurrentPosition());
+        List<Importer> importers = instanceImporters();
+        DistributionChannel channel = instanceChannel(importers);
         dumper.setChannel(channel);
-        for (Writer each : writers) {
+        for (Importer each : importers) {
             each.setChannel(channel);
         }
         syncExecutorGroup.setChannel(channel);
         syncExecutorGroup.addSyncExecutor(dumper);
-        syncExecutorGroup.addAllSyncExecutor(writers);
+        syncExecutorGroup.addAllSyncExecutor(importers);
     }
     
-    private List<Writer> instanceWriters() {
-        List<Writer> result = new ArrayList<>(syncConfiguration.getConcurrency());
+    private List<Importer> instanceImporters() {
+        List<Importer> result = new ArrayList<>(syncConfiguration.getConcurrency());
         for (int i = 0; i < syncConfiguration.getConcurrency(); i++) {
-            result.add(WriterFactory.newInstance(syncConfiguration.getWriterConfiguration(), dataSourceManager));
+            result.add(ImporterFactory.newInstance(syncConfiguration.getImporterConfiguration(), dataSourceManager));
         }
         return result;
     }
     
-    private DistributionChannel instanceChannel(final List<Writer> writers) {
-        return new DistributionChannel(writers.size(), records -> {
+    private DistributionChannel instanceChannel(final List<Importer> importers) {
+        return new DistributionChannel(importers.size(), records -> {
             Record lastHandledRecord = records.get(records.size() - 1);
             logPositionManager.updateCurrentPosition(lastHandledRecord.getLogPosition());
             delayMillisecond = System.currentTimeMillis() - lastHandledRecord.getCommitTime();

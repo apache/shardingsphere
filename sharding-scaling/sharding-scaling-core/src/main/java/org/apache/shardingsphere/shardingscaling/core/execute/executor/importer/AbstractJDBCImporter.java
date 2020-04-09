@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.execute.executor.writer;
+package org.apache.shardingsphere.shardingscaling.core.execute.executor.importer;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -39,10 +39,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Abstract JDBC writer implementation.
+ * Abstract JDBC importer implementation.
  */
 @Slf4j
-public abstract class AbstractJDBCWriter extends AbstractSyncExecutor implements Writer {
+public abstract class AbstractJDBCImporter extends AbstractSyncExecutor implements Importer {
     
     private final RdbmsConfiguration rdbmsConfiguration;
     
@@ -53,7 +53,7 @@ public abstract class AbstractJDBCWriter extends AbstractSyncExecutor implements
     @Setter
     private Channel channel;
     
-    public AbstractJDBCWriter(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
+    public AbstractJDBCImporter(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
         this.rdbmsConfiguration = rdbmsConfiguration;
         this.dataSourceManager = dataSourceManager;
         sqlBuilder = createSqlBuilder();

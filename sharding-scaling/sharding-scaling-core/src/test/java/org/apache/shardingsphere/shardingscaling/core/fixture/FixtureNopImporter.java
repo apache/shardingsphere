@@ -19,16 +19,16 @@ package org.apache.shardingsphere.shardingscaling.core.fixture;
 
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.Channel;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Writer;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.importer.Importer;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 
-public final class FixtureNopWriter implements Writer {
+public final class FixtureNopImporter implements Importer {
     
     private boolean running;
     
     private Channel channel;
     
-    public FixtureNopWriter(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
+    public FixtureNopImporter(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
     }
     
     @Override

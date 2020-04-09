@@ -46,7 +46,7 @@ public final class SyncTaskController implements Runnable {
     
     public SyncTaskController(final SyncConfiguration syncConfiguration) {
         SyncTaskFactory syncTaskFactory = new DefaultSyncTaskFactory();
-        syncTaskId = generateSyncTaskId(syncConfiguration.getReaderConfiguration().getDataSourceConfiguration());
+        syncTaskId = generateSyncTaskId(syncConfiguration.getDumperConfiguration().getDataSourceConfiguration());
         this.historyDataSyncTaskGroup = syncTaskFactory.createHistoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
         this.realtimeDataSyncTask = syncTaskFactory.createRealtimeDataSyncTask(syncConfiguration, dataSourceManager);
         syncTaskControlStatus = SyncTaskControlStatus.PREPARING;

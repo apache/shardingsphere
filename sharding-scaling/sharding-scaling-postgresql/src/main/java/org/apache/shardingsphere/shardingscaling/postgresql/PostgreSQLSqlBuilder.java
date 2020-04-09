@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingscaling.postgresql;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.RecordUtil;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.AbstractSqlBuilder;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.importer.AbstractSqlBuilder;
 
 /**
  * PostgreSQL SQL builder.
