@@ -51,10 +51,10 @@ public final class SyncConfigurationUtil {
         ShardingRuleConfiguration sourceRule = ConfigurationYamlConverter.loadShardingRuleConfiguration(scalingConfiguration.getRuleConfiguration().getSourceRule());
         Map<String, Map<String, String>> dataSourceTableNameMap = toDataSourceTableNameMap(sourceRule, sourceDatasource.keySet());
         for (String each : dataSourceTableNameMap.keySet()) {
-            RdbmsConfiguration readerConfiguration = createReaderConfiguration(sourceDatasource.get(each));
+            RdbmsConfiguration dumperConfiguration = createDumperConfiguration(sourceDatasource.get(each));
             RdbmsConfiguration importerConfiguration = createImporterConfiguration(scalingConfiguration);
             Map<String, String> tableNameMap = dataSourceTableNameMap.get(each);
-            result.add(new SyncConfiguration(scalingConfiguration.getJobConfiguration().getConcurrency(), tableNameMap, readerConfiguration, importerConfiguration));
+            result.add(new SyncConfiguration(scalingConfiguration.getJobConfiguration().getConcurrency(), tableNameMap, dumperConfiguration, importerConfiguration));
         }
         return result;
     }
@@ -100,13 +100,13 @@ public final class SyncConfigurationUtil {
         }
     }
     
-    private static RdbmsConfiguration createReaderConfiguration(final DataSourceConfiguration dataSourceConfiguration) {
+    private static RdbmsConfiguration createDumperConfiguration(final DataSourceConfiguration dataSourceConfiguration) {
         RdbmsConfiguration result = new RdbmsConfiguration();
         Map<String, Object> dataSourceProperties = dataSourceConfiguration.getProperties();
-        JDBCDataSourceConfiguration readerDataSourceConfiguration = new JDBCDataSourceConfiguration(
+        JDBCDataSourceConfiguration dumperDataSourceConfiguration = new JDBCDataSourceConfiguration(
                 dataSourceProperties.containsKey("jdbcUrl") ? dataSourceProperties.get("jdbcUrl").toString() : dataSourceProperties.get("url").toString(),
                 dataSourceProperties.get("username").toString(), dataSourceProperties.get("password").toString());
-        result.setDataSourceConfiguration(readerDataSourceConfiguration);
+        result.setDataSourceConfiguration(dumperDataSourceConfiguration);
         return result;
     }
     

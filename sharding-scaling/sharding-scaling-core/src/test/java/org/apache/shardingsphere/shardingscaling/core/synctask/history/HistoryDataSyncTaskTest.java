@@ -72,8 +72,8 @@ public final class HistoryDataSyncTaskTest {
     }
     
     @SneakyThrows
-    private void initTableData(final RdbmsConfiguration readerConfig) {
-        DataSource dataSource = dataSourceManager.getDataSource(readerConfig.getDataSourceConfiguration());
+    private void initTableData(final RdbmsConfiguration dumperConfig) {
+        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfiguration());
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");

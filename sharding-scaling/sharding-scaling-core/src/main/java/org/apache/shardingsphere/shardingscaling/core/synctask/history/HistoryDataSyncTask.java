@@ -67,10 +67,10 @@ public final class HistoryDataSyncTask implements SyncTask {
         syncTaskId = generateSyncTaskId(syncConfiguration.getDumperConfiguration());
     }
     
-    private String generateSyncTaskId(final RdbmsConfiguration readerConfiguration) {
-        DataSourceMetaData dataSourceMetaData = readerConfiguration.getDataSourceConfiguration().getDataSourceMetaData();
-        String result = String.format("history-%s-%s", null != dataSourceMetaData.getCatalog() ? dataSourceMetaData.getCatalog() : dataSourceMetaData.getSchema(), readerConfiguration.getTableName());
-        return null == readerConfiguration.getWhereCondition() ? result : result + "#" + readerConfiguration.getSpiltNum();
+    private String generateSyncTaskId(final RdbmsConfiguration dumperConfiguration) {
+        DataSourceMetaData dataSourceMetaData = dumperConfiguration.getDataSourceConfiguration().getDataSourceMetaData();
+        String result = String.format("history-%s-%s", null != dataSourceMetaData.getCatalog() ? dataSourceMetaData.getCatalog() : dataSourceMetaData.getSchema(), dumperConfiguration.getTableName());
+        return null == dumperConfiguration.getWhereCondition() ? result : result + "#" + dumperConfiguration.getSpiltNum();
     }
     
     @Override

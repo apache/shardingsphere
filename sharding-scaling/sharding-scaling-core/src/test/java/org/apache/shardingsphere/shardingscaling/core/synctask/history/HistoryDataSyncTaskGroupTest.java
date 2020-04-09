@@ -61,12 +61,12 @@ public final class HistoryDataSyncTaskGroupTest {
     
     @Before
     public void setUp() {
-        RdbmsConfiguration readerConfig = mockReaderConfig();
+        RdbmsConfiguration dumperConfig = mockDumperConfig();
         RdbmsConfiguration importerConfig = new RdbmsConfiguration();
         Map<String, String> tableMap = new HashMap<>();
         tableMap.put("t_order", "t_order");
         syncConfiguration = new SyncConfiguration(3, tableMap,
-                readerConfig, importerConfig);
+                dumperConfig, importerConfig);
         dataSourceManager = new DataSourceManager();
     }
     
@@ -144,8 +144,8 @@ public final class HistoryDataSyncTaskGroupTest {
     }
     
     @SneakyThrows
-    private void initIntPrimaryEnvironment(final RdbmsConfiguration readerConfig) {
-        DataSource dataSource = dataSourceManager.getDataSource(readerConfig.getDataSourceConfiguration());
+    private void initIntPrimaryEnvironment(final RdbmsConfiguration dumperConfig) {
+        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfiguration());
         try (Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
@@ -155,8 +155,8 @@ public final class HistoryDataSyncTaskGroupTest {
     }
     
     @SneakyThrows
-    private void initCharPrimaryEnvironment(final RdbmsConfiguration readerConfig) {
-        DataSource dataSource = dataSourceManager.getDataSource(readerConfig.getDataSourceConfiguration());
+    private void initCharPrimaryEnvironment(final RdbmsConfiguration dumperConfig) {
+        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfiguration());
         try (Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
@@ -166,8 +166,8 @@ public final class HistoryDataSyncTaskGroupTest {
     }
     
     @SneakyThrows
-    private void initUnionPrimaryEnvironment(final RdbmsConfiguration readerConfig) {
-        DataSource dataSource = dataSourceManager.getDataSource(readerConfig.getDataSourceConfiguration());
+    private void initUnionPrimaryEnvironment(final RdbmsConfiguration dumperConfig) {
+        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfiguration());
         try (Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
@@ -177,8 +177,8 @@ public final class HistoryDataSyncTaskGroupTest {
     }
     
     @SneakyThrows
-    private void initNoPrimaryEnvironment(final RdbmsConfiguration readerConfig) {
-        DataSource dataSource = dataSourceManager.getDataSource(readerConfig.getDataSourceConfiguration());
+    private void initNoPrimaryEnvironment(final RdbmsConfiguration dumperConfig) {
+        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfiguration());
         try (Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
@@ -187,7 +187,7 @@ public final class HistoryDataSyncTaskGroupTest {
         }
     }
     
-    private RdbmsConfiguration mockReaderConfig() {
+    private RdbmsConfiguration mockDumperConfig() {
         DataSourceConfiguration dataSourceConfiguration = new JDBCDataSourceConfiguration(dataSourceUrl, userName, password);
         RdbmsConfiguration result = new RdbmsConfiguration();
         result.setDataSourceConfiguration(dataSourceConfiguration);

@@ -98,10 +98,10 @@ public final class HistoryDataSyncTaskGroup implements SyncTask {
     private Collection<SyncConfiguration> splitByTable(final SyncConfiguration syncConfiguration) {
         Collection<SyncConfiguration> result = new LinkedList<>();
         for (String each : syncConfiguration.getTableNameMap().keySet()) {
-            RdbmsConfiguration readerConfig = RdbmsConfiguration.clone(syncConfiguration.getDumperConfiguration());
-            readerConfig.setTableName(each);
+            RdbmsConfiguration dumperConfig = RdbmsConfiguration.clone(syncConfiguration.getDumperConfiguration());
+            dumperConfig.setTableName(each);
             result.add(new SyncConfiguration(syncConfiguration.getConcurrency(), syncConfiguration.getTableNameMap(),
-                    readerConfig, RdbmsConfiguration.clone(syncConfiguration.getImporterConfiguration())));
+                    dumperConfig, RdbmsConfiguration.clone(syncConfiguration.getImporterConfiguration())));
         }
         return result;
     }
@@ -132,26 +132,26 @@ public final class HistoryDataSyncTaskGroup implements SyncTask {
     private Collection<SyncConfiguration> splitByPrimaryKeyRange(final SyncConfiguration syncConfiguration, final MetaDataManager metaDataManager, final DataSource dataSource) {
         int concurrency = syncConfiguration.getConcurrency();
         Collection<SyncConfiguration> result = new LinkedList<>();
-        RdbmsConfiguration readerConfiguration = syncConfiguration.getDumperConfiguration();
-        String primaryKey = metaDataManager.getTableMetaData(readerConfiguration.getTableName()).getPrimaryKeyColumns().get(0);
+        RdbmsConfiguration dumperConfiguration = syncConfiguration.getDumperConfiguration();
+        String primaryKey = metaDataManager.getTableMetaData(dumperConfiguration.getTableName()).getPrimaryKeyColumns().get(0);
         try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement ps = connection.prepareStatement(String.format("SELECT MIN(%s),MAX(%s) FROM %s LIMIT 1", primaryKey, primaryKey, readerConfiguration.getTableName()));
+            PreparedStatement ps = connection.prepareStatement(String.format("SELECT MIN(%s),MAX(%s) FROM %s LIMIT 1", primaryKey, primaryKey, dumperConfiguration.getTableName()));
             ResultSet rs = ps.executeQuery();
             rs.next();
             int min = rs.getInt(1);
             int max = rs.getInt(2);
             int step = (max - min) / concurrency;
             for (int i = 0; i < concurrency; i++) {
-                RdbmsConfiguration splitReaderConfig = RdbmsConfiguration.clone(readerConfiguration);
+                RdbmsConfiguration splitDumperConfig = RdbmsConfiguration.clone(dumperConfiguration);
                 if (i < concurrency - 1) {
-                    splitReaderConfig.setWhereCondition(String.format("WHERE %s BETWEEN %d AND %d", primaryKey, min, min + step));
+                    splitDumperConfig.setWhereCondition(String.format("WHERE %s BETWEEN %d AND %d", primaryKey, min, min + step));
                     min = min + step + 1;
                 } else {
-                    splitReaderConfig.setWhereCondition(String.format("WHERE %s BETWEEN %d AND %d", primaryKey, min, max));
+                    splitDumperConfig.setWhereCondition(String.format("WHERE %s BETWEEN %d AND %d", primaryKey, min, max));
                 }
-                splitReaderConfig.setSpiltNum(i);
+                splitDumperConfig.setSpiltNum(i);
                 result.add(new SyncConfiguration(concurrency, syncConfiguration.getTableNameMap(),
-                        splitReaderConfig, RdbmsConfiguration.clone(syncConfiguration.getImporterConfiguration())));
+                        splitDumperConfig, RdbmsConfiguration.clone(syncConfiguration.getImporterConfiguration())));
             }
         } catch (SQLException e) {
             throw new RuntimeException("getTableNames error", e);
