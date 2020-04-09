@@ -37,7 +37,8 @@ import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
 import org.apache.shardingsphere.underlying.pluggble.prepare.PrepareEngine;
 import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
-import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
+import org.apache.shardingsphere.underlying.rewrite.engine.result.GenericSQLRewriteResult;
+import org.apache.shardingsphere.underlying.rewrite.engine.result.SQLRewriteUnit;
 import org.apache.shardingsphere.underlying.route.DataNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
@@ -113,8 +114,8 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
                 : logicSchema.getDataSources().keySet().iterator().next();
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(
                 logicSchema.getMetaData().getSchema().getConfiguredSchemaMetaData(), ShardingProxyContext.getInstance().getProperties(), Collections.singletonList(shadowSchema.getShadowRule()));
-        SQLRewriteResult sqlRewriteResult = sqlRewriteEntry.rewrite(sql, Collections.emptyList(), 
-                new RouteContext(sqlStatementContext, Collections.emptyList(), new RouteResult())).values().iterator().next();
+        SQLRewriteUnit sqlRewriteResult = ((GenericSQLRewriteResult) sqlRewriteEntry.rewrite(sql, Collections.emptyList(), 
+                new RouteContext(sqlStatementContext, Collections.emptyList(), new RouteResult()))).getSqlRewriteUnit();
         ExecutionContext result = new ExecutionContext(sqlStatementContext);
         result.getExecutionUnits().add(new ExecutionUnit(dataSourceName, new SQLUnit(sqlRewriteResult.getSql(), sqlRewriteResult.getParameters())));
         return result;

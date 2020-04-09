@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.rewrite.engine;
+package org.apache.shardingsphere.underlying.rewrite.engine.result;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +23,11 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 /**
- * SQL rewrite result.
+ * SQL rewrite unit.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SQLRewriteResult {
+public final class SQLRewriteUnit {
     
     private final String sql;
     

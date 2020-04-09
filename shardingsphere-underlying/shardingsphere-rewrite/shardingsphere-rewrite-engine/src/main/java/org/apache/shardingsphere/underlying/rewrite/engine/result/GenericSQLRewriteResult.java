@@ -15,23 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.rewrite.engine;
+package org.apache.shardingsphere.underlying.rewrite.engine.result;
 
-import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
-import org.apache.shardingsphere.underlying.rewrite.sql.impl.DefaultSQLBuilder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * SQL generic rewrite engine.
+ * Generic SQL rewrite result.
  */
-public final class SQLGenericRewriteEngine {
+@RequiredArgsConstructor
+@Getter
+public final class GenericSQLRewriteResult implements SQLRewriteResult {
     
-    /**
-     * Rewrite SQL and parameters.
-     *
-     * @param sqlRewriteContext SQL rewrite context
-     * @return SQL rewrite result
-     */
-    public SQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext) {
-        return new SQLRewriteResult(new DefaultSQLBuilder(sqlRewriteContext).toSQL(), sqlRewriteContext.getParameterBuilder().getParameters());
-    }
+    private final SQLRewriteUnit sqlRewriteUnit;
 }

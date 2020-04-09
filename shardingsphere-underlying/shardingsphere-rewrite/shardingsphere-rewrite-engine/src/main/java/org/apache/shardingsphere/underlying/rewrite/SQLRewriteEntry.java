@@ -25,14 +25,12 @@ import org.apache.shardingsphere.underlying.common.config.properties.Configurati
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
-import org.apache.shardingsphere.underlying.rewrite.engine.SQLGenericRewriteEngine;
-import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
-import org.apache.shardingsphere.underlying.rewrite.engine.SQLRouteRewriteEngine;
+import org.apache.shardingsphere.underlying.rewrite.engine.GenericSQLRewriteEngine;
+import org.apache.shardingsphere.underlying.rewrite.engine.RouteSQLRewriteEngine;
+import org.apache.shardingsphere.underlying.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
-import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,17 +65,10 @@ public final class SQLRewriteEntry {
      * @param routeContext route context
      * @return route unit and SQL rewrite result map
      */
-    public Map<RouteUnit, SQLRewriteResult> rewrite(final String sql, final List<Object> parameters, final RouteContext routeContext) {
+    public SQLRewriteResult rewrite(final String sql, final List<Object> parameters, final RouteContext routeContext) {
         SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(sql, parameters, routeContext.getSqlStatementContext(), routeContext);
-        return routeContext.getRouteResult().getRouteUnits().isEmpty() ? rewrite(sqlRewriteContext) : rewrite(routeContext, sqlRewriteContext);
-    }
-    
-    private Map<RouteUnit, SQLRewriteResult> rewrite(final SQLRewriteContext sqlRewriteContext) {
-        return Collections.singletonMap(null, new SQLGenericRewriteEngine().rewrite(sqlRewriteContext));
-    }
-    
-    private Map<RouteUnit, SQLRewriteResult> rewrite(final RouteContext routeContext, final SQLRewriteContext sqlRewriteContext) {
-        return new SQLRouteRewriteEngine().rewrite(sqlRewriteContext, routeContext.getRouteResult());
+        return routeContext.getRouteResult().getRouteUnits().isEmpty()
+                ? new GenericSQLRewriteEngine().rewrite(sqlRewriteContext) : new RouteSQLRewriteEngine().rewrite(sqlRewriteContext, routeContext.getRouteResult());
     }
     
     private SQLRewriteContext createSQLRewriteContext(final String sql, final List<Object> parameters, final SQLStatementContext sqlStatementContext, final RouteContext routeContext) {

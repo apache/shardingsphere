@@ -19,6 +19,8 @@ package org.apache.shardingsphere.underlying.rewrite.engine;
 
 import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
+import org.apache.shardingsphere.underlying.rewrite.engine.result.RouteSQLRewriteResult;
+import org.apache.shardingsphere.underlying.rewrite.engine.result.SQLRewriteUnit;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.StandardParameterBuilder;
@@ -33,23 +35,23 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * SQL rewrite engine with route.
+ * Route SQL rewrite engine.
  */
-public final class SQLRouteRewriteEngine {
+public final class RouteSQLRewriteEngine {
     
     /**
      * Rewrite SQL and parameters.
      *
      * @param sqlRewriteContext SQL rewrite context
      * @param routeResult route result
-     * @return SQL map of route unit and rewrite result
+     * @return SQL rewrite result
      */
-    public Map<RouteUnit, SQLRewriteResult> rewrite(final SQLRewriteContext sqlRewriteContext, final RouteResult routeResult) {
-        Map<RouteUnit, SQLRewriteResult> result = new LinkedHashMap<>(routeResult.getRouteUnits().size(), 1);
+    public RouteSQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext, final RouteResult routeResult) {
+        Map<RouteUnit, SQLRewriteUnit> result = new LinkedHashMap<>(routeResult.getRouteUnits().size(), 1);
         for (RouteUnit each : routeResult.getRouteUnits()) {
-            result.put(each, new SQLRewriteResult(new RouteSQLBuilder(sqlRewriteContext, each).toSQL(), getParameters(sqlRewriteContext.getParameterBuilder(), routeResult, each)));
+            result.put(each, new SQLRewriteUnit(new RouteSQLBuilder(sqlRewriteContext, each).toSQL(), getParameters(sqlRewriteContext.getParameterBuilder(), routeResult, each)));
         }
-        return result;
+        return new RouteSQLRewriteResult(result);
     }
     
     private List<Object> getParameters(final ParameterBuilder parameterBuilder, final RouteResult routeResult, final RouteUnit routeUnit) {
