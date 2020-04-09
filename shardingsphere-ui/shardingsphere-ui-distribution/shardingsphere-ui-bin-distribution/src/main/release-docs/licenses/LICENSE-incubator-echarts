@@ -1,3 +1,4 @@
+
                                  Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
@@ -178,7 +179,7 @@
    APPENDIX: How to apply the Apache License to your work.
 
       To apply the Apache License to your work, attach the following
-      boilerplate notice, with the fields enclosed by brackets "{}"
+      boilerplate notice, with the fields enclosed by brackets "[]"
       replaced with your own identifying information. (Don't include
       the brackets!)  The text should be enclosed in the appropriate
       comment syntax for the file format. We also recommend that a
@@ -186,7 +187,7 @@
       same "printed page" as the copyright notice for easier
       identification within third-party archives.
 
-   Copyright {yyyy} {name of copyright owner}
+   Copyright [yyyy] [name of copyright owner]
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -200,89 +201,23 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 
-=======================================================================
-Apache ShardingSphere Subcomponents:
 
-The Apache ShardingSphere project contains subcomponents with separate
-copyright notices and license terms. Your use of the source code for these
-subcomponents is subject to the terms and conditions of the following
+
+
+
+========================================================================
+Apache ECharts Subcomponents:
+
+The Apache ECharts project contains subcomponents with separate copyright
+notices and license terms. Your use of the source code for these
+subcomponents is also subject to the terms and conditions of the following
 licenses.
 
-========================================================================
-Apache 2.0 licenses
-========================================================================
-
-The following components are provided under the Apache License. See project link for details.
-The text of each license is also included at licenses/LICENSE-[project].txt.
-
-    groovy 2.4.5-indy: https://github.com/apache/groovy, Apache 2.0
-    echarts 4.6.0: https://github.com/apache/incubator-echarts, Apache 2.0
-
-========================================================================
-Apache 2.0 licenses
-========================================================================
-
-The following components are provided under the Apache License. See project link for details.
-The text of each license is the standard Apache 2.0 license.
-
-    commons-codec 1.10: https://github.com/apache/commons-codec, Apache 2.0
-    commons-logging 1.2 https://raw.githubusercontent.com/apache/commons-logging, Apache 2.0
-    curator-client 2.10.0:  https://github.com/apache/curator,  Apache 2.0
-    curator-framework 2.10.0:  https://github.com/apache/curator,  Apache 2.0
-    curator-recipes 2.10.0:  https://github.com/apache/curator,  Apache 2.0
-    guava 18.0: https://github.com/google/guava, Apache 2.0
-    httpclient 4.5.8: https://github.com/apache/httpcomponents-client, Apache 2.0
-    httpcore 4.4.11: https://github.com/apache/httpcomponents-core, Apache 2.0
-    log4j 1.2.16: http://logging.apache.org/log4j/1.2/, Apache 2.0
-    SnakeYAML 1.16: http://www.snakeyaml.org , Apache 2.0
-    zookeeper 3.4.6: https://github.com/apache/zookeeper, Apache 2.0
-    jackson-databind 2.8.11.3: https://github.com/FasterXML/jackson-databind, Apache 2.0
-    jackson-annotations 2.8.0: https://github.com/FasterXML/jackson-annotations, Apache 2.0
-    jackson-core 2.8.10: https://github.com/FasterXML/jackson-core, Apache 2.0
-    spring-boot 1.5.21.RELEASE: https://raw.githubusercontent.com/spring-projects/spring-boot, Apache 2.0
-    spring-framework 4.3.24.RELEASE: https://raw.githubusercontent.com/spring-projects/spring-framework, Apache 2.0
-    tomcat 8.5.40: http://svn.apache.org/repos/asf/tomcat, Apache 2.0
-    gson 2.8.5: https://github.com/google/gson, Apache 2.0
-
-========================================================================
-BSD licenses
-========================================================================
-
-The following components are provided under a BSD license. See project link for details.
-The text of each license is also included at licenses/LICENSE-[project].txt.
-
-    jline 0.9.94: https://github.com/jline/jline1, BSD-3-Clause
-
-========================================================================
-EPL licenses
-========================================================================
-
-The following components are provided under the EPL License. See project link for details.
-The text of each license is also included at licenses/LICENSE-[project].txt.
-
-    logback-classic 1.2.0: https://github.com/qos-ch/logback: EPL 1.0
-    logback-core 1.2.0: https://github.com/qos-ch/logback: EPL 1.0
-
-========================================================================
-MIT licenses
-========================================================================
-
-The following components are provided under the MIT License. See project link for details.
-The text of each license is also included at licenses/LICENSE-[project].txt.
-
-   jcl-over-slf4j 1.7.7: https://www.slf4j.org, MIT
-   slf4j 1.7.7: https://www.slf4j.org, MIT
-   jul-to-slf4j 1.7.26: https://www.slf4j.org, MIT
-
-   axios 0.18.0: https://github.com/axios/axios, MIT
-   element-ui 2.4.9: https://github.com/ElemeFE/element, MIT
-   js-yaml 3.12.0: https://github.com/nodeca/js-yaml, MIT
-   lodash 4.17.11: https://github.com/lodash/lodash, MIT
-   normalize.css 8.0.1: https://github.com/necolas/normalize.css, MIT
-   vue 2.5.2: https://github.com/vuejs/vue, MIT
-   vue-i18n 8.4.0: https://github.com/kazupon/vue-i18n, MIT
-   vue-router 3.0.1: https://github.com/vuejs/vue-router, MIT
-   vuex 3.0.1: https://github.com/vuejs/vuex, MIT
-   resize-detector 0.2.1: https://github.com/Justineo/resize-detector, MIT
-   echarts-liquidfill 2.0.5: https://github.com/ecomfe/echarts-liquidfill, MIT
-   moment 2.24.0: https://github.com/moment/moment, MIT
+BSD 3-Clause (d3.js):
+The following files embed [d3.js](https://github.com/d3/d3) BSD 3-Clause:
+    `/src/chart/treemap/treemapLayout.js`,
+    `/src/chart/tree/layoutHelper.js`,
+    `/src/chart/graph/forceHelper.js`,
+    `/src/util/number.js`,
+    `/src/scale/Time.js`,
+See `/licenses/LICENSE-d3` for details of the license.
