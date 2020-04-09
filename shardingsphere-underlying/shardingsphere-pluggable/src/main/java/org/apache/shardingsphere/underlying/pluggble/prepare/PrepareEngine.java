@@ -23,22 +23,14 @@ import org.apache.shardingsphere.underlying.common.config.properties.Configurati
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionContextBuilder;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
-import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
 import org.apache.shardingsphere.underlying.executor.log.SQLLogger;
 import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
-import org.apache.shardingsphere.underlying.rewrite.engine.result.GenericSQLRewriteResult;
-import org.apache.shardingsphere.underlying.rewrite.engine.result.RouteSQLRewriteResult;
-import org.apache.shardingsphere.underlying.rewrite.engine.result.SQLRewriteResult;
-import org.apache.shardingsphere.underlying.rewrite.engine.result.SQLRewriteUnit;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
-import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map.Entry;
 
 /**
  * Prepare engine.
@@ -70,20 +62,6 @@ public final class PrepareEngine {
     }
     
     private Collection<ExecutionUnit> rewrite(final String sql, final List<Object> parameters, final RouteContext routeContext) {
-        SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(metaData.getSchema().getConfiguredSchemaMetaData(), properties, rules).rewrite(sql, parameters, routeContext);
-        return sqlRewriteResult instanceof GenericSQLRewriteResult ? getExecutionUnit((GenericSQLRewriteResult) sqlRewriteResult) : getExecutionUnit((RouteSQLRewriteResult) sqlRewriteResult);
-    }
-    
-    private Collection<ExecutionUnit> getExecutionUnit(final GenericSQLRewriteResult sqlRewriteResult) {
-        String dataSourceName = metaData.getDataSources().getAllInstanceDataSourceNames().iterator().next();
-        return Collections.singletonList(new ExecutionUnit(dataSourceName, new SQLUnit(sqlRewriteResult.getSqlRewriteUnit().getSql(), sqlRewriteResult.getSqlRewriteUnit().getParameters())));
-    }
-    
-    private Collection<ExecutionUnit> getExecutionUnit(final RouteSQLRewriteResult sqlRewriteResult) {
-        Collection<ExecutionUnit> result = new LinkedHashSet<>();
-        for (Entry<RouteUnit, SQLRewriteUnit> entry : sqlRewriteResult.getSqlRewriteUnits().entrySet()) {
-            result.add(new ExecutionUnit(entry.getKey().getDataSourceMapper().getActualName(), new SQLUnit(entry.getValue().getSql(), entry.getValue().getParameters())));
-        }
-        return result;
+        return ExecutionContextBuilder.build(metaData, new SQLRewriteEntry(metaData.getSchema().getConfiguredSchemaMetaData(), properties, rules).rewrite(sql, parameters, routeContext));
     }
 }
