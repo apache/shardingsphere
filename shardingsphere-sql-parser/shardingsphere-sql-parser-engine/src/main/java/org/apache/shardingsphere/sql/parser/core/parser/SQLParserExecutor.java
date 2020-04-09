@@ -44,14 +44,14 @@ public final class SQLParserExecutor {
      * @return AST node
      */
     public ParseASTNode execute() {
-        ParseASTNode result = towPhaseParse();
+        ParseASTNode result = twoPhaseParse();
         if (result.getRootNode() instanceof ErrorNode) {
             throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
         }
         return result;
     }
     
-    private ParseASTNode towPhaseParse() {
+    private ParseASTNode twoPhaseParse() {
         SQLParser sqlParser = SQLParserFactory.newInstance(databaseTypeName, sql);
         try {
             ((Parser) sqlParser).setErrorHandler(new BailErrorStrategy());
