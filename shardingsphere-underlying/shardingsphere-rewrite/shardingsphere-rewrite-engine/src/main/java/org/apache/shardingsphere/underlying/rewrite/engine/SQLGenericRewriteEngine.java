@@ -21,9 +21,9 @@ import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.sql.impl.DefaultSQLBuilder;
 
 /**
- * SQL rewrite engine.
+ * SQL generic rewrite engine.
  */
-public final class SQLRewriteEngine {
+public final class SQLGenericRewriteEngine {
     
     /**
      * Rewrite SQL and parameters.

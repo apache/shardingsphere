@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.underlying.route;
 
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
@@ -30,6 +30,7 @@ import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.decorator.RouteDecorator;
 import org.apache.shardingsphere.underlying.route.hook.SPIRoutingHook;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,25 +39,22 @@ import java.util.Map.Entry;
 /**
  * Data node router.
  */
-@RequiredArgsConstructor
 public final class DataNodeRouter {
     
     private final ShardingSphereMetaData metaData;
     
     private final ConfigurationProperties properties;
     
-    private final Map<BaseRule, RouteDecorator> decorators = new LinkedHashMap<>();
+    private final Map<BaseRule, RouteDecorator> decorators;
     
-    private SPIRoutingHook routingHook = new SPIRoutingHook();
+    private SPIRoutingHook routingHook;
     
-    /**
-     * Register route decorator.
-     *
-     * @param rule rule
-     * @param decorator route decorator
-     */
-    public void registerDecorator(final BaseRule rule, final RouteDecorator decorator) {
-        decorators.put(rule, decorator);
+    public DataNodeRouter(final ShardingSphereMetaData metaData, final ConfigurationProperties properties, final Collection<BaseRule> rules) {
+        this.metaData = metaData;
+        this.properties = properties;
+        decorators = new LinkedHashMap<>();
+        routingHook = new SPIRoutingHook();
+        OrderedSPIRegistry.getRegisteredServices(rules, RouteDecorator.class).forEach(decorators::put);
     }
     
     /**

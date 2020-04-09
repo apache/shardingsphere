@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.underlying.merge;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
+import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.engine.ResultProcessEngine;
@@ -33,6 +33,7 @@ import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import org.apache.shardingsphere.underlying.merge.result.impl.transparent.TransparentMergedResult;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,10 +41,9 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * Merge entry.
+ * Merge engine.
  */
-@RequiredArgsConstructor
-public final class MergeEntry {
+public final class MergeEngine {
     
     private final DatabaseType databaseType;
     
@@ -53,32 +53,29 @@ public final class MergeEntry {
     
     private final Map<BaseRule, ResultProcessEngine> engines = new LinkedHashMap<>();
     
-    /**
-     * Register result process engine.
-     *
-     * @param rule rule
-     * @param processEngine result process engine
-     */
-    public void registerProcessEngine(final BaseRule rule, final ResultProcessEngine processEngine) {
-        engines.put(rule, processEngine);
+    public MergeEngine(final DatabaseType databaseType, final SchemaMetaData schemaMetaData, final ConfigurationProperties properties, final Collection<BaseRule> rules) {
+        this.databaseType = databaseType;
+        this.schemaMetaData = schemaMetaData;
+        this.properties = properties;
+        OrderedSPIRegistry.getRegisteredServices(rules, ResultProcessEngine.class).forEach(engines::put);
     }
     
     /**
-     * Process query results.
+     * Merge.
      *
      * @param queryResults query results
      * @param sqlStatementContext SQL statement context
      * @return merged result
      * @throws SQLException SQL exception
      */
-    public MergedResult process(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
-        Optional<MergedResult> mergedResult = merge(queryResults, sqlStatementContext);
+    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
+        Optional<MergedResult> mergedResult = executeMerge(queryResults, sqlStatementContext);
         Optional<MergedResult> result = mergedResult.isPresent() ? Optional.of(decorate(mergedResult.get(), sqlStatementContext)) : decorate(queryResults.get(0), sqlStatementContext);
         return result.orElseGet(() -> new TransparentMergedResult(queryResults.get(0)));
     }
     
     @SuppressWarnings("unchecked")
-    private Optional<MergedResult> merge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
+    private Optional<MergedResult> executeMerge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
         for (Entry<BaseRule, ResultProcessEngine> entry : engines.entrySet()) {
             if (entry.getValue() instanceof ResultMergerEngine) {
                 ResultMerger resultMerger = ((ResultMergerEngine) entry.getValue()).newInstance(databaseType, entry.getKey(), properties, sqlStatementContext);

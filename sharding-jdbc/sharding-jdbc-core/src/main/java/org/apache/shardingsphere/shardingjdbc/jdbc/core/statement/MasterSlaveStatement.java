@@ -70,7 +70,8 @@ public final class MasterSlaveStatement extends AbstractStatementAdapter {
     public MasterSlaveStatement(final MasterSlaveConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         super(Statement.class);
         this.connection = connection;
-        dataNodeRouter = new DataNodeRouter(connection.getRuntimeContext().getMetaData(), connection.getRuntimeContext().getProperties());
+        dataNodeRouter = new DataNodeRouter(
+                connection.getRuntimeContext().getMetaData(), connection.getRuntimeContext().getProperties(), Collections.singletonList(connection.getRuntimeContext().getRule()));
         this.resultSetType = resultSetType;
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;
@@ -83,8 +84,10 @@ public final class MasterSlaveStatement extends AbstractStatementAdapter {
         }
         clearPrevious();
         MasterSlaveRuntimeContext runtimeContext = connection.getRuntimeContext();
+        RouteContext routeContext = new DataNodeRouter(runtimeContext.getMetaData(), runtimeContext.getProperties(),
+                Collections.singletonList(runtimeContext.getRule())).route(runtimeContext.getSqlParserEngine().parse(sql, false), sql, Collections.emptyList());
         PrepareEngine prepareEngine = new PrepareEngine(Collections.singletonList(runtimeContext.getRule()), runtimeContext.getProperties(), runtimeContext.getMetaData());
-        ExecutionContext executionContext = prepareEngine.prepare(runtimeContext.getSqlParserEngine().parse(sql, false), sql, Collections.emptyList());
+        ExecutionContext executionContext = prepareEngine.prepare(sql, Collections.emptyList(), routeContext);
         ExecutionUnit executionUnit = executionContext.getExecutionUnits().iterator().next();
         Preconditions.checkState(1 == executionContext.getExecutionUnits().size(), "Cannot support executeQuery for DML or DDL");
         Statement statement = connection.getConnection(executionUnit.getDataSourceName()).createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
