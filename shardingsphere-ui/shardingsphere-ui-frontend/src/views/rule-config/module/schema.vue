@@ -30,6 +30,7 @@
         <el-card class="box-card">
           <div slot="header" class="clearfix">
             <span>{{ item.title }}</span>
+            <i v-if="schemaData.length > 1" class="el-icon-delete" @click="handleDelete(item.title)"/>
           </div>
           <div v-for="(itm, idex) in item.children" :key="idex" class="coll-item">
             <div :class="'itm icon-' + idex" />
@@ -106,6 +107,16 @@
         <el-button type="primary" @click="addSchema('form')">{{ $t('btn.submit') }}</el-button>
       </div>
     </el-dialog>
+    <el-dialog
+      :visible.sync="deleteDialogVisible"
+      :title="$t('common.notify.title')"
+      width="30%">
+      <span>{{ $t('common.notify.confirmDelOperator') }} {{ schemaName }} ?</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="deleteDialogVisible = false">{{ $t('btn.cancel') }}</el-button>
+        <el-button type="primary" @click="deleteSchema()">{{ $t('btn.confirm') }}</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -124,6 +135,7 @@ export default {
       sname: '',
       scname: '',
       addSchemaDialogVisible: false,
+      deleteDialogVisible: false,
       schemaName: ``,
       rueleConfigTextArea: ``,
       dataSourceConfigTextArea: ``,
@@ -271,6 +283,22 @@ export default {
           return false
         }
       })
+    },
+    handleDelete(schemaName) {
+      this.deleteDialogVisible = true
+      this.schemaName = schemaName
+    },
+    deleteSchema() {
+      API.deleteSchema(this.schemaName).then(res => {
+        this.$notify({
+          title: this.$t('common').notify.title,
+          message: this.$t('common').notify.delSucMessage,
+          type: 'success'
+        })
+        this.deleteDialogVisible = false
+        this.schemaName = ''
+        this.getSchema()
+      })
     }
   }
 }
@@ -342,6 +370,11 @@ export default {
   .el-input__inner {
     height: 35px;
     line-height: 35px;
+  }
+  .el-icon-delete {
+    color: #F56C6C;
+    float: right;
+    cursor: pointer;
   }
 }
 </style>
