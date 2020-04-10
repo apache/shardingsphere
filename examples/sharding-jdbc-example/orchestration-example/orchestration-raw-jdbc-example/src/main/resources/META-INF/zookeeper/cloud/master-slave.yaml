@@ -17,7 +17,7 @@
 
 orchestration:
   demo_yaml_ds_ms:
-    orchestrationType: config_center,registry_center
+    orchestrationType: config_center,registry_center,metadata_center
     instanceType: zookeeper
     serverLists: localhost:2181
     namespace: orchestration-yaml-demo
