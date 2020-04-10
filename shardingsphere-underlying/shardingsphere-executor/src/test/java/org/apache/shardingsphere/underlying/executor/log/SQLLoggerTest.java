@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.underlying.executor.log;
 
+import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
 import org.junit.Before;
@@ -60,7 +61,7 @@ public final class SQLLoggerTest {
     
     @Test
     public void assertLogNormalSQLWithoutParameter() {
-        SQLLogger.logSQL(SQL, false, null, executionUnits);
+        SQLLogger.logSQL(SQL, false, new ExecutionContext(null, executionUnits));
         InOrder inOrder = inOrder(logger);
         inOrder.verify(logger).info("Logic SQL: {}", new Object[]{SQL});
         inOrder.verify(logger).info("SQLStatement: {}", new Object[]{null});
@@ -73,7 +74,7 @@ public final class SQLLoggerTest {
     public void assertLogNormalSQLWithParameters() {
         List<Object> parameters = executionUnits.iterator().next().getSqlUnit().getParameters();
         parameters.add("parameter");
-        SQLLogger.logSQL(SQL, false, null, executionUnits);
+        SQLLogger.logSQL(SQL, false, new ExecutionContext(null, executionUnits));
         InOrder inOrder = inOrder(logger);
         inOrder.verify(logger).info("Logic SQL: {}", new Object[]{SQL});
         inOrder.verify(logger).info("SQLStatement: {}", new Object[]{null});
@@ -84,7 +85,7 @@ public final class SQLLoggerTest {
     
     @Test
     public void assertLogSimpleSQL() {
-        SQLLogger.logSQL(SQL, true, null, executionUnits);
+        SQLLogger.logSQL(SQL, true, new ExecutionContext(null, executionUnits));
         InOrder inOrder = inOrder(logger);
         inOrder.verify(logger).info("Logic SQL: {}", new Object[]{SQL});
         inOrder.verify(logger).info("SQLStatement: {}", new Object[]{null});
