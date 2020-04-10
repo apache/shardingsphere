@@ -106,7 +106,7 @@ public abstract class LogicSchema {
      */
     @Subscribe
     public final synchronized void renew(final MetaDataChangedEvent event) {
-        for(String each : event.getSchemaNames()){
+        for (String each : event.getSchemaNames()) {
             if (name.equals(each)) {
                 metaData = new ShardingSphereMetaData(metaData.getDataSources(), event.getRuleSchemaMetaData());
             }

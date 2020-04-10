@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.core.facade.listener;
 
+import org.apache.shardingsphere.orchestration.center.CenterRepository;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.core.configcenter.listener.ConfigurationChangedListenerManager;
@@ -38,10 +39,11 @@ public final class ShardingOrchestrationListenerManager {
     
     public ShardingOrchestrationListenerManager(final String registryCenterRepositoryName, final RegistryCenterRepository registryCenterRepository,
                                                 final String configCenterRepositoryName, final ConfigCenterRepository configCenterRepository,
-                                                final String metadataCenterRepositoryName, final Collection<String> shardingSchemaNames) {
+                                                final String metadataCenterRepositoryName, final CenterRepository centerRepository,
+                                                final Collection<String> shardingSchemaNames) {
         configurationChangedListenerManager = new ConfigurationChangedListenerManager(configCenterRepositoryName, configCenterRepository, shardingSchemaNames);
         stateChangedListenerManager = new StateChangedListenerManager(registryCenterRepositoryName, registryCenterRepository);
-        metaDataListenerManager = new MetaDataListenerManager(metadataCenterRepositoryName, configCenterRepository, shardingSchemaNames);
+        metaDataListenerManager = new MetaDataListenerManager(metadataCenterRepositoryName, centerRepository, shardingSchemaNames);
     }
     
     /**
