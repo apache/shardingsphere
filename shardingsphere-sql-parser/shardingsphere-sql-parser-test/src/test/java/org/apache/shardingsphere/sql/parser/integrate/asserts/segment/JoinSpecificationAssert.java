@@ -23,6 +23,9 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertConte
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.ExpectedJoinSpecification;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.JoinSpecificationSegment;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 /**
  * JoinSpecification assert.
  */
@@ -37,5 +40,8 @@ public final class JoinSpecificationAssert {
      * @param expected expected JoinSpecification
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final JoinSpecificationSegment actual, final ExpectedJoinSpecification expected) {
+        assertThat(assertContext.getText("startindex assert error"), actual.getStartIndex(), is(expected.getStartIndex()));
+        assertThat(assertContext.getText("stopindex assert error"), actual.getStopIndex(), is(expected.getStopIndex()));
+        PredicatesAssert.assertIs(assertContext, actual.getAndPredicates(), expected.getAndPredicates());
     }
 }

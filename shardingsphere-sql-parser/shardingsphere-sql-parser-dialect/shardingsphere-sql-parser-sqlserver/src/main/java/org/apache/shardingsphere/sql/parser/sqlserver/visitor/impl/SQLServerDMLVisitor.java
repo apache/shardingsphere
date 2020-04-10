@@ -449,8 +449,13 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
         if (null != ctx.expr()) {
             ASTNode expr = visit(ctx.expr());
             if (expr instanceof PredicateSegment) {
-                PredicateSegment predicate = (PredicateSegment) expr;
-                result.setPredicateSegment(predicate);
+                result.setPredicateSegment((PredicateSegment) expr);
+                AndPredicate andPredicate = new AndPredicate();
+                andPredicate.getPredicates().add((PredicateSegment) expr);
+                result.getAndPredicates().add(andPredicate);
+            }
+            if (expr instanceof OrPredicateSegment) {
+                result.getAndPredicates().addAll(((OrPredicateSegment) expr).getAndPredicates());
             }
         }
         if (null != ctx.USING()) {
@@ -458,7 +463,7 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
             for (SQLServerStatementParser.ColumnNameWithSortContext cname :ctx.columnNames().columnNameWithSort()) {
                 columnSegmentList.add((ColumnSegment) visit(cname));
             }
-            result.setUsingColumns(columnSegmentList);
+            result.getUsingColumns().addAll(columnSegmentList);
         }
         return result;
     }

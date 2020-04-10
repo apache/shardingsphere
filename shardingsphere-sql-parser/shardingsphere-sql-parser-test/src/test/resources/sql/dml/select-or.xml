@@ -291,6 +291,26 @@
                 <table-factor>
                     <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
                 </table-factor>
+                <joinSpecification>
+                    <and-predicate>
+                        <predicate start-index="49" stop-index="69">
+                            <column-left-value name="user_id" start-index="49" stop-index="57">
+                                <owner name="o" start-index="49" stop-index="49" />
+                            </column-left-value>
+                            <column-right-value name="user_id" start-index="61" stop-index="69">
+                                <owner name="i" start-index="61" stop-index="61" />
+                            </column-right-value>
+                        </predicate>
+                        <predicate start-index="75" stop-index="97">
+                            <column-left-value name="order_id" start-index="75" stop-index="84">
+                                <owner name="o" start-index="75" stop-index="75" />
+                            </column-left-value>
+                            <column-right-value name="order_id" start-index="88" stop-index="97">
+                                <owner name="i" start-index="88" stop-index="88" />
+                            </column-right-value>
+                        </predicate>
+                    </and-predicate>
+                </joinSpecification>
             </join-table>
         </table-reference>
         <projections start-index="7" stop-index="9">
@@ -355,11 +375,43 @@
                 <table-factor>
                     <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
                 </table-factor>
+                <joinSpecification>
+                    <and-predicate>
+                        <predicate start-index="49" stop-index="69">
+                            <column-left-value name="user_id" start-index="49" stop-index="57">
+                                <owner name="o" start-index="49" stop-index="49" />
+                            </column-left-value>
+                            <column-right-value name="user_id" start-index="61" stop-index="69">
+                                <owner name="i" start-index="61" stop-index="61" />
+                            </column-right-value>
+                        </predicate>
+                        <predicate start-index="75" stop-index="97">
+                            <column-left-value name="order_id" start-index="75" stop-index="84">
+                                <owner name="o" start-index="75" stop-index="75" />
+                            </column-left-value>
+                            <column-right-value name="order_id" start-index="88" stop-index="97">
+                                <owner name="i" start-index="88" stop-index="88" />
+                            </column-right-value>
+                        </predicate>
+                    </and-predicate>
+                </joinSpecification>
             </join-table>
             <join-table>
                 <table-factor>
                     <table name="t_broadcast_table" alias="c" start-index="104" stop-index="120" />
                 </table-factor>
+                <joinSpecification>
+                    <and-predicate>
+                        <predicate start-index="127" stop-index="145">
+                            <column-left-value name="status" start-index="127" stop-index="134">
+                                <owner name="o" start-index="127" stop-index="127" />
+                            </column-left-value>
+                            <column-right-value name="status" start-index="138" stop-index="145">
+                                <owner name="c" start-index="138" stop-index="138" />
+                            </column-right-value>
+                        </predicate>
+                    </and-predicate>
+                </joinSpecification>
             </join-table>
         </table-reference>
         <projections start-index="7" stop-index="9">
