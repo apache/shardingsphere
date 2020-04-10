@@ -35,6 +35,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -49,6 +51,9 @@ public class MySQLDataSourceCheckerTest {
 
     @Mock
     private PreparedStatement preparedStatement;
+    
+    @Mock
+    private ResultSet resultSet;
 
     private Collection<DataSource> dataSources;
 
@@ -57,42 +62,74 @@ public class MySQLDataSourceCheckerTest {
     @Before
     public void setUp() throws SQLException {
         DataSource dataSource = mock(DataSource.class);
-        Connection connection = mockConnection();
+        mockConnection();
+        mockResultSet();
         when(dataSource.getConnection()).thenReturn(connection);
         dataSources = new ArrayList<>();
         dataSources.add(dataSource);
         dataSourceChecker = new MySQLDataSourceChecker();
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
     }
 
     @SneakyThrows
-    private Connection mockConnection() {
+    private void mockConnection() {
         DatabaseMetaData metaData = mock(DatabaseMetaData.class);
         when(connection.getMetaData()).thenReturn(metaData);
-        ResultSet resultSet = mockResultSet();
         when(metaData.getTables(CATALOG, null, "%", new String[]{"TABLE"})).thenReturn(resultSet);
         when(connection.getCatalog()).thenReturn(CATALOG);
         when(connection.prepareStatement("SELECT * FROM test LIMIT 1")).thenReturn(preparedStatement);
         when(connection.prepareStatement("SHOW MASTER STATUS")).thenReturn(preparedStatement);
-        return connection;
     }
 
     @SneakyThrows
-    private ResultSet mockResultSet() {
-        ResultSet resultSet = mock(ResultSet.class);
+    private void mockResultSet() {
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getString(3)).thenReturn("test");
-        return resultSet;
     }
 
     @Test
-    public void assertCheckPrivilege() throws SQLException {
+    public void assertCheckPrivilegeSuccess() throws SQLException {
         dataSourceChecker.checkPrivilege(dataSources);
         verify(preparedStatement, Mockito.times(2)).executeQuery();
     }
 
-    @Test(expected = DatasourceCheckFailedException.class)
-    public void assertCheckPrivilegeFailed() throws SQLException {
+    @Test
+    public void assertCheckPrivilegeWithGettingTableFailure() throws SQLException {
+        when(resultSet.next()).thenReturn(false);
+        try {
+            dataSourceChecker.checkPrivilege(dataSources);
+        } catch (DatasourceCheckFailedException checkFailedEx) {
+            assertThat(checkFailedEx.getMessage(), is("No tables find in the source datasource."));
+        }
+    }
+    
+    @Test
+    public void assertCheckPrivilegeWithNoQueryPrivilegeFailure() throws SQLException {
         when(preparedStatement.executeQuery()).thenThrow(new SQLException());
-        dataSourceChecker.checkPrivilege(dataSources);
+        try {
+            dataSourceChecker.checkPrivilege(dataSources);
+        } catch (DatasourceCheckFailedException checkFailedEx) {
+            assertThat(checkFailedEx.getMessage(), is("Source datasource is lack of query privileges."));
+        }
+    }
+    
+    @Test
+    public void assertCheckPrivilegeWithNoReplicationPrivilegeFailure() throws SQLException {
+        when(connection.prepareStatement("SHOW MASTER STATUS")).thenThrow(new SQLException());
+        try {
+            dataSourceChecker.checkPrivilege(dataSources);
+        } catch (DatasourceCheckFailedException checkFailedEx) {
+            assertThat(checkFailedEx.getMessage(), is("Source datasource is lack of replication(binlog) privileges."));
+        }
+    }
+    
+    @Test
+    public void assertCheckPrivilegeWithNoBinlogFailure() throws SQLException {
+        when(resultSet.next()).thenReturn(true, false);
+        try {
+            dataSourceChecker.checkPrivilege(dataSources);
+        } catch (DatasourceCheckFailedException checkFailedEx) {
+            assertThat(checkFailedEx.getMessage(), is("Source datasource do not open binlog."));
+        }
     }
 }
