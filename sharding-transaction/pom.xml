@@ -36,7 +36,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-common</artifactId>
+            <artifactId>shardingsphere-executor</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
     </dependencies>
