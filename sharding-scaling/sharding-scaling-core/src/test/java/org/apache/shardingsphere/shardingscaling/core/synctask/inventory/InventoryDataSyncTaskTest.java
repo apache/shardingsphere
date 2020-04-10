@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.synctask.history;
+package org.apache.shardingsphere.shardingscaling.core.synctask.inventory;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingscaling.core.config.DataSourceConfiguration;
@@ -37,7 +37,7 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class HistoryDataSyncTaskTest {
+public final class InventoryDataSyncTaskTest {
     
     private static String dataSourceUrl = "jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
     
@@ -66,9 +66,9 @@ public final class HistoryDataSyncTaskTest {
     @Test
     public void assertGetProgress() {
         initTableData(syncConfiguration.getDumperConfiguration());
-        HistoryDataSyncTask historyDataSyncTask = new HistoryDataSyncTask(syncConfiguration, dataSourceManager);
-        historyDataSyncTask.start(event -> { });
-        assertThat(((HistoryDataSyncTaskProgress) historyDataSyncTask.getProgress()).getEstimatedRows(), is(2L));
+        InventoryDataSyncTask inventoryDataSyncTask = new InventoryDataSyncTask(syncConfiguration, dataSourceManager);
+        inventoryDataSyncTask.start(event -> { });
+        assertThat(((InventoryDataSyncTaskProgress) inventoryDataSyncTask.getProgress()).getEstimatedRows(), is(2L));
     }
     
     @SneakyThrows

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.synctask.history;
+package org.apache.shardingsphere.shardingscaling.core.synctask.inventory;
 
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgressGroup;
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
@@ -24,19 +24,19 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * History data sync task group progress.
+ * Inventory data sync task group progress.
  */
-public final class HistoryDataSyncTaskProgressGroup implements SyncProgressGroup {
+public final class InventoryDataSyncTaskProgressGroup implements SyncProgressGroup {
     
-    private final List<SyncProgress> historyDataSyncTaskProgresses = new LinkedList<>();
+    private final List<SyncProgress> inventoryDataSyncTaskProgresses = new LinkedList<>();
     
     @Override
     public List<SyncProgress> getSyncProgresses() {
-        return historyDataSyncTaskProgresses;
+        return inventoryDataSyncTaskProgresses;
     }
     
     @Override
     public void addSyncProgress(final SyncProgress syncProgress) {
-        historyDataSyncTaskProgresses.add(syncProgress);
+        inventoryDataSyncTaskProgresses.add(syncProgress);
     }
 }

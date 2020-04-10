@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.synctask.history;
+package org.apache.shardingsphere.shardingscaling.core.synctask.inventory;
 
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
@@ -48,10 +48,10 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * History data sync task group.
+ * Inventory data sync task group.
  */
 @Slf4j
-public final class HistoryDataSyncTaskGroup implements SyncTask {
+public final class InventoryDataSyncTaskGroup implements SyncTask {
     
     private final SyncConfiguration syncConfiguration;
     
@@ -63,11 +63,11 @@ public final class HistoryDataSyncTaskGroup implements SyncTask {
     
     private final Queue<SyncTask> submitFailureTasks = new LinkedList<>();
     
-    public HistoryDataSyncTaskGroup(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
+    public InventoryDataSyncTaskGroup(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
         this.syncConfiguration = syncConfiguration;
         this.dataSourceManager = dataSourceManager;
         DataSourceMetaData dataSourceMetaData = syncConfiguration.getDumperConfiguration().getDataSourceConfiguration().getDataSourceMetaData();
-        syncTaskId = String.format("historyGroup-%s", null != dataSourceMetaData.getCatalog() ? dataSourceMetaData.getCatalog() : dataSourceMetaData.getSchema());
+        syncTaskId = String.format("InventoryGroup-%s", null != dataSourceMetaData.getCatalog() ? dataSourceMetaData.getCatalog() : dataSourceMetaData.getSchema());
     }
     
     @Override
@@ -75,7 +75,7 @@ public final class HistoryDataSyncTaskGroup implements SyncTask {
         List<SyncConfiguration> tableSliceConfigurations = split(syncConfiguration);
         SyncTaskFactory syncTaskFactory = new DefaultSyncTaskFactory();
         for (SyncConfiguration each : tableSliceConfigurations) {
-            SyncTask syncTask = syncTaskFactory.createHistoryDataSyncTask(each, dataSourceManager);
+            SyncTask syncTask = syncTaskFactory.createInventoryDataSyncTask(each, dataSourceManager);
             syncTask.prepare();
             syncTasks.add(syncTask);
         }
@@ -200,7 +200,7 @@ public final class HistoryDataSyncTaskGroup implements SyncTask {
     
     @Override
     public SyncProgress getProgress() {
-        HistoryDataSyncTaskProgressGroup result = new HistoryDataSyncTaskProgressGroup();
+        InventoryDataSyncTaskProgressGroup result = new InventoryDataSyncTaskProgressGroup();
         for (SyncTask each : syncTasks) {
             result.addSyncProgress(each.getProgress());
         }
