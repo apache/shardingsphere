@@ -24,7 +24,6 @@ import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChang
 import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.orchestration.core.metadatacenter.event.MetaDataChangedEvent;
-import org.apache.shardingsphere.orchestration.core.metadatacenter.listener.MetaDataChangedListener;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
@@ -59,8 +58,6 @@ public abstract class LogicSchema {
     private JDBCBackendDataSource backendDataSource;
     
     private ShardingSphereMetaData metaData;
-
-    private MetaDataChangedListener listener;
     
     public LogicSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final Collection<BaseRule> rules) throws SQLException {
         this.name = name;
@@ -76,7 +73,6 @@ public abstract class LogicSchema {
         RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataLoader(rules).load(databaseType, getBackendDataSource().getDataSources(), ShardingProxyContext.getInstance().getProperties());
         if (null != ShardingOrchestrationFacade.getInstance()) {
             ShardingOrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(name, ruleSchemaMetaData);
-            listener = ShardingOrchestrationFacade.getInstance().getMetaDataCenter().createMetaDataChangeListener(name);
         }
         return new ShardingSphereMetaData(dataSourceMetas, ruleSchemaMetaData);
     }
@@ -107,12 +103,13 @@ public abstract class LogicSchema {
      * Renew meta data of the schema.
      *
      * @param event meta data changed event.
-     * @throws Exception exception
      */
     @Subscribe
-    public final synchronized void renew(final MetaDataChangedEvent event) throws Exception {
-        if (name.equals(event.getSchemaName())) {
-            metaData = new ShardingSphereMetaData(metaData.getDataSources(), event.getRuleSchemaMetaData());
+    public final synchronized void renew(final MetaDataChangedEvent event) {
+        for(String each : event.getSchemaNames()){
+            if (name.equals(each)) {
+                metaData = new ShardingSphereMetaData(metaData.getDataSources(), event.getRuleSchemaMetaData());
+            }
         }
     }
     

@@ -28,23 +28,23 @@ import org.apache.shardingsphere.orchestration.core.metadatacenter.yaml.YamlRule
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
-import java.util.Collections;
+import java.util.Collection;
 
 /**
  * Meta data changed listener.
  */
 public final class MetaDataChangedListener extends PostShardingCenterRepositoryEventListener {
 
-    private final String schemaName;
+    private final Collection<String> schemaNames;
 
-    public MetaDataChangedListener(final CenterRepository centerRepository, final MetaDataCenterNode node, final String schemaName) {
-        super(centerRepository, Collections.singleton(node.getMetaDataCenterNodeFullPath(schemaName)));
-        this.schemaName = schemaName;
+    public MetaDataChangedListener(final String name, final CenterRepository centerRepository, final Collection<String> shardingSchemaNames) {
+        super(centerRepository, new MetaDataCenterNode(name).getAllSchemaMetadataPaths(shardingSchemaNames));
+        this.schemaNames = shardingSchemaNames;
     }
 
     @Override
     protected ShardingOrchestrationEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
         RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataYamlSwapper().swap(YamlEngine.unmarshal(event.getValue(), YamlRuleSchemaMetaData.class));
-        return new MetaDataChangedEvent(schemaName, ruleSchemaMetaData);
+        return new MetaDataChangedEvent(schemaNames, ruleSchemaMetaData);
     }
 }
