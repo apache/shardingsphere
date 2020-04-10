@@ -41,7 +41,7 @@ public final class SyncTaskProgress implements SyncProgress {
     
     private final List<SyncProgress> historySyncTaskProgress = new LinkedList<>();
     
-    private SyncProgress realTimeSyncTaskProgress;
+    private SyncProgress incrementalSyncTaskProgress;
     
     /**
      * Set history sync task progress.

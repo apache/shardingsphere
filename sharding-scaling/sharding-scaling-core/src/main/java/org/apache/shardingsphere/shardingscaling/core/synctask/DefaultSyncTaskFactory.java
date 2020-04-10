@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingscaling.core.synctask;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.synctask.history.HistoryDataSyncTask;
 import org.apache.shardingsphere.shardingscaling.core.synctask.history.HistoryDataSyncTaskGroup;
-import org.apache.shardingsphere.shardingscaling.core.synctask.realtime.RealtimeDataSyncTask;
+import org.apache.shardingsphere.shardingscaling.core.synctask.incremental.IncrementalDataSyncTask;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 
 /**
@@ -39,7 +39,7 @@ public final class DefaultSyncTaskFactory implements SyncTaskFactory {
     }
     
     @Override
-    public RealtimeDataSyncTask createRealtimeDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
-        return new RealtimeDataSyncTask(syncConfiguration, dataSourceManager);
+    public IncrementalDataSyncTask createIncrementalDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
+        return new IncrementalDataSyncTask(syncConfiguration, dataSourceManager);
     }
 }

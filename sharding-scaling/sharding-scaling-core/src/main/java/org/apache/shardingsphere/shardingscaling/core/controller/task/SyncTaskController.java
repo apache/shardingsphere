@@ -29,14 +29,14 @@ import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTaskFactory;
 import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
 
 /**
- * Sync task controller, synchronize history data and realtime data.
+ * Sync task controller, synchronize history data and incremental data.
  */
 @Slf4j
 public final class SyncTaskController implements Runnable {
     
     private final SyncTask historyDataSyncTaskGroup;
     
-    private final SyncTask realtimeDataSyncTask;
+    private final SyncTask incrementalDataSyncTask;
     
     private final DataSourceManager dataSourceManager = new DataSourceManager();
     
@@ -48,7 +48,7 @@ public final class SyncTaskController implements Runnable {
         SyncTaskFactory syncTaskFactory = new DefaultSyncTaskFactory();
         syncTaskId = generateSyncTaskId(syncConfiguration.getDumperConfiguration().getDataSourceConfiguration());
         this.historyDataSyncTaskGroup = syncTaskFactory.createHistoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
-        this.realtimeDataSyncTask = syncTaskFactory.createRealtimeDataSyncTask(syncConfiguration, dataSourceManager);
+        this.incrementalDataSyncTask = syncTaskFactory.createIncrementalDataSyncTask(syncConfiguration, dataSourceManager);
         syncTaskControlStatus = SyncTaskControlStatus.PREPARING;
     }
     
@@ -73,7 +73,7 @@ public final class SyncTaskController implements Runnable {
             syncTaskControlStatus = SyncTaskControlStatus.STOPPING;
         }
         historyDataSyncTaskGroup.stop();
-        realtimeDataSyncTask.stop();
+        incrementalDataSyncTask.stop();
     }
     
     /**
@@ -84,13 +84,13 @@ public final class SyncTaskController implements Runnable {
     public SyncProgress getProgress() {
         SyncTaskProgress result = new SyncTaskProgress(syncTaskId, syncTaskControlStatus.name());
         result.setHistorySyncTaskProgress(historyDataSyncTaskGroup.getProgress());
-        result.setRealTimeSyncTaskProgress(realtimeDataSyncTask.getProgress());
+        result.setIncrementalSyncTaskProgress(incrementalDataSyncTask.getProgress());
         return result;
     }
     
     @Override
     public void run() {
-        realtimeDataSyncTask.prepare();
+        incrementalDataSyncTask.prepare();
         historyDataSyncTaskGroup.prepare();
         syncTaskControlStatus = SyncTaskControlStatus.MIGRATE_HISTORY_DATA;
         historyDataSyncTaskGroup.start(event -> {
@@ -100,22 +100,22 @@ public final class SyncTaskController implements Runnable {
                 dataSourceManager.close();
                 syncTaskControlStatus = SyncTaskControlStatus.MIGRATE_HISTORY_DATA_FAILURE;
             } else {
-                executeRealTimeSyncTask();
+                executeIncrementalDataSyncTask();
             }
         });
     }
     
-    private void executeRealTimeSyncTask() {
+    private void executeIncrementalDataSyncTask() {
         if (!SyncTaskControlStatus.MIGRATE_HISTORY_DATA.equals(syncTaskControlStatus)) {
             dataSourceManager.close();
             syncTaskControlStatus = SyncTaskControlStatus.STOPPED;
             return;
         }
-        realtimeDataSyncTask.start(event -> {
-            log.info("realtime data sync task {} finished, execute result: {}", syncTaskId, event.getEventType().name());
+        incrementalDataSyncTask.start(event -> {
+            log.info("incremental data sync task {} finished, execute result: {}", syncTaskId, event.getEventType().name());
             dataSourceManager.close();
-            syncTaskControlStatus = EventType.FINISHED.equals(event.getEventType()) ? SyncTaskControlStatus.STOPPED : SyncTaskControlStatus.SYNCHRONIZE_REALTIME_DATA_FAILURE;
+            syncTaskControlStatus = EventType.FINISHED.equals(event.getEventType()) ? SyncTaskControlStatus.STOPPED : SyncTaskControlStatus.SYNCHRONIZE_INCREMENTAL_DATA_FAILURE;
         });
-        syncTaskControlStatus = SyncTaskControlStatus.SYNCHRONIZE_REALTIME_DATA;
+        syncTaskControlStatus = SyncTaskControlStatus.SYNCHRONIZE_INCREMENTAL_DATA;
     }
 }

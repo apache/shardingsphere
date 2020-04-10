@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.synctask.realtime;
+package org.apache.shardingsphere.shardingscaling.core.synctask.incremental;
 
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPosition;
@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Getter
 @RequiredArgsConstructor
-public final class RealTimeDataSyncTaskProgress implements SyncProgress {
+public final class IncrementalDataSyncTaskProgress implements SyncProgress {
     
     private final String id;
     

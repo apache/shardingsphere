@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.synctask.realtime;
+package org.apache.shardingsphere.shardingscaling.core.synctask.incremental;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingscaling.core.config.ScalingContext;
@@ -40,10 +40,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Realtime data execute task.
+ * Incremental data execute task.
  */
 @Slf4j
-public final class RealtimeDataSyncTask implements SyncTask {
+public final class IncrementalDataSyncTask implements SyncTask {
     
     private final SyncConfiguration syncConfiguration;
     
@@ -57,11 +57,11 @@ public final class RealtimeDataSyncTask implements SyncTask {
     
     private long delayMillisecond;
     
-    public RealtimeDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
+    public IncrementalDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
         this.syncConfiguration = syncConfiguration;
         this.dataSourceManager = dataSourceManager;
         DataSourceMetaData dataSourceMetaData = syncConfiguration.getDumperConfiguration().getDataSourceConfiguration().getDataSourceMetaData();
-        syncTaskId = String.format("realtime-%s", null != dataSourceMetaData.getCatalog() ? dataSourceMetaData.getCatalog() : dataSourceMetaData.getSchema());
+        syncTaskId = String.format("incremental-%s", null != dataSourceMetaData.getCatalog() ? dataSourceMetaData.getCatalog() : dataSourceMetaData.getSchema());
     }
     
     @Override
@@ -123,6 +123,6 @@ public final class RealtimeDataSyncTask implements SyncTask {
     
     @Override
     public SyncProgress getProgress() {
-        return new RealTimeDataSyncTaskProgress(syncTaskId, delayMillisecond, logPositionManager.getCurrentPosition());
+        return new IncrementalDataSyncTaskProgress(syncTaskId, delayMillisecond, logPositionManager.getCurrentPosition());
     }
 }
