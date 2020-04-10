@@ -87,6 +87,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             return new ErrorResponse(new TableModifyInTransactionException(getTableName(sqlStatementContext)));
         }
         response = executeEngine.execute(executionContext);
+        // TODO refresh non-sharding table meta data
         if (logicSchema instanceof ShardingSchema) {
             logicSchema.refreshTableMetaData(executionContext.getSqlStatementContext());
         }

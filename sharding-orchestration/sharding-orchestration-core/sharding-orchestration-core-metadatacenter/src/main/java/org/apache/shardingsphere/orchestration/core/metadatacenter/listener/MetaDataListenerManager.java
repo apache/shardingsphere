@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.core.metadatacenter.listener;
 
-import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.center.CenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 
 import java.util.Collection;
@@ -29,8 +29,8 @@ public class MetaDataListenerManager {
     
     private final MetaDataChangedListener metaDataChangedListener;
     
-    public MetaDataListenerManager(final String name, final ConfigCenterRepository configCenterRepository, final Collection<String> shardingSchemaNames) {
-        metaDataChangedListener = new MetaDataChangedListener(name, configCenterRepository, shardingSchemaNames);
+    public MetaDataListenerManager(final String name, final CenterRepository centerRepository, final Collection<String> shardingSchemaNames) {
+        metaDataChangedListener = new MetaDataChangedListener(name, centerRepository, shardingSchemaNames);
     }
     
     /**

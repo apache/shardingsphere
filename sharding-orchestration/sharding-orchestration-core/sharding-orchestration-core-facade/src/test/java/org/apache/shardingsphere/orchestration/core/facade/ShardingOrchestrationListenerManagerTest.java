@@ -23,6 +23,7 @@ import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.core.configcenter.listener.ConfigurationChangedListenerManager;
 import org.apache.shardingsphere.orchestration.core.facade.listener.ShardingOrchestrationListenerManager;
 import org.apache.shardingsphere.orchestration.core.facade.util.FieldUtil;
+import org.apache.shardingsphere.orchestration.core.metadatacenter.listener.MetaDataListenerManager;
 import org.apache.shardingsphere.orchestration.core.registrycenter.listener.StateChangedListenerManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,25 +38,31 @@ import static org.mockito.Mockito.verify;
 public final class ShardingOrchestrationListenerManagerTest {
     
     @Mock
-    private RegistryCenterRepository regCenter;
+    private RegistryCenterRepository registryCenterRepository;
 
     @Mock
     private ConfigCenterRepository configCenterRepository;
     
     @Mock
     private ConfigurationChangedListenerManager configurationChangedListenerManager;
-    
+
+    @Mock
+    private MetaDataListenerManager metaDataListenerManager;
+
     @Mock
     private StateChangedListenerManager stateChangedListenerManager;
     
     @Test
     public void assertInitListeners() {
-        ShardingOrchestrationListenerManager actual = new ShardingOrchestrationListenerManager("testRegCenter", regCenter,
-                                                                            "FirstTestConfigCenter", configCenterRepository, Collections.emptyList());
+        ShardingOrchestrationListenerManager actual = new ShardingOrchestrationListenerManager("testRegCenter", registryCenterRepository,
+                                                     "FirstTestConfigCenter", configCenterRepository,
+                                                     "FirstTestConfigCenter", configCenterRepository, Collections.emptyList());
         FieldUtil.setField(actual, "configurationChangedListenerManager", configurationChangedListenerManager);
         FieldUtil.setField(actual, "stateChangedListenerManager", stateChangedListenerManager);
+        FieldUtil.setField(actual, "metaDataListenerManager", metaDataListenerManager);
         actual.initListeners();
         verify(configurationChangedListenerManager).initListeners();
         verify(stateChangedListenerManager).initListeners();
+        verify(metaDataListenerManager).initListeners();
     }
 }

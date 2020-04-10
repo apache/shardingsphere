@@ -51,6 +51,7 @@ import java.util.Properties;
 public final class ShardingOrchestrationFacade implements AutoCloseable {
     
     static {
+        // TODO avoid multiple loading
         ShardingSphereServiceLoader.register(ConfigCenterRepository.class);
         ShardingSphereServiceLoader.register(RegistryCenterRepository.class);
     }
@@ -102,8 +103,10 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
         metaDataCenter = new MetaDataCenter(metaDataCenterName.get(), centerRepository);
         listenerManager = shardingSchemaNames.isEmpty()
                 ? new ShardingOrchestrationListenerManager(
-                registryCenterName.get(), registryCenterRepository, configCenterName.get(), configCenterRepository,  metaDataCenterName.get(), configCenter.getAllShardingSchemaNames())
-                : new ShardingOrchestrationListenerManager(registryCenterName.get(), registryCenterRepository, configCenterName.get(), configCenterRepository, metaDataCenterName.get(), shardingSchemaNames);
+                registryCenterName.get(), registryCenterRepository, configCenterName.get(),
+                configCenterRepository, metaDataCenterName.get(), centerRepository, configCenter.getAllShardingSchemaNames())
+                : new ShardingOrchestrationListenerManager(registryCenterName.get(), registryCenterRepository,
+                configCenterName.get(), configCenterRepository, metaDataCenterName.get(), centerRepository, shardingSchemaNames);
         instance = this;
     }
     
@@ -137,6 +140,7 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
         try {
             configCenterRepository.close();
             registryCenterRepository.close();
+            centerRepository.close();
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
