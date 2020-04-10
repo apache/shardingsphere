@@ -52,7 +52,7 @@ orchestration:
       timeout: 3000
       
   demo_zookeeper_yaml_ds_ms:
-    orchestrationType: registry_center
+    orchestrationType: registry_center,metadata_center
     instanceType: zookeeper
     serverLists: localhost:2181
     namespace:

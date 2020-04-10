@@ -30,7 +30,7 @@
 
 <orchestraion:instance id="confCenter" orchestration-type="config_center" instance-type="nacos" server-lists="localhost:8848" namespace=""
                        props-ref="instance-props" />
-<orchestraion:instance id="regCenter" orchestration-type="registry_center" instance-type="zookeeper" server-lists="localhost:2181" namespace=""
+<orchestraion:instance id="regCenter" orchestration-type="registry_center,metadata_center" instance-type="zookeeper" server-lists="localhost:2181" namespace=""
                        props-ref="instance-props" />
 </beans>
 
