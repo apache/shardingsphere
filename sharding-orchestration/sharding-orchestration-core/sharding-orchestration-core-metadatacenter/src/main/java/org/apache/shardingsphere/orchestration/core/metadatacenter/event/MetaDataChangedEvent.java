@@ -22,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.orchestration.core.common.event.ShardingOrchestrationEvent;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
 
+import java.util.Collection;
+
 /**
  * Meta data changed event.
  */
@@ -29,7 +31,7 @@ import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMet
 @Getter
 public final class MetaDataChangedEvent implements ShardingOrchestrationEvent {
 
-    private final String schemaName;
+    private final Collection<String> schemaNames;
 
     private final RuleSchemaMetaData ruleSchemaMetaData;
 }
