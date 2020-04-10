@@ -46,8 +46,7 @@ public final class PrepareEngine {
      * @return execution context
      */
     public ExecutionContext prepare(final String sql, final SQLStatementContext sqlStatementContext, final SQLRewriteResult sqlRewriteResult) {
-        ExecutionContext result = new ExecutionContext(sqlStatementContext);
-        result.getExecutionUnits().addAll(ExecutionContextBuilder.build(metaData, sqlRewriteResult));
+        ExecutionContext result = new ExecutionContext(sqlStatementContext, ExecutionContextBuilder.build(metaData, sqlRewriteResult));
         if (properties.<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
             SQLLogger.logSQL(sql, properties.<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), result.getSqlStatementContext(), result.getExecutionUnits());
         }
