@@ -41,7 +41,7 @@ public class RegistryCenterConfigurationUtil {
         CenterConfiguration result = new CenterConfiguration("zookeeper", properties);
         result.setServerLists(ZOOKEEPER_CONNECTION_STRING);
         result.setNamespace(NAMESPACE);
-        result.setOrchestrationType("registry_center,config_center");
+        result.setOrchestrationType("registry_center,config_center,metadata_center");
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
                 instanceConfigurationMap.put("orchestration-sharding-data-source", result);

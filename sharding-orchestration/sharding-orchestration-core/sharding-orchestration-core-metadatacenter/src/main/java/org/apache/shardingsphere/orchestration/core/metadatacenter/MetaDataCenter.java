@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.orchestration.core.metadatacenter;
 
 import org.apache.shardingsphere.orchestration.center.CenterRepository;
-import org.apache.shardingsphere.orchestration.core.metadatacenter.listener.MetaDataChangedListener;
 import org.apache.shardingsphere.orchestration.core.metadatacenter.yaml.RuleSchemaMetaDataYamlSwapper;
 import org.apache.shardingsphere.orchestration.core.metadatacenter.yaml.YamlRuleSchemaMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
@@ -57,14 +56,5 @@ public final class MetaDataCenter {
     public RuleSchemaMetaData loadRuleSchemaMetaData(final String schemaName) {
         return new RuleSchemaMetaDataYamlSwapper().swap(YamlEngine.unmarshal(repository.get(node.getMetaDataCenterNodeFullPath(schemaName)), YamlRuleSchemaMetaData.class));
     }
-
-    /**
-     * Create meta data change listener of the schema.
-     *
-     * @param schemaName schema name
-     * @return Meta data change listener of the schema
-     */
-    public MetaDataChangedListener createMetaDataChangeListener(final String schemaName) {
-        return new MetaDataChangedListener(this.repository, this.node, schemaName);
-    }
+    
 }

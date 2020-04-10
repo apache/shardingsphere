@@ -15,27 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.execute.executor.checker;
+package org.apache.shardingsphere.orchestration.core.metadatacenter.listener;
 
-import org.apache.shardingsphere.shardingscaling.core.exception.DatasourceCheckFailedException;
+import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Collection;
 
 /**
- * Abstract data source checker.
+ * Meta data listener manager.
  */
-public abstract class AbstractDataSourceChecker implements DataSourceChecker {
+public class MetaDataListenerManager {
     
-    @Override
-    public final void checkConnection(final Collection<DataSource> dataSources) {
-        try {
-            for (DataSource each : dataSources) {
-                each.getConnection().close();
-            }
-        } catch (SQLException e) {
-            throw new DatasourceCheckFailedException("Datasources can't connected!");
-        }
+    private final MetaDataChangedListener metaDataChangedListener;
+    
+    public MetaDataListenerManager(final String name, final ConfigCenterRepository configCenterRepository, final Collection<String> shardingSchemaNames) {
+        metaDataChangedListener = new MetaDataChangedListener(name, configCenterRepository, shardingSchemaNames);
+    }
+    
+    /**
+     * Initialize all metadata changed listeners.
+     */
+    public void initListeners() {
+        metaDataChangedListener.watch(DataChangedEvent.ChangedType.UPDATED);
     }
 }

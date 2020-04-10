@@ -15,22 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.synctask.history;
+package org.apache.shardingsphere.shardingscaling.core.synctask.incremental;
+
+import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPosition;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 
 /**
- * History data sync task progress.
+ * Real-time data sync task progress.
  */
-@RequiredArgsConstructor
 @Getter
-public final class HistoryDataSyncTaskProgress implements SyncProgress {
+@RequiredArgsConstructor
+public final class IncrementalDataSyncTaskProgress implements SyncProgress {
     
     private final String id;
     
-    private final long estimatedRows;
+    private final long delayMillisecond;
     
-    private final long syncedRows;
+    private final LogPosition logPosition;
 }

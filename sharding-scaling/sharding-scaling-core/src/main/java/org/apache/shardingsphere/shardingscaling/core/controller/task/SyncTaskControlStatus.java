@@ -33,14 +33,14 @@ public enum SyncTaskControlStatus {
     PREPARING(false),
     
     /**
-     * Task is in migrate history data status.
+     * Task is in migrate inventory data status.
      */
-    MIGRATE_HISTORY_DATA(false),
+    MIGRATE_INVENTORY_DATA(false),
     
     /**
-     * Task is in synchronize realtime data status.
+     * Task is in synchronize incremental data status.
      */
-    SYNCHRONIZE_REALTIME_DATA(false),
+    SYNCHRONIZE_INCREMENTAL_DATA(false),
     
     /**
      * Task is stopping.
@@ -53,14 +53,14 @@ public enum SyncTaskControlStatus {
     STOPPED(true),
     
     /**
-     * Task has stopped by failing to migrate history data.
+     * Task has stopped by failing to migrate inventory data.
      */
-    MIGRATE_HISTORY_DATA_FAILURE(true),
+    MIGRATE_INVENTORY_DATA_FAILURE(true),
     
     /**
-     * Task has stopped by failing to synchronize realtime data.
+     * Task has stopped by failing to synchronize incremental data.
      */
-    SYNCHRONIZE_REALTIME_DATA_FAILURE(true);
+    SYNCHRONIZE_INCREMENTAL_DATA_FAILURE(true);
     
     private final boolean stoppedStatus;
 }
