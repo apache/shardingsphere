@@ -22,6 +22,7 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.A
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -31,23 +32,52 @@ import java.util.Collection;
  */
 public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
     
+    private static final String QUERY_SQL = "SELECT * FROM %s LIMIT 1";
+    
+    private static final String SHOW_MASTER_STATUS_SQL = "SHOW MASTER STATUS";
+    
     @Override
     public void checkPrivilege(final Collection<DataSource> dataSources) {
-        try {
-            for (DataSource dataSource : dataSources) {
-                String tableName;
-                Connection connection = dataSource.getConnection();
-                ResultSet tables = connection.getMetaData().getTables(connection.getCatalog(), null, "%", new String[]{"TABLE"});
-                if (tables.next()) {
-                    tableName = tables.getString(3);
-                } else {
-                    throw new DatasourceCheckFailedException("No tables find in the source datasource");
-                }
-                connection.prepareStatement(String.format("SELECT * FROM %s LIMIT 1", tableName)).executeQuery();
-                connection.prepareStatement("SHOW MASTER STATUS").executeQuery();
+        for (DataSource each : dataSources) {
+            checkPrivilege0(each);
+        }
+    }
+    
+    private void checkPrivilege0(final DataSource dataSource) {
+        try (Connection connection = dataSource.getConnection()) {
+            String tableName = getFirstTableName(connection);
+            checkQueuePrivilege(connection, tableName);
+            checkBinlogPrivilege(connection);
+        } catch (SQLException e) {
+            throw new DatasourceCheckFailedException("Datasources privileges check failed!");
+        }
+    }
+    
+    private String getFirstTableName(final Connection connection) throws SQLException {
+        try (ResultSet tables = connection.getMetaData().getTables(connection.getCatalog(), null, "%", new String[]{"TABLE"})) {
+            if (tables.next()) {
+                return tables.getString(3);
+            }
+            throw new DatasourceCheckFailedException("No tables find in the source datasource.");
+        }
+    }
+    
+    private void checkQueuePrivilege(final Connection connection, final String tableName) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(String.format(QUERY_SQL, tableName))) {
+            preparedStatement.executeQuery();
+        } catch (SQLException e) {
+            throw new DatasourceCheckFailedException("Source datasource is lack of query privileges.");
+        }
+    }
+    
+    private void checkBinlogPrivilege(final Connection connection) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SHOW_MASTER_STATUS_SQL);
+            ResultSet resultSet = preparedStatement.executeQuery()) {
+            if (!resultSet.next()) {
+                throw new DatasourceCheckFailedException("Source datasource do not open binlog.");
             }
         } catch (SQLException e) {
-            throw new DatasourceCheckFailedException("Datasources check failed!");
+            throw new DatasourceCheckFailedException("Source datasource is lack of replication(binlog) privileges.");
         }
     }
 }
