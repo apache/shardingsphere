@@ -26,9 +26,11 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.EncryptRunt
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.EncryptResultSet;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationStatement;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
-import org.apache.shardingsphere.underlying.pluggble.prepare.PrepareEngine;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionContextBuilder;
+import org.apache.shardingsphere.underlying.executor.log.SQLLogger;
 import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.underlying.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.underlying.route.DataNodeRouter;
@@ -94,12 +96,14 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
         Collection<BaseRule> rules = Collections.singletonList(runtimeContext.getRule());
         RouteContext routeContext = new DataNodeRouter(runtimeContext.getMetaData(), runtimeContext.getProperties(),
                 rules).route(runtimeContext.getSqlParserEngine().parse(sql, false), sql, Collections.emptyList());
+        sqlStatementContext = routeContext.getSqlStatementContext();
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(
                 runtimeContext.getMetaData().getSchema().getConfiguredSchemaMetaData(), runtimeContext.getProperties(), rules).rewrite(sql, Collections.emptyList(), routeContext);
-        PrepareEngine prepareEngine = new PrepareEngine(runtimeContext.getProperties(), runtimeContext.getMetaData());
-        ExecutionContext executionContext = prepareEngine.prepare(sql, routeContext.getSqlStatementContext(), sqlRewriteResult);
+        ExecutionContext executionContext = new ExecutionContext(sqlStatementContext, ExecutionContextBuilder.build(runtimeContext.getMetaData(), sqlRewriteResult));
         Preconditions.checkArgument(1 == executionContext.getExecutionUnits().size());
-        sqlStatementContext = executionContext.getSqlStatementContext();
+        if (runtimeContext.getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
+            SQLLogger.logSQL(sql, runtimeContext.getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
+        }
         return executionContext.getExecutionUnits().iterator().next().getSqlUnit().getSql();
     }
     
