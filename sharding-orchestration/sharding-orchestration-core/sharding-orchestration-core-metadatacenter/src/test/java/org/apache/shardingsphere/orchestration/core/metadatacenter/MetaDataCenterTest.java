@@ -63,9 +63,4 @@ public final class MetaDataCenterTest {
         assertNotNull(ruleSchemaMetaData.getConfiguredSchemaMetaData());
         assertNotNull(ruleSchemaMetaData.getUnconfiguredSchemaMetaDataMap());
     }
-    
-    @Test
-    public void assertCreateMetaDataChangeListener() {
-        assertNotNull(metaDataCenter.createMetaDataChangeListener("schema"));
-    }
 }

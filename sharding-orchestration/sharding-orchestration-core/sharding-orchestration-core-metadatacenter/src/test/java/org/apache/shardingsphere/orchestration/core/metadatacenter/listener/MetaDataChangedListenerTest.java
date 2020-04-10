@@ -19,12 +19,13 @@ package org.apache.shardingsphere.orchestration.core.metadatacenter.listener;
 
 import org.apache.shardingsphere.orchestration.center.CenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
-import org.apache.shardingsphere.orchestration.core.metadatacenter.MetaDataCenterNode;
 import org.apache.shardingsphere.orchestration.core.metadatacenter.MetaDataTest;
 import org.apache.shardingsphere.orchestration.core.metadatacenter.event.MetaDataChangedEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -39,8 +40,7 @@ public final class MetaDataChangedListenerTest {
     
     @Before
     public void setUp() {
-        MetaDataCenterNode metaDataCenterNode = new MetaDataCenterNode("test");
-        metaDataChangedListener = new MetaDataChangedListener(centerRepository, metaDataCenterNode, "schema");
+        metaDataChangedListener = new MetaDataChangedListener("test", centerRepository, Collections.singleton("schema"));
     }
     
     @Test
@@ -48,6 +48,6 @@ public final class MetaDataChangedListenerTest {
         DataChangedEvent event = new DataChangedEvent("/test/metadata/schema", MetaDataTest.META_DATA, DataChangedEvent.ChangedType.UPDATED);
         MetaDataChangedEvent metaDataChangedEvent = (MetaDataChangedEvent) metaDataChangedListener.createShardingOrchestrationEvent(event);
         assertNotNull(metaDataChangedEvent);
-        assertThat(metaDataChangedEvent.getSchemaName(), is("schema"));
+        assertThat(metaDataChangedEvent.getSchemaNames(), is(Collections.singleton("schema")));
     }
 }
