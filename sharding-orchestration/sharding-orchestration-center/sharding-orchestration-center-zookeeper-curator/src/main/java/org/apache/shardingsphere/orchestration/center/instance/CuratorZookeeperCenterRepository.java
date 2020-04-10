@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Distributed lock center for zookeeper with curator.
@@ -54,6 +55,8 @@ import java.util.concurrent.TimeUnit;
 public final class CuratorZookeeperCenterRepository implements ConfigCenterRepository, RegistryCenterRepository {
     
     private final Map<String, TreeCache> caches = new HashMap<>();
+    
+    private static volatile AtomicBoolean initialized = new AtomicBoolean(false);
     
     private CuratorFramework client;
     
@@ -63,6 +66,9 @@ public final class CuratorZookeeperCenterRepository implements ConfigCenterRepos
     
     @Override
     public void init(final CenterConfiguration config) {
+        if (!initialized.compareAndSet(false, true)) {
+            return;
+        }
         ZookeeperProperties zookeeperProperties = new ZookeeperProperties(properties);
         client = buildCuratorClient(config, zookeeperProperties);
         initCuratorClient(zookeeperProperties);

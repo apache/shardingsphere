@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Config center for Apollo.
@@ -45,6 +46,8 @@ import java.util.Properties;
 public final class ApolloCenterRepository implements ConfigCenterRepository {
     
     private final Map<String, DataChangedEventListener> caches = new HashMap<>();
+    
+    private static volatile AtomicBoolean initialized = new AtomicBoolean(false);
     
     private ApolloConfigWrapper configWrapper;
     
@@ -56,6 +59,9 @@ public final class ApolloCenterRepository implements ConfigCenterRepository {
     
     @Override
     public void init(final CenterConfiguration config) {
+        if (!initialized.compareAndSet(false, true)) {
+            return;
+        }
         ApolloProperties apolloProperties = new ApolloProperties(properties);
         configWrapper = new ApolloConfigWrapper(config, apolloProperties);
         openApiWrapper = new ApolloOpenApiWrapper(config, apolloProperties);

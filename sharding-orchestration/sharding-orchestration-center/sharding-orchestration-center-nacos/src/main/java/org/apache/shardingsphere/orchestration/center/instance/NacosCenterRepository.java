@@ -34,12 +34,15 @@ import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * The nacos instance for ConfigCenter.
  */
 @Slf4j
 public final class NacosCenterRepository implements ConfigCenterRepository {
+    
+    private static volatile AtomicBoolean initialized = new AtomicBoolean(false);
     
     private ConfigService configService;
     
@@ -57,6 +60,9 @@ public final class NacosCenterRepository implements ConfigCenterRepository {
     @Override
     public void init(final CenterConfiguration config) {
         try {
+            if (!initialized.compareAndSet(false, true)) {
+                return;
+            }
             nacosProperties = new NacosProperties(properties);
             Properties properties = new Properties();
             properties.put(PropertyKeyConst.SERVER_ADDR, config.getServerLists());

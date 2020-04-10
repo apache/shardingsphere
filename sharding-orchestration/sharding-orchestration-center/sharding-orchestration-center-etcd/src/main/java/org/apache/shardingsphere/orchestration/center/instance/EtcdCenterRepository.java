@@ -39,12 +39,15 @@ import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration
 
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
  * ETCD registry center.
  */
 public final class EtcdCenterRepository implements ConfigCenterRepository, RegistryCenterRepository {
+    
+    private static volatile AtomicBoolean initialized = new AtomicBoolean(false);
     
     private Client client;
     
@@ -58,6 +61,9 @@ public final class EtcdCenterRepository implements ConfigCenterRepository, Regis
 
     @Override
     public void init(final CenterConfiguration config) {
+        if (!initialized.compareAndSet(false, true)) {
+            return;
+        }
         this.config = config;
         this.etcdProperties = new EtcdProperties(this.properties);
         client = Client.builder().endpoints(Util.toURIs(Splitter.on(",").trimResults().splitToList(config.getServerLists()))).build();
