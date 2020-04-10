@@ -80,6 +80,15 @@ public final class ApolloOpenApiWrapper {
         publishNamespace();
     }
     
+    /**
+     * Remove config.
+     *
+     * @param key key
+     */
+    public void remove(final String key) {
+        client.removeItem(appId, env, clusterName, namespace, key, administrator);
+    }
+    
     private void updateKey(final String key, final String value) {
         OpenItemDTO openItem = new OpenItemDTO();
         openItem.setKey(key);

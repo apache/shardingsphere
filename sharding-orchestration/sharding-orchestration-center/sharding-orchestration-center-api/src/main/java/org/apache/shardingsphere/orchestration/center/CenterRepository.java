@@ -73,4 +73,11 @@ public interface CenterRepository extends TypedSPI {
      * @param dataChangedEventListener data changed event listener
      */
     void watch(String key, DataChangedEventListener dataChangedEventListener);
+    
+    /**
+     * Delete node.
+     *
+     * @param key key of data
+     */
+    void delete(String key);
 }

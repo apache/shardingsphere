@@ -31,11 +31,11 @@ public abstract class AbstractDataSourceChecker implements DataSourceChecker {
     @Override
     public final void checkConnection(final Collection<DataSource> dataSources) {
         try {
-            for (DataSource dataSource : dataSources) {
-                dataSource.getConnection();
+            for (DataSource each : dataSources) {
+                each.getConnection().close();
             }
         } catch (SQLException e) {
-            throw new DatasourceCheckFailedException("Datasources check failed!");
+            throw new DatasourceCheckFailedException("Datasources can't connected!");
         }
     }
 }

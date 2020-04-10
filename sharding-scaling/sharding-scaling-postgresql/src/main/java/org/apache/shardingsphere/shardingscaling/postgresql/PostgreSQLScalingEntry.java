@@ -19,10 +19,10 @@ package org.apache.shardingsphere.shardingscaling.postgresql;
 
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.DataSourceChecker;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.JDBCReader;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.JDBCDumper;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.LogDumper;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.importer.Importer;
 import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntry;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.LogReader;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Writer;
 
 /**
  * PostgreSQL scaling entry.
@@ -30,13 +30,13 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Wr
 public final class PostgreSQLScalingEntry implements ScalingEntry {
     
     @Override
-    public Class<? extends JDBCReader> getJdbcReaderClass() {
-        return PostgreSQLJdbcReader.class;
+    public Class<? extends JDBCDumper> getJdbcDumperClass() {
+        return PostgreSQLJdbcDumper.class;
     }
     
     @Override
-    public Class<? extends LogReader> getLogReaderClass() {
-        return PostgreSQLWalReader.class;
+    public Class<? extends LogDumper> getLogDumperClass() {
+        return PostgreSQLWalDumper.class;
     }
     
     @Override
@@ -45,8 +45,8 @@ public final class PostgreSQLScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public Class<? extends Writer> getWriterClass() {
-        return PostgreSQLWriter.class;
+    public Class<? extends Importer> getImporterClass() {
+        return PostgreSQLImporter.class;
     }
     
     @Override

@@ -26,6 +26,26 @@
                 <table-factor>
                     <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
                 </table-factor>
+                <joinSpecification>
+                    <and-predicate>
+                        <predicate start-index="49" stop-index="69">
+                            <column-left-value name="user_id" start-index="49" stop-index="57">
+                                <owner name="o" start-index="49" stop-index="49" />
+                            </column-left-value>
+                            <column-right-value name="user_id" start-index="61" stop-index="69">
+                                <owner name="i" start-index="61" stop-index="61" />
+                            </column-right-value>
+                        </predicate>
+                        <predicate start-index="75" stop-index="97">
+                            <column-left-value name="order_id" start-index="75" stop-index="84">
+                                <owner name="o" start-index="75" stop-index="75" />
+                            </column-left-value>
+                            <column-right-value name="order_id" start-index="88" stop-index="97">
+                                <owner name="i" start-index="88" stop-index="88" />
+                            </column-right-value>
+                        </predicate>
+                    </and-predicate>
+                </joinSpecification>
             </join-table>
         </table-reference>
         <projections start-index="7" stop-index="9">
@@ -79,6 +99,26 @@
                 <table-factor>
                     <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
                 </table-factor>
+                <joinSpecification>
+                    <and-predicate>
+                        <predicate start-index="49" stop-index="69">
+                            <column-left-value name="user_id" start-index="49" stop-index="57">
+                                <owner name="o" start-index="49" stop-index="49" />
+                            </column-left-value>
+                            <column-right-value name="user_id" start-index="61" stop-index="69">
+                                <owner name="i" start-index="61" stop-index="61" />
+                            </column-right-value>
+                        </predicate>
+                        <predicate start-index="75" stop-index="97">
+                            <column-left-value name="order_id" start-index="75" stop-index="84">
+                                <owner name="o" start-index="75" stop-index="75" />
+                            </column-left-value>
+                            <column-right-value name="order_id" start-index="88" stop-index="97">
+                                <owner name="i" start-index="88" stop-index="88" />
+                            </column-right-value>
+                        </predicate>
+                    </and-predicate>
+                </joinSpecification>
             </join-table>
         </table-reference>
 
@@ -132,6 +172,26 @@
                 <table-factor>
                     <table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="33" stop-index="46" />
                 </table-factor>
+                <joinSpecification>
+                    <and-predicate>
+                        <predicate start-index="53" stop-index="73">
+                            <column-left-value name="user_id" start-index="53" stop-index="61">
+                                <owner name="o" start-index="53" stop-index="53" />
+                            </column-left-value>
+                            <column-right-value name="user_id" start-index="65" stop-index="73">
+                                <owner name="i" start-index="65" stop-index="65" />
+                            </column-right-value>
+                        </predicate>
+                        <predicate start-index="79" stop-index="101">
+                            <column-left-value name="order_id" start-index="79" stop-index="88">
+                                <owner name="o" start-index="79" stop-index="79" />
+                            </column-left-value>
+                            <column-right-value name="order_id" start-index="92" stop-index="101">
+                                <owner name="i" start-index="92" stop-index="92" />
+                            </column-right-value>
+                        </predicate>
+                    </and-predicate>
+                </joinSpecification>
             </join-table>
         </table-reference>
         <projections start-index="7" stop-index="9">
@@ -185,6 +245,26 @@
                 <table-factor>
                     <table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="33" stop-index="46" />
                 </table-factor>
+                <joinSpecification>
+                    <and-predicate>
+                        <predicate start-index="53" stop-index="73">
+                            <column-left-value name="user_id" start-index="53" stop-index="61">
+                                <owner name="o" start-index="53" stop-index="53" />
+                            </column-left-value>
+                            <column-right-value name="user_id" start-index="65" stop-index="73">
+                                <owner name="i" start-index="65" stop-index="65" />
+                            </column-right-value>
+                        </predicate>
+                        <predicate start-index="79" stop-index="101">
+                            <column-left-value name="order_id" start-index="79" stop-index="88">
+                                <owner name="o" start-index="79" stop-index="79" />
+                            </column-left-value>
+                            <column-right-value name="order_id" start-index="92" stop-index="101">
+                                <owner name="i" start-index="92" stop-index="92" />
+                            </column-right-value>
+                        </predicate>
+                    </and-predicate>
+                </joinSpecification>
             </join-table>
         </table-reference>
         <projections start-index="7" stop-index="9">
@@ -294,6 +374,26 @@
                 <table-factor>
                     <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
                 </table-factor>
+                <joinSpecification>
+                    <and-predicate>
+                        <predicate start-index="49" stop-index="69">
+                            <column-left-value name="user_id" start-index="49" stop-index="57">
+                                <owner name="o" start-index="49" stop-index="49" />
+                            </column-left-value>
+                            <column-right-value name="user_id" start-index="61" stop-index="69">
+                                <owner name="i" start-index="61" stop-index="61" />
+                            </column-right-value>
+                        </predicate>
+                        <predicate start-index="75" stop-index="97">
+                            <column-left-value name="order_id" start-index="75" stop-index="84">
+                                <owner name="o" start-index="75" stop-index="75" />
+                            </column-left-value>
+                            <column-right-value name="order_id" start-index="88" stop-index="97">
+                                <owner name="i" start-index="88" stop-index="88" />
+                            </column-right-value>
+                        </predicate>
+                    </and-predicate>
+                </joinSpecification>
             </join-table>
         </table-reference>
         <projections start-index="7" stop-index="9">
@@ -348,6 +448,26 @@
                 <table-factor>
                     <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
                 </table-factor>
+                <joinSpecification>
+                    <and-predicate>
+                        <predicate start-index="49" stop-index="69">
+                            <column-left-value name="user_id" start-index="49" stop-index="57">
+                                <owner name="o" start-index="49" stop-index="49" />
+                            </column-left-value>
+                            <column-right-value name="user_id" start-index="61" stop-index="69">
+                                <owner name="i" start-index="61" stop-index="61" />
+                            </column-right-value>
+                        </predicate>
+                        <predicate start-index="75" stop-index="97">
+                            <column-left-value name="order_id" start-index="75" stop-index="84">
+                                <owner name="o" start-index="75" stop-index="75" />
+                            </column-left-value>
+                            <column-right-value name="order_id" start-index="88" stop-index="97">
+                                <owner name="i" start-index="88" stop-index="88" />
+                            </column-right-value>
+                        </predicate>
+                    </and-predicate>
+                </joinSpecification>
             </join-table>
         </table-reference>
         <projections start-index="7" stop-index="9">

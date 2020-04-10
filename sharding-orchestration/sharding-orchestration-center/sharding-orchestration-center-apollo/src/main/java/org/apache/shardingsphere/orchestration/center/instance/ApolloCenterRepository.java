@@ -63,8 +63,8 @@ public final class ApolloCenterRepository implements ConfigCenterRepository {
     
     @Override
     public String get(final String key) {
-        String value = configWrapper.getProperty(ConfigKeyUtils.path2Key(key));
-        return Strings.isNullOrEmpty(value) ? openApiWrapper.getValue(ConfigKeyUtils.path2Key(key)) : value;
+        String value = configWrapper.getProperty(ConfigKeyUtils.pathToKey(key));
+        return Strings.isNullOrEmpty(value) ? openApiWrapper.getValue(ConfigKeyUtils.pathToKey(key)) : value;
     }
     
     @Override
@@ -75,7 +75,7 @@ public final class ApolloCenterRepository implements ConfigCenterRepository {
     @Override
     public void persist(final String key, final String value) {
         try {
-            openApiWrapper.persist(ConfigKeyUtils.path2Key(key), value);
+            openApiWrapper.persist(ConfigKeyUtils.pathToKey(key), value);
             // CHECKSTYLE:OFF
         } catch (Exception ex) {
             // CHECKSTYLE:ON
@@ -85,7 +85,7 @@ public final class ApolloCenterRepository implements ConfigCenterRepository {
     
     @Override
     public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
-        String apolloKey = ConfigKeyUtils.path2Key(key);
+        String apolloKey = ConfigKeyUtils.pathToKey(key);
         caches.put(apolloKey, dataChangedEventListener);
         ConfigChangeListener listener = changeEvent -> {
             for (String changeKey : changeEvent.changedKeys()) {
@@ -97,10 +97,15 @@ public final class ApolloCenterRepository implements ConfigCenterRepository {
                 if (caches.get(changeKey) == null) {
                     continue;
                 }
-                caches.get(changeKey).onChange(new DataChangedEvent(ConfigKeyUtils.key2Path(changeKey), change.getNewValue(), changedType));
+                caches.get(changeKey).onChange(new DataChangedEvent(ConfigKeyUtils.keyToPath(changeKey), change.getNewValue(), changedType));
             }
         };
         configWrapper.addChangeListener(listener, Collections.singleton(apolloKey), Collections.singleton(apolloKey));
+    }
+    
+    @Override
+    public void delete(final String key) {
+        openApiWrapper.remove(ConfigKeyUtils.pathToKey(key));
     }
     
     private DataChangedEvent.ChangedType getChangedType(final PropertyChangeType changeType) {

@@ -26,6 +26,18 @@
                 <table-factor>
                     <table name="t_order_item" alias="i" start-index="37" stop-index="48" />
                 </table-factor>
+                <joinSpecification>
+                    <and-predicate>
+                        <predicate start-index="55" stop-index="77">
+                            <column-left-value name="order_id" start-index="55" stop-index="64">
+                                <owner name="o" start-index="55" stop-index="55" />
+                            </column-left-value>
+                            <column-right-value name="order_id" start-index="68" stop-index="77">
+                                <owner name="i" start-index="68" stop-index="68" />
+                            </column-right-value>
+                        </predicate>
+                    </and-predicate>
+                </joinSpecification>
             </join-table>
         </table-reference>
         <projections start-index="7" stop-index="9">
@@ -58,6 +70,18 @@
                 <table-factor>
                     <table name="t_order_item" start-index="40" stop-index="51" />
                 </table-factor>
+                <joinSpecification>
+                    <and-predicate>
+                        <predicate start-index="56" stop-index="95">
+                            <column-left-value name="order_id" start-index="56" stop-index="71">
+                                <owner name="t_order" start-index="56" stop-index="62" />
+                            </column-left-value>
+                            <column-right-value name="order_id" start-index="75" stop-index="95">
+                                <owner name="t_order_item" start-index="75" stop-index="86" />
+                            </column-right-value>
+                        </predicate>
+                    </and-predicate>
+                </joinSpecification>
             </join-table>
         </table-reference>
         <projections start-index="7" stop-index="20">
@@ -90,6 +114,7 @@
                 <table-factor>
                     <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
                 </table-factor>
+                <joinSpecification />
             </join-table>
         </table-reference>
         <projections start-index="7" stop-index="9">

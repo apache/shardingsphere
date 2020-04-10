@@ -20,23 +20,36 @@ package org.apache.shardingsphere.orchestration.core.metadatacenter;
 import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 /**
- * MetaData node.
+ * Meta data node.
  */
 @RequiredArgsConstructor
 public final class MetaDataCenterNode {
     
-    private static final String ROOT = "metadatas";
+    private static final String ROOT = "metadata";
     
     private final String name;
     
     /**
-     * Get metadata node full path.
+     * Get meta data node full path.
      *
      * @param schemaName schema name
-     * @return metadata node full path
+     * @return meta data node full path
      */
     public String getMetaDataCenterNodeFullPath(final String schemaName) {
         return Joiner.on("/").join("", name, ROOT, schemaName);
+    }
+    
+    /**
+     * Get all schema metadata paths.
+     *
+     * @param schemaNames schema names.
+     * @return metadata paths list.
+     */
+    public Collection<String> getAllSchemaMetadataPaths(final Collection<String> schemaNames) {
+        return schemaNames.stream().map(this::getMetaDataCenterNodeFullPath).collect(Collectors.toList());
     }
 }

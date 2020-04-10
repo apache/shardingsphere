@@ -19,20 +19,20 @@ package org.apache.shardingsphere.shardingscaling.fixture;
 
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.DataSourceChecker;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.JDBCReader;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.LogReader;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Writer;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.JDBCDumper;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.LogDumper;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.importer.Importer;
 import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntry;
 
 public final class FixtureH2ScalingEntry implements ScalingEntry {
     
     @Override
-    public Class<? extends JDBCReader> getJdbcReaderClass() {
+    public Class<? extends JDBCDumper> getJdbcDumperClass() {
         return null;
     }
     
     @Override
-    public Class<? extends LogReader> getLogReaderClass() {
+    public Class<? extends LogDumper> getLogDumperClass() {
         return null;
     }
     
@@ -42,7 +42,7 @@ public final class FixtureH2ScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public Class<? extends Writer> getWriterClass() {
+    public Class<? extends Importer> getImporterClass() {
         return null;
     }
 

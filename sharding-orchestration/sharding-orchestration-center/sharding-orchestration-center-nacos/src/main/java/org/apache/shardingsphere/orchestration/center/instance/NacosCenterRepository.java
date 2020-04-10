@@ -76,7 +76,7 @@ public final class NacosCenterRepository implements ConfigCenterRepository {
     @Override
     public String get(final String key) {
         try {
-            String dataId = ConfigKeyUtils.path2Key(key);
+            String dataId = ConfigKeyUtils.pathToKey(key);
             String group = nacosProperties.getValue(NacosPropertyKey.GROUP);
             long timeoutMs = nacosProperties.getValue(NacosPropertyKey.TIMEOUT);
             return configService.getConfig(dataId, group, timeoutMs);
@@ -106,7 +106,7 @@ public final class NacosCenterRepository implements ConfigCenterRepository {
     @Override
     public void persist(final String key, final String value) {
         try {
-            String dataId = ConfigKeyUtils.path2Key(key);
+            String dataId = ConfigKeyUtils.pathToKey(key);
             String group = nacosProperties.getValue(NacosPropertyKey.GROUP);
             configService.publishConfig(dataId, group, value);
         } catch (final NacosException ex) {
@@ -123,7 +123,7 @@ public final class NacosCenterRepository implements ConfigCenterRepository {
     @Override
     public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
         try {
-            String dataId = ConfigKeyUtils.path2Key(key);
+            String dataId = ConfigKeyUtils.pathToKey(key);
             String group = nacosProperties.getValue(NacosPropertyKey.GROUP);
             configService.addListener(dataId, group, new Listener() {
                 
@@ -139,6 +139,16 @@ public final class NacosCenterRepository implements ConfigCenterRepository {
             });
         } catch (final NacosException ex) {
             log.debug("Nacos watch key exception for: {}", ex.toString());
+        }
+    }
+    
+    @Override
+    public void delete(final String key) {
+        try {
+            String dataId = ConfigKeyUtils.pathToKey(key);
+            configService.removeConfig(dataId, nacosProperties.getValue(NacosPropertyKey.GROUP));
+        } catch (NacosException ex) {
+            log.debug("Nacos remove config exception for: {}", ex.toString());
         }
     }
     

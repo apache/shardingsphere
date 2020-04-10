@@ -9,7 +9,7 @@ weight = 3
 
 ### 部署启动
 
-1. 执行以下命令，编译生成sharding-scaling二进制包：
+#### 1. 执行以下命令，编译生成sharding-scaling二进制包：
 
 ```
 
@@ -20,7 +20,7 @@ mvn clean install -Prelease;
 
 发布包所在目录为：`/sharding-distribution/sharding-scaling-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-scaling-bin.tar.gz`。
 
-2. 解压缩发布包，修改配置文件`conf/server.yaml`，这里主要修改启动端口，保证不与本机其他端口冲突，其他值保持默认即可：
+#### 2. 解压缩发布包，修改配置文件`conf/server.yaml`，这里主要修改启动端口，保证不与本机其他端口冲突，其他值保持默认即可：
 
 ```
 port: 8888
@@ -29,7 +29,7 @@ pushTimeout: 1000
 workerThread: 30
 ```
 
-3. 启动sharding-scaling：
+#### 3. 启动sharding-scaling：
 
 ```
 sh bin/start.sh
@@ -39,7 +39,7 @@ sh bin/start.sh
 如果后端连接MySQL数据库，需要下载[MySQL Connector/J](https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.47.tar.gz)，
 解压缩后，将mysql-connector-java-5.1.47.jar拷贝到${sharding-scaling}\lib目录。
 
-4. 查看日志`logs/stdout.log`，确保启动成功。
+#### 4. 查看日志`logs/stdout.log`，确保启动成功。
 
 ### 创建迁移任务
 

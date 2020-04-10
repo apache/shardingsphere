@@ -19,7 +19,7 @@ package org.apache.shardingsphere.underlying.rewrite.parameterized.engine;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
+import org.apache.shardingsphere.underlying.rewrite.engine.result.SQLRewriteUnit;
 import org.apache.shardingsphere.underlying.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParameters;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,10 +40,10 @@ public abstract class AbstractSQLRewriterParameterizedTest {
     
     @Test
     public void assertRewrite() throws IOException {
-        Collection<SQLRewriteResult> actual = createSQLRewriteResults();
+        Collection<SQLRewriteUnit> actual = createSQLRewriteUnits();
         assertThat(actual.size(), is(testParameters.getOutputSQLs().size()));
         int count = 0;
-        for (SQLRewriteResult each : actual) {
+        for (SQLRewriteUnit each : actual) {
             assertThat(each.getSql(), is(testParameters.getOutputSQLs().get(count)));
             assertThat(each.getParameters().size(), is(testParameters.getOutputGroupedParameters().get(count).size()));
             for (int i = 0; i < each.getParameters().size(); i++) {
@@ -53,5 +53,5 @@ public abstract class AbstractSQLRewriterParameterizedTest {
         }
     }
     
-    protected abstract Collection<SQLRewriteResult> createSQLRewriteResults() throws IOException;
+    protected abstract Collection<SQLRewriteUnit> createSQLRewriteUnits() throws IOException;
 }

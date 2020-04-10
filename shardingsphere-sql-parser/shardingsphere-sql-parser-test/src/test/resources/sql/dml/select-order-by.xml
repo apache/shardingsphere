@@ -286,6 +286,26 @@
                 <table-factor>
                     <table name="t_order_item" alias="i" start-index="36" stop-index="47" />
                 </table-factor>
+                <joinSpecification>
+                    <and-predicate>
+                        <predicate start-index="54" stop-index="74">
+                            <column-left-value name="user_id" start-index="54" stop-index="62">
+                                <owner name="o" start-index="54" stop-index="54" />
+                            </column-left-value>
+                            <column-right-value name="user_id" start-index="66" stop-index="74">
+                                <owner name="i" start-index="66" stop-index="66" />
+                            </column-right-value>
+                        </predicate>
+                        <predicate start-index="80" stop-index="102">
+                            <column-left-value name="order_id" start-index="80" stop-index="89">
+                                <owner name="o" start-index="80" stop-index="80" />
+                            </column-left-value>
+                            <column-right-value name="order_id" start-index="93" stop-index="102">
+                                <owner name="i" start-index="93" stop-index="93" />
+                            </column-right-value>
+                        </predicate>
+                    </and-predicate>
+                </joinSpecification>
             </join-table>
         </table-reference>
         <projections start-index="7" stop-index="14">

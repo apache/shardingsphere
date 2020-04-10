@@ -11,5 +11,4 @@ This chapter mainly introduces the core concepts of distributed transactions, in
 
 * Local transaction
 * 2PC transaction-XA
-* Saga BASE transaction
 * Seata BASE transaction

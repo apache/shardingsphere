@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.shardingscaling.core.spi;
 
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.DataSourceChecker;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.JDBCReader;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.JDBCDumper;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.LogReader;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Writer;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.LogDumper;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.importer.Importer;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypeAwareSPI;
 
 /**
@@ -30,18 +30,18 @@ import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypeAwa
 public interface ScalingEntry extends DatabaseTypeAwareSPI {
     
     /**
-     * Get JDBC reader type.
+     * Get JDBC dumper type.
      *
-     * @return JDBC reader type
+     * @return JDBC dumper type
      */
-    Class<? extends JDBCReader> getJdbcReaderClass();
+    Class<? extends JDBCDumper> getJdbcDumperClass();
     
     /**
-     * Get log reader type.
+     * Get log dumper type.
      *
-     * @return log reader type
+     * @return log dumper type
      */
-    Class<? extends LogReader> getLogReaderClass();
+    Class<? extends LogDumper> getLogDumperClass();
 
     /**
      * Get log position manager type.
@@ -51,11 +51,11 @@ public interface ScalingEntry extends DatabaseTypeAwareSPI {
     Class<? extends LogPositionManager> getLogPositionManager();
     
     /**
-     * Get writer type.
+     * Get importer type.
      *
-     * @return writer type
+     * @return importer type
      */
-    Class<? extends Writer> getWriterClass();
+    Class<? extends Importer> getImporterClass();
 
     /**
      * Get checker type.

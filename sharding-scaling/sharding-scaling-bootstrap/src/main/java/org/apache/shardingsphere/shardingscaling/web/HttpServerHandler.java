@@ -112,7 +112,7 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
     private void checkDatasources(final List<SyncConfiguration> syncConfigurations, final DataSourceManager dataSourceManager) {
         try {
             DataSourceChecker dataSourceChecker = DataSourceCheckerCheckerFactory.newInstanceDataSourceChecker(
-                    syncConfigurations.get(0).getReaderConfiguration().getDataSourceConfiguration().getDatabaseType().getName());
+                    syncConfigurations.get(0).getDumperConfiguration().getDataSourceConfiguration().getDatabaseType().getName());
             dataSourceChecker.checkConnection(new ArrayList<>(dataSourceManager.getCachedDataSources().values()));
             dataSourceChecker.checkPrivilege(new ArrayList<>(dataSourceManager.getSourceDatasources().values()));
         } finally {

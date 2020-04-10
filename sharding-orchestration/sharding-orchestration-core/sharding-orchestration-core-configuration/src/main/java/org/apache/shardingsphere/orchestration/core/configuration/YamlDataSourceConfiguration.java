@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Data source configuration for yaml.
+ * Data source configuration for YAML.
  */
 @Getter
 @Setter

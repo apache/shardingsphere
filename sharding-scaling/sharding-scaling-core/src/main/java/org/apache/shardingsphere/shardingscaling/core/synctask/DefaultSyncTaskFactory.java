@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.shardingscaling.core.synctask;
 
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.synctask.history.HistoryDataSyncTask;
-import org.apache.shardingsphere.shardingscaling.core.synctask.history.HistoryDataSyncTaskGroup;
-import org.apache.shardingsphere.shardingscaling.core.synctask.realtime.RealtimeDataSyncTask;
+import org.apache.shardingsphere.shardingscaling.core.synctask.inventory.InventoryDataSyncTask;
+import org.apache.shardingsphere.shardingscaling.core.synctask.inventory.InventoryDataSyncTaskGroup;
+import org.apache.shardingsphere.shardingscaling.core.synctask.incremental.IncrementalDataSyncTask;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 
 /**
@@ -29,17 +29,17 @@ import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManag
 public final class DefaultSyncTaskFactory implements SyncTaskFactory {
     
     @Override
-    public HistoryDataSyncTaskGroup createHistoryDataSyncTaskGroup(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
-        return new HistoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
+    public InventoryDataSyncTaskGroup createInventoryDataSyncTaskGroup(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
+        return new InventoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
     }
     
     @Override
-    public HistoryDataSyncTask createHistoryDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
-        return new HistoryDataSyncTask(syncConfiguration, dataSourceManager);
+    public InventoryDataSyncTask createInventoryDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
+        return new InventoryDataSyncTask(syncConfiguration, dataSourceManager);
     }
     
     @Override
-    public RealtimeDataSyncTask createRealtimeDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
-        return new RealtimeDataSyncTask(syncConfiguration, dataSourceManager);
+    public IncrementalDataSyncTask createIncrementalDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
+        return new IncrementalDataSyncTask(syncConfiguration, dataSourceManager);
     }
 }

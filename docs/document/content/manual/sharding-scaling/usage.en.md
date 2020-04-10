@@ -14,12 +14,34 @@ The migration scene we support：
 
 | Source     | Destination    | Whether support or not |
 | ---------- | -------------- | ---------------------- |
-| MySQL      | sharding-proxy | support                |
-| PostgreSQL | sharding-proxy | support                |
+| MySQL(5.1.15 ~ 5.7.x)      | sharding-proxy | support                |
+| PostgreSQL(9.4 ~ ) | sharding-proxy | support                |
 
 **Attention**: 
 If the backend database is MySQL, download [MySQL Connector/J](https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.47.tar.gz) 
 and decompress, then copy mysql-connector-java-5.1.47.jar to ${sharding-scaling}\lib directory.
+
+### Privileges
+
+MySQL need to open `binlog`, and `binlog format` should be Row model. Privileges of users scaling used should include Replication privileges.
+
+```
++-----------------------------------------+---------------------------------------+
+| Variable_name                           | Value                                 |
++-----------------------------------------+---------------------------------------+
+| log_bin                                 | ON                                    |
+| binlog_format                           | ROW                                   |
++-----------------------------------------+---------------------------------------+
+
++------------------------------------------------------------------------------+
+|Grants for ${username}@${host}                                                |
++------------------------------------------------------------------------------+
+|GRANT REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO ${username}@${host}     |
+|.......                                                                       |
++------------------------------------------------------------------------------+
+```
+
+PostgreSQL need to support and open [test_decoding](https://www.postgresql.org/docs/9.4/test-decoding.html) feature.
 
 ### API
 

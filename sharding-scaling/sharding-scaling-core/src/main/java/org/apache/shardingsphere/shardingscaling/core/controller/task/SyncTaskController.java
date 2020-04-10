@@ -29,14 +29,14 @@ import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTaskFactory;
 import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
 
 /**
- * Sync task controller, synchronize history data and realtime data.
+ * Sync task controller, synchronize inventory data and incremental data.
  */
 @Slf4j
 public final class SyncTaskController implements Runnable {
     
-    private final SyncTask historyDataSyncTaskGroup;
+    private final SyncTask inventoryDataSyncTaskGroup;
     
-    private final SyncTask realtimeDataSyncTask;
+    private final SyncTask incrementalDataSyncTask;
     
     private final DataSourceManager dataSourceManager = new DataSourceManager();
     
@@ -46,9 +46,9 @@ public final class SyncTaskController implements Runnable {
     
     public SyncTaskController(final SyncConfiguration syncConfiguration) {
         SyncTaskFactory syncTaskFactory = new DefaultSyncTaskFactory();
-        syncTaskId = generateSyncTaskId(syncConfiguration.getReaderConfiguration().getDataSourceConfiguration());
-        this.historyDataSyncTaskGroup = syncTaskFactory.createHistoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
-        this.realtimeDataSyncTask = syncTaskFactory.createRealtimeDataSyncTask(syncConfiguration, dataSourceManager);
+        syncTaskId = generateSyncTaskId(syncConfiguration.getDumperConfiguration().getDataSourceConfiguration());
+        this.inventoryDataSyncTaskGroup = syncTaskFactory.createInventoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
+        this.incrementalDataSyncTask = syncTaskFactory.createIncrementalDataSyncTask(syncConfiguration, dataSourceManager);
         syncTaskControlStatus = SyncTaskControlStatus.PREPARING;
     }
     
@@ -72,8 +72,8 @@ public final class SyncTaskController implements Runnable {
         if (!syncTaskControlStatus.isStoppedStatus()) {
             syncTaskControlStatus = SyncTaskControlStatus.STOPPING;
         }
-        historyDataSyncTaskGroup.stop();
-        realtimeDataSyncTask.stop();
+        inventoryDataSyncTaskGroup.stop();
+        incrementalDataSyncTask.stop();
     }
     
     /**
@@ -83,39 +83,39 @@ public final class SyncTaskController implements Runnable {
      */
     public SyncProgress getProgress() {
         SyncTaskProgress result = new SyncTaskProgress(syncTaskId, syncTaskControlStatus.name());
-        result.setHistorySyncTaskProgress(historyDataSyncTaskGroup.getProgress());
-        result.setRealTimeSyncTaskProgress(realtimeDataSyncTask.getProgress());
+        result.setInventorySyncTaskProgress(inventoryDataSyncTaskGroup.getProgress());
+        result.setIncrementalSyncTaskProgress(incrementalDataSyncTask.getProgress());
         return result;
     }
     
     @Override
     public void run() {
-        realtimeDataSyncTask.prepare();
-        historyDataSyncTaskGroup.prepare();
-        syncTaskControlStatus = SyncTaskControlStatus.MIGRATE_HISTORY_DATA;
-        historyDataSyncTaskGroup.start(event -> {
-            log.info("history data migrate task {} finished, execute result: {}", event.getTaskId(), event.getEventType().name());
+        incrementalDataSyncTask.prepare();
+        inventoryDataSyncTaskGroup.prepare();
+        syncTaskControlStatus = SyncTaskControlStatus.MIGRATE_INVENTORY_DATA;
+        inventoryDataSyncTaskGroup.start(event -> {
+            log.info("inventory data migrate task {} finished, execute result: {}", event.getTaskId(), event.getEventType().name());
             if (EventType.EXCEPTION_EXIT.equals(event.getEventType())) {
                 stop();
                 dataSourceManager.close();
-                syncTaskControlStatus = SyncTaskControlStatus.MIGRATE_HISTORY_DATA_FAILURE;
+                syncTaskControlStatus = SyncTaskControlStatus.MIGRATE_INVENTORY_DATA_FAILURE;
             } else {
-                executeRealTimeSyncTask();
+                executeIncrementalDataSyncTask();
             }
         });
     }
     
-    private void executeRealTimeSyncTask() {
-        if (!SyncTaskControlStatus.MIGRATE_HISTORY_DATA.equals(syncTaskControlStatus)) {
+    private void executeIncrementalDataSyncTask() {
+        if (!SyncTaskControlStatus.MIGRATE_INVENTORY_DATA.equals(syncTaskControlStatus)) {
             dataSourceManager.close();
             syncTaskControlStatus = SyncTaskControlStatus.STOPPED;
             return;
         }
-        realtimeDataSyncTask.start(event -> {
-            log.info("realtime data sync task {} finished, execute result: {}", syncTaskId, event.getEventType().name());
+        incrementalDataSyncTask.start(event -> {
+            log.info("incremental data sync task {} finished, execute result: {}", syncTaskId, event.getEventType().name());
             dataSourceManager.close();
-            syncTaskControlStatus = EventType.FINISHED.equals(event.getEventType()) ? SyncTaskControlStatus.STOPPED : SyncTaskControlStatus.SYNCHRONIZE_REALTIME_DATA_FAILURE;
+            syncTaskControlStatus = EventType.FINISHED.equals(event.getEventType()) ? SyncTaskControlStatus.STOPPED : SyncTaskControlStatus.SYNCHRONIZE_INCREMENTAL_DATA_FAILURE;
         });
-        syncTaskControlStatus = SyncTaskControlStatus.SYNCHRONIZE_REALTIME_DATA;
+        syncTaskControlStatus = SyncTaskControlStatus.SYNCHRONIZE_INCREMENTAL_DATA;
     }
 }

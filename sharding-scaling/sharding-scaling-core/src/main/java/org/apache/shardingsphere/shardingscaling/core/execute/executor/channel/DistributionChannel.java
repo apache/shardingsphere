@@ -35,7 +35,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Realtime data execute channel.
+ * Distribution channel.
  */
 public final class DistributionChannel implements Channel {
     

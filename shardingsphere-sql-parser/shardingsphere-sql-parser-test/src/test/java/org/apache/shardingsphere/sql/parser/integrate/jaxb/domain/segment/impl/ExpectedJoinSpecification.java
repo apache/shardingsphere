@@ -20,8 +20,12 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.AbstractExpectedDelimiterSQLSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.column.ExpectedColumn;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.predicate.ExpectedAndPredicate;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Expected JoinSpecification.
@@ -30,9 +34,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Setter
 public final class ExpectedJoinSpecification extends AbstractExpectedDelimiterSQLSegment {
     
-    @XmlAttribute
-    private String expr;
+    @XmlElement(name = "and-predicate")
+    private final List<ExpectedAndPredicate> andPredicates = new LinkedList<>();
     
-    @XmlAttribute
-    private String columus;
+    @XmlElement
+    private final List<ExpectedColumn> columus = new LinkedList<>();
 }

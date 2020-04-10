@@ -36,7 +36,7 @@ public final class SyncConfiguration {
     
     private final Map<String, String> tableNameMap;
     
-    private final RdbmsConfiguration readerConfiguration;
+    private final RdbmsConfiguration dumperConfiguration;
     
-    private final RdbmsConfiguration writerConfiguration;
+    private final RdbmsConfiguration importerConfiguration;
 }

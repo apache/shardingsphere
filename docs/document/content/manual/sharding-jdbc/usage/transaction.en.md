@@ -6,50 +6,25 @@ weight = 5
 
 Distributed transaction have been integrated into `ShardingDataSource`, you can use `TransactionTypeHolder` to modify transaction type before creating `ShardingConnection`.
 
-## XA
+## Not Use Spring
 
 ### Introduce Maven Dependency
 
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>sharding-jdbc-core</artifactId>
+    <version>${sharding-sphere.version}</version>
+</dependency>
+
+<!-- introduce this module if you want to use XA transaction -->
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-transaction-xa-core</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
-```
 
-### Switch Transaction Type Based on Java
-
- ```java
- TransactionTypeHolder.set(TransactionType.XA);
- ```
-
-### Atomikos Configuration (Optional)
-
-Default ShardingSphere XA transaction manager is Atomikos. `xa_tx.log` generated in the project log is necessary for the recovery when XA crashes. Please do not delete it.
-
-Or you can add `jta.properties` in `classpath` of the program to customize Atomikos configurations. 
-For detailed configuration rules, please refer to the [official documentation](https://www.atomikos.com/Documentation/JtaProperties) of Atomikos.
-
-## BASE Transaction
-
-Currently, we have integrated saga and seata into shardingsphere.
-
-### Introduce Maven Dependency
-
-```xml
-<!-- saga transaction -->
-<dependency>
-    <groupId>io.shardingsphere</groupId>
-    <artifactId>sharding-transaction-base-saga</artifactId>
-    <version>${shardingsphere-spi-impl.version}</version>
-</dependency>
-```
-
-`${shardingsphere-spi-impl.version}` mentioned has not been posted to the central maven repository, so you need to install it by yourself.Project Address: [shardingsphere-spi-impl](https://github.com/sharding-sphere/shardingsphere-spi-impl)
-
-```xml
-<!-- seata at transaction -->
+<!-- introduce this module if you want to use BASE transaction -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-transaction-base-seata-at</artifactId>
@@ -57,81 +32,182 @@ Currently, we have integrated saga and seata into shardingsphere.
 </dependency>
 ```
 
-### Switch Transaction Type Based on Java
+### Raw JDBC for sharding transaction
 
- ```java
- TransactionTypeHolder.set(TransactionType.BASE);
- ```
-
-#### Saga Configuration
-
-You can add `saga.properties` in the project classpath to customize Saga configurations. When `saga.persistence.enabled=true`, Saga engine will persist event log through JDBC.  
-Configuration properties and explanations are as follow:
-
-| **Property**                                        | **Default Value**| **Explanation**                                              |
-| --------------------------------------------------- | ---------------- | ------------------------------------------------------------ |
-| saga.actuator.executor.size                         | 5                | Saga actuator thread pool size                               |
-| saga.actuator.transaction.max.retries               | 5                | Maximum retry times                                          |
-| saga.actuator.compensation.max.retries              | 5                | Maximum compensation times                                   |
-| saga.actuator.transaction.retry.delay.milliseconds  | 5000             | Retry interval                                               |
-| saga.actuator.compensation.retry.delay.milliseconds | 3000             | Compensation interval                                        |
-| saga.persistence.enabled                            | false            | Persistence for event log                                    |
-| saga.persistence.ds.url                             | No               | JDBC url                         |
-| saga.persistence.ds.username                        | No               | User name                        |
-| saga.persistence.ds.password                        | No               | Password                         |
-| saga.persistence.ds.max.pool.size                   | 50               | Maximum connection               |
-| saga.persistence.ds.min.pool.size                   | 1                | Minimum connection               |
-| saga.persistence.ds.max.life.time.milliseconds      | 0 (unrestricted) | Maximum life time (millisecond)  |
-| saga.persistence.ds.idle.timeout.milliseconds       | 60 * 1000        | Idle timeout (millisecond)       |
-| saga.persistence.ds.connection.timeout.milliseconds | 30 * 1000        | Connection timeout (millisecond) |
-
-Saga event log table structure
-
-```sql
--- MySQL init table SQL
-
-CREATE TABLE IF NOT EXISTS saga_event(
-  id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  saga_id VARCHAR(255) null,
-  type VARCHAR(255) null,
-  content_json TEXT null,
-  create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  INDEX saga_id_index(saga_id)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8
+```java
+TransactionTypeHolder.set(TransactionType.XA); // Support TransactionType.LOCAL, TransactionType.XA, TransactionType.BASE
+try (Connection connection = dataSource.getConnection()) { // dataSource type is ShardingDataSource
+    connection.setAutoCommit(false);
+    PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO t_order (user_id, status) VALUES (?, ?)");
+    preparedStatement.setObject(1, i);
+    preparedStatement.setObject(2, "init");
+    preparedStatement.executeUpdate();
+    connection.commit();
+}
 ```
-`saga_event` table will be created automatically when your put this DDL into `schema-init.sql` located in classpath.
 
-#### Seata Configuration
+## Use Spring-namespace
+
+### Introduce Maven Dependency
+
+```xml
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>sharding-jdbc-spring-namespace</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+
+<!-- introduce this module if you want to use XA transaction -->
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>sharding-transaction-xa-core</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+
+<!-- introduce this module if you want to use BASE transaction -->
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>sharding-transaction-base-seata-at</artifactId>
+    <version>${sharding-sphere.version}</version>
+</dependency>
+```
+
+### Config Spring-namespace transaction manager
+
+```xml
+<!-- ShardingDataSource configuration -->
+...
+
+<!-- Enable auto scan @ShardingTransactionType annotation to inject the transaction type before connection created -->
+<sharding:tx-type-annotation-driven />
+
+<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <property name="dataSource" ref="shardingDataSource" />
+</bean>
+<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+    <property name="dataSource" ref="shardingDataSource" />
+</bean>
+<tx:annotation-driven />
+
+```
+
+### Use sharding transaction in business code
+
+```java
+@Transactional
+@ShardingTransactionType(TransactionType.XA)  // Support TransactionType.LOCAL, TransactionType.XA, TransactionType.BASE
+public void insert() {
+    jdbcTemplate.execute("INSERT INTO t_order (user_id, status) VALUES (?, ?)", (PreparedStatementCallback<Object>) preparedStatement -> {
+        preparedStatement.setObject(1, i);
+        preparedStatement.setObject(2, "init");
+        preparedStatement.executeUpdate();
+    });
+}
+```
+
+## Use Spring-boot
+
+### Introduce Maven Dependency
+
+```xml
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>sharding-jdbc-spring-boot-starter</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+
+<!-- introduce this module if you want to use XA transaction -->
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>sharding-transaction-xa-core</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+
+<!-- introduce this module if you want to use BASE transaction -->
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>sharding-transaction-base-seata-at</artifactId>
+    <version>${sharding-sphere.version}</version>
+</dependency>
+```
+
+### Config spring-boot transaction manager
+
+```java
+@Configuration
+@EnableTransactionManagement
+public class TransactionConfiguration {
+    
+    @Bean
+    public PlatformTransactionManager txManager(final DataSource dataSource) {
+        return new DataSourceTransactionManager(dataSource);
+    }
+    
+    @Bean
+    public JdbcTemplate jdbcTemplate(final DataSource dataSource) {
+        return new JdbcTemplate(dataSource);
+    }
+}
+```
+
+### Use sharding transaction in business code
+
+```java
+@Transactional
+@ShardingTransactionType(TransactionType.XA)  // Support TransactionType.LOCAL, TransactionType.XA, TransactionType.BASE
+public void insert() {
+    jdbcTemplate.execute("INSERT INTO t_order (user_id, status) VALUES (?, ?)", (PreparedStatementCallback<Object>) preparedStatement -> {
+        preparedStatement.setObject(1, i);
+        preparedStatement.setObject(2, "init");
+        preparedStatement.executeUpdate();
+    });
+}
+```
+## Other configuration for Sharding Transaction Manager
+
+### XA Transaction (Optional)
+
+Default ShardingSphere XA transaction manager is Atomikos. `xa_tx.log` generated in the project log is necessary for the recovery when XA crashes. Please do not delete it.
+
+Or you can add `jta.properties` in `classpath` of the program to customize Atomikos configurations. 
+For detailed configuration rules, please refer to the [official documentation](https://www.atomikos.com/Documentation/JtaProperties) of Atomikos.
+
+### BASE Transaction (SEATA-AT)
 
 1.Download seata server according to [seata-work-shop](https://github.com/seata/seata-workshop), refer to step6 and step7 is OK.
 
 2.Create `undo_log` table in each physical database.(only mysql supported before seata version 0.8.X)
 
-```sql
-CREATE TABLE IF NOT EXISTS `undo_log` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `branch_id` bigint(20) NOT NULL,
-  `xid` varchar(100) NOT NULL,
-  `rollback_info` longblob NOT NULL,
-  `log_status` int(11) NOT NULL,
-  `log_created` datetime NOT NULL,
-  `log_modified` datetime NOT NULL,
-  `ext` varchar(100) DEFAULT NULL,
+```conf
+CREATE TABLE IF NOT EXISTS `undo_log`
+(
+  `id`            BIGINT(20)   NOT NULL AUTO_INCREMENT COMMENT 'increment id',
+  `branch_id`     BIGINT(20)   NOT NULL COMMENT 'branch transaction id',
+  `xid`           VARCHAR(100) NOT NULL COMMENT 'global transaction id',
+  `context`       VARCHAR(128) NOT NULL COMMENT 'undo_log context,such as serialization',
+  `rollback_info` LONGBLOB     NOT NULL COMMENT 'rollback info',
+  `log_status`    INT(11)      NOT NULL COMMENT '0:normal status,1:defense status',
+  `log_created`   DATETIME     NOT NULL COMMENT 'create datetime',
+  `log_modified`  DATETIME     NOT NULL COMMENT 'modify datetime',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `ux_undo_log` (`xid`,`branch_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+  UNIQUE KEY `ux_undo_log` (`xid`, `branch_id`)
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 1
+  DEFAULT CHARSET = utf8 COMMENT ='AT transaction mode undo table';
 ```
+
 3.Config `seata.conf` file in classpath.
 
 ```conf
 client {
-    application.id = raw-jdbc   ## application unique id.
-    transaction.service.group = raw-jdbc-group   ## transaction group
+    application.id = example   ## application unique id.
+    transaction.service.group = my_test_tx_group   ## transaction group
 }
+
 ```
+
+4.Modify file.conf and registry.conf if you need.
 
 ## Distributed Transaction Example
 
-* [official example](https://github.com/apache/incubator-shardingsphere-example/tree/dev/sharding-jdbc-example/transaction-example)
-
-* [third party example（include spring）](https://github.com/OpenSharding/shardingsphere-spi-impl-example/tree/master/transaction-example)
+* [official example](https://github.com/apache/incubator-shardingsphere/tree/master/examples/sharding-jdbc-example/sharding-example)

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.shardingscaling.core.synctask;
 
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.synctask.history.HistoryDataSyncTask;
-import org.apache.shardingsphere.shardingscaling.core.synctask.history.HistoryDataSyncTaskGroup;
-import org.apache.shardingsphere.shardingscaling.core.synctask.realtime.RealtimeDataSyncTask;
+import org.apache.shardingsphere.shardingscaling.core.synctask.inventory.InventoryDataSyncTask;
+import org.apache.shardingsphere.shardingscaling.core.synctask.inventory.InventoryDataSyncTaskGroup;
+import org.apache.shardingsphere.shardingscaling.core.synctask.incremental.IncrementalDataSyncTask;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 
 /**
@@ -29,29 +29,29 @@ import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManag
 public interface SyncTaskFactory {
     
     /**
-     * Create history data sync task group.
+     * Create inventory data sync task group.
      *
      * @param syncConfiguration sync configuration
      * @param dataSourceManager  data source factory
-     * @return history data sync task group
+     * @return inventory data sync task group
      */
-    HistoryDataSyncTaskGroup createHistoryDataSyncTaskGroup(SyncConfiguration syncConfiguration, DataSourceManager dataSourceManager);
+    InventoryDataSyncTaskGroup createInventoryDataSyncTaskGroup(SyncConfiguration syncConfiguration, DataSourceManager dataSourceManager);
     
     /**
-     * Create history data sync task.
+     * Create inventory data sync task.
      *
      * @param syncConfiguration sync configuration
      * @param dataSourceManager  data source factory
-     * @return history data sync task
+     * @return inventory data sync task
      */
-    HistoryDataSyncTask createHistoryDataSyncTask(SyncConfiguration syncConfiguration, DataSourceManager dataSourceManager);
+    InventoryDataSyncTask createInventoryDataSyncTask(SyncConfiguration syncConfiguration, DataSourceManager dataSourceManager);
     
     /**
-     * Create realtime data sync task.
+     * Create incremental data sync task.
      *
      * @param syncConfiguration sync configuration
      * @param dataSourceManager  data source factory
-     * @return realtime data sync task
+     * @return incremental data sync task
      */
-    RealtimeDataSyncTask createRealtimeDataSyncTask(SyncConfiguration syncConfiguration, DataSourceManager dataSourceManager);
+    IncrementalDataSyncTask createIncrementalDataSyncTask(SyncConfiguration syncConfiguration, DataSourceManager dataSourceManager);
 }

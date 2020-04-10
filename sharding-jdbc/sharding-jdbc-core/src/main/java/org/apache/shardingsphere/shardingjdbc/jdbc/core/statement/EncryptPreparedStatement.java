@@ -32,12 +32,15 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
 import org.apache.shardingsphere.underlying.pluggble.prepare.PrepareEngine;
+import org.apache.shardingsphere.underlying.route.DataNodeRouter;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -166,8 +169,10 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     
     @SuppressWarnings("unchecked")
     private SQLUnit getSQLUnit(final String sql) {
+        RouteContext routeContext = new DataNodeRouter(runtimeContext.getMetaData(), runtimeContext.getProperties(), 
+                Collections.singletonList(runtimeContext.getRule())).route(sqlStatement, sql, getParameters());
         PrepareEngine prepareEngine = new PrepareEngine(Collections.singletonList(runtimeContext.getRule()), runtimeContext.getProperties(), runtimeContext.getMetaData());
-        ExecutionContext executionContext = prepareEngine.prepare(runtimeContext.getSqlParserEngine().parse(sql, true), sql, getParameters());
+        ExecutionContext executionContext = prepareEngine.prepare(sql, new ArrayList<>(getParameters()), routeContext);
         Preconditions.checkArgument(1 == executionContext.getExecutionUnits().size());
         sqlStatementContext = executionContext.getSqlStatementContext();
         return executionContext.getExecutionUnits().iterator().next().getSqlUnit();

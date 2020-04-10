@@ -31,7 +31,7 @@ import java.util.Properties;
 public final class CenterConfiguration extends TypedSPIConfiguration {
     
     /**
-     * Type of center, such as config_center, registry_center.
+     * Type of center, such as config_center, registry_center, metadata_center.
      */
     private String orchestrationType;
     

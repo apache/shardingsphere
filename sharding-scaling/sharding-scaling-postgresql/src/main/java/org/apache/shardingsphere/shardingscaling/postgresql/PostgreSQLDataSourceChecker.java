@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.shardingscaling.postgresql;
 
+import org.apache.shardingsphere.shardingscaling.core.exception.DatasourceCheckFailedException;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.AbstractDataSourceChecker;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collection;
 
 /**
@@ -29,5 +33,20 @@ public final class PostgreSQLDataSourceChecker extends AbstractDataSourceChecker
     
     @Override
     public void checkPrivilege(final Collection<DataSource> dataSources) {
+        try {
+            for (DataSource dataSource : dataSources) {
+                String tableName;
+                Connection connection = dataSource.getConnection();
+                ResultSet tables = connection.getMetaData().getTables(connection.getCatalog(), null, "%", new String[]{"TABLE"});
+                if (tables.next()) {
+                    tableName = tables.getString(3);
+                } else {
+                    throw new DatasourceCheckFailedException("No tables find in the source datasource");
+                }
+                connection.prepareStatement(String.format("SELECT * FROM %s LIMIT 1", tableName)).executeQuery();
+            }
+        } catch (SQLException e) {
+            throw new DatasourceCheckFailedException("Datasources check failed!");
+        }
     }
 }

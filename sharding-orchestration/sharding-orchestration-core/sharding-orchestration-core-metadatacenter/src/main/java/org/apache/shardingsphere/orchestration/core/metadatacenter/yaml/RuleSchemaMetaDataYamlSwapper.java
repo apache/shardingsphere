@@ -17,24 +17,101 @@
 
 package org.apache.shardingsphere.orchestration.core.metadatacenter.yaml;
 
+import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 /**
- * Rule Schema Metadata configuration YAML swapper.
+ * Rule schema meta data configuration YAML swapper.
  */
-public class RuleSchemaMetaDataYamlSwapper implements YamlSwapper<YamlRuleSchemaMetaData, RuleSchemaMetaData> {
+public final class RuleSchemaMetaDataYamlSwapper implements YamlSwapper<YamlRuleSchemaMetaData, RuleSchemaMetaData> {
 
     @Override
     public YamlRuleSchemaMetaData swap(final RuleSchemaMetaData metaData) {
         YamlRuleSchemaMetaData result = new YamlRuleSchemaMetaData();
-        result.setConfiguredSchemaMetaData(metaData.getConfiguredSchemaMetaData());
-        result.setUnconfiguredSchemaMetaDataMap(metaData.getUnconfiguredSchemaMetaDataMap());
+        result.setConfiguredSchemaMetaData(convertYamlSchema(metaData.getConfiguredSchemaMetaData()));
+        Map<String, YamlSchemaMetaData> unconfigured = metaData.getUnconfiguredSchemaMetaDataMap().entrySet().stream()
+                .collect(Collectors.toMap(entry -> entry.getKey(), entry -> convertYamlSchema(entry.getValue())));
+        result.setUnconfiguredSchemaMetaDataMap(unconfigured);
         return result;
     }
 
     @Override
     public RuleSchemaMetaData swap(final YamlRuleSchemaMetaData yaml) {
-        return new RuleSchemaMetaData(yaml.getConfiguredSchemaMetaData(), yaml.getUnconfiguredSchemaMetaDataMap());
+        SchemaMetaData configured = convertSchema(yaml.getConfiguredSchemaMetaData());
+        Map<String, SchemaMetaData> unconfigured = yaml.getUnconfiguredSchemaMetaDataMap().entrySet().stream()
+                .collect(Collectors.toMap(entry -> entry.getKey(), entry -> convertSchema(entry.getValue())));
+        return new RuleSchemaMetaData(configured, unconfigured);
+    }
+
+    private SchemaMetaData convertSchema(final YamlSchemaMetaData schema) {
+        return new SchemaMetaData(schema.getTables().entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey(), entry -> convertTable(entry.getValue()))));
+    }
+
+    private TableMetaData convertTable(final YamlTableMetaData table) {
+        return new TableMetaData(convertColumns(table.getColumns()), convertIndexes(table.getIndexes()));
+    }
+
+    private Collection<IndexMetaData> convertIndexes(final Map<String, YamlIndexMetaData> indexes) {
+        return null == indexes ? Collections.emptyList() : indexes.values().stream().map(this::convertIndex).collect(Collectors.toList());
+    }
+
+    private IndexMetaData convertIndex(final YamlIndexMetaData index) {
+        return new IndexMetaData(index.getName());
+    }
+
+    private Collection<ColumnMetaData> convertColumns(final Map<String, YamlColumnMetaData> indexes) {
+        return indexes.values().stream().map(this::convertColumn).collect(Collectors.toList());
+    }
+
+    private ColumnMetaData convertColumn(final YamlColumnMetaData column) {
+        return new ColumnMetaData(column.getName(), column.getDataType(), column.getDataTypeName(), column.isPrimaryKey(), column.isGenerated(), column.isCaseSensitive());
+    }
+    
+    private YamlSchemaMetaData convertYamlSchema(final SchemaMetaData schema) {
+        Map<String, YamlTableMetaData> tables = schema.getAllTableNames().stream().collect(Collectors.toMap(each -> each, each -> convertYamlTable(schema.get(each))));
+        YamlSchemaMetaData result = new YamlSchemaMetaData();
+        result.setTables(tables);
+        return result;
+    }
+
+    private YamlTableMetaData convertYamlTable(final TableMetaData table) {
+        YamlTableMetaData result = new YamlTableMetaData();
+        result.setColumns(convertYamlColumns(table.getColumns()));
+        result.setIndexes(convertYamlIndexes(table.getIndexes()));
+        return result;
+    }
+
+    private Map<String, YamlIndexMetaData> convertYamlIndexes(final Map<String, IndexMetaData> indexes) {
+        return indexes.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey(), entry -> convertYamlIndex(entry.getValue())));
+    }
+
+    private YamlIndexMetaData convertYamlIndex(final IndexMetaData index) {
+        YamlIndexMetaData result = new YamlIndexMetaData();
+        result.setName(index.getName());
+        return result;
+    }
+
+    private Map<String, YamlColumnMetaData> convertYamlColumns(final Map<String, ColumnMetaData> columns) {
+        return columns.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey(), entry -> convertYamlColumn(entry.getValue())));
+    }
+
+    private YamlColumnMetaData convertYamlColumn(final ColumnMetaData column) {
+        YamlColumnMetaData result = new YamlColumnMetaData();
+        result.setName(column.getName());
+        result.setCaseSensitive(column.isCaseSensitive());
+        result.setGenerated(column.isGenerated());
+        result.setPrimaryKey(column.isPrimaryKey());
+        result.setDataType(result.getDataType());
+        result.setDataTypeName(result.getDataTypeName());
+        return result;
     }
 }
