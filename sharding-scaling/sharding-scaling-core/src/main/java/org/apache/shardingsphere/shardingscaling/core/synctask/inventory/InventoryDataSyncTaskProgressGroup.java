@@ -15,22 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.synctask.history;
+package org.apache.shardingsphere.shardingscaling.core.synctask.inventory;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgressGroup;
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
- * History data sync task progress.
+ * Inventory data sync task group progress.
  */
-@RequiredArgsConstructor
-@Getter
-public final class HistoryDataSyncTaskProgress implements SyncProgress {
+public final class InventoryDataSyncTaskProgressGroup implements SyncProgressGroup {
     
-    private final String id;
+    private final List<SyncProgress> inventoryDataSyncTaskProgresses = new LinkedList<>();
     
-    private final long estimatedRows;
+    @Override
+    public List<SyncProgress> getSyncProgresses() {
+        return inventoryDataSyncTaskProgresses;
+    }
     
-    private final long syncedRows;
+    @Override
+    public void addSyncProgress(final SyncProgress syncProgress) {
+        inventoryDataSyncTaskProgresses.add(syncProgress);
+    }
 }

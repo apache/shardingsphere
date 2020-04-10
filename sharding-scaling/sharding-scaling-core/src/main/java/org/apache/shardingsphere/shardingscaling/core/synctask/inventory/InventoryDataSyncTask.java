@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.synctask.history;
+package org.apache.shardingsphere.shardingscaling.core.synctask.inventory;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
@@ -47,7 +47,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Table slice execute task.
  */
 @Slf4j
-public final class HistoryDataSyncTask implements SyncTask {
+public final class InventoryDataSyncTask implements SyncTask {
     
     private final SyncConfiguration syncConfiguration;
     
@@ -61,7 +61,7 @@ public final class HistoryDataSyncTask implements SyncTask {
     
     private Dumper dumper;
     
-    public HistoryDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
+    public InventoryDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
         this.syncConfiguration = syncConfiguration;
         this.dataSourceManager = dataSourceManager;
         syncTaskId = generateSyncTaskId(syncConfiguration.getDumperConfiguration());
@@ -69,7 +69,7 @@ public final class HistoryDataSyncTask implements SyncTask {
     
     private String generateSyncTaskId(final RdbmsConfiguration dumperConfiguration) {
         DataSourceMetaData dataSourceMetaData = dumperConfiguration.getDataSourceConfiguration().getDataSourceMetaData();
-        String result = String.format("history-%s-%s", null != dataSourceMetaData.getCatalog() ? dataSourceMetaData.getCatalog() : dataSourceMetaData.getSchema(), dumperConfiguration.getTableName());
+        String result = String.format("inventory-%s-%s", null != dataSourceMetaData.getCatalog() ? dataSourceMetaData.getCatalog() : dataSourceMetaData.getSchema(), dumperConfiguration.getTableName());
         return null == dumperConfiguration.getWhereCondition() ? result : result + "#" + dumperConfiguration.getSpiltNum();
     }
     
@@ -133,6 +133,6 @@ public final class HistoryDataSyncTask implements SyncTask {
     
     @Override
     public SyncProgress getProgress() {
-        return new HistoryDataSyncTaskProgress(syncTaskId, estimatedRows, syncedRows.get());
+        return new InventoryDataSyncTaskProgress(syncTaskId, estimatedRows, syncedRows.get());
     }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.synctask.history;
+package org.apache.shardingsphere.shardingscaling.core.synctask.inventory;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingscaling.core.config.DataSourceConfiguration;
@@ -47,7 +47,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public final class HistoryDataSyncTaskGroupTest {
+public final class InventoryDataSyncTaskGroupTest {
     
     private static String dataSourceUrl = "jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
     
@@ -78,9 +78,9 @@ public final class HistoryDataSyncTaskGroupTest {
     @Test
     public void assertPrepareWithIntPrimaryRangeSplit() throws NoSuchFieldException, IllegalAccessException {
         initIntPrimaryEnvironment(syncConfiguration.getDumperConfiguration());
-        HistoryDataSyncTaskGroup historyDataSyncTaskGroup = new HistoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
-        historyDataSyncTaskGroup.prepare();
-        List<SyncTask> syncTasks = ReflectionUtil.getFieldValueFromClass(historyDataSyncTaskGroup, "syncTasks", List.class);
+        InventoryDataSyncTaskGroup inventoryDataSyncTaskGroup = new InventoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
+        inventoryDataSyncTaskGroup.prepare();
+        List<SyncTask> syncTasks = ReflectionUtil.getFieldValueFromClass(inventoryDataSyncTaskGroup, "syncTasks", List.class);
         assertNotNull(syncTasks);
         assertThat(syncTasks.size(), is(3));
     }
@@ -88,9 +88,9 @@ public final class HistoryDataSyncTaskGroupTest {
     @Test
     public void assertPrepareWithCharPrimaryRangeSplit() throws NoSuchFieldException, IllegalAccessException {
         initCharPrimaryEnvironment(syncConfiguration.getDumperConfiguration());
-        HistoryDataSyncTaskGroup historyDataSyncTaskGroup = new HistoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
-        historyDataSyncTaskGroup.prepare();
-        List<SyncTask> syncTasks = ReflectionUtil.getFieldValueFromClass(historyDataSyncTaskGroup, "syncTasks", List.class);
+        InventoryDataSyncTaskGroup inventoryDataSyncTaskGroup = new InventoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
+        inventoryDataSyncTaskGroup.prepare();
+        List<SyncTask> syncTasks = ReflectionUtil.getFieldValueFromClass(inventoryDataSyncTaskGroup, "syncTasks", List.class);
         assertNotNull(syncTasks);
         assertThat(syncTasks.size(), is(1));
     }
@@ -98,9 +98,9 @@ public final class HistoryDataSyncTaskGroupTest {
     @Test
     public void assertPrepareWithUnionPrimaryRangeSplit() throws NoSuchFieldException, IllegalAccessException {
         initUnionPrimaryEnvironment(syncConfiguration.getDumperConfiguration());
-        HistoryDataSyncTaskGroup historyDataSyncTaskGroup = new HistoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
-        historyDataSyncTaskGroup.prepare();
-        List<SyncTask> syncTasks = ReflectionUtil.getFieldValueFromClass(historyDataSyncTaskGroup, "syncTasks", List.class);
+        InventoryDataSyncTaskGroup inventoryDataSyncTaskGroup = new InventoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
+        inventoryDataSyncTaskGroup.prepare();
+        List<SyncTask> syncTasks = ReflectionUtil.getFieldValueFromClass(inventoryDataSyncTaskGroup, "syncTasks", List.class);
         assertNotNull(syncTasks);
         assertThat(syncTasks.size(), is(1));
     }
@@ -108,9 +108,9 @@ public final class HistoryDataSyncTaskGroupTest {
     @Test
     public void assertPrepareWithoutPrimaryRangeSplit() throws NoSuchFieldException, IllegalAccessException {
         initNoPrimaryEnvironment(syncConfiguration.getDumperConfiguration());
-        HistoryDataSyncTaskGroup historyDataSyncTaskGroup = new HistoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
-        historyDataSyncTaskGroup.prepare();
-        List<SyncTask> syncTasks = ReflectionUtil.getFieldValueFromClass(historyDataSyncTaskGroup, "syncTasks", List.class);
+        InventoryDataSyncTaskGroup inventoryDataSyncTaskGroup = new InventoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
+        inventoryDataSyncTaskGroup.prepare();
+        List<SyncTask> syncTasks = ReflectionUtil.getFieldValueFromClass(inventoryDataSyncTaskGroup, "syncTasks", List.class);
         assertNotNull(syncTasks);
         assertThat(syncTasks.size(), is(1));
     }
@@ -118,29 +118,29 @@ public final class HistoryDataSyncTaskGroupTest {
     @Test
     public void assertStart() throws NoSuchFieldException, IllegalAccessException {
         SyncTask syncTask = mock(SyncTask.class);
-        HistoryDataSyncTaskGroup historyDataSyncTaskGroup = new HistoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
+        InventoryDataSyncTaskGroup inventoryDataSyncTaskGroup = new InventoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
         List<SyncTask> syncTasks = new LinkedList<>();
         syncTasks.add(syncTask);
-        ReflectionUtil.setFieldValueToClass(historyDataSyncTaskGroup, "syncTasks", syncTasks);
-        historyDataSyncTaskGroup.start(event -> { });
+        ReflectionUtil.setFieldValueToClass(inventoryDataSyncTaskGroup, "syncTasks", syncTasks);
+        inventoryDataSyncTaskGroup.start(event -> { });
         verify(syncTask).start(any(ReportCallback.class));
     }
     
     @Test
     public void assertStop() throws NoSuchFieldException, IllegalAccessException {
         SyncTask syncTask = mock(SyncTask.class);
-        HistoryDataSyncTaskGroup historyDataSyncTaskGroup = new HistoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
+        InventoryDataSyncTaskGroup inventoryDataSyncTaskGroup = new InventoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
         List<SyncTask> syncTasks = new LinkedList<>();
         syncTasks.add(syncTask);
-        ReflectionUtil.setFieldValueToClass(historyDataSyncTaskGroup, "syncTasks", syncTasks);
-        historyDataSyncTaskGroup.stop();
+        ReflectionUtil.setFieldValueToClass(inventoryDataSyncTaskGroup, "syncTasks", syncTasks);
+        inventoryDataSyncTaskGroup.stop();
         verify(syncTask).stop();
     }
     
     @Test
     public void assertGetProgress() {
-        HistoryDataSyncTaskGroup historyDataSyncTaskGroup = new HistoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
-        assertThat(historyDataSyncTaskGroup.getProgress(), instanceOf(SyncProgress.class));
+        InventoryDataSyncTaskGroup inventoryDataSyncTaskGroup = new InventoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
+        assertThat(inventoryDataSyncTaskGroup.getProgress(), instanceOf(SyncProgress.class));
     }
     
     @SneakyThrows

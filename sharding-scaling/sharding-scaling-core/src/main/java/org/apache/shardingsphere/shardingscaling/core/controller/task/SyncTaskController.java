@@ -29,12 +29,12 @@ import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTaskFactory;
 import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
 
 /**
- * Sync task controller, synchronize history data and incremental data.
+ * Sync task controller, synchronize inventory data and incremental data.
  */
 @Slf4j
 public final class SyncTaskController implements Runnable {
     
-    private final SyncTask historyDataSyncTaskGroup;
+    private final SyncTask inventoryDataSyncTaskGroup;
     
     private final SyncTask incrementalDataSyncTask;
     
@@ -47,7 +47,7 @@ public final class SyncTaskController implements Runnable {
     public SyncTaskController(final SyncConfiguration syncConfiguration) {
         SyncTaskFactory syncTaskFactory = new DefaultSyncTaskFactory();
         syncTaskId = generateSyncTaskId(syncConfiguration.getDumperConfiguration().getDataSourceConfiguration());
-        this.historyDataSyncTaskGroup = syncTaskFactory.createHistoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
+        this.inventoryDataSyncTaskGroup = syncTaskFactory.createInventoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
         this.incrementalDataSyncTask = syncTaskFactory.createIncrementalDataSyncTask(syncConfiguration, dataSourceManager);
         syncTaskControlStatus = SyncTaskControlStatus.PREPARING;
     }
@@ -72,7 +72,7 @@ public final class SyncTaskController implements Runnable {
         if (!syncTaskControlStatus.isStoppedStatus()) {
             syncTaskControlStatus = SyncTaskControlStatus.STOPPING;
         }
-        historyDataSyncTaskGroup.stop();
+        inventoryDataSyncTaskGroup.stop();
         incrementalDataSyncTask.stop();
     }
     
@@ -83,7 +83,7 @@ public final class SyncTaskController implements Runnable {
      */
     public SyncProgress getProgress() {
         SyncTaskProgress result = new SyncTaskProgress(syncTaskId, syncTaskControlStatus.name());
-        result.setHistorySyncTaskProgress(historyDataSyncTaskGroup.getProgress());
+        result.setInventorySyncTaskProgress(inventoryDataSyncTaskGroup.getProgress());
         result.setIncrementalSyncTaskProgress(incrementalDataSyncTask.getProgress());
         return result;
     }
@@ -91,14 +91,14 @@ public final class SyncTaskController implements Runnable {
     @Override
     public void run() {
         incrementalDataSyncTask.prepare();
-        historyDataSyncTaskGroup.prepare();
-        syncTaskControlStatus = SyncTaskControlStatus.MIGRATE_HISTORY_DATA;
-        historyDataSyncTaskGroup.start(event -> {
-            log.info("history data migrate task {} finished, execute result: {}", event.getTaskId(), event.getEventType().name());
+        inventoryDataSyncTaskGroup.prepare();
+        syncTaskControlStatus = SyncTaskControlStatus.MIGRATE_INVENTORY_DATA;
+        inventoryDataSyncTaskGroup.start(event -> {
+            log.info("inventory data migrate task {} finished, execute result: {}", event.getTaskId(), event.getEventType().name());
             if (EventType.EXCEPTION_EXIT.equals(event.getEventType())) {
                 stop();
                 dataSourceManager.close();
-                syncTaskControlStatus = SyncTaskControlStatus.MIGRATE_HISTORY_DATA_FAILURE;
+                syncTaskControlStatus = SyncTaskControlStatus.MIGRATE_INVENTORY_DATA_FAILURE;
             } else {
                 executeIncrementalDataSyncTask();
             }
@@ -106,7 +106,7 @@ public final class SyncTaskController implements Runnable {
     }
     
     private void executeIncrementalDataSyncTask() {
-        if (!SyncTaskControlStatus.MIGRATE_HISTORY_DATA.equals(syncTaskControlStatus)) {
+        if (!SyncTaskControlStatus.MIGRATE_INVENTORY_DATA.equals(syncTaskControlStatus)) {
             dataSourceManager.close();
             syncTaskControlStatus = SyncTaskControlStatus.STOPPED;
             return;
