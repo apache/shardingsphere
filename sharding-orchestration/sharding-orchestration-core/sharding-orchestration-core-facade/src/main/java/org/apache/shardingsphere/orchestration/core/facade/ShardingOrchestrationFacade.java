@@ -93,10 +93,6 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
         registryCenterRepository = TypedSPIRegistry.getRegisteredService(RegistryCenterRepository.class, registryCenterConfiguration.getType(), registryCenterConfiguration.getProperties());
         registryCenterRepository.init(registryCenterConfiguration);
         registryCenter = new RegistryCenter(registryCenterName.get(), registryCenterRepository);
-        listenerManager = shardingSchemaNames.isEmpty()
-                ? new ShardingOrchestrationListenerManager(
-                        registryCenterName.get(), registryCenterRepository, configCenterName.get(), configCenterRepository, configCenter.getAllShardingSchemaNames())
-                : new ShardingOrchestrationListenerManager(registryCenterName.get(), registryCenterRepository, configCenterName.get(), configCenterRepository, shardingSchemaNames);
         Optional<String> metaDataCenterName = getInstanceNameByOrchestrationType(orchestrationConfig.getInstanceConfigurationMap(), CenterType.METADATA_CENTER.getValue());
         Preconditions.checkArgument(metaDataCenterName.isPresent(), "Can not find instance configuration with metadata center orchestration type.");
         CenterConfiguration metaDataCenterConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(metaDataCenterName.get());
@@ -104,6 +100,10 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
         centerRepository = TypedSPIRegistry.getRegisteredService(ConfigCenterRepository.class, metaDataCenterConfiguration.getType(), metaDataCenterConfiguration.getProperties());
         centerRepository.init(metaDataCenterConfiguration);
         metaDataCenter = new MetaDataCenter(metaDataCenterName.get(), centerRepository);
+        listenerManager = shardingSchemaNames.isEmpty()
+                ? new ShardingOrchestrationListenerManager(
+                registryCenterName.get(), registryCenterRepository, configCenterName.get(), configCenterRepository,  metaDataCenterName.get(), configCenter.getAllShardingSchemaNames())
+                : new ShardingOrchestrationListenerManager(registryCenterName.get(), registryCenterRepository, configCenterName.get(), configCenterRepository, metaDataCenterName.get(), shardingSchemaNames);
         instance = this;
     }
     

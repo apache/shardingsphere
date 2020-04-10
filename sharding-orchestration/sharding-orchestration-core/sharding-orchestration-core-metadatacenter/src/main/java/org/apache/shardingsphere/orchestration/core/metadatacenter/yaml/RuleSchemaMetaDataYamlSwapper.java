@@ -61,10 +61,7 @@ public final class RuleSchemaMetaDataYamlSwapper implements YamlSwapper<YamlRule
     }
 
     private Collection<IndexMetaData> convertIndexes(final Map<String, YamlIndexMetaData> indexes) {
-        if(null == indexes){
-            return Collections.emptyList();
-        }
-        return indexes.values().stream().map(this::convertIndex).collect(Collectors.toList());
+        return null == indexes ? Collections.emptyList() : indexes.values().stream().map(this::convertIndex).collect(Collectors.toList());
     }
 
     private IndexMetaData convertIndex(final YamlIndexMetaData index) {
