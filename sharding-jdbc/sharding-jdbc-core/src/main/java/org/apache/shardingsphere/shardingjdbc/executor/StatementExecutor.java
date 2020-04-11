@@ -59,7 +59,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     @SuppressWarnings("MagicConstant")
     private Collection<InputGroup<StatementExecuteUnit>> getExecuteGroups(final Collection<ExecutionUnit> executionUnits) throws SQLException {
         return getExecuteGroupEngine().getExecuteUnitGroups(getConnection(), executionUnits, (connection, executionUnit, connectionMode)
-            -> new StatementExecuteUnit(executionUnit, connection.createStatement(getResultSetType(), getResultSetConcurrency(), getResultSetHoldability()), connectionMode));
+            -> connection.createStatement(getResultSetType(), getResultSetConcurrency(), getResultSetHoldability()));
     }
     
     /**

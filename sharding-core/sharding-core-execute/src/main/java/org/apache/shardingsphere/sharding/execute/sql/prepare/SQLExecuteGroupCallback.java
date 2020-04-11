@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.sharding.execute.sql.prepare;
 
-import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * SQL execute group callback.
@@ -30,7 +30,7 @@ import java.sql.SQLException;
 public interface SQLExecuteGroupCallback {
     
     /**
-     * Create SQL statement execute unit.
+     * Create SQL statement.
      * 
      * @param connection connection
      * @param executionUnit execution unit
@@ -38,5 +38,5 @@ public interface SQLExecuteGroupCallback {
      * @return SQL execute unit
      * @throws SQLException SQL exception
      */
-    StatementExecuteUnit createStatementExecuteUnit(Connection connection, ExecutionUnit executionUnit, ConnectionMode connectionMode) throws SQLException;
+    Statement createStatement(Connection connection, ExecutionUnit executionUnit, ConnectionMode connectionMode) throws SQLException;
 }

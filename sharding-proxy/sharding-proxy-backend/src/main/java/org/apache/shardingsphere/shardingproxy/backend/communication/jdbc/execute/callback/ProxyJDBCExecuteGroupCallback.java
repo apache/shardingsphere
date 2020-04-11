@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.callback;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.sharding.execute.sql.prepare.SQLExecuteGroupCallback;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
@@ -46,15 +45,19 @@ public final class ProxyJDBCExecuteGroupCallback implements SQLExecuteGroupCallb
     private final boolean isReturnGeneratedKeys;
     
     @Override
-    public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final ExecutionUnit executionUnit, final ConnectionMode connectionMode) throws SQLException {
-        Statement statement = jdbcExecutorWrapper.createStatement(connection, executionUnit.getSqlUnit(), isReturnGeneratedKeys);
-        if (connectionMode.equals(ConnectionMode.MEMORY_STRICTLY)) {
-            if (LogicSchemas.getInstance().getDatabaseType() instanceof MySQLDatabaseType) {
-                statement.setFetchSize(MYSQL_MEMORY_FETCH_ONE_ROW_A_TIME);
-            } else if (LogicSchemas.getInstance().getDatabaseType() instanceof PostgreSQLDatabaseType) {
-                statement.setFetchSize(POSTGRESQL_MEMORY_FETCH_ONE_ROW_A_TIME);
-            }
+    public Statement createStatement(final Connection connection, final ExecutionUnit executionUnit, final ConnectionMode connectionMode) throws SQLException {
+        Statement result = jdbcExecutorWrapper.createStatement(connection, executionUnit.getSqlUnit(), isReturnGeneratedKeys);
+        if (ConnectionMode.MEMORY_STRICTLY == connectionMode) {
+            setFetchSize(result);
         }
-        return new StatementExecuteUnit(executionUnit, statement, connectionMode);
+        return result;
+    }
+    
+    private void setFetchSize(final Statement statement) throws SQLException {
+        if (LogicSchemas.getInstance().getDatabaseType() instanceof MySQLDatabaseType) {
+            statement.setFetchSize(MYSQL_MEMORY_FETCH_ONE_ROW_A_TIME);
+        } else if (LogicSchemas.getInstance().getDatabaseType() instanceof PostgreSQLDatabaseType) {
+            statement.setFetchSize(POSTGRESQL_MEMORY_FETCH_ONE_ROW_A_TIME);
+        }
     }
 }

@@ -66,7 +66,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     
     private Collection<InputGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<ExecutionUnit> executionUnits) throws SQLException {
         return getExecuteGroupEngine().getExecuteUnitGroups(getConnection(), executionUnits, (connection, executionUnit, connectionMode)
-            -> new StatementExecuteUnit(executionUnit, createPreparedStatement(connection, executionUnit.getSqlUnit().getSql()), connectionMode));
+            -> createPreparedStatement(connection, executionUnit.getSqlUnit().getSql()));
     }
     
     @SuppressWarnings("MagicConstant")

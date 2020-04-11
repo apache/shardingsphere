@@ -76,7 +76,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     private Collection<InputGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<BatchRouteUnit> batchRouteUnits) throws SQLException {
         return getExecuteGroupEngine().getExecuteUnitGroups(
                 getConnection(), new ArrayList<>(batchRouteUnits).stream().map(BatchRouteUnit::getExecutionUnit).collect(Collectors.toList()), (connection, executionUnit, connectionMode)
-                -> new StatementExecuteUnit(executionUnit, createPreparedStatement(connection, executionUnit.getSqlUnit().getSql()), connectionMode));
+                -> createPreparedStatement(connection, executionUnit.getSqlUnit().getSql()));
     }
     
     @SuppressWarnings("MagicConstant")

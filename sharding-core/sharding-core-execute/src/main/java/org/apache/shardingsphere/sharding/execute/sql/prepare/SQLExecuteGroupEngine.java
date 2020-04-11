@@ -96,7 +96,8 @@ public final class SQLExecuteGroupEngine {
                                                                 final String dataSourceName, final List<SQLUnit> sqlUnitGroup, final SQLExecuteGroupCallback callback) throws SQLException {
         List<StatementExecuteUnit> result = new LinkedList<>();
         for (SQLUnit each : sqlUnitGroup) {
-            result.add(callback.createStatementExecuteUnit(connection, new ExecutionUnit(dataSourceName, each), connectionMode));
+            ExecutionUnit executionUnit = new ExecutionUnit(dataSourceName, each);
+            result.add(new StatementExecuteUnit(executionUnit, callback.createStatement(connection, executionUnit, connectionMode), connectionMode));
         }
         return new InputGroup<>(result);
     }
