@@ -35,6 +35,5 @@
         <module>shardingsphere-rewrite</module>
         <module>shardingsphere-executor</module>
         <module>shardingsphere-merge</module>
-        <module>shardingsphere-pluggable</module>
     </modules>
 </project>

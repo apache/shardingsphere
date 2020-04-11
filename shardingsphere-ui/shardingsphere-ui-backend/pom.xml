@@ -50,12 +50,6 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>sharding-orchestration-core-facade</artifactId>
             <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-pluggable</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>

@@ -29,7 +29,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-pluggable</artifactId>
+            <artifactId>shardingsphere-executor</artifactId>
             <version>${project.version}</version>
         </dependency>
         

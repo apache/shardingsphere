@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.Collections;
 
 /**
  * Execution context.
@@ -33,5 +33,10 @@ public class ExecutionContext {
     
     private final SQLStatementContext sqlStatementContext;
     
-    private final Collection<ExecutionUnit> executionUnits = new LinkedHashSet<>();
+    private final Collection<ExecutionUnit> executionUnits;
+    
+    public ExecutionContext(final SQLStatementContext sqlStatementContext, final ExecutionUnit executionUnit) {
+        this.sqlStatementContext = sqlStatementContext;
+        executionUnits = Collections.singletonList(executionUnit);
+    }
 }
