@@ -23,6 +23,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrappe
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.underlying.common.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.underlying.common.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 
@@ -42,11 +43,9 @@ public final class ProxyJDBCExecuteGroupCallback implements SQLExecuteGroupCallb
     
     private final JDBCExecutorWrapper jdbcExecutorWrapper;
     
-    private final boolean isReturnGeneratedKeys;
-    
     @Override
-    public Statement createStatement(final Connection connection, final ExecutionUnit executionUnit, final ConnectionMode connectionMode) throws SQLException {
-        Statement result = jdbcExecutorWrapper.createStatement(connection, executionUnit.getSqlUnit(), isReturnGeneratedKeys);
+    public Statement createStatement(final Connection connection, final ExecutionUnit executionUnit, final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
+        Statement result = jdbcExecutorWrapper.createStatement(connection, executionUnit.getSqlUnit(), statementOption.isReturnGeneratedKeys());
         if (ConnectionMode.MEMORY_STRICTLY == connectionMode) {
             setFetchSize(result);
         }

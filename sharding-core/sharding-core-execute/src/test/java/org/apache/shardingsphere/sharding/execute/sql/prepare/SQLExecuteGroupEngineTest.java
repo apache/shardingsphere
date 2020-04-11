@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.execute.sql.prepare;
 
 import org.apache.shardingsphere.underlying.executor.connection.ExecutionConnection;
+import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
@@ -53,7 +54,7 @@ public final class SQLExecuteGroupEngineTest {
     public void assertGetExecuteUnitGroupForOneShardMemoryStrictly() throws SQLException {
         sqlExecuteGroupEngine = new SQLExecuteGroupEngine(2);
         Collection<InputGroup<StatementExecuteUnit>> actual = sqlExecuteGroupEngine.getExecuteUnitGroups(
-                mockExecutionConnection(1, ConnectionMode.MEMORY_STRICTLY), mockShardRouteUnit(1, 1), callback);
+                mockExecutionConnection(1, ConnectionMode.MEMORY_STRICTLY), mockShardRouteUnit(1, 1), callback, new StatementOption(true, true));
         assertThat(actual.size(), is(1));
         for (InputGroup<StatementExecuteUnit> each : actual) {
             assertThat(each.getInputs().size(), is(1));
@@ -64,7 +65,7 @@ public final class SQLExecuteGroupEngineTest {
     public void assertGetExecuteUnitGroupForMultiShardConnectionStrictly() throws SQLException {
         sqlExecuteGroupEngine = new SQLExecuteGroupEngine(1);
         Collection<InputGroup<StatementExecuteUnit>> actual = sqlExecuteGroupEngine.getExecuteUnitGroups(
-                mockExecutionConnection(1, ConnectionMode.CONNECTION_STRICTLY), mockShardRouteUnit(10, 2), callback);
+                mockExecutionConnection(1, ConnectionMode.CONNECTION_STRICTLY), mockShardRouteUnit(10, 2), callback, new StatementOption(true, true));
         assertThat(actual.size(), is(10));
         for (InputGroup<StatementExecuteUnit> each : actual) {
             assertThat(each.getInputs().size(), is(2));

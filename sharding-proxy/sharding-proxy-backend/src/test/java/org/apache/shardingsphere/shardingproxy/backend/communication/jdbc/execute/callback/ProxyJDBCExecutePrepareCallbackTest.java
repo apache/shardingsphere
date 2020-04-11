@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.callback;
 
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
+import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
@@ -40,17 +41,17 @@ public final class ProxyJDBCExecutePrepareCallbackTest {
     public void assertCreateStatementExecuteUnitWhenNotMemoryStrictly() throws SQLException {
         JDBCExecutorWrapper jdbcExecutorWrapper = mock(JDBCExecutorWrapper.class);
         when(jdbcExecutorWrapper.createStatement(any(), any(), anyBoolean())).thenReturn(mock(Statement.class));
-        ProxyJDBCExecuteGroupCallback proxyJDBCExecutePrepareCallback = new ProxyJDBCExecuteGroupCallback(jdbcExecutorWrapper, false);
+        ProxyJDBCExecuteGroupCallback proxyJDBCExecutePrepareCallback = new ProxyJDBCExecuteGroupCallback(jdbcExecutorWrapper);
         assertThat(proxyJDBCExecutePrepareCallback.createStatement(
-                null, new ExecutionUnit("ds", new SQLUnit("SELECT 1", Collections.emptyList())), ConnectionMode.CONNECTION_STRICTLY).getFetchSize(), is(0));
+                null, new ExecutionUnit("ds", new SQLUnit("SELECT 1", Collections.emptyList())), ConnectionMode.CONNECTION_STRICTLY, new StatementOption(true, false)).getFetchSize(), is(0));
     }
     
     @Test
     public void assertCreateStatementExecuteUnitWhenMemoryStrictly() throws SQLException {
         JDBCExecutorWrapper jdbcExecutorWrapper = mock(JDBCExecutorWrapper.class);
         when(jdbcExecutorWrapper.createStatement(any(), any(), anyBoolean())).thenReturn(mock(Statement.class));
-        ProxyJDBCExecuteGroupCallback proxyJDBCExecutePrepareCallback = new ProxyJDBCExecuteGroupCallback(jdbcExecutorWrapper, false);
+        ProxyJDBCExecuteGroupCallback proxyJDBCExecutePrepareCallback = new ProxyJDBCExecuteGroupCallback(jdbcExecutorWrapper);
         assertThat(proxyJDBCExecutePrepareCallback.createStatement(
-                null, new ExecutionUnit("ds", new SQLUnit("SELECT 1", Collections.emptyList())), ConnectionMode.MEMORY_STRICTLY).getFetchSize(), is(0));
+                null, new ExecutionUnit("ds", new SQLUnit("SELECT 1", Collections.emptyList())), ConnectionMode.MEMORY_STRICTLY, new StatementOption(true, false)).getFetchSize(), is(0));
     }
 }

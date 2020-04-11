@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.execute.sql.prepare;
 
+import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 
@@ -35,8 +36,9 @@ public interface SQLExecuteGroupCallback {
      * @param connection connection
      * @param executionUnit execution unit
      * @param connectionMode connection mode
+     * @param statementOption statement option
      * @return SQL execute unit
      * @throws SQLException SQL exception
      */
-    Statement createStatement(Connection connection, ExecutionUnit executionUnit, ConnectionMode connectionMode) throws SQLException;
+    Statement createStatement(Connection connection, ExecutionUnit executionUnit, ConnectionMode connectionMode, StatementOption statementOption) throws SQLException;
 }

@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.Execut
 import org.apache.shardingsphere.shardingjdbc.executor.AbstractStatementExecutor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
@@ -74,9 +75,11 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     }
     
     private Collection<InputGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<BatchRouteUnit> batchRouteUnits) throws SQLException {
+        StatementOption statementOption = returnGeneratedKeys
+                ? new StatementOption(true, true) : new StatementOption(true, getResultSetType(), getResultSetConcurrency(), getResultSetHoldability());
         return getExecuteGroupEngine().getExecuteUnitGroups(
-                getConnection(), new ArrayList<>(batchRouteUnits).stream().map(BatchRouteUnit::getExecutionUnit).collect(Collectors.toList()), (connection, executionUnit, connectionMode)
-                -> createPreparedStatement(connection, executionUnit.getSqlUnit().getSql()));
+                getConnection(), new ArrayList<>(batchRouteUnits).stream().map(BatchRouteUnit::getExecutionUnit).collect(Collectors.toList()), (connection, executionUnit, connectionMode, option)
+                -> createPreparedStatement(connection, executionUnit.getSqlUnit().getSql()), statementOption);
     }
     
     @SuppressWarnings("MagicConstant")
