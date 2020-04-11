@@ -28,7 +28,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Collections;
+
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -62,5 +66,13 @@ public final class MetaDataCenterTest {
         assertNotNull(ruleSchemaMetaData);
         assertNotNull(ruleSchemaMetaData.getConfiguredSchemaMetaData());
         assertNotNull(ruleSchemaMetaData.getUnconfiguredSchemaMetaDataMap());
+        assertThat(ruleSchemaMetaData.getConfiguredSchemaMetaData().getAllTableNames(), is(Collections.singleton("t_order")));
+        assertThat(ruleSchemaMetaData.getConfiguredSchemaMetaData().get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
+        assertThat(ruleSchemaMetaData.getConfiguredSchemaMetaData().getAllColumnNames("t_order").size(), is(1));
+        assertThat(ruleSchemaMetaData.getConfiguredSchemaMetaData().get("t_order").getColumns().keySet(), is(Collections.singleton("id")));
+        assertThat(ruleSchemaMetaData.getUnconfiguredSchemaMetaDataMap().keySet(), is(Collections.singleton("ds_0")));
+        assertThat(ruleSchemaMetaData.getUnconfiguredSchemaMetaDataMap().get("ds_0").getAllTableNames(), is(Collections.singleton("t_user")));
+        assertThat(ruleSchemaMetaData.getUnconfiguredSchemaMetaDataMap().get("ds_0").get("t_user").getIndexes().keySet(), is(Collections.singleton("primary")));
+        assertThat(ruleSchemaMetaData.getUnconfiguredSchemaMetaDataMap().get("ds_0").get("t_user").getColumns().keySet(), is(Collections.singleton("id")));
     }
 }
