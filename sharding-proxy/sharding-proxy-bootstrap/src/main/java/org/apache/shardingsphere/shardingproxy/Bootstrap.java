@@ -98,8 +98,8 @@ public final class Bootstrap {
         if (0 == args.length) {
             return DEFAULT_PORT;
         }
-        Integer parsedPort = Ints.tryParse(args[0]);
-        return parsedPort == null ? DEFAULT_PORT : parsedPort;
+        Integer port = Ints.tryParse(args[0]);
+        return port == null ? DEFAULT_PORT : port;
     }
     
     private static String getConfigPath(final String[] args) {
