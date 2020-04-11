@@ -33,7 +33,7 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
-import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
+import org.apache.shardingsphere.underlying.executor.kernel.ExecutorKernel;
 import org.junit.After;
 import org.junit.Before;
 import org.mockito.MockitoAnnotations;
@@ -54,7 +54,7 @@ import static org.mockito.Mockito.when;
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractBaseExecutorTest {
     
-    private ExecutorEngine executorEngine;
+    private ExecutorKernel executorKernel;
     
     private ShardingConnection connection;
     
@@ -62,13 +62,13 @@ public abstract class AbstractBaseExecutorTest {
     public void setUp() throws SQLException {
         MockitoAnnotations.initMocks(this);
         ExecutorExceptionHandler.setExceptionThrown(false);
-        executorEngine = new ExecutorEngine(Runtime.getRuntime().availableProcessors());
+        executorKernel = new ExecutorKernel(Runtime.getRuntime().availableProcessors());
         setConnection();
     }
     
     private void setConnection() throws SQLException {
         ShardingRuntimeContext runtimeContext = mock(ShardingRuntimeContext.class);
-        when(runtimeContext.getExecutorEngine()).thenReturn(executorEngine);
+        when(runtimeContext.getExecutorKernel()).thenReturn(executorKernel);
         when(runtimeContext.getProperties()).thenReturn(getProperties());
         when(runtimeContext.getDatabaseType()).thenReturn(DatabaseTypes.getActualDatabaseType("H2"));
         ShardingRule shardingRule = getShardingRule();
@@ -114,6 +114,6 @@ public abstract class AbstractBaseExecutorTest {
     
     @After
     public void tearDown() {
-        executorEngine.close();
+        executorKernel.close();
     }
 }

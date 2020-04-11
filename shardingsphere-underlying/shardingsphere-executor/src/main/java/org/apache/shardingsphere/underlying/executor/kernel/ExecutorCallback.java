@@ -15,21 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.executor.engine;
+package org.apache.shardingsphere.underlying.executor.kernel;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.List;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Map;
 
 /**
- * Input group.
- *
- * @param <T> type of inputs value
+ * Grouped callback.
+ * 
+ * @param <I> type of input value
+ * @param <O> type of output value
  */
-@RequiredArgsConstructor
-@Getter
-public final class InputGroup<T> {
+public interface ExecutorCallback<I, O> {
     
-    private final List<T> inputs;
+    /**
+     * Execute.
+     * 
+     * @param inputs input values
+     * @param isTrunkThread is execution in trunk thread
+     * @param dataMap data map
+     * @return execution results
+     * @throws SQLException throw when execute failure
+     */
+    Collection<O> execute(Collection<I> inputs, boolean isTrunkThread, Map<String, Object> dataMap) throws SQLException;
 }

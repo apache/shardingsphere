@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.executor;
 
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
-import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteCallback;
+import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.MemoryQueryResult;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
-import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
+import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -82,7 +82,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
      */
     public List<QueryResult> executeQuery() throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecuteCallback<QueryResult> executeCallback = new SQLExecuteCallback<QueryResult>(getDatabaseType(), isExceptionThrown) {
+        SQLExecutorCallback<QueryResult> executeCallback = new SQLExecutorCallback<QueryResult>(getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected QueryResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -143,7 +143,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     
     private int executeUpdate(final Updater updater) throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecuteCallback<Integer> executeCallback = new SQLExecuteCallback<Integer>(getDatabaseType(), isExceptionThrown) {
+        SQLExecutorCallback<Integer> executeCallback = new SQLExecutorCallback<Integer>(getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected Integer executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -211,7 +211,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     
     private boolean execute(final Executor executor) throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecuteCallback<Boolean> executeCallback = new SQLExecuteCallback<Boolean>(getDatabaseType(), isExceptionThrown) {
+        SQLExecutorCallback<Boolean> executeCallback = new SQLExecutorCallback<Boolean>(getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected Boolean executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {

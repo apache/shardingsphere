@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.executor.engine;
+package org.apache.shardingsphere.underlying.executor.kernel;
 
-import org.apache.shardingsphere.underlying.executor.engine.fixture.GroupedCallbackFixture;
+import org.apache.shardingsphere.underlying.executor.kernel.fixture.ExecutorCallbackFixture;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,21 +34,21 @@ import static org.mockito.Mockito.mock;
 
 public final class ExecutorEngineTest {
     
-    private final ExecutorEngine executorEngine = new ExecutorEngine(10);
+    private final ExecutorKernel executorEngine = new ExecutorKernel(10);
     
     private final CountDownLatch latch = new CountDownLatch(4);
     
     private Collection<InputGroup<Object>> inputGroups;
     
-    private GroupedCallbackFixture firstCallback;
+    private ExecutorCallbackFixture firstCallback;
     
-    private GroupedCallbackFixture callback;
+    private ExecutorCallbackFixture callback;
     
     @Before
     public void setUp() {
         inputGroups = createMockedInputGroups(2, 2);
-        firstCallback = new GroupedCallbackFixture(latch);
-        callback = new GroupedCallbackFixture(latch);
+        firstCallback = new ExecutorCallbackFixture(latch);
+        callback = new ExecutorCallbackFixture(latch);
     }
     
     @After
@@ -96,7 +96,7 @@ public final class ExecutorEngineTest {
     @Test
     public void assertInputGroupIsEmpty() throws SQLException {
         CountDownLatch latch = new CountDownLatch(1);
-        List<String> actual = executorEngine.execute(new LinkedList<>(), new GroupedCallbackFixture(latch));
+        List<String> actual = executorEngine.execute(new LinkedList<>(), new ExecutorCallbackFixture(latch));
         latch.countDown();
         assertThat(actual.size(), is(0));
     }

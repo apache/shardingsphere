@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.executor;
 
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
-import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteCallback;
+import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 
 import java.sql.PreparedStatement;
@@ -37,8 +37,8 @@ public final class SQLExecuteCallbackFactory {
      * @param isExceptionThrown is exception thrown
      * @return update callback
      */
-    public static SQLExecuteCallback<Integer> getPreparedUpdateSQLExecuteCallback(final DatabaseType databaseType, final boolean isExceptionThrown) {
-        return new SQLExecuteCallback<Integer>(databaseType, isExceptionThrown) {
+    public static SQLExecutorCallback<Integer> getPreparedUpdateSQLExecuteCallback(final DatabaseType databaseType, final boolean isExceptionThrown) {
+        return new SQLExecutorCallback<Integer>(databaseType, isExceptionThrown) {
             
             @Override
             protected Integer executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -54,8 +54,8 @@ public final class SQLExecuteCallbackFactory {
      * @param isExceptionThrown is exception thrown
      * @return execute callback
      */
-    public static SQLExecuteCallback<Boolean> getPreparedSQLExecuteCallback(final DatabaseType databaseType, final boolean isExceptionThrown) {
-        return new SQLExecuteCallback<Boolean>(databaseType, isExceptionThrown) {
+    public static SQLExecutorCallback<Boolean> getPreparedSQLExecuteCallback(final DatabaseType databaseType, final boolean isExceptionThrown) {
+        return new SQLExecutorCallback<Boolean>(databaseType, isExceptionThrown) {
             
             @Override
             protected Boolean executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {

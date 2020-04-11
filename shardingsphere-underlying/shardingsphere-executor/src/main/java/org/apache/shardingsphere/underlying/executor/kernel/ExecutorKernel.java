@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.executor.engine;
+package org.apache.shardingsphere.underlying.executor.kernel;
 
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
-import org.apache.shardingsphere.underlying.executor.engine.impl.ShardingSphereExecutorService;
+import org.apache.shardingsphere.underlying.executor.kernel.impl.ShardingSphereExecutorService;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -32,13 +32,13 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Executor engine.
+ * Executor kernel.
  */
-public final class ExecutorEngine implements AutoCloseable {
+public final class ExecutorKernel implements AutoCloseable {
     
     private final ShardingSphereExecutorService executorService;
     
-    public ExecutorEngine(final int executorSize) {
+    public ExecutorKernel(final int executorSize) {
         executorService = new ShardingSphereExecutorService(executorSize);
     }
     
@@ -46,13 +46,13 @@ public final class ExecutorEngine implements AutoCloseable {
      * Execute.
      *
      * @param inputGroups input groups
-     * @param callback grouped callback
+     * @param callback executor callback
      * @param <I> type of input value
      * @param <O> type of return value
      * @return execute result
      * @throws SQLException throw if execute failure
      */
-    public <I, O> List<O> execute(final Collection<InputGroup<I>> inputGroups, final GroupedCallback<I, O> callback) throws SQLException {
+    public <I, O> List<O> execute(final Collection<InputGroup<I>> inputGroups, final ExecutorCallback<I, O> callback) throws SQLException {
         return execute(inputGroups, null, callback, false);
     }
     
@@ -60,23 +60,23 @@ public final class ExecutorEngine implements AutoCloseable {
      * Execute.
      *
      * @param inputGroups input groups
-     * @param firstCallback first grouped callback
-     * @param callback other grouped callback
+     * @param firstCallback first executor callback
+     * @param callback other executor callback
      * @param serial whether using multi thread execute or not
      * @param <I> type of input value
      * @param <O> type of return value
      * @return execute result
      * @throws SQLException throw if execute failure
      */
-    public <I, O> List<O> execute(final Collection<InputGroup<I>> inputGroups, 
-                                  final GroupedCallback<I, O> firstCallback, final GroupedCallback<I, O> callback, final boolean serial) throws SQLException {
+    public <I, O> List<O> execute(final Collection<InputGroup<I>> inputGroups,
+                                  final ExecutorCallback<I, O> firstCallback, final ExecutorCallback<I, O> callback, final boolean serial) throws SQLException {
         if (inputGroups.isEmpty()) {
             return Collections.emptyList();
         }
         return serial ? serialExecute(inputGroups, firstCallback, callback) : parallelExecute(inputGroups, firstCallback, callback);
     }
     
-    private <I, O> List<O> serialExecute(final Collection<InputGroup<I>> inputGroups, final GroupedCallback<I, O> firstCallback, final GroupedCallback<I, O> callback) throws SQLException {
+    private <I, O> List<O> serialExecute(final Collection<InputGroup<I>> inputGroups, final ExecutorCallback<I, O> firstCallback, final ExecutorCallback<I, O> callback) throws SQLException {
         Iterator<InputGroup<I>> inputGroupsIterator = inputGroups.iterator();
         InputGroup<I> firstInputs = inputGroupsIterator.next();
         List<O> result = new LinkedList<>(syncExecute(firstInputs, null == firstCallback ? callback : firstCallback));
@@ -86,18 +86,18 @@ public final class ExecutorEngine implements AutoCloseable {
         return result;
     }
     
-    private <I, O> List<O> parallelExecute(final Collection<InputGroup<I>> inputGroups, final GroupedCallback<I, O> firstCallback, final GroupedCallback<I, O> callback) throws SQLException {
+    private <I, O> List<O> parallelExecute(final Collection<InputGroup<I>> inputGroups, final ExecutorCallback<I, O> firstCallback, final ExecutorCallback<I, O> callback) throws SQLException {
         Iterator<InputGroup<I>> inputGroupsIterator = inputGroups.iterator();
         InputGroup<I> firstInputs = inputGroupsIterator.next();
         Collection<ListenableFuture<Collection<O>>> restResultFutures = asyncExecute(Lists.newArrayList(inputGroupsIterator), callback);
         return getGroupResults(syncExecute(firstInputs, null == firstCallback ? callback : firstCallback), restResultFutures);
     }
     
-    private <I, O> Collection<O> syncExecute(final InputGroup<I> inputGroup, final GroupedCallback<I, O> callback) throws SQLException {
+    private <I, O> Collection<O> syncExecute(final InputGroup<I> inputGroup, final ExecutorCallback<I, O> callback) throws SQLException {
         return callback.execute(inputGroup.getInputs(), true, ExecutorDataMap.getValue());
     }
     
-    private <I, O> Collection<ListenableFuture<Collection<O>>> asyncExecute(final List<InputGroup<I>> inputGroups, final GroupedCallback<I, O> callback) {
+    private <I, O> Collection<ListenableFuture<Collection<O>>> asyncExecute(final List<InputGroup<I>> inputGroups, final ExecutorCallback<I, O> callback) {
         Collection<ListenableFuture<Collection<O>>> result = new LinkedList<>();
         for (InputGroup<I> each : inputGroups) {
             result.add(asyncExecute(each, callback));
@@ -105,7 +105,7 @@ public final class ExecutorEngine implements AutoCloseable {
         return result;
     }
     
-    private <I, O> ListenableFuture<Collection<O>> asyncExecute(final InputGroup<I> inputGroup, final GroupedCallback<I, O> callback) {
+    private <I, O> ListenableFuture<Collection<O>> asyncExecute(final InputGroup<I> inputGroup, final ExecutorCallback<I, O> callback) {
         final Map<String, Object> dataMap = ExecutorDataMap.getValue();
         return executorService.getExecutorService().submit(() -> callback.execute(inputGroup.getInputs(), false, dataMap));
     }

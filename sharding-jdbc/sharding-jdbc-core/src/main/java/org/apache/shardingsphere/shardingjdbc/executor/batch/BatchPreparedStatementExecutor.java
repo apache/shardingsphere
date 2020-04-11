@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.executor.batch;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
-import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteCallback;
+import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
 import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
 import org.apache.shardingsphere.sharding.execute.sql.prepare.SQLExecutePrepareCallback;
 import org.apache.shardingsphere.shardingjdbc.executor.AbstractStatementExecutor;
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
-import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
+import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -146,7 +146,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
      */
     public int[] executeBatch() throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecuteCallback<int[]> callback = new SQLExecuteCallback<int[]>(getDatabaseType(), isExceptionThrown) {
+        SQLExecutorCallback<int[]> callback = new SQLExecutorCallback<int[]>(getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected int[] executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {

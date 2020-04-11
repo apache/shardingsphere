@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.executor;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
-import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteCallback;
+import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
 import org.junit.Before;
@@ -64,14 +64,14 @@ public final class SQLExecuteCallbackFactoryTest {
     
     @Test
     public void assertGetPreparedUpdateSQLExecuteCallback() throws SQLException {
-        SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(DatabaseTypes.getActualDatabaseType("MySQL"), true);
+        SQLExecutorCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(DatabaseTypes.getActualDatabaseType("MySQL"), true);
         sqlExecuteCallback.execute(units, true, null);
         verify(preparedStatement).executeUpdate();
     }
     
     @Test
     public void assertGetPreparedSQLExecuteCallback() throws SQLException {
-        SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(DatabaseTypes.getActualDatabaseType("MySQL"), true);
+        SQLExecutorCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(DatabaseTypes.getActualDatabaseType("MySQL"), true);
         sqlExecuteCallback.execute(units, true, null);
         verify(preparedStatement).execute();
     }

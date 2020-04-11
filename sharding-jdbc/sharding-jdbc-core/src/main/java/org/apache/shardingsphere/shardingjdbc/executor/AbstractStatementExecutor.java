@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.executor;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
-import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteCallback;
+import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
 import org.apache.shardingsphere.sharding.execute.sql.prepare.SQLExecutePrepareTemplate;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
@@ -31,7 +31,7 @@ import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
-import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
+import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -88,7 +88,7 @@ public abstract class AbstractStatementExecutor {
         inputGroups = new LinkedList<>();
         int maxConnectionsSizePerQuery = connection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(maxConnectionsSizePerQuery);
-        sqlExecuteTemplate = new SQLExecuteTemplate(connection.getRuntimeContext().getExecutorEngine(), connection.isHoldTransaction());
+        sqlExecuteTemplate = new SQLExecuteTemplate(connection.getRuntimeContext().getExecutorKernel(), connection.isHoldTransaction());
         metaDataLoader = new RuleSchemaMetaDataLoader(connection.getRuntimeContext().getRule().toRules());
     }
     
@@ -111,7 +111,7 @@ public abstract class AbstractStatementExecutor {
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("unchecked")
-    protected final <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
+    protected final <T> List<T> executeCallback(final SQLExecutorCallback<T> executeCallback) throws SQLException {
         List<T> result = sqlExecuteTemplate.execute((Collection) inputGroups, executeCallback);
         refreshMetaDataIfNeeded(connection.getRuntimeContext(), sqlStatementContext);
         return result;
