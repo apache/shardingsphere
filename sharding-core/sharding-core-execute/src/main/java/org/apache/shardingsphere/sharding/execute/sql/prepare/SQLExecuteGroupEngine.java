@@ -35,10 +35,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * SQL execute prepare template.
+ * SQL execute group engine.
  */
 @RequiredArgsConstructor
-public final class SQLExecutePrepareTemplate {
+public final class SQLExecuteGroupEngine {
     
     private final int maxConnectionsSizePerQuery;
     
@@ -50,12 +50,12 @@ public final class SQLExecutePrepareTemplate {
      * @return statement execute unit groups
      * @throws SQLException SQL exception
      */
-    public Collection<InputGroup<StatementExecuteUnit>> getExecuteUnitGroups(final Collection<ExecutionUnit> executionUnits, final SQLExecutePrepareCallback callback) throws SQLException {
+    public Collection<InputGroup<StatementExecuteUnit>> getExecuteUnitGroups(final Collection<ExecutionUnit> executionUnits, final SQLExecuteGroupCallback callback) throws SQLException {
         return getSynchronizedExecuteUnitGroups(executionUnits, callback);
     }
     
     private Collection<InputGroup<StatementExecuteUnit>> getSynchronizedExecuteUnitGroups(
-            final Collection<ExecutionUnit> executionUnits, final SQLExecutePrepareCallback callback) throws SQLException {
+            final Collection<ExecutionUnit> executionUnits, final SQLExecuteGroupCallback callback) throws SQLException {
         Map<String, List<SQLUnit>> sqlUnitGroups = getSQLUnitGroups(executionUnits);
         Collection<InputGroup<StatementExecuteUnit>> result = new LinkedList<>();
         for (Entry<String, List<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
@@ -76,12 +76,12 @@ public final class SQLExecutePrepareTemplate {
     }
     
     private List<InputGroup<StatementExecuteUnit>> getSQLExecuteGroups(final String dataSourceName,
-                                                                       final List<SQLUnit> sqlUnits, final SQLExecutePrepareCallback callback) throws SQLException {
+                                                                       final List<SQLUnit> sqlUnits, final SQLExecuteGroupCallback callback) throws SQLException {
         List<InputGroup<StatementExecuteUnit>> result = new LinkedList<>();
         int desiredPartitionSize = Math.max(0 == sqlUnits.size() % maxConnectionsSizePerQuery ? sqlUnits.size() / maxConnectionsSizePerQuery : sqlUnits.size() / maxConnectionsSizePerQuery + 1, 1);
         List<List<SQLUnit>> sqlUnitPartitions = Lists.partition(sqlUnits, desiredPartitionSize);
         ConnectionMode connectionMode = maxConnectionsSizePerQuery < sqlUnits.size() ? ConnectionMode.CONNECTION_STRICTLY : ConnectionMode.MEMORY_STRICTLY;
-        List<Connection> connections = callback.getConnections(connectionMode, dataSourceName, sqlUnitPartitions.size());
+        List<Connection> connections = callback.getConnections(dataSourceName, sqlUnitPartitions.size(), connectionMode);
         int count = 0;
         for (List<SQLUnit> each : sqlUnitPartitions) {
             result.add(getSQLExecuteGroup(connectionMode, connections.get(count++), dataSourceName, each, callback));
@@ -90,7 +90,7 @@ public final class SQLExecutePrepareTemplate {
     }
     
     private InputGroup<StatementExecuteUnit> getSQLExecuteGroup(final ConnectionMode connectionMode, final Connection connection,
-                                                                final String dataSourceName, final List<SQLUnit> sqlUnitGroup, final SQLExecutePrepareCallback callback) throws SQLException {
+                                                                final String dataSourceName, final List<SQLUnit> sqlUnitGroup, final SQLExecuteGroupCallback callback) throws SQLException {
         List<StatementExecuteUnit> result = new LinkedList<>();
         for (SQLUnit each : sqlUnitGroup) {
             result.add(callback.createStatementExecuteUnit(connection, new ExecutionUnit(dataSourceName, each), connectionMode));

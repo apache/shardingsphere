@@ -133,21 +133,21 @@ public final class BackendConnection implements AutoCloseable {
     /**
      * Get connections of current thread datasource.
      *
-     * @param connectionMode connection mode
      * @param dataSourceName data source name
      * @param connectionSize size of connections to be get
+     * @param connectionMode connection mode
      * @return connections
      * @throws SQLException SQL exception
      */
-    public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
+    public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
         if (stateHandler.isInTransaction()) {
-            return getConnectionsWithTransaction(connectionMode, dataSourceName, connectionSize);
+            return getConnectionsWithTransaction(dataSourceName, connectionSize, connectionMode);
         } else {
-            return getConnectionsWithoutTransaction(connectionMode, dataSourceName, connectionSize);
+            return getConnectionsWithoutTransaction(dataSourceName, connectionSize, connectionMode);
         }
     }
     
-    private List<Connection> getConnectionsWithTransaction(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
+    private List<Connection> getConnectionsWithTransaction(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
         Collection<Connection> connections;
         synchronized (cachedConnections) {
             connections = cachedConnections.get(dataSourceName);
@@ -158,13 +158,13 @@ public final class BackendConnection implements AutoCloseable {
         } else if (!connections.isEmpty()) {
             result = new ArrayList<>(connectionSize);
             result.addAll(connections);
-            List<Connection> newConnections = createNewConnections(connectionMode, dataSourceName, connectionSize - connections.size());
+            List<Connection> newConnections = createNewConnections(dataSourceName, connectionSize - connections.size(), connectionMode);
             result.addAll(newConnections);
             synchronized (cachedConnections) {
                 cachedConnections.putAll(dataSourceName, newConnections);
             }
         } else {
-            result = createNewConnections(connectionMode, dataSourceName, connectionSize);
+            result = createNewConnections(dataSourceName, connectionSize, connectionMode);
             synchronized (cachedConnections) {
                 cachedConnections.putAll(dataSourceName, result);
             }
@@ -172,26 +172,26 @@ public final class BackendConnection implements AutoCloseable {
         return result;
     }
     
-    private List<Connection> getConnectionsWithoutTransaction(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
+    private List<Connection> getConnectionsWithoutTransaction(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
         Preconditions.checkNotNull(logicSchema, "current logic schema is null");
-        List<Connection> result = getConnectionFromUnderlying(connectionMode, dataSourceName, connectionSize);
+        List<Connection> result = getConnectionFromUnderlying(dataSourceName, connectionSize, connectionMode);
         synchronized (cachedConnections) {
             cachedConnections.putAll(dataSourceName, result);
         }
         return result;
     }
     
-    private List<Connection> createNewConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
+    private List<Connection> createNewConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
         Preconditions.checkNotNull(logicSchema, "current logic schema is null");
-        List<Connection> result = getConnectionFromUnderlying(connectionMode, dataSourceName, connectionSize);
+        List<Connection> result = getConnectionFromUnderlying(dataSourceName, connectionSize, connectionMode);
         for (Connection each : result) {
             replayMethodsInvocation(each);
         }
         return result;
     }
     
-    private List<Connection> getConnectionFromUnderlying(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
-        return logicSchema.getBackendDataSource().getConnections(connectionMode, dataSourceName, connectionSize, transactionType);
+    private List<Connection> getConnectionFromUnderlying(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
+        return logicSchema.getBackendDataSource().getConnections(dataSourceName, connectionSize, connectionMode, transactionType);
     }
     
     /**

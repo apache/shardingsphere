@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execu
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
-import org.apache.shardingsphere.sharding.execute.sql.prepare.SQLExecutePrepareCallback;
+import org.apache.shardingsphere.sharding.execute.sql.prepare.SQLExecuteGroupCallback;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
@@ -34,10 +34,10 @@ import java.sql.Statement;
 import java.util.List;
 
 /**
- * SQL execute prepare callback for Sharding-Proxy.
+ * SQL execute group callback for Sharding-Proxy.
  */
 @RequiredArgsConstructor
-public final class ProxyJDBCExecutePrepareCallback implements SQLExecutePrepareCallback {
+public final class ProxyJDBCExecuteGroupCallback implements SQLExecuteGroupCallback {
     
     private static final Integer MYSQL_MEMORY_FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
     
@@ -50,8 +50,8 @@ public final class ProxyJDBCExecutePrepareCallback implements SQLExecutePrepareC
     private final boolean isReturnGeneratedKeys;
     
     @Override
-    public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
-        return backendConnection.getConnections(connectionMode, dataSourceName, connectionSize);
+    public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
+        return backendConnection.getConnections(dataSourceName, connectionSize, connectionMode);
     }
     
     @Override

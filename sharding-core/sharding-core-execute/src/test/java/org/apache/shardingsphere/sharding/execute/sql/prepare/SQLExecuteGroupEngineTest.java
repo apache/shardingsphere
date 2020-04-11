@@ -41,18 +41,18 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SQLExecutePrepareTemplateTest {
+public final class SQLExecuteGroupEngineTest {
     
-    private SQLExecutePrepareTemplate sqlExecutePrepareTemplate;
+    private SQLExecuteGroupEngine sqlExecuteGroupEngine;
     
     @Mock
-    private SQLExecutePrepareCallback callback;
+    private SQLExecuteGroupCallback callback;
     
     @Test
     public void assertGetExecuteUnitGroupForOneShardMemoryStrictly() throws SQLException {
         mockConnections(callback, ConnectionMode.MEMORY_STRICTLY, 1);
-        sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(2);
-        Collection<InputGroup<StatementExecuteUnit>> actual = sqlExecutePrepareTemplate.getExecuteUnitGroups(mockShardRouteUnit(1, 1), callback);
+        sqlExecuteGroupEngine = new SQLExecuteGroupEngine(2);
+        Collection<InputGroup<StatementExecuteUnit>> actual = sqlExecuteGroupEngine.getExecuteUnitGroups(mockShardRouteUnit(1, 1), callback);
         assertThat(actual.size(), is(1));
         for (InputGroup<StatementExecuteUnit> each : actual) {
             assertThat(each.getInputs().size(), is(1));
@@ -62,20 +62,20 @@ public final class SQLExecutePrepareTemplateTest {
     @Test
     public void assertGetExecuteUnitGroupForMultiShardConnectionStrictly() throws SQLException {
         mockConnections(callback, ConnectionMode.CONNECTION_STRICTLY, 1);
-        sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(1);
-        Collection<InputGroup<StatementExecuteUnit>> actual = sqlExecutePrepareTemplate.getExecuteUnitGroups(mockShardRouteUnit(10, 2), callback);
+        sqlExecuteGroupEngine = new SQLExecuteGroupEngine(1);
+        Collection<InputGroup<StatementExecuteUnit>> actual = sqlExecuteGroupEngine.getExecuteUnitGroups(mockShardRouteUnit(10, 2), callback);
         assertThat(actual.size(), is(10));
         for (InputGroup<StatementExecuteUnit> each : actual) {
             assertThat(each.getInputs().size(), is(2));
         }
     }
     
-    private void mockConnections(final SQLExecutePrepareCallback callback, final ConnectionMode connectionMode, final int size) throws SQLException {
+    private void mockConnections(final SQLExecuteGroupCallback callback, final ConnectionMode connectionMode, final int size) throws SQLException {
         List<Connection> connections = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             connections.add(mock(Connection.class));
         }
-        when(callback.getConnections(eq(connectionMode), anyString(), eq(size))).thenReturn(connections);
+        when(callback.getConnections(anyString(), eq(size), eq(connectionMode))).thenReturn(connections);
     }
     
     private Collection<ExecutionUnit> mockShardRouteUnit(final int shardCount, final int sizePerShard) {

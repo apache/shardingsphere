@@ -26,23 +26,23 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * SQL execute prepare callback.
+ * SQL execute group callback.
  */
-public interface SQLExecutePrepareCallback {
+public interface SQLExecuteGroupCallback {
     
     /**
-     * Get connection.
+     * Get connections.
      * 
-     * @param connectionMode connection mode
      * @param dataSourceName data source name
      * @param connectionSize connection size
-     * @return connection
+     * @param connectionMode connection mode
+     * @return connections
      * @throws SQLException SQL exception
      */
-    List<Connection> getConnections(ConnectionMode connectionMode, String dataSourceName, int connectionSize) throws SQLException;
+    List<Connection> getConnections(String dataSourceName, int connectionSize, ConnectionMode connectionMode) throws SQLException;
     
     /**
-     * Create SQL execute unit.
+     * Create SQL statement execute unit.
      * 
      * @param connection connection
      * @param executionUnit execution unit

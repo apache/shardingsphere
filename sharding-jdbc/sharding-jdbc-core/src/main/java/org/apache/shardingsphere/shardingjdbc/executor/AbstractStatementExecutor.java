@@ -22,7 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
-import org.apache.shardingsphere.sharding.execute.sql.prepare.SQLExecutePrepareTemplate;
+import org.apache.shardingsphere.sharding.execute.sql.prepare.SQLExecuteGroupEngine;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
@@ -67,7 +67,7 @@ public abstract class AbstractStatementExecutor {
     
     private final Collection<InputGroup<StatementExecuteUnit>> inputGroups;
     
-    private final SQLExecutePrepareTemplate sqlExecutePrepareTemplate;
+    private final SQLExecuteGroupEngine executeGroupEngine;
     
     private final SQLExecuteTemplate sqlExecuteTemplate;
     
@@ -87,7 +87,7 @@ public abstract class AbstractStatementExecutor {
         resultSets = new CopyOnWriteArrayList<>();
         inputGroups = new LinkedList<>();
         int maxConnectionsSizePerQuery = connection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(maxConnectionsSizePerQuery);
+        executeGroupEngine = new SQLExecuteGroupEngine(maxConnectionsSizePerQuery);
         sqlExecuteTemplate = new SQLExecuteTemplate(connection.getRuntimeContext().getExecutorKernel(), connection.isHoldTransaction());
         metaDataLoader = new RuleSchemaMetaDataLoader(connection.getRuntimeContext().getRule().toRules());
     }

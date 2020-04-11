@@ -47,16 +47,16 @@ public final class ProxyJDBCExecutePrepareCallbackTest {
     public void assertGetConnections() throws SQLException {
         BackendConnection backendConnection = mock(BackendConnection.class);
         List<Connection> connections = Collections.emptyList();
-        when(backendConnection.getConnections((ConnectionMode) any(), anyString(), anyInt())).thenReturn(connections);
-        ProxyJDBCExecutePrepareCallback proxyJDBCExecutePrepareCallback = new ProxyJDBCExecutePrepareCallback(backendConnection, mock(JDBCExecutorWrapper.class), false);
-        assertThat(proxyJDBCExecutePrepareCallback.getConnections(null, null, 1), is(connections));
+        when(backendConnection.getConnections(anyString(), anyInt(), any())).thenReturn(connections);
+        ProxyJDBCExecuteGroupCallback proxyJDBCExecutePrepareCallback = new ProxyJDBCExecuteGroupCallback(backendConnection, mock(JDBCExecutorWrapper.class), false);
+        assertThat(proxyJDBCExecutePrepareCallback.getConnections(null, 1, null), is(connections));
     }
     
     @Test
     public void assertCreateStatementExecuteUnitWhenNotMemoryStrictly() throws SQLException {
         JDBCExecutorWrapper jdbcExecutorWrapper = mock(JDBCExecutorWrapper.class);
-        when(jdbcExecutorWrapper.createStatement((Connection) any(), (SQLUnit) any(), anyBoolean())).thenReturn(mock(Statement.class));
-        ProxyJDBCExecutePrepareCallback proxyJDBCExecutePrepareCallback = new ProxyJDBCExecutePrepareCallback(mock(BackendConnection.class), jdbcExecutorWrapper, false);
+        when(jdbcExecutorWrapper.createStatement(any(), any(), anyBoolean())).thenReturn(mock(Statement.class));
+        ProxyJDBCExecuteGroupCallback proxyJDBCExecutePrepareCallback = new ProxyJDBCExecuteGroupCallback(mock(BackendConnection.class), jdbcExecutorWrapper, false);
         assertThat(proxyJDBCExecutePrepareCallback.createStatementExecuteUnit(
                 null, new ExecutionUnit("ds", new SQLUnit("SELECT 1", Collections.emptyList())), ConnectionMode.CONNECTION_STRICTLY), instanceOf(StatementExecuteUnit.class));
     }
@@ -64,8 +64,8 @@ public final class ProxyJDBCExecutePrepareCallbackTest {
     @Test
     public void assertCreateStatementExecuteUnitWhenMemoryStrictly() throws SQLException {
         JDBCExecutorWrapper jdbcExecutorWrapper = mock(JDBCExecutorWrapper.class);
-        when(jdbcExecutorWrapper.createStatement((Connection) any(), (SQLUnit) any(), anyBoolean())).thenReturn(mock(Statement.class));
-        ProxyJDBCExecutePrepareCallback proxyJDBCExecutePrepareCallback = new ProxyJDBCExecutePrepareCallback(mock(BackendConnection.class), jdbcExecutorWrapper, false);
+        when(jdbcExecutorWrapper.createStatement(any(), any(), anyBoolean())).thenReturn(mock(Statement.class));
+        ProxyJDBCExecuteGroupCallback proxyJDBCExecutePrepareCallback = new ProxyJDBCExecuteGroupCallback(mock(BackendConnection.class), jdbcExecutorWrapper, false);
         assertThat(proxyJDBCExecutePrepareCallback.createStatementExecuteUnit(
                 null, new ExecutionUnit("ds", new SQLUnit("SELECT 1", Collections.emptyList())), ConnectionMode.MEMORY_STRICTLY), instanceOf(StatementExecuteUnit.class));
     }
