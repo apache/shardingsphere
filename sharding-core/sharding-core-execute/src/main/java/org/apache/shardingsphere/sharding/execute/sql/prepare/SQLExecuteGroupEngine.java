@@ -19,11 +19,12 @@ package org.apache.shardingsphere.sharding.execute.sql.prepare;
 
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
-import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.connection.ExecutionConnection;
+import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
+import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -45,21 +46,23 @@ public final class SQLExecuteGroupEngine {
     /**
      * Get execute unit groups.
      *
+     * @param executionConnection execution connection
      * @param executionUnits execution units
      * @param callback SQL execute prepare callback
      * @return statement execute unit groups
      * @throws SQLException SQL exception
      */
-    public Collection<InputGroup<StatementExecuteUnit>> getExecuteUnitGroups(final Collection<ExecutionUnit> executionUnits, final SQLExecuteGroupCallback callback) throws SQLException {
-        return getSynchronizedExecuteUnitGroups(executionUnits, callback);
+    public Collection<InputGroup<StatementExecuteUnit>> getExecuteUnitGroups(
+            final ExecutionConnection executionConnection, final Collection<ExecutionUnit> executionUnits, final SQLExecuteGroupCallback callback) throws SQLException {
+        return getSynchronizedExecuteUnitGroups(executionConnection, executionUnits, callback);
     }
     
     private Collection<InputGroup<StatementExecuteUnit>> getSynchronizedExecuteUnitGroups(
-            final Collection<ExecutionUnit> executionUnits, final SQLExecuteGroupCallback callback) throws SQLException {
+            final ExecutionConnection executionConnection, final Collection<ExecutionUnit> executionUnits, final SQLExecuteGroupCallback callback) throws SQLException {
         Map<String, List<SQLUnit>> sqlUnitGroups = getSQLUnitGroups(executionUnits);
         Collection<InputGroup<StatementExecuteUnit>> result = new LinkedList<>();
         for (Entry<String, List<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
-            result.addAll(getSQLExecuteGroups(entry.getKey(), entry.getValue(), callback));
+            result.addAll(getSQLExecuteGroups(executionConnection, entry.getKey(), entry.getValue(), callback));
         }
         return result;
     }
@@ -75,13 +78,13 @@ public final class SQLExecuteGroupEngine {
         return result;
     }
     
-    private List<InputGroup<StatementExecuteUnit>> getSQLExecuteGroups(final String dataSourceName,
+    private List<InputGroup<StatementExecuteUnit>> getSQLExecuteGroups(final ExecutionConnection executionConnection, final String dataSourceName,
                                                                        final List<SQLUnit> sqlUnits, final SQLExecuteGroupCallback callback) throws SQLException {
         List<InputGroup<StatementExecuteUnit>> result = new LinkedList<>();
         int desiredPartitionSize = Math.max(0 == sqlUnits.size() % maxConnectionsSizePerQuery ? sqlUnits.size() / maxConnectionsSizePerQuery : sqlUnits.size() / maxConnectionsSizePerQuery + 1, 1);
         List<List<SQLUnit>> sqlUnitPartitions = Lists.partition(sqlUnits, desiredPartitionSize);
         ConnectionMode connectionMode = maxConnectionsSizePerQuery < sqlUnits.size() ? ConnectionMode.CONNECTION_STRICTLY : ConnectionMode.MEMORY_STRICTLY;
-        List<Connection> connections = callback.getConnections(dataSourceName, sqlUnitPartitions.size(), connectionMode);
+        List<Connection> connections = executionConnection.getConnections(dataSourceName, sqlUnitPartitions.size(), connectionMode);
         int count = 0;
         for (List<SQLUnit> each : sqlUnitPartitions) {
             result.add(getSQLExecuteGroup(connectionMode, connections.get(count++), dataSourceName, each, callback));

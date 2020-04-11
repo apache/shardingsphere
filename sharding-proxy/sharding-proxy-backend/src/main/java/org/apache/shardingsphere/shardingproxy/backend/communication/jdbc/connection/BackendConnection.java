@@ -24,12 +24,13 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
-import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
+import org.apache.shardingsphere.underlying.executor.connection.ExecutionConnection;
+import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -46,7 +47,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 @Getter
 @Slf4j
-public final class BackendConnection implements AutoCloseable {
+public final class BackendConnection implements ExecutionConnection, AutoCloseable {
     
     private static final int MAXIMUM_RETRY_COUNT = 5;
     
@@ -130,21 +131,10 @@ public final class BackendConnection implements AutoCloseable {
         return false;
     }
     
-    /**
-     * Get connections of current thread datasource.
-     *
-     * @param dataSourceName data source name
-     * @param connectionSize size of connections to be get
-     * @param connectionMode connection mode
-     * @return connections
-     * @throws SQLException SQL exception
-     */
+    @Override
     public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        if (stateHandler.isInTransaction()) {
-            return getConnectionsWithTransaction(dataSourceName, connectionSize, connectionMode);
-        } else {
-            return getConnectionsWithoutTransaction(dataSourceName, connectionSize, connectionMode);
-        }
+        return stateHandler.isInTransaction()
+                ? getConnectionsWithTransaction(dataSourceName, connectionSize, connectionMode) : getConnectionsWithoutTransaction(dataSourceName, connectionSize, connectionMode);
     }
     
     private List<Connection> getConnectionsWithTransaction(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {

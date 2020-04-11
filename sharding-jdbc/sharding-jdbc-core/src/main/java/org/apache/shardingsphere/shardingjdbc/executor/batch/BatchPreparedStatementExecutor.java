@@ -22,7 +22,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
 import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
-import org.apache.shardingsphere.sharding.execute.sql.prepare.SQLExecuteGroupCallback;
 import org.apache.shardingsphere.shardingjdbc.executor.AbstractStatementExecutor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
@@ -75,19 +74,9 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     }
     
     private Collection<InputGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<BatchRouteUnit> batchRouteUnits) throws SQLException {
-        return getExecuteGroupEngine().getExecuteUnitGroups(new ArrayList<>(batchRouteUnits).stream().map(BatchRouteUnit::getExecutionUnit).collect(Collectors.toList()), 
-                new SQLExecuteGroupCallback() {
-                
-                @Override
-                public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-                    return BatchPreparedStatementExecutor.super.getConnection().getConnections(dataSourceName, connectionSize, connectionMode);
-                }
-                
-                @Override
-                public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final ExecutionUnit executionUnit, final ConnectionMode connectionMode) throws SQLException {
-                    return new StatementExecuteUnit(executionUnit, createPreparedStatement(connection, executionUnit.getSqlUnit().getSql()), connectionMode);
-                }
-            });
+        return getExecuteGroupEngine().getExecuteUnitGroups(
+                getConnection(), new ArrayList<>(batchRouteUnits).stream().map(BatchRouteUnit::getExecutionUnit).collect(Collectors.toList()), (connection, executionUnit, connectionMode)
+                -> new StatementExecuteUnit(executionUnit, createPreparedStatement(connection, executionUnit.getSqlUnit().getSql()), connectionMode));
     }
     
     @SuppressWarnings("MagicConstant")

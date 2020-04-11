@@ -22,7 +22,6 @@ import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallbac
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.MemoryQueryResult;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
-import org.apache.shardingsphere.sharding.execute.sql.prepare.SQLExecuteGroupCallback;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
@@ -30,7 +29,6 @@ import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -58,20 +56,10 @@ public final class StatementExecutor extends AbstractStatementExecutor {
         cacheStatements();
     }
     
+    @SuppressWarnings("MagicConstant")
     private Collection<InputGroup<StatementExecuteUnit>> getExecuteGroups(final Collection<ExecutionUnit> executionUnits) throws SQLException {
-        return getExecuteGroupEngine().getExecuteUnitGroups(executionUnits, new SQLExecuteGroupCallback() {
-            
-            @Override
-            public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-                return StatementExecutor.super.getConnection().getConnections(dataSourceName, connectionSize, connectionMode);
-            }
-            
-            @SuppressWarnings("MagicConstant")
-            @Override
-            public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final ExecutionUnit executionUnit, final ConnectionMode connectionMode) throws SQLException {
-                return new StatementExecuteUnit(executionUnit, connection.createStatement(getResultSetType(), getResultSetConcurrency(), getResultSetHoldability()), connectionMode);
-            }
-        });
+        return getExecuteGroupEngine().getExecuteUnitGroups(getConnection(), executionUnits, (connection, executionUnit, connectionMode)
+            -> new StatementExecuteUnit(executionUnit, connection.createStatement(getResultSetType(), getResultSetConcurrency(), getResultSetHoldability()), connectionMode));
     }
     
     /**

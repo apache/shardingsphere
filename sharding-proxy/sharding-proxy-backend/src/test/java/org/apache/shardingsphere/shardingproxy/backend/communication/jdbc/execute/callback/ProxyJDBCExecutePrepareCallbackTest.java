@@ -17,46 +17,31 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.callback;
 
-import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
+import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
 import org.junit.Test;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ProxyJDBCExecutePrepareCallbackTest {
     
     @Test
-    public void assertGetConnections() throws SQLException {
-        BackendConnection backendConnection = mock(BackendConnection.class);
-        List<Connection> connections = Collections.emptyList();
-        when(backendConnection.getConnections(anyString(), anyInt(), any())).thenReturn(connections);
-        ProxyJDBCExecuteGroupCallback proxyJDBCExecutePrepareCallback = new ProxyJDBCExecuteGroupCallback(backendConnection, mock(JDBCExecutorWrapper.class), false);
-        assertThat(proxyJDBCExecutePrepareCallback.getConnections(null, 1, null), is(connections));
-    }
-    
-    @Test
     public void assertCreateStatementExecuteUnitWhenNotMemoryStrictly() throws SQLException {
         JDBCExecutorWrapper jdbcExecutorWrapper = mock(JDBCExecutorWrapper.class);
         when(jdbcExecutorWrapper.createStatement(any(), any(), anyBoolean())).thenReturn(mock(Statement.class));
-        ProxyJDBCExecuteGroupCallback proxyJDBCExecutePrepareCallback = new ProxyJDBCExecuteGroupCallback(mock(BackendConnection.class), jdbcExecutorWrapper, false);
+        ProxyJDBCExecuteGroupCallback proxyJDBCExecutePrepareCallback = new ProxyJDBCExecuteGroupCallback(jdbcExecutorWrapper, false);
         assertThat(proxyJDBCExecutePrepareCallback.createStatementExecuteUnit(
                 null, new ExecutionUnit("ds", new SQLUnit("SELECT 1", Collections.emptyList())), ConnectionMode.CONNECTION_STRICTLY), instanceOf(StatementExecuteUnit.class));
     }
@@ -65,7 +50,7 @@ public final class ProxyJDBCExecutePrepareCallbackTest {
     public void assertCreateStatementExecuteUnitWhenMemoryStrictly() throws SQLException {
         JDBCExecutorWrapper jdbcExecutorWrapper = mock(JDBCExecutorWrapper.class);
         when(jdbcExecutorWrapper.createStatement(any(), any(), anyBoolean())).thenReturn(mock(Statement.class));
-        ProxyJDBCExecuteGroupCallback proxyJDBCExecutePrepareCallback = new ProxyJDBCExecuteGroupCallback(mock(BackendConnection.class), jdbcExecutorWrapper, false);
+        ProxyJDBCExecuteGroupCallback proxyJDBCExecutePrepareCallback = new ProxyJDBCExecuteGroupCallback(jdbcExecutorWrapper, false);
         assertThat(proxyJDBCExecutePrepareCallback.createStatementExecuteUnit(
                 null, new ExecutionUnit("ds", new SQLUnit("SELECT 1", Collections.emptyList())), ConnectionMode.MEMORY_STRICTLY), instanceOf(StatementExecuteUnit.class));
     }

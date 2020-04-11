@@ -27,6 +27,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupport
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.underlying.common.hook.RootInvokeHook;
 import org.apache.shardingsphere.underlying.common.hook.SPIRootInvokeHook;
+import org.apache.shardingsphere.underlying.executor.connection.ExecutionConnection;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 
 import javax.sql.DataSource;
@@ -44,7 +45,7 @@ import java.util.Map.Entry;
 /**
  * Adapter for {@code Connection}.
  */
-public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOperationConnection {
+public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOperationConnection implements ExecutionConnection {
     
     @Getter
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
@@ -79,15 +80,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         return getConnections(dataSourceName, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
     }
     
-    /**
-     * Get database connections.
-     *
-     * @param dataSourceName data source name
-     * @param connectionSize size of connection list to be get
-     * @param connectionMode connection mode
-     * @return database connections
-     * @throws SQLException SQL exception
-     */
+    @Override
     public final List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
         DataSource dataSource = getDataSourceMap().get(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);

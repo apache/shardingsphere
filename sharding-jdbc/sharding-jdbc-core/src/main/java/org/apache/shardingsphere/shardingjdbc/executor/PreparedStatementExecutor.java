@@ -23,7 +23,6 @@ import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallbac
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.MemoryQueryResult;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
-import org.apache.shardingsphere.sharding.execute.sql.prepare.SQLExecuteGroupCallback;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
@@ -66,18 +65,8 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     }
     
     private Collection<InputGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<ExecutionUnit> executionUnits) throws SQLException {
-        return getExecuteGroupEngine().getExecuteUnitGroups(executionUnits, new SQLExecuteGroupCallback() {
-            
-            @Override
-            public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-                return PreparedStatementExecutor.super.getConnection().getConnections(dataSourceName, connectionSize, connectionMode);
-            }
-            
-            @Override
-            public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final ExecutionUnit executionUnit, final ConnectionMode connectionMode) throws SQLException {
-                return new StatementExecuteUnit(executionUnit, createPreparedStatement(connection, executionUnit.getSqlUnit().getSql()), connectionMode);
-            }
-        });
+        return getExecuteGroupEngine().getExecuteUnitGroups(getConnection(), executionUnits, (connection, executionUnit, connectionMode)
+            -> new StatementExecuteUnit(executionUnit, createPreparedStatement(connection, executionUnit.getSqlUnit().getSql()), connectionMode));
     }
     
     @SuppressWarnings("MagicConstant")

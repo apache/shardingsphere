@@ -18,20 +18,18 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.callback;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.sharding.execute.sql.prepare.SQLExecuteGroupCallback;
-import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.underlying.common.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.underlying.common.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
 
 /**
  * SQL execute group callback for Sharding-Proxy.
@@ -43,16 +41,9 @@ public final class ProxyJDBCExecuteGroupCallback implements SQLExecuteGroupCallb
     
     private static final int POSTGRESQL_MEMORY_FETCH_ONE_ROW_A_TIME = 1;
     
-    private final BackendConnection backendConnection;
-    
     private final JDBCExecutorWrapper jdbcExecutorWrapper;
     
     private final boolean isReturnGeneratedKeys;
-    
-    @Override
-    public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        return backendConnection.getConnections(dataSourceName, connectionSize, connectionMode);
-    }
     
     @Override
     public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final ExecutionUnit executionUnit, final ConnectionMode connectionMode) throws SQLException {

@@ -15,28 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.execute.sql.prepare;
+package org.apache.shardingsphere.underlying.executor.connection;
 
-import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
-import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
- * SQL execute group callback.
+ * Execution connection.
  */
-public interface SQLExecuteGroupCallback {
+public interface ExecutionConnection {
     
     /**
-     * Create SQL statement execute unit.
-     * 
-     * @param connection connection
-     * @param executionUnit execution unit
+     * Get connections.
+     *
+     * @param dataSourceName data source name
+     * @param connectionSize connection size
      * @param connectionMode connection mode
-     * @return SQL execute unit
+     * @return connections
      * @throws SQLException SQL exception
      */
-    StatementExecuteUnit createStatementExecuteUnit(Connection connection, ExecutionUnit executionUnit, ConnectionMode connectionMode) throws SQLException;
+    List<Connection> getConnections(String dataSourceName, int connectionSize, ConnectionMode connectionMode) throws SQLException;
 }
