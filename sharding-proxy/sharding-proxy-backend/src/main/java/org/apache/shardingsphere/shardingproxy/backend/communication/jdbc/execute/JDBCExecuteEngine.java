@@ -23,7 +23,6 @@ import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate
 import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
 import org.apache.shardingsphere.sharding.execute.sql.prepare.SQLExecuteGroupEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.callback.ProxyJDBCExecuteGroupCallback;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.callback.ProxySQLExecuteCallback;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteQueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteResponse;
@@ -76,8 +75,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         boolean isReturnGeneratedKeys = sqlStatementContext.getSqlStatement() instanceof InsertStatement;
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         Collection<InputGroup<StatementExecuteUnit>> inputGroups = sqlExecuteGroupEngine.getExecuteUnitGroups(
-                backendConnection, executionContext.getExecutionUnits(), new ProxyJDBCExecuteGroupCallback(jdbcExecutorWrapper), 
-                new StatementOption(jdbcExecutorWrapper instanceof PreparedStatementExecutorWrapper, isReturnGeneratedKeys));
+                backendConnection, executionContext.getExecutionUnits(), new StatementOption(jdbcExecutorWrapper instanceof PreparedStatementExecutorWrapper, isReturnGeneratedKeys));
         Collection<ExecuteResponse> executeResponses = sqlExecuteTemplate.execute((Collection) inputGroups, 
                 new ProxySQLExecuteCallback(sqlStatementContext, backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, true),
                 new ProxySQLExecuteCallback(sqlStatementContext, backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, false));

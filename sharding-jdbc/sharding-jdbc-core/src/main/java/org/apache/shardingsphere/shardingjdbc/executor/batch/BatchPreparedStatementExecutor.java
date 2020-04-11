@@ -31,8 +31,6 @@ import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -78,14 +76,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
         StatementOption statementOption = returnGeneratedKeys
                 ? new StatementOption(true, true) : new StatementOption(true, getResultSetType(), getResultSetConcurrency(), getResultSetHoldability());
         return getExecuteGroupEngine().getExecuteUnitGroups(
-                getConnection(), new ArrayList<>(batchRouteUnits).stream().map(BatchRouteUnit::getExecutionUnit).collect(Collectors.toList()), (connection, executionUnit, connectionMode, option)
-                -> createPreparedStatement(connection, executionUnit.getSqlUnit().getSql()), statementOption);
-    }
-    
-    @SuppressWarnings("MagicConstant")
-    private PreparedStatement createPreparedStatement(final Connection connection, final String sql) throws SQLException {
-        return returnGeneratedKeys ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
-                : connection.prepareStatement(sql, getResultSetType(), getResultSetConcurrency(), getResultSetHoldability());
+                getConnection(), new ArrayList<>(batchRouteUnits).stream().map(BatchRouteUnit::getExecutionUnit).collect(Collectors.toList()), statementOption);
     }
     
     /**

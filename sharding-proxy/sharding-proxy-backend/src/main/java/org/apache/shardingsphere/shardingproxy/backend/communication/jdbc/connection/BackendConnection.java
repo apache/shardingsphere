@@ -28,11 +28,16 @@ import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedMana
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.underlying.common.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.underlying.common.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.executor.connection.ExecutionConnection;
+import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -50,6 +55,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public final class BackendConnection implements ExecutionConnection, AutoCloseable {
     
     private static final int MAXIMUM_RETRY_COUNT = 5;
+    
+    private static final int MYSQL_MEMORY_FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
+    
+    private static final int POSTGRESQL_MEMORY_FETCH_ONE_ROW_A_TIME = 1;
     
     private volatile String schemaName;
     
@@ -182,6 +191,36 @@ public final class BackendConnection implements ExecutionConnection, AutoCloseab
     
     private List<Connection> getConnectionFromUnderlying(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
         return logicSchema.getBackendDataSource().getConnections(dataSourceName, connectionSize, connectionMode, transactionType);
+    }
+    
+    @Override
+    public Statement createStatement(final Connection connection, final ExecutionUnit executionUnit, final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
+        Statement result = statementOption.isPreparedStatement() ? createPreparedStatement(connection, executionUnit, statementOption) : createStatement(connection);
+        if (ConnectionMode.MEMORY_STRICTLY == connectionMode) {
+            setFetchSize(result);
+        }
+        return result;
+    }
+    
+    private Statement createStatement(final Connection connection) throws SQLException {
+        return connection.createStatement();
+    }
+    
+    private PreparedStatement createPreparedStatement(final Connection connection, final ExecutionUnit executionUnit, final StatementOption statementOption) throws SQLException {
+        PreparedStatement result = statementOption.isReturnGeneratedKeys()
+                ? connection.prepareStatement(executionUnit.getSqlUnit().getSql(), Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(executionUnit.getSqlUnit().getSql());
+        for (int i = 0; i < executionUnit.getSqlUnit().getParameters().size(); i++) {
+            result.setObject(i + 1, executionUnit.getSqlUnit().getParameters().get(i));
+        }
+        return result;
+    }
+    
+    private void setFetchSize(final Statement statement) throws SQLException {
+        if (LogicSchemas.getInstance().getDatabaseType() instanceof MySQLDatabaseType) {
+            statement.setFetchSize(MYSQL_MEMORY_FETCH_ONE_ROW_A_TIME);
+        } else if (LogicSchemas.getInstance().getDatabaseType() instanceof PostgreSQLDatabaseType) {
+            statement.setFetchSize(POSTGRESQL_MEMORY_FETCH_ONE_ROW_A_TIME);
+        }
     }
     
     /**

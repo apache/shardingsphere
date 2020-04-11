@@ -31,7 +31,6 @@ import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -68,14 +67,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     private Collection<InputGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<ExecutionUnit> executionUnits) throws SQLException {
         StatementOption statementOption = returnGeneratedKeys
                 ? new StatementOption(true, true) : new StatementOption(true, getResultSetType(), getResultSetConcurrency(), getResultSetHoldability());
-        return getExecuteGroupEngine().getExecuteUnitGroups(getConnection(), executionUnits, (connection, executionUnit, connectionMode, option)
-            -> createPreparedStatement(connection, executionUnit.getSqlUnit().getSql()), statementOption);
-    }
-    
-    @SuppressWarnings("MagicConstant")
-    private PreparedStatement createPreparedStatement(final Connection connection, final String sql) throws SQLException {
-        return returnGeneratedKeys ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
-                : connection.prepareStatement(sql, getResultSetType(), getResultSetConcurrency(), getResultSetHoldability());
+        return getExecuteGroupEngine().getExecuteUnitGroups(getConnection(), executionUnits, statementOption);
     }
     
     /**

@@ -28,13 +28,17 @@ import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.underlying.common.hook.RootInvokeHook;
 import org.apache.shardingsphere.underlying.common.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.underlying.executor.connection.ExecutionConnection;
+import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -143,6 +147,22 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     protected abstract Connection createConnection(String dataSourceName, DataSource dataSource) throws SQLException;
     
     protected abstract Map<String, DataSource> getDataSourceMap();
+    
+    @Override
+    public Statement createStatement(final Connection connection, final ExecutionUnit executionUnit, final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
+        return statementOption.isPreparedStatement() ? createPreparedStatement(connection, executionUnit.getSqlUnit().getSql(), statementOption) : createStatement(connection, statementOption);
+    }
+    
+    @SuppressWarnings("MagicConstant")
+    private PreparedStatement createPreparedStatement(final Connection connection, final String sql, final StatementOption statementOption) throws SQLException {
+        return statementOption.isReturnGeneratedKeys() ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+                : connection.prepareStatement(sql, statementOption.getResultSetType(), statementOption.getResultSetConcurrency(), statementOption.getResultSetHoldability());
+    }
+    
+    @SuppressWarnings("MagicConstant")
+    private Statement createStatement(final Connection connection, final StatementOption statementOption) throws SQLException {
+        return connection.createStatement(statementOption.getResultSetType(), statementOption.getResultSetConcurrency(), statementOption.getResultSetHoldability());
+    }
     
     @Override
     public final boolean getAutoCommit() {
