@@ -102,8 +102,8 @@ public final class SQLExecuteGroupEngine {
         List<StatementExecuteUnit> result = new LinkedList<>();
         for (SQLUnit each : sqlUnitGroup) {
             ExecutionUnit executionUnit = new ExecutionUnit(dataSourceName, each);
-            Statement statement = isPreparedStatement ? executionConnection.createStatement(connection, connectionMode, statementOption)
-                    : executionConnection.createPreparedStatement(each.getSql(), each.getParameters(), connection, connectionMode, statementOption);
+            Statement statement = isPreparedStatement ? executionConnection.createPreparedStatement(each.getSql(), each.getParameters(), connection, connectionMode, statementOption)
+                    : executionConnection.createStatement(connection, connectionMode, statementOption);
             result.add(new StatementExecuteUnit(executionUnit, statement, connectionMode));
         }
         return new InputGroup<>(result);

@@ -44,7 +44,6 @@ import org.apache.shardingsphere.underlying.route.DataNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -132,15 +131,6 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         SQLStatement sqlStatement = logicSchema.getSqlParserEngine().parse(sql, false);
         return new ExecutionContext(
                 new CommonSQLStatementContext(sqlStatement), new ExecutionUnit(logicSchema.getDataSources().keySet().iterator().next(), new SQLUnit(sql, Collections.emptyList())));
-    }
-    
-    @Override
-    public Statement createStatement(final Connection connection, final SQLUnit sqlUnit, final boolean isReturnGeneratedKeys) throws SQLException {
-        PreparedStatement result = isReturnGeneratedKeys ? connection.prepareStatement(sqlUnit.getSql(), Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sqlUnit.getSql());
-        for (int i = 0; i < sqlUnit.getParameters().size(); i++) {
-            result.setObject(i + 1, sqlUnit.getParameters().get(i));
-        }
-        return result;
     }
     
     @Override
