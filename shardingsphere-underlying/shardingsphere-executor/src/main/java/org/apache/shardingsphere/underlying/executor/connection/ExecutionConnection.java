@@ -20,6 +20,7 @@ package org.apache.shardingsphere.underlying.executor.connection;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
@@ -41,15 +42,26 @@ public interface ExecutionConnection {
     List<Connection> getConnections(String dataSourceName, int connectionSize, ConnectionMode connectionMode) throws SQLException;
     
     /**
-     * Create SQL statement.
+     * Create statement.
+     *
+     * @param connection connection
+     * @param connectionMode connection mode
+     * @param statementOption statement option
+     * @return SQL Statement
+     * @throws SQLException SQL exception
+     */
+    Statement createStatement(Connection connection, ConnectionMode connectionMode, StatementOption statementOption) throws SQLException;
+    
+    /**
+     * Create prepared statement.
      *
      * @param sql SQL
      * @param parameters SQL parameters
      * @param connection connection
      * @param connectionMode connection mode
      * @param statementOption statement option
-     * @return SQL execute unit
+     * @return SQL prepared statement
      * @throws SQLException SQL exception
      */
-    Statement createStatement(String sql, List<Object> parameters, Connection connection, ConnectionMode connectionMode, StatementOption statementOption) throws SQLException;
+    PreparedStatement createPreparedStatement(String sql, List<Object> parameters, Connection connection, ConnectionMode connectionMode, StatementOption statementOption) throws SQLException;
 }

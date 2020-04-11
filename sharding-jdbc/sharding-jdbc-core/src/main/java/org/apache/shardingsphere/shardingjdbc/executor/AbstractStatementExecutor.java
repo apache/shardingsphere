@@ -76,7 +76,8 @@ public abstract class AbstractStatementExecutor {
     @Setter
     private SQLStatementContext sqlStatementContext;
     
-    public AbstractStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final ShardingConnection shardingConnection) {
+    public AbstractStatementExecutor(final boolean isPreparedStatement, 
+                                     final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final ShardingConnection shardingConnection) {
         this.resultSetType = resultSetType;
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;
@@ -87,7 +88,7 @@ public abstract class AbstractStatementExecutor {
         resultSets = new CopyOnWriteArrayList<>();
         inputGroups = new LinkedList<>();
         int maxConnectionsSizePerQuery = connection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        executeGroupEngine = new SQLExecuteGroupEngine(maxConnectionsSizePerQuery);
+        executeGroupEngine = new SQLExecuteGroupEngine(isPreparedStatement, maxConnectionsSizePerQuery);
         sqlExecuteTemplate = new SQLExecuteTemplate(connection.getRuntimeContext().getExecutorKernel(), connection.isHoldTransaction());
         metaDataLoader = new RuleSchemaMetaDataLoader(connection.getRuntimeContext().getRule().toRules());
     }

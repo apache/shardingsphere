@@ -29,6 +29,7 @@ import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -41,6 +42,8 @@ import java.util.Map.Entry;
  */
 @RequiredArgsConstructor
 public final class SQLExecuteGroupEngine {
+    
+    private final boolean isPreparedStatement;
     
     private final int maxConnectionsSizePerQuery;
     
@@ -99,7 +102,9 @@ public final class SQLExecuteGroupEngine {
         List<StatementExecuteUnit> result = new LinkedList<>();
         for (SQLUnit each : sqlUnitGroup) {
             ExecutionUnit executionUnit = new ExecutionUnit(dataSourceName, each);
-            result.add(new StatementExecuteUnit(executionUnit, executionConnection.createStatement(each.getSql(), each.getParameters(), connection, connectionMode, statementOption), connectionMode));
+            Statement statement = isPreparedStatement ? executionConnection.createStatement(connection, connectionMode, statementOption)
+                    : executionConnection.createPreparedStatement(each.getSql(), each.getParameters(), connection, connectionMode, statementOption);
+            result.add(new StatementExecuteUnit(executionUnit, statement, connectionMode));
         }
         return new InputGroup<>(result);
     }

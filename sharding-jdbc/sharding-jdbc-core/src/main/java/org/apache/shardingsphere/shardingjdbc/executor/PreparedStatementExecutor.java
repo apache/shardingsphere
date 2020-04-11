@@ -46,9 +46,9 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     @Getter
     private final boolean returnGeneratedKeys;
     
-    public PreparedStatementExecutor(
-            final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys, final ShardingConnection shardingConnection) {
-        super(resultSetType, resultSetConcurrency, resultSetHoldability, shardingConnection);
+    public PreparedStatementExecutor(final int resultSetType, 
+                                     final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys, final ShardingConnection shardingConnection) {
+        super(true, resultSetType, resultSetConcurrency, resultSetHoldability, shardingConnection);
         this.returnGeneratedKeys = returnGeneratedKeys;
     }
     
@@ -66,7 +66,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     
     private Collection<InputGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<ExecutionUnit> executionUnits) throws SQLException {
         StatementOption statementOption = returnGeneratedKeys
-                ? new StatementOption(true, true) : new StatementOption(true, getResultSetType(), getResultSetConcurrency(), getResultSetHoldability());
+                ? new StatementOption(true) : new StatementOption(getResultSetType(), getResultSetConcurrency(), getResultSetHoldability());
         return getExecuteGroupEngine().getExecuteUnitGroups(getConnection(), executionUnits, statementOption);
     }
     

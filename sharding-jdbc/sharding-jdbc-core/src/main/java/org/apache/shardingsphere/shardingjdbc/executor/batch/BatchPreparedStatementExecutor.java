@@ -57,7 +57,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     
     public BatchPreparedStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys,
                                           final ShardingConnection shardingConnection) {
-        super(resultSetType, resultSetConcurrency, resultSetHoldability, shardingConnection);
+        super(true, resultSetType, resultSetConcurrency, resultSetHoldability, shardingConnection);
         this.returnGeneratedKeys = returnGeneratedKeys;
     }
     
@@ -74,7 +74,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     
     private Collection<InputGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<BatchRouteUnit> batchRouteUnits) throws SQLException {
         StatementOption statementOption = returnGeneratedKeys
-                ? new StatementOption(true, true) : new StatementOption(true, getResultSetType(), getResultSetConcurrency(), getResultSetHoldability());
+                ? new StatementOption(true) : new StatementOption(getResultSetType(), getResultSetConcurrency(), getResultSetHoldability());
         return getExecuteGroupEngine().getExecuteUnitGroups(
                 getConnection(), new ArrayList<>(batchRouteUnits).stream().map(BatchRouteUnit::getExecutionUnit).collect(Collectors.toList()), statementOption);
     }

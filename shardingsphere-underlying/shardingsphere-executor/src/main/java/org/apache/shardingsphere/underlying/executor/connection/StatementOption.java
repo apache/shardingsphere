@@ -30,8 +30,6 @@ import java.sql.ResultSet;
 @Getter
 public final class StatementOption {
     
-    private final boolean isPreparedStatement;
-    
     private final int resultSetType;
     
     private final int resultSetConcurrency;
@@ -40,11 +38,11 @@ public final class StatementOption {
     
     private final boolean returnGeneratedKeys;
     
-    public StatementOption(final boolean isPreparedStatement, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
-        this(isPreparedStatement, resultSetType, resultSetConcurrency, resultSetHoldability, false);
+    public StatementOption(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
+        this(resultSetType, resultSetConcurrency, resultSetHoldability, false);
     }
     
-    public StatementOption(final boolean isPreparedStatement, final boolean returnGeneratedKeys) {
-        this(isPreparedStatement, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT, returnGeneratedKeys);
+    public StatementOption(final boolean returnGeneratedKeys) {
+        this(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT, returnGeneratedKeys);
     }
 }

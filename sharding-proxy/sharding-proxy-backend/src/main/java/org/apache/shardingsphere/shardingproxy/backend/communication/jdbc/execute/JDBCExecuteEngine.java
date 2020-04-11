@@ -64,7 +64,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         this.backendConnection = backendConnection;
         this.jdbcExecutorWrapper = jdbcExecutorWrapper;
         int maxConnectionsSizePerQuery = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        sqlExecuteGroupEngine = new SQLExecuteGroupEngine(maxConnectionsSizePerQuery);
+        sqlExecuteGroupEngine = new SQLExecuteGroupEngine(jdbcExecutorWrapper instanceof PreparedStatementExecutorWrapper, maxConnectionsSizePerQuery);
         sqlExecuteTemplate = new SQLExecuteTemplate(BackendExecutorContext.getInstance().getExecutorKernel(), backendConnection.isSerialExecute());
     }
     
@@ -75,7 +75,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         boolean isReturnGeneratedKeys = sqlStatementContext.getSqlStatement() instanceof InsertStatement;
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         Collection<InputGroup<StatementExecuteUnit>> inputGroups = sqlExecuteGroupEngine.getExecuteUnitGroups(
-                backendConnection, executionContext.getExecutionUnits(), new StatementOption(jdbcExecutorWrapper instanceof PreparedStatementExecutorWrapper, isReturnGeneratedKeys));
+                backendConnection, executionContext.getExecutionUnits(), new StatementOption(isReturnGeneratedKeys));
         Collection<ExecuteResponse> executeResponses = sqlExecuteTemplate.execute((Collection) inputGroups, 
                 new ProxySQLExecuteCallback(sqlStatementContext, backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, true),
                 new ProxySQLExecuteCallback(sqlStatementContext, backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, false));

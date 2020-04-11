@@ -147,21 +147,18 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     protected abstract Map<String, DataSource> getDataSourceMap();
     
+    @SuppressWarnings("MagicConstant")
     @Override
-    public Statement createStatement(final String sql, final List<Object> parameters,
-                                     final Connection connection, final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
-        return statementOption.isPreparedStatement() ? createPreparedStatement(connection, sql, statementOption) : createStatement(connection, statementOption);
+    public final Statement createStatement(final Connection connection, final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
+        return connection.createStatement(statementOption.getResultSetType(), statementOption.getResultSetConcurrency(), statementOption.getResultSetHoldability());
     }
     
     @SuppressWarnings("MagicConstant")
-    private PreparedStatement createPreparedStatement(final Connection connection, final String sql, final StatementOption statementOption) throws SQLException {
+    @Override
+    public final PreparedStatement createPreparedStatement(final String sql, final List<Object> parameters,
+                                     final Connection connection, final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
         return statementOption.isReturnGeneratedKeys() ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
                 : connection.prepareStatement(sql, statementOption.getResultSetType(), statementOption.getResultSetConcurrency(), statementOption.getResultSetHoldability());
-    }
-    
-    @SuppressWarnings("MagicConstant")
-    private Statement createStatement(final Connection connection, final StatementOption statementOption) throws SQLException {
-        return connection.createStatement(statementOption.getResultSetType(), statementOption.getResultSetConcurrency(), statementOption.getResultSetHoldability());
     }
     
     @Override

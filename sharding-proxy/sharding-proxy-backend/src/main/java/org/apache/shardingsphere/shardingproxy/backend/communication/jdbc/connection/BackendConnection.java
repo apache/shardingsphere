@@ -193,24 +193,24 @@ public final class BackendConnection implements ExecutionConnection, AutoCloseab
     }
     
     @Override
-    public Statement createStatement(final String sql, final List<Object> parameters,
-                                     final Connection connection, final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
-        Statement result = statementOption.isPreparedStatement() ? createPreparedStatement(connection, sql, parameters, statementOption) : createStatement(connection);
+    public Statement createStatement(final Connection connection, final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
+        Statement result = connection.createStatement();
         if (ConnectionMode.MEMORY_STRICTLY == connectionMode) {
             setFetchSize(result);
         }
         return result;
     }
     
-    private Statement createStatement(final Connection connection) throws SQLException {
-        return connection.createStatement();
-    }
-    
-    private PreparedStatement createPreparedStatement(final Connection connection, final String sql, final List<Object> parameters, final StatementOption statementOption) throws SQLException {
+    @Override
+    public PreparedStatement createPreparedStatement(final String sql, final List<Object> parameters,
+                                     final Connection connection, final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
         PreparedStatement result = statementOption.isReturnGeneratedKeys()
                 ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sql);
         for (int i = 0; i < parameters.size(); i++) {
             result.setObject(i + 1, parameters.get(i));
+        }
+        if (ConnectionMode.MEMORY_STRICTLY == connectionMode) {
+            setFetchSize(result);
         }
         return result;
     }

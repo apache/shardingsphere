@@ -42,7 +42,7 @@ import java.util.List;
 public final class StatementExecutor extends AbstractStatementExecutor {
     
     public StatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final ShardingConnection shardingConnection) {
-        super(resultSetType, resultSetConcurrency, resultSetHoldability, shardingConnection);
+        super(false, resultSetType, resultSetConcurrency, resultSetHoldability, shardingConnection);
     }
     
     /**
@@ -59,7 +59,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     
     @SuppressWarnings("MagicConstant")
     private Collection<InputGroup<StatementExecuteUnit>> getExecuteGroups(final Collection<ExecutionUnit> executionUnits) throws SQLException {
-        StatementOption statementOption = new StatementOption(false, getResultSetType(), getResultSetConcurrency(), getResultSetHoldability());
+        StatementOption statementOption = new StatementOption(getResultSetType(), getResultSetConcurrency(), getResultSetHoldability());
         return getExecuteGroupEngine().getExecuteUnitGroups(getConnection(), executionUnits, statementOption);
     }
     
