@@ -25,7 +25,6 @@ import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate
 import org.apache.shardingsphere.sharding.execute.sql.prepare.SQLExecutePrepareTemplate;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
@@ -60,17 +59,19 @@ public abstract class AbstractStatementExecutor {
     
     private final ShardingConnection connection;
     
+    private final List<List<Object>> parameterSets;
+    
+    private final List<Statement> statements;
+    
+    private final List<ResultSet> resultSets;
+    
+    private final Collection<InputGroup<StatementExecuteUnit>> inputGroups;
+    
     private final SQLExecutePrepareTemplate sqlExecutePrepareTemplate;
     
     private final SQLExecuteTemplate sqlExecuteTemplate;
     
-    private final List<List<Object>> parameterSets = new LinkedList<>();
-    
-    private final List<Statement> statements = new LinkedList<>();
-    
-    private final List<ResultSet> resultSets = new CopyOnWriteArrayList<>();
-    
-    private final Collection<InputGroup<StatementExecuteUnit>> inputGroups = new LinkedList<>();
+    private final RuleSchemaMetaDataLoader metaDataLoader;
     
     @Setter
     private SQLStatementContext sqlStatementContext;
@@ -81,9 +82,14 @@ public abstract class AbstractStatementExecutor {
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;
         this.connection = shardingConnection;
+        parameterSets = new LinkedList<>();
+        statements = new LinkedList<>();
+        resultSets = new CopyOnWriteArrayList<>();
+        inputGroups = new LinkedList<>();
         int maxConnectionsSizePerQuery = connection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(maxConnectionsSizePerQuery);
         sqlExecuteTemplate = new SQLExecuteTemplate(connection.getRuntimeContext().getExecutorEngine(), connection.isHoldTransaction());
+        metaDataLoader = new RuleSchemaMetaDataLoader(connection.getRuntimeContext().getRule().toRules());
     }
     
     protected final void cacheStatements() {
@@ -146,12 +152,8 @@ public abstract class AbstractStatementExecutor {
         }
         Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
         if (refreshStrategy.isPresent()) {
-            refreshStrategy.get().refreshMetaData(runtimeContext.getMetaData(), sqlStatementContext, this::loadTableMetaData);
+            refreshStrategy.get().refreshMetaData(runtimeContext.getMetaData(), sqlStatementContext, 
+                tableName -> metaDataLoader.load(databaseType, connection.getDataSourceMap(), tableName, connection.getRuntimeContext().getProperties()));
         }
-    }
-    
-    private Optional<TableMetaData> loadTableMetaData(final String tableName) throws SQLException {
-        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(connection.getRuntimeContext().getRule().toRules());
-        return loader.load(databaseType, connection.getDataSourceMap(), tableName, connection.getRuntimeContext().getProperties());
     }
 }

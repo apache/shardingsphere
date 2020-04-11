@@ -81,7 +81,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
      * @throws SQLException SQL exception
      */
     public List<QueryResult> executeQuery() throws SQLException {
-        final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
+        boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         SQLExecuteCallback<QueryResult> executeCallback = new SQLExecuteCallback<QueryResult>(getDatabaseType(), isExceptionThrown) {
             
             @Override
