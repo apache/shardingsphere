@@ -43,13 +43,13 @@ public interface ExecutionConnection {
     /**
      * Create SQL statement.
      *
-     * @param connection connection
      * @param sql SQL
      * @param parameters SQL parameters
+     * @param connection connection
      * @param connectionMode connection mode
      * @param statementOption statement option
      * @return SQL execute unit
      * @throws SQLException SQL exception
      */
-    Statement createStatement(Connection connection, String sql, List<Object> parameters, ConnectionMode connectionMode, StatementOption statementOption) throws SQLException;
+    Statement createStatement(String sql, List<Object> parameters, Connection connection, ConnectionMode connectionMode, StatementOption statementOption) throws SQLException;
 }

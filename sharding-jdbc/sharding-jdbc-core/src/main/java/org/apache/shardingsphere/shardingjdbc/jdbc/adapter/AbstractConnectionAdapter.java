@@ -148,8 +148,8 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     protected abstract Map<String, DataSource> getDataSourceMap();
     
     @Override
-    public Statement createStatement(final Connection connection, final String sql, final List<Object> parameters, 
-                                     final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
+    public Statement createStatement(final String sql, final List<Object> parameters,
+                                     final Connection connection, final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
         return statementOption.isPreparedStatement() ? createPreparedStatement(connection, sql, statementOption) : createStatement(connection, statementOption);
     }
     

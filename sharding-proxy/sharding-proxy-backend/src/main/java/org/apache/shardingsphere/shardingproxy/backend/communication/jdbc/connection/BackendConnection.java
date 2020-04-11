@@ -193,8 +193,8 @@ public final class BackendConnection implements ExecutionConnection, AutoCloseab
     }
     
     @Override
-    public Statement createStatement(final Connection connection, final String sql, final List<Object> parameters, 
-                                     final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
+    public Statement createStatement(final String sql, final List<Object> parameters,
+                                     final Connection connection, final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
         Statement result = statementOption.isPreparedStatement() ? createPreparedStatement(connection, sql, parameters, statementOption) : createStatement(connection);
         if (ConnectionMode.MEMORY_STRICTLY == connectionMode) {
             setFetchSize(result);
