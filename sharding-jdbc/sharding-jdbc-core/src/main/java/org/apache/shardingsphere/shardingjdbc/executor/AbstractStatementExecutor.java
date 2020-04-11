@@ -49,8 +49,6 @@ import java.util.stream.Collectors;
 @Getter
 public abstract class AbstractStatementExecutor {
     
-    private final DatabaseType databaseType;
-    
     private final int resultSetType;
     
     private final int resultSetConcurrency;
@@ -58,6 +56,8 @@ public abstract class AbstractStatementExecutor {
     private final int resultSetHoldability;
     
     private final ShardingConnection connection;
+    
+    private final DatabaseType databaseType;
     
     private final List<List<Object>> parameterSets;
     
@@ -77,11 +77,11 @@ public abstract class AbstractStatementExecutor {
     private SQLStatementContext sqlStatementContext;
     
     public AbstractStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final ShardingConnection shardingConnection) {
-        this.databaseType = shardingConnection.getRuntimeContext().getDatabaseType();
         this.resultSetType = resultSetType;
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;
         this.connection = shardingConnection;
+        this.databaseType = shardingConnection.getRuntimeContext().getDatabaseType();
         parameterSets = new LinkedList<>();
         statements = new LinkedList<>();
         resultSets = new CopyOnWriteArrayList<>();
