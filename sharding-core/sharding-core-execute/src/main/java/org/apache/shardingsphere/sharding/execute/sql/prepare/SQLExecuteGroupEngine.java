@@ -99,7 +99,7 @@ public final class SQLExecuteGroupEngine {
         List<StatementExecuteUnit> result = new LinkedList<>();
         for (SQLUnit each : sqlUnitGroup) {
             ExecutionUnit executionUnit = new ExecutionUnit(dataSourceName, each);
-            result.add(new StatementExecuteUnit(executionUnit, executionConnection.createStatement(connection, executionUnit, connectionMode, statementOption), connectionMode));
+            result.add(new StatementExecuteUnit(executionUnit, executionConnection.createStatement(connection, each.getSql(), each.getParameters(), connectionMode, statementOption), connectionMode));
         }
         return new InputGroup<>(result);
     }

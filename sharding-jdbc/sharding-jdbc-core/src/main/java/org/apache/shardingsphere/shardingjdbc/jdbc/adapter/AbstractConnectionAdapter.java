@@ -30,7 +30,6 @@ import org.apache.shardingsphere.underlying.common.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.underlying.executor.connection.ExecutionConnection;
 import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
-import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -149,8 +148,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     protected abstract Map<String, DataSource> getDataSourceMap();
     
     @Override
-    public Statement createStatement(final Connection connection, final ExecutionUnit executionUnit, final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
-        return statementOption.isPreparedStatement() ? createPreparedStatement(connection, executionUnit.getSqlUnit().getSql(), statementOption) : createStatement(connection, statementOption);
+    public Statement createStatement(final Connection connection, final String sql, final List<Object> parameters, 
+                                     final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
+        return statementOption.isPreparedStatement() ? createPreparedStatement(connection, sql, statementOption) : createStatement(connection, statementOption);
     }
     
     @SuppressWarnings("MagicConstant")

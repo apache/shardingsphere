@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.underlying.executor.connection;
 
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
-import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -45,11 +44,12 @@ public interface ExecutionConnection {
      * Create SQL statement.
      *
      * @param connection connection
-     * @param executionUnit execution unit
+     * @param sql SQL
+     * @param parameters SQL parameters
      * @param connectionMode connection mode
      * @param statementOption statement option
      * @return SQL execute unit
      * @throws SQLException SQL exception
      */
-    Statement createStatement(Connection connection, ExecutionUnit executionUnit, ConnectionMode connectionMode, StatementOption statementOption) throws SQLException;
+    Statement createStatement(Connection connection, String sql, List<Object> parameters, ConnectionMode connectionMode, StatementOption statementOption) throws SQLException;
 }

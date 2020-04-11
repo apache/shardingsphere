@@ -34,7 +34,6 @@ import org.apache.shardingsphere.underlying.common.exception.ShardingSphereExcep
 import org.apache.shardingsphere.underlying.executor.connection.ExecutionConnection;
 import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
-import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -194,8 +193,9 @@ public final class BackendConnection implements ExecutionConnection, AutoCloseab
     }
     
     @Override
-    public Statement createStatement(final Connection connection, final ExecutionUnit executionUnit, final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
-        Statement result = statementOption.isPreparedStatement() ? createPreparedStatement(connection, executionUnit, statementOption) : createStatement(connection);
+    public Statement createStatement(final Connection connection, final String sql, final List<Object> parameters, 
+                                     final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
+        Statement result = statementOption.isPreparedStatement() ? createPreparedStatement(connection, sql, parameters, statementOption) : createStatement(connection);
         if (ConnectionMode.MEMORY_STRICTLY == connectionMode) {
             setFetchSize(result);
         }
@@ -206,11 +206,11 @@ public final class BackendConnection implements ExecutionConnection, AutoCloseab
         return connection.createStatement();
     }
     
-    private PreparedStatement createPreparedStatement(final Connection connection, final ExecutionUnit executionUnit, final StatementOption statementOption) throws SQLException {
+    private PreparedStatement createPreparedStatement(final Connection connection, final String sql, final List<Object> parameters, final StatementOption statementOption) throws SQLException {
         PreparedStatement result = statementOption.isReturnGeneratedKeys()
-                ? connection.prepareStatement(executionUnit.getSqlUnit().getSql(), Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(executionUnit.getSqlUnit().getSql());
-        for (int i = 0; i < executionUnit.getSqlUnit().getParameters().size(); i++) {
-            result.setObject(i + 1, executionUnit.getSqlUnit().getParameters().get(i));
+                ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sql);
+        for (int i = 0; i < parameters.size(); i++) {
+            result.setObject(i + 1, parameters.get(i));
         }
         return result;
     }
