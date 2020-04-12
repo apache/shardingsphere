@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.shardingjdbc.executor;
 
-import org.apache.shardingsphere.underlying.executor.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.MemoryQueryResult;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
-import org.apache.shardingsphere.underlying.executor.jdbc.group.StatementExecuteGroupBuilder;
+import org.apache.shardingsphere.underlying.executor.group.StatementExecuteGroupEngine;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
-import org.apache.shardingsphere.underlying.executor.jdbc.connection.StatementOption;
+import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
@@ -43,12 +43,12 @@ import java.util.List;
  */
 public final class StatementExecutor extends AbstractStatementExecutor {
     
-    private StatementExecuteGroupBuilder executeGroupBuilder;
+    private StatementExecuteGroupEngine executeGroupEngine;
     
     public StatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final ShardingConnection shardingConnection) {
         super(resultSetType, resultSetConcurrency, resultSetHoldability, shardingConnection);
         int maxConnectionsSizePerQuery = shardingConnection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        executeGroupBuilder = new StatementExecuteGroupBuilder(maxConnectionsSizePerQuery);
+        executeGroupEngine = new StatementExecuteGroupEngine(maxConnectionsSizePerQuery);
     }
     
     /**
@@ -66,7 +66,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     @SuppressWarnings("MagicConstant")
     private Collection<InputGroup<StatementExecuteUnit>> getExecuteGroups(final Collection<ExecutionUnit> executionUnits) throws SQLException {
         StatementOption statementOption = new StatementOption(getResultSetType(), getResultSetConcurrency(), getResultSetHoldability());
-        return executeGroupBuilder.getExecuteUnitGroups(getConnection(), executionUnits, statementOption);
+        return executeGroupEngine.getExecuteUnitGroups(getConnection(), executionUnits, statementOption);
     }
     
     /**

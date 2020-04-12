@@ -22,9 +22,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
-import org.apache.shardingsphere.underlying.executor.jdbc.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.executor.jdbc.connection.ExecutionConnection;
-import org.apache.shardingsphere.underlying.executor.jdbc.connection.StatementOption;
+import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.connection.ExecutionConnection;
+import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 
 import java.sql.Connection;
@@ -38,10 +38,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Execute group builder.
+ * Execute group engine.
  */
 @RequiredArgsConstructor
-public abstract class ExecuteGroupBuilder {
+public abstract class ExecuteGroupEngine {
     
     private final int maxConnectionsSizePerQuery;
     

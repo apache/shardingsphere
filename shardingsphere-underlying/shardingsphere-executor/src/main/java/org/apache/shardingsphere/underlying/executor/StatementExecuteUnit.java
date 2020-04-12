@@ -15,26 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.executor.jdbc;
+package org.apache.shardingsphere.underlying.executor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.executor.ResourceExecuteUnit;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 
 import java.sql.Statement;
 
 /**
- * Execute unit for JDBC statement.
+ * Execute unit with resource.
  */
 @RequiredArgsConstructor
 @Getter
-public final class StatementExecuteUnit implements ResourceExecuteUnit<Statement> {
+public final class StatementExecuteUnit {
     
     private final ExecutionUnit executionUnit;
     
-    private final Statement resource;
+    private final Statement statement;
     
     private final ConnectionMode connectionMode;
 }

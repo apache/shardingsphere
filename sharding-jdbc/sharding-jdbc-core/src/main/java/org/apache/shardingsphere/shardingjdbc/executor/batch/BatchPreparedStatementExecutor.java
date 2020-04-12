@@ -19,15 +19,15 @@ package org.apache.shardingsphere.shardingjdbc.executor.batch;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.executor.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
 import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
-import org.apache.shardingsphere.underlying.executor.jdbc.group.PreparedStatementExecuteGroupBuilder;
+import org.apache.shardingsphere.underlying.executor.group.PreparedStatementExecuteGroupEngine;
 import org.apache.shardingsphere.shardingjdbc.executor.AbstractStatementExecutor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.underlying.executor.jdbc.connection.StatementOption;
+import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
  */
 public final class BatchPreparedStatementExecutor extends AbstractStatementExecutor {
     
-    private PreparedStatementExecuteGroupBuilder executeGroupBuilder;
+    private PreparedStatementExecuteGroupEngine executeGroupEngine;
     
     private final Collection<BatchRouteUnit> routeUnits = new LinkedList<>();
     
@@ -64,7 +64,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
         super(resultSetType, resultSetConcurrency, resultSetHoldability, shardingConnection);
         this.returnGeneratedKeys = returnGeneratedKeys;
         int maxConnectionsSizePerQuery = shardingConnection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        executeGroupBuilder = new PreparedStatementExecuteGroupBuilder(maxConnectionsSizePerQuery);
+        executeGroupEngine = new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery);
     }
     
     /**
@@ -81,7 +81,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     private Collection<InputGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<BatchRouteUnit> batchRouteUnits) throws SQLException {
         StatementOption statementOption = returnGeneratedKeys
                 ? new StatementOption(true) : new StatementOption(getResultSetType(), getResultSetConcurrency(), getResultSetHoldability());
-        return executeGroupBuilder.getExecuteUnitGroups(
+        return executeGroupEngine.getExecuteUnitGroups(
                 getConnection(), new ArrayList<>(batchRouteUnits).stream().map(BatchRouteUnit::getExecutionUnit).collect(Collectors.toList()), statementOption);
     }
     
@@ -186,7 +186,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     public List<Statement> getStatements() {
         List<Statement> result = new LinkedList<>();
         for (InputGroup<StatementExecuteUnit> each : getInputGroups()) {
-            result.addAll(each.getInputs().stream().map(StatementExecuteUnit::getResource).collect(Collectors.toList()));
+            result.addAll(each.getInputs().stream().map(StatementExecuteUnit::getStatement).collect(Collectors.toList()));
         }
         return result;
     }
@@ -211,7 +211,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     
     private Optional<StatementExecuteUnit> getStatementExecuteUnit(final Statement statement, final InputGroup<StatementExecuteUnit> executeGroup) {
         for (StatementExecuteUnit each : executeGroup.getInputs()) {
-            if (each.getResource().equals(statement)) {
+            if (each.getStatement().equals(statement)) {
                 return Optional.of(each);
             }
         }

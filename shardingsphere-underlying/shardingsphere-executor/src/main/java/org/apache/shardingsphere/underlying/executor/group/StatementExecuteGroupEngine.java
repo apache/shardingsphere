@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.executor.jdbc.group;
+package org.apache.shardingsphere.underlying.executor.group;
 
-import org.apache.shardingsphere.underlying.executor.group.ExecuteGroupBuilder;
-import org.apache.shardingsphere.underlying.executor.jdbc.connection.ExecutionConnection;
-import org.apache.shardingsphere.underlying.executor.jdbc.connection.StatementOption;
+import org.apache.shardingsphere.underlying.executor.connection.ExecutionConnection;
+import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 
 import java.sql.Connection;
@@ -30,9 +29,9 @@ import java.util.List;
 /**
  * Execute group builder for statement.
  */
-public final class StatementExecuteGroupBuilder extends ExecuteGroupBuilder {
+public final class StatementExecuteGroupEngine extends ExecuteGroupEngine {
     
-    public StatementExecuteGroupBuilder(final int maxConnectionsSizePerQuery) {
+    public StatementExecuteGroupEngine(final int maxConnectionsSizePerQuery) {
         super(maxConnectionsSizePerQuery);
     }
     

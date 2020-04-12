@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute;
 
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.executor.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
 import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
-import org.apache.shardingsphere.underlying.executor.jdbc.group.PreparedStatementExecuteGroupBuilder;
-import org.apache.shardingsphere.underlying.executor.group.ExecuteGroupBuilder;
-import org.apache.shardingsphere.underlying.executor.jdbc.group.StatementExecuteGroupBuilder;
+import org.apache.shardingsphere.underlying.executor.group.PreparedStatementExecuteGroupEngine;
+import org.apache.shardingsphere.underlying.executor.group.ExecuteGroupEngine;
+import org.apache.shardingsphere.underlying.executor.group.StatementExecuteGroupEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.callback.ProxySQLExecuteCallback;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteQueryResponse;
@@ -39,7 +39,7 @@ import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.underlying.executor.jdbc.connection.StatementOption;
+import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 
@@ -58,7 +58,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     @Getter
     private final JDBCExecutorWrapper jdbcExecutorWrapper;
     
-    private final ExecuteGroupBuilder executeGroupBuilder;
+    private final ExecuteGroupEngine executeGroupEngine;
     
     private final SQLExecuteTemplate sqlExecuteTemplate;
     
@@ -66,8 +66,8 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         this.backendConnection = backendConnection;
         this.jdbcExecutorWrapper = jdbcExecutorWrapper;
         int maxConnectionsSizePerQuery = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        executeGroupBuilder = jdbcExecutorWrapper instanceof PreparedStatementExecutorWrapper
-                ? new PreparedStatementExecuteGroupBuilder(maxConnectionsSizePerQuery) : new StatementExecuteGroupBuilder(maxConnectionsSizePerQuery);
+        executeGroupEngine = jdbcExecutorWrapper instanceof PreparedStatementExecutorWrapper
+                ? new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery) : new StatementExecuteGroupEngine(maxConnectionsSizePerQuery);
         sqlExecuteTemplate = new SQLExecuteTemplate(BackendExecutorContext.getInstance().getExecutorKernel(), backendConnection.isSerialExecute());
     }
     
@@ -77,7 +77,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         SQLStatementContext sqlStatementContext = executionContext.getSqlStatementContext();
         boolean isReturnGeneratedKeys = sqlStatementContext.getSqlStatement() instanceof InsertStatement;
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        Collection<InputGroup<StatementExecuteUnit>> inputGroups = executeGroupBuilder.getExecuteUnitGroups(
+        Collection<InputGroup<StatementExecuteUnit>> inputGroups = executeGroupEngine.getExecuteUnitGroups(
                 backendConnection, executionContext.getExecutionUnits(), new StatementOption(isReturnGeneratedKeys));
         Collection<ExecuteResponse> executeResponses = sqlExecuteTemplate.execute((Collection) inputGroups, 
                 new ProxySQLExecuteCallback(sqlStatementContext, backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, true),
