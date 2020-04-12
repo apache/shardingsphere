@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -161,13 +160,11 @@ public final class WhereClauseShardingConditionEngine {
     }
     
     private Collection<Comparable<?>> mergeListRouteValues(final Collection<Comparable<?>> value1, final Collection<Comparable<?>> value2) {
-        Collection<Comparable<?>> result = new LinkedHashSet<>();
         if (null == value2) {
             return value1;
         }
-        result.addAll(value1);
-        result.addAll(value2);
-        return result;
+        value1.retainAll(value2);
+        return value1;
     }
     
     private Range<Comparable<?>> mergeRangeRouteValues(final Range<Comparable<?>> value1, final Range<Comparable<?>> value2) {
