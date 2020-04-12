@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.execute.sql.group;
+package org.apache.shardingsphere.underlying.executor.jdbc.group;
 
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.executor.connection.ExecutionConnection;
-import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
+import org.apache.shardingsphere.underlying.executor.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.jdbc.connection.ExecutionConnection;
+import org.apache.shardingsphere.underlying.executor.jdbc.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 
 import java.sql.Connection;
@@ -54,7 +54,7 @@ public abstract class ExecuteGroupBuilder {
      * @return statement execute unit groups
      * @throws SQLException SQL exception
      */
-    public Collection<InputGroup<StatementExecuteUnit>> getExecuteUnitGroups(final ExecutionConnection executionConnection, 
+    public Collection<InputGroup<StatementExecuteUnit>> getExecuteUnitGroups(final ExecutionConnection executionConnection,
                                                                              final Collection<ExecutionUnit> executionUnits, final StatementOption statementOption) throws SQLException {
         return getSynchronizedExecuteUnitGroups(executionConnection, executionUnits, statementOption);
     }
