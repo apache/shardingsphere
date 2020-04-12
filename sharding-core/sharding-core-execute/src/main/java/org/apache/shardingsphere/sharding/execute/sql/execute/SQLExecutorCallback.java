@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
 import org.apache.shardingsphere.underlying.executor.hook.SPISQLExecutionHook;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
-import org.apache.shardingsphere.underlying.executor.engine.GroupedCallback;
+import org.apache.shardingsphere.underlying.executor.kernel.ExecutorCallback;
 import org.apache.shardingsphere.underlying.executor.hook.SQLExecutionHook;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
@@ -37,12 +37,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Statement execute callback interface.
+ * SQL executor callback.
  *
  * @param <T> class type of return value
  */
 @RequiredArgsConstructor
-public abstract class SQLExecuteCallback<T> implements GroupedCallback<StatementExecuteUnit, T> {
+public abstract class SQLExecutorCallback<T> implements ExecutorCallback<StatementExecuteUnit, T> {
     
     private static final Map<String, DataSourceMetaData> CACHED_DATASOURCE_METADATA = new ConcurrentHashMap<>();
     

@@ -85,51 +85,51 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
      * @throws SQLException SQL exception
      */
     public Connection getConnection(final String dataSourceName) throws SQLException {
-        return getConnections(ConnectionMode.MEMORY_STRICTLY, dataSourceName, 1).get(0);
+        return getConnections(dataSourceName, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
     }
     
     /**
      * Get connections.
      *
-     * @param connectionMode connection mode
      * @param dataSourceName data source name
      * @param connectionSize size of connections to get
+     * @param connectionMode connection mode
      * @return connections
      * @throws SQLException SQL exception
      */
-    public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
-        return getConnections(connectionMode, dataSourceName, connectionSize, TransactionType.LOCAL);
+    public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
+        return getConnections(dataSourceName, connectionSize, connectionMode, TransactionType.LOCAL);
     }
     
     /**
      * Get connections.
      *
-     * @param connectionMode  connection mode
-     * @param dataSourceName  data source name
-     * @param connectionSize  size of connections to be get
+     * @param dataSourceName data source name
+     * @param connectionSize size of connections to be get
+     * @param connectionMode connection mode
      * @param transactionType transaction type
      * @return connections
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
-    public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize, final TransactionType transactionType) throws SQLException {
+    public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode, final TransactionType transactionType) throws SQLException {
         DataSource dataSource = dataSources.get(dataSourceName);
         if (1 == connectionSize) {
-            return Collections.singletonList(createConnection(transactionType, dataSourceName, dataSource));
+            return Collections.singletonList(createConnection(dataSourceName, dataSource, transactionType));
         }
         if (ConnectionMode.CONNECTION_STRICTLY == connectionMode) {
-            return createConnections(transactionType, dataSourceName, dataSource, connectionSize);
+            return createConnections(dataSourceName, dataSource, connectionSize, transactionType);
         }
         synchronized (dataSource) {
-            return createConnections(transactionType, dataSourceName, dataSource, connectionSize);
+            return createConnections(dataSourceName, dataSource, connectionSize, transactionType);
         }
     }
     
-    private List<Connection> createConnections(final TransactionType transactionType, final String dataSourceName, final DataSource dataSource, final int connectionSize) throws SQLException {
+    private List<Connection> createConnections(final String dataSourceName, final DataSource dataSource, final int connectionSize, final TransactionType transactionType) throws SQLException {
         List<Connection> result = new ArrayList<>(connectionSize);
         for (int i = 0; i < connectionSize; i++) {
             try {
-                result.add(createConnection(transactionType, dataSourceName, dataSource));
+                result.add(createConnection(dataSourceName, dataSource, transactionType));
             } catch (final SQLException ex) {
                 for (Connection each : result) {
                     each.close();
@@ -140,7 +140,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
         return result;
     }
     
-    private Connection createConnection(final TransactionType transactionType, final String dataSourceName, final DataSource dataSource) throws SQLException {
+    private Connection createConnection(final String dataSourceName, final DataSource dataSource, final TransactionType transactionType) throws SQLException {
         ShardingTransactionManager shardingTransactionManager = shardingTransactionManagerEngine.getTransactionManager(transactionType);
         return isInShardingTransaction(shardingTransactionManager) ? shardingTransactionManager.getConnection(dataSourceName) : dataSource.getConnection();
     }

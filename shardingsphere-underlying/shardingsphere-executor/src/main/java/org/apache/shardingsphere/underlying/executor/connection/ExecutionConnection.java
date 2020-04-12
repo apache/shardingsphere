@@ -15,40 +15,53 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.execute.sql.prepare;
+package org.apache.shardingsphere.underlying.executor.connection;
 
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
-import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 /**
- * SQL execute prepare callback.
+ * Execution connection.
  */
-public interface SQLExecutePrepareCallback {
+public interface ExecutionConnection {
     
     /**
-     * Get connection.
-     * 
-     * @param connectionMode connection mode
+     * Get connections.
+     *
      * @param dataSourceName data source name
      * @param connectionSize connection size
-     * @return connection
+     * @param connectionMode connection mode
+     * @return connections
      * @throws SQLException SQL exception
      */
-    List<Connection> getConnections(ConnectionMode connectionMode, String dataSourceName, int connectionSize) throws SQLException;
+    List<Connection> getConnections(String dataSourceName, int connectionSize, ConnectionMode connectionMode) throws SQLException;
     
     /**
-     * Create SQL execute unit.
-     * 
+     * Create statement.
+     *
      * @param connection connection
-     * @param executionUnit execution unit
      * @param connectionMode connection mode
-     * @return SQL execute unit
+     * @param statementOption statement option
+     * @return SQL Statement
      * @throws SQLException SQL exception
      */
-    StatementExecuteUnit createStatementExecuteUnit(Connection connection, ExecutionUnit executionUnit, ConnectionMode connectionMode) throws SQLException;
+    Statement createStatement(Connection connection, ConnectionMode connectionMode, StatementOption statementOption) throws SQLException;
+    
+    /**
+     * Create prepared statement.
+     *
+     * @param sql SQL
+     * @param parameters SQL parameters
+     * @param connection connection
+     * @param connectionMode connection mode
+     * @param statementOption statement option
+     * @return SQL prepared statement
+     * @throws SQLException SQL exception
+     */
+    PreparedStatement createPreparedStatement(String sql, List<Object> parameters, Connection connection, ConnectionMode connectionMode, StatementOption statementOption) throws SQLException;
 }

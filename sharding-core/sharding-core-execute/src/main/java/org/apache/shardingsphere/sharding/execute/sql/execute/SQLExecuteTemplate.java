@@ -20,8 +20,8 @@ package org.apache.shardingsphere.sharding.execute.sql.execute;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
-import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
-import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
+import org.apache.shardingsphere.underlying.executor.kernel.ExecutorKernel;
+import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -34,7 +34,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class SQLExecuteTemplate {
     
-    private final ExecutorEngine executorEngine;
+    private final ExecutorKernel executorKernel;
     
     private final boolean serial;
     
@@ -47,7 +47,7 @@ public final class SQLExecuteTemplate {
      * @return execute result
      * @throws SQLException SQL exception
      */
-    public <T> List<T> execute(final Collection<InputGroup<? extends StatementExecuteUnit>> inputGroups, final SQLExecuteCallback<T> callback) throws SQLException {
+    public <T> List<T> execute(final Collection<InputGroup<? extends StatementExecuteUnit>> inputGroups, final SQLExecutorCallback<T> callback) throws SQLException {
         return execute(inputGroups, null, callback);
     }
     
@@ -63,9 +63,9 @@ public final class SQLExecuteTemplate {
      */
     @SuppressWarnings("unchecked")
     public <T> List<T> execute(final Collection<InputGroup<? extends StatementExecuteUnit>> inputGroups,
-                               final SQLExecuteCallback<T> firstCallback, final SQLExecuteCallback<T> callback) throws SQLException {
+                               final SQLExecutorCallback<T> firstCallback, final SQLExecutorCallback<T> callback) throws SQLException {
         try {
-            return executorEngine.execute((Collection) inputGroups, firstCallback, callback, serial);
+            return executorKernel.execute((Collection) inputGroups, firstCallback, callback, serial);
         } catch (final SQLException ex) {
             ExecutorExceptionHandler.handleException(ex);
             return Collections.emptyList();

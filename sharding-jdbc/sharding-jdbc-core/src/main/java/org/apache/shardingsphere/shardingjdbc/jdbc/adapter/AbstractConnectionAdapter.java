@@ -27,13 +27,17 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupport
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.underlying.common.hook.RootInvokeHook;
 import org.apache.shardingsphere.underlying.common.hook.SPIRootInvokeHook;
+import org.apache.shardingsphere.underlying.executor.connection.ExecutionConnection;
+import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -44,7 +48,7 @@ import java.util.Map.Entry;
 /**
  * Adapter for {@code Connection}.
  */
-public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOperationConnection {
+public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOperationConnection implements ExecutionConnection {
     
     @Getter
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
@@ -76,19 +80,11 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
      * @throws SQLException SQL exception
      */
     public final Connection getConnection(final String dataSourceName) throws SQLException {
-        return getConnections(ConnectionMode.MEMORY_STRICTLY, dataSourceName, 1).get(0);
+        return getConnections(dataSourceName, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
     }
     
-    /**
-     * Get database connections.
-     *
-     * @param connectionMode connection mode
-     * @param dataSourceName data source name
-     * @param connectionSize size of connection list to be get
-     * @return database connections
-     * @throws SQLException SQL exception
-     */
-    public final List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
+    @Override
+    public final List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
         DataSource dataSource = getDataSourceMap().get(dataSourceName);
         Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);
         Collection<Connection> connections;
@@ -101,13 +97,13 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         } else if (!connections.isEmpty()) {
             result = new ArrayList<>(connectionSize);
             result.addAll(connections);
-            List<Connection> newConnections = createConnections(dataSourceName, connectionMode, dataSource, connectionSize - connections.size());
+            List<Connection> newConnections = createConnections(dataSourceName, dataSource, connectionSize - connections.size(), connectionMode);
             result.addAll(newConnections);
             synchronized (cachedConnections) {
                 cachedConnections.putAll(dataSourceName, newConnections);
             }
         } else {
-            result = new ArrayList<>(createConnections(dataSourceName, connectionMode, dataSource, connectionSize));
+            result = new ArrayList<>(createConnections(dataSourceName, dataSource, connectionSize, connectionMode));
             synchronized (cachedConnections) {
                 cachedConnections.putAll(dataSourceName, result);
             }
@@ -116,7 +112,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     }
     
     @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
-    private List<Connection> createConnections(final String dataSourceName, final ConnectionMode connectionMode, final DataSource dataSource, final int connectionSize) throws SQLException {
+    private List<Connection> createConnections(final String dataSourceName, final DataSource dataSource, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
         if (1 == connectionSize) {
             Connection connection = createConnection(dataSourceName, dataSource);
             replayMethodsInvocation(connection);
@@ -150,6 +146,20 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     protected abstract Connection createConnection(String dataSourceName, DataSource dataSource) throws SQLException;
     
     protected abstract Map<String, DataSource> getDataSourceMap();
+    
+    @SuppressWarnings("MagicConstant")
+    @Override
+    public final Statement createStatement(final Connection connection, final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
+        return connection.createStatement(statementOption.getResultSetType(), statementOption.getResultSetConcurrency(), statementOption.getResultSetHoldability());
+    }
+    
+    @SuppressWarnings("MagicConstant")
+    @Override
+    public final PreparedStatement createPreparedStatement(final String sql, final List<Object> parameters,
+                                     final Connection connection, final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
+        return statementOption.isReturnGeneratedKeys() ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+                : connection.prepareStatement(sql, statementOption.getResultSetType(), statementOption.getResultSetConcurrency(), statementOption.getResultSetHoldability());
+    }
     
     @Override
     public final boolean getAutoCommit() {

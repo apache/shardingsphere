@@ -24,14 +24,19 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
-import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.underlying.common.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.underlying.common.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
+import org.apache.shardingsphere.underlying.executor.connection.ExecutionConnection;
+import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
+import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -46,9 +51,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 @Getter
 @Slf4j
-public final class BackendConnection implements AutoCloseable {
+public final class BackendConnection implements ExecutionConnection, AutoCloseable {
     
     private static final int MAXIMUM_RETRY_COUNT = 5;
+    
+    private static final int MYSQL_MEMORY_FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
+    
+    private static final int POSTGRESQL_MEMORY_FETCH_ONE_ROW_A_TIME = 1;
     
     private volatile String schemaName;
     
@@ -130,24 +139,13 @@ public final class BackendConnection implements AutoCloseable {
         return false;
     }
     
-    /**
-     * Get connections of current thread datasource.
-     *
-     * @param connectionMode connection mode
-     * @param dataSourceName data source name
-     * @param connectionSize size of connections to be get
-     * @return connections
-     * @throws SQLException SQL exception
-     */
-    public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
-        if (stateHandler.isInTransaction()) {
-            return getConnectionsWithTransaction(connectionMode, dataSourceName, connectionSize);
-        } else {
-            return getConnectionsWithoutTransaction(connectionMode, dataSourceName, connectionSize);
-        }
+    @Override
+    public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
+        return stateHandler.isInTransaction()
+                ? getConnectionsWithTransaction(dataSourceName, connectionSize, connectionMode) : getConnectionsWithoutTransaction(dataSourceName, connectionSize, connectionMode);
     }
     
-    private List<Connection> getConnectionsWithTransaction(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
+    private List<Connection> getConnectionsWithTransaction(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
         Collection<Connection> connections;
         synchronized (cachedConnections) {
             connections = cachedConnections.get(dataSourceName);
@@ -158,13 +156,13 @@ public final class BackendConnection implements AutoCloseable {
         } else if (!connections.isEmpty()) {
             result = new ArrayList<>(connectionSize);
             result.addAll(connections);
-            List<Connection> newConnections = createNewConnections(connectionMode, dataSourceName, connectionSize - connections.size());
+            List<Connection> newConnections = createNewConnections(dataSourceName, connectionSize - connections.size(), connectionMode);
             result.addAll(newConnections);
             synchronized (cachedConnections) {
                 cachedConnections.putAll(dataSourceName, newConnections);
             }
         } else {
-            result = createNewConnections(connectionMode, dataSourceName, connectionSize);
+            result = createNewConnections(dataSourceName, connectionSize, connectionMode);
             synchronized (cachedConnections) {
                 cachedConnections.putAll(dataSourceName, result);
             }
@@ -172,26 +170,57 @@ public final class BackendConnection implements AutoCloseable {
         return result;
     }
     
-    private List<Connection> getConnectionsWithoutTransaction(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
+    private List<Connection> getConnectionsWithoutTransaction(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
         Preconditions.checkNotNull(logicSchema, "current logic schema is null");
-        List<Connection> result = getConnectionFromUnderlying(connectionMode, dataSourceName, connectionSize);
+        List<Connection> result = getConnectionFromUnderlying(dataSourceName, connectionSize, connectionMode);
         synchronized (cachedConnections) {
             cachedConnections.putAll(dataSourceName, result);
         }
         return result;
     }
     
-    private List<Connection> createNewConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
+    private List<Connection> createNewConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
         Preconditions.checkNotNull(logicSchema, "current logic schema is null");
-        List<Connection> result = getConnectionFromUnderlying(connectionMode, dataSourceName, connectionSize);
+        List<Connection> result = getConnectionFromUnderlying(dataSourceName, connectionSize, connectionMode);
         for (Connection each : result) {
             replayMethodsInvocation(each);
         }
         return result;
     }
     
-    private List<Connection> getConnectionFromUnderlying(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
-        return logicSchema.getBackendDataSource().getConnections(connectionMode, dataSourceName, connectionSize, transactionType);
+    private List<Connection> getConnectionFromUnderlying(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
+        return logicSchema.getBackendDataSource().getConnections(dataSourceName, connectionSize, connectionMode, transactionType);
+    }
+    
+    @Override
+    public Statement createStatement(final Connection connection, final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
+        Statement result = connection.createStatement();
+        if (ConnectionMode.MEMORY_STRICTLY == connectionMode) {
+            setFetchSize(result);
+        }
+        return result;
+    }
+    
+    @Override
+    public PreparedStatement createPreparedStatement(final String sql, final List<Object> parameters,
+                                     final Connection connection, final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
+        PreparedStatement result = statementOption.isReturnGeneratedKeys()
+                ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sql);
+        for (int i = 0; i < parameters.size(); i++) {
+            result.setObject(i + 1, parameters.get(i));
+        }
+        if (ConnectionMode.MEMORY_STRICTLY == connectionMode) {
+            setFetchSize(result);
+        }
+        return result;
+    }
+    
+    private void setFetchSize(final Statement statement) throws SQLException {
+        if (LogicSchemas.getInstance().getDatabaseType() instanceof MySQLDatabaseType) {
+            statement.setFetchSize(MYSQL_MEMORY_FETCH_ONE_ROW_A_TIME);
+        } else if (LogicSchemas.getInstance().getDatabaseType() instanceof PostgreSQLDatabaseType) {
+            statement.setFetchSize(POSTGRESQL_MEMORY_FETCH_ONE_ROW_A_TIME);
+        }
     }
     
     /**

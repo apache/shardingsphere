@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.sharding.execute.sql.prepare;
 
-import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
-import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.connection.ExecutionConnection;
+import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
+import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
+import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.Connection;
@@ -41,18 +42,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SQLExecutePrepareTemplateTest {
+public final class SQLExecuteGroupEngineTest {
     
-    private SQLExecutePrepareTemplate sqlExecutePrepareTemplate;
-    
-    @Mock
-    private SQLExecutePrepareCallback callback;
+    private SQLExecuteGroupEngine sqlExecuteGroupEngine;
     
     @Test
     public void assertGetExecuteUnitGroupForOneShardMemoryStrictly() throws SQLException {
-        mockConnections(callback, ConnectionMode.MEMORY_STRICTLY, 1);
-        sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(2);
-        Collection<InputGroup<StatementExecuteUnit>> actual = sqlExecutePrepareTemplate.getExecuteUnitGroups(mockShardRouteUnit(1, 1), callback);
+        sqlExecuteGroupEngine = new SQLExecuteGroupEngine(true, 2);
+        Collection<InputGroup<StatementExecuteUnit>> actual = sqlExecuteGroupEngine.getExecuteUnitGroups(
+                mockExecutionConnection(1, ConnectionMode.MEMORY_STRICTLY), mockShardRouteUnit(1, 1), new StatementOption(true));
         assertThat(actual.size(), is(1));
         for (InputGroup<StatementExecuteUnit> each : actual) {
             assertThat(each.getInputs().size(), is(1));
@@ -61,21 +59,23 @@ public final class SQLExecutePrepareTemplateTest {
     
     @Test
     public void assertGetExecuteUnitGroupForMultiShardConnectionStrictly() throws SQLException {
-        mockConnections(callback, ConnectionMode.CONNECTION_STRICTLY, 1);
-        sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(1);
-        Collection<InputGroup<StatementExecuteUnit>> actual = sqlExecutePrepareTemplate.getExecuteUnitGroups(mockShardRouteUnit(10, 2), callback);
+        sqlExecuteGroupEngine = new SQLExecuteGroupEngine(true, 1);
+        Collection<InputGroup<StatementExecuteUnit>> actual = sqlExecuteGroupEngine.getExecuteUnitGroups(
+                mockExecutionConnection(1, ConnectionMode.CONNECTION_STRICTLY), mockShardRouteUnit(10, 2), new StatementOption(true));
         assertThat(actual.size(), is(10));
         for (InputGroup<StatementExecuteUnit> each : actual) {
             assertThat(each.getInputs().size(), is(2));
         }
     }
     
-    private void mockConnections(final SQLExecutePrepareCallback callback, final ConnectionMode connectionMode, final int size) throws SQLException {
+    private ExecutionConnection mockExecutionConnection(final int size, final ConnectionMode connectionMode) throws SQLException {
         List<Connection> connections = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             connections.add(mock(Connection.class));
         }
-        when(callback.getConnections(eq(connectionMode), anyString(), eq(size))).thenReturn(connections);
+        ExecutionConnection result = mock(ExecutionConnection.class);
+        when(result.getConnections(anyString(), eq(size), eq(connectionMode))).thenReturn(connections);
+        return result;
     }
     
     private Collection<ExecutionUnit> mockShardRouteUnit(final int shardCount, final int sizePerShard) {

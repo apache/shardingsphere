@@ -20,19 +20,18 @@ package org.apache.shardingsphere.shardingjdbc.executor;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
-import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteCallback;
+import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
-import org.apache.shardingsphere.sharding.execute.sql.prepare.SQLExecutePrepareTemplate;
+import org.apache.shardingsphere.sharding.execute.sql.prepare.SQLExecuteGroupEngine;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
-import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
+import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -50,8 +49,6 @@ import java.util.stream.Collectors;
 @Getter
 public abstract class AbstractStatementExecutor {
     
-    private final DatabaseType databaseType;
-    
     private final int resultSetType;
     
     private final int resultSetConcurrency;
@@ -60,30 +57,40 @@ public abstract class AbstractStatementExecutor {
     
     private final ShardingConnection connection;
     
-    private final SQLExecutePrepareTemplate sqlExecutePrepareTemplate;
+    private final DatabaseType databaseType;
+    
+    private final List<List<Object>> parameterSets;
+    
+    private final List<Statement> statements;
+    
+    private final List<ResultSet> resultSets;
+    
+    private final Collection<InputGroup<StatementExecuteUnit>> inputGroups;
+    
+    private final SQLExecuteGroupEngine executeGroupEngine;
     
     private final SQLExecuteTemplate sqlExecuteTemplate;
     
-    private final List<List<Object>> parameterSets = new LinkedList<>();
-    
-    private final List<Statement> statements = new LinkedList<>();
-    
-    private final List<ResultSet> resultSets = new CopyOnWriteArrayList<>();
-    
-    private final Collection<InputGroup<StatementExecuteUnit>> inputGroups = new LinkedList<>();
+    private final RuleSchemaMetaDataLoader metaDataLoader;
     
     @Setter
     private SQLStatementContext sqlStatementContext;
     
-    public AbstractStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final ShardingConnection shardingConnection) {
-        this.databaseType = shardingConnection.getRuntimeContext().getDatabaseType();
+    public AbstractStatementExecutor(final boolean isPreparedStatement, 
+                                     final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final ShardingConnection shardingConnection) {
         this.resultSetType = resultSetType;
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;
         this.connection = shardingConnection;
+        this.databaseType = shardingConnection.getRuntimeContext().getDatabaseType();
+        parameterSets = new LinkedList<>();
+        statements = new LinkedList<>();
+        resultSets = new CopyOnWriteArrayList<>();
+        inputGroups = new LinkedList<>();
         int maxConnectionsSizePerQuery = connection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(maxConnectionsSizePerQuery);
-        sqlExecuteTemplate = new SQLExecuteTemplate(connection.getRuntimeContext().getExecutorEngine(), connection.isHoldTransaction());
+        executeGroupEngine = new SQLExecuteGroupEngine(isPreparedStatement, maxConnectionsSizePerQuery);
+        sqlExecuteTemplate = new SQLExecuteTemplate(connection.getRuntimeContext().getExecutorKernel(), connection.isHoldTransaction());
+        metaDataLoader = new RuleSchemaMetaDataLoader(connection.getRuntimeContext().getRule().toRules());
     }
     
     protected final void cacheStatements() {
@@ -105,7 +112,7 @@ public abstract class AbstractStatementExecutor {
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("unchecked")
-    protected final <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
+    protected final <T> List<T> executeCallback(final SQLExecutorCallback<T> executeCallback) throws SQLException {
         List<T> result = sqlExecuteTemplate.execute((Collection) inputGroups, executeCallback);
         refreshMetaDataIfNeeded(connection.getRuntimeContext(), sqlStatementContext);
         return result;
@@ -146,12 +153,8 @@ public abstract class AbstractStatementExecutor {
         }
         Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
         if (refreshStrategy.isPresent()) {
-            refreshStrategy.get().refreshMetaData(runtimeContext.getMetaData(), sqlStatementContext, this::loadTableMetaData);
+            refreshStrategy.get().refreshMetaData(runtimeContext.getMetaData(), sqlStatementContext, 
+                tableName -> metaDataLoader.load(databaseType, connection.getDataSourceMap(), tableName, connection.getRuntimeContext().getProperties()));
         }
-    }
-    
-    private Optional<TableMetaData> loadTableMetaData(final String tableName) throws SQLException {
-        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(connection.getRuntimeContext().getRule().toRules());
-        return loader.load(databaseType, connection.getDataSourceMap(), tableName, connection.getRuntimeContext().getProperties());
     }
 }

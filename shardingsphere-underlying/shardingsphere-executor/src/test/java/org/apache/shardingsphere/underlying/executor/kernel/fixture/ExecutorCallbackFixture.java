@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.executor.engine.fixture;
+package org.apache.shardingsphere.underlying.executor.kernel.fixture;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.executor.engine.GroupedCallback;
+import org.apache.shardingsphere.underlying.executor.kernel.ExecutorCallback;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 @RequiredArgsConstructor
-public final class GroupedCallbackFixture implements GroupedCallback<Object, String> {
+public final class ExecutorCallbackFixture implements ExecutorCallback<Object, String> {
     
     private final CountDownLatch latch;
     
