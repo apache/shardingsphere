@@ -186,7 +186,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     public List<Statement> getStatements() {
         List<Statement> result = new LinkedList<>();
         for (InputGroup<StatementExecuteUnit> each : getInputGroups()) {
-            result.addAll(each.getInputs().stream().map(StatementExecuteUnit::getStatement).collect(Collectors.toList()));
+            result.addAll(each.getInputs().stream().map(StatementExecuteUnit::getResource).collect(Collectors.toList()));
         }
         return result;
     }
@@ -211,7 +211,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     
     private Optional<StatementExecuteUnit> getStatementExecuteUnit(final Statement statement, final InputGroup<StatementExecuteUnit> executeGroup) {
         for (StatementExecuteUnit each : executeGroup.getInputs()) {
-            if (each.getStatement().equals(statement)) {
+            if (each.getResource().equals(statement)) {
                 return Optional.of(each);
             }
         }

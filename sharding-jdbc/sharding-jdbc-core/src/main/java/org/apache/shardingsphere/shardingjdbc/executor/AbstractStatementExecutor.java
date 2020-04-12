@@ -88,7 +88,7 @@ public abstract class AbstractStatementExecutor {
     
     protected final void cacheStatements() {
         for (InputGroup<StatementExecuteUnit> each : inputGroups) {
-            statements.addAll(each.getInputs().stream().map(StatementExecuteUnit::getStatement).collect(Collectors.toList()));
+            statements.addAll(each.getInputs().stream().map(StatementExecuteUnit::getResource).collect(Collectors.toList()));
             parameterSets.addAll(each.getInputs().stream().map(input -> input.getExecutionUnit().getSqlUnit().getParameters()).collect(Collectors.toList()));
         }
     }
