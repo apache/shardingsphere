@@ -22,9 +22,11 @@ import lombok.Getter;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
 import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
+import org.apache.shardingsphere.sharding.execute.sql.group.PreparedStatementExecuteGroupBuilder;
 import org.apache.shardingsphere.shardingjdbc.executor.AbstractStatementExecutor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
@@ -48,6 +50,8 @@ import java.util.stream.Collectors;
  */
 public final class BatchPreparedStatementExecutor extends AbstractStatementExecutor {
     
+    private PreparedStatementExecuteGroupBuilder executeGroupBuilder;
+    
     private final Collection<BatchRouteUnit> routeUnits = new LinkedList<>();
     
     @Getter
@@ -57,8 +61,10 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     
     public BatchPreparedStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys,
                                           final ShardingConnection shardingConnection) {
-        super(true, resultSetType, resultSetConcurrency, resultSetHoldability, shardingConnection);
+        super(resultSetType, resultSetConcurrency, resultSetHoldability, shardingConnection);
         this.returnGeneratedKeys = returnGeneratedKeys;
+        int maxConnectionsSizePerQuery = shardingConnection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        executeGroupBuilder = new PreparedStatementExecuteGroupBuilder(maxConnectionsSizePerQuery);
     }
     
     /**
@@ -75,7 +81,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     private Collection<InputGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<BatchRouteUnit> batchRouteUnits) throws SQLException {
         StatementOption statementOption = returnGeneratedKeys
                 ? new StatementOption(true) : new StatementOption(getResultSetType(), getResultSetConcurrency(), getResultSetHoldability());
-        return getExecuteGroupEngine().getExecuteUnitGroups(
+        return executeGroupBuilder.getExecuteUnitGroups(
                 getConnection(), new ArrayList<>(batchRouteUnits).stream().map(BatchRouteUnit::getExecutionUnit).collect(Collectors.toList()), statementOption);
     }
     

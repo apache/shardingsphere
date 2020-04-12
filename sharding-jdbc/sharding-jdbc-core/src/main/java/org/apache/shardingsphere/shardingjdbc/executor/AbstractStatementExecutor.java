@@ -20,13 +20,11 @@ package org.apache.shardingsphere.shardingjdbc.executor;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
-import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
-import org.apache.shardingsphere.sharding.execute.sql.prepare.SQLExecuteGroupEngine;
+import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategyFactory;
@@ -67,8 +65,6 @@ public abstract class AbstractStatementExecutor {
     
     private final Collection<InputGroup<StatementExecuteUnit>> inputGroups;
     
-    private final SQLExecuteGroupEngine executeGroupEngine;
-    
     private final SQLExecuteTemplate sqlExecuteTemplate;
     
     private final RuleSchemaMetaDataLoader metaDataLoader;
@@ -76,8 +72,7 @@ public abstract class AbstractStatementExecutor {
     @Setter
     private SQLStatementContext sqlStatementContext;
     
-    public AbstractStatementExecutor(final boolean isPreparedStatement, 
-                                     final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final ShardingConnection shardingConnection) {
+    public AbstractStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final ShardingConnection shardingConnection) {
         this.resultSetType = resultSetType;
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;
@@ -87,8 +82,6 @@ public abstract class AbstractStatementExecutor {
         statements = new LinkedList<>();
         resultSets = new CopyOnWriteArrayList<>();
         inputGroups = new LinkedList<>();
-        int maxConnectionsSizePerQuery = connection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        executeGroupEngine = new SQLExecuteGroupEngine(isPreparedStatement, maxConnectionsSizePerQuery);
         sqlExecuteTemplate = new SQLExecuteTemplate(connection.getRuntimeContext().getExecutorKernel(), connection.isHoldTransaction());
         metaDataLoader = new RuleSchemaMetaDataLoader(connection.getRuntimeContext().getRule().toRules());
     }

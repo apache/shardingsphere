@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.execute.sql.prepare;
+package org.apache.shardingsphere.sharding.execute.sql.group;
 
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
@@ -38,17 +38,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * SQL execute group engine.
+ * Execute group builder.
  */
 @RequiredArgsConstructor
-public final class SQLExecuteGroupEngine {
-    
-    private final boolean isPreparedStatement;
+public abstract class ExecuteGroupBuilder {
     
     private final int maxConnectionsSizePerQuery;
     
     /**
-     * Get execute unit groups.
+     * Build execute unit groups.
      *
      * @param executionConnection execution connection
      * @param executionUnits execution units
@@ -56,8 +54,8 @@ public final class SQLExecuteGroupEngine {
      * @return statement execute unit groups
      * @throws SQLException SQL exception
      */
-    public Collection<InputGroup<StatementExecuteUnit>> getExecuteUnitGroups(final ExecutionConnection executionConnection, final Collection<ExecutionUnit> executionUnits, 
-                                                                             final StatementOption statementOption) throws SQLException {
+    public Collection<InputGroup<StatementExecuteUnit>> getExecuteUnitGroups(final ExecutionConnection executionConnection, 
+                                                                             final Collection<ExecutionUnit> executionUnits, final StatementOption statementOption) throws SQLException {
         return getSynchronizedExecuteUnitGroups(executionConnection, executionUnits, statementOption);
     }
     
@@ -102,10 +100,12 @@ public final class SQLExecuteGroupEngine {
         List<StatementExecuteUnit> result = new LinkedList<>();
         for (SQLUnit each : sqlUnitGroup) {
             ExecutionUnit executionUnit = new ExecutionUnit(dataSourceName, each);
-            Statement statement = isPreparedStatement ? executionConnection.createPreparedStatement(each.getSql(), each.getParameters(), connection, connectionMode, statementOption)
-                    : executionConnection.createStatement(connection, connectionMode, statementOption);
+            Statement statement = createStatement(each.getSql(), each.getParameters(), executionConnection, connection, connectionMode, statementOption);
             result.add(new StatementExecuteUnit(executionUnit, statement, connectionMode));
         }
         return new InputGroup<>(result);
     }
+    
+    protected abstract Statement createStatement(String sql, List<Object> parameters, ExecutionConnection executionConnection, 
+                                                 Connection connection, ConnectionMode connectionMode, StatementOption statementOption) throws SQLException;
 }

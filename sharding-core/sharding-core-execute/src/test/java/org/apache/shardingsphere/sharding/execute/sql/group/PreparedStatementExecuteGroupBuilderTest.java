@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.execute.sql.prepare;
+package org.apache.shardingsphere.sharding.execute.sql.group;
 
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.underlying.executor.connection.ExecutionConnection;
@@ -42,14 +42,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SQLExecuteGroupEngineTest {
+public final class PreparedStatementExecuteGroupBuilderTest {
     
-    private SQLExecuteGroupEngine sqlExecuteGroupEngine;
+    private PreparedStatementExecuteGroupBuilder preparedStatementExecuteGroupBuilder;
     
     @Test
     public void assertGetExecuteUnitGroupForOneShardMemoryStrictly() throws SQLException {
-        sqlExecuteGroupEngine = new SQLExecuteGroupEngine(true, 2);
-        Collection<InputGroup<StatementExecuteUnit>> actual = sqlExecuteGroupEngine.getExecuteUnitGroups(
+        preparedStatementExecuteGroupBuilder = new PreparedStatementExecuteGroupBuilder(2);
+        Collection<InputGroup<StatementExecuteUnit>> actual = preparedStatementExecuteGroupBuilder.getExecuteUnitGroups(
                 mockExecutionConnection(1, ConnectionMode.MEMORY_STRICTLY), mockShardRouteUnit(1, 1), new StatementOption(true));
         assertThat(actual.size(), is(1));
         for (InputGroup<StatementExecuteUnit> each : actual) {
@@ -59,8 +59,8 @@ public final class SQLExecuteGroupEngineTest {
     
     @Test
     public void assertGetExecuteUnitGroupForMultiShardConnectionStrictly() throws SQLException {
-        sqlExecuteGroupEngine = new SQLExecuteGroupEngine(true, 1);
-        Collection<InputGroup<StatementExecuteUnit>> actual = sqlExecuteGroupEngine.getExecuteUnitGroups(
+        preparedStatementExecuteGroupBuilder = new PreparedStatementExecuteGroupBuilder(1);
+        Collection<InputGroup<StatementExecuteUnit>> actual = preparedStatementExecuteGroupBuilder.getExecuteUnitGroups(
                 mockExecutionConnection(1, ConnectionMode.CONNECTION_STRICTLY), mockShardRouteUnit(10, 2), new StatementOption(true));
         assertThat(actual.size(), is(10));
         for (InputGroup<StatementExecuteUnit> each : actual) {

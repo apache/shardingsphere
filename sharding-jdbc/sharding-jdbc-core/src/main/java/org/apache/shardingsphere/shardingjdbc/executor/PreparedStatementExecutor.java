@@ -23,7 +23,9 @@ import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallbac
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.MemoryQueryResult;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
+import org.apache.shardingsphere.sharding.execute.sql.group.PreparedStatementExecuteGroupBuilder;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
@@ -43,13 +45,17 @@ import java.util.List;
  */
 public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     
+    private PreparedStatementExecuteGroupBuilder executeGroupBuilder;
+    
     @Getter
     private final boolean returnGeneratedKeys;
     
     public PreparedStatementExecutor(final int resultSetType, 
                                      final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys, final ShardingConnection shardingConnection) {
-        super(true, resultSetType, resultSetConcurrency, resultSetHoldability, shardingConnection);
+        super(resultSetType, resultSetConcurrency, resultSetHoldability, shardingConnection);
         this.returnGeneratedKeys = returnGeneratedKeys;
+        int maxConnectionsSizePerQuery = shardingConnection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        executeGroupBuilder = new PreparedStatementExecuteGroupBuilder(maxConnectionsSizePerQuery);
     }
     
     /**
@@ -67,7 +73,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     private Collection<InputGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<ExecutionUnit> executionUnits) throws SQLException {
         StatementOption statementOption = returnGeneratedKeys
                 ? new StatementOption(true) : new StatementOption(getResultSetType(), getResultSetConcurrency(), getResultSetHoldability());
-        return getExecuteGroupEngine().getExecuteUnitGroups(getConnection(), executionUnits, statementOption);
+        return executeGroupBuilder.getExecuteUnitGroups(getConnection(), executionUnits, statementOption);
     }
     
     /**
