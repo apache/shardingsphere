@@ -25,8 +25,6 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.H
  * <p>
  * example: sctl:hint clear.
  * </p>
- *
- * @author liya
  */
-public class HintClearCommand implements HintCommand {
+public final class HintClearCommand implements HintCommand {
 }

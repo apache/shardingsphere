@@ -24,8 +24,6 @@ import java.util.Collections;
 
 /**
  * JDBC URL recognizer for H2.
- *
- * @author zhangliang
  */
 public final class H2Recognizer implements JDBCDriverURLRecognizer {
     

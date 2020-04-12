@@ -32,8 +32,6 @@ import java.sql.Connection;
 
 /**
  * XA connection wrapper for H2.
- *
- * @author zhaojun
  */
 public final class H2XAConnectionWrapper implements XAConnectionWrapper {
     

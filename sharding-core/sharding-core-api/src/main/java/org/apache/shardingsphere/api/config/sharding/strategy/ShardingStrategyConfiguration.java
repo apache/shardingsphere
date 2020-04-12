@@ -19,8 +19,6 @@ package org.apache.shardingsphere.api.config.sharding.strategy;
 
 /**
  * Sharding strategy configuration.
- * 
- * @author zhangliang
  */
 public interface ShardingStrategyConfiguration {
 }

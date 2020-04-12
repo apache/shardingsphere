@@ -23,8 +23,6 @@ import lombok.Getter;
 
 /**
  * Inline sharding strategy configuration.
- * 
- * @author zhangliang
  */
 @Getter
 public final class InlineShardingStrategyConfiguration implements ShardingStrategyConfiguration {

@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingproxy.backend.exception;
 
 /**
  * No database selected exception.
- *
- * @author zhangliang
  */
 public final class NoDatabaseSelectedException extends BackendException {
     

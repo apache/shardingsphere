@@ -19,8 +19,9 @@ package org.apache.shardingsphere.shardingproxy.config.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
-import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.config.shadow.YamlShadowRuleConfiguration;
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
 
@@ -29,8 +30,6 @@ import java.util.Map;
 
 /**
  * Rule configuration for YAML.
- *
- * @author panjuan
  */
 @Getter
 @Setter
@@ -47,4 +46,6 @@ public final class YamlProxyRuleConfiguration implements YamlConfiguration {
     private YamlMasterSlaveRuleConfiguration masterSlaveRule;
     
     private YamlEncryptRuleConfiguration encryptRule;
+    
+    private YamlShadowRuleConfiguration shadowRule;
 }

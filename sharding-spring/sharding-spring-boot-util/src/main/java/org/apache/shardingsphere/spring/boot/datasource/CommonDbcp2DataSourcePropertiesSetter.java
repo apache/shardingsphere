@@ -19,8 +19,6 @@ package org.apache.shardingsphere.spring.boot.datasource;
 
 /**
  * DBCP2 datasource properties setter.
- *
- * @author xiayan
  */
 public final class CommonDbcp2DataSourcePropertiesSetter extends AbstractDbcp2DataSourcePropertiesSetter {
     

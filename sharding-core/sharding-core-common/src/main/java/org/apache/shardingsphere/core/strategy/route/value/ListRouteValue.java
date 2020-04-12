@@ -26,8 +26,6 @@ import java.util.Collection;
 
 /**
  * Route value for list values.
- * 
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

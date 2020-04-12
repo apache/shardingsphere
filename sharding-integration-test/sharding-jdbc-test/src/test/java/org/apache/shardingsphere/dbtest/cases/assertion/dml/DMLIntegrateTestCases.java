@@ -27,12 +27,10 @@ import java.util.List;
 
 /**
  * JAXB definition of DML integrate test cases.
- * 
- * @author zhangliang 
  */
 @Getter
 @XmlRootElement(name = "integrate-test-cases")
-public class DMLIntegrateTestCases implements IntegrateTestCases {
+public final class DMLIntegrateTestCases implements IntegrateTestCases {
     
     @XmlElement(name = "dml-test-case")
     private List<DMLIntegrateTestCase> integrateTestCases = new LinkedList<>();

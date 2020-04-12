@@ -17,27 +17,21 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.callback;
 
-import org.apache.shardingsphere.core.constant.ConnectionMode;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteCallback;
-import org.apache.shardingsphere.core.execute.sql.execute.result.MemoryQueryResult;
-import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
-import org.apache.shardingsphere.core.execute.sql.execute.result.StreamQueryResult;
-import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.route.RouteUnit;
-import org.apache.shardingsphere.core.rule.EncryptRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
+import org.apache.shardingsphere.sharding.execute.sql.execute.result.MemoryQueryResult;
+import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteQueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteResponse;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteUpdateResponse;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
-import org.apache.shardingsphere.shardingproxy.backend.schema.impl.EncryptSchema;
-import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
-import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -48,41 +42,39 @@ import java.util.List;
 
 /**
  * SQL execute callback for Sharding-Proxy.
- *
- * @author zhangliang
  */
-public final class ProxySQLExecuteCallback extends SQLExecuteCallback<ExecuteResponse> {
+public final class ProxySQLExecuteCallback extends SQLExecutorCallback<ExecuteResponse> {
+    
+    private final SQLStatementContext sqlStatementContext;
     
     private final BackendConnection backendConnection;
     
     private final JDBCExecutorWrapper jdbcExecutorWrapper;
 
-    private final SQLStatementContext sqlStatementContext;
-    
     private final boolean isReturnGeneratedKeys;
     
     private final boolean fetchMetaData;
     
     private boolean hasMetaData;
 
-    public ProxySQLExecuteCallback(final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper, final SQLStatementContext sqlStatementContext,
+    public ProxySQLExecuteCallback(final SQLStatementContext sqlStatementContext, final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper,
                                    final boolean isExceptionThrown, final boolean isReturnGeneratedKeys, final boolean fetchMetaData) {
         super(LogicSchemas.getInstance().getDatabaseType(), isExceptionThrown);
+        this.sqlStatementContext = sqlStatementContext;
         this.backendConnection = backendConnection;
         this.jdbcExecutorWrapper = jdbcExecutorWrapper;
-        this.sqlStatementContext = sqlStatementContext;
         this.isReturnGeneratedKeys = isReturnGeneratedKeys;
         this.fetchMetaData = fetchMetaData;
     }
     
     @Override
-    public ExecuteResponse executeSQL(final RouteUnit routeUnit, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+    public ExecuteResponse executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
         boolean withMetaData = false;
         if (fetchMetaData && !hasMetaData) {
             hasMetaData = true;
             withMetaData = true;
         }
-        return executeSQL(statement, routeUnit.getSqlUnit().getSql(), connectionMode, withMetaData);
+        return executeSQL(statement, sql, connectionMode, withMetaData);
     }
     
     private ExecuteResponse executeSQL(final Statement statement, final String sql, final ConnectionMode connectionMode, final boolean withMetadata) throws SQLException {
@@ -90,9 +82,25 @@ public final class ProxySQLExecuteCallback extends SQLExecuteCallback<ExecuteRes
         if (jdbcExecutorWrapper.executeSQL(statement, sql, isReturnGeneratedKeys)) {
             ResultSet resultSet = statement.getResultSet();
             backendConnection.add(resultSet);
-            return new ExecuteQueryResponse(withMetadata ? getQueryHeaders(resultSet.getMetaData()) : null, createQueryResult(resultSet, connectionMode));
+            return new ExecuteQueryResponse(withMetadata
+                    ? getQueryHeaders(sqlStatementContext, resultSet.getMetaData()) : null, createQueryResult(resultSet, connectionMode));
         }
         return new ExecuteUpdateResponse(statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0L);
+    }
+    
+    private List<QueryHeader> getQueryHeaders(final SQLStatementContext sqlStatementContext, final ResultSetMetaData resultSetMetaData) throws SQLException {
+        if (sqlStatementContext instanceof SelectStatementContext) {
+            return getQueryHeaders(((SelectStatementContext) sqlStatementContext).getProjectionsContext(), resultSetMetaData);
+        }
+        return getQueryHeaders(resultSetMetaData);
+    }
+    
+    private List<QueryHeader> getQueryHeaders(final ProjectionsContext projectionsContext, final ResultSetMetaData resultSetMetaData) throws SQLException {
+        List<QueryHeader> result = new LinkedList<>();
+        for (int columnIndex = 1; columnIndex <= projectionsContext.getExpandProjections().size(); columnIndex++) {
+            result.add(new QueryHeader(projectionsContext, resultSetMetaData, backendConnection.getLogicSchema(), columnIndex));
+        }
+        return result;
     }
     
     private List<QueryHeader> getQueryHeaders(final ResultSetMetaData resultSetMetaData) throws SQLException {
@@ -104,19 +112,6 @@ public final class ProxySQLExecuteCallback extends SQLExecuteCallback<ExecuteRes
     }
     
     private QueryResult createQueryResult(final ResultSet resultSet, final ConnectionMode connectionMode) throws SQLException {
-        LogicSchema logicSchema = backendConnection.getLogicSchema();
-        if (logicSchema instanceof ShardingSchema) {
-            ShardingRule shardingRule = logicSchema.getShardingRule();
-            ShardingProperties properties = ShardingProxyContext.getInstance().getShardingProperties();
-            return connectionMode == ConnectionMode.MEMORY_STRICTLY 
-                    ? new StreamQueryResult(resultSet, shardingRule, properties, sqlStatementContext) : new MemoryQueryResult(resultSet, shardingRule, properties, sqlStatementContext);
-        }
-        if (logicSchema instanceof EncryptSchema) {
-            EncryptRule encryptRule = ((EncryptSchema) logicSchema).getEncryptRule();
-            ShardingProperties properties = ShardingProxyContext.getInstance().getShardingProperties();
-            return connectionMode == ConnectionMode.MEMORY_STRICTLY 
-                    ? new StreamQueryResult(resultSet, encryptRule, properties, sqlStatementContext) : new MemoryQueryResult(resultSet, encryptRule, properties, sqlStatementContext);
-        }
         return connectionMode == ConnectionMode.MEMORY_STRICTLY ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
     }
     

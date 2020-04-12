@@ -23,8 +23,6 @@ import org.apache.shardingsphere.api.sharding.hint.HintShardingAlgorithm;
 
 /**
  * Hint sharding strategy configuration.
- * 
- * @author zhangliang
  */
 @Getter
 public final class HintShardingStrategyConfiguration implements ShardingStrategyConfiguration {

@@ -29,8 +29,6 @@ import javax.transaction.TransactionManager;
 
 /**
  * Atomikos XA transaction manager.
- *
- * @author zhaojun
  */
 public final class AtomikosTransactionManager implements XATransactionManager {
     

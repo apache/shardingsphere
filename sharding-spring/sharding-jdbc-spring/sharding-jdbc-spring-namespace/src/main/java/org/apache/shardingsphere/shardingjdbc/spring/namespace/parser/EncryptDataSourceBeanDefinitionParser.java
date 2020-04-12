@@ -31,8 +31,6 @@ import java.util.Properties;
 
 /**
  * Encrypt data source parser for spring namespace.
- * 
- * @author panjuan
  */
 public final class EncryptDataSourceBeanDefinitionParser extends AbstractBeanDefinitionParser {
     

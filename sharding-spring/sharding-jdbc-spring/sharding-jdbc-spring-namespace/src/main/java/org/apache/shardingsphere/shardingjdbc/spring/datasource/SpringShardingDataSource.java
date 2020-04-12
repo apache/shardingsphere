@@ -28,11 +28,8 @@ import java.util.Properties;
 
 /**
  * Sharding datasource for spring namespace.
- *
- * @author caohao
- * @author zhangliang
  */
-public class SpringShardingDataSource extends ShardingDataSource {
+public final class SpringShardingDataSource extends ShardingDataSource {
     
     public SpringShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfiguration, final Properties props) throws SQLException {
         super(dataSourceMap, new ShardingRule(shardingRuleConfiguration, dataSourceMap.keySet()), props);

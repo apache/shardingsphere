@@ -19,14 +19,12 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource;
 
 import java.sql.SQLException;
 import javax.sql.DataSource;
-import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
+import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 
 /**
  * Orchestration master slave datasource for spring namespace.
- *
- * @author panjuan
  */
 public final class OrchestrationSpringMasterSlaveDataSource extends OrchestrationMasterSlaveDataSource {
     

@@ -29,8 +29,6 @@ import java.util.List;
 
 /**
  * Update response.
- * 
- * @author zhangliang
  */
 public final class UpdateResponse implements BackendResponse {
     
@@ -43,7 +41,7 @@ public final class UpdateResponse implements BackendResponse {
     private long updateCount;
     
     public UpdateResponse() {
-        this(Collections.<ExecuteResponse>emptyList());
+        this(Collections.emptyList());
     }
     
     public UpdateResponse(final Collection<ExecuteResponse> responseUnits) {

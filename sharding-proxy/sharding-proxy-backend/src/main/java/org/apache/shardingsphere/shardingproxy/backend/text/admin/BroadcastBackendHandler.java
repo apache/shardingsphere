@@ -32,9 +32,6 @@ import java.util.LinkedList;
 
 /**
  * Backend handler for broadcast.
- *
- * @author chenqingyang
- * @author zhaojun
  */
 @RequiredArgsConstructor
 public final class BroadcastBackendHandler implements TextProtocolBackendHandler {

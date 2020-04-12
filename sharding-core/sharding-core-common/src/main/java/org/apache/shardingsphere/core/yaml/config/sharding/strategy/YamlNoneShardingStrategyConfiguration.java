@@ -19,8 +19,6 @@ package org.apache.shardingsphere.core.yaml.config.sharding.strategy;
 
 /**
  * None sharding strategy configuration for YAML.
- * 
- * @author zhangliang
  */
 public final class YamlNoneShardingStrategyConfiguration implements YamlBaseShardingStrategyConfiguration {
 }

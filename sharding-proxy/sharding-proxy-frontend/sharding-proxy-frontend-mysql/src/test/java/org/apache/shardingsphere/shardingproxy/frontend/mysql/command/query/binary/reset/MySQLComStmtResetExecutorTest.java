@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.command.query.binary.reset;
 
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.reset.MySQLComStmtResetPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
-import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.reset.MySQLComStmtResetPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -32,7 +32,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MySQLComStmtResetExecutorTest {
+public final class MySQLComStmtResetExecutorTest {
     
     @Mock
     private MySQLComStmtResetPacket packet;

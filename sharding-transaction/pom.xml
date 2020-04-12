@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere</artifactId>
-        <version>4.0.0-RC3-SNAPSHOT</version>
+        <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-transaction</artifactId>
     <name>${project.artifactId}</name>
@@ -36,7 +36,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-entry</artifactId>
+            <artifactId>shardingsphere-executor</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
     </dependencies>

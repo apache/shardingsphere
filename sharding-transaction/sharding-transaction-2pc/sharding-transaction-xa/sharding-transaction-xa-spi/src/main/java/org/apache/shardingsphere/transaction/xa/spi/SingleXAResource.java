@@ -26,8 +26,6 @@ import javax.transaction.xa.Xid;
 
 /**
  * Single XA resource.
- *
- * @author zhaojun
  */
 @RequiredArgsConstructor
 @Getter

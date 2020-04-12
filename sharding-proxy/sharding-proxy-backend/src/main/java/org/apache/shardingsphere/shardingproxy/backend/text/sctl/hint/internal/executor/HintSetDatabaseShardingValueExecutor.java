@@ -24,8 +24,6 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.c
 
 /**
  * Hint set database sharding value command executor.
- *
- * @author liya
  */
 public final class HintSetDatabaseShardingValueExecutor extends AbstractHintUpdateExecutor<HintSetDatabaseShardingValueCommand> {
     

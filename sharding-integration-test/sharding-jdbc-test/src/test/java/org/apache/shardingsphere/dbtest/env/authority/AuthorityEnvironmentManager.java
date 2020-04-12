@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.dbtest.env.authority;
 
-import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
@@ -32,8 +32,6 @@ import java.util.Map;
 
 /**
  * Authority environment manager.
- *
- * @author panjuan
  */
 public final class AuthorityEnvironmentManager {
     

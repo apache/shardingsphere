@@ -30,8 +30,6 @@ import javax.transaction.TransactionManager;
 
 /**
  * Narayana transaction manager.
- *
- * @author zhfeng
  */
 public final class NarayanaXATransactionManager implements XATransactionManager {
     

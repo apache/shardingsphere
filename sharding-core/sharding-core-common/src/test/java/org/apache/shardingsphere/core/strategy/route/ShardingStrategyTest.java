@@ -31,11 +31,13 @@ import org.apache.shardingsphere.core.strategy.route.standard.StandardShardingSt
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.junit.Test;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -47,15 +49,15 @@ public final class ShardingStrategyTest {
     @Test
     public void assertDoShardingWithoutShardingColumns() {
         NoneShardingStrategy strategy = new NoneShardingStrategy();
-        assertThat(strategy.doSharding(targets, Collections.<RouteValue>emptySet()), is(targets));
+        assertThat(strategy.doSharding(targets, Collections.emptySet(), new ConfigurationProperties(new Properties())), is(targets));
     }
     
     @Test
     public void assertDoShardingForBetweenSingleKey() {
         StandardShardingStrategy strategy = new StandardShardingStrategy(
                 new StandardShardingStrategyConfiguration("column", new PreciseShardingAlgorithmFixture(), new RangeShardingAlgorithmFixture()));
-        assertThat(strategy.doSharding(targets, Collections.<RouteValue>singletonList(new RangeRouteValue<>("column", "logicTable", Range.open(1, 3)))), 
-                is((Collection<String>) Sets.newHashSet("1")));
+        assertThat(strategy.doSharding(targets, Collections.singletonList(new RangeRouteValue<>("column", "logicTable", Range.open(1, 3))), new ConfigurationProperties(new Properties())),
+                is(Sets.newHashSet("1")));
     }
     
     @Test
@@ -63,6 +65,6 @@ public final class ShardingStrategyTest {
         ComplexShardingStrategy strategy = new ComplexShardingStrategy(new ComplexShardingStrategyConfiguration("column1, column2", new ComplexKeysShardingAlgorithmFixture()));
         List<RouteValue> routeValues = Lists.newArrayList(
                 new ListRouteValue<>("column1", "logicTable", Collections.singletonList(1)), new RangeRouteValue<>("column2", "logicTable", Range.open(1, 3)));
-        assertThat(strategy.doSharding(targets, routeValues), is((Collection<String>) Sets.newHashSet("1", "2", "3")));
+        assertThat(strategy.doSharding(targets, routeValues, new ConfigurationProperties(new Properties())), is(Sets.newHashSet("1", "2", "3")));
     }
 }

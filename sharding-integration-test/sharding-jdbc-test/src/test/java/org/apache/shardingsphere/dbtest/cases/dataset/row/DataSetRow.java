@@ -27,8 +27,6 @@ import java.util.List;
 
 /**
  * Data set row.
- * 
- * @author zhangliang 
  */
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)

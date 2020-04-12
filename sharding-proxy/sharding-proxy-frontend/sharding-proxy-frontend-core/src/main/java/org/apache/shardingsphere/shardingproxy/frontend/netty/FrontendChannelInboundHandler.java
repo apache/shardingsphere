@@ -23,21 +23,18 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.shardingproxy.frontend.command.CommandExecutorTask;
 import org.apache.shardingsphere.shardingproxy.frontend.executor.ChannelThreadExecutorGroup;
 import org.apache.shardingsphere.shardingproxy.frontend.executor.CommandExecutorSelector;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseProtocolFrontendEngine;
-import org.apache.shardingsphere.shardingproxy.transport.payload.PacketPayload;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 
 /**
  * Frontend channel inbound handler.
- * 
- * @author zhangliang
- * @author liya
  */
 @RequiredArgsConstructor
 @Slf4j
@@ -48,8 +45,8 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     private volatile boolean authorized;
     
     private final BackendConnection backendConnection = new BackendConnection(
-            TransactionType.valueOf(ShardingProxyContext.getInstance().getShardingProperties().<String>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_TYPE)),
-            ShardingProxyContext.getInstance().getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_HINT_ENABLED));
+            TransactionType.valueOf(ShardingProxyContext.getInstance().getProperties().getValue(ConfigurationPropertyKey.PROXY_TRANSACTION_TYPE)),
+            ShardingProxyContext.getInstance().getProperties().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED));
     
     @Override
     public void channelActive(final ChannelHandlerContext context) {

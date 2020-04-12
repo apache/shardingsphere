@@ -19,15 +19,13 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execu
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 
 import java.util.List;
 
 /**
  * Execute query response.
- * 
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

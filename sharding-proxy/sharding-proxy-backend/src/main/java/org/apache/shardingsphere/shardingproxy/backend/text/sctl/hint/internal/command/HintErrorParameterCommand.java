@@ -21,8 +21,6 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.H
 
 /**
  * Hint error parameter command.
- *
- * @author liya
  */
 public class HintErrorParameterCommand implements HintCommand {
 }

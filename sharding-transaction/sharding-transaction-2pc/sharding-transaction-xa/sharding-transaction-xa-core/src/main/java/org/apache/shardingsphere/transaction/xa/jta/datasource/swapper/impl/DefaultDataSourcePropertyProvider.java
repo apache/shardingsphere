@@ -21,8 +21,6 @@ import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourc
 
 /**
  * Default data source property provider.
- *
- * @author zhangliang
  */
 public final class DefaultDataSourcePropertyProvider implements DataSourcePropertyProvider {
     

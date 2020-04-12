@@ -17,16 +17,14 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.postgresql.command.generic;
 
+import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
-import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
 
 import java.util.Collection;
 import java.util.Collections;
 
 /**
  * Command termination executor for PostgreSQL.
- * 
- * @author zhangliang
  */
 public final class PostgreSQLComTerminationExecutor implements CommandExecutor {
     

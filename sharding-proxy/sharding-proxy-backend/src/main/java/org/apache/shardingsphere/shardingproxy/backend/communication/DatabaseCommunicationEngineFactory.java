@@ -30,10 +30,6 @@ import java.util.List;
 
 /**
  * Database communication engine factory.
- *
- * @author zhangliang
- * @author panjuan
- * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseCommunicationEngineFactory {

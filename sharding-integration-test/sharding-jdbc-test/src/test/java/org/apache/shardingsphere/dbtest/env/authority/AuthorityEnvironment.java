@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.dbtest.env.authority;
 
-import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -26,8 +26,6 @@ import java.util.LinkedList;
 
 /**
  * Authority root xml entry.
- * 
- * @author panjuan
  */
 @XmlRootElement(name = "authority")
 public final class AuthorityEnvironment {

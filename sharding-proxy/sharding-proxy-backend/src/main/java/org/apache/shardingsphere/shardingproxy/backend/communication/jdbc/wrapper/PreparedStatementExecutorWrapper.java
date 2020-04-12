@@ -18,39 +18,42 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.PreparedQueryShardingEngine;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.core.preprocessor.SQLStatementContextFactory;
-import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.preprocessor.statement.impl.CommonSQLStatementContext;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.rewrite.engine.impl.DefaultSQLRewriteEngine;
-import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
-import org.apache.shardingsphere.core.rewrite.feature.encrypt.context.EncryptSQLRewriteContextDecorator;
-import org.apache.shardingsphere.core.route.RouteUnit;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.core.route.SQLUnit;
-import org.apache.shardingsphere.core.route.router.masterslave.MasterSlaveRouter;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingCondition;
-import org.apache.shardingsphere.core.route.router.sharding.condition.ShardingConditions;
+import org.apache.shardingsphere.shadow.rewrite.judgement.ShadowJudgementEngine;
+import org.apache.shardingsphere.shadow.rewrite.judgement.impl.PreparedJudgementEngine;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.EncryptSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.MasterSlaveSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShadowSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
+import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionContextBuilder;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
+import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
+import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
+import org.apache.shardingsphere.underlying.rewrite.engine.result.GenericSQLRewriteResult;
+import org.apache.shardingsphere.underlying.rewrite.engine.result.SQLRewriteResult;
+import org.apache.shardingsphere.underlying.rewrite.engine.result.SQLRewriteUnit;
+import org.apache.shardingsphere.underlying.route.DataNodeRouter;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
+import org.apache.shardingsphere.underlying.route.context.RouteResult;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 /**
  * Executor wrapper for prepared statement.
- *
- * @author zhangliang
- * @author panjuan
  */
 @RequiredArgsConstructor
 public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapper {
@@ -62,58 +65,72 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     private final List<Object> parameters;
     
     @Override
-    public SQLRouteResult route(final String sql) {
+    public ExecutionContext route(final String sql) {
         if (logicSchema instanceof ShardingSchema) {
             return doShardingRoute(sql);
         }
         if (logicSchema instanceof MasterSlaveSchema) {
             return doMasterSlaveRoute(sql);
         }
-        return doEncryptRoute(sql);
-    }
-    
-    private SQLRouteResult doShardingRoute(final String sql) {
-        PreparedQueryShardingEngine shardingEngine = new PreparedQueryShardingEngine(
-                sql, logicSchema.getShardingRule(), ShardingProxyContext.getInstance().getShardingProperties(), logicSchema.getMetaData(), logicSchema.getParseEngine());
-        return shardingEngine.shard(sql, parameters);
-    }
-    
-    private SQLRouteResult doMasterSlaveRoute(final String sql) {
-        SQLStatement sqlStatement = logicSchema.getParseEngine().parse(sql, true);
-        CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(logicSchema.getMetaData().getTables(), sqlStatementContext, sql, parameters);
-        sqlRewriteContext.generateSQLTokens();
-        String rewriteSQL = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext).getSql();
-        SQLRouteResult result = new SQLRouteResult(sqlStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        for (String each : new MasterSlaveRouter(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), logicSchema.getParseEngine(),
-                SHARDING_PROXY_CONTEXT.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW)).route(rewriteSQL, true)) {
-            result.getRouteUnits().add(new RouteUnit(each, new SQLUnit(rewriteSQL, parameters)));
+        if (logicSchema instanceof EncryptSchema) {
+            return doEncryptRoute(sql);
         }
-        return result;
+        if (logicSchema instanceof ShadowSchema) {
+            return doShadowRoute(sql);
+        }
+        return doTransparentRoute(sql);
+    }
+    
+    private ExecutionContext doShardingRoute(final String sql) {
+        Collection<BaseRule> rules = logicSchema.getShardingRule().toRules();
+        SQLStatement sqlStatement = logicSchema.getSqlParserEngine().parse(sql, true);
+        RouteContext routeContext = new DataNodeRouter(logicSchema.getMetaData(), SHARDING_PROXY_CONTEXT.getProperties(), rules).route(sqlStatement, sql, parameters);
+        SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(logicSchema.getMetaData().getSchema().getConfiguredSchemaMetaData(),
+                SHARDING_PROXY_CONTEXT.getProperties(), rules).rewrite(sql, new ArrayList<>(parameters), routeContext);
+        return new ExecutionContext(routeContext.getSqlStatementContext(), ExecutionContextBuilder.build(logicSchema.getMetaData(), sqlRewriteResult));
     }
     
     @SuppressWarnings("unchecked")
-    private SQLRouteResult doEncryptRoute(final String sql) {
-        EncryptSchema encryptSchema = (EncryptSchema) logicSchema;
-        SQLStatement sqlStatement = encryptSchema.getParseEngine().parse(sql, true);
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(logicSchema.getMetaData().getTables(), sql, parameters, sqlStatement);
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(logicSchema.getMetaData().getTables(), sqlStatementContext, sql, parameters);
-        boolean isQueryWithCipherColumn = ShardingProxyContext.getInstance().getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
-        new EncryptSQLRewriteContextDecorator(encryptSchema.getEncryptRule(), isQueryWithCipherColumn).decorate(sqlRewriteContext);
-        sqlRewriteContext.generateSQLTokens();
-        SQLRouteResult result = new SQLRouteResult(sqlStatementContext, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
-        result.getRouteUnits().add(
-                new RouteUnit(logicSchema.getDataSources().keySet().iterator().next(), new SQLUnit(new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext).getSql(), parameters)));
-        return result;
+    private ExecutionContext doMasterSlaveRoute(final String sql) {
+        Collection<BaseRule> rules = Collections.singletonList(((MasterSlaveSchema) logicSchema).getMasterSlaveRule());
+        SQLStatement sqlStatement = logicSchema.getSqlParserEngine().parse(sql, true);
+        RouteContext routeContext = new DataNodeRouter(logicSchema.getMetaData(), SHARDING_PROXY_CONTEXT.getProperties(), rules).route(sqlStatement, sql, parameters);
+        SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(logicSchema.getMetaData().getSchema().getConfiguredSchemaMetaData(),
+                SHARDING_PROXY_CONTEXT.getProperties(), rules).rewrite(sql, new ArrayList<>(parameters), routeContext);
+        return new ExecutionContext(routeContext.getSqlStatementContext(), ExecutionContextBuilder.build(logicSchema.getMetaData(), sqlRewriteResult));
     }
     
-    @Override
-    public Statement createStatement(final Connection connection, final SQLUnit sqlUnit, final boolean isReturnGeneratedKeys) throws SQLException {
-        PreparedStatement result = isReturnGeneratedKeys ? connection.prepareStatement(sqlUnit.getSql(), Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sqlUnit.getSql());
-        for (int i = 0; i < sqlUnit.getParameters().size(); i++) {
-            result.setObject(i + 1, sqlUnit.getParameters().get(i));
-        }
-        return result;
+    @SuppressWarnings("unchecked")
+    private ExecutionContext doEncryptRoute(final String sql) {
+        Collection<BaseRule> rules = Collections.singletonList(((EncryptSchema) logicSchema).getEncryptRule());
+        SQLStatement sqlStatement = logicSchema.getSqlParserEngine().parse(sql, true);
+        RouteContext routeContext = new DataNodeRouter(logicSchema.getMetaData(), SHARDING_PROXY_CONTEXT.getProperties(), rules).route(sqlStatement, sql, parameters);
+        SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(logicSchema.getMetaData().getSchema().getConfiguredSchemaMetaData(),
+                SHARDING_PROXY_CONTEXT.getProperties(), rules).rewrite(sql, new ArrayList<>(parameters), routeContext);
+        return new ExecutionContext(routeContext.getSqlStatementContext(), ExecutionContextBuilder.build(logicSchema.getMetaData(), sqlRewriteResult));
+    }
+    
+    private ExecutionContext doShadowRoute(final String sql) {
+        ShadowSchema shadowSchema = (ShadowSchema) logicSchema;
+        SQLStatement sqlStatement = shadowSchema.getSqlParserEngine().parse(sql, true);
+        SchemaMetaData schemaMetaData = logicSchema.getMetaData().getSchema().getConfiguredSchemaMetaData();
+        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, sql, parameters, sqlStatement);
+        ShadowJudgementEngine shadowJudgementEngine = new PreparedJudgementEngine(shadowSchema.getShadowRule(), sqlStatementContext, parameters);
+        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(
+                logicSchema.getMetaData().getSchema().getConfiguredSchemaMetaData(), ShardingProxyContext.getInstance().getProperties(), Collections.singletonList(shadowSchema.getShadowRule()));
+        SQLRewriteUnit sqlRewriteResult = ((GenericSQLRewriteResult) sqlRewriteEntry.rewrite(
+                sql, parameters, new RouteContext(sqlStatementContext, parameters, new RouteResult()))).getSqlRewriteUnit();
+        String dataSourceName = shadowJudgementEngine.isShadowSQL()
+                ? shadowSchema.getShadowRule().getRuleConfiguration().getShadowMappings().get(logicSchema.getDataSources().keySet().iterator().next())
+                : logicSchema.getDataSources().keySet().iterator().next();
+        return new ExecutionContext(sqlStatementContext, Collections.singletonList(new ExecutionUnit(dataSourceName, new SQLUnit(sqlRewriteResult.getSql(), sqlRewriteResult.getParameters()))));
+    }
+    
+    @SuppressWarnings("unchecked")
+    private ExecutionContext doTransparentRoute(final String sql) {
+        SQLStatement sqlStatement = logicSchema.getSqlParserEngine().parse(sql, false);
+        return new ExecutionContext(
+                new CommonSQLStatementContext(sqlStatement), new ExecutionUnit(logicSchema.getDataSources().keySet().iterator().next(), new SQLUnit(sql, Collections.emptyList())));
     }
     
     @Override

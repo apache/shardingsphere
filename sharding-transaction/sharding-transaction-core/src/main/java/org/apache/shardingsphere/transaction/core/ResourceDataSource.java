@@ -23,11 +23,9 @@ import javax.sql.DataSource;
 
 /**
  * Unique resource data source.
- *
- * @author zhaojun
  */
 @Getter
-public class ResourceDataSource {
+public final class ResourceDataSource {
     
     private final String originalName;
     

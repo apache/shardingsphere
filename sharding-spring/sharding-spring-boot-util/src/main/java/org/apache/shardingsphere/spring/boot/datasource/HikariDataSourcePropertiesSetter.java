@@ -28,8 +28,6 @@ import java.util.Properties;
 
 /**
  * Hikari datasource properties setter.
- *
- * @author xiayan
  */
 public final class HikariDataSourcePropertiesSetter implements DataSourcePropertiesSetter {
     

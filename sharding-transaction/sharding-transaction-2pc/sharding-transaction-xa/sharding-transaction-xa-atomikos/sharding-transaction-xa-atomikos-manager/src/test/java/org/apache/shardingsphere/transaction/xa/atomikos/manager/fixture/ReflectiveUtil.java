@@ -26,8 +26,6 @@ import java.lang.reflect.Field;
 
 /**
  * Reflective utility.
- * 
- * @author zhaojun 
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReflectiveUtil {

@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.show;
 
-import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.merge.MergedResult;
-import org.apache.shardingsphere.core.merge.dal.show.ShowShardingCTLMergedResult;
+import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
@@ -29,16 +27,16 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryRespo
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
+import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Sharding CTL show backend handler.
- *
- * @author zhaojun
  */
 public final class ShardingCTLShowBackendHandler implements TextProtocolBackendHandler {
     
@@ -70,7 +68,7 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
     }
     
     private BackendResponse createResponsePackets(final String columnName, final Object... values) {
-        mergedResult = new ShowShardingCTLMergedResult(Collections.singletonList(Arrays.asList(values)));
+        mergedResult = new MultipleLocalDataMergedResult(Collections.singletonList(Arrays.asList(values)));
         return new QueryResponse(Collections.singletonList(new QueryHeader("", "", columnName, columnName, 100, Types.VARCHAR, 0, false, false, false, false)));
     }
     

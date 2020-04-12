@@ -36,8 +36,6 @@ import java.util.Calendar;
 
 /**
  * Master-slave adapter for {@code PreparedStatement}.
- *
- * @author zhangliang
  */
 public abstract class AbstractMasterSlavePreparedStatementAdapter extends AbstractUnsupportedOperationPreparedStatement {
     

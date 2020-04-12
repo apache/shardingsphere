@@ -27,8 +27,6 @@ import java.util.List;
 
 /**
  * SQL test cases for xml root tag.
- * 
- * @author zhangliang 
  */
 @XmlRootElement(name = "sql-cases")
 @Getter

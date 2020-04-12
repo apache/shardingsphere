@@ -17,17 +17,15 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.core.execute.ShardingExecuteEngine;
-import org.apache.shardingsphere.core.parse.SQLParseEngine;
-import org.apache.shardingsphere.core.rule.BaseRule;
-import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.underlying.executor.kernel.ExecutorKernel;
+import org.apache.shardingsphere.sql.parser.SQLParserEngine;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 
 /**
  * Runtime context.
  *
- * @author zhangliang
- * 
  * @param <T> type of rule
  */
 public interface RuntimeContext<T extends BaseRule> extends AutoCloseable {
@@ -44,7 +42,7 @@ public interface RuntimeContext<T extends BaseRule> extends AutoCloseable {
      *
      * @return properties
      */
-    ShardingProperties getProps();
+    ConfigurationProperties getProperties();
     
     /**
      * Get database type.
@@ -54,16 +52,16 @@ public interface RuntimeContext<T extends BaseRule> extends AutoCloseable {
     DatabaseType getDatabaseType();
     
     /**
-     * Get execute engine.
+     * Get executor kernel.
      * 
-     * @return execute engine
+     * @return executor kernel
      */
-    ShardingExecuteEngine getExecuteEngine();
+    ExecutorKernel getExecutorKernel();
     
     /**
-     * Get parse engine.
+     * Get SQL parser engine.
      * 
-     * @return parse engine
+     * @return SQL parser engine
      */
-    SQLParseEngine getParseEngine();
+    SQLParserEngine getSqlParserEngine();
 }

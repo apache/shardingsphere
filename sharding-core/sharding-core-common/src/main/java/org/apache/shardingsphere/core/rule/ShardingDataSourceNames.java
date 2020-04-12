@@ -25,14 +25,12 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Sharding data source names.
  * 
  * <p>Will convert actual data source names to master-slave data source name.</p>
- * 
- * @author zhangliang
  */
 public final class ShardingDataSourceNames {
     
@@ -55,15 +53,6 @@ public final class ShardingDataSourceNames {
             result.add(each.getName());
         }
         return result;
-    }
-    
-    /**
-     * Get default data source name.
-     *
-     * @return default data source name
-     */
-    public String getDefaultDataSourceName() {
-        return 1 == dataSourceNames.size() ? dataSourceNames.iterator().next() : shardingRuleConfig.getDefaultDataSourceName();
     }
     
     /**
@@ -97,6 +86,6 @@ public final class ShardingDataSourceNames {
      * @return random data source name
      */
     public String getRandomDataSourceName(final Collection<String> dataSourceNames) {
-        return Lists.newArrayList(dataSourceNames).get(new Random().nextInt(dataSourceNames.size()));
+        return Lists.newArrayList(dataSourceNames).get(ThreadLocalRandom.current().nextInt(dataSourceNames.size()));
     }
 }

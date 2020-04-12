@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere</artifactId>
-        <version>4.0.0-RC3-SNAPSHOT</version>
+        <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-spring</artifactId>
     <name>${project.artifactId}</name>
@@ -31,12 +31,13 @@
         <module>sharding-jdbc-spring</module>
         <module>sharding-jdbc-orchestration-spring</module>
         <module>sharding-spring-boot-util</module>
+        <module>sharding-transaction-spring</module>
     </modules>
     
     <dependencies>
         <dependency>
             <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP-java7</artifactId>
+            <artifactId>HikariCP</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

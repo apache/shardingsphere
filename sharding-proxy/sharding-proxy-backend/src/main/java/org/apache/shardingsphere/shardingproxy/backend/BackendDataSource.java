@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingproxy.backend;
 
 /**
  * Backend data source.
- *
- * @author zhangliang
  */
 public interface BackendDataSource {
 }

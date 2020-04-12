@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.unsupported;
 
 import org.apache.shardingsphere.shardingjdbc.common.base.AbstractShardingJDBCDatabaseAndTableTest;
-import org.apache.shardingsphere.shardingjdbc.jdbc.JDBCTestSQL;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.junit.After;
 import org.junit.Before;
@@ -34,7 +33,7 @@ import java.util.List;
 
 public final class UnsupportedOperationResultSetTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
-    private final String sql = JDBCTestSQL.SELECT_WITH_ALIAS_SQL;
+    private static final String SQL = "SELECT user_id AS usr_id FROM t_order WHERE status = 'init'";
     
     private final List<ShardingConnection> shardingConnections = new ArrayList<>();
     
@@ -48,7 +47,7 @@ public final class UnsupportedOperationResultSetTest extends AbstractShardingJDB
         shardingConnections.add(connection);
         Statement statement = connection.createStatement();
         statements.add(statement);
-        resultSets.add(statement.executeQuery(sql));
+        resultSets.add(statement.executeQuery(SQL));
     }
     
     @After
@@ -333,14 +332,14 @@ public final class UnsupportedOperationResultSetTest extends AbstractShardingJDB
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertObjectForColumnIndexWithMap() throws SQLException {
         for (ResultSet each : resultSets) {
-            each.getObject(1, Collections.<String, Class<?>>emptyMap());
+            each.getObject(1, Collections.emptyMap());
         }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertObjectForColumnLabelWithMap() throws SQLException {
         for (ResultSet each : resultSets) {
-            each.getObject("label", Collections.<String, Class<?>>emptyMap());
+            each.getObject("label", Collections.emptyMap());
         }
     }
 }

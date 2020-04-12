@@ -27,8 +27,6 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.H
  * <p>
  * example: sctl:hint set MASTER_ONLY=true.
  * </p>
- *
- * @author liya
  */
 @RequiredArgsConstructor
 @Getter

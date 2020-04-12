@@ -29,6 +29,7 @@ import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,8 +38,6 @@ import java.util.TreeSet;
 
 /**
  * Complex sharding strategy.
- * 
- * @author zhangliang
  */
 public final class ComplexShardingStrategy implements ShardingStrategy {
     
@@ -57,7 +56,7 @@ public final class ComplexShardingStrategy implements ShardingStrategy {
     
     @SuppressWarnings("unchecked")
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<RouteValue> shardingValues) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<RouteValue> shardingValues, final ConfigurationProperties properties) {
         Map<String, Collection<Comparable<?>>> columnShardingValues = new HashMap<>(shardingValues.size(), 1);
         Map<String, Range<Comparable<?>>> columnRangeValues = new HashMap<>(shardingValues.size(), 1);
         String logicTableName = "";

@@ -21,19 +21,17 @@ import java.util.Map;
 import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.yaml.config.encrypt.YamlRootEncryptRuleConfiguration;
-import org.apache.shardingsphere.orchestration.center.yaml.config.YamlInstanceConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.YamlRootEncryptRuleConfiguration;
+import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
 
 /**
  * Orchestration encrypt configuration for YAML.
- *
- * @author yangyi
  */
 @Getter
 @Setter
 public final class YamlOrchestrationEncryptRuleConfiguration extends YamlRootEncryptRuleConfiguration {
     
-    private Map<String, YamlInstanceConfiguration> orchestration;
+    private Map<String, YamlCenterRepositoryConfiguration> orchestration;
     
     private Properties props = new Properties();
 }

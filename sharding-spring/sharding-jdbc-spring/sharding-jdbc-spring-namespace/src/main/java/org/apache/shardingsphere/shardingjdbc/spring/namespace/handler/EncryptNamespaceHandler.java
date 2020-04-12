@@ -23,8 +23,6 @@ import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
  * Spring namespace handler for encrypt.
- * 
- * @author panjuan
  */
 public final class EncryptNamespaceHandler extends NamespaceHandlerSupport {
     

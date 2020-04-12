@@ -17,22 +17,20 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.command.admin.quit;
 
+import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
-import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
 
 import java.util.Collection;
 import java.util.Collections;
 
 /**
  * COM_QUIT executor for MySQL.
- *
- * @author zhangliang
  */
 public final class MySQLComQuitExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket> execute() {
-        return Collections.<DatabasePacket>singletonList(new MySQLOKPacket(1));
+        return Collections.singletonList(new MySQLOKPacket(1));
     }
 }

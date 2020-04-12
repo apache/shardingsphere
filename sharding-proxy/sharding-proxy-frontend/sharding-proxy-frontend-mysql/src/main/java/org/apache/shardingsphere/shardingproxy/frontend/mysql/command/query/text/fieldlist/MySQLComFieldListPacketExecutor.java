@@ -17,6 +17,11 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.command.query.text.fieldlist;
 
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLColumnType;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.text.fieldlist.MySQLComFieldListPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLEofPacket;
+import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
@@ -24,11 +29,6 @@ import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.mysql.MySQLErrPacketFactory;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLColumnDefinition41Packet;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.fieldlist.MySQLComFieldListPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLEofPacket;
-import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -37,8 +37,6 @@ import java.util.LinkedList;
 
 /**
  * COM_FIELD_LIST packet executor for MySQL.
- *
- * @author zhangliang 
  */
 public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
     
@@ -59,7 +57,7 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
         BackendResponse backendResponse = databaseCommunicationEngine.execute();
-        return backendResponse instanceof ErrorResponse ? Collections.<DatabasePacket>singletonList(MySQLErrPacketFactory.newInstance(1, ((ErrorResponse) backendResponse).getCause())) 
+        return backendResponse instanceof ErrorResponse ? Collections.singletonList(MySQLErrPacketFactory.newInstance(1, ((ErrorResponse) backendResponse).getCause())) 
                 : getColumnDefinition41Packets();
     }
     

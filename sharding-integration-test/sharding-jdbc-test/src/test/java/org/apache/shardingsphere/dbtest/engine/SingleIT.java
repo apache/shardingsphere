@@ -19,13 +19,11 @@ package org.apache.shardingsphere.dbtest.engine;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLValue;
 import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
-import org.apache.shardingsphere.dbtest.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
-import org.apache.shardingsphere.test.sql.loader.sharding.ShardingSQLCasesRegistry;
+import org.apache.shardingsphere.test.sql.loader.SQLCasesRegistry;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -37,10 +35,6 @@ import java.util.List;
 @Getter(AccessLevel.PROTECTED)
 public abstract class SingleIT extends BaseIT {
     
-    private static IntegrateTestEnvironment integrateTestEnvironment = IntegrateTestEnvironment.getInstance();
-    
-    private static IntegrateTestCasesLoader integrateTestCasesLoader = IntegrateTestCasesLoader.getInstance();
-    
     private final IntegrateTestCaseAssertion assertion;
     
     private final SQLCaseType caseType;
@@ -50,12 +44,12 @@ public abstract class SingleIT extends BaseIT {
     private final String expectedDataFile;
     
     public SingleIT(final String sqlCaseId, final String path, final IntegrateTestCaseAssertion assertion, 
-                    final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
-        super(shardingRuleType, databaseTypeEnvironment);
+                    final String ruleType, final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
+        super(ruleType, databaseTypeEnvironment);
         this.assertion = assertion;
         this.caseType = caseType;
         sql = getSQL(sqlCaseId);
-        expectedDataFile = getExpectedDataFile(path, shardingRuleType, databaseTypeEnvironment.getDatabaseType(), assertion.getExpectedDataFile());
+        expectedDataFile = getExpectedDataFile(path, ruleType, databaseTypeEnvironment.getDatabaseType(), assertion.getExpectedDataFile());
     }
 
     private String getSQL(final String sqlCaseId) throws ParseException {
@@ -63,6 +57,6 @@ public abstract class SingleIT extends BaseIT {
         for (SQLValue each : assertion.getSQLValues()) {
             parameters.add(each.toString());
         }
-        return ShardingSQLCasesRegistry.getInstance().getSqlCasesLoader().getSQL(sqlCaseId, caseType, parameters);
+        return SQLCasesRegistry.getInstance().getSqlCasesLoader().getSQL(sqlCaseId, caseType, parameters);
     }
 }

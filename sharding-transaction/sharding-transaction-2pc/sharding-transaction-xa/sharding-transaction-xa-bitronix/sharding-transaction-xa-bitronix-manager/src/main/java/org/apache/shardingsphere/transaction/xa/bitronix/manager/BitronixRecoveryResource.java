@@ -33,8 +33,6 @@ import javax.transaction.xa.XAResource;
 
 /**
  * Bitronix recovery resource.
- *
- * @author zhaojun
  */
 @RequiredArgsConstructor
 public final class BitronixRecoveryResource extends ResourceBean implements XAResourceProducer {

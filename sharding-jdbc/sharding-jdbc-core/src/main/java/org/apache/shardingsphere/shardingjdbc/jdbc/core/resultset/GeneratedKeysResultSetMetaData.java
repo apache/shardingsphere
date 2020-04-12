@@ -26,8 +26,6 @@ import java.sql.Types;
 
 /**
  * Result set meta data for generated keys.
- * 
- * @author gaohongtao
  */
 @RequiredArgsConstructor
 public final class GeneratedKeysResultSetMetaData extends WrapperAdapter implements ResultSetMetaData {

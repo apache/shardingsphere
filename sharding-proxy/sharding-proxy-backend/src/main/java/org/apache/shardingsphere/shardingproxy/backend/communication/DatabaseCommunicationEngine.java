@@ -24,8 +24,6 @@ import java.sql.SQLException;
 
 /**
  * Database communication engine.
- *
- * @author zhangliang
  */
 public interface DatabaseCommunicationEngine {
     

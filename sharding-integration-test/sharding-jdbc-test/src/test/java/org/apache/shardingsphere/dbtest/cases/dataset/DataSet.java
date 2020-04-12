@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.dbtest.cases.dataset;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.rule.DataNode;
-import org.apache.shardingsphere.core.util.InlineExpressionParser;
+import org.apache.shardingsphere.underlying.common.rule.DataNode;
+import org.apache.shardingsphere.underlying.common.config.inline.InlineExpressionParser;
 import org.apache.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.dbtest.cases.dataset.row.DataSetRow;
 
@@ -32,8 +32,6 @@ import java.util.List;
 
 /**
  * Data sets root xml entry.
- * 
- * @author zhangliang 
  */
 @Getter
 //@Setter

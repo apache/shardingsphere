@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.dbtest.env.dataset;
 
 import com.google.common.base.Joiner;
-import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.core.rule.DataNode;
-import org.apache.shardingsphere.core.util.InlineExpressionParser;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
+import org.apache.shardingsphere.underlying.common.rule.DataNode;
+import org.apache.shardingsphere.underlying.common.config.inline.InlineExpressionParser;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLValue;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLValueGroup;
 import org.apache.shardingsphere.dbtest.cases.dataset.DataSet;
 import org.apache.shardingsphere.dbtest.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.dbtest.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
@@ -47,8 +47,6 @@ import java.util.Map.Entry;
 
 /**
  * Data set environment manager.
- *
- * @author zhangliang
  */
 public final class DataSetEnvironmentManager {
     
@@ -93,7 +91,7 @@ public final class DataSetEnvironmentManager {
         for (DataSetRow each : dataSet.getRows()) {
             DataNode dataNode = new DataNode(each.getDataNode());
             if (!result.containsKey(dataNode)) {
-                result.put(dataNode, new LinkedList<DataSetRow>());
+                result.put(dataNode, new LinkedList<>());
             }
             result.get(dataNode).add(each);
         }
@@ -156,7 +154,7 @@ public final class DataSetEnvironmentManager {
         for (DataSetMetadata each : dataSet.getMetadataList()) {
             for (Entry<String, Collection<String>> entry : getDataNodeMap(each).entrySet()) {
                 if (!result.containsKey(entry.getKey())) {
-                    result.put(entry.getKey(), new LinkedList<String>());
+                    result.put(entry.getKey(), new LinkedList<>());
                 }
                 result.get(entry.getKey()).addAll(entry.getValue());
             }
@@ -169,7 +167,7 @@ public final class DataSetEnvironmentManager {
         for (String each : new InlineExpressionParser(dataSetMetadata.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
             if (!result.containsKey(dataNode.getDataSourceName())) {
-                result.put(dataNode.getDataSourceName(), new LinkedList<String>());
+                result.put(dataNode.getDataSourceName(), new LinkedList<>());
             }
             result.get(dataNode.getDataSourceName()).add(dataNode.getTableName());
         }

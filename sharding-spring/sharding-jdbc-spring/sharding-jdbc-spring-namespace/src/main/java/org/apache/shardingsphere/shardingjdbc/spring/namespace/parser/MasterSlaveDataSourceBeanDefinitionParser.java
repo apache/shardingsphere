@@ -35,9 +35,6 @@ import java.util.Properties;
 
 /**
  * Master-slave data source parser for spring namespace.
- * 
- * @author zhangliang
- * @author zhaojun
  */
 public final class MasterSlaveDataSourceBeanDefinitionParser extends AbstractBeanDefinitionParser {
     

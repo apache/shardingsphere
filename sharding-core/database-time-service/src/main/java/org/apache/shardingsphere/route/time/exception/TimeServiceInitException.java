@@ -18,14 +18,12 @@
 package org.apache.shardingsphere.route.time.exception;
 
 /**
- * TimeService init exception.
- *
- * @author chenchuangliu
+ * Time service init exception.
  */
-public class TimeServiceInitException extends RuntimeException {
-
+public final class TimeServiceInitException extends RuntimeException {
+    
     private static final long serialVersionUID = -834638295454826244L;
-
+    
     public TimeServiceInitException(final String message, final Throwable cause) {
         super(message, cause);
     }

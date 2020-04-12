@@ -27,8 +27,6 @@ import java.sql.SQLWarning;
 
 /**
  * Circuit breaker statement.
- * 
- * @author caohao
  */
 @Getter
 public final class CircuitBreakerStatement extends AbstractUnsupportedOperationStatement {

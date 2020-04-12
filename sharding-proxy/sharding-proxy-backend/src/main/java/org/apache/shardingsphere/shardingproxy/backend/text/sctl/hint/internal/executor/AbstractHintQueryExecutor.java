@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor;
 
-import org.apache.shardingsphere.core.merge.MergedResult;
+import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
@@ -31,8 +31,6 @@ import java.util.List;
 
 /**
  * Abstract hint query command.
- *
- * @author liya
  */
 public abstract class AbstractHintQueryExecutor<T extends HintCommand> implements HintCommandExecutor<T> {
     

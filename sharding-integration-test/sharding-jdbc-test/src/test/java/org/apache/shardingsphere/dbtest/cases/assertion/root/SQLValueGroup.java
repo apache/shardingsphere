@@ -27,8 +27,6 @@ import java.util.List;
 
 /**
  * Group of SQL value.
- *
- * @author zhangliang
  */
 @Getter
 public final class SQLValueGroup {

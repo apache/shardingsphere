@@ -23,17 +23,13 @@ import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
-
 /**
  * Encrypt condition.
- *
- * @author yangyi
- * @author panjuan
  */
 public final class EncryptRuleCondition extends SpringBootCondition {
     
     private static final String ENCRYPT_ENCRYPTORS_PREFIX = "spring.shardingsphere.encrypt.encryptors";
-
+    
     private static final String ENCRYPT_TABLES_PREFIX = "spring.shardingsphere.encrypt.tables";
     
     @Override

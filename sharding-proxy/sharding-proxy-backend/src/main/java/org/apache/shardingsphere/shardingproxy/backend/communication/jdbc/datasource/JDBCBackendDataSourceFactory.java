@@ -23,8 +23,6 @@ import javax.sql.DataSource;
 
 /**
  * Backend data source factory for JDBC.
- *
- * @author zhangliang
  */
 public interface JDBCBackendDataSourceFactory {
     

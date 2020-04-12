@@ -26,8 +26,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * SQL test case for xml tag.
- *
- * @author zhangliang
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
@@ -42,6 +40,4 @@ public final class SQLCase {
     
     @XmlAttribute(name = "db-types")
     private String databaseTypes;
-    
-    private String sqlType;
 }

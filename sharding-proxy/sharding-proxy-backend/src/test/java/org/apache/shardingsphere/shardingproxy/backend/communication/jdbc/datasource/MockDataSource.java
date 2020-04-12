@@ -41,8 +41,6 @@ import java.util.logging.Logger;
 
 /**
  * Mock data source.
- *
- * @author zhaojun
  */
 public final class MockDataSource implements DataSource, AutoCloseable {
     

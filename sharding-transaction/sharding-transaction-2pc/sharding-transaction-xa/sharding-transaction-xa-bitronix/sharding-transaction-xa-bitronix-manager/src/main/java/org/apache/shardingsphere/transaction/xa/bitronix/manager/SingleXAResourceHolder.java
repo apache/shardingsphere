@@ -28,8 +28,6 @@ import java.util.List;
 
 /**
  * Single XA resource holder.
- *
- * @author zhaojun
  */
 @RequiredArgsConstructor
 public final class SingleXAResourceHolder extends AbstractXAResourceHolder {

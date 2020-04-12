@@ -48,17 +48,22 @@ public final class EmbedTestingServer {
                 throw new RuntimeException(ex);
             }
         } finally {
-            Runtime.getRuntime().addShutdownHook(new Thread() {
-            
-                @Override
-                public void run() {
-                    try {
-                        testingServer.close();
-                    } catch (final IOException ignored) {
-                    }
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                try {
+                    testingServer.close();
+                } catch (final IOException ignored) {
                 }
-            });
+            }));
         }
+    }
+
+    /**
+     * Get testingServer connection string.
+     *
+     * @return connection string
+     */
+    public static String getTestingServerConnectionString() {
+        return testingServer.getConnectString();
     }
     
     private static boolean isIgnoredException(final Throwable cause) {

@@ -19,8 +19,6 @@ package org.apache.shardingsphere.api.config.sharding.strategy;
 
 /**
  * None sharding strategy configuration.
- * 
- * @author zhangliang
  */
 public final class NoneShardingStrategyConfiguration implements ShardingStrategyConfiguration {
 }

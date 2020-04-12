@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.yaml.config.sharding;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlHintShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlInlineShardingStrategyConfiguration;
@@ -28,13 +28,10 @@ import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlStandard
 
 /**
  * Sharding strategy configuration for YAML.
- *
- * @author caohao
- * @author panjuan
  */
 @Getter
 @Setter
-public class YamlShardingStrategyConfiguration implements YamlConfiguration {
+public final class YamlShardingStrategyConfiguration implements YamlConfiguration {
     
     private YamlStandardShardingStrategyConfiguration standard;
     

@@ -23,8 +23,6 @@ import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 
 /**
  * Error response.
- * 
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

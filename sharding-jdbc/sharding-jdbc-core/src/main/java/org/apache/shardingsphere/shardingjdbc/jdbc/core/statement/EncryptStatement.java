@@ -17,59 +17,73 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.core.preprocessor.SQLStatementContextFactory;
-import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.rewrite.context.SQLRewriteContext;
-import org.apache.shardingsphere.core.rewrite.feature.encrypt.context.EncryptSQLRewriteContextDecorator;
-import org.apache.shardingsphere.core.rewrite.engine.impl.DefaultSQLRewriteEngine;
-import org.apache.shardingsphere.core.route.SQLLogger;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import lombok.Getter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionConstant;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.EncryptRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.EncryptResultSet;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationStatement;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionContextBuilder;
+import org.apache.shardingsphere.underlying.executor.log.SQLLogger;
+import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
+import org.apache.shardingsphere.underlying.rewrite.engine.result.SQLRewriteResult;
+import org.apache.shardingsphere.underlying.route.DataNodeRouter;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.Collections;
 
 /**
  * Encrypt statement.
- *
- * @author panjuan
  */
 public final class EncryptStatement extends AbstractUnsupportedOperationStatement {
     
+    @Getter
     private final EncryptConnection connection;
     
     private final Statement statement;
+    
+    private final EncryptRuntimeContext runtimeContext;
     
     private SQLStatementContext sqlStatementContext;
     
     private EncryptResultSet resultSet;
     
     public EncryptStatement(final EncryptConnection connection) throws SQLException {
-        statement = connection.getConnection().createStatement();
-        this.connection = connection;
+        this(connection, connection.getConnection().createStatement());
     }
     
     public EncryptStatement(final EncryptConnection connection, final int resultSetType, final int resultSetConcurrency) throws SQLException {
-        statement = connection.getConnection().createStatement(resultSetType, resultSetConcurrency);
-        this.connection = connection;
+        this(connection, connection.getConnection().createStatement(resultSetType, resultSetConcurrency));
     }
     
     public EncryptStatement(final EncryptConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) throws SQLException {
-        statement = connection.getConnection().createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
+        this(connection, connection.getConnection().createStatement(resultSetType, resultSetConcurrency, resultSetHoldability));
+    }
+    
+    private EncryptStatement(final EncryptConnection connection, final Statement statement) {
         this.connection = connection;
+        this.statement = statement;
+        runtimeContext = connection.getRuntimeContext();
     }
     
     @Override
     public ResultSet executeQuery(final String sql) throws SQLException {
+        if (Strings.isNullOrEmpty(sql)) {
+            throw new SQLException(SQLExceptionConstant.SQL_STRING_NULL_OR_EMPTY);
+        }
         ResultSet resultSet = statement.executeQuery(getRewriteSQL(sql));
-        this.resultSet = new EncryptResultSet(connection.getRuntimeContext(), sqlStatementContext, this, resultSet);
+        this.resultSet = new EncryptResultSet(runtimeContext, sqlStatementContext, this, resultSet);
         return this.resultSet;
     }
     
@@ -78,24 +92,19 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
         return resultSet;
     }
     
-    @SuppressWarnings("unchecked")
     private String getRewriteSQL(final String sql) {
-        SQLStatement sqlStatement = connection.getRuntimeContext().getParseEngine().parse(sql, false);
-        sqlStatementContext = SQLStatementContextFactory.newInstance(connection.getRuntimeContext().getTableMetas(), sql, Collections.emptyList(), sqlStatement);
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(connection.getRuntimeContext().getTableMetas(), sqlStatementContext, sql, Collections.emptyList());
-        boolean isQueryWithCipherColumn = connection.getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
-        new EncryptSQLRewriteContextDecorator(connection.getRuntimeContext().getRule(), isQueryWithCipherColumn).decorate(sqlRewriteContext);
-        sqlRewriteContext.generateSQLTokens();
-        String result = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext).getSql();
-        showSQL(result);
-        return result;
-    }
-    
-    private void showSQL(final String sql) {
-        boolean showSQL = connection.getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW);
-        if (showSQL) {
-            SQLLogger.logSQL(sql);
+        Collection<BaseRule> rules = Collections.singletonList(runtimeContext.getRule());
+        RouteContext routeContext = new DataNodeRouter(runtimeContext.getMetaData(), runtimeContext.getProperties(),
+                rules).route(runtimeContext.getSqlParserEngine().parse(sql, false), sql, Collections.emptyList());
+        sqlStatementContext = routeContext.getSqlStatementContext();
+        SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(
+                runtimeContext.getMetaData().getSchema().getConfiguredSchemaMetaData(), runtimeContext.getProperties(), rules).rewrite(sql, Collections.emptyList(), routeContext);
+        ExecutionContext executionContext = new ExecutionContext(sqlStatementContext, ExecutionContextBuilder.build(runtimeContext.getMetaData(), sqlRewriteResult));
+        Preconditions.checkArgument(1 == executionContext.getExecutionUnits().size());
+        if (runtimeContext.getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
+            SQLLogger.logSQL(sql, runtimeContext.getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
         }
+        return executionContext.getExecutionUnits().iterator().next().getSqlUnit().getSql();
     }
     
     @Override
@@ -147,7 +156,7 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     }
     
     private EncryptResultSet createEncryptResultSet(final Statement statement) throws SQLException {
-        return null == statement.getResultSet() ? null : new EncryptResultSet(connection.getRuntimeContext(), sqlStatementContext, this, statement.getResultSet());
+        return null == statement.getResultSet() ? null : new EncryptResultSet(runtimeContext, sqlStatementContext, this, statement.getResultSet());
     }
     
     @Override
@@ -238,11 +247,6 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     @Override
     public int getResultSetType() throws SQLException {
         return statement.getResultSetType();
-    }
-    
-    @Override
-    public Connection getConnection() {
-        return connection;
     }
     
     @Override

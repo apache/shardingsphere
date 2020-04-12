@@ -22,8 +22,6 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Frontend context.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

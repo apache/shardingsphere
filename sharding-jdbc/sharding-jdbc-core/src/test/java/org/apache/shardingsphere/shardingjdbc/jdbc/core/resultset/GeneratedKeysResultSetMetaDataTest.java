@@ -33,13 +33,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class GeneratedKeysResultSetMetaDataTest {
+public final class GeneratedKeysResultSetMetaDataTest {
     
     private ResultSetMetaData actualMetaData;
     
     @Before
     public void init() {
-        actualMetaData = new GeneratedKeysResultSet(Arrays.<Comparable<?>>asList(1L, 2L).iterator(), "order_id", Mockito.mock(Statement.class)).getMetaData();
+        actualMetaData = new GeneratedKeysResultSet("order_id", Arrays.<Comparable<?>>asList(1L, 2L).iterator(), Mockito.mock(Statement.class)).getMetaData();
     }
     
     @Test

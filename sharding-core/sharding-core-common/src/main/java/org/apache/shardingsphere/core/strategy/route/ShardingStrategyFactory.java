@@ -32,8 +32,6 @@ import org.apache.shardingsphere.core.strategy.route.standard.StandardShardingSt
 
 /**
  * Sharding strategy factory.
- * 
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingStrategyFactory {

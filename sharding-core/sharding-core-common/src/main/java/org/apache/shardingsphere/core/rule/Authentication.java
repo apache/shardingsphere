@@ -25,9 +25,7 @@ import java.util.Map;
 
 /**
  * Authentication.
- *
- * @author panjuan
- */
+*/
 @RequiredArgsConstructor
 @Getter
 public final class Authentication {

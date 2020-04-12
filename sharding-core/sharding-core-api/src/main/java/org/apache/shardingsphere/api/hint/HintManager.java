@@ -28,10 +28,6 @@ import java.util.Collections;
 
 /**
  * The manager that use hint to inject sharding key directly through {@code ThreadLocal}.
- *
- * @author gaohongtao
- * @author zhangliang
- * @author panjun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HintManager implements AutoCloseable {
@@ -120,7 +116,7 @@ public final class HintManager implements AutoCloseable {
      * @return database sharding values
      */
     public static Collection<Comparable<?>> getDatabaseShardingValues(final String logicTable) {
-        return null == HINT_MANAGER_HOLDER.get() ? Collections.<Comparable<?>>emptyList() : HINT_MANAGER_HOLDER.get().databaseShardingValues.get(logicTable);
+        return null == HINT_MANAGER_HOLDER.get() ? Collections.emptyList() : HINT_MANAGER_HOLDER.get().databaseShardingValues.get(logicTable);
     }
     
     /**
@@ -130,7 +126,7 @@ public final class HintManager implements AutoCloseable {
      * @return table sharding values
      */
     public static Collection<Comparable<?>> getTableShardingValues(final String logicTable) {
-        return null == HINT_MANAGER_HOLDER.get() ? Collections.<Comparable<?>>emptyList() : HINT_MANAGER_HOLDER.get().tableShardingValues.get(logicTable);
+        return null == HINT_MANAGER_HOLDER.get() ? Collections.emptyList() : HINT_MANAGER_HOLDER.get().tableShardingValues.get(logicTable);
     }
     
     /**

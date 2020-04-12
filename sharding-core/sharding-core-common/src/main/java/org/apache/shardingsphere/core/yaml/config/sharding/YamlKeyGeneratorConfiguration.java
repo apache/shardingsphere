@@ -19,14 +19,12 @@ package org.apache.shardingsphere.core.yaml.config.sharding;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
 
 import java.util.Properties;
 
 /**
  * Key generator configuration for YAML.
- *
- * @author panjuan
  */
 @Getter
 @Setter

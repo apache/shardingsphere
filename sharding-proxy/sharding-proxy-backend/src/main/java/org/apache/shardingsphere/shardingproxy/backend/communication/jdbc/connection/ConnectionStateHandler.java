@@ -23,11 +23,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Connection state handler.
- *
- * @author zhaojun
  */
 @RequiredArgsConstructor
-public class ConnectionStateHandler {
+public final class ConnectionStateHandler {
     
     private final AtomicReference<ConnectionStatus> status = new AtomicReference<>(ConnectionStatus.INIT);
     

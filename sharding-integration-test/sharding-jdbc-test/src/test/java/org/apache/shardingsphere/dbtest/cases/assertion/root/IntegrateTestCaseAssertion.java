@@ -31,8 +31,6 @@ import java.util.List;
 
 /**
  * JAXB definition of integrate test case assertion.
- * 
- * @author zhangliang 
  */
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)

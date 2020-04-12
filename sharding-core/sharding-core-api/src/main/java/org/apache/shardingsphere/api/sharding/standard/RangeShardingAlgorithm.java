@@ -24,8 +24,6 @@ import java.util.Collection;
 /**
  * Range sharding algorithm.
  * 
- * @author zhangliang
- * 
  * @param <T> class type of sharding value
  */
 public interface RangeShardingAlgorithm<T extends Comparable<?>> extends ShardingAlgorithm {

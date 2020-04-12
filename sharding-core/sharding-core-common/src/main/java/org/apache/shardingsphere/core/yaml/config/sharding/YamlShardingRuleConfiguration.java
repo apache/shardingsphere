@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.yaml.config.sharding;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
-import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfiguration;
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 
 import java.util.ArrayList;
@@ -30,10 +30,6 @@ import java.util.Map;
 
 /**
  * Sharding rule configuration for YAML.
- *
- * @author caohao
- * @author panjuan
- * @author maxiaoguang
  */
 @Getter
 @Setter
@@ -44,8 +40,6 @@ public class YamlShardingRuleConfiguration implements YamlConfiguration {
     private Collection<String> bindingTables = new ArrayList<>();
     
     private Collection<String> broadcastTables = new ArrayList<>();
-    
-    private String defaultDataSourceName;
     
     private YamlShardingStrategyConfiguration defaultDatabaseStrategy;
     

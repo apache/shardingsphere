@@ -33,9 +33,6 @@ import java.util.concurrent.Executors;
  *     Manage the thread for each channel invoking.
  *     This ensure XA transaction framework processed by current thread id.
  * </p>
- * 
- * @author zhaojun
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ChannelThreadExecutorGroup {

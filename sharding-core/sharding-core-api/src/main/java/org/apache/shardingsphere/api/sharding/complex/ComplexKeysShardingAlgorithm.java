@@ -24,8 +24,6 @@ import java.util.Collection;
 /**
  * Complex keys sharding algorithm.
  * 
- * @author zhangliang
- * 
  * @param <T> class type of sharding value
  */
 public interface ComplexKeysShardingAlgorithm<T extends Comparable<?>> extends ShardingAlgorithm {

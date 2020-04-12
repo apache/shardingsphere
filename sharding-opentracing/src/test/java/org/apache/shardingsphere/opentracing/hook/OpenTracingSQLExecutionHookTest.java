@@ -21,15 +21,12 @@ import io.opentracing.ActiveSpan;
 import io.opentracing.ActiveSpan.Continuation;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.tag.Tags;
-import org.apache.shardingsphere.core.execute.ShardingExecuteDataMap;
-import org.apache.shardingsphere.core.execute.hook.SPISQLExecutionHook;
-import org.apache.shardingsphere.core.execute.hook.SQLExecutionHook;
-import org.apache.shardingsphere.core.route.RouteUnit;
-import org.apache.shardingsphere.core.route.SQLUnit;
-import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.opentracing.constant.ShardingTags;
-import org.apache.shardingsphere.spi.database.DataSourceMetaData;
-import org.hamcrest.CoreMatchers;
+import org.apache.shardingsphere.underlying.executor.hook.SPISQLExecutionHook;
+import org.apache.shardingsphere.underlying.executor.hook.SQLExecutionHook;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.underlying.executor.kernel.ExecutorDataMap;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -37,7 +34,6 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -55,7 +51,7 @@ public final class OpenTracingSQLExecutionHookTest extends BaseOpenTracingHookTe
     
     @BeforeClass
     public static void registerSPI() {
-        NewInstanceServiceLoader.register(SQLExecutionHook.class);
+        ShardingSphereServiceLoader.register(SQLExecutionHook.class);
     }
     
     @Before
@@ -67,13 +63,13 @@ public final class OpenTracingSQLExecutionHookTest extends BaseOpenTracingHookTe
         Continuation continuation = mock(Continuation.class);
         ActiveSpan result = mock(ActiveSpan.class);
         when(continuation.activate()).thenReturn(result);
-        ShardingExecuteDataMap.getDataMap().put(OpenTracingRootInvokeHook.ACTIVE_SPAN_CONTINUATION, continuation);
+        ExecutorDataMap.getValue().put(OpenTracingRootInvokeHook.ACTIVE_SPAN_CONTINUATION, continuation);
         return result;
     }
     
     @After
     public void tearDown() {
-        ShardingExecuteDataMap.getDataMap().remove(OpenTracingRootInvokeHook.ACTIVE_SPAN_CONTINUATION);
+        ExecutorDataMap.getValue().remove(OpenTracingRootInvokeHook.ACTIVE_SPAN_CONTINUATION);
     }
     
     @Test
@@ -81,21 +77,21 @@ public final class OpenTracingSQLExecutionHookTest extends BaseOpenTracingHookTe
         DataSourceMetaData dataSourceMetaData = mock(DataSourceMetaData.class);
         when(dataSourceMetaData.getHostName()).thenReturn("localhost");
         when(dataSourceMetaData.getPort()).thenReturn(8888);
-        sqlExecutionHook.start(createRouteUnit("success_ds", "SELECT * FROM success_tbl;", Arrays.<Object>asList("1", 2)), dataSourceMetaData, true, null);
+        sqlExecutionHook.start("success_ds", "SELECT * FROM success_tbl;", Arrays.asList("1", 2), dataSourceMetaData, true, null);
         sqlExecutionHook.finishSuccess();
         MockSpan actual = getActualSpan();
         assertThat(actual.operationName(), is("/ShardingSphere/executeSQL/"));
         Map<String, Object> actualTags = actual.tags();
-        assertThat(actualTags.get(Tags.COMPONENT.getKey()), CoreMatchers.<Object>is(ShardingTags.COMPONENT_NAME));
-        assertThat(actualTags.get(Tags.SPAN_KIND.getKey()), CoreMatchers.<Object>is(Tags.SPAN_KIND_CLIENT));
-        assertThat(actualTags.get(Tags.PEER_HOSTNAME.getKey()), CoreMatchers.<Object>is("localhost"));
-        assertThat(actualTags.get(Tags.PEER_PORT.getKey()), CoreMatchers.<Object>is(8888));
-        assertThat(actualTags.get(Tags.DB_TYPE.getKey()), CoreMatchers.<Object>is("sql"));
-        assertThat(actualTags.get(Tags.DB_INSTANCE.getKey()), CoreMatchers.<Object>is("success_ds"));
-        assertThat(actualTags.get(Tags.DB_STATEMENT.getKey()), CoreMatchers.<Object>is("SELECT * FROM success_tbl;"));
-        assertThat(actualTags.get(ShardingTags.DB_BIND_VARIABLES.getKey()), CoreMatchers.<Object>is("[1, 2]"));
+        assertThat(actualTags.get(Tags.COMPONENT.getKey()), is(ShardingTags.COMPONENT_NAME));
+        assertThat(actualTags.get(Tags.SPAN_KIND.getKey()), is(Tags.SPAN_KIND_CLIENT));
+        assertThat(actualTags.get(Tags.PEER_HOSTNAME.getKey()), is("localhost"));
+        assertThat(actualTags.get(Tags.PEER_PORT.getKey()), is(8888));
+        assertThat(actualTags.get(Tags.DB_TYPE.getKey()), is("sql"));
+        assertThat(actualTags.get(Tags.DB_INSTANCE.getKey()), is("success_ds"));
+        assertThat(actualTags.get(Tags.DB_STATEMENT.getKey()), is("SELECT * FROM success_tbl;"));
+        assertThat(actualTags.get(ShardingTags.DB_BIND_VARIABLES.getKey()), is("[1, 2]"));
         verify(activeSpan, times(0)).deactivate();
-        sqlExecutionHook.start(createRouteUnit("success_ds", "SELECT * FROM success_tbl;", null), dataSourceMetaData, true, null);
+        sqlExecutionHook.start("success_ds", "SELECT * FROM success_tbl;", null, dataSourceMetaData, true, null);
         sqlExecutionHook.finishSuccess();
     }
 
@@ -104,19 +100,19 @@ public final class OpenTracingSQLExecutionHookTest extends BaseOpenTracingHookTe
         DataSourceMetaData dataSourceMetaData = mock(DataSourceMetaData.class);
         when(dataSourceMetaData.getHostName()).thenReturn("localhost");
         when(dataSourceMetaData.getPort()).thenReturn(8888);
-        sqlExecutionHook.start(createRouteUnit("success_ds", "SELECT * FROM success_tbl;", null), dataSourceMetaData, true, null);
+        sqlExecutionHook.start("success_ds", "SELECT * FROM success_tbl;", null, dataSourceMetaData, true, null);
         sqlExecutionHook.finishSuccess();
         MockSpan actual = getActualSpan();
         assertThat(actual.operationName(), is("/ShardingSphere/executeSQL/"));
         Map<String, Object> actualTags = actual.tags();
-        assertThat(actualTags.get(Tags.COMPONENT.getKey()), CoreMatchers.<Object>is(ShardingTags.COMPONENT_NAME));
-        assertThat(actualTags.get(Tags.SPAN_KIND.getKey()), CoreMatchers.<Object>is(Tags.SPAN_KIND_CLIENT));
-        assertThat(actualTags.get(Tags.PEER_HOSTNAME.getKey()), CoreMatchers.<Object>is("localhost"));
-        assertThat(actualTags.get(Tags.PEER_PORT.getKey()), CoreMatchers.<Object>is(8888));
-        assertThat(actualTags.get(Tags.DB_TYPE.getKey()), CoreMatchers.<Object>is("sql"));
-        assertThat(actualTags.get(Tags.DB_INSTANCE.getKey()), CoreMatchers.<Object>is("success_ds"));
-        assertThat(actualTags.get(Tags.DB_STATEMENT.getKey()), CoreMatchers.<Object>is("SELECT * FROM success_tbl;"));
-        assertThat(actualTags.get(ShardingTags.DB_BIND_VARIABLES.getKey()), CoreMatchers.<Object>is(""));
+        assertThat(actualTags.get(Tags.COMPONENT.getKey()), is(ShardingTags.COMPONENT_NAME));
+        assertThat(actualTags.get(Tags.SPAN_KIND.getKey()), is(Tags.SPAN_KIND_CLIENT));
+        assertThat(actualTags.get(Tags.PEER_HOSTNAME.getKey()), is("localhost"));
+        assertThat(actualTags.get(Tags.PEER_PORT.getKey()), is(8888));
+        assertThat(actualTags.get(Tags.DB_TYPE.getKey()), is("sql"));
+        assertThat(actualTags.get(Tags.DB_INSTANCE.getKey()), is("success_ds"));
+        assertThat(actualTags.get(Tags.DB_STATEMENT.getKey()), is("SELECT * FROM success_tbl;"));
+        assertThat(actualTags.get(ShardingTags.DB_BIND_VARIABLES.getKey()), is(""));
         verify(activeSpan, times(0)).deactivate();
     }
     
@@ -125,20 +121,19 @@ public final class OpenTracingSQLExecutionHookTest extends BaseOpenTracingHookTe
         DataSourceMetaData dataSourceMetaData = mock(DataSourceMetaData.class);
         when(dataSourceMetaData.getHostName()).thenReturn("localhost");
         when(dataSourceMetaData.getPort()).thenReturn(8888);
-        sqlExecutionHook.start(
-                createRouteUnit("success_ds", "SELECT * FROM success_tbl;", Arrays.<Object>asList("1", 2)), dataSourceMetaData, false, ShardingExecuteDataMap.getDataMap());
+        sqlExecutionHook.start("success_ds", "SELECT * FROM success_tbl;", Arrays.asList("1", 2), dataSourceMetaData, false, ExecutorDataMap.getValue());
         sqlExecutionHook.finishSuccess();
         MockSpan actual = getActualSpan();
         assertThat(actual.operationName(), is("/ShardingSphere/executeSQL/"));
         Map<String, Object> actualTags = actual.tags();
-        assertThat(actualTags.get(Tags.COMPONENT.getKey()), CoreMatchers.<Object>is(ShardingTags.COMPONENT_NAME));
-        assertThat(actualTags.get(Tags.SPAN_KIND.getKey()), CoreMatchers.<Object>is(Tags.SPAN_KIND_CLIENT));
-        assertThat(actualTags.get(Tags.PEER_HOSTNAME.getKey()), CoreMatchers.<Object>is("localhost"));
-        assertThat(actualTags.get(Tags.PEER_PORT.getKey()), CoreMatchers.<Object>is(8888));
-        assertThat(actualTags.get(Tags.DB_TYPE.getKey()), CoreMatchers.<Object>is("sql"));
-        assertThat(actualTags.get(Tags.DB_INSTANCE.getKey()), CoreMatchers.<Object>is("success_ds"));
-        assertThat(actualTags.get(Tags.DB_STATEMENT.getKey()), CoreMatchers.<Object>is("SELECT * FROM success_tbl;"));
-        assertThat(actualTags.get(ShardingTags.DB_BIND_VARIABLES.getKey()), CoreMatchers.<Object>is("[1, 2]"));
+        assertThat(actualTags.get(Tags.COMPONENT.getKey()), is(ShardingTags.COMPONENT_NAME));
+        assertThat(actualTags.get(Tags.SPAN_KIND.getKey()), is(Tags.SPAN_KIND_CLIENT));
+        assertThat(actualTags.get(Tags.PEER_HOSTNAME.getKey()), is("localhost"));
+        assertThat(actualTags.get(Tags.PEER_PORT.getKey()), is(8888));
+        assertThat(actualTags.get(Tags.DB_TYPE.getKey()), is("sql"));
+        assertThat(actualTags.get(Tags.DB_INSTANCE.getKey()), is("success_ds"));
+        assertThat(actualTags.get(Tags.DB_STATEMENT.getKey()), is("SELECT * FROM success_tbl;"));
+        assertThat(actualTags.get(ShardingTags.DB_BIND_VARIABLES.getKey()), is("[1, 2]"));
         verify(activeSpan).deactivate();
     }
     
@@ -147,25 +142,20 @@ public final class OpenTracingSQLExecutionHookTest extends BaseOpenTracingHookTe
         DataSourceMetaData dataSourceMetaData = mock(DataSourceMetaData.class);
         when(dataSourceMetaData.getHostName()).thenReturn("localhost");
         when(dataSourceMetaData.getPort()).thenReturn(8888);
-        sqlExecutionHook.start(createRouteUnit("failure_ds", "SELECT * FROM failure_tbl;", Collections.emptyList()), dataSourceMetaData, true, null);
+        sqlExecutionHook.start("failure_ds", "SELECT * FROM failure_tbl;", Collections.emptyList(), dataSourceMetaData, true, null);
         sqlExecutionHook.finishFailure(new RuntimeException("SQL execution error"));
         MockSpan actual = getActualSpan();
         assertThat(actual.operationName(), is("/ShardingSphere/executeSQL/"));
         Map<String, Object> actualTags = actual.tags();
-        assertThat(actualTags.get(Tags.COMPONENT.getKey()), CoreMatchers.<Object>is(ShardingTags.COMPONENT_NAME));
-        assertThat(actualTags.get(Tags.SPAN_KIND.getKey()), CoreMatchers.<Object>is(Tags.SPAN_KIND_CLIENT));
-        assertThat(actualTags.get(Tags.PEER_HOSTNAME.getKey()), CoreMatchers.<Object>is("localhost"));
-        assertThat(actualTags.get(Tags.PEER_PORT.getKey()), CoreMatchers.<Object>is(8888));
-        assertThat(actualTags.get(Tags.DB_TYPE.getKey()), CoreMatchers.<Object>is("sql"));
-        assertThat(actualTags.get(Tags.DB_INSTANCE.getKey()), CoreMatchers.<Object>is("failure_ds"));
-        assertThat(actualTags.get(Tags.DB_STATEMENT.getKey()), CoreMatchers.<Object>is("SELECT * FROM failure_tbl;"));
-        assertThat(actualTags.get(ShardingTags.DB_BIND_VARIABLES.getKey()), CoreMatchers.<Object>is(""));
+        assertThat(actualTags.get(Tags.COMPONENT.getKey()), is(ShardingTags.COMPONENT_NAME));
+        assertThat(actualTags.get(Tags.SPAN_KIND.getKey()), is(Tags.SPAN_KIND_CLIENT));
+        assertThat(actualTags.get(Tags.PEER_HOSTNAME.getKey()), is("localhost"));
+        assertThat(actualTags.get(Tags.PEER_PORT.getKey()), is(8888));
+        assertThat(actualTags.get(Tags.DB_TYPE.getKey()), is("sql"));
+        assertThat(actualTags.get(Tags.DB_INSTANCE.getKey()), is("failure_ds"));
+        assertThat(actualTags.get(Tags.DB_STATEMENT.getKey()), is("SELECT * FROM failure_tbl;"));
+        assertThat(actualTags.get(ShardingTags.DB_BIND_VARIABLES.getKey()), is(""));
         assertSpanError(RuntimeException.class, "SQL execution error");
         verify(activeSpan, times(0)).deactivate();
-    }
-    
-    private RouteUnit createRouteUnit(final String dataSourceName, final String sql, final List<Object> parameters) {
-        SQLUnit sqlUnit = new SQLUnit(sql, parameters);
-        return new RouteUnit(dataSourceName, sqlUnit);
     }
 }

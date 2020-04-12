@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.dbtest.engine.dml;
 
-import org.apache.shardingsphere.core.rule.DataNode;
-import org.apache.shardingsphere.core.util.InlineExpressionParser;
+import org.apache.shardingsphere.underlying.common.rule.DataNode;
+import org.apache.shardingsphere.underlying.common.config.inline.InlineExpressionParser;
 import org.apache.shardingsphere.dbtest.cases.assertion.dml.DMLIntegrateTestCaseAssertion;
 import org.apache.shardingsphere.dbtest.cases.dataset.DataSet;
 import org.apache.shardingsphere.dbtest.cases.dataset.metadata.DataSetColumn;
@@ -55,10 +55,10 @@ public abstract class BaseDMLIT extends SingleIT {
     
     private final DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    public BaseDMLIT(final String sqlCaseId, final String path, final DMLIntegrateTestCaseAssertion assertion, final String shardingRuleType,
+    public BaseDMLIT(final String sqlCaseId, final String path, final DMLIntegrateTestCaseAssertion assertion, final String ruleType,
                      final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
-        super(sqlCaseId, path, assertion, shardingRuleType, databaseTypeEnvironment, caseType);
-        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(getShardingRuleType()), getDataSourceMap());
+        super(sqlCaseId, path, assertion, ruleType, databaseTypeEnvironment, caseType);
+        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(getRuleType()), getDataSourceMap());
     }
     
     @BeforeClass
@@ -123,7 +123,7 @@ public abstract class BaseDMLIT extends SingleIT {
             int index = 1;
             for (String each : expectedDatSetRows.get(count).getValues()) {
                 if (Types.DATE == actualResultSet.getMetaData().getColumnType(index)) {
-                    if (!getNotVerifyFlag().equals(each)) {
+                    if (!NOT_VERIFY_FLAG.equals(each)) {
                         assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actualResultSet.getDate(index)), is(each));
                     }
                 } else {

@@ -27,8 +27,6 @@ import java.util.List;
 
 /**
  * JAXB definition of integrate test case.
- * 
- * @author zhangliang 
  */
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)

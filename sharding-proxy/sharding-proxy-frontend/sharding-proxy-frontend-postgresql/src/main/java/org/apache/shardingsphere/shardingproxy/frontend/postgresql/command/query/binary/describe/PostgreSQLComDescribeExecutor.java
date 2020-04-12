@@ -17,17 +17,14 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.postgresql.command.query.binary.describe;
 
+import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
-import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
 
 import java.util.Collection;
 import java.util.Collections;
 
 /**
  * Command describe for PostgreSQL.
- *
- * @author zhangyonglun
- * @author zhangliang
  */
 public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     

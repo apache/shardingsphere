@@ -25,8 +25,6 @@ import java.util.LinkedList;
 
 /**
  * Hint show table status result.
- *
- * @author liya
  */
 @Getter
 @RequiredArgsConstructor

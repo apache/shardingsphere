@@ -21,16 +21,14 @@ import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlRootMasterSlaveConfiguration;
-import org.apache.shardingsphere.orchestration.center.yaml.config.YamlInstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
 
 /**
  * Orchestration master-slave configuration for YAML.
- *
- * @author caohao
  */
 @Getter
 @Setter
 public final class YamlOrchestrationMasterSlaveRuleConfiguration extends YamlRootMasterSlaveConfiguration {
     
-    private Map<String, YamlInstanceConfiguration> orchestration;
+    private Map<String, YamlCenterRepositoryConfiguration> orchestration;
 }

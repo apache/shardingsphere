@@ -27,7 +27,7 @@ import org.apache.shardingsphere.dbtest.engine.SingleIT;
 import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import org.apache.shardingsphere.dbtest.env.EnvironmentPath;
 import org.apache.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
-import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -59,9 +59,9 @@ public abstract class BaseDDLIT extends SingleIT {
     
     private final DatabaseType databaseType;
     
-    public BaseDDLIT(final String sqlCaseId, final String path, final DDLIntegrateTestCaseAssertion assertion, final String shardingRuleType,
+    public BaseDDLIT(final String sqlCaseId, final String path, final DDLIntegrateTestCaseAssertion assertion, final String ruleType,
                      final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
-        super(sqlCaseId, path, assertion, shardingRuleType, databaseTypeEnvironment, caseType);
+        super(sqlCaseId, path, assertion, ruleType, databaseTypeEnvironment, caseType);
         this.assertion = assertion;
         databaseType = databaseTypeEnvironment.getDatabaseType();
     }
@@ -83,7 +83,7 @@ public abstract class BaseDDLIT extends SingleIT {
                 dropTables();
             }
             createTables();
-            new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(getShardingRuleType()), getDataSourceMap()).initialize();
+            new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(getRuleType()), getDataSourceMap()).initialize();
         }
     }
     

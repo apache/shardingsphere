@@ -26,8 +26,6 @@ import java.util.logging.Logger;
 
 /**
  * Circuit breaker datasource.
- * 
- * @author caohao
  */
 public final class CircuitBreakerDataSource extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
     

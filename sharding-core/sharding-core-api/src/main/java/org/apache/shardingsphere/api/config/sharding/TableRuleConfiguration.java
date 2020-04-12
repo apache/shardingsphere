@@ -25,9 +25,6 @@ import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyCo
 
 /**
  * Table rule configuration.
- * 
- * @author zhangliang
- * @author panjuan
  */
 @Getter
 @Setter

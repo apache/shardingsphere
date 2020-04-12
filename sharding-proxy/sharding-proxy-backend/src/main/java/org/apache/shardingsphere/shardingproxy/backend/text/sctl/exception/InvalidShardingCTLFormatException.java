@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception;
 
 /**
  * Invalid sharding CTL exception.
- *
- * @author zhangliang
  */
 public final class InvalidShardingCTLFormatException extends ShardingCTLException {
     

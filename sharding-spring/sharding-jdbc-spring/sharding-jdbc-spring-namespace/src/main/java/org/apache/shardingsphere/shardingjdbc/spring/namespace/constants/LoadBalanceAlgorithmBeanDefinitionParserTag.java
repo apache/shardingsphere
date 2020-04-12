@@ -19,10 +19,8 @@ package org.apache.shardingsphere.shardingjdbc.spring.namespace.constants;
 
 /**
  * Load balance algorithm bean definition parser tag.
- *
- * @author zhaojun
  */
-public class LoadBalanceAlgorithmBeanDefinitionParserTag {
+public final class LoadBalanceAlgorithmBeanDefinitionParserTag {
     
     public static final String LOAD_BALANCE_ALGORITHM_TAG = "load-balance-algorithm";
     

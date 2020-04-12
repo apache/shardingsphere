@@ -24,8 +24,6 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.c
 
 /**
  * Hint set master database only command executor.
- *
- * @author liya
  */
 public final class HintSetMasterOnlyExecutor extends AbstractHintUpdateExecutor<HintSetMasterOnlyCommand> {
     

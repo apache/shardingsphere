@@ -17,16 +17,21 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.api;
 
-import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
+import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 
 import java.sql.SQLException;
 
 /**
  * Query command executor.
- *
- * @author zhangliang
  */
 public interface QueryCommandExecutor extends CommandExecutor {
+    
+    /**
+     * Judge is error response.
+     *
+     * @return is error response or not
+     */
+    boolean isErrorResponse();
     
     /**
      * Judge is query SQL or not.

@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.sharding;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.AbstractYamlDataSourceTest;
 import org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationShardingDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -41,7 +40,7 @@ import java.util.Map.Entry;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public class YamlOrchestrationShardingWithMasterSlaveIntegrateTest extends AbstractYamlDataSourceTest {
+public final class YamlOrchestrationShardingWithMasterSlaveIntegrateTest extends AbstractYamlDataSourceTest {
     
     private final String filePath;
     
@@ -64,24 +63,19 @@ public class YamlOrchestrationShardingWithMasterSlaveIntegrateTest extends Abstr
         if (hasDataSource) {
             dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(yamlFile);
         } else {
-            Map<String, DataSource> dataSourceMap = Maps.asMap(Sets.newHashSet("db0_master", "db0_slave", "db1_master", "db1_slave"), new Function<String, DataSource>() {
-                @Override
-                public DataSource apply(final String key) {
-                    return AbstractYamlDataSourceTest.createDataSource(key);
-                }
-            });
+            Map<String, DataSource> dataSourceMap = Maps.asMap(Sets.newHashSet("db0_master", "db0_slave", "db1_master", "db1_slave"), AbstractYamlDataSourceTest::createDataSource);
             Map<String, DataSource> result = new HashMap<>();
             for (Entry<String, DataSource> each : dataSourceMap.entrySet()) {
                 result.put(each.getKey(), each.getValue());
             }
             dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(result, yamlFile);
         }
-        try (Connection conn = dataSource.getConnection();
-             Statement stm = conn.createStatement()) {
-            stm.execute(String.format("INSERT INTO t_order(user_id,status) values(%d, %s)", 10, "'insert'"));
-            stm.executeQuery("SELECT * FROM t_order");
-            stm.executeQuery("SELECT * FROM t_order_item");
-            stm.executeQuery("SELECT * FROM config");
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.execute(String.format("INSERT INTO t_order(user_id,status) values(%d, %s)", 10, "'insert'"));
+            statement.executeQuery("SELECT * FROM t_order");
+            statement.executeQuery("SELECT * FROM t_order_item");
+            statement.executeQuery("SELECT * FROM config");
         }
         ((OrchestrationShardingDataSource) dataSource).close();
     }

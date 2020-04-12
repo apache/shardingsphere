@@ -25,8 +25,6 @@ import java.sql.SQLFeatureNotSupportedException;
 
 /**
  * Unsupported {@code Datasource} methods.
- * 
- * @author zhangliang
  */
 public abstract class AbstractUnsupportedOperationDataSource extends WrapperAdapter implements DataSource {
     

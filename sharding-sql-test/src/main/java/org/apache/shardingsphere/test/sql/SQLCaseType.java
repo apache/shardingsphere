@@ -19,8 +19,6 @@ package org.apache.shardingsphere.test.sql;
 
 /**
  * SQL case type.
- *
- * @author zhangliang
  */
 public enum SQLCaseType {
     

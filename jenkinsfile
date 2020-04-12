@@ -19,7 +19,7 @@
 def ssBuildBadge = addEmbeddableBadgeConfiguration(id: "ssbuild", subject: "Build")
 pipeline {
     agent  {
-        label 'xenial'
+        label 'ubuntu'
     }
     options {
         buildDiscarder(logRotator(
@@ -32,12 +32,24 @@ pipeline {
     stages {
         stage('SCM checkout') {
             steps {
-                deleteDir()
-                checkout scm
-                sh 'git submodule update --init'
+                script {
+                    try {
+                        deleteDir()
+                        checkout scm
+                        sh 'git submodule update --init'
+                    } catch (e) {
+                        currentBuild.result = 'FAILURE'
+                        throw e
+                    }
+                }
             }
         }
         stage('Build & Test') {
+            when {
+                expression {
+                    currentBuild.result == null || currentBuild.result == 'SUCCESS'
+                }
+            }
             tools {
                 // use at least Apache Maven 3.3.1 to have .mvn/jvm.config support
                 maven 'Maven 3.6.2'

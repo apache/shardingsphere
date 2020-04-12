@@ -30,8 +30,6 @@ import java.sql.Statement;
 
 /**
  * Circuit breaker connection.
- * 
- * @author caohao
  */
 public final class CircuitBreakerConnection extends AbstractUnsupportedOperationConnection {
     

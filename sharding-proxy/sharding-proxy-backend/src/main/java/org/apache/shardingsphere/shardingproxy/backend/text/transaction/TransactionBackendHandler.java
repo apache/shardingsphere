@@ -31,8 +31,6 @@ import java.sql.SQLFeatureNotSupportedException;
 
 /**
  * Do transaction operation.
- *
- * @author zhaojun
  */
 public final class TransactionBackendHandler implements TextProtocolBackendHandler {
     

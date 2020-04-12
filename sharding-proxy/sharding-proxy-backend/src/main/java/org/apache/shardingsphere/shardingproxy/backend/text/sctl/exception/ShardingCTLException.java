@@ -22,8 +22,6 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Sharding CTL exception.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

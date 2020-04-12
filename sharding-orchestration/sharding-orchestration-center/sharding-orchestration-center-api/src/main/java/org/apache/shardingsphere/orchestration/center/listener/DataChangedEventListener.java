@@ -19,11 +19,6 @@ package org.apache.shardingsphere.orchestration.center.listener;
 
 /**
  * Listener for data changed event.
- *
- * @author junxiong
- * @author sunbufu
- * @author dongzonglei
- * @author wangguangyuan
  */
 public interface DataChangedEventListener {
     

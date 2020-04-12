@@ -18,17 +18,15 @@
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.command.query.binary.close;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.close.MySQLComStmtClosePacket;
+import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.close.MySQLComStmtClosePacket;
-import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
 
 import java.util.Collection;
 import java.util.Collections;
 
 /**
  * COM_STMT_CLOSE command executor for MySQL.
- * 
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class MySQLComStmtCloseExecutor implements CommandExecutor {

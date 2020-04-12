@@ -26,8 +26,6 @@ import java.util.Collection;
 
 /**
  * Sharding value for hint.
- * 
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

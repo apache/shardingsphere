@@ -21,25 +21,24 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.core.execute.hook.RootInvokeHook;
-import org.apache.shardingsphere.core.execute.hook.SPIRootInvokeHook;
+import org.apache.shardingsphere.database.protocol.packet.CommandPacket;
+import org.apache.shardingsphere.database.protocol.packet.CommandPacketType;
+import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.engine.CommandExecuteEngine;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseProtocolFrontendEngine;
-import org.apache.shardingsphere.shardingproxy.transport.packet.CommandPacket;
-import org.apache.shardingsphere.shardingproxy.transport.packet.CommandPacketType;
-import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
-import org.apache.shardingsphere.shardingproxy.transport.payload.PacketPayload;
+import org.apache.shardingsphere.underlying.common.hook.RootInvokeHook;
+import org.apache.shardingsphere.underlying.common.hook.SPIRootInvokeHook;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Command executor task.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Slf4j
@@ -53,6 +52,12 @@ public final class CommandExecutorTask implements Runnable {
     
     private final Object message;
     
+    /**
+     * To make sure SkyWalking will be available at the next release of ShardingSphere,
+     * a new plugin should be provided to SkyWalking project if this API changed.
+     *
+     * @see <a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/Java-Plugin-Development-Guide.md#user-content-plugin-development-guide">Plugin Development Guide</a>
+     */
     @Override
     public void run() {
         RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
@@ -70,6 +75,8 @@ public final class CommandExecutorTask implements Runnable {
             // CHECKSTYLE:ON
             log.error("Exception occur: ", ex);
             context.writeAndFlush(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(ex));
+            Optional<DatabasePacket> databasePacket = databaseProtocolFrontendEngine.getCommandExecuteEngine().getOtherPacket();
+            databasePacket.ifPresent(context::writeAndFlush);
         } finally {
             if (isNeedFlush) {
                 context.flush();

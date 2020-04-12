@@ -17,7 +17,18 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.command.query.text.query;
 
-import org.apache.shardingsphere.core.database.DatabaseTypes;
+import org.apache.shardingsphere.database.protocol.error.CommonErrorCode;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLColumnType;
+import org.apache.shardingsphere.database.protocol.mysql.packet.MySQLPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLColumnFieldDetailFlag;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLFieldCountPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.text.MySQLTextResultSetRowPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLEofPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
@@ -27,20 +38,9 @@ import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateRes
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
-import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
 import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.mysql.MySQLErrPacketFactory;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLColumnDefinition41Packet;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLColumnFieldDetailFlag;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLFieldCountPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.MySQLTextResultSetRowPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.MySQLComQueryPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLEofPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
-import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -50,14 +50,14 @@ import java.util.List;
 
 /**
  * COM_QUERY command packet executor for MySQL.
- *
- * @author zhangliang
  */
 public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     
     private final TextProtocolBackendHandler textProtocolBackendHandler;
     
     private volatile boolean isQuery;
+    
+    private volatile boolean isErrorResponse;
     
     private int currentSequenceId;
     
@@ -66,16 +66,17 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     }
     
     @Override
-    public Collection<DatabasePacket> execute() {
+    public Collection<DatabasePacket> execute() throws SQLException {
         if (ShardingProxyContext.getInstance().isCircuitBreak()) {
-            return Collections.<DatabasePacket>singletonList(new MySQLErrPacket(1, CommonErrorCode.CIRCUIT_BREAK_MODE));
+            return Collections.singletonList(new MySQLErrPacket(1, CommonErrorCode.CIRCUIT_BREAK_MODE));
         }
         BackendResponse backendResponse = textProtocolBackendHandler.execute();
         if (backendResponse instanceof ErrorResponse) {
-            return Collections.<DatabasePacket>singletonList(createErrorPacket(((ErrorResponse) backendResponse).getCause()));
+            isErrorResponse = true;
+            return Collections.singletonList(createErrorPacket(((ErrorResponse) backendResponse).getCause()));
         }
         if (backendResponse instanceof UpdateResponse) {
-            return Collections.<DatabasePacket>singletonList(createUpdatePacket((UpdateResponse) backendResponse));
+            return Collections.singletonList(createUpdatePacket((UpdateResponse) backendResponse));
         }
         isQuery = true;
         return createQueryPackets((QueryResponse) backendResponse);
@@ -121,6 +122,11 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     @Override
     public boolean isQuery() {
         return isQuery;
+    }
+    
+    @Override
+    public boolean isErrorResponse() {
+        return isErrorResponse;
     }
     
     @Override

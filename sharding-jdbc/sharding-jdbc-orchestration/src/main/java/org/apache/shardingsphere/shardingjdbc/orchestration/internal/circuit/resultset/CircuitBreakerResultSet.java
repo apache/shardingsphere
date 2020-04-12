@@ -37,8 +37,6 @@ import java.util.Calendar;
 
 /**
  * Circuit breaker result set.
- *
- * @author caohao
  */
 public final class CircuitBreakerResultSet extends AbstractUnsupportedOperationResultSet {
     

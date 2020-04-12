@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>sharding-jdbc-spring</artifactId>
-        <version>4.0.0-RC3-SNAPSHOT</version>
+        <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-jdbc-spring-boot-starter</artifactId>
     <name>${project.artifactId}</name>
@@ -30,6 +30,11 @@
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>sharding-spring-boot-util</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>sharding-transaction-spring</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

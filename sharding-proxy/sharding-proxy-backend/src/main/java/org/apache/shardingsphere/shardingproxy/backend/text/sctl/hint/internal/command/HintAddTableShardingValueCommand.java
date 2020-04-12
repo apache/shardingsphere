@@ -29,12 +29,10 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.H
  * xx: logicTable.
  * yy: sharding value.
  * </p>
- *
- * @author liya
  */
 @RequiredArgsConstructor
 @Getter
-public class HintAddTableShardingValueCommand implements HintCommand {
+public final class HintAddTableShardingValueCommand implements HintCommand {
     
     private final String logicTable;
     

@@ -24,8 +24,6 @@ import java.util.Collections;
 
 /**
  * JDBC URL recognizer for MySQL.
- *
- * @author zhangliang
  */
 public final class MySQLRecognizer implements JDBCDriverURLRecognizer {
     

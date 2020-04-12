@@ -24,7 +24,6 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCom
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
@@ -81,7 +80,7 @@ public final class UnicastBackendHandlerTest {
     private void setUnderlyingHandler(final BackendResponse backendResponse) {
         DatabaseCommunicationEngine databaseCommunicationEngine = mock(DatabaseCommunicationEngine.class);
         when(databaseCommunicationEngine.execute()).thenReturn(backendResponse);
-        when(databaseCommunicationEngineFactory.newTextProtocolInstance((LogicSchema) any(), anyString(), (BackendConnection) any())).thenReturn(databaseCommunicationEngine);
+        when(databaseCommunicationEngineFactory.newTextProtocolInstance(any(), anyString(), any())).thenReturn(databaseCommunicationEngine);
     }
     
     @SneakyThrows

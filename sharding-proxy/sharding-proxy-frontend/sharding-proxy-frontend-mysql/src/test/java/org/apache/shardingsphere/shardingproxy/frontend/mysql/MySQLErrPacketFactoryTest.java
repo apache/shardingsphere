@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.mysql;
 
+import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.shardingproxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.shardingproxy.backend.exception.TableModifyInTransactionException;
 import org.apache.shardingsphere.shardingproxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -39,6 +39,15 @@ public final class MySQLErrPacketFactoryTest {
         assertThat(actual.getErrorCode(), is(9999));
         assertThat(actual.getSqlState(), is("XXX"));
         assertThat(actual.getErrorMessage(), is("No reason"));
+    }
+    
+    @Test
+    public void assertNewInstanceWithSQLExceptionOfNullSqlState() {
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(1, new SQLException(new RuntimeException("No reason")));
+        assertThat(actual.getSequenceId(), is(1));
+        assertThat(actual.getErrorCode(), is(1815));
+        assertThat(actual.getSqlState(), is("HY000"));
+        assertThat(actual.getErrorMessage(), is("Internal error: No reason"));
     }
     
     @Test

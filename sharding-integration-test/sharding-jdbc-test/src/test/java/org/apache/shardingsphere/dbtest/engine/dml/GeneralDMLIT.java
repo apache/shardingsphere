@@ -41,9 +41,9 @@ public final class GeneralDMLIT extends BaseDMLIT {
     
     private final DMLIntegrateTestCaseAssertion assertion;
     
-    public GeneralDMLIT(final String sqlCaseId, final String path, final DMLIntegrateTestCaseAssertion assertion, final String shardingRuleType,
+    public GeneralDMLIT(final String sqlCaseId, final String path, final DMLIntegrateTestCaseAssertion assertion, final String ruleType,
                         final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
-        super(sqlCaseId, path, assertion, shardingRuleType, databaseTypeEnvironment, caseType);
+        super(sqlCaseId, path, assertion, ruleType, databaseTypeEnvironment, caseType);
         this.assertion = assertion;
     }
     
@@ -55,7 +55,11 @@ public final class GeneralDMLIT extends BaseDMLIT {
     @Test
     public void assertExecuteUpdate() throws JAXBException, IOException, SQLException, ParseException {
         // TODO fix masterslave
-        if (!getDatabaseTypeEnvironment().isEnabled() || "masterslave".equals(getShardingRuleType())) {
+        if (!getDatabaseTypeEnvironment().isEnabled() || "masterslave".equals(getRuleType())) {
+            return;
+        }
+        // TODO fix shadow
+        if ("shadow".equals(getRuleType())) {
             return;
         }
         int actualUpdateCount;
@@ -83,7 +87,11 @@ public final class GeneralDMLIT extends BaseDMLIT {
     @Test
     public void assertExecute() throws JAXBException, IOException, SQLException, ParseException {
         // TODO fix masterslave
-        if (!getDatabaseTypeEnvironment().isEnabled() || "masterslave".equals(getShardingRuleType())) {
+        if (!getDatabaseTypeEnvironment().isEnabled() || "masterslave".equals(getRuleType())) {
+            return;
+        }
+        // TODO fix shadow
+        if ("shadow".equals(getRuleType())) {
             return;
         }
         int actualUpdateCount;

@@ -27,6 +27,7 @@ import java.sql.Statement;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -61,6 +62,38 @@ public final class ShardingStatementTest extends AbstractShardingJDBCDatabaseAnd
             generatedKeysResultSet = statement.getGeneratedKeys();
             assertTrue(generatedKeysResultSet.next());
             assertThat(generatedKeysResultSet.getLong(1), is(7L));
+        }
+    }
+    
+    @Test(expected = SQLException.class)
+    public void assertQueryWithNull() throws SQLException {
+        try (Statement statement = getShardingDataSource().getConnection().createStatement()) {
+            statement.executeQuery(null);
+        }
+    }
+    
+    @Test(expected = SQLException.class)
+    public void assertQueryWithEmptyString() throws SQLException {
+        try (Statement statement = getShardingDataSource().getConnection().createStatement()) {
+            statement.executeQuery("");
+        }
+    }
+
+    @Test
+    public void assertExecuteGetResultSet() throws SQLException {
+        String sql = "UPDATE t_order_item SET status = '%s' WHERE user_id = %d AND order_id = %d";
+        try (Statement statement = getShardingDataSource().getConnection().createStatement()) {
+            assertFalse(statement.execute(String.format(sql, "OK", 1, 1)));
+            assertNull(statement.getResultSet());
+        }
+    }
+
+    @Test
+    public void assertExecuteUpdateGetResultSet() throws SQLException {
+        String sql = "UPDATE t_order_item SET status = '%s' WHERE user_id = %d AND order_id = %d";
+        try (Statement statement = getShardingDataSource().getConnection().createStatement()) {
+            statement.executeUpdate(String.format(sql, "OK", 1, 1));
+            assertNull(statement.getResultSet());
         }
     }
 }

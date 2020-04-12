@@ -24,8 +24,6 @@ import java.sql.SQLException;
 
 /**
  * Hint command executor.
- *
- * @author liya
  */
 public interface HintCommandExecutor<T extends HintCommand> {
     

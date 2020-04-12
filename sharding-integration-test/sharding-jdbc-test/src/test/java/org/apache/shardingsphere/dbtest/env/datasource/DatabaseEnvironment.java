@@ -19,12 +19,10 @@ package org.apache.shardingsphere.dbtest.env.datasource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 
 /**
  * Database environment.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class DatabaseEnvironment {

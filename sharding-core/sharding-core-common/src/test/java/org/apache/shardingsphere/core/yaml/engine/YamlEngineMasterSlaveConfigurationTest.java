@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.yaml.engine;
 
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlRootMasterSlaveConfiguration;
-import org.hamcrest.CoreMatchers;
+import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -27,7 +27,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -74,7 +73,7 @@ public final class YamlEngineMasterSlaveConfigurationTest {
     private void assertMasterSlaveRule(final YamlRootMasterSlaveConfiguration actual) {
         assertThat(actual.getMasterSlaveRule().getName(), is("master-slave-ds"));
         assertThat(actual.getMasterSlaveRule().getMasterDataSourceName(), is("master_ds"));
-        assertThat(actual.getMasterSlaveRule().getSlaveDataSourceNames(), CoreMatchers.<Collection<String>>is(Arrays.asList("slave_ds_0", "slave_ds_1")));
+        assertThat(actual.getMasterSlaveRule().getSlaveDataSourceNames(), is(Arrays.asList("slave_ds_0", "slave_ds_1")));
         assertThat(actual.getMasterSlaveRule().getLoadBalanceAlgorithmType(), is("ROUND_ROBIN"));
     }
 }

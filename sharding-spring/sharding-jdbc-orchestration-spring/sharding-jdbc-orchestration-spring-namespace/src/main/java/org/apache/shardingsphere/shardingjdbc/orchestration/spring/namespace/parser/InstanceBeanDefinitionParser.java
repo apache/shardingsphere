@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.parser;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.constants.InstanceBeanDefinitionParserTag;
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -28,15 +28,12 @@ import org.w3c.dom.Element;
 
 /**
  * Orchestration instance parser for spring namespace.
- *
- * @author panjuan
- * @author sunbufu
  */
 public final class InstanceBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(InstanceConfiguration.class);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(CenterConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(InstanceBeanDefinitionParserTag.TYPE_TAG));
         addPropertiesArgReferenceIfNotEmpty(element, factory);
         addPropertyValueIfNotEmpty(InstanceBeanDefinitionParserTag.ORCHESTRATION_TYPE_TAG, "orchestrationType", element, factory);

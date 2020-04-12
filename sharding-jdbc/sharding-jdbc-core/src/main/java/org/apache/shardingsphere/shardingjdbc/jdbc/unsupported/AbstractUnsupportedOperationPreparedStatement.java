@@ -22,7 +22,6 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractStatementAdap
 import java.io.Reader;
 import java.sql.Array;
 import java.sql.NClob;
-import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
 import java.sql.Ref;
 import java.sql.ResultSet;
@@ -33,8 +32,6 @@ import java.sql.SQLFeatureNotSupportedException;
 
 /**
  * Unsupported {@code PreparedStatement} methods.
- * 
- * @author zhangliang
  */
 public abstract class AbstractUnsupportedOperationPreparedStatement extends AbstractStatementAdapter implements PreparedStatement {
     
@@ -45,11 +42,6 @@ public abstract class AbstractUnsupportedOperationPreparedStatement extends Abst
     @Override
     public final ResultSetMetaData getMetaData() throws SQLException {
         throw new SQLFeatureNotSupportedException("getMetaData");
-    }
-    
-    @Override
-    public final ParameterMetaData getParameterMetaData() throws SQLException {
-        throw new SQLFeatureNotSupportedException("ParameterMetaData");
     }
     
     @Override

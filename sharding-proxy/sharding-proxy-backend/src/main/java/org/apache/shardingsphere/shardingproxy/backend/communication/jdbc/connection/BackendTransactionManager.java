@@ -24,8 +24,6 @@ import java.sql.SQLException;
 
 /**
  * Backend transaction manager.
- *
- * @author zhaojun
  */
 public final class BackendTransactionManager implements TransactionManager {
     

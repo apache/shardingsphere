@@ -23,8 +23,6 @@ import org.apache.shardingsphere.api.hint.HintManager;
 
 /**
  * Holder for {@code HintManager}.
- *
- * @author liya
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HintManagerHolder {

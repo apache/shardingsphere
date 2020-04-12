@@ -17,31 +17,28 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.core.common.rule.OrchestrationMasterSlaveRule;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.YamlCenterRepositoryConfigurationSwapperUtil;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml.YamlOrchestrationMasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
+
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
-import javax.sql.DataSource;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
-import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.center.yaml.config.YamlInstanceConfiguration;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.YamlInstanceConfigurationSwapperUtil;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml.YamlOrchestrationMasterSlaveRuleConfiguration;
 
 /**
  * Orchestration master-slave data source factory for YAML.
- *
- * @author zhangliang
- * @author caohao
- * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlOrchestrationMasterSlaveDataSourceFactory {
@@ -103,12 +100,13 @@ public final class YamlOrchestrationMasterSlaveDataSourceFactory {
     }
     
     private static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final YamlMasterSlaveRuleConfiguration yamlMasterSlaveRuleConfiguration, 
-                                               final Properties props, final Map<String, YamlInstanceConfiguration> yamlInstanceConfigurationMap) throws SQLException {
+                                               final Properties props, final Map<String, YamlCenterRepositoryConfiguration> yamlInstanceConfigurationMap) throws SQLException {
         if (null == yamlMasterSlaveRuleConfiguration) {
-            return new OrchestrationMasterSlaveDataSource(new OrchestrationConfiguration(YamlInstanceConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
+            return new OrchestrationMasterSlaveDataSource(new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
         } else {
-            MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource(dataSourceMap, new MasterSlaveRule(MASTER_SLAVE_RULE_SWAPPER.swap(yamlMasterSlaveRuleConfiguration)), props);
-            return new OrchestrationMasterSlaveDataSource(masterSlaveDataSource, new OrchestrationConfiguration(YamlInstanceConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
+            MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource(dataSourceMap,
+                    new OrchestrationMasterSlaveRule(MASTER_SLAVE_RULE_SWAPPER.swap(yamlMasterSlaveRuleConfiguration)), props);
+            return new OrchestrationMasterSlaveDataSource(masterSlaveDataSource, new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
         }
     }
     

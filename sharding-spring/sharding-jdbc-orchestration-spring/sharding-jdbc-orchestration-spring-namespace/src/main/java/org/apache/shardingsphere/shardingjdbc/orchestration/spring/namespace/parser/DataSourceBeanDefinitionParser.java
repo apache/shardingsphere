@@ -19,14 +19,12 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.pa
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import java.util.List;
-import java.util.Map;
-import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringEncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringMasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.constants.EncryptDataSourceBeanDefinitionParserTag;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
+import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -36,11 +34,11 @@ import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Data source parser for spring namespace.
- * 
- * @author panjuan
- * @author sunbufu
  */
 public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
@@ -52,12 +50,13 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     }
     
     private Class<?> getOrchestrationDataSourceClass(final String localName) {
-        if (ShardingDataSourceBeanDefinitionParserTag.ROOT_TAG.equals(localName)) {
-            return OrchestrationSpringShardingDataSource.class;
-        } else if (EncryptDataSourceBeanDefinitionParserTag.ROOT_TAG.equals(localName)) {
-            return OrchestrationSpringEncryptDataSource.class;
-        } else {
-            return OrchestrationSpringMasterSlaveDataSource.class;
+        switch (localName) { 
+            case ShardingDataSourceBeanDefinitionParserTag.ROOT_TAG:
+                return OrchestrationSpringShardingDataSource.class;
+            case EncryptDataSourceBeanDefinitionParserTag.ROOT_TAG:
+                return OrchestrationSpringEncryptDataSource.class;
+            default:
+                return OrchestrationSpringMasterSlaveDataSource.class;
         }
     }
     

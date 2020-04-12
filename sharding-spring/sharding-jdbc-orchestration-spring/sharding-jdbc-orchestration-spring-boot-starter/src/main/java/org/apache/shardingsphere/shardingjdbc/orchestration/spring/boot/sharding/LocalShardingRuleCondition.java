@@ -25,8 +25,6 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
  * Local sharding rule condition.
- *
- * @author yangyi
  */
 public final class LocalShardingRuleCondition extends SpringBootCondition {
     

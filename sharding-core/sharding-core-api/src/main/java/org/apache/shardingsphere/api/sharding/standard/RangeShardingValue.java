@@ -25,8 +25,6 @@ import org.apache.shardingsphere.api.sharding.ShardingValue;
 
 /**
  * Sharding value for range.
- * 
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

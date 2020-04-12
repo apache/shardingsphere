@@ -19,8 +19,6 @@ package org.apache.shardingsphere.dbtest.env.datasource;
 
 /**
  * Data source pool type.
- * 
- * @author zhangliang 
  */
 public enum DataSourcePoolType {
     

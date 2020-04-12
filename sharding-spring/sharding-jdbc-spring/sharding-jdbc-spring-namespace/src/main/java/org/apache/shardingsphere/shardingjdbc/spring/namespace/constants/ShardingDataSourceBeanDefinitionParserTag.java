@@ -22,9 +22,6 @@ import lombok.NoArgsConstructor;
 
 /**
  * Sharding data source parser tag constants.
- * 
- * @author caohao
- * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingDataSourceBeanDefinitionParserTag {
@@ -36,8 +33,6 @@ public final class ShardingDataSourceBeanDefinitionParserTag {
     public static final String PROPS_TAG = "props";
     
     public static final String DATA_SOURCE_NAMES_TAG = "data-source-names";
-    
-    public static final String DEFAULT_DATA_SOURCE_NAME_TAG = "default-data-source-name";
     
     public static final String TABLE_RULES_TAG = "table-rules";
     
@@ -79,9 +74,7 @@ public final class ShardingDataSourceBeanDefinitionParserTag {
     
     public static final String GENERATE_KEY_COLUMN_ATTRIBUTE = "column";
     
-    public static final String GENERATE_KEY_TYPE_ATTRIBUTE = "type";
-    
-    public static final String GENERATE_KEY_PROPERTY_REF_ATTRIBUTE = "props-ref";
+    public static final String GENERATE_KEY_ALGORITHM_REF_TAG = "algorithm-ref";
     
     public static final String LOGIC_INDEX = "logic-index";
 }

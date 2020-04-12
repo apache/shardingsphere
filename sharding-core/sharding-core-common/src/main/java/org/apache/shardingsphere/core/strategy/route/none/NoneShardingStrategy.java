@@ -20,14 +20,13 @@ package org.apache.shardingsphere.core.strategy.route.none;
 import lombok.Getter;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 
 import java.util.Collection;
 import java.util.Collections;
 
 /**
  * None sharding strategy.
- * 
- * @author zhangliang
  */
 @Getter
 public final class NoneShardingStrategy implements ShardingStrategy {
@@ -35,7 +34,7 @@ public final class NoneShardingStrategy implements ShardingStrategy {
     private final Collection<String> shardingColumns = Collections.emptyList();
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<RouteValue> shardingValues) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<RouteValue> shardingValues, final ConfigurationProperties properties) {
         return availableTargetNames;
     }
 }

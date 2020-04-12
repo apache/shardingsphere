@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.dbtest.env.IntegrateTestEnvironment;
-import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 
 import javax.sql.DataSource;
 import java.util.Collections;
@@ -34,8 +34,6 @@ import java.util.Map;
 
 /**
  * Data source utility.
- * 
- * @author zhangliang 
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourceUtil {

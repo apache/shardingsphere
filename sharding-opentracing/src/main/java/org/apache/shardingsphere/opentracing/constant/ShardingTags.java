@@ -23,8 +23,6 @@ import lombok.NoArgsConstructor;
 
 /**
  * Sharding tags.
- *
- * @author chenqingyang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingTags {

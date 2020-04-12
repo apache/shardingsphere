@@ -17,15 +17,13 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.api;
 
-import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
+import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 
 import java.sql.SQLException;
 import java.util.Collection;
 
 /**
  * Command executor.
- *
- * @author zhangliang
  */
 public interface CommandExecutor {
     

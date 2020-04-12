@@ -23,8 +23,6 @@ import javax.sql.DataSource;
 
 /**
  * Different datasource properties setter.
- *
- * @author xiayan
  */
 public interface DataSourcePropertiesSetter {
     

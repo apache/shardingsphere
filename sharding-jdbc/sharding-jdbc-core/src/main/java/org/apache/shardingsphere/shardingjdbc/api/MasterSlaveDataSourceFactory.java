@@ -30,9 +30,6 @@ import java.util.Properties;
 
 /**
  * Master-slave data source factory.
- * 
- * @author zhangliang
- * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MasterSlaveDataSourceFactory {

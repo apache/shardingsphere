@@ -27,8 +27,6 @@ import java.util.List;
 
 /**
  * JAXB definition of DDL integrate test cases.
- * 
- * @author zhangliang
  */
 @Getter
 @XmlRootElement(name = "integrate-test-cases")

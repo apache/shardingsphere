@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.response.query;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 
 import java.util.LinkedList;
@@ -27,8 +27,6 @@ import java.util.List;
 
 /**
  * Query response.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

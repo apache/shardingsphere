@@ -26,11 +26,9 @@ import java.util.List;
 
 /**
  * JAXB definition of DQL integrate test case.
- *
- * @author zhangliang
  */
 @Getter
-public class DQLIntegrateTestCase extends IntegrateTestCase {
+public final class DQLIntegrateTestCase extends IntegrateTestCase {
     
     @XmlElement(name = "assertion")
     private List<DQLIntegrateTestCaseAssertion> integrateTestCaseAssertions = new LinkedList<>();

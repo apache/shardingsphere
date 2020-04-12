@@ -18,11 +18,9 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.impl;
 
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.spi.JDBCDriverURLRecognizer;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -33,7 +31,7 @@ public final class SQLServerRecognizerTest {
     
     @Test
     public void assertGetURLPrefixes() {
-        assertThat(recognizer.getURLPrefixes(), CoreMatchers.<Collection<String>>is(Arrays.asList("jdbc:sqlserver:", "jdbc:microsoft:sqlserver:")));
+        assertThat(recognizer.getURLPrefixes(), is(Arrays.asList("jdbc:sqlserver:", "jdbc:microsoft:sqlserver:")));
     }
     
     @Test

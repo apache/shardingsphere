@@ -18,22 +18,19 @@
 package org.apache.shardingsphere.shardingjdbc.executor;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.ConnectionMode;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.core.execute.ShardingExecuteGroup;
-import org.apache.shardingsphere.core.execute.StatementExecuteUnit;
-import org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteCallback;
-import org.apache.shardingsphere.core.execute.sql.execute.result.MemoryQueryResult;
-import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
-import org.apache.shardingsphere.core.execute.sql.execute.result.StreamQueryResult;
-import org.apache.shardingsphere.core.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
-import org.apache.shardingsphere.core.execute.sql.prepare.SQLExecutePrepareCallback;
-import org.apache.shardingsphere.core.route.RouteUnit;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
+import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
+import org.apache.shardingsphere.sharding.execute.sql.execute.result.MemoryQueryResult;
+import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
+import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
+import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
+import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -43,54 +40,34 @@ import java.util.List;
 
 /**
  * Prepared statement executor.
- * 
- * @author zhangliang
- * @author caohao
- * @author maxiaoguang
- * @author panjuan
  */
 public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     
     @Getter
     private final boolean returnGeneratedKeys;
     
-    public PreparedStatementExecutor(
-            final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys, final ShardingConnection shardingConnection) {
-        super(resultSetType, resultSetConcurrency, resultSetHoldability, shardingConnection);
+    public PreparedStatementExecutor(final int resultSetType, 
+                                     final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys, final ShardingConnection shardingConnection) {
+        super(true, resultSetType, resultSetConcurrency, resultSetHoldability, shardingConnection);
         this.returnGeneratedKeys = returnGeneratedKeys;
     }
     
     /**
      * Initialize executor.
      *
-     * @param routeResult route result
+     * @param executionContext execution context
      * @throws SQLException SQL exception
      */
-    public void init(final SQLRouteResult routeResult) throws SQLException {
-        setSqlStatementContext(routeResult.getSqlStatementContext());
-        getExecuteGroups().addAll(obtainExecuteGroups(routeResult.getRouteUnits()));
+    public void init(final ExecutionContext executionContext) throws SQLException {
+        setSqlStatementContext(executionContext.getSqlStatementContext());
+        getInputGroups().addAll(obtainExecuteGroups(executionContext.getExecutionUnits()));
         cacheStatements();
     }
     
-    private Collection<ShardingExecuteGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<RouteUnit> routeUnits) throws SQLException {
-        return getSqlExecutePrepareTemplate().getExecuteUnitGroups(routeUnits, new SQLExecutePrepareCallback() {
-            
-            @Override
-            public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
-                return PreparedStatementExecutor.super.getConnection().getConnections(connectionMode, dataSourceName, connectionSize);
-            }
-            
-            @Override
-            public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
-                return new StatementExecuteUnit(routeUnit, createPreparedStatement(connection, routeUnit.getSqlUnit().getSql()), connectionMode);
-            }
-        });
-    }
-    
-    @SuppressWarnings("MagicConstant")
-    private PreparedStatement createPreparedStatement(final Connection connection, final String sql) throws SQLException {
-        return returnGeneratedKeys ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
-                : connection.prepareStatement(sql, getResultSetType(), getResultSetConcurrency(), getResultSetHoldability());
+    private Collection<InputGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<ExecutionUnit> executionUnits) throws SQLException {
+        StatementOption statementOption = returnGeneratedKeys
+                ? new StatementOption(true) : new StatementOption(getResultSetType(), getResultSetConcurrency(), getResultSetHoldability());
+        return getExecuteGroupEngine().getExecuteUnitGroups(getConnection(), executionUnits, statementOption);
     }
     
     /**
@@ -101,10 +78,10 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
      */
     public List<QueryResult> executeQuery() throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecuteCallback<QueryResult> executeCallback = new SQLExecuteCallback<QueryResult>(getDatabaseType(), isExceptionThrown) {
+        SQLExecutorCallback<QueryResult> executeCallback = new SQLExecutorCallback<QueryResult>(getDatabaseType(), isExceptionThrown) {
             
             @Override
-            protected QueryResult executeSQL(final RouteUnit routeUnit, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+            protected QueryResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 return getQueryResult(statement, connectionMode);
             }
         };
@@ -114,11 +91,8 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     private QueryResult getQueryResult(final Statement statement, final ConnectionMode connectionMode) throws SQLException {
         PreparedStatement preparedStatement = (PreparedStatement) statement;
         ResultSet resultSet = preparedStatement.executeQuery();
-        ShardingRule shardingRule = getConnection().getRuntimeContext().getRule();
-        ShardingProperties properties = getConnection().getRuntimeContext().getProps();
         getResultSets().add(resultSet);
-        return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamQueryResult(resultSet, shardingRule, properties, getSqlStatementContext())
-                : new MemoryQueryResult(resultSet, shardingRule, properties, getSqlStatementContext());
+        return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
     }
     
     /**
@@ -129,7 +103,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
      */
     public int executeUpdate() throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecuteCallback<Integer> executeCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(getDatabaseType(), isExceptionThrown);
+        SQLExecutorCallback<Integer> executeCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(getDatabaseType(), isExceptionThrown);
         List<Integer> results = executeCallback(executeCallback);
         if (isAccumulate()) {
             return accumulate(results);
@@ -154,7 +128,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
      */
     public boolean execute() throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecuteCallback<Boolean> executeCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(getDatabaseType(), isExceptionThrown);
+        SQLExecutorCallback<Boolean> executeCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(getDatabaseType(), isExceptionThrown);
         List<Boolean> result = executeCallback(executeCallback);
         if (null == result || result.isEmpty() || null == result.get(0)) {
             return false;

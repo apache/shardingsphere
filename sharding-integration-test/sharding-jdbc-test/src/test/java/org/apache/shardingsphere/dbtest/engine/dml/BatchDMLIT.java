@@ -39,15 +39,19 @@ public final class BatchDMLIT extends BatchIT {
     private final IntegrateTestCase integrateTestCase;
     
     public BatchDMLIT(final String sqlCaseId, final IntegrateTestCase integrateTestCase,
-                      final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, JAXBException, SQLException {
-        super(sqlCaseId, integrateTestCase, shardingRuleType, databaseTypeEnvironment);
+                      final String ruleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, JAXBException, SQLException {
+        super(sqlCaseId, integrateTestCase, ruleType, databaseTypeEnvironment);
         this.integrateTestCase = integrateTestCase;
     }
     
     @Test
     public void assertExecuteBatch() throws JAXBException, IOException, SQLException, ParseException {
         // TODO fix masterslave
-        if (!getDatabaseTypeEnvironment().isEnabled() || "masterslave".equals(getShardingRuleType())) {
+        if (!getDatabaseTypeEnvironment().isEnabled() || "masterslave".equals(getRuleType())) {
+            return;
+        }
+        // TODO fix shadow
+        if ("shadow".equals(getRuleType())) {
             return;
         }
         int[] actualUpdateCounts;
@@ -76,7 +80,7 @@ public final class BatchDMLIT extends BatchIT {
     @Test
     public void assertClearBatch() throws SQLException, ParseException {
         // TODO fix masterslave
-        if (!getDatabaseTypeEnvironment().isEnabled() || "masterslave".equals(getShardingRuleType())) {
+        if (!getDatabaseTypeEnvironment().isEnabled() || "masterslave".equals(getRuleType())) {
             return;
         }
         try (Connection connection = getDataSource().getConnection()) {

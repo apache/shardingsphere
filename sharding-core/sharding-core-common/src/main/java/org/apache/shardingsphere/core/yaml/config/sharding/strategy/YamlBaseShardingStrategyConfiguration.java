@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.core.yaml.config.sharding.strategy;
 
-import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
 
 /**
  * Sharding base strategy configuration for YAML.
- * 
- * @author zhangliang
  */
 public interface YamlBaseShardingStrategyConfiguration extends YamlConfiguration {
 }

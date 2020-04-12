@@ -24,8 +24,6 @@ import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendH
 
 /**
  * Skip backend handler.
- *
- * @author zhaojun
  */
 public final class SkipBackendHandler implements TextProtocolBackendHandler {
     

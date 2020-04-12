@@ -22,9 +22,9 @@ import javax.annotation.Resource;
 import javax.sql.DataSource;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry.TestCenter;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry.TestCenterRepository;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.util.EmbedTestingServer;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
 import org.junit.BeforeClass;
@@ -51,9 +51,9 @@ public class OrchestrationSpringBootRegistryEncryptTest {
     @BeforeClass
     public static void init() {
         EmbedTestingServer.start();
-        TestCenter testCenter = new TestCenter();
+        TestCenterRepository testCenter = new TestCenterRepository();
         testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/datasource",
-            "dataSource: !!org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration\n"
+            "dataSource: !!org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration\n"
             + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
             + "  properties:\n"
             + "    url: jdbc:h2:mem:ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL\n"

@@ -21,8 +21,6 @@ import io.seata.tm.api.GlobalTransaction;
 
 /**
  * Seata transaction holder.
- *
- * @author zhaojun
  */
 final class SeataTransactionHolder {
     

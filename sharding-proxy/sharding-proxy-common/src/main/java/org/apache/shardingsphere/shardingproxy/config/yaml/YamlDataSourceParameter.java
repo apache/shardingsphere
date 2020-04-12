@@ -23,9 +23,6 @@ import lombok.Setter;
 
 /**
  * Data source parameters for YAML.
- *
- * @author zhangyonglun
- * @author panjuan
  */
 @Getter
 @Setter

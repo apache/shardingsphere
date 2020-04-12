@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>sharding-integration-test</artifactId>
-        <version>4.0.0-RC3-SNAPSHOT</version>
+        <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-jdbc-test</artifactId>
     <name>${project.artifactId}</name>
@@ -42,7 +42,7 @@
     
         <dependency>
             <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP-java7</artifactId>
+            <artifactId>HikariCP</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

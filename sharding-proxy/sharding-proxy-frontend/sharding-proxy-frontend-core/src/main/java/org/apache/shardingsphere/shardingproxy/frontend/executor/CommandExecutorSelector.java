@@ -25,10 +25,6 @@ import java.util.concurrent.ExecutorService;
 
 /**
  * Command executor selector.
- *
- * @author zhangliang
- * @author zhaojun
- * @author liya
  */
 @RequiredArgsConstructor
 public final class CommandExecutorSelector {

@@ -26,15 +26,13 @@ import org.apache.shardingsphere.api.config.sharding.strategy.HintShardingStrate
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.w3c.dom.Element;
 
 /**
  * Sharding strategy parser for spring namespace.
- * 
- * @author caohao
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingStrategyBeanDefinition {
@@ -53,7 +51,7 @@ public final class ShardingStrategyBeanDefinition {
             case ShardingStrategyBeanDefinitionParserTag.NONE_STRATEGY_ROOT_TAG:
                 return getNoneShardingStrategyConfigBeanDefinition();
             default:
-                throw new ShardingException("Cannot support type: %s", type);
+                throw new ShardingSphereException("Cannot support type: %s", type);
         }
     }
     

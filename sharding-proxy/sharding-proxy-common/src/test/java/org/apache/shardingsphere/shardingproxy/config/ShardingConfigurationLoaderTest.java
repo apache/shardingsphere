@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.shardingproxy.config;
 
-import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptorRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.orchestration.center.yaml.config.YamlInstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlProxyRuleConfiguration;
 import org.junit.Test;
@@ -40,7 +40,7 @@ public final class ShardingConfigurationLoaderTest {
     
     @Test
     public void assertLoad() throws IOException {
-        ShardingConfiguration actual = new ShardingConfigurationLoader().load();
+        ShardingConfiguration actual = new ShardingConfigurationLoader().load("/conf/");
         assertOrchestrationConfiguration(actual.getServerConfiguration().getOrchestration());
         assertThat(actual.getRuleConfigurationMap().size(), is(3));
         assertShardingRuleConfiguration(actual.getRuleConfigurationMap().get("sharding_db"));
@@ -48,9 +48,9 @@ public final class ShardingConfigurationLoaderTest {
         assertEncryptRuleConfiguration(actual.getRuleConfigurationMap().get("encrypt_db"));
     }
     
-    private void assertOrchestrationConfiguration(final Map<String, YamlInstanceConfiguration> map) {
-        YamlInstanceConfiguration actual = map.get("testname1");
-        assertThat(actual.getNamespace(), is("testnamspace1"));
+    private void assertOrchestrationConfiguration(final Map<String, YamlCenterRepositoryConfiguration> map) {
+        YamlCenterRepositoryConfiguration actual = map.get("test_name_1");
+        assertThat(actual.getNamespace(), is("test_namespace_1"));
         assertThat(actual.getOrchestrationType(), is("configuration_center"));
         assertThat(actual.getServerLists(), is("localhost:2181"));
     }
@@ -73,6 +73,7 @@ public final class ShardingConfigurationLoaderTest {
         assertThat(actual.getTables().get("t_order").getDatabaseStrategy().getInline().getAlgorithmExpression(), is("ds_${user_id % 2}"));
         assertThat(actual.getTables().get("t_order").getTableStrategy().getInline().getShardingColumn(), is("order_id"));
         assertThat(actual.getTables().get("t_order").getTableStrategy().getInline().getAlgorithmExpression(), is("t_order_${order_id % 2}"));
+        assertNotNull(actual.getDefaultDatabaseStrategy().getNone());
     }
     
     private void assertMasterSlaveRuleConfiguration(final YamlProxyRuleConfiguration actual) {

@@ -25,8 +25,6 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.H
  * <p>
  * example: sctl:hint show status.
  * </p>
- *
- * @author liya
  */
 public final class HintShowStatusCommand implements HintCommand {
 }

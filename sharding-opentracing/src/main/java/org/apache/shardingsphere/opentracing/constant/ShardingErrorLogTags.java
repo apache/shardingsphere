@@ -22,8 +22,6 @@ import lombok.NoArgsConstructor;
 
 /**
  * Sharding error log tags.
- *
- * @author chenqingyang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingErrorLogTags {

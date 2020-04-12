@@ -27,8 +27,6 @@ import java.util.Map;
 
 /**
  * DBCP datasource properties setter.
- *
- * @author xiayan
  */
 public abstract class AbstractDbcp2DataSourcePropertiesSetter implements DataSourcePropertiesSetter {
     

@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execu
 
 /**
  * Execute response.
- * 
- * @author zhangliang
  */
 public interface ExecuteResponse {
 }

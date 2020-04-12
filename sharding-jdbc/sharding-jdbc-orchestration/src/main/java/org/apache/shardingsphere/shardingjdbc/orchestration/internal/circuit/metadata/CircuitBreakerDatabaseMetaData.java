@@ -24,8 +24,6 @@ import java.sql.RowIdLifetime;
 
 /**
  * Circuit breaker metadata.
- *
- * @author caohao
  */
 public final class CircuitBreakerDatabaseMetaData implements DatabaseMetaData {
     

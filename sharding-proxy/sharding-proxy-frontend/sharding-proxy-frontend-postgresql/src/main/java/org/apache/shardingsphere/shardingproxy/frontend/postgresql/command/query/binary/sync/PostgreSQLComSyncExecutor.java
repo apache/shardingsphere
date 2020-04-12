@@ -17,17 +17,14 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.postgresql.command.query.binary.sync;
 
+import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
-import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
 
 import java.util.Collection;
 import java.util.Collections;
 
 /**
  * Command sync executor for PostgreSQL.
- *
- * @author zhangyonglun
- * @author zhangliang
  */
 public final class PostgreSQLComSyncExecutor implements CommandExecutor {
     
