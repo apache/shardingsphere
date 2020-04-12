@@ -52,20 +52,14 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
         executeGroupEngine = new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery);
     }
     
-    /**
-     * Initialize executor.
-     *
-     * @param executionContext execution context
-     * @param statementOption statement option
-     * @throws SQLException SQL exception
-     */
+    @Override
     public void init(final ExecutionContext executionContext, final StatementOption statementOption) throws SQLException {
         setSqlStatementContext(executionContext.getSqlStatementContext());
-        getInputGroups().addAll(obtainExecuteGroups(executionContext.getExecutionUnits(), statementOption));
+        getInputGroups().addAll(generateExecuteGroups(executionContext.getExecutionUnits(), statementOption));
         cacheStatements();
     }
     
-    private Collection<InputGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<ExecutionUnit> executionUnits, final StatementOption statementOption) throws SQLException {
+    private Collection<InputGroup<StatementExecuteUnit>> generateExecuteGroups(final Collection<ExecutionUnit> executionUnits, final StatementOption statementOption) throws SQLException {
         return executeGroupEngine.generate(executionUnits, getConnection(), statementOption);
     }
     

@@ -29,6 +29,8 @@ import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefr
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
 import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 
 import java.sql.ResultSet;
@@ -76,6 +78,15 @@ public abstract class AbstractStatementExecutor {
         sqlExecuteTemplate = new SQLExecuteTemplate(connection.getRuntimeContext().getExecutorKernel(), connection.isHoldTransaction());
         metaDataLoader = new RuleSchemaMetaDataLoader(connection.getRuntimeContext().getRule().toRules());
     }
+    
+    /**
+     * Initialize executor.
+     *
+     * @param executionContext execution context
+     * @param statementOption statement option
+     * @throws SQLException SQL exception
+     */
+    public abstract void init(ExecutionContext executionContext, StatementOption statementOption) throws SQLException;
     
     protected final void cacheStatements() {
         for (InputGroup<StatementExecuteUnit> each : inputGroups) {
