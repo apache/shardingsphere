@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.execute.sql;
+package org.apache.shardingsphere.underlying.executor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import java.sql.Statement;
 
 /**
- * Execute unit for JDBC statement.
+ * Execute unit with resource.
  */
 @RequiredArgsConstructor
 @Getter

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.execute.sql.execute;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
 import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
 import org.apache.shardingsphere.underlying.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
