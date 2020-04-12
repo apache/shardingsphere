@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.executor.jdbc.group;
+package org.apache.shardingsphere.underlying.executor.group;
 
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;

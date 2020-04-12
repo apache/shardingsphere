@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.underlying.executor.jdbc.group;
 
+import org.apache.shardingsphere.underlying.executor.group.ExecuteGroupBuilder;
 import org.apache.shardingsphere.underlying.executor.jdbc.connection.ExecutionConnection;
 import org.apache.shardingsphere.underlying.executor.jdbc.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;

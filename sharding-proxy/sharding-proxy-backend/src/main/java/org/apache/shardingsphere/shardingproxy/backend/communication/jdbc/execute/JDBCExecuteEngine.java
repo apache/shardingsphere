@@ -22,7 +22,7 @@ import org.apache.shardingsphere.underlying.executor.jdbc.StatementExecuteUnit;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
 import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
 import org.apache.shardingsphere.underlying.executor.jdbc.group.PreparedStatementExecuteGroupBuilder;
-import org.apache.shardingsphere.underlying.executor.jdbc.group.ExecuteGroupBuilder;
+import org.apache.shardingsphere.underlying.executor.group.ExecuteGroupBuilder;
 import org.apache.shardingsphere.underlying.executor.jdbc.group.StatementExecuteGroupBuilder;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.callback.ProxySQLExecuteCallback;
