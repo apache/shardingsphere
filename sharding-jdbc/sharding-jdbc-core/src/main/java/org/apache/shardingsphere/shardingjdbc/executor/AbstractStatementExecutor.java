@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shardingjdbc.executor;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
@@ -29,7 +28,7 @@ import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
-import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
+import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 
 import java.sql.ResultSet;
@@ -50,8 +49,6 @@ public abstract class AbstractStatementExecutor {
     
     private final ShardingConnection connection;
     
-    private final StatementOption statementOption;
-    
     private final DatabaseType databaseType;
     
     private final List<List<Object>> parameterSets;
@@ -69,8 +66,7 @@ public abstract class AbstractStatementExecutor {
     @Setter
     private SQLStatementContext sqlStatementContext;
     
-    public AbstractStatementExecutor(final ShardingConnection shardingConnection, final StatementOption statementOption) {
-        this.statementOption = statementOption;
+    public AbstractStatementExecutor(final ShardingConnection shardingConnection) {
         this.connection = shardingConnection;
         this.databaseType = shardingConnection.getRuntimeContext().getDatabaseType();
         parameterSets = new LinkedList<>();

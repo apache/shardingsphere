@@ -71,6 +71,8 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     private final SQLStatement sqlStatement;
     
+    private final StatementOption statementOption;
+    
     @Getter
     private final ParameterMetaData parameterMetaData;
     
@@ -111,9 +113,9 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         ShardingRuntimeContext runtimeContext = connection.getRuntimeContext();
         sqlStatement = runtimeContext.getSqlParserEngine().parse(sql, true);
         parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
-        StatementOption statementOption = returnGeneratedKeys ? new StatementOption(true) : new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
-        preparedStatementExecutor = new PreparedStatementExecutor(connection, statementOption);
-        batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(connection, statementOption);
+        statementOption = returnGeneratedKeys ? new StatementOption(true) : new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
+        preparedStatementExecutor = new PreparedStatementExecutor(connection);
+        batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(connection);
     }
     
     @Override
@@ -209,7 +211,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     @Override
     public ResultSet getGeneratedKeys() throws SQLException {
         Optional<GeneratedKeyContext> generatedKey = findGeneratedKey();
-        if (preparedStatementExecutor.getStatementOption().isReturnGeneratedKeys() && generatedKey.isPresent()) {
+        if (statementOption.isReturnGeneratedKeys() && generatedKey.isPresent()) {
             return new GeneratedKeysResultSet(generatedKey.get().getColumnName(), generatedValues.iterator(), this);
         }
         if (1 == preparedStatementExecutor.getStatements().size()) {
@@ -224,7 +226,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     }
     
     private void initPreparedStatementExecutor() throws SQLException {
-        preparedStatementExecutor.init(executionContext);
+        preparedStatementExecutor.init(executionContext, statementOption);
         setParametersForStatements();
         replayMethodForStatements();
     }
@@ -267,7 +269,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     }
     
     private void initBatchPreparedStatementExecutor() throws SQLException {
-        batchPreparedStatementExecutor.init(executionContext.getSqlStatementContext());
+        batchPreparedStatementExecutor.init(executionContext.getSqlStatementContext(), statementOption);
         setBatchParametersForStatements();
     }
     
@@ -291,18 +293,18 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     @SuppressWarnings("MagicConstant")
     @Override
     public int getResultSetType() {
-        return preparedStatementExecutor.getStatementOption().getResultSetType();
+        return statementOption.getResultSetType();
     }
     
     @SuppressWarnings("MagicConstant")
     @Override
     public int getResultSetConcurrency() {
-        return preparedStatementExecutor.getStatementOption().getResultSetConcurrency();
+        return statementOption.getResultSetConcurrency();
     }
     
     @Override
     public int getResultSetHoldability() {
-        return preparedStatementExecutor.getStatementOption().getResultSetHoldability();
+        return statementOption.getResultSetHoldability();
     }
     
     @Override

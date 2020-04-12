@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shardingjdbc.executor.batch;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingjdbc.executor.AbstractBaseExecutorTest;
 import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
@@ -31,7 +30,6 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -56,7 +54,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     @Override
     public void setUp() throws SQLException {
         super.setUp();
-        actual = spy(new BatchPreparedStatementExecutor(getConnection(), new StatementOption(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)));
+        actual = spy(new BatchPreparedStatementExecutor(getConnection()));
         doReturn(true).when(actual).isAccumulate();
     }
     

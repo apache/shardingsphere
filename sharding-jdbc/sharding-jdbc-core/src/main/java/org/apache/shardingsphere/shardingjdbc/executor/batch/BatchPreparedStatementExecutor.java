@@ -49,14 +49,14 @@ import java.util.stream.Collectors;
  */
 public final class BatchPreparedStatementExecutor extends AbstractStatementExecutor {
     
-    private PreparedStatementExecuteGroupEngine executeGroupEngine;
+    private final PreparedStatementExecuteGroupEngine executeGroupEngine;
     
     private final Collection<BatchRouteUnit> routeUnits = new LinkedList<>();
     
     private int batchCount;
     
-    public BatchPreparedStatementExecutor(final ShardingConnection shardingConnection, final StatementOption statementOption) {
-        super(shardingConnection, statementOption);
+    public BatchPreparedStatementExecutor(final ShardingConnection shardingConnection) {
+        super(shardingConnection);
         int maxConnectionsSizePerQuery = shardingConnection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         executeGroupEngine = new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery);
     }
@@ -65,15 +65,16 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
      * Initialize executor.
      *
      * @param sqlStatementContext SQL statement context
+     * @param statementOption statement option
      * @throws SQLException SQL exception
      */
-    public void init(final SQLStatementContext sqlStatementContext) throws SQLException {
+    public void init(final SQLStatementContext sqlStatementContext, final StatementOption statementOption) throws SQLException {
         setSqlStatementContext(sqlStatementContext);
-        getInputGroups().addAll(obtainExecuteGroups(routeUnits));
+        getInputGroups().addAll(obtainExecuteGroups(routeUnits, statementOption));
     }
     
-    private Collection<InputGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<BatchRouteUnit> batchRouteUnits) throws SQLException {
-        return executeGroupEngine.generate(new ArrayList<>(batchRouteUnits).stream().map(BatchRouteUnit::getExecutionUnit).collect(Collectors.toList()), getConnection(), getStatementOption());
+    private Collection<InputGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<BatchRouteUnit> batchRouteUnits, final StatementOption statementOption) throws SQLException {
+        return executeGroupEngine.generate(new ArrayList<>(batchRouteUnits).stream().map(BatchRouteUnit::getExecutionUnit).collect(Collectors.toList()), getConnection(), statementOption);
     }
     
     /**

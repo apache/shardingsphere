@@ -62,6 +62,8 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     @Getter
     private final ShardingConnection connection;
     
+    private final StatementOption statementOption;
+    
     private final StatementExecutor statementExecutor;
     
     private boolean returnGeneratedKeys;
@@ -81,7 +83,8 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     public ShardingStatement(final ShardingConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         super(Statement.class);
         this.connection = connection;
-        statementExecutor = new StatementExecutor(connection, new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability));
+        statementOption = new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
+        statementExecutor = new StatementExecutor(connection);
     }
     
     @Override
@@ -235,7 +238,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         if (runtimeContext.getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
             SQLLogger.logSQL(sql, runtimeContext.getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
         }
-        statementExecutor.init(result);
+        statementExecutor.init(result, statementOption);
         statementExecutor.getStatements().forEach(this::replayMethodsInvocation);
         return result;
     }
@@ -250,18 +253,18 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     @SuppressWarnings("MagicConstant")
     @Override
     public int getResultSetType() {
-        return statementExecutor.getStatementOption().getResultSetType();
+        return statementOption.getResultSetType();
     }
     
     @SuppressWarnings("MagicConstant")
     @Override
     public int getResultSetConcurrency() {
-        return statementExecutor.getStatementOption().getResultSetConcurrency();
+        return statementOption.getResultSetConcurrency();
     }
     
     @Override
     public int getResultSetHoldability() {
-        return statementExecutor.getStatementOption().getResultSetHoldability();
+        return statementOption.getResultSetHoldability();
     }
     
     @Override

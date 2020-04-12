@@ -17,19 +17,19 @@
 
 package org.apache.shardingsphere.shardingjdbc.executor;
 
-import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.MemoryQueryResult;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
-import org.apache.shardingsphere.underlying.executor.group.StatementExecuteGroupEngine;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
 import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
+import org.apache.shardingsphere.underlying.executor.group.StatementExecuteGroupEngine;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 
 import java.sql.ResultSet;
@@ -43,10 +43,10 @@ import java.util.List;
  */
 public final class StatementExecutor extends AbstractStatementExecutor {
     
-    private StatementExecuteGroupEngine executeGroupEngine;
+    private final StatementExecuteGroupEngine executeGroupEngine;
     
-    public StatementExecutor(final ShardingConnection shardingConnection, final StatementOption statementOption) {
-        super(shardingConnection, statementOption);
+    public StatementExecutor(final ShardingConnection shardingConnection) {
+        super(shardingConnection);
         int maxConnectionsSizePerQuery = shardingConnection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         executeGroupEngine = new StatementExecuteGroupEngine(maxConnectionsSizePerQuery);
     }
@@ -55,17 +55,18 @@ public final class StatementExecutor extends AbstractStatementExecutor {
      * Initialize executor.
      *
      * @param executionContext execution context
+     * @param statementOption statement option
      * @throws SQLException SQL exception
      */
-    public void init(final ExecutionContext executionContext) throws SQLException {
+    public void init(final ExecutionContext executionContext, final StatementOption statementOption) throws SQLException {
         setSqlStatementContext(executionContext.getSqlStatementContext());
-        getInputGroups().addAll(getExecuteGroups(executionContext.getExecutionUnits()));
+        getInputGroups().addAll(getExecuteGroups(executionContext.getExecutionUnits(), statementOption));
         cacheStatements();
     }
     
     @SuppressWarnings("MagicConstant")
-    private Collection<InputGroup<StatementExecuteUnit>> getExecuteGroups(final Collection<ExecutionUnit> executionUnits) throws SQLException {
-        return executeGroupEngine.generate(executionUnits, getConnection(), getStatementOption());
+    private Collection<InputGroup<StatementExecuteUnit>> getExecuteGroups(final Collection<ExecutionUnit> executionUnits, final StatementOption statementOption) throws SQLException {
+        return executeGroupEngine.generate(executionUnits, getConnection(), statementOption);
     }
     
     /**

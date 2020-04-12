@@ -44,10 +44,10 @@ import java.util.List;
  */
 public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     
-    private PreparedStatementExecuteGroupEngine executeGroupEngine;
+    private final PreparedStatementExecuteGroupEngine executeGroupEngine;
     
-    public PreparedStatementExecutor(final ShardingConnection shardingConnection, final StatementOption statementOption) {
-        super(shardingConnection, statementOption);
+    public PreparedStatementExecutor(final ShardingConnection shardingConnection) {
+        super(shardingConnection);
         int maxConnectionsSizePerQuery = shardingConnection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         executeGroupEngine = new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery);
     }
@@ -56,16 +56,17 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
      * Initialize executor.
      *
      * @param executionContext execution context
+     * @param statementOption statement option
      * @throws SQLException SQL exception
      */
-    public void init(final ExecutionContext executionContext) throws SQLException {
+    public void init(final ExecutionContext executionContext, final StatementOption statementOption) throws SQLException {
         setSqlStatementContext(executionContext.getSqlStatementContext());
-        getInputGroups().addAll(obtainExecuteGroups(executionContext.getExecutionUnits()));
+        getInputGroups().addAll(obtainExecuteGroups(executionContext.getExecutionUnits(), statementOption));
         cacheStatements();
     }
     
-    private Collection<InputGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<ExecutionUnit> executionUnits) throws SQLException {
-        return executeGroupEngine.generate(executionUnits, getConnection(), getStatementOption());
+    private Collection<InputGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<ExecutionUnit> executionUnits, final StatementOption statementOption) throws SQLException {
+        return executeGroupEngine.generate(executionUnits, getConnection(), statementOption);
     }
     
     /**
