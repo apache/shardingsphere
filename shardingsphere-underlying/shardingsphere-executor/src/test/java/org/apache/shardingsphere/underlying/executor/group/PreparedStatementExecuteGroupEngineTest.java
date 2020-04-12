@@ -49,8 +49,8 @@ public final class PreparedStatementExecuteGroupEngineTest {
     @Test
     public void assertGetExecuteUnitGroupForOneShardMemoryStrictly() throws SQLException {
         preparedStatementExecuteGroupEngine = new PreparedStatementExecuteGroupEngine(2);
-        Collection<InputGroup<StatementExecuteUnit>> actual = preparedStatementExecuteGroupEngine.getExecuteUnitGroups(
-                mockExecutionConnection(1, ConnectionMode.MEMORY_STRICTLY), mockShardRouteUnit(1, 1), new StatementOption(true));
+        Collection<InputGroup<StatementExecuteUnit>> actual = preparedStatementExecuteGroupEngine.generate(
+                mockShardRouteUnit(1, 1), mockExecutionConnection(1, ConnectionMode.MEMORY_STRICTLY), new StatementOption(true));
         assertThat(actual.size(), is(1));
         for (InputGroup<StatementExecuteUnit> each : actual) {
             assertThat(each.getInputs().size(), is(1));
@@ -60,8 +60,8 @@ public final class PreparedStatementExecuteGroupEngineTest {
     @Test
     public void assertGetExecuteUnitGroupForMultiShardConnectionStrictly() throws SQLException {
         preparedStatementExecuteGroupEngine = new PreparedStatementExecuteGroupEngine(1);
-        Collection<InputGroup<StatementExecuteUnit>> actual = preparedStatementExecuteGroupEngine.getExecuteUnitGroups(
-                mockExecutionConnection(1, ConnectionMode.CONNECTION_STRICTLY), mockShardRouteUnit(10, 2), new StatementOption(true));
+        Collection<InputGroup<StatementExecuteUnit>> actual = preparedStatementExecuteGroupEngine.generate(
+                mockShardRouteUnit(10, 2), mockExecutionConnection(1, ConnectionMode.CONNECTION_STRICTLY), new StatementOption(true));
         assertThat(actual.size(), is(10));
         for (InputGroup<StatementExecuteUnit> each : actual) {
             assertThat(each.getInputs().size(), is(2));

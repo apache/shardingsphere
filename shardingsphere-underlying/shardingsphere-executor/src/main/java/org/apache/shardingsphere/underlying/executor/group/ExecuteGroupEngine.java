@@ -46,30 +46,30 @@ public abstract class ExecuteGroupEngine {
     private final int maxConnectionsSizePerQuery;
     
     /**
-     * Build execute unit groups.
+     * Generate statement execute unit groups.
      *
-     * @param executionConnection execution connection
      * @param executionUnits execution units
+     * @param executionConnection execution connection
      * @param statementOption statement option
      * @return statement execute unit groups
      * @throws SQLException SQL exception
      */
-    public Collection<InputGroup<StatementExecuteUnit>> getExecuteUnitGroups(final ExecutionConnection executionConnection,
-                                                                             final Collection<ExecutionUnit> executionUnits, final StatementOption statementOption) throws SQLException {
-        return getSynchronizedExecuteUnitGroups(executionConnection, executionUnits, statementOption);
+    public Collection<InputGroup<StatementExecuteUnit>> generate(final Collection<ExecutionUnit> executionUnits, 
+                                                                 final ExecutionConnection executionConnection, final StatementOption statementOption) throws SQLException {
+        return generateSynchronizedExecuteUnitGroups(executionUnits, executionConnection, statementOption);
     }
     
-    private Collection<InputGroup<StatementExecuteUnit>> getSynchronizedExecuteUnitGroups(final ExecutionConnection executionConnection, final Collection<ExecutionUnit> executionUnits, 
-            final StatementOption statementOption) throws SQLException {
-        Map<String, List<SQLUnit>> sqlUnitGroups = getSQLUnitGroups(executionUnits);
+    private Collection<InputGroup<StatementExecuteUnit>> generateSynchronizedExecuteUnitGroups(final Collection<ExecutionUnit> executionUnits, final ExecutionConnection executionConnection, 
+                                                                                               final StatementOption statementOption) throws SQLException {
+        Map<String, List<SQLUnit>> sqlUnitGroups = generateSQLUnitGroups(executionUnits);
         Collection<InputGroup<StatementExecuteUnit>> result = new LinkedList<>();
         for (Entry<String, List<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
-            result.addAll(getSQLExecuteGroups(executionConnection, entry.getKey(), entry.getValue(), statementOption));
+            result.addAll(generateSQLExecuteGroups(entry.getKey(), entry.getValue(), executionConnection, statementOption));
         }
         return result;
     }
     
-    private Map<String, List<SQLUnit>> getSQLUnitGroups(final Collection<ExecutionUnit> executionUnits) {
+    private Map<String, List<SQLUnit>> generateSQLUnitGroups(final Collection<ExecutionUnit> executionUnits) {
         Map<String, List<SQLUnit>> result = new LinkedHashMap<>(executionUnits.size(), 1);
         for (ExecutionUnit each : executionUnits) {
             if (!result.containsKey(each.getDataSourceName())) {
@@ -80,8 +80,8 @@ public abstract class ExecuteGroupEngine {
         return result;
     }
     
-    private List<InputGroup<StatementExecuteUnit>> getSQLExecuteGroups(final ExecutionConnection executionConnection, final String dataSourceName, final List<SQLUnit> sqlUnits, 
-                                                                       final StatementOption statementOption) throws SQLException {
+    private List<InputGroup<StatementExecuteUnit>> generateSQLExecuteGroups(final String dataSourceName, final List<SQLUnit> sqlUnits,
+                                                                            final ExecutionConnection executionConnection, final StatementOption statementOption) throws SQLException {
         List<InputGroup<StatementExecuteUnit>> result = new LinkedList<>();
         int desiredPartitionSize = Math.max(0 == sqlUnits.size() % maxConnectionsSizePerQuery ? sqlUnits.size() / maxConnectionsSizePerQuery : sqlUnits.size() / maxConnectionsSizePerQuery + 1, 1);
         List<List<SQLUnit>> sqlUnitPartitions = Lists.partition(sqlUnits, desiredPartitionSize);
@@ -89,14 +89,13 @@ public abstract class ExecuteGroupEngine {
         List<Connection> connections = executionConnection.getConnections(dataSourceName, sqlUnitPartitions.size(), connectionMode);
         int count = 0;
         for (List<SQLUnit> each : sqlUnitPartitions) {
-            result.add(getSQLExecuteGroup(executionConnection, connections.get(count++), dataSourceName, each, connectionMode, statementOption));
+            result.add(generateSQLExecuteGroup(dataSourceName, each, executionConnection, connections.get(count++), connectionMode, statementOption));
         }
         return result;
     }
     
-    private InputGroup<StatementExecuteUnit> getSQLExecuteGroup(final ExecutionConnection executionConnection, final Connection connection, 
-                                                                final String dataSourceName, final List<SQLUnit> sqlUnitGroup,
-                                                                final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
+    private InputGroup<StatementExecuteUnit> generateSQLExecuteGroup(final String dataSourceName, final List<SQLUnit> sqlUnitGroup, final ExecutionConnection executionConnection,
+                                                                     final Connection connection, final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
         List<StatementExecuteUnit> result = new LinkedList<>();
         for (SQLUnit each : sqlUnitGroup) {
             ExecutionUnit executionUnit = new ExecutionUnit(dataSourceName, each);

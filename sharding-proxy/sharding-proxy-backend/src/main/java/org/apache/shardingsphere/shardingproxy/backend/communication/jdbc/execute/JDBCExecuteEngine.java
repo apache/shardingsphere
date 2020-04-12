@@ -77,8 +77,8 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         SQLStatementContext sqlStatementContext = executionContext.getSqlStatementContext();
         boolean isReturnGeneratedKeys = sqlStatementContext.getSqlStatement() instanceof InsertStatement;
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        Collection<InputGroup<StatementExecuteUnit>> inputGroups = executeGroupEngine.getExecuteUnitGroups(
-                backendConnection, executionContext.getExecutionUnits(), new StatementOption(isReturnGeneratedKeys));
+        Collection<InputGroup<StatementExecuteUnit>> inputGroups = executeGroupEngine.generate(
+                executionContext.getExecutionUnits(), backendConnection, new StatementOption(isReturnGeneratedKeys));
         Collection<ExecuteResponse> executeResponses = sqlExecuteTemplate.execute((Collection) inputGroups, 
                 new ProxySQLExecuteCallback(sqlStatementContext, backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, true),
                 new ProxySQLExecuteCallback(sqlStatementContext, backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, false));

@@ -73,7 +73,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     private Collection<InputGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<ExecutionUnit> executionUnits) throws SQLException {
         StatementOption statementOption = returnGeneratedKeys
                 ? new StatementOption(true) : new StatementOption(getResultSetType(), getResultSetConcurrency(), getResultSetHoldability());
-        return executeGroupEngine.getExecuteUnitGroups(getConnection(), executionUnits, statementOption);
+        return executeGroupEngine.generate(executionUnits, getConnection(), statementOption);
     }
     
     /**

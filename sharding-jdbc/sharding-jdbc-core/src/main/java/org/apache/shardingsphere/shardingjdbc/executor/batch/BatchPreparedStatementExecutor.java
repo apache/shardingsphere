@@ -81,8 +81,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     private Collection<InputGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<BatchRouteUnit> batchRouteUnits) throws SQLException {
         StatementOption statementOption = returnGeneratedKeys
                 ? new StatementOption(true) : new StatementOption(getResultSetType(), getResultSetConcurrency(), getResultSetHoldability());
-        return executeGroupEngine.getExecuteUnitGroups(
-                getConnection(), new ArrayList<>(batchRouteUnits).stream().map(BatchRouteUnit::getExecutionUnit).collect(Collectors.toList()), statementOption);
+        return executeGroupEngine.generate(new ArrayList<>(batchRouteUnits).stream().map(BatchRouteUnit::getExecutionUnit).collect(Collectors.toList()), getConnection(), statementOption);
     }
     
     /**
