@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.shardingjdbc.executor;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
-import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
-import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
+import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -61,7 +62,8 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     @Override
     public void setUp() throws SQLException {
         super.setUp();
-        PreparedStatementExecutor preparedStatementExecutor = new PreparedStatementExecutor(1, 1, 1, false, getConnection());
+        PreparedStatementExecutor preparedStatementExecutor = new PreparedStatementExecutor(
+                getConnection(), new StatementOption(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT));
         preparedStatementExecutor.setSqlStatementContext(getSQLStatementContext());
         actual = spy(preparedStatementExecutor);
         doReturn(true).when(actual).isAccumulate();

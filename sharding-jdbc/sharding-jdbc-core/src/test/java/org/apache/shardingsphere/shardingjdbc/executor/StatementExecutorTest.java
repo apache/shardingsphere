@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.executor;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
@@ -62,7 +63,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     @Override
     public void setUp() throws SQLException {
         super.setUp();
-        StatementExecutor statementExecutor = new StatementExecutor(1, 1, 1, getConnection());
+        StatementExecutor statementExecutor = new StatementExecutor(getConnection(), new StatementOption(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT));
         statementExecutor.setSqlStatementContext(getSQLStatementContext());
         actual = spy(statementExecutor);
         doReturn(true).when(actual).isAccumulate();

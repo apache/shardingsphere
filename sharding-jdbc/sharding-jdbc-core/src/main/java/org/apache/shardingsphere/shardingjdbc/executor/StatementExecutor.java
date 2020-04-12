@@ -45,8 +45,8 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     
     private StatementExecuteGroupEngine executeGroupEngine;
     
-    public StatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final ShardingConnection shardingConnection) {
-        super(resultSetType, resultSetConcurrency, resultSetHoldability, shardingConnection);
+    public StatementExecutor(final ShardingConnection shardingConnection, final StatementOption statementOption) {
+        super(shardingConnection, statementOption);
         int maxConnectionsSizePerQuery = shardingConnection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         executeGroupEngine = new StatementExecuteGroupEngine(maxConnectionsSizePerQuery);
     }
@@ -65,8 +65,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     
     @SuppressWarnings("MagicConstant")
     private Collection<InputGroup<StatementExecuteUnit>> getExecuteGroups(final Collection<ExecutionUnit> executionUnits) throws SQLException {
-        StatementOption statementOption = new StatementOption(getResultSetType(), getResultSetConcurrency(), getResultSetHoldability());
-        return executeGroupEngine.generate(executionUnits, getConnection(), statementOption);
+        return executeGroupEngine.generate(executionUnits, getConnection(), getStatementOption());
     }
     
     /**

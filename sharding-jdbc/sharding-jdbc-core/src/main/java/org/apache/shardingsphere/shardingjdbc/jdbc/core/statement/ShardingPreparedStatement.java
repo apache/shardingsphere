@@ -37,6 +37,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContextBuilder;
 import org.apache.shardingsphere.underlying.executor.log.SQLLogger;
@@ -110,8 +111,9 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         ShardingRuntimeContext runtimeContext = connection.getRuntimeContext();
         sqlStatement = runtimeContext.getSqlParserEngine().parse(sql, true);
         parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
-        preparedStatementExecutor = new PreparedStatementExecutor(resultSetType, resultSetConcurrency, resultSetHoldability, returnGeneratedKeys, connection);
-        batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(resultSetType, resultSetConcurrency, resultSetHoldability, returnGeneratedKeys, connection);
+        StatementOption statementOption = returnGeneratedKeys ? new StatementOption(true) : new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
+        preparedStatementExecutor = new PreparedStatementExecutor(connection, statementOption);
+        batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(connection, statementOption);
     }
     
     @Override
@@ -207,7 +209,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     @Override
     public ResultSet getGeneratedKeys() throws SQLException {
         Optional<GeneratedKeyContext> generatedKey = findGeneratedKey();
-        if (preparedStatementExecutor.isReturnGeneratedKeys() && generatedKey.isPresent()) {
+        if (preparedStatementExecutor.getStatementOption().isReturnGeneratedKeys() && generatedKey.isPresent()) {
             return new GeneratedKeysResultSet(generatedKey.get().getColumnName(), generatedValues.iterator(), this);
         }
         if (1 == preparedStatementExecutor.getStatements().size()) {
@@ -289,18 +291,18 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     @SuppressWarnings("MagicConstant")
     @Override
     public int getResultSetType() {
-        return preparedStatementExecutor.getResultSetType();
+        return preparedStatementExecutor.getStatementOption().getResultSetType();
     }
     
     @SuppressWarnings("MagicConstant")
     @Override
     public int getResultSetConcurrency() {
-        return preparedStatementExecutor.getResultSetConcurrency();
+        return preparedStatementExecutor.getStatementOption().getResultSetConcurrency();
     }
     
     @Override
     public int getResultSetHoldability() {
-        return preparedStatementExecutor.getResultSetHoldability();
+        return preparedStatementExecutor.getStatementOption().getResultSetHoldability();
     }
     
     @Override

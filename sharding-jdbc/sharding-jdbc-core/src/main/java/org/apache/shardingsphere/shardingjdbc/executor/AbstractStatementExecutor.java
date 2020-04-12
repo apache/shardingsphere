@@ -29,6 +29,7 @@ import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
+import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 
 import java.sql.ResultSet;
@@ -47,13 +48,9 @@ import java.util.stream.Collectors;
 @Getter
 public abstract class AbstractStatementExecutor {
     
-    private final int resultSetType;
-    
-    private final int resultSetConcurrency;
-    
-    private final int resultSetHoldability;
-    
     private final ShardingConnection connection;
+    
+    private final StatementOption statementOption;
     
     private final DatabaseType databaseType;
     
@@ -72,10 +69,8 @@ public abstract class AbstractStatementExecutor {
     @Setter
     private SQLStatementContext sqlStatementContext;
     
-    public AbstractStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final ShardingConnection shardingConnection) {
-        this.resultSetType = resultSetType;
-        this.resultSetConcurrency = resultSetConcurrency;
-        this.resultSetHoldability = resultSetHoldability;
+    public AbstractStatementExecutor(final ShardingConnection shardingConnection, final StatementOption statementOption) {
+        this.statementOption = statementOption;
         this.connection = shardingConnection;
         this.databaseType = shardingConnection.getRuntimeContext().getDatabaseType();
         parameterSets = new LinkedList<>();

@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContextBuilder;
 import org.apache.shardingsphere.underlying.executor.log.SQLLogger;
@@ -80,7 +81,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     public ShardingStatement(final ShardingConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         super(Statement.class);
         this.connection = connection;
-        statementExecutor = new StatementExecutor(resultSetType, resultSetConcurrency, resultSetHoldability, connection);
+        statementExecutor = new StatementExecutor(connection, new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability));
     }
     
     @Override
@@ -249,18 +250,18 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     @SuppressWarnings("MagicConstant")
     @Override
     public int getResultSetType() {
-        return statementExecutor.getResultSetType();
+        return statementExecutor.getStatementOption().getResultSetType();
     }
     
     @SuppressWarnings("MagicConstant")
     @Override
     public int getResultSetConcurrency() {
-        return statementExecutor.getResultSetConcurrency();
+        return statementExecutor.getStatementOption().getResultSetConcurrency();
     }
     
     @Override
     public int getResultSetHoldability() {
-        return statementExecutor.getResultSetHoldability();
+        return statementExecutor.getStatementOption().getResultSetHoldability();
     }
     
     @Override
