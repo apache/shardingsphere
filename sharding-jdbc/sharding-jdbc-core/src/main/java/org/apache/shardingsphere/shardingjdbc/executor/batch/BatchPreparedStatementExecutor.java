@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.executor.batch;
 
 import com.google.common.base.Preconditions;
+import lombok.Getter;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
 import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.group.PreparedStatementExecuteGroupEngine;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -43,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**
@@ -51,6 +54,9 @@ import java.util.stream.Collectors;
 public final class BatchPreparedStatementExecutor extends AbstractStatementExecutor {
     
     private final ShardingConnection connection;
+    
+    @Getter
+    private final List<ResultSet> resultSets;
     
     private final PreparedStatementExecuteGroupEngine executeGroupEngine;
     
@@ -61,6 +67,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     public BatchPreparedStatementExecutor(final ShardingConnection shardingConnection, final SQLExecuteTemplate sqlExecuteTemplate) {
         super(sqlExecuteTemplate);
         connection = shardingConnection;
+        resultSets = new CopyOnWriteArrayList<>();
         int maxConnectionsSizePerQuery = shardingConnection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         executeGroupEngine = new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery);
     }
@@ -172,7 +179,6 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
      *
      * @return statements
      */
-    @Override
     public List<Statement> getStatements() {
         List<Statement> result = new LinkedList<>();
         for (InputGroup<StatementExecuteUnit> each : getInputGroups()) {
@@ -222,7 +228,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     public void clear() throws SQLException {
         closeStatements();
         getStatements().clear();
-        getResultSets().clear();
+        resultSets.clear();
         getInputGroups().clear();
         batchCount = 0;
         routeUnits.clear();

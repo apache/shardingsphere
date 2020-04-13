@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.executor;
 
+import lombok.Getter;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.MemoryQueryResult;
@@ -42,8 +43,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**
@@ -53,11 +56,19 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     
     private final ShardingConnection connection;
     
+    @Getter
+    private final List<Statement> statements;
+    
+    @Getter
+    private final List<ResultSet> resultSets;
+    
     private final StatementExecuteGroupEngine executeGroupEngine;
     
     public StatementExecutor(final ShardingConnection shardingConnection, final SQLExecuteTemplate sqlExecuteTemplate) {
         super(sqlExecuteTemplate);
         connection = shardingConnection;
+        statements = new LinkedList<>();
+        resultSets = new CopyOnWriteArrayList<>();
         int maxConnectionsSizePerQuery = shardingConnection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         executeGroupEngine = new StatementExecuteGroupEngine(maxConnectionsSizePerQuery);
     }
@@ -70,7 +81,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     
     private void cacheStatements() {
         for (InputGroup<StatementExecuteUnit> each : getInputGroups()) {
-            getStatements().addAll(each.getInputs().stream().map(StatementExecuteUnit::getStatement).collect(Collectors.toList()));
+            statements.addAll(each.getInputs().stream().map(StatementExecuteUnit::getStatement).collect(Collectors.toList()));
         }
     }
     
@@ -99,7 +110,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     
     private QueryResult getQueryResult(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
         ResultSet resultSet = statement.executeQuery(sql);
-        getResultSets().add(resultSet);
+        resultSets.add(resultSet);
         return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
     }
     
@@ -260,13 +271,13 @@ public final class StatementExecutor extends AbstractStatementExecutor {
      */
     public void clear() throws SQLException {
         closeStatements();
-        getStatements().clear();
-        getResultSets().clear();
+        statements.clear();
+        resultSets.clear();
         getInputGroups().clear();
     }
     
     private void closeStatements() throws SQLException {
-        for (Statement each : getStatements()) {
+        for (Statement each : statements) {
             each.close();
         }
     }

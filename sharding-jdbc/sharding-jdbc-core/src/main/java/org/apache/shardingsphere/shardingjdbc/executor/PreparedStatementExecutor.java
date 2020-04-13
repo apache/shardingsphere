@@ -47,6 +47,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**
@@ -57,6 +58,12 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     private final ShardingConnection connection;
     
     @Getter
+    private final List<Statement> statements;
+    
+    @Getter
+    private final List<ResultSet> resultSets;
+    
+    @Getter
     private final List<List<Object>> parameterSets;
     
     private final PreparedStatementExecuteGroupEngine executeGroupEngine;
@@ -64,6 +71,8 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     public PreparedStatementExecutor(final ShardingConnection shardingConnection, final SQLExecuteTemplate sqlExecuteTemplate) {
         super(sqlExecuteTemplate);
         connection = shardingConnection;
+        statements = new LinkedList<>();
+        resultSets = new CopyOnWriteArrayList<>();
         parameterSets = new LinkedList<>();
         int maxConnectionsSizePerQuery = shardingConnection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         executeGroupEngine = new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery);
@@ -81,7 +90,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     
     private void cacheStatements() {
         for (InputGroup<StatementExecuteUnit> each : getInputGroups()) {
-            getStatements().addAll(each.getInputs().stream().map(StatementExecuteUnit::getStatement).collect(Collectors.toList()));
+            statements.addAll(each.getInputs().stream().map(StatementExecuteUnit::getStatement).collect(Collectors.toList()));
             parameterSets.addAll(each.getInputs().stream().map(input -> input.getExecutionUnit().getSqlUnit().getParameters()).collect(Collectors.toList()));
         }
     }
@@ -107,7 +116,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     private QueryResult getQueryResult(final Statement statement, final ConnectionMode connectionMode) throws SQLException {
         PreparedStatement preparedStatement = (PreparedStatement) statement;
         ResultSet resultSet = preparedStatement.executeQuery();
-        getResultSets().add(resultSet);
+        resultSets.add(resultSet);
         return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
     }
     
@@ -176,14 +185,14 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
      */
     public void clear() throws SQLException {
         closeStatements();
-        getStatements().clear();
-        getResultSets().clear();
+        statements.clear();
+        resultSets.clear();
         getInputGroups().clear();
         parameterSets.clear();
     }
     
     private void closeStatements() throws SQLException {
-        for (Statement each : getStatements()) {
+        for (Statement each : statements) {
             each.close();
         }
     }

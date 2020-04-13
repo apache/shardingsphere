@@ -26,13 +26,10 @@ import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Abstract statement executor.
@@ -40,10 +37,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @RequiredArgsConstructor
 @Getter
 public abstract class AbstractStatementExecutor {
-    
-    private final List<Statement> statements = new LinkedList<>();
-    
-    private final List<ResultSet> resultSets = new CopyOnWriteArrayList<>();
     
     private final Collection<InputGroup<StatementExecuteUnit>> inputGroups = new LinkedList<>();
     
