@@ -60,12 +60,12 @@ shardingRule:
         complex:
           shardingColumns: region_id, user_id
           shardingAlgorithm:
-            type: complex
+            type: COMPLEX_TEST
       tableStrategy: 
         complex:
           shardingColumns: region_id, user_id
           shardingAlgorithm:
-            type: complex
+            type: COMPLEX_TEST
     t_stock:
       actualDataNodes: ds_${0..1}.t_stock{0..8}
       databaseStrategy: 

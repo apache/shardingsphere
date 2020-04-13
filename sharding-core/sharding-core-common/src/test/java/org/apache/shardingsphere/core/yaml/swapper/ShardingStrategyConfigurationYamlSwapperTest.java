@@ -81,7 +81,7 @@ public final class ShardingStrategyConfigurationYamlSwapperTest {
         when(complexKeysShardingAlgorithm.getType()).thenReturn("complex");
         YamlShardingStrategyConfiguration actual = shardingStrategyConfigurationYamlSwapper.swap(new ComplexShardingStrategyConfiguration("id, creation_date", complexKeysShardingAlgorithm));
         assertThat(actual.getComplex().getShardingColumns(), is("id, creation_date"));
-        assertThat(actual.getComplex().getShardingAlgorithm().getType(), is("complex"));
+        assertThat(actual.getComplex().getShardingAlgorithm().getType(), is("COMPLEX-TEST"));
         assertNull(actual.getStandard());
         assertNull(actual.getInline());
         assertNull(actual.getHint());
@@ -164,7 +164,7 @@ public final class ShardingStrategyConfigurationYamlSwapperTest {
         YamlComplexShardingStrategyConfiguration yamlComplexShardingStrategyConfiguration = new YamlComplexShardingStrategyConfiguration();
         yamlComplexShardingStrategyConfiguration.setShardingColumns("id, creation_date");
         yamlComplexShardingStrategyConfiguration.setShardingAlgorithm(new YamlShardingAlgorithmConfiguration());
-        yamlComplexShardingStrategyConfiguration.getShardingAlgorithm().setType("complex");
+        yamlComplexShardingStrategyConfiguration.getShardingAlgorithm().setType("COMPLEX_TEST");
         YamlShardingStrategyConfiguration result = new YamlShardingStrategyConfiguration();
         result.setComplex(yamlComplexShardingStrategyConfiguration);
         return result;

@@ -52,7 +52,7 @@ shardingRule:
     complex:
       shardingColumns: id, order_id
       shardingAlgorithm:
-        type: complex
+        type: COMPLEX_TEST
   
   masterSlaveRules:
     db_ms_0:

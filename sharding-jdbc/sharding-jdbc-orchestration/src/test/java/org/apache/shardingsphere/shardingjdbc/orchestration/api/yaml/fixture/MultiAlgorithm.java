@@ -32,7 +32,7 @@ public final class MultiAlgorithm implements ComplexKeysShardingAlgorithm<String
     
     @Override
     public String getType() {
-        return "complex";
+        return "COMPLEX_TEST";
     }
     
     @Override
