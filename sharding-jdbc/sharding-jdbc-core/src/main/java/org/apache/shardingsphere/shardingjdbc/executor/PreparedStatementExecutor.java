@@ -90,7 +90,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
      */
     public List<QueryResult> executeQuery() throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<QueryResult> executeCallback = new SQLExecutorCallback<QueryResult>(getDatabaseType(), isExceptionThrown) {
+        SQLExecutorCallback<QueryResult> executeCallback = new SQLExecutorCallback<QueryResult>(getConnection().getRuntimeContext().getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected QueryResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -116,7 +116,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
      */
     public int executeUpdate(final SQLStatementContext sqlStatementContext) throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<Integer> executeCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(getDatabaseType(), isExceptionThrown);
+        SQLExecutorCallback<Integer> executeCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(getConnection().getRuntimeContext().getDatabaseType(), isExceptionThrown);
         List<Integer> results = executeCallback(executeCallback);
         refreshTableMetaData(getConnection().getRuntimeContext(), sqlStatementContext);
         if (isAccumulate(sqlStatementContext)) {
@@ -143,7 +143,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
      */
     public boolean execute(final SQLStatementContext sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<Boolean> executeCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(getDatabaseType(), isExceptionThrown);
+        SQLExecutorCallback<Boolean> executeCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(getConnection().getRuntimeContext().getDatabaseType(), isExceptionThrown);
         List<Boolean> result = executeCallback(executeCallback);
         refreshTableMetaData(getConnection().getRuntimeContext(), sqlStatementContext);
         if (null == result || result.isEmpty() || null == result.get(0)) {

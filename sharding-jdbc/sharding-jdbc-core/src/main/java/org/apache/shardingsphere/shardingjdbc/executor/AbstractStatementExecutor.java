@@ -22,7 +22,6 @@ import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
 import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
 import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
@@ -45,8 +44,6 @@ public abstract class AbstractStatementExecutor {
     
     private final ShardingConnection connection;
     
-    private final DatabaseType databaseType;
-    
     private final List<Statement> statements;
     
     private final List<ResultSet> resultSets;
@@ -59,7 +56,6 @@ public abstract class AbstractStatementExecutor {
     
     public AbstractStatementExecutor(final ShardingConnection shardingConnection) {
         this.connection = shardingConnection;
-        this.databaseType = shardingConnection.getRuntimeContext().getDatabaseType();
         statements = new LinkedList<>();
         resultSets = new CopyOnWriteArrayList<>();
         inputGroups = new LinkedList<>();

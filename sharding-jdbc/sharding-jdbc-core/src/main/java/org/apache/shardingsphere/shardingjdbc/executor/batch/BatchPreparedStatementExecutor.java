@@ -121,7 +121,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
      */
     public int[] executeBatch(final SQLStatementContext sqlStatementContext) throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<int[]> callback = new SQLExecutorCallback<int[]>(getDatabaseType(), isExceptionThrown) {
+        SQLExecutorCallback<int[]> callback = new SQLExecutorCallback<int[]>(getConnection().getRuntimeContext().getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected int[] executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {

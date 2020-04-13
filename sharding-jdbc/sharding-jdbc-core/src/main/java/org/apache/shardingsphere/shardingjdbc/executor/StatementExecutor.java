@@ -83,7 +83,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
      */
     public List<QueryResult> executeQuery() throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<QueryResult> executeCallback = new SQLExecutorCallback<QueryResult>(getDatabaseType(), isExceptionThrown) {
+        SQLExecutorCallback<QueryResult> executeCallback = new SQLExecutorCallback<QueryResult>(getConnection().getRuntimeContext().getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected QueryResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -148,7 +148,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     
     private int executeUpdate(final Updater updater, final SQLStatementContext sqlStatementContext) throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<Integer> executeCallback = new SQLExecutorCallback<Integer>(getDatabaseType(), isExceptionThrown) {
+        SQLExecutorCallback<Integer> executeCallback = new SQLExecutorCallback<Integer>(getConnection().getRuntimeContext().getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected Integer executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -221,7 +221,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     
     private boolean execute(final Executor executor, final SQLStatementContext sqlStatementContext) throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<Boolean> executeCallback = new SQLExecutorCallback<Boolean>(getDatabaseType(), isExceptionThrown) {
+        SQLExecutorCallback<Boolean> executeCallback = new SQLExecutorCallback<Boolean>(getConnection().getRuntimeContext().getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected Boolean executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
