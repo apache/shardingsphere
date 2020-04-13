@@ -49,7 +49,8 @@ shardingRule:
   defaultTableStrategy:
     complex:
       shardingColumns: id, order_id
-      algorithmClassName: org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture.MultiAlgorithm
+      shardingAlgorithm:
+        type: COMPLEX_TEST
 
 orchestration:
   test_sharding_registry_name:

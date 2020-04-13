@@ -15,32 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.shard.fixture;
+package org.apache.shardingsphere.core.yaml.config.sharding.strategy;
 
-import org.apache.shardingsphere.api.sharding.complex.ComplexKeysShardingAlgorithm;
-import org.apache.shardingsphere.api.sharding.complex.ComplexKeysShardingValue;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.util.Collection;
 import java.util.Properties;
 
-public final class ComplexKeysShardingAlgorithmFixture implements ComplexKeysShardingAlgorithm<Integer> {
+/**
+ * Sharding algorithm configuration for YAML.
+ */
+@Getter
+@Setter
+public final class YamlShardingAlgorithmConfiguration implements YamlBaseShardingStrategyConfiguration {
     
-    @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<Integer> shardingValue) {
-        return availableTargetNames;
-    }
+    private String type;
     
-    @Override
-    public String getType() {
-        return "COMPLEX_TEST";
-    }
-    
-    @Override
-    public Properties getProperties() {
-        return new Properties();
-    }
-    
-    @Override
-    public void setProperties(final Properties properties) {
-    }
+    private Properties props = new Properties();
 }
