@@ -62,6 +62,8 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     @Getter
     private final List<ResultSet> resultSets;
     
+    private final Collection<InputGroup<StatementExecuteUnit>> inputGroups;
+    
     private final StatementExecuteGroupEngine executeGroupEngine;
     
     public StatementExecutor(final ShardingConnection shardingConnection, final SQLExecuteTemplate sqlExecuteTemplate) {
@@ -69,25 +71,26 @@ public final class StatementExecutor extends AbstractStatementExecutor {
         connection = shardingConnection;
         statements = new LinkedList<>();
         resultSets = new CopyOnWriteArrayList<>();
+        inputGroups = new LinkedList<>();
         int maxConnectionsSizePerQuery = shardingConnection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         executeGroupEngine = new StatementExecuteGroupEngine(maxConnectionsSizePerQuery);
     }
     
     @Override
     public void init(final ExecutionContext executionContext, final StatementOption statementOption) throws SQLException {
-        getInputGroups().addAll(generateExecuteGroups(executionContext.getExecutionUnits(), statementOption));
+        inputGroups.addAll(generateExecuteGroups(executionContext.getExecutionUnits(), statementOption));
         cacheStatements();
-    }
-    
-    private void cacheStatements() {
-        for (InputGroup<StatementExecuteUnit> each : getInputGroups()) {
-            statements.addAll(each.getInputs().stream().map(StatementExecuteUnit::getStatement).collect(Collectors.toList()));
-        }
     }
     
     @SuppressWarnings("MagicConstant")
     private Collection<InputGroup<StatementExecuteUnit>> generateExecuteGroups(final Collection<ExecutionUnit> executionUnits, final StatementOption statementOption) throws SQLException {
         return executeGroupEngine.generate(executionUnits, connection, statementOption);
+    }
+    
+    private void cacheStatements() {
+        for (InputGroup<StatementExecuteUnit> each : inputGroups) {
+            statements.addAll(each.getInputs().stream().map(StatementExecuteUnit::getStatement).collect(Collectors.toList()));
+        }
     }
     
     /**
@@ -105,7 +108,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
                 return getQueryResult(sql, statement, connectionMode);
             }
         };
-        return executeCallback(executeCallback);
+        return executeCallback(inputGroups, executeCallback);
     }
     
     private QueryResult getQueryResult(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -170,7 +173,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
                 return updater.executeUpdate(statement, sql);
             }
         };
-        List<Integer> results = executeCallback(executeCallback);
+        List<Integer> results = executeCallback(inputGroups, executeCallback);
         refreshTableMetaData(connection.getRuntimeContext(), sqlStatementContext);
         if (!connection.getRuntimeContext().getRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())) {
             return accumulate(results);
@@ -243,7 +246,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
                 return executor.execute(statement, sql);
             }
         };
-        List<Boolean> result = executeCallback(executeCallback);
+        List<Boolean> result = executeCallback(inputGroups, executeCallback);
         refreshTableMetaData(connection.getRuntimeContext(), sqlStatementContext);
         if (null == result || result.isEmpty() || null == result.get(0)) {
             return false;
@@ -273,7 +276,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
         closeStatements();
         statements.clear();
         resultSets.clear();
-        getInputGroups().clear();
+        inputGroups.clear();
     }
     
     private void closeStatements() throws SQLException {

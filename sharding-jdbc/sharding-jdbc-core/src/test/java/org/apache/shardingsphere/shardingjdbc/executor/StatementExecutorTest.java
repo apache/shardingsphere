@@ -336,7 +336,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
             statementExecuteUnits.add(
                     new StatementExecuteUnit(new ExecutionUnit("ds_0", new SQLUnit(isQuery ? DQL_SQL : DML_SQL, Collections.singletonList(1))), each, ConnectionMode.MEMORY_STRICTLY));
         }
-        Field field = StatementExecutor.class.getSuperclass().getDeclaredField("inputGroups");
+        Field field = StatementExecutor.class.getDeclaredField("inputGroups");
         field.setAccessible(true);
         field.set(actual, executeGroups);
     }

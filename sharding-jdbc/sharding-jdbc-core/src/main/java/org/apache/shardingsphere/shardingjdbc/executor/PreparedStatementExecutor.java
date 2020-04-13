@@ -66,6 +66,8 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     @Getter
     private final List<List<Object>> parameterSets;
     
+    private final Collection<InputGroup<StatementExecuteUnit>> inputGroups;
+    
     private final PreparedStatementExecuteGroupEngine executeGroupEngine;
     
     public PreparedStatementExecutor(final ShardingConnection shardingConnection, final SQLExecuteTemplate sqlExecuteTemplate) {
@@ -74,13 +76,14 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
         statements = new LinkedList<>();
         resultSets = new CopyOnWriteArrayList<>();
         parameterSets = new LinkedList<>();
+        inputGroups = new LinkedList<>();
         int maxConnectionsSizePerQuery = shardingConnection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         executeGroupEngine = new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery);
     }
     
     @Override
     public void init(final ExecutionContext executionContext, final StatementOption statementOption) throws SQLException {
-        getInputGroups().addAll(generateExecuteGroups(executionContext.getExecutionUnits(), statementOption));
+        inputGroups.addAll(generateExecuteGroups(executionContext.getExecutionUnits(), statementOption));
         cacheStatements();
     }
     
@@ -89,7 +92,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     }
     
     private void cacheStatements() {
-        for (InputGroup<StatementExecuteUnit> each : getInputGroups()) {
+        for (InputGroup<StatementExecuteUnit> each : inputGroups) {
             statements.addAll(each.getInputs().stream().map(StatementExecuteUnit::getStatement).collect(Collectors.toList()));
             parameterSets.addAll(each.getInputs().stream().map(input -> input.getExecutionUnit().getSqlUnit().getParameters()).collect(Collectors.toList()));
         }
@@ -110,7 +113,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
                 return getQueryResult(statement, connectionMode);
             }
         };
-        return executeCallback(executeCallback);
+        return executeCallback(inputGroups, executeCallback);
     }
     
     private QueryResult getQueryResult(final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -130,7 +133,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     public int executeUpdate(final SQLStatementContext sqlStatementContext) throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         SQLExecutorCallback<Integer> executeCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(connection.getRuntimeContext().getDatabaseType(), isExceptionThrown);
-        List<Integer> results = executeCallback(executeCallback);
+        List<Integer> results = executeCallback(inputGroups, executeCallback);
         refreshTableMetaData(connection.getRuntimeContext(), sqlStatementContext);
         if (!connection.getRuntimeContext().getRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())) {
             return accumulate(results);
@@ -157,7 +160,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     public boolean execute(final SQLStatementContext sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         SQLExecutorCallback<Boolean> executeCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(connection.getRuntimeContext().getDatabaseType(), isExceptionThrown);
-        List<Boolean> result = executeCallback(executeCallback);
+        List<Boolean> result = executeCallback(inputGroups, executeCallback);
         refreshTableMetaData(connection.getRuntimeContext(), sqlStatementContext);
         if (null == result || result.isEmpty() || null == result.get(0)) {
             return false;
@@ -187,7 +190,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
         closeStatements();
         statements.clear();
         resultSets.clear();
-        getInputGroups().clear();
+        inputGroups.clear();
         parameterSets.clear();
     }
     

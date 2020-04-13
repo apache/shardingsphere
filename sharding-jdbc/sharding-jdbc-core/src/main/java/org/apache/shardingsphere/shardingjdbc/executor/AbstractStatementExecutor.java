@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingjdbc.executor;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
@@ -28,17 +27,13 @@ import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Abstract statement executor.
  */
 @RequiredArgsConstructor
-@Getter
 public abstract class AbstractStatementExecutor {
-    
-    private final Collection<InputGroup<StatementExecuteUnit>> inputGroups = new LinkedList<>();
     
     private final SQLExecuteTemplate sqlExecuteTemplate;
     
@@ -57,13 +52,14 @@ public abstract class AbstractStatementExecutor {
      * 
      * @see <a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/Java-Plugin-Development-Guide.md#user-content-plugin-development-guide">Plugin Development Guide</a>
      * 
+     * @param inputGroups input groups
      * @param executeCallback execute callback
      * @param <T> class type of return value 
      * @return result
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("unchecked")
-    protected final <T> List<T> executeCallback(final SQLExecutorCallback<T> executeCallback) throws SQLException {
+    protected final <T> List<T> executeCallback(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLExecutorCallback<T> executeCallback) throws SQLException {
         return sqlExecuteTemplate.execute((Collection) inputGroups, executeCallback);
     }
 }

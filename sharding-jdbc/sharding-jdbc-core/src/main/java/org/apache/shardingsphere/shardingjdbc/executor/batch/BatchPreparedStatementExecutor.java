@@ -58,6 +58,8 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     @Getter
     private final List<ResultSet> resultSets;
     
+    private final Collection<InputGroup<StatementExecuteUnit>> inputGroups;
+    
     private final PreparedStatementExecuteGroupEngine executeGroupEngine;
     
     private final Collection<BatchRouteUnit> routeUnits = new LinkedList<>();
@@ -68,13 +70,14 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
         super(sqlExecuteTemplate);
         connection = shardingConnection;
         resultSets = new CopyOnWriteArrayList<>();
+        inputGroups = new LinkedList<>();
         int maxConnectionsSizePerQuery = shardingConnection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         executeGroupEngine = new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery);
     }
     
     @Override
     public void init(final ExecutionContext executionContext, final StatementOption statementOption) throws SQLException {
-        getInputGroups().addAll(generateExecuteGroups(routeUnits, statementOption));
+        inputGroups.addAll(generateExecuteGroups(routeUnits, statementOption));
     }
     
     private Collection<InputGroup<StatementExecuteUnit>> generateExecuteGroups(final Collection<BatchRouteUnit> batchRouteUnits, final StatementOption statementOption) throws SQLException {
@@ -139,7 +142,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
                 return statement.executeBatch();
             }
         };
-        List<int[]> results = executeCallback(callback);
+        List<int[]> results = executeCallback(inputGroups, callback);
         if (!connection.getRuntimeContext().getRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())) {
             return accumulate(results);
         } else {
@@ -150,7 +153,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     private int[] accumulate(final List<int[]> results) {
         int[] result = new int[batchCount];
         int count = 0;
-        for (InputGroup<StatementExecuteUnit> each : getInputGroups()) {
+        for (InputGroup<StatementExecuteUnit> each : inputGroups) {
             for (StatementExecuteUnit eachUnit : each.getInputs()) {
                 Map<Integer, Integer> jdbcAndActualAddBatchCallTimesMap = Collections.emptyMap();
                 for (BatchRouteUnit eachRouteUnit : routeUnits) {
@@ -181,7 +184,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
      */
     public List<Statement> getStatements() {
         List<Statement> result = new LinkedList<>();
-        for (InputGroup<StatementExecuteUnit> each : getInputGroups()) {
+        for (InputGroup<StatementExecuteUnit> each : inputGroups) {
             result.addAll(each.getInputs().stream().map(StatementExecuteUnit::getStatement).collect(Collectors.toList()));
         }
         return result;
@@ -195,7 +198,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
      */
     public List<List<Object>> getParameterSet(final Statement statement) {
         List<List<Object>> result = new LinkedList<>();
-        for (InputGroup<StatementExecuteUnit> each : getInputGroups()) {
+        for (InputGroup<StatementExecuteUnit> each : inputGroups) {
             Optional<StatementExecuteUnit> target = getStatementExecuteUnit(statement, each);
             if (target.isPresent()) {
                 result = getParameterSets(target.get());
@@ -229,7 +232,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
         closeStatements();
         getStatements().clear();
         resultSets.clear();
-        getInputGroups().clear();
+        inputGroups.clear();
         batchCount = 0;
         routeUnits.clear();
     }
