@@ -73,22 +73,4 @@ public abstract class AbstractStatementExecutor {
     protected final <T> List<T> executeCallback(final SQLExecutorCallback<T> executeCallback) throws SQLException {
         return sqlExecuteTemplate.execute((Collection) inputGroups, executeCallback);
     }
-    
-    /**
-     * Clear.
-     *
-     * @throws SQLException SQL exception
-     */
-    public void clear() throws SQLException {
-        closeStatements();
-        statements.clear();
-        resultSets.clear();
-        inputGroups.clear();
-    }
-    
-    private void closeStatements() throws SQLException {
-        for (Statement each : statements) {
-            each.close();
-        }
-    }
 }

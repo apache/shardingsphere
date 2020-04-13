@@ -214,11 +214,24 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
         return batchRouteUnit.get().getParameterSets();
     }
     
-    @Override
+    /**
+     * Clear.
+     *
+     * @throws SQLException SQL exception
+     */
     public void clear() throws SQLException {
-        super.clear();
+        closeStatements();
+        getStatements().clear();
+        getResultSets().clear();
+        getInputGroups().clear();
         batchCount = 0;
         routeUnits.clear();
+    }
+    
+    private void closeStatements() throws SQLException {
+        for (Statement each : getStatements()) {
+            each.close();
+        }
     }
 }
 

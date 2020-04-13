@@ -169,9 +169,22 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
         }
     }
     
-    @Override
+    /**
+     * Clear.
+     *
+     * @throws SQLException SQL exception
+     */
     public void clear() throws SQLException {
-        super.clear();
+        closeStatements();
+        getStatements().clear();
+        getResultSets().clear();
+        getInputGroups().clear();
         parameterSets.clear();
+    }
+    
+    private void closeStatements() throws SQLException {
+        for (Statement each : getStatements()) {
+            each.close();
+        }
     }
 }

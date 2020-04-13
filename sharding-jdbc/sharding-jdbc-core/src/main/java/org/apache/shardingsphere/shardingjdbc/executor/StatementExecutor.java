@@ -253,6 +253,24 @@ public final class StatementExecutor extends AbstractStatementExecutor {
         }
     }
     
+    /**
+     * Clear.
+     *
+     * @throws SQLException SQL exception
+     */
+    public void clear() throws SQLException {
+        closeStatements();
+        getStatements().clear();
+        getResultSets().clear();
+        getInputGroups().clear();
+    }
+    
+    private void closeStatements() throws SQLException {
+        for (Statement each : getStatements()) {
+            each.close();
+        }
+    }
+    
     private interface Updater {
         
         int executeUpdate(Statement statement, String sql) throws SQLException;
