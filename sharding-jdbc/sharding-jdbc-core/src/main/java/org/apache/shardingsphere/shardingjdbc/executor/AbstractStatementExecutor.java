@@ -22,11 +22,8 @@ import lombok.Setter;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
-import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategy;
-import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
 import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
 import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
@@ -39,7 +36,6 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -97,21 +93,7 @@ public abstract class AbstractStatementExecutor {
      */
     @SuppressWarnings("unchecked")
     protected final <T> List<T> executeCallback(final SQLExecutorCallback<T> executeCallback) throws SQLException {
-        List<T> result = sqlExecuteTemplate.execute((Collection) inputGroups, executeCallback);
-        refreshTableMetaData(connection.getRuntimeContext(), sqlStatementContext);
-        return result;
-    }
-    
-    @SuppressWarnings("unchecked")
-    private void refreshTableMetaData(final ShardingRuntimeContext runtimeContext, final SQLStatementContext sqlStatementContext) throws SQLException {
-        if (null == sqlStatementContext) {
-            return;
-        }
-        Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
-        if (refreshStrategy.isPresent()) {
-            refreshStrategy.get().refreshMetaData(runtimeContext.getMetaData(), sqlStatementContext,
-                tableName -> metaDataLoader.load(databaseType, connection.getDataSourceMap(), tableName, connection.getRuntimeContext().getProperties()));
-        }
+        return sqlExecuteTemplate.execute((Collection) inputGroups, executeCallback);
     }
     
     /**

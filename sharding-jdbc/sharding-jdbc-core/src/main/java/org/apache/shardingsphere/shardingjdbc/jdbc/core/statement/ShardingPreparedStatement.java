@@ -140,7 +140,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             clearPrevious();
             prepare();
             initPreparedStatementExecutor();
-            return preparedStatementExecutor.executeUpdate();
+            return preparedStatementExecutor.executeUpdate(executionContext.getSqlStatementContext());
         } finally {
             clearBatch();
         }
@@ -152,7 +152,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             clearPrevious();
             prepare();
             initPreparedStatementExecutor();
-            return preparedStatementExecutor.execute();
+            return preparedStatementExecutor.execute(executionContext.getSqlStatementContext());
         } finally {
             clearBatch();
         }

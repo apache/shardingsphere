@@ -23,7 +23,12 @@ import org.apache.shardingsphere.sharding.execute.sql.execute.result.MemoryQuery
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategy;
+import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategyFactory;
+import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
 import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
@@ -40,6 +45,7 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -105,13 +111,15 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     /**
      * Execute update.
      * 
+     * @param sqlStatementContext SQL statement context
      * @return effected records count
      * @throws SQLException SQL exception
      */
-    public int executeUpdate() throws SQLException {
+    public int executeUpdate(final SQLStatementContext sqlStatementContext) throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         SQLExecutorCallback<Integer> executeCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(getDatabaseType(), isExceptionThrown);
         List<Integer> results = executeCallback(executeCallback);
+        refreshTableMetaData(getConnection().getRuntimeContext(), sqlStatementContext);
         if (isAccumulate()) {
             return accumulate(results);
         } else {
@@ -130,17 +138,32 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     /**
      * Execute SQL.
      *
+     * @param sqlStatementContext SQL statement context
      * @return return true if is DQL, false if is DML
      * @throws SQLException SQL exception
      */
-    public boolean execute() throws SQLException {
+    public boolean execute(final SQLStatementContext sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         SQLExecutorCallback<Boolean> executeCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(getDatabaseType(), isExceptionThrown);
         List<Boolean> result = executeCallback(executeCallback);
+        refreshTableMetaData(getConnection().getRuntimeContext(), sqlStatementContext);
         if (null == result || result.isEmpty() || null == result.get(0)) {
             return false;
         }
         return result.get(0);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void refreshTableMetaData(final ShardingRuntimeContext runtimeContext, final SQLStatementContext sqlStatementContext) throws SQLException {
+        if (null == sqlStatementContext) {
+            return;
+        }
+        Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
+        if (refreshStrategy.isPresent()) {
+            RuleSchemaMetaDataLoader metaDataLoader = new RuleSchemaMetaDataLoader(getConnection().getRuntimeContext().getRule().toRules());
+            refreshStrategy.get().refreshMetaData(runtimeContext.getMetaData(), sqlStatementContext,
+                tableName -> metaDataLoader.load(runtimeContext.getDatabaseType(), getConnection().getDataSourceMap(), tableName, getConnection().getRuntimeContext().getProperties()));
+        }
     }
     
     @Override
