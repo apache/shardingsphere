@@ -60,7 +60,6 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     
     @Override
     public void init(final ExecutionContext executionContext, final StatementOption statementOption) throws SQLException {
-        setSqlStatementContext(executionContext.getSqlStatementContext());
         getInputGroups().addAll(generateExecuteGroups(executionContext.getExecutionUnits(), statementOption));
         cacheStatements();
     }
@@ -158,7 +157,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
         };
         List<Integer> results = executeCallback(executeCallback);
         refreshTableMetaData(getConnection().getRuntimeContext(), sqlStatementContext);
-        if (isAccumulate()) {
+        if (isAccumulate(sqlStatementContext)) {
             return accumulate(results);
         } else {
             return null == results.get(0) ? 0 : results.get(0);

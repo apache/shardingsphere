@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingjdbc.executor;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
@@ -58,9 +57,6 @@ public abstract class AbstractStatementExecutor {
     
     private final RuleSchemaMetaDataLoader metaDataLoader;
     
-    @Setter
-    private SQLStatementContext sqlStatementContext;
-    
     public AbstractStatementExecutor(final ShardingConnection shardingConnection) {
         this.connection = shardingConnection;
         this.databaseType = shardingConnection.getRuntimeContext().getDatabaseType();
@@ -97,11 +93,12 @@ public abstract class AbstractStatementExecutor {
     }
     
     /**
-     * is accumulate.
-     * 
+     * Is accumulate or not.
+     *
+     * @param sqlStatementContext SQL statement context
      * @return accumulate or not
      */
-    public final boolean isAccumulate() {
+    public final boolean isAccumulate(final SQLStatementContext sqlStatementContext) {
         return !connection.getRuntimeContext().getRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames());
     }
     

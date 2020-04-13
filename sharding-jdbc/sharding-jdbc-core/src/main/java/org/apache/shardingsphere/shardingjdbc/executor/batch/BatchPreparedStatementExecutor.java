@@ -22,6 +22,7 @@ import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallbac
 import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
 import org.apache.shardingsphere.shardingjdbc.executor.AbstractStatementExecutor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
 import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
@@ -62,7 +63,6 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     
     @Override
     public void init(final ExecutionContext executionContext, final StatementOption statementOption) throws SQLException {
-        setSqlStatementContext(executionContext.getSqlStatementContext());
         getInputGroups().addAll(generateExecuteGroups(routeUnits, statementOption));
     }
     
@@ -115,10 +115,11 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     /**
      * Execute batch.
      * 
+     * @param sqlStatementContext SQL statement context
      * @return execute results
      * @throws SQLException SQL exception
      */
-    public int[] executeBatch() throws SQLException {
+    public int[] executeBatch(final SQLStatementContext sqlStatementContext) throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         SQLExecutorCallback<int[]> callback = new SQLExecutorCallback<int[]>(getDatabaseType(), isExceptionThrown) {
             
@@ -128,7 +129,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
             }
         };
         List<int[]> results = executeCallback(callback);
-        if (isAccumulate()) {
+        if (isAccumulate(sqlStatementContext)) {
             return accumulate(results);
         } else {
             return results.get(0);

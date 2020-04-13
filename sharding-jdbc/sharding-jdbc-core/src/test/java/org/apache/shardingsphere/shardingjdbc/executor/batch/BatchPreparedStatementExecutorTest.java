@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.executor.batch;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingjdbc.executor.AbstractBaseExecutorTest;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
@@ -39,6 +40,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -55,7 +57,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     public void setUp() throws SQLException {
         super.setUp();
         actual = spy(new BatchPreparedStatementExecutor(getConnection()));
-        doReturn(true).when(actual).isAccumulate();
+        doReturn(true).when(actual).isAccumulate(any());
     }
     
     @SuppressWarnings("unchecked")
@@ -64,7 +66,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         PreparedStatement preparedStatement = getPreparedStatement();
         when(preparedStatement.executeBatch()).thenReturn(new int[] {0, 0});
         setExecuteGroups(Collections.singletonList(preparedStatement));
-        assertThat(actual.executeBatch(), is(new int[] {0, 0}));
+        assertThat(actual.executeBatch(mock(SQLStatementContext.class)), is(new int[] {0, 0}));
     }
     
     @Test
@@ -72,7 +74,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         PreparedStatement preparedStatement = getPreparedStatement();
         when(preparedStatement.executeBatch()).thenReturn(new int[] {10, 20});
         setExecuteGroups(Collections.singletonList(preparedStatement));
-        assertThat(actual.executeBatch(), is(new int[] {10, 20}));
+        assertThat(actual.executeBatch(mock(SQLStatementContext.class)), is(new int[] {10, 20}));
         verify(preparedStatement).executeBatch();
     }
     
@@ -93,7 +95,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         when(preparedStatement1.executeBatch()).thenReturn(new int[] {10, 20});
         when(preparedStatement2.executeBatch()).thenReturn(new int[] {20, 40});
         setExecuteGroups(Arrays.asList(preparedStatement1, preparedStatement2));
-        assertThat(actual.executeBatch(), is(new int[] {30, 60}));
+        assertThat(actual.executeBatch(mock(SQLStatementContext.class)), is(new int[] {30, 60}));
         verify(preparedStatement1).executeBatch();
         verify(preparedStatement2).executeBatch();
     }
@@ -104,7 +106,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         SQLException exp = new SQLException();
         when(preparedStatement.executeBatch()).thenThrow(exp);
         setExecuteGroups(Collections.singletonList(preparedStatement));
-        assertThat(actual.executeBatch(), is(new int[] {0, 0}));
+        assertThat(actual.executeBatch(mock(SQLStatementContext.class)), is(new int[] {0, 0}));
         verify(preparedStatement).executeBatch();
     }
     
@@ -116,7 +118,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         when(preparedStatement1.executeBatch()).thenThrow(exp);
         when(preparedStatement2.executeBatch()).thenThrow(exp);
         setExecuteGroups(Arrays.asList(preparedStatement1, preparedStatement2));
-        assertThat(actual.executeBatch(), is(new int[] {0, 0}));
+        assertThat(actual.executeBatch(mock(SQLStatementContext.class)), is(new int[] {0, 0}));
         verify(preparedStatement1).executeBatch();
         verify(preparedStatement2).executeBatch();
     }

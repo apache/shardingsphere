@@ -262,7 +262,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     public int[] executeBatch() throws SQLException {
         try {
             initBatchPreparedStatementExecutor();
-            return batchPreparedStatementExecutor.executeBatch();
+            return batchPreparedStatementExecutor.executeBatch(executionContext.getSqlStatementContext());
         } finally {
             clearBatch();
         }

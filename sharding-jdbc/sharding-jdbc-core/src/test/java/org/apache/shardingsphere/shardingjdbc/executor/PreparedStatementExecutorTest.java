@@ -44,6 +44,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -61,10 +62,8 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     @Override
     public void setUp() throws SQLException {
         super.setUp();
-        PreparedStatementExecutor preparedStatementExecutor = new PreparedStatementExecutor(getConnection());
-        preparedStatementExecutor.setSqlStatementContext(getSQLStatementContext());
-        actual = spy(preparedStatementExecutor);
-        doReturn(true).when(actual).isAccumulate();
+        actual = spy(new PreparedStatementExecutor(getConnection()));
+        doReturn(true).when(actual).isAccumulate(any());
     }
     
     @Test

@@ -67,7 +67,6 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     
     @Override
     public void init(final ExecutionContext executionContext, final StatementOption statementOption) throws SQLException {
-        setSqlStatementContext(executionContext.getSqlStatementContext());
         getInputGroups().addAll(generateExecuteGroups(executionContext.getExecutionUnits(), statementOption));
         cacheStatements();
     }
@@ -120,7 +119,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
         SQLExecutorCallback<Integer> executeCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(getDatabaseType(), isExceptionThrown);
         List<Integer> results = executeCallback(executeCallback);
         refreshTableMetaData(getConnection().getRuntimeContext(), sqlStatementContext);
-        if (isAccumulate()) {
+        if (isAccumulate(sqlStatementContext)) {
             return accumulate(results);
         } else {
             return results.get(0);
