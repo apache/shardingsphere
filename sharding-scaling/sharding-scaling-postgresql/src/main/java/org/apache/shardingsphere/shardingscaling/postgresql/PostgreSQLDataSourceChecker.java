@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingscaling.postgresql;
 
 import org.apache.shardingsphere.shardingscaling.core.exception.DatasourceCheckFailedException;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.AbstractDataSourceChecker;
+import org.apache.shardingsphere.shardingscaling.core.preparer.checker.AbstractDataSourceChecker;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

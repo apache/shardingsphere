@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.execute.executor.checker;
+package org.apache.shardingsphere.shardingscaling.core.preparer.checker;
 
 import org.apache.shardingsphere.shardingscaling.core.exception.DatasourceCheckFailedException;
 import org.junit.Before;

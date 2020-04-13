@@ -42,8 +42,8 @@ import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.shardingscaling.core.exception.DatasourceCheckFailedException;
 import org.apache.shardingsphere.shardingscaling.core.exception.ScalingJobNotFoundException;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.DataSourceChecker;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.DataSourceCheckerCheckerFactory;
+import org.apache.shardingsphere.shardingscaling.core.preparer.checker.DataSourceChecker;
+import org.apache.shardingsphere.shardingscaling.core.preparer.checker.DataSourceCheckerCheckerFactory;
 import org.apache.shardingsphere.shardingscaling.utils.ResponseContentUtil;
 
 import java.util.ArrayList;
