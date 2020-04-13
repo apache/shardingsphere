@@ -84,7 +84,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         super(Statement.class);
         this.connection = connection;
         statementOption = new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
-        statementExecutor = new StatementExecutor(connection);
+        statementExecutor = new StatementExecutor(connection, connection.isHoldTransaction());
     }
     
     @Override

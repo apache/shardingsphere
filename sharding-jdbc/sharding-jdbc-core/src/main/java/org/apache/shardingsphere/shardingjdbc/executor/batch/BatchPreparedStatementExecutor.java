@@ -55,8 +55,8 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     
     private int batchCount;
     
-    public BatchPreparedStatementExecutor(final ShardingConnection shardingConnection) {
-        super(shardingConnection);
+    public BatchPreparedStatementExecutor(final ShardingConnection shardingConnection, final boolean serial) {
+        super(shardingConnection, serial);
         int maxConnectionsSizePerQuery = shardingConnection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         executeGroupEngine = new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery);
     }

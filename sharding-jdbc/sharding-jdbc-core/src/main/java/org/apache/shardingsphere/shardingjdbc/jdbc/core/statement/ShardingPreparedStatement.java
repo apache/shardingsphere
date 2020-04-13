@@ -114,8 +114,9 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         sqlStatement = runtimeContext.getSqlParserEngine().parse(sql, true);
         parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
         statementOption = returnGeneratedKeys ? new StatementOption(true) : new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
-        preparedStatementExecutor = new PreparedStatementExecutor(connection);
-        batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(connection);
+        boolean isHoldTransaction = connection.isHoldTransaction();
+        preparedStatementExecutor = new PreparedStatementExecutor(connection, isHoldTransaction);
+        batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(connection, isHoldTransaction);
     }
     
     @Override

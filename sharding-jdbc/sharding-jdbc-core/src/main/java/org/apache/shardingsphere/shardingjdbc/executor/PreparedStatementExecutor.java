@@ -58,8 +58,8 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     
     private final PreparedStatementExecuteGroupEngine executeGroupEngine;
     
-    public PreparedStatementExecutor(final ShardingConnection shardingConnection) {
-        super(shardingConnection);
+    public PreparedStatementExecutor(final ShardingConnection shardingConnection, final boolean serial) {
+        super(shardingConnection, serial);
         parameterSets = new LinkedList<>();
         int maxConnectionsSizePerQuery = shardingConnection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         executeGroupEngine = new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery);

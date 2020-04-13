@@ -56,7 +56,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     @Override
     public void setUp() throws SQLException {
         super.setUp();
-        actual = spy(new BatchPreparedStatementExecutor(getConnection()));
+        actual = spy(new BatchPreparedStatementExecutor(getConnection(), false));
         doReturn(true).when(actual).isAccumulate(any());
     }
     

@@ -51,12 +51,12 @@ public abstract class AbstractStatementExecutor {
     
     private final SQLExecuteTemplate sqlExecuteTemplate;
     
-    public AbstractStatementExecutor(final ShardingConnection shardingConnection) {
+    public AbstractStatementExecutor(final ShardingConnection shardingConnection, final boolean serial) {
         this.connection = shardingConnection;
         statements = new LinkedList<>();
         resultSets = new CopyOnWriteArrayList<>();
         inputGroups = new LinkedList<>();
-        sqlExecuteTemplate = new SQLExecuteTemplate(connection.getRuntimeContext().getExecutorKernel(), connection.isHoldTransaction());
+        sqlExecuteTemplate = new SQLExecuteTemplate(connection.getRuntimeContext().getExecutorKernel(), serial);
     }
     
     /**

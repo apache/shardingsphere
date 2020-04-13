@@ -52,8 +52,8 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     
     private final StatementExecuteGroupEngine executeGroupEngine;
     
-    public StatementExecutor(final ShardingConnection shardingConnection) {
-        super(shardingConnection);
+    public StatementExecutor(final ShardingConnection shardingConnection, final boolean serial) {
+        super(shardingConnection, serial);
         int maxConnectionsSizePerQuery = shardingConnection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         executeGroupEngine = new StatementExecuteGroupEngine(maxConnectionsSizePerQuery);
     }
