@@ -22,7 +22,6 @@ import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
 import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
 import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
@@ -52,15 +51,12 @@ public abstract class AbstractStatementExecutor {
     
     private final SQLExecuteTemplate sqlExecuteTemplate;
     
-    private final RuleSchemaMetaDataLoader metaDataLoader;
-    
     public AbstractStatementExecutor(final ShardingConnection shardingConnection) {
         this.connection = shardingConnection;
         statements = new LinkedList<>();
         resultSets = new CopyOnWriteArrayList<>();
         inputGroups = new LinkedList<>();
         sqlExecuteTemplate = new SQLExecuteTemplate(connection.getRuntimeContext().getExecutorKernel(), connection.isHoldTransaction());
-        metaDataLoader = new RuleSchemaMetaDataLoader(connection.getRuntimeContext().getRule().toRules());
     }
     
     /**
