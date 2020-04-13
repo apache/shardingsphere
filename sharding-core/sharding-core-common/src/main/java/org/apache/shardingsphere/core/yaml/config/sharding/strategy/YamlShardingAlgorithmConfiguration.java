@@ -23,7 +23,7 @@ import lombok.Setter;
 import java.util.Properties;
 
 /**
- * Sharding strategy configuration for YAML.
+ * Sharding algorithm configuration for YAML.
  */
 @Getter
 @Setter
