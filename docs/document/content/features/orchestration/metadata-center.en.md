@@ -89,6 +89,7 @@ unconfiguredSchemaMetaDataMap:
           primary:
             name: PRIMARY
 ```
+
 ### configuredSchemaMetaData
 
 Store metadata for all data sources configured with sharding rules.

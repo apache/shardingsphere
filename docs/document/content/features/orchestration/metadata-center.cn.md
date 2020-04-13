@@ -23,6 +23,7 @@ metadata
     ├      ├── [YAML text contents]    
     ├──....
 ```
+
 ## YAML Text Contents
 
 在元数据中心中，元数据分为 `configuredSchemaMetaData` 和 `unconfiguredSchemaMetaDataMap` 两部分。
@@ -88,6 +89,7 @@ unconfiguredSchemaMetaDataMap:
           primary:
             name: PRIMARY
 ```
+
 ### configuredSchemaMetaData
 
 存储所有配置了分片规则的数据源的元数据。
