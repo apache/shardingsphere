@@ -98,19 +98,19 @@ public abstract class AbstractStatementExecutor {
     @SuppressWarnings("unchecked")
     protected final <T> List<T> executeCallback(final SQLExecutorCallback<T> executeCallback) throws SQLException {
         List<T> result = sqlExecuteTemplate.execute((Collection) inputGroups, executeCallback);
-        refreshMetaDataIfNeeded(connection.getRuntimeContext(), sqlStatementContext);
+        refreshTableMetaData(connection.getRuntimeContext(), sqlStatementContext);
         return result;
     }
     
     @SuppressWarnings("unchecked")
-    private void refreshMetaDataIfNeeded(final ShardingRuntimeContext runtimeContext, final SQLStatementContext sqlStatementContext) throws SQLException {
+    private void refreshTableMetaData(final ShardingRuntimeContext runtimeContext, final SQLStatementContext sqlStatementContext) throws SQLException {
         if (null == sqlStatementContext) {
             return;
         }
         Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
         if (refreshStrategy.isPresent()) {
             refreshStrategy.get().refreshMetaData(runtimeContext.getMetaData(), sqlStatementContext,
-                    tableName -> metaDataLoader.load(databaseType, connection.getDataSourceMap(), tableName, connection.getRuntimeContext().getProperties()));
+                tableName -> metaDataLoader.load(databaseType, connection.getDataSourceMap(), tableName, connection.getRuntimeContext().getProperties()));
         }
     }
     
