@@ -23,6 +23,8 @@ import org.apache.shardingsphere.orchestration.core.common.event.ShardingOrchest
 import org.apache.shardingsphere.orchestration.core.common.listener.PostShardingCenterRepositoryEventListener;
 import org.apache.shardingsphere.orchestration.core.metadatacenter.MetaDataCenterNode;
 import org.apache.shardingsphere.orchestration.core.metadatacenter.event.MetaDataChangedEvent;
+import org.apache.shardingsphere.orchestration.core.metadatacenter.event.MetaDataIgnoredEvent;
+import org.apache.shardingsphere.orchestration.core.metadatacenter.threadlocal.MetadataRefreshThreadLocal;
 import org.apache.shardingsphere.orchestration.core.metadatacenter.yaml.RuleSchemaMetaDataYamlSwapper;
 import org.apache.shardingsphere.orchestration.core.metadatacenter.yaml.YamlRuleSchemaMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
@@ -44,6 +46,10 @@ public final class MetaDataChangedListener extends PostShardingCenterRepositoryE
 
     @Override
     protected ShardingOrchestrationEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
+        Object object = MetadataRefreshThreadLocal.getInstance().getAndRemove();
+        if (object != null) {
+            return new MetaDataIgnoredEvent();
+        }
         RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataYamlSwapper().swap(YamlEngine.unmarshal(event.getValue(), YamlRuleSchemaMetaData.class));
         return new MetaDataChangedEvent(schemaNames, ruleSchemaMetaData);
     }
