@@ -1,8 +1,8 @@
 +++
-pre = "<b>3.3.3. </b>"
+pre = "<b>3.3.4. </b>"
 toc = true
 title = "支持的配置中心/注册中心"
-weight = 3
+weight = 4
 +++
 
 ## SPI

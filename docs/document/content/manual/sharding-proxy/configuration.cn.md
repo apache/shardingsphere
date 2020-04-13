@@ -326,17 +326,18 @@ shardingRule:
 Sharding-Proxy使用conf/server.yaml配置注册中心、认证信息以及公用属性。
 
 ### 治理
-治理模块目前支持配置中心和注册中心，具体配置为：
+治理模块目前支持配置中心、注册中心和元数据中心，具体配置为：
 - `orchestrationType: config_center`   #配置配置中心
 - `orchestrationType: registry_center` #配置注册中心
-- `orchestrationType: config_center,registry_center` #同时配置配置中心和注册中心
+- `orchestrationType: metadata_center` #元数据中心
+- `orchestrationType: config_center,registry_center,metadata_center` #同时配置配置中心、注册中心和元数据中心
 
 ```yaml
 #省略数据分片和读写分离配置
 
 orchestration:
   orchestration_ds: 
-    orchestrationType: config_center,registry_center
+    orchestrationType: config_center,registry_center,metadata_center
     instanceType: zookeeper
     serverLists: localhost:2181
     namespace: orchestration

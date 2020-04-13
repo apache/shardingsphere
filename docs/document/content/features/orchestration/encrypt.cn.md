@@ -1,8 +1,8 @@
 +++
-pre = "<b>3.3.5. </b>"
+pre = "<b>3.3.6. </b>"
 toc = true
 title = "数据脱敏"
-weight = 5
+weight = 6
 +++
 
 一、背景

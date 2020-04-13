@@ -325,17 +325,18 @@ shardingRule:
 Sharding-Proxy uses `conf/server.yaml` to configure the registry center, authentication information and common properties.
 
 ### Orchestration
-Orchestration can config config-center and registry-center now, as follow:
+Orchestration can config config-center, registry-center and metadata-center now, as follow:
 - `orchestrationType: config_center`   #config config-center
 - `orchestrationType: registry_center` #config registry_center
-- `orchestrationType: config_center,registry_center` #config config-center and registry_center
+- `orchestrationType: metadata_center` #config metadata_center
+- `orchestrationType: config_center,registry_center,metadata_center` #config config-center, registry_center and metadata_center
 
 ```yaml
 #Omit data sharding and read-write split configurations
 
 orchestration:
   orchestration_ds: 
-    orchestrationType: config_center,registry_center
+    orchestrationType: config_center,registry_center,metadata_center
     instanceType: zookeeper
     serverLists: localhost:2181
     namespace: orchestration
