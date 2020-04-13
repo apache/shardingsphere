@@ -23,5 +23,5 @@ import org.apache.shardingsphere.orchestration.core.common.event.ShardingOrchest
  * Meta data ignored event.
  */
 public final class MetaDataIgnoredEvent implements ShardingOrchestrationEvent {
-
 }
+

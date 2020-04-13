@@ -35,5 +35,3 @@ public final class MetadataRefreshThreadLocalTest {
         assertNull(MetadataRefreshThreadLocal.getInstance().getAndRemove());
     }
 }
-
-
