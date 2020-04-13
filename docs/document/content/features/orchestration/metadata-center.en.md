@@ -7,21 +7,23 @@ weight = 3
 
 ## Motivation
 
-- Metadata is the core data of the data source used by Sharding-JDBC / Sharding-Proxy, which contains tables, columns, and indexes, etc. Metadata ensures that each component of ShardingSphere can run correctly.
+- Metadata is the core data of the data source used by Sharding-JDBC/Sharding-Proxy, which contains tables, columns, and indexes, etc. Metadata ensures that each component of ShardingSphere can run correctly.
 
 - The metadata center organizes and manages the metadata in a unified manner to realize the unified loading of metadata, change notifications and data synchronization.
 
 ## Data Structure in Metadata Center
 
-The metadata center stores metadata in YAML under the metadata node of the defined namespace, and each logical data source is stored independently.
+The metadata center stores metadata in YAML under the metadata node of the defined namespace and orchestration node, and each logical data source is stored independently.
 
 ```
-metadata
-    ├──schema1
-    ├      ├── [YAML text contents]     
-    ├──schema2
-    ├      ├── [YAML text contents]    
-    ├──....
+├─orchestration-namespace
+│   ├─orchestration-name
+│   │   ├──metadata
+│   │   │    ├──schema1
+│   │   │    │    ├── [YAML text contents]     
+│   │   │    ├──schema2
+│   │   │    │    ├── [YAML text contents]    
+│   │   │    ├──....
 ```
 
 ## YAML text contents
@@ -100,4 +102,4 @@ Store metadata for data sources that no sharding rules configured.
 
 ## Change Notifications
 
-After DDL is executed through a certain Proxy instance, the metadata center notifies other Proxy instances to reload metadata through an event mechanism to ensure metadata consistency.
+After DDL is executed through a certain Proxy instance, ShardingSphere stores new metadata in the metadata center first, and then notifies other Proxy instances to synchronize metadata from the metadata center by event broadcast mechanism to ensure metadata consistency.

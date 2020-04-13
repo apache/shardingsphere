@@ -13,15 +13,17 @@ weight = 3
 
 ## 元数据中心数据结构
 
-元数据中心在定义的命名空间的metadata节点下，以YAML格式存储，每个逻辑数据源独立存储。
+元数据中心在定义的命名空间和治理节点的metadata节点下，以YAML格式存储，每个逻辑数据源独立存储。
 
 ```
-metadata
-    ├──schema1
-    ├      ├── [YAML text contents]     
-    ├──schema2
-    ├      ├── [YAML text contents]    
-    ├──....
+├─orchestration-namespace
+│   ├─orchestration-name
+│   │   ├──metadata
+│   │   │    ├──schema1
+│   │   │    │    ├── [YAML text contents]     
+│   │   │    ├──schema2
+│   │   │    │    ├── [YAML text contents]    
+│   │   │    ├──....
 ```
 
 ## YAML Text Contents
@@ -100,4 +102,4 @@ unconfiguredSchemaMetaDataMap:
 
 ## 变更通知
 
-通过某一个Proxy实例执行DDL以后，元数据中心通过事件机制，通知其它Proxy实例重新加载元数据，保证元数据一致。
+通过某一个Proxy实例执行DDL以后，ShardingSphere先将新的元数据存储到元数据中心，然后通过事件广播机制，通知其它Proxy实例从元数据中心同步元数据，保证元数据一致。
