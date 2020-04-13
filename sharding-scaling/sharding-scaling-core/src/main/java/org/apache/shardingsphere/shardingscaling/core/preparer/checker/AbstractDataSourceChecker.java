@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.execute.executor.checker;
+package org.apache.shardingsphere.shardingscaling.core.preparer.checker;
+
+import org.apache.shardingsphere.shardingscaling.core.exception.DatasourceCheckFailedException;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Collection;
 
 /**
- * Data source checker.
+ * Abstract data source checker.
  */
-public interface DataSourceChecker {
+public abstract class AbstractDataSourceChecker implements DataSourceChecker {
     
-    /**
-     * Check datasource connections.
-     *
-     * @param dataSources datasource connections
-     */
-    void checkConnection(Collection<DataSource> dataSources);
-    
-    /**
-     * Check user privileges.
-     *
-     * @param dataSources datasource connections
-     */
-    void checkPrivilege(Collection<DataSource> dataSources);
+    @Override
+    public final void checkConnection(final Collection<? extends DataSource> dataSources) {
+        try {
+            for (DataSource each : dataSources) {
+                each.getConnection().close();
+            }
+        } catch (SQLException e) {
+            throw new DatasourceCheckFailedException("Datasources can't connected!");
+        }
+    }
 }

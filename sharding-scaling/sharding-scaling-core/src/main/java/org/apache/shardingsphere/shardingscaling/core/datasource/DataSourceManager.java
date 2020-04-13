@@ -31,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Data source manager.
  */
 @NoArgsConstructor
-public final class DataSourceManager {
+public final class DataSourceManager implements AutoCloseable {
     
     private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
 
@@ -86,6 +86,7 @@ public final class DataSourceManager {
     /**
      * Close, close cached data source.
      */
+    @Override
     public void close() {
         for (HikariDataSource each : cachedDataSources.values()) {
             if (!each.isClosed()) {

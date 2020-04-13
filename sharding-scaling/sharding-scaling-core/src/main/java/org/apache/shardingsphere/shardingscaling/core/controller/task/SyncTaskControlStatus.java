@@ -53,6 +53,11 @@ public enum SyncTaskControlStatus {
     STOPPED(true),
     
     /**
+     * Task has stopped by failing to prepare work.
+     */
+    PREPARING_FAILURE(true),
+    
+    /**
      * Task has stopped by failing to migrate inventory data.
      */
     MIGRATE_INVENTORY_DATA_FAILURE(true),

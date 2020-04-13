@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling.postgresql;
 
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.DataSourceChecker;
+import org.apache.shardingsphere.shardingscaling.core.preparer.checker.DataSourceChecker;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.JDBCDumper;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.LogDumper;
