@@ -35,3 +35,4 @@ public final class MetadataRefreshIgnoreTest {
         assertThat(MetadataRefreshIgnore.getInstance().getMyself(), is(false));
     }
 }
+
