@@ -33,12 +33,9 @@ import org.apache.shardingsphere.underlying.common.rule.TablesAggregationRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.TreeSet;
+import java.util.concurrent.*;
 
 /**
  * Rule schema meta data loader.
@@ -77,9 +74,9 @@ public final class RuleSchemaMetaDataLoader {
         configuredSchemaMetaData = decorate(configuredSchemaMetaData);
         Map<String, SchemaMetaData> unconfiguredSchemaMetaDataMap = new HashMap<>(dataSourceMap.size(), 1);
         int maxConnectionCount = properties.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        // TODO use multiple threads for different data sources
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            SchemaMetaData schemaMetaData = SchemaMetaDataLoader.load(entry.getValue(), maxConnectionCount, databaseType.getName(), excludedTableNames);
+        Map<String, SchemaMetaData> asyncLoadSchemaMetaData = asyncLoadSchemaMetaDataMap(dataSourceMap, maxConnectionCount, databaseType.getName(), excludedTableNames);
+        for (Entry<String, SchemaMetaData> entry : asyncLoadSchemaMetaData.entrySet()) {
+            SchemaMetaData schemaMetaData = entry.getValue();
             if (!schemaMetaData.getAllTableNames().isEmpty()) {
                 unconfiguredSchemaMetaDataMap.put(entry.getKey(), schemaMetaData);
             }
@@ -160,5 +157,32 @@ public final class RuleSchemaMetaDataLoader {
             result = entry.getValue().decorate(tableName, tableMetaData, entry.getKey());
         }
         return result;
+    }
+    
+    private Map<String, SchemaMetaData> asyncLoadSchemaMetaDataMap(final Map<String, DataSource> dataSourceMap, final int maxConnectionCount,
+                                                                   final String databaseTypeName, final Collection<String> excludedTableNames) throws SQLException {
+        Map<String, SchemaMetaData> result = new ConcurrentHashMap<>(dataSourceMap.size(), 1);
+        ExecutorService executorService = Executors.newFixedThreadPool(dataSourceMap.size());
+        Collection<Future<Map<String, SchemaMetaData>>> futures = new LinkedList<>();
+        for (Entry<String, DataSource> dataSourceEntry : dataSourceMap.entrySet()) {
+            futures.add(executorService.submit(() -> getSingleSchemaMetaDataMap(dataSourceEntry.getKey(), SchemaMetaDataLoader.load(dataSourceEntry.getValue(), maxConnectionCount, databaseTypeName, excludedTableNames))));
+        }
+        for (Future<Map<String, SchemaMetaData>> each : futures) {
+            try {
+                result.putAll(each.get());
+            } catch (final InterruptedException | ExecutionException ex) {
+                if (ex.getCause() instanceof SQLException) {
+                    throw (SQLException) ex.getCause();
+                }
+                Thread.currentThread().interrupt();
+            }
+        }
+        return result;
+    }
+    
+    private Map<String, SchemaMetaData> getSingleSchemaMetaDataMap(final String entryKey, final SchemaMetaData schemaMetaData) {
+        Map<String, SchemaMetaData> schemaMetaDataMap = new HashMap<>(1,1);
+        schemaMetaDataMap.put(entryKey, schemaMetaData);
+        return schemaMetaDataMap;
     }
 }
