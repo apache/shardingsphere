@@ -38,6 +38,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Prepared statement executor.
@@ -61,6 +62,13 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     
     private Collection<InputGroup<StatementExecuteUnit>> generateExecuteGroups(final Collection<ExecutionUnit> executionUnits, final StatementOption statementOption) throws SQLException {
         return executeGroupEngine.generate(executionUnits, getConnection(), statementOption);
+    }
+    
+    private void cacheStatements() {
+        for (InputGroup<StatementExecuteUnit> each : getInputGroups()) {
+            getStatements().addAll(each.getInputs().stream().map(StatementExecuteUnit::getStatement).collect(Collectors.toList()));
+            getParameterSets().addAll(each.getInputs().stream().map(input -> input.getExecutionUnit().getSqlUnit().getParameters()).collect(Collectors.toList()));
+        }
     }
     
     /**

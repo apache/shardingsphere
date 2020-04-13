@@ -37,6 +37,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Statement executor.
@@ -56,6 +57,12 @@ public final class StatementExecutor extends AbstractStatementExecutor {
         setSqlStatementContext(executionContext.getSqlStatementContext());
         getInputGroups().addAll(generateExecuteGroups(executionContext.getExecutionUnits(), statementOption));
         cacheStatements();
+    }
+    
+    private void cacheStatements() {
+        for (InputGroup<StatementExecuteUnit> each : getInputGroups()) {
+            getStatements().addAll(each.getInputs().stream().map(StatementExecuteUnit::getStatement).collect(Collectors.toList()));
+        }
     }
     
     @SuppressWarnings("MagicConstant")

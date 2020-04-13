@@ -41,7 +41,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
 /**
  * Abstract statement executor.
@@ -87,13 +86,6 @@ public abstract class AbstractStatementExecutor {
      * @throws SQLException SQL exception
      */
     public abstract void init(ExecutionContext executionContext, StatementOption statementOption) throws SQLException;
-    
-    protected final void cacheStatements() {
-        for (InputGroup<StatementExecuteUnit> each : inputGroups) {
-            statements.addAll(each.getInputs().stream().map(StatementExecuteUnit::getStatement).collect(Collectors.toList()));
-            parameterSets.addAll(each.getInputs().stream().map(input -> input.getExecutionUnit().getSqlUnit().getParameters()).collect(Collectors.toList()));
-        }
-    }
     
     /**
      * To make sure SkyWalking will be available at the next release of ShardingSphere,
