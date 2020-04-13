@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.executor;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
@@ -60,7 +61,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     @Override
     public void setUp() throws SQLException {
         super.setUp();
-        actual = spy(new PreparedStatementExecutor(getConnection(), false));
+        actual = spy(new PreparedStatementExecutor(getConnection(), new SQLExecuteTemplate(getExecutorKernel(), false)));
     }
     
     @Test

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.executor;
 
 import lombok.Getter;
+import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.MemoryQueryResult;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
@@ -60,8 +61,8 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     
     private final PreparedStatementExecuteGroupEngine executeGroupEngine;
     
-    public PreparedStatementExecutor(final ShardingConnection shardingConnection, final boolean serial) {
-        super(shardingConnection, serial);
+    public PreparedStatementExecutor(final ShardingConnection shardingConnection, final SQLExecuteTemplate sqlExecuteTemplate) {
+        super(sqlExecuteTemplate);
         connection = shardingConnection;
         parameterSets = new LinkedList<>();
         int maxConnectionsSizePerQuery = shardingConnection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.executor;
 
+import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.MemoryQueryResult;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
@@ -54,8 +55,8 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     
     private final StatementExecuteGroupEngine executeGroupEngine;
     
-    public StatementExecutor(final ShardingConnection shardingConnection, final boolean serial) {
-        super(shardingConnection, serial);
+    public StatementExecutor(final ShardingConnection shardingConnection, final SQLExecuteTemplate sqlExecuteTemplate) {
+        super(sqlExecuteTemplate);
         connection = shardingConnection;
         int maxConnectionsSizePerQuery = shardingConnection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         executeGroupEngine = new StatementExecuteGroupEngine(maxConnectionsSizePerQuery);

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
 import lombok.Getter;
+import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.shardingjdbc.executor.PreparedStatementExecutor;
 import org.apache.shardingsphere.shardingjdbc.executor.batch.BatchPreparedStatementExecutor;
@@ -114,9 +115,9 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         sqlStatement = runtimeContext.getSqlParserEngine().parse(sql, true);
         parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
         statementOption = returnGeneratedKeys ? new StatementOption(true) : new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
-        boolean isHoldTransaction = connection.isHoldTransaction();
-        preparedStatementExecutor = new PreparedStatementExecutor(connection, isHoldTransaction);
-        batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(connection, isHoldTransaction);
+        SQLExecuteTemplate sqlExecuteTemplate = new SQLExecuteTemplate(connection.getRuntimeContext().getExecutorKernel(), connection.isHoldTransaction());
+        preparedStatementExecutor = new PreparedStatementExecutor(connection, sqlExecuteTemplate);
+        batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(connection, sqlExecuteTemplate);
     }
     
     @Override

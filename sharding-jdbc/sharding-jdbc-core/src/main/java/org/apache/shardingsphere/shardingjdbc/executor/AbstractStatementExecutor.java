@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.shardingjdbc.executor;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
 import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
@@ -37,6 +37,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * Abstract statement executor.
  */
+@RequiredArgsConstructor
 @Getter
 public abstract class AbstractStatementExecutor {
     
@@ -47,10 +48,6 @@ public abstract class AbstractStatementExecutor {
     private final Collection<InputGroup<StatementExecuteUnit>> inputGroups = new LinkedList<>();
     
     private final SQLExecuteTemplate sqlExecuteTemplate;
-    
-    public AbstractStatementExecutor(final ShardingConnection shardingConnection, final boolean serial) {
-        sqlExecuteTemplate = new SQLExecuteTemplate(shardingConnection.getRuntimeContext().getExecutorKernel(), serial);
-    }
     
     /**
      * Initialize executor.

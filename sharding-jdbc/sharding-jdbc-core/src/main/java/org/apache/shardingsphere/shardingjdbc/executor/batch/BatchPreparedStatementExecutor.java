@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.executor.batch;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
 import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
 import org.apache.shardingsphere.shardingjdbc.executor.AbstractStatementExecutor;
@@ -57,8 +58,8 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     
     private int batchCount;
     
-    public BatchPreparedStatementExecutor(final ShardingConnection shardingConnection, final boolean serial) {
-        super(shardingConnection, serial);
+    public BatchPreparedStatementExecutor(final ShardingConnection shardingConnection, final SQLExecuteTemplate sqlExecuteTemplate) {
+        super(sqlExecuteTemplate);
         connection = shardingConnection;
         int maxConnectionsSizePerQuery = shardingConnection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         executeGroupEngine = new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery);
