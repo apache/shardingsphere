@@ -15,20 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.fixture;
-
-import org.apache.shardingsphere.shardingscaling.core.preparer.checker.DataSourceChecker;
+package org.apache.shardingsphere.shardingscaling.core.preparer.checker;
 
 import javax.sql.DataSource;
 import java.util.Collection;
 
-public final class FixtureH2DataSourceChecker implements DataSourceChecker {
+/**
+ * Data source checker.
+ */
+public interface DataSourceChecker {
     
-    @Override
-    public void checkConnection(final Collection<? extends DataSource> dataSources) {
-    }
+    /**
+     * Check datasource connections.
+     *
+     * @param dataSources datasource connections
+     */
+    void checkConnection(Collection<? extends DataSource> dataSources);
     
-    @Override
-    public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
-    }
+    /**
+     * Check user privileges.
+     *
+     * @param dataSources datasource connections
+     */
+    void checkPrivilege(Collection<? extends DataSource> dataSources);
 }

@@ -35,18 +35,12 @@ import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingscaling.core.ShardingScalingJob;
 import org.apache.shardingsphere.shardingscaling.core.config.ScalingConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.utils.SyncConfigurationUtil;
 import org.apache.shardingsphere.shardingscaling.core.controller.ScalingJobController;
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
-import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.shardingscaling.core.exception.DatasourceCheckFailedException;
 import org.apache.shardingsphere.shardingscaling.core.exception.ScalingJobNotFoundException;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.DataSourceChecker;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.DataSourceCheckerCheckerFactory;
 import org.apache.shardingsphere.shardingscaling.utils.ResponseContentUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -96,28 +90,9 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
         ScalingConfiguration scalingConfiguration = GSON.fromJson(requestBody, ScalingConfiguration.class);
         ShardingScalingJob shardingScalingJob = new ShardingScalingJob("Local Sharding Scaling Job");
         shardingScalingJob.getSyncConfigurations().addAll(SyncConfigurationUtil.toSyncConfigurations(scalingConfiguration));
-        DataSourceManager dataSourceManager = new DataSourceManager(shardingScalingJob.getSyncConfigurations());
-        try {
-            checkDatasources(shardingScalingJob.getSyncConfigurations(), dataSourceManager);
-        } catch (DatasourceCheckFailedException e) {
-            log.warn("Datasources check failed!", e);
-            response(GSON.toJson(ResponseContentUtil.handleBadRequest(e.getMessage())), channelHandlerContext, HttpResponseStatus.BAD_REQUEST);
-            return;
-        }
         log.info("start job : {}", requestBody);
         SCALING_JOB_CONTROLLER.start(shardingScalingJob);
         response(GSON.toJson(ResponseContentUtil.success()), channelHandlerContext, HttpResponseStatus.OK);
-    }
-    
-    private void checkDatasources(final List<SyncConfiguration> syncConfigurations, final DataSourceManager dataSourceManager) {
-        try {
-            DataSourceChecker dataSourceChecker = DataSourceCheckerCheckerFactory.newInstanceDataSourceChecker(
-                    syncConfigurations.get(0).getDumperConfiguration().getDataSourceConfiguration().getDatabaseType().getName());
-            dataSourceChecker.checkConnection(new ArrayList<>(dataSourceManager.getCachedDataSources().values()));
-            dataSourceChecker.checkPrivilege(new ArrayList<>(dataSourceManager.getSourceDatasources().values()));
-        } finally {
-            dataSourceManager.close();
-        }
     }
     
     private void getJobProgress(final ChannelHandlerContext channelHandlerContext, final String requestPath) {

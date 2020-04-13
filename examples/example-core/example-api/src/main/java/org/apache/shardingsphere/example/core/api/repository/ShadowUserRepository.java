@@ -15,27 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.execute.executor.checker;
+package org.apache.shardingsphere.example.core.api.repository;
 
-import javax.sql.DataSource;
-import java.util.Collection;
+import org.apache.shardingsphere.example.core.api.entity.ShadowUser;
 
-/**
- * Data source checker.
- */
-public interface DataSourceChecker {
-    
-    /**
-     * Check datasource connections.
-     *
-     * @param dataSources datasource connections
-     */
-    void checkConnection(Collection<DataSource> dataSources);
-    
-    /**
-     * Check user privileges.
-     *
-     * @param dataSources datasource connections
-     */
-    void checkPrivilege(Collection<DataSource> dataSources);
+public interface ShadowUserRepository extends CommonRepository<ShadowUser, Long> {
 }

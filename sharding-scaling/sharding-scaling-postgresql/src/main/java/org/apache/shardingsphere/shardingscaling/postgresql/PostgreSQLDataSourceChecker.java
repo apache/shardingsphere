@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingscaling.postgresql;
 
 import org.apache.shardingsphere.shardingscaling.core.exception.DatasourceCheckFailedException;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.AbstractDataSourceChecker;
+import org.apache.shardingsphere.shardingscaling.core.preparer.checker.AbstractDataSourceChecker;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -32,7 +32,7 @@ import java.util.Collection;
 public final class PostgreSQLDataSourceChecker extends AbstractDataSourceChecker {
     
     @Override
-    public void checkPrivilege(final Collection<DataSource> dataSources) {
+    public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
         try {
             for (DataSource dataSource : dataSources) {
                 String tableName;
