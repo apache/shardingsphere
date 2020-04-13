@@ -37,7 +37,7 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
     private static final String SHOW_MASTER_STATUS_SQL = "SHOW MASTER STATUS";
     
     @Override
-    public void checkPrivilege(final Collection<DataSource> dataSources) {
+    public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
         for (DataSource each : dataSources) {
             checkPrivilege0(each);
         }

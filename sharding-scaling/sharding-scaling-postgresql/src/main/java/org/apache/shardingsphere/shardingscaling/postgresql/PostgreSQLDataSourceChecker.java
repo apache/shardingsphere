@@ -32,7 +32,7 @@ import java.util.Collection;
 public final class PostgreSQLDataSourceChecker extends AbstractDataSourceChecker {
     
     @Override
-    public void checkPrivilege(final Collection<DataSource> dataSources) {
+    public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
         try {
             for (DataSource dataSource : dataSources) {
                 String tableName;

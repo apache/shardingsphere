@@ -30,12 +30,12 @@ public interface DataSourceChecker {
      *
      * @param dataSources datasource connections
      */
-    void checkConnection(Collection<DataSource> dataSources);
+    void checkConnection(Collection<? extends DataSource> dataSources);
     
     /**
      * Check user privileges.
      *
      * @param dataSources datasource connections
      */
-    void checkPrivilege(Collection<DataSource> dataSources);
+    void checkPrivilege(Collection<? extends DataSource> dataSources);
 }

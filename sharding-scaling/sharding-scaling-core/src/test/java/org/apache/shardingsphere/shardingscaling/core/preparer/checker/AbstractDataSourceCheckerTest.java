@@ -50,7 +50,7 @@ public final class AbstractDataSourceCheckerTest {
     public void setUp() {
         dataSourceChecker = new AbstractDataSourceChecker() {
             @Override
-            public void checkPrivilege(final Collection<DataSource> dataSources) {
+            public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
 
             }
         };

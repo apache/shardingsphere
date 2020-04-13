@@ -29,7 +29,7 @@ import java.util.Collection;
 public abstract class AbstractDataSourceChecker implements DataSourceChecker {
     
     @Override
-    public final void checkConnection(final Collection<DataSource> dataSources) {
+    public final void checkConnection(final Collection<? extends DataSource> dataSources) {
         try {
             for (DataSource each : dataSources) {
                 each.getConnection().close();
