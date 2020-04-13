@@ -157,7 +157,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
         };
         List<Integer> results = executeCallback(executeCallback);
         refreshTableMetaData(getConnection().getRuntimeContext(), sqlStatementContext);
-        if (isAccumulate(sqlStatementContext)) {
+        if (!getConnection().getRuntimeContext().getRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())) {
             return accumulate(results);
         } else {
             return null == results.get(0) ? 0 : results.get(0);

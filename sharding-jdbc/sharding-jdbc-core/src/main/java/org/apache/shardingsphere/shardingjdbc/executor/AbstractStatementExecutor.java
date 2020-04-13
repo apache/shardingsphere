@@ -21,7 +21,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
 import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
@@ -82,16 +81,6 @@ public abstract class AbstractStatementExecutor {
     @SuppressWarnings("unchecked")
     protected final <T> List<T> executeCallback(final SQLExecutorCallback<T> executeCallback) throws SQLException {
         return sqlExecuteTemplate.execute((Collection) inputGroups, executeCallback);
-    }
-    
-    /**
-     * Is accumulate or not.
-     *
-     * @param sqlStatementContext SQL statement context
-     * @return accumulate or not
-     */
-    public final boolean isAccumulate(final SQLStatementContext sqlStatementContext) {
-        return !connection.getRuntimeContext().getRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames());
     }
     
     /**

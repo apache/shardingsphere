@@ -119,7 +119,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
         SQLExecutorCallback<Integer> executeCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(getConnection().getRuntimeContext().getDatabaseType(), isExceptionThrown);
         List<Integer> results = executeCallback(executeCallback);
         refreshTableMetaData(getConnection().getRuntimeContext(), sqlStatementContext);
-        if (isAccumulate(sqlStatementContext)) {
+        if (!getConnection().getRuntimeContext().getRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())) {
             return accumulate(results);
         } else {
             return results.get(0);

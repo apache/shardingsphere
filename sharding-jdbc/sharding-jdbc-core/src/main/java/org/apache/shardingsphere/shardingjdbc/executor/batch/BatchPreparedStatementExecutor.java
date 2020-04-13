@@ -120,7 +120,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
      * @throws SQLException SQL exception
      */
     public int[] executeBatch(final SQLStatementContext sqlStatementContext) throws SQLException {
-        final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
+        boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         SQLExecutorCallback<int[]> callback = new SQLExecutorCallback<int[]>(getConnection().getRuntimeContext().getDatabaseType(), isExceptionThrown) {
             
             @Override
@@ -129,7 +129,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
             }
         };
         List<int[]> results = executeCallback(callback);
-        if (isAccumulate(sqlStatementContext)) {
+        if (!getConnection().getRuntimeContext().getRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())) {
             return accumulate(results);
         } else {
             return results.get(0);
