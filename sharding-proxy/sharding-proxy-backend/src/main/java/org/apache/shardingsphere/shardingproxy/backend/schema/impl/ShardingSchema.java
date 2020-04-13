@@ -27,7 +27,7 @@ import org.apache.shardingsphere.orchestration.core.common.event.ShardingRuleCha
 import org.apache.shardingsphere.orchestration.core.common.rule.OrchestrationMasterSlaveRule;
 import org.apache.shardingsphere.orchestration.core.common.rule.OrchestrationShardingRule;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
-import org.apache.shardingsphere.orchestration.core.metadatacenter.threadlocal.MetadataRefreshThreadLocal;
+import org.apache.shardingsphere.orchestration.core.metadatacenter.ignore.MetadataRefreshIgnore;
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationShardingSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
@@ -101,7 +101,7 @@ public final class ShardingSchema extends LogicSchema {
             refreshStrategy.get().refreshMetaData(getMetaData(), sqlStatementContext, this::loadTableMetaData);
             if (null != ShardingOrchestrationFacade.getInstance()) {
                 ShardingOrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(getName(), getMetaData().getSchema());
-                MetadataRefreshThreadLocal.getInstance().set(true);
+                MetadataRefreshIgnore.getInstance().setMyself();
             }
         }
     }

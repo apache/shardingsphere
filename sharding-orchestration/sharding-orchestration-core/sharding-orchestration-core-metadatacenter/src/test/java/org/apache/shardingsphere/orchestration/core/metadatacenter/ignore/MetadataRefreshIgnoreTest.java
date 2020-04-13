@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.core.metadatacenter.threadlocal;
+package org.apache.shardingsphere.orchestration.core.metadatacenter.ignore;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-public final class MetadataRefreshThreadLocalTest {
+public final class MetadataRefreshIgnoreTest {
     
     @Test
-    public void assertExist() {
-        MetadataRefreshThreadLocal.getInstance().set(true);
-        assertNotNull(MetadataRefreshThreadLocal.getInstance().getAndRemove());
+    public void assertTrue() {
+        MetadataRefreshIgnore.getInstance().setMyself();
+        assertThat(MetadataRefreshIgnore.getInstance().getMyself(), is(true));
     }
     
     @Test
-    public void assertNotExist() {
-        assertNull(MetadataRefreshThreadLocal.getInstance().getAndRemove());
+    public void assertFalse() {
+        assertThat(MetadataRefreshIgnore.getInstance().getMyself(), is(false));
     }
 }

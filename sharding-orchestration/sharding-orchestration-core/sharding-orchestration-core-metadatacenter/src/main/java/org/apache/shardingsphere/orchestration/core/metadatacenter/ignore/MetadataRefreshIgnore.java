@@ -15,54 +15,47 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.core.metadatacenter.threadlocal;
+package org.apache.shardingsphere.orchestration.core.metadatacenter.ignore;
 
 import lombok.NoArgsConstructor;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
- * Metadata refresh thread local.
+ * Metadata refresh ignore.
  */
 @NoArgsConstructor
-public final class MetadataRefreshThreadLocal {
+public final class MetadataRefreshIgnore {
     
-    private static final ThreadLocal<Object> THREAD_LOCAL = new ThreadLocal<>();
+    private static final MetadataRefreshIgnore INSTANCE = new MetadataRefreshIgnore();
     
-    private static final MetadataRefreshThreadLocal INSTANCE = new MetadataRefreshThreadLocal();
+    private volatile AtomicBoolean myself = new AtomicBoolean(false);
     
     /**
      * Gets instance.
      *
-     * @return metadata refresh thread local
+     * @return metadata refresh ignore
      */
-    public static MetadataRefreshThreadLocal getInstance() {
+    public static MetadataRefreshIgnore getInstance() {
         return INSTANCE;
     }
     
     /**
-     * Set object for thread local.
-     *
-     * @param object object
+     * Set myself.
      */
-    public void set(final Object object) {
-        THREAD_LOCAL.set(object);
+    public void setMyself() {
+        myself.compareAndSet(false, true);
     }
     
     /**
-     * Gets and remove.
+     * Get myself.
      *
-     * @return object
+     * @return myself
      */
-    public Object getAndRemove() {
-        Object result = THREAD_LOCAL.get();
-        THREAD_LOCAL.remove();
+    public boolean getMyself() {
+        boolean result = myself.get();
+        myself.set(false);
         return result;
-    }
-    
-    /**
-     * clean thread local for gc.
-     */
-    public void remove() {
-        THREAD_LOCAL.remove();
     }
 }
 

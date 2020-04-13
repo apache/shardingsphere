@@ -24,6 +24,7 @@ import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChang
 import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.orchestration.core.metadatacenter.event.MetaDataChangedEvent;
+import org.apache.shardingsphere.orchestration.core.metadatacenter.ignore.MetadataRefreshIgnore;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
@@ -73,6 +74,7 @@ public abstract class LogicSchema {
         RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataLoader(rules).load(databaseType, getBackendDataSource().getDataSources(), ShardingProxyContext.getInstance().getProperties());
         if (null != ShardingOrchestrationFacade.getInstance()) {
             ShardingOrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(name, ruleSchemaMetaData);
+            MetadataRefreshIgnore.getInstance().setMyself();
         }
         return new ShardingSphereMetaData(dataSourceMetas, ruleSchemaMetaData);
     }

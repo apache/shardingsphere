@@ -47,8 +47,8 @@ public final class RuleSchemaMetaDataYamlSwapper implements YamlSwapper<YamlRule
     @Override
     public RuleSchemaMetaData swap(final YamlRuleSchemaMetaData yaml) {
         SchemaMetaData configured = convertSchema(yaml.getConfiguredSchemaMetaData());
-        Map<String, SchemaMetaData> unconfigured = yaml.getUnconfiguredSchemaMetaDataMap().entrySet().stream()
-                .collect(Collectors.toMap(entry -> entry.getKey(), entry -> convertSchema(entry.getValue())));
+        Map<String, SchemaMetaData> unconfigured = yaml.getUnconfiguredSchemaMetaDataMap() == null ? Collections.emptyMap() :
+           yaml.getUnconfiguredSchemaMetaDataMap().entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey(), entry -> convertSchema(entry.getValue())));
         return new RuleSchemaMetaData(configured, unconfigured);
     }
 
@@ -69,7 +69,7 @@ public final class RuleSchemaMetaDataYamlSwapper implements YamlSwapper<YamlRule
     }
 
     private Collection<ColumnMetaData> convertColumns(final Map<String, YamlColumnMetaData> indexes) {
-        return indexes.values().stream().map(this::convertColumn).collect(Collectors.toList());
+        return null == indexes ? Collections.emptyList() : indexes.values().stream().map(this::convertColumn).collect(Collectors.toList());
     }
 
     private ColumnMetaData convertColumn(final YamlColumnMetaData column) {
