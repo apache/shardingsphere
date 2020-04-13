@@ -78,10 +78,10 @@ public final class ShardingStrategyConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToYamlWithComplex() {
         ComplexKeysShardingAlgorithm complexKeysShardingAlgorithm = mock(ComplexKeysShardingAlgorithm.class);
-        when(complexKeysShardingAlgorithm.getType()).thenReturn("complex");
+        when(complexKeysShardingAlgorithm.getType()).thenReturn("COMPLEX_TEST");
         YamlShardingStrategyConfiguration actual = shardingStrategyConfigurationYamlSwapper.swap(new ComplexShardingStrategyConfiguration("id, creation_date", complexKeysShardingAlgorithm));
         assertThat(actual.getComplex().getShardingColumns(), is("id, creation_date"));
-        assertThat(actual.getComplex().getShardingAlgorithm().getType(), is("COMPLEX-TEST"));
+        assertThat(actual.getComplex().getShardingAlgorithm().getType(), is("COMPLEX_TEST"));
         assertNull(actual.getStandard());
         assertNull(actual.getInline());
         assertNull(actual.getHint());
