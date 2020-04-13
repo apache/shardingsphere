@@ -35,6 +35,7 @@ import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlComplexS
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlHintShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlInlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlNoneShardingStrategyConfiguration;
+import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlShardingAlgorithmConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlStandardShardingStrategyConfiguration;
 import org.junit.Test;
 
@@ -43,6 +44,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class ShardingStrategyConfigurationYamlSwapperTest {
     
@@ -76,9 +78,10 @@ public final class ShardingStrategyConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToYamlWithComplex() {
         ComplexKeysShardingAlgorithm complexKeysShardingAlgorithm = mock(ComplexKeysShardingAlgorithm.class);
+        when(complexKeysShardingAlgorithm.getType()).thenReturn("complex");
         YamlShardingStrategyConfiguration actual = shardingStrategyConfigurationYamlSwapper.swap(new ComplexShardingStrategyConfiguration("id, creation_date", complexKeysShardingAlgorithm));
         assertThat(actual.getComplex().getShardingColumns(), is("id, creation_date"));
-        assertThat(actual.getComplex().getAlgorithmClassName(), is(complexKeysShardingAlgorithm.getClass().getName()));
+        assertThat(actual.getComplex().getShardingAlgorithm().getType(), is("complex"));
         assertNull(actual.getStandard());
         assertNull(actual.getInline());
         assertNull(actual.getHint());
@@ -160,7 +163,8 @@ public final class ShardingStrategyConfigurationYamlSwapperTest {
     private YamlShardingStrategyConfiguration createComplexShardingStrategyConfiguration() {
         YamlComplexShardingStrategyConfiguration yamlComplexShardingStrategyConfiguration = new YamlComplexShardingStrategyConfiguration();
         yamlComplexShardingStrategyConfiguration.setShardingColumns("id, creation_date");
-        yamlComplexShardingStrategyConfiguration.setAlgorithmClassName(ComplexKeysShardingAlgorithmFixture.class.getName());
+        yamlComplexShardingStrategyConfiguration.setShardingAlgorithm(new YamlShardingAlgorithmConfiguration());
+        yamlComplexShardingStrategyConfiguration.getShardingAlgorithm().setType("complex");
         YamlShardingStrategyConfiguration result = new YamlShardingStrategyConfiguration();
         result.setComplex(yamlComplexShardingStrategyConfiguration);
         return result;
