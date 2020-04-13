@@ -19,8 +19,10 @@ package org.apache.shardingsphere.shardingscaling.core.controller;
 
 import org.apache.shardingsphere.shardingscaling.core.ShardingScalingJob;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
+import org.apache.shardingsphere.shardingscaling.core.controller.task.SyncTaskControlStatus;
 import org.apache.shardingsphere.shardingscaling.core.controller.task.SyncTaskController;
 import org.apache.shardingsphere.shardingscaling.core.exception.ScalingJobNotFoundException;
+import org.apache.shardingsphere.shardingscaling.core.preparer.ShardingScalingJobPreparer;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -36,19 +38,25 @@ public final class ScalingJobController {
     
     private final ConcurrentMap<Integer, List<SyncTaskController>> syncTaskControllerMaps = new ConcurrentHashMap<>();
     
+    private final ShardingScalingJobPreparer shardingScalingJobPreparer = new ShardingScalingJobPreparer();
+    
     /**
      * Start data nodes migrate.
      *
      * @param shardingScalingJob sharding scaling job
      */
     public void start(final ShardingScalingJob shardingScalingJob) {
+        scalingJobMap.put(shardingScalingJob.getJobId(), shardingScalingJob);
+        shardingScalingJobPreparer.prepare(shardingScalingJob);
+        if (SyncTaskControlStatus.PREPARING_FAILURE.name().equals(shardingScalingJob.getStatus())) {
+            return;
+        }
         List<SyncTaskController> syncTaskControllers = new LinkedList<>();
         for (SyncConfiguration syncConfiguration : shardingScalingJob.getSyncConfigurations()) {
             SyncTaskController syncTaskController = new SyncTaskController(syncConfiguration);
             syncTaskController.start();
             syncTaskControllers.add(syncTaskController);
         }
-        scalingJobMap.put(shardingScalingJob.getJobId(), shardingScalingJob);
         syncTaskControllerMaps.put(shardingScalingJob.getJobId(), syncTaskControllers);
     }
     

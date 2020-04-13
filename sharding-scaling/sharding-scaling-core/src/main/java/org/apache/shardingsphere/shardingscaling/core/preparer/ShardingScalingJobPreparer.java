@@ -18,13 +18,17 @@
 package org.apache.shardingsphere.shardingscaling.core.preparer;
 
 import org.apache.shardingsphere.shardingscaling.core.ShardingScalingJob;
+import org.apache.shardingsphere.shardingscaling.core.controller.task.SyncTaskControlStatus;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.shardingscaling.core.exception.DatasourceCheckFailedException;
 import org.apache.shardingsphere.shardingscaling.core.preparer.checker.DataSourceChecker;
 import org.apache.shardingsphere.shardingscaling.core.preparer.checker.DataSourceCheckerCheckerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Sharding scaling job preparer.
  */
+@Slf4j
 public final class ShardingScalingJobPreparer {
     
     /**
@@ -36,6 +40,9 @@ public final class ShardingScalingJobPreparer {
         String databaseType = shardingScalingJob.getSyncConfigurations().get(0).getDumperConfiguration().getDataSourceConfiguration().getDatabaseType().getName();
         try (DataSourceManager dataSourceManager = new DataSourceManager(shardingScalingJob.getSyncConfigurations())) {
             checkDatasources(databaseType, dataSourceManager);
+        } catch (DatasourceCheckFailedException ex) {
+            log.warn("Preparing sharding scaling job {} : {} failed", shardingScalingJob.getJobId(), shardingScalingJob.getJobName(), ex);
+            shardingScalingJob.setStatus(SyncTaskControlStatus.PREPARING_FAILURE.name());
         }
     }
     

@@ -25,10 +25,10 @@ import java.util.Collection;
 public final class FixtureH2DataSourceChecker implements DataSourceChecker {
     
     @Override
-    public void checkConnection(final Collection<DataSource> dataSources) {
+    public void checkConnection(final Collection<? extends DataSource> dataSources) {
     }
     
     @Override
-    public void checkPrivilege(final Collection<DataSource> dataSources) {
+    public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
     }
 }
