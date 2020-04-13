@@ -52,8 +52,6 @@ public abstract class AbstractStatementExecutor {
     
     private final DatabaseType databaseType;
     
-    private final List<List<Object>> parameterSets;
-    
     private final List<Statement> statements;
     
     private final List<ResultSet> resultSets;
@@ -70,7 +68,6 @@ public abstract class AbstractStatementExecutor {
     public AbstractStatementExecutor(final ShardingConnection shardingConnection) {
         this.connection = shardingConnection;
         this.databaseType = shardingConnection.getRuntimeContext().getDatabaseType();
-        parameterSets = new LinkedList<>();
         statements = new LinkedList<>();
         resultSets = new CopyOnWriteArrayList<>();
         inputGroups = new LinkedList<>();
@@ -115,20 +112,19 @@ public abstract class AbstractStatementExecutor {
     }
     
     /**
-     * Clear data.
+     * Clear.
      *
      * @throws SQLException SQL exception
      */
     public void clear() throws SQLException {
-        clearStatements();
+        closeStatements();
         statements.clear();
-        parameterSets.clear();
         resultSets.clear();
         inputGroups.clear();
     }
     
-    private void clearStatements() throws SQLException {
-        for (Statement each : getStatements()) {
+    private void closeStatements() throws SQLException {
+        for (Statement each : statements) {
             each.close();
         }
     }

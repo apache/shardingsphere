@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.executor;
 
+import lombok.Getter;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.MemoryQueryResult;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
@@ -37,6 +38,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,10 +47,14 @@ import java.util.stream.Collectors;
  */
 public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     
+    @Getter
+    private final List<List<Object>> parameterSets;
+    
     private final PreparedStatementExecuteGroupEngine executeGroupEngine;
     
     public PreparedStatementExecutor(final ShardingConnection shardingConnection) {
         super(shardingConnection);
+        parameterSets = new LinkedList<>();
         int maxConnectionsSizePerQuery = shardingConnection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         executeGroupEngine = new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery);
     }
@@ -67,7 +73,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     private void cacheStatements() {
         for (InputGroup<StatementExecuteUnit> each : getInputGroups()) {
             getStatements().addAll(each.getInputs().stream().map(StatementExecuteUnit::getStatement).collect(Collectors.toList()));
-            getParameterSets().addAll(each.getInputs().stream().map(input -> input.getExecutionUnit().getSqlUnit().getParameters()).collect(Collectors.toList()));
+            parameterSets.addAll(each.getInputs().stream().map(input -> input.getExecutionUnit().getSqlUnit().getParameters()).collect(Collectors.toList()));
         }
     }
     
@@ -135,5 +141,11 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
             return false;
         }
         return result.get(0);
+    }
+    
+    @Override
+    public void clear() throws SQLException {
+        super.clear();
+        parameterSets.clear();
     }
 }
