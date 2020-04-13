@@ -102,6 +102,18 @@ public abstract class AbstractStatementExecutor {
         return result;
     }
     
+    @SuppressWarnings("unchecked")
+    private void refreshMetaDataIfNeeded(final ShardingRuntimeContext runtimeContext, final SQLStatementContext sqlStatementContext) throws SQLException {
+        if (null == sqlStatementContext) {
+            return;
+        }
+        Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
+        if (refreshStrategy.isPresent()) {
+            refreshStrategy.get().refreshMetaData(runtimeContext.getMetaData(), sqlStatementContext,
+                    tableName -> metaDataLoader.load(databaseType, connection.getDataSourceMap(), tableName, connection.getRuntimeContext().getProperties()));
+        }
+    }
+    
     /**
      * is accumulate.
      * 
@@ -126,18 +138,6 @@ public abstract class AbstractStatementExecutor {
     private void closeStatements() throws SQLException {
         for (Statement each : statements) {
             each.close();
-        }
-    }
-    
-    @SuppressWarnings("unchecked")
-    private void refreshMetaDataIfNeeded(final ShardingRuntimeContext runtimeContext, final SQLStatementContext sqlStatementContext) throws SQLException {
-        if (null == sqlStatementContext) {
-            return;
-        }
-        Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
-        if (refreshStrategy.isPresent()) {
-            refreshStrategy.get().refreshMetaData(runtimeContext.getMetaData(), sqlStatementContext, 
-                tableName -> metaDataLoader.load(databaseType, connection.getDataSourceMap(), tableName, connection.getRuntimeContext().getProperties()));
         }
     }
 }
