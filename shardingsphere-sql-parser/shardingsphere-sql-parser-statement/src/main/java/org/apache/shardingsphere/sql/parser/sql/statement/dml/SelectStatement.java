@@ -107,9 +107,19 @@ public final class SelectStatement extends DMLStatement {
      */
     public Collection<SimpleTableSegment> getSimpleTableSegments() {
         Collection<SimpleTableSegment> result = new LinkedList<>();
+        Collection<SimpleTableSegment> tmp = new LinkedList<>();
         for (TableReferenceSegment each: tableReferences) {
             result.addAll(each.getSimpleTableSegments());
         }
+        for (SimpleTableSegment each: result) {
+            for (SimpleTableSegment each1:result) {
+                String tableName = each.getTableName().getIdentifier().getValue();
+                if (tableName.equals(each1.getAlias().orElse(null)) && !tableName.equals(each1.getTableName().getIdentifier().getValue())) {
+                    tmp.add(each);
+                }
+            }
+        }
+        result.removeAll(tmp);
         return result;
     }
 }

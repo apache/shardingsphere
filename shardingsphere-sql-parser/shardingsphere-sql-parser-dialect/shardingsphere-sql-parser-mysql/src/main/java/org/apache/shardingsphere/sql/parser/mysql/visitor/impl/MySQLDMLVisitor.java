@@ -551,7 +551,6 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         if (null != ctx.expr()) {
             ASTNode expr = visit(ctx.expr());
             if (expr instanceof PredicateSegment) {
-                result.setPredicateSegment((PredicateSegment) expr);
                 AndPredicate andPredicate = new AndPredicate();
                 andPredicate.getPredicates().add((PredicateSegment) expr);
                 result.getAndPredicates().add(andPredicate);
