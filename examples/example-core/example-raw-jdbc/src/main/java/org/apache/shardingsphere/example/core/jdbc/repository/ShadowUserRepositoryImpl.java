@@ -84,16 +84,15 @@ public final class ShadowUserRepositoryImpl implements ShadowUserRepository {
     @Override
     public void delete(final Long id) throws SQLException {
         String sql = "DELETE FROM t_user WHERE user_id=? and shadow=?";
+        deleteUser(sql, id, true);
+        deleteUser(sql, id, false);
+    }
+    
+    private void deleteUser(final String sql, final Long id, final boolean isShadow) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setLong(1, id);
-            preparedStatement.setBoolean(2, true);
-            preparedStatement.executeUpdate();
-        }
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setLong(1, id);
-            preparedStatement.setBoolean(2, false);
+            preparedStatement.setBoolean(2, isShadow);
             preparedStatement.executeUpdate();
         }
     }
