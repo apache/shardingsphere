@@ -40,22 +40,16 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Getter
 public abstract class AbstractStatementExecutor {
     
-    private final ShardingConnection connection;
+    private final List<Statement> statements = new LinkedList<>();
     
-    private final List<Statement> statements;
+    private final List<ResultSet> resultSets = new CopyOnWriteArrayList<>();
     
-    private final List<ResultSet> resultSets;
-    
-    private final Collection<InputGroup<StatementExecuteUnit>> inputGroups;
+    private final Collection<InputGroup<StatementExecuteUnit>> inputGroups = new LinkedList<>();
     
     private final SQLExecuteTemplate sqlExecuteTemplate;
     
     public AbstractStatementExecutor(final ShardingConnection shardingConnection, final boolean serial) {
-        this.connection = shardingConnection;
-        statements = new LinkedList<>();
-        resultSets = new CopyOnWriteArrayList<>();
-        inputGroups = new LinkedList<>();
-        sqlExecuteTemplate = new SQLExecuteTemplate(connection.getRuntimeContext().getExecutorKernel(), serial);
+        sqlExecuteTemplate = new SQLExecuteTemplate(shardingConnection.getRuntimeContext().getExecutorKernel(), serial);
     }
     
     /**

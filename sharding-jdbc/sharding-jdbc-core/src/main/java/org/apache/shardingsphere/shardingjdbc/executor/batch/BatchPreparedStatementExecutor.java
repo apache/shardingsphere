@@ -49,6 +49,8 @@ import java.util.stream.Collectors;
  */
 public final class BatchPreparedStatementExecutor extends AbstractStatementExecutor {
     
+    private final ShardingConnection connection;
+    
     private final PreparedStatementExecuteGroupEngine executeGroupEngine;
     
     private final Collection<BatchRouteUnit> routeUnits = new LinkedList<>();
@@ -57,6 +59,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     
     public BatchPreparedStatementExecutor(final ShardingConnection shardingConnection, final boolean serial) {
         super(shardingConnection, serial);
+        connection = shardingConnection;
         int maxConnectionsSizePerQuery = shardingConnection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         executeGroupEngine = new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery);
     }
@@ -67,7 +70,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     }
     
     private Collection<InputGroup<StatementExecuteUnit>> generateExecuteGroups(final Collection<BatchRouteUnit> batchRouteUnits, final StatementOption statementOption) throws SQLException {
-        return executeGroupEngine.generate(new ArrayList<>(batchRouteUnits).stream().map(BatchRouteUnit::getExecutionUnit).collect(Collectors.toList()), getConnection(), statementOption);
+        return executeGroupEngine.generate(new ArrayList<>(batchRouteUnits).stream().map(BatchRouteUnit::getExecutionUnit).collect(Collectors.toList()), connection, statementOption);
     }
     
     /**
@@ -121,7 +124,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
      */
     public int[] executeBatch(final SQLStatementContext sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<int[]> callback = new SQLExecutorCallback<int[]>(getConnection().getRuntimeContext().getDatabaseType(), isExceptionThrown) {
+        SQLExecutorCallback<int[]> callback = new SQLExecutorCallback<int[]>(connection.getRuntimeContext().getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected int[] executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -129,7 +132,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
             }
         };
         List<int[]> results = executeCallback(callback);
-        if (!getConnection().getRuntimeContext().getRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())) {
+        if (!connection.getRuntimeContext().getRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())) {
             return accumulate(results);
         } else {
             return results.get(0);

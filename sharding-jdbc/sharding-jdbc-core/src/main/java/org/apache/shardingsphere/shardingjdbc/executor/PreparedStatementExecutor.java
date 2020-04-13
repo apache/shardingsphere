@@ -53,6 +53,8 @@ import java.util.stream.Collectors;
  */
 public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     
+    private final ShardingConnection connection;
+    
     @Getter
     private final List<List<Object>> parameterSets;
     
@@ -60,6 +62,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     
     public PreparedStatementExecutor(final ShardingConnection shardingConnection, final boolean serial) {
         super(shardingConnection, serial);
+        connection = shardingConnection;
         parameterSets = new LinkedList<>();
         int maxConnectionsSizePerQuery = shardingConnection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         executeGroupEngine = new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery);
@@ -72,7 +75,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     }
     
     private Collection<InputGroup<StatementExecuteUnit>> generateExecuteGroups(final Collection<ExecutionUnit> executionUnits, final StatementOption statementOption) throws SQLException {
-        return executeGroupEngine.generate(executionUnits, getConnection(), statementOption);
+        return executeGroupEngine.generate(executionUnits, connection, statementOption);
     }
     
     private void cacheStatements() {
@@ -90,7 +93,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
      */
     public List<QueryResult> executeQuery() throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<QueryResult> executeCallback = new SQLExecutorCallback<QueryResult>(getConnection().getRuntimeContext().getDatabaseType(), isExceptionThrown) {
+        SQLExecutorCallback<QueryResult> executeCallback = new SQLExecutorCallback<QueryResult>(connection.getRuntimeContext().getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected QueryResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -116,10 +119,10 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
      */
     public int executeUpdate(final SQLStatementContext sqlStatementContext) throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<Integer> executeCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(getConnection().getRuntimeContext().getDatabaseType(), isExceptionThrown);
+        SQLExecutorCallback<Integer> executeCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(connection.getRuntimeContext().getDatabaseType(), isExceptionThrown);
         List<Integer> results = executeCallback(executeCallback);
-        refreshTableMetaData(getConnection().getRuntimeContext(), sqlStatementContext);
-        if (!getConnection().getRuntimeContext().getRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())) {
+        refreshTableMetaData(connection.getRuntimeContext(), sqlStatementContext);
+        if (!connection.getRuntimeContext().getRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())) {
             return accumulate(results);
         } else {
             return results.get(0);
@@ -143,9 +146,9 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
      */
     public boolean execute(final SQLStatementContext sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<Boolean> executeCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(getConnection().getRuntimeContext().getDatabaseType(), isExceptionThrown);
+        SQLExecutorCallback<Boolean> executeCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(connection.getRuntimeContext().getDatabaseType(), isExceptionThrown);
         List<Boolean> result = executeCallback(executeCallback);
-        refreshTableMetaData(getConnection().getRuntimeContext(), sqlStatementContext);
+        refreshTableMetaData(connection.getRuntimeContext(), sqlStatementContext);
         if (null == result || result.isEmpty() || null == result.get(0)) {
             return false;
         }
@@ -159,9 +162,9 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
         }
         Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
         if (refreshStrategy.isPresent()) {
-            RuleSchemaMetaDataLoader metaDataLoader = new RuleSchemaMetaDataLoader(getConnection().getRuntimeContext().getRule().toRules());
+            RuleSchemaMetaDataLoader metaDataLoader = new RuleSchemaMetaDataLoader(connection.getRuntimeContext().getRule().toRules());
             refreshStrategy.get().refreshMetaData(runtimeContext.getMetaData(), sqlStatementContext,
-                tableName -> metaDataLoader.load(runtimeContext.getDatabaseType(), getConnection().getDataSourceMap(), tableName, getConnection().getRuntimeContext().getProperties()));
+                tableName -> metaDataLoader.load(runtimeContext.getDatabaseType(), connection.getDataSourceMap(), tableName, connection.getRuntimeContext().getProperties()));
         }
     }
     
