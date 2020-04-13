@@ -108,10 +108,10 @@ public final class SelectStatement extends DMLStatement {
     public Collection<SimpleTableSegment> getSimpleTableSegments() {
         Collection<SimpleTableSegment> result = new LinkedList<>();
         Collection<SimpleTableSegment> tables = new LinkedList<>();
-        for (TableReferenceSegment each: tableReferences) {
+        for (TableReferenceSegment each : tableReferences) {
             result.addAll(each.getSimpleTableSegments());
         }
-        for (SimpleTableSegment each: result) {
+        for (SimpleTableSegment each : result) {
             if (isTable(each, result)) {
                 tables.add(each);
             }
