@@ -348,27 +348,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         }
         return result;
     }
-    
-    @SuppressWarnings("unchecked")
-    private Collection<SimpleTableSegment> getTableSegments(final Collection<SimpleTableSegment> tableSegments, final JoinedTableContext joinedTable) {
-        Collection<SimpleTableSegment> result = new LinkedList<>();
-        for (SimpleTableSegment tableSegment : ((CollectionValue<SimpleTableSegment>) visit(joinedTable)).getValue()) {
-            if (isTable(tableSegment, tableSegments)) {
-                result.add(tableSegment);
-            }
-        }
-        return result;
-    }
-    
-    private boolean isTable(final SimpleTableSegment owner, final Collection<SimpleTableSegment> tableSegments) {
-        for (SimpleTableSegment each : tableSegments) {
-            if (owner.getTableName().getIdentifier().getValue().equals(each.getAlias().orElse(null))) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
+
     private boolean isDistinct(final SelectClauseContext ctx) {
         for (SelectSpecificationContext each : ctx.selectSpecification()) {
             if (((BooleanLiteralValue) visit(each)).getValue()) {
