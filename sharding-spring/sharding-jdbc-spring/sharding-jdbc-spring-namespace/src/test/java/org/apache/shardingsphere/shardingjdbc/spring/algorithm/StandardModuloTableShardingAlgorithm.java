@@ -52,7 +52,7 @@ public final class StandardModuloTableShardingAlgorithm implements StandardShard
     
     @Override
     public String getType() {
-        return "STANDARD_TEST_TB";
+        return "STANDARD_TEST_TBL";
     }
     
     @Override
