@@ -21,8 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
 import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
-import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 
 import java.sql.SQLException;
@@ -40,11 +38,10 @@ public abstract class AbstractStatementExecutor {
     /**
      * Initialize executor.
      *
-     * @param executionContext execution context
-     * @param statementOption statement option
+     * @param inputGroups input groups
      * @throws SQLException SQL exception
      */
-    public abstract void init(ExecutionContext executionContext, StatementOption statementOption) throws SQLException;
+    public abstract void init(Collection<InputGroup<StatementExecuteUnit>> inputGroups) throws SQLException;
     
     /**
      * To make sure SkyWalking will be available at the next release of ShardingSphere,

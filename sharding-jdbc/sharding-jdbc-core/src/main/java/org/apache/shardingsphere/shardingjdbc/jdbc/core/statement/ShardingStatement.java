@@ -38,6 +38,8 @@ import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContextBuilder;
+import org.apache.shardingsphere.underlying.executor.group.ExecuteGroupEngine;
+import org.apache.shardingsphere.underlying.executor.group.StatementExecuteGroupEngine;
 import org.apache.shardingsphere.underlying.executor.log.SQLLogger;
 import org.apache.shardingsphere.underlying.merge.MergeEngine;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
@@ -239,7 +241,8 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         if (runtimeContext.getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
             SQLLogger.logSQL(sql, runtimeContext.getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
         }
-        statementExecutor.init(result, statementOption);
+        ExecuteGroupEngine executeGroupEngine = new StatementExecuteGroupEngine(runtimeContext.getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY));
+        statementExecutor.init(executeGroupEngine.generate(result.getExecutionUnits(), connection, statementOption));
         statementExecutor.getStatements().forEach(this::replayMethodsInvocation);
         return result;
     }

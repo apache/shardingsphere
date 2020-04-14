@@ -25,19 +25,15 @@ import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.Execut
 import org.apache.shardingsphere.shardingjdbc.executor.AbstractStatementExecutor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
-import org.apache.shardingsphere.underlying.executor.group.PreparedStatementExecuteGroupEngine;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -60,8 +56,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     
     private final Collection<InputGroup<StatementExecuteUnit>> inputGroups;
     
-    private final PreparedStatementExecuteGroupEngine executeGroupEngine;
-    
+    @Getter
     private final Collection<BatchRouteUnit> routeUnits = new LinkedList<>();
     
     private int batchCount;
@@ -71,17 +66,11 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
         connection = shardingConnection;
         resultSets = new CopyOnWriteArrayList<>();
         inputGroups = new LinkedList<>();
-        int maxConnectionsSizePerQuery = shardingConnection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        executeGroupEngine = new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery);
     }
     
     @Override
-    public void init(final ExecutionContext executionContext, final StatementOption statementOption) throws SQLException {
-        inputGroups.addAll(generateExecuteGroups(routeUnits, statementOption));
-    }
-    
-    private Collection<InputGroup<StatementExecuteUnit>> generateExecuteGroups(final Collection<BatchRouteUnit> batchRouteUnits, final StatementOption statementOption) throws SQLException {
-        return executeGroupEngine.generate(new ArrayList<>(batchRouteUnits).stream().map(BatchRouteUnit::getExecutionUnit).collect(Collectors.toList()), connection, statementOption);
+    public void init(final Collection<InputGroup<StatementExecuteUnit>> inputGroups) {
+        this.inputGroups.addAll(inputGroups);
     }
     
     /**

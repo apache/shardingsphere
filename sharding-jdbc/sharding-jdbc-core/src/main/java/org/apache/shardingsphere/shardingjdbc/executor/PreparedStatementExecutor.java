@@ -26,17 +26,12 @@ import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.Execut
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
-import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
-import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
-import org.apache.shardingsphere.underlying.executor.group.PreparedStatementExecuteGroupEngine;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 
 import java.sql.PreparedStatement;
@@ -68,8 +63,6 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     
     private final Collection<InputGroup<StatementExecuteUnit>> inputGroups;
     
-    private final PreparedStatementExecuteGroupEngine executeGroupEngine;
-    
     public PreparedStatementExecutor(final ShardingConnection shardingConnection, final SQLExecuteTemplate sqlExecuteTemplate) {
         super(sqlExecuteTemplate);
         connection = shardingConnection;
@@ -77,18 +70,12 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
         resultSets = new CopyOnWriteArrayList<>();
         parameterSets = new LinkedList<>();
         inputGroups = new LinkedList<>();
-        int maxConnectionsSizePerQuery = shardingConnection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        executeGroupEngine = new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery);
     }
     
     @Override
-    public void init(final ExecutionContext executionContext, final StatementOption statementOption) throws SQLException {
-        inputGroups.addAll(generateExecuteGroups(executionContext.getExecutionUnits(), statementOption));
+    public void init(final Collection<InputGroup<StatementExecuteUnit>> inputGroups) {
+        this.inputGroups.addAll(inputGroups);
         cacheStatements();
-    }
-    
-    private Collection<InputGroup<StatementExecuteUnit>> generateExecuteGroups(final Collection<ExecutionUnit> executionUnits, final StatementOption statementOption) throws SQLException {
-        return executeGroupEngine.generate(executionUnits, connection, statementOption);
     }
     
     private void cacheStatements() {
