@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.postgresql.command.query.binary.bind;
 
+import lombok.Getter;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.constant.PostgreSQLColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.PostgreSQLPacket;
@@ -60,8 +61,10 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     
     private volatile boolean isQuery;
     
+    @Getter
     private volatile boolean isUpdateResponse;
     
+    @Getter
     private volatile boolean isErrorResponse;
     
     public PostgreSQLComBindExecutor(final PostgreSQLComBindPacket packet, final BackendConnection backendConnection) {
@@ -124,16 +127,6 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     @Override
     public boolean isQuery() {
         return isQuery;
-    }
-    
-    @Override
-    public boolean isUpdateResponse() {
-        return isUpdateResponse;
-    }
-    
-    @Override
-    public boolean isErrorResponse() {
-        return isErrorResponse;
     }
     
     @Override

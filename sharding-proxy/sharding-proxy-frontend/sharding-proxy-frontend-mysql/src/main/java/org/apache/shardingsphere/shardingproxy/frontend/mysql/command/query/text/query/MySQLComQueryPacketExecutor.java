@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.command.query.text.query;
 
+import lombok.Getter;
 import org.apache.shardingsphere.database.protocol.error.CommonErrorCode;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.database.protocol.mysql.packet.MySQLPacket;
@@ -57,8 +58,10 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     
     private volatile boolean isQuery;
     
+    @Getter
     private volatile boolean isUpdateResponse;
     
+    @Getter
     private volatile boolean isErrorResponse;
     
     private int currentSequenceId;
@@ -125,16 +128,6 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     @Override
     public boolean isQuery() {
         return isQuery;
-    }
-    
-    @Override
-    public boolean isUpdateResponse() {
-        return isUpdateResponse;
-    }
-    
-    @Override
-    public boolean isErrorResponse() {
-        return isErrorResponse;
     }
     
     @Override
