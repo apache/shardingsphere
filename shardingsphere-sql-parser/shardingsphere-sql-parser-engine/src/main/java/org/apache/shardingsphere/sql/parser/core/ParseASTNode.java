@@ -23,8 +23,6 @@ import org.apache.shardingsphere.sql.parser.api.ASTNode;
 
 /**
  * Parse AST node.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class ParseASTNode implements ASTNode {
