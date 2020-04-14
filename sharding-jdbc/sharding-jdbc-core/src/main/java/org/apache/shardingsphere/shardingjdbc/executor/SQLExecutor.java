@@ -28,16 +28,20 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Abstract statement executor.
+ * SQL executor.
  */
 @RequiredArgsConstructor
-public abstract class AbstractStatementExecutor {
+public final class SQLExecutor {
     
     private final SQLExecuteTemplate sqlExecuteTemplate;
     
     /**
+     * Execute.
+     * 
+     * <p>
      * To make sure SkyWalking will be available at the next release of ShardingSphere,
      * a new plugin should be provided to SkyWalking project if this API changed.
+     * </p>
      * 
      * @see <a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/Java-Plugin-Development-Guide.md#user-content-plugin-development-guide">Plugin Development Guide</a>
      * 
@@ -48,7 +52,7 @@ public abstract class AbstractStatementExecutor {
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("unchecked")
-    protected final <T> List<T> executeCallback(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLExecutorCallback<T> executeCallback) throws SQLException {
+    public <T> List<T> execute(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLExecutorCallback<T> executeCallback) throws SQLException {
         return sqlExecuteTemplate.execute((Collection) inputGroups, executeCallback);
     }
 }

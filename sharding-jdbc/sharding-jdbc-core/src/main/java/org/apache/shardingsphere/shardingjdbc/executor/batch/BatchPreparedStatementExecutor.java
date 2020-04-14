@@ -22,7 +22,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
 import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
-import org.apache.shardingsphere.shardingjdbc.executor.AbstractStatementExecutor;
+import org.apache.shardingsphere.shardingjdbc.executor.SQLExecutor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
@@ -47,9 +47,11 @@ import java.util.stream.Collectors;
 /**
  * Prepared statement executor to process add batch.
  */
-public final class BatchPreparedStatementExecutor extends AbstractStatementExecutor {
+public final class BatchPreparedStatementExecutor {
     
     private final ShardingRuntimeContext runtimeContext;
+    
+    private final SQLExecutor sqlExecutor;
     
     @Getter
     private final List<ResultSet> resultSets;
@@ -62,8 +64,8 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     private int batchCount;
     
     public BatchPreparedStatementExecutor(final ShardingRuntimeContext runtimeContext, final SQLExecuteTemplate sqlExecuteTemplate) {
-        super(sqlExecuteTemplate);
         this.runtimeContext = runtimeContext;
+        sqlExecutor = new SQLExecutor(sqlExecuteTemplate);
         resultSets = new CopyOnWriteArrayList<>();
         inputGroups = new LinkedList<>();
     }
@@ -135,7 +137,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
                 return statement.executeBatch();
             }
         };
-        List<int[]> results = executeCallback(inputGroups, callback);
+        List<int[]> results = sqlExecutor.execute(inputGroups, callback);
         if (!runtimeContext.getRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())) {
             return accumulate(results);
         } else {

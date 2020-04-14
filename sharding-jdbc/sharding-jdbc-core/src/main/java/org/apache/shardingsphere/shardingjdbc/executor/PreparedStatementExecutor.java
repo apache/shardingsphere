@@ -49,11 +49,13 @@ import java.util.stream.Collectors;
 /**
  * Prepared statement executor.
  */
-public final class PreparedStatementExecutor extends AbstractStatementExecutor {
+public final class PreparedStatementExecutor {
     
     private final Map<String, DataSource> dataSourceMap;
     
     private final ShardingRuntimeContext runtimeContext;
+    
+    private final SQLExecutor sqlExecutor;
     
     @Getter
     private final List<Statement> statements;
@@ -67,9 +69,9 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     private final Collection<InputGroup<StatementExecuteUnit>> inputGroups;
     
     public PreparedStatementExecutor(final Map<String, DataSource> dataSourceMap, final ShardingRuntimeContext runtimeContext, final SQLExecuteTemplate sqlExecuteTemplate) {
-        super(sqlExecuteTemplate);
         this.dataSourceMap = dataSourceMap;
         this.runtimeContext = runtimeContext;
+        sqlExecutor = new SQLExecutor(sqlExecuteTemplate);
         statements = new LinkedList<>();
         resultSets = new CopyOnWriteArrayList<>();
         parameterSets = new LinkedList<>();
@@ -108,7 +110,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
                 return getQueryResult(statement, connectionMode);
             }
         };
-        return executeCallback(inputGroups, executeCallback);
+        return sqlExecutor.execute(inputGroups, executeCallback);
     }
     
     private QueryResult getQueryResult(final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -128,7 +130,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     public int executeUpdate(final SQLStatementContext sqlStatementContext) throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         SQLExecutorCallback<Integer> executeCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(runtimeContext.getDatabaseType(), isExceptionThrown);
-        List<Integer> results = executeCallback(inputGroups, executeCallback);
+        List<Integer> results = sqlExecutor.execute(inputGroups, executeCallback);
         refreshTableMetaData(runtimeContext, sqlStatementContext);
         if (!runtimeContext.getRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())) {
             return accumulate(results);
@@ -155,7 +157,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     public boolean execute(final SQLStatementContext sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         SQLExecutorCallback<Boolean> executeCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(runtimeContext.getDatabaseType(), isExceptionThrown);
-        List<Boolean> result = executeCallback(inputGroups, executeCallback);
+        List<Boolean> result = sqlExecutor.execute(inputGroups, executeCallback);
         refreshTableMetaData(runtimeContext, sqlStatementContext);
         if (null == result || result.isEmpty() || null == result.get(0)) {
             return false;

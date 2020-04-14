@@ -48,11 +48,13 @@ import java.util.stream.Collectors;
 /**
  * Statement executor.
  */
-public final class StatementExecutor extends AbstractStatementExecutor {
+public final class StatementExecutor {
     
     private final Map<String, DataSource> dataSourceMap;
     
     private final ShardingRuntimeContext runtimeContext;
+    
+    private final SQLExecutor sqlExecutor;
     
     @Getter
     private final List<Statement> statements;
@@ -63,9 +65,9 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     private final Collection<InputGroup<StatementExecuteUnit>> inputGroups;
     
     public StatementExecutor(final Map<String, DataSource> dataSourceMap, final ShardingRuntimeContext runtimeContext, final SQLExecuteTemplate sqlExecuteTemplate) {
-        super(sqlExecuteTemplate);
         this.dataSourceMap = dataSourceMap;
         this.runtimeContext = runtimeContext;
+        sqlExecutor = new SQLExecutor(sqlExecuteTemplate);
         statements = new LinkedList<>();
         resultSets = new CopyOnWriteArrayList<>();
         inputGroups = new LinkedList<>();
@@ -102,7 +104,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
                 return getQueryResult(sql, statement, connectionMode);
             }
         };
-        return executeCallback(inputGroups, executeCallback);
+        return sqlExecutor.execute(inputGroups, executeCallback);
     }
     
     private QueryResult getQueryResult(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -167,7 +169,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
                 return updater.executeUpdate(statement, sql);
             }
         };
-        List<Integer> results = executeCallback(inputGroups, executeCallback);
+        List<Integer> results = sqlExecutor.execute(inputGroups, executeCallback);
         refreshTableMetaData(runtimeContext, sqlStatementContext);
         if (!runtimeContext.getRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())) {
             return accumulate(results);
@@ -240,7 +242,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
                 return executor.execute(statement, sql);
             }
         };
-        List<Boolean> result = executeCallback(inputGroups, executeCallback);
+        List<Boolean> result = sqlExecutor.execute(inputGroups, executeCallback);
         refreshTableMetaData(runtimeContext, sqlStatementContext);
         if (null == result || result.isEmpty() || null == result.get(0)) {
             return false;
