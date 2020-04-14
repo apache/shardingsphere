@@ -136,14 +136,13 @@ public final class StatementExecutor {
     
     private int executeUpdate(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final Updater updater, final SQLStatementContext sqlStatementContext) throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<Integer> executeCallback = new SQLExecutorCallback<Integer>(runtimeContext.getDatabaseType(), isExceptionThrown) {
+        List<Integer> results = sqlExecutor.execute(inputGroups, new SQLExecutorCallback<Integer>(runtimeContext.getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected Integer executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 return updater.executeUpdate(statement, sql);
             }
-        };
-        List<Integer> results = sqlExecutor.execute(inputGroups, executeCallback);
+        });
         refreshTableMetaData(runtimeContext, sqlStatementContext);
         if (!runtimeContext.getRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())) {
             return accumulate(results);
@@ -213,14 +212,13 @@ public final class StatementExecutor {
     
     private boolean execute(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final Executor executor, final SQLStatementContext sqlStatementContext) throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<Boolean> executeCallback = new SQLExecutorCallback<Boolean>(runtimeContext.getDatabaseType(), isExceptionThrown) {
+        List<Boolean> result = sqlExecutor.execute(inputGroups, new SQLExecutorCallback<Boolean>(runtimeContext.getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected Boolean executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 return executor.execute(statement, sql);
             }
-        };
-        List<Boolean> result = sqlExecutor.execute(inputGroups, executeCallback);
+        });
         refreshTableMetaData(runtimeContext, sqlStatementContext);
         if (null == result || result.isEmpty() || null == result.get(0)) {
             return false;
