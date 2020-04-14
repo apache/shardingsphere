@@ -54,6 +54,8 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     
     private volatile boolean isQuery;
     
+    private volatile boolean isUpdateResponse;
+    
     private volatile boolean isErrorResponse;
     
     public PostgreSQLComQueryExecutor(final PostgreSQLComQueryPacket comQueryPacket, final BackendConnection backendConnection) {
@@ -71,6 +73,7 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
             return Collections.singletonList(createErrorPacket((ErrorResponse) backendResponse));
         }
         if (backendResponse instanceof UpdateResponse) {
+            isUpdateResponse = true;
             return Collections.singletonList(createUpdatePacket((UpdateResponse) backendResponse));
         }
         Optional<PostgreSQLRowDescriptionPacket> result = createQueryPacket((QueryResponse) backendResponse);
@@ -106,6 +109,11 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     @Override
     public boolean isQuery() {
         return isQuery;
+    }
+    
+    @Override
+    public boolean isUpdateResponse() {
+        return isUpdateResponse;
     }
     
     @Override

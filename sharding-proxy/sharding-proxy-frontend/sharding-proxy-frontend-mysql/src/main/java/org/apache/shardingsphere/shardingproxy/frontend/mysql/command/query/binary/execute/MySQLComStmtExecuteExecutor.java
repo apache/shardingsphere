@@ -57,6 +57,8 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     
     private volatile boolean isQuery;
     
+    private volatile boolean isUpdateResponse;
+    
     private volatile boolean isErrorResponse;
     
     private int currentSequenceId;
@@ -77,6 +79,7 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
             return Collections.singletonList(createErrorPacket(((ErrorResponse) backendResponse).getCause()));
         }
         if (backendResponse instanceof UpdateResponse) {
+            isUpdateResponse = true;
             return Collections.singletonList(createUpdatePacket((UpdateResponse) backendResponse));
         }
         isQuery = true;
@@ -106,6 +109,11 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     @Override
     public boolean isQuery() {
         return isQuery;
+    }
+    
+    @Override
+    public boolean isUpdateResponse() {
+        return isUpdateResponse;
     }
     
     @Override
