@@ -76,7 +76,11 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
         inputGroups = new LinkedList<>();
     }
     
-    @Override
+    /**
+     * Initialize executor.
+     *
+     * @param inputGroups input groups
+     */
     public void init(final Collection<InputGroup<StatementExecuteUnit>> inputGroups) {
         this.inputGroups.addAll(inputGroups);
         cacheStatements();

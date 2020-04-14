@@ -68,7 +68,11 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
         inputGroups = new LinkedList<>();
     }
     
-    @Override
+    /**
+     * Initialize executor.
+     *
+     * @param inputGroups input groups
+     */
     public void init(final Collection<InputGroup<StatementExecuteUnit>> inputGroups) {
         this.inputGroups.addAll(inputGroups);
     }

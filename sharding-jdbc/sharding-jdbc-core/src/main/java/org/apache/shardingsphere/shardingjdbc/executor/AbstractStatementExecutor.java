@@ -36,14 +36,6 @@ public abstract class AbstractStatementExecutor {
     private final SQLExecuteTemplate sqlExecuteTemplate;
     
     /**
-     * Initialize executor.
-     *
-     * @param inputGroups input groups
-     * @throws SQLException SQL exception
-     */
-    public abstract void init(Collection<InputGroup<StatementExecuteUnit>> inputGroups) throws SQLException;
-    
-    /**
      * To make sure SkyWalking will be available at the next release of ShardingSphere,
      * a new plugin should be provided to SkyWalking project if this API changed.
      * 
