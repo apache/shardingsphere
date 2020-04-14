@@ -90,6 +90,7 @@ public final class ShardingSchema extends LogicSchema {
         }
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public void refreshTableMetaData(final SQLStatementContext sqlStatementContext) throws SQLException {
         if (null == sqlStatementContext) {

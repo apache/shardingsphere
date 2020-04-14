@@ -15,32 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.orchestration.spring.algorithm;
+package org.apache.shardingsphere.core.yaml.config.sharding.strategy;
 
-import org.apache.shardingsphere.api.sharding.hint.HintShardingAlgorithm;
-import org.apache.shardingsphere.api.sharding.hint.HintShardingValue;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.util.Collection;
 import java.util.Properties;
 
-public final class DefaultHintShardingAlgorithm implements HintShardingAlgorithm<Integer> {
+/**
+ * Sharding algorithm configuration for YAML.
+ */
+@Getter
+@Setter
+public final class YamlShardingAlgorithmConfiguration implements YamlBaseShardingStrategyConfiguration {
     
-    @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final HintShardingValue<Integer> shardingValue) {
-        return availableTargetNames;
-    }
+    private String type;
     
-    @Override
-    public String getType() {
-        return "HINT_TEST";
-    }
-    
-    @Override
-    public Properties getProperties() {
-        return new Properties();
-    }
-    
-    @Override
-    public void setProperties(final Properties properties) {
-    }
+    private Properties props = new Properties();
 }

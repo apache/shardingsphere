@@ -51,8 +51,7 @@ public abstract class SQLExecutorCallback<T> implements ExecutorCallback<Stateme
     private final boolean isExceptionThrown;
     
     @Override
-    public final Collection<T> execute(final Collection<StatementExecuteUnit> statementExecuteUnits, 
-                                       final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
+    public final Collection<T> execute(final Collection<StatementExecuteUnit> statementExecuteUnits, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
         Collection<T> result = new LinkedList<>();
         for (StatementExecuteUnit each : statementExecuteUnits) {
             result.add(execute0(each, isTrunkThread, dataMap));
@@ -60,17 +59,11 @@ public abstract class SQLExecutorCallback<T> implements ExecutorCallback<Stateme
         return result;
     }
     
-    /**
+    /*
      * To make sure SkyWalking will be available at the next release of ShardingSphere,
      * a new plugin should be provided to SkyWalking project if this API changed.
      *
      * @see <a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/Java-Plugin-Development-Guide.md#user-content-plugin-development-guide">Plugin Development Guide</a>
-     * 
-     * @param statementExecuteUnit statement execute unit
-     * @param isTrunkThread is trunk thread 
-     * @param dataMap data map
-     * @return result
-     * @throws SQLException SQL exception
      */
     private T execute0(final StatementExecuteUnit statementExecuteUnit, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
         ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);

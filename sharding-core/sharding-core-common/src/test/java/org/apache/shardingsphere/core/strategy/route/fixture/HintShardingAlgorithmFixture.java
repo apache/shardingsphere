@@ -22,6 +22,7 @@ import org.apache.shardingsphere.api.sharding.hint.HintShardingValue;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Properties;
 
 public final class HintShardingAlgorithmFixture implements HintShardingAlgorithm<Integer> {
     
@@ -33,5 +34,19 @@ public final class HintShardingAlgorithmFixture implements HintShardingAlgorithm
             }
         }
         return null;
+    }
+    
+    @Override
+    public String getType() {
+        return "HINT_TEST";
+    }
+    
+    @Override
+    public Properties getProperties() {
+        return new Properties();
+    }
+    
+    @Override
+    public void setProperties(final Properties properties) {
     }
 }
