@@ -91,8 +91,9 @@ public final class ShardingStrategyConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToYamlWithHint() {
         HintShardingAlgorithm hintShardingAlgorithm = mock(HintShardingAlgorithm.class);
+        when(hintShardingAlgorithm.getType()).thenReturn("HINT_TEST");
         YamlShardingStrategyConfiguration actual = shardingStrategyConfigurationYamlSwapper.swap(new HintShardingStrategyConfiguration(hintShardingAlgorithm));
-        assertThat(actual.getHint().getAlgorithmClassName(), is(hintShardingAlgorithm.getClass().getName()));
+        assertThat(actual.getHint().getShardingAlgorithm().getType(), is("HINT_TEST"));
         assertNull(actual.getStandard());
         assertNull(actual.getInline());
         assertNull(actual.getComplex());
@@ -178,7 +179,8 @@ public final class ShardingStrategyConfigurationYamlSwapperTest {
     
     private YamlShardingStrategyConfiguration createHintShardingStrategyConfiguration() {
         YamlHintShardingStrategyConfiguration yamlHintShardingStrategyConfiguration = new YamlHintShardingStrategyConfiguration();
-        yamlHintShardingStrategyConfiguration.setAlgorithmClassName(HintShardingAlgorithmFixture.class.getName());
+        yamlHintShardingStrategyConfiguration.setShardingAlgorithm(new YamlShardingAlgorithmConfiguration());
+        yamlHintShardingStrategyConfiguration.getShardingAlgorithm().setType("HINT_TEST");
         YamlShardingStrategyConfiguration result = new YamlShardingStrategyConfiguration();
         result.setHint(yamlHintShardingStrategyConfiguration);
         return result;

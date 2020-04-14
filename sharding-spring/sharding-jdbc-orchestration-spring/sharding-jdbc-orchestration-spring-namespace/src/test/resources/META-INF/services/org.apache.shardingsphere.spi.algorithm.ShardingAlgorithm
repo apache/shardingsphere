@@ -16,3 +16,4 @@
 #
  
 org.apache.shardingsphere.shardingjdbc.orchestration.spring.algorithm.DefaultComplexKeysShardingAlgorithm
+org.apache.shardingsphere.shardingjdbc.orchestration.spring.algorithm.DefaultHintShardingAlgorithm

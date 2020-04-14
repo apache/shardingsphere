@@ -94,8 +94,8 @@ public final class YamlEngineShadowShardingConfigurationTest {
     
     private void assertTStock(final YamlRootShadowConfiguration actual) {
         assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_stock").getActualDataNodes(), is("ds_${0..1}.t_stock{0..8}"));
-        assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_stock").getDatabaseStrategy().getHint().getAlgorithmClassName(), is("TestDatabaseHintAlgorithmClassName"));
-        assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_stock").getTableStrategy().getHint().getAlgorithmClassName(), is("TestTableHintAlgorithmClassName"));
+        assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_stock").getDatabaseStrategy().getHint().getShardingAlgorithm().getType(), is("HINT_TEST"));
+        assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_stock").getTableStrategy().getHint().getShardingAlgorithm().getType(), is("HINT_TEST"));
     }
     
     private void assertTOrder(final YamlRootShadowConfiguration actual) {
