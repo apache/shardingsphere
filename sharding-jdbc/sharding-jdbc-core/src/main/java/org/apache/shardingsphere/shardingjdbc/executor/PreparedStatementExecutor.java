@@ -44,7 +44,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Prepared statement executor.
@@ -58,9 +57,6 @@ public final class PreparedStatementExecutor {
     private final SQLExecutor sqlExecutor;
     
     @Getter
-    private final List<Statement> statements;
-    
-    @Getter
     private final List<List<Object>> parameterSets;
     
     private final Collection<InputGroup<StatementExecuteUnit>> inputGroups;
@@ -69,7 +65,6 @@ public final class PreparedStatementExecutor {
         this.dataSourceMap = dataSourceMap;
         this.runtimeContext = runtimeContext;
         sqlExecutor = new SQLExecutor(sqlExecuteTemplate);
-        statements = new LinkedList<>();
         parameterSets = new LinkedList<>();
         inputGroups = new LinkedList<>();
     }
@@ -81,14 +76,6 @@ public final class PreparedStatementExecutor {
      */
     public void init(final Collection<InputGroup<StatementExecuteUnit>> inputGroups) {
         this.inputGroups.addAll(inputGroups);
-        cacheStatements();
-    }
-    
-    private void cacheStatements() {
-        for (InputGroup<StatementExecuteUnit> each : inputGroups) {
-            statements.addAll(each.getInputs().stream().map(StatementExecuteUnit::getStatement).collect(Collectors.toList()));
-            parameterSets.addAll(each.getInputs().stream().map(input -> input.getExecutionUnit().getSqlUnit().getParameters()).collect(Collectors.toList()));
-        }
     }
     
     /**
@@ -175,19 +162,9 @@ public final class PreparedStatementExecutor {
     
     /**
      * Clear.
-     *
-     * @throws SQLException SQL exception
      */
-    public void clear() throws SQLException {
-        closeStatements();
-        statements.clear();
+    public void clear() {
         inputGroups.clear();
         parameterSets.clear();
-    }
-    
-    private void closeStatements() throws SQLException {
-        for (Statement each : statements) {
-            each.close();
-        }
     }
 }
