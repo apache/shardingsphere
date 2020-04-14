@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatement
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
@@ -56,6 +57,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Statement that support sharding.
@@ -101,7 +103,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
             executionContext = prepare(sql);
             List<QueryResult> queryResults = statementExecutor.executeQuery();
             MergedResult mergedResult = mergeQuery(queryResults);
-            result = new ShardingResultSet(statementExecutor.getResultSets(), mergedResult, this, executionContext);
+            result = new ShardingResultSet(statementExecutor.getStatements().stream().map(this::getResultSet).collect(Collectors.toList()), mergedResult, this, executionContext);
         } finally {
             currentResultSet = null;
         }
@@ -210,6 +212,14 @@ public final class ShardingStatement extends AbstractStatementAdapter {
             currentResultSet = new ShardingResultSet(resultSets, mergedResult, this, executionContext);
         }
         return currentResultSet;
+    }
+    
+    private ResultSet getResultSet(final Statement statement) {
+        try {
+            return statement.getResultSet();
+        } catch (final SQLException ex) {
+            throw new ShardingSphereException(ex);
+        }
     }
     
     private List<ResultSet> getResultSets() throws SQLException {

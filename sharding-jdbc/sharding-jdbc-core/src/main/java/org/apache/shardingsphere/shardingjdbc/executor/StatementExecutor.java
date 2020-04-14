@@ -43,7 +43,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**
@@ -60,9 +59,6 @@ public final class StatementExecutor {
     @Getter
     private final List<Statement> statements;
     
-    @Getter
-    private final List<ResultSet> resultSets;
-    
     private final Collection<InputGroup<StatementExecuteUnit>> inputGroups;
     
     public StatementExecutor(final Map<String, DataSource> dataSourceMap, final ShardingRuntimeContext runtimeContext, final SQLExecuteTemplate sqlExecuteTemplate) {
@@ -70,7 +66,6 @@ public final class StatementExecutor {
         this.runtimeContext = runtimeContext;
         sqlExecutor = new SQLExecutor(sqlExecuteTemplate);
         statements = new LinkedList<>();
-        resultSets = new CopyOnWriteArrayList<>();
         inputGroups = new LinkedList<>();
     }
     
@@ -110,7 +105,6 @@ public final class StatementExecutor {
     
     private QueryResult getQueryResult(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
         ResultSet resultSet = statement.executeQuery(sql);
-        resultSets.add(resultSet);
         return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
     }
     
@@ -272,7 +266,6 @@ public final class StatementExecutor {
     public void clear() throws SQLException {
         closeStatements();
         statements.clear();
-        resultSets.clear();
         inputGroups.clear();
     }
     

@@ -44,7 +44,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**
@@ -62,9 +61,6 @@ public final class PreparedStatementExecutor {
     private final List<Statement> statements;
     
     @Getter
-    private final List<ResultSet> resultSets;
-    
-    @Getter
     private final List<List<Object>> parameterSets;
     
     private final Collection<InputGroup<StatementExecuteUnit>> inputGroups;
@@ -74,7 +70,6 @@ public final class PreparedStatementExecutor {
         this.runtimeContext = runtimeContext;
         sqlExecutor = new SQLExecutor(sqlExecuteTemplate);
         statements = new LinkedList<>();
-        resultSets = new CopyOnWriteArrayList<>();
         parameterSets = new LinkedList<>();
         inputGroups = new LinkedList<>();
     }
@@ -117,7 +112,6 @@ public final class PreparedStatementExecutor {
     private QueryResult getQueryResult(final Statement statement, final ConnectionMode connectionMode) throws SQLException {
         PreparedStatement preparedStatement = (PreparedStatement) statement;
         ResultSet resultSet = preparedStatement.executeQuery();
-        resultSets.add(resultSet);
         return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
     }
     
@@ -187,7 +181,6 @@ public final class PreparedStatementExecutor {
     public void clear() throws SQLException {
         closeStatements();
         statements.clear();
-        resultSets.clear();
         inputGroups.clear();
         parameterSets.clear();
     }

@@ -20,9 +20,9 @@ package org.apache.shardingsphere.shardingjdbc.executor.batch;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
+import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutor;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
 import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
-import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
@@ -31,7 +31,6 @@ import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
@@ -41,7 +40,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**
@@ -53,9 +51,6 @@ public final class BatchPreparedStatementExecutor {
     
     private final SQLExecutor sqlExecutor;
     
-    @Getter
-    private final List<ResultSet> resultSets;
-    
     private final Collection<InputGroup<StatementExecuteUnit>> inputGroups;
     
     @Getter
@@ -66,7 +61,6 @@ public final class BatchPreparedStatementExecutor {
     public BatchPreparedStatementExecutor(final ShardingRuntimeContext runtimeContext, final SQLExecuteTemplate sqlExecuteTemplate) {
         this.runtimeContext = runtimeContext;
         sqlExecutor = new SQLExecutor(sqlExecuteTemplate);
-        resultSets = new CopyOnWriteArrayList<>();
         inputGroups = new LinkedList<>();
     }
     
@@ -226,7 +220,6 @@ public final class BatchPreparedStatementExecutor {
     public void clear() throws SQLException {
         closeStatements();
         getStatements().clear();
-        resultSets.clear();
         inputGroups.clear();
         batchCount = 0;
         routeUnits.clear();

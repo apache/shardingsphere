@@ -38,6 +38,7 @@ import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatement
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
@@ -132,7 +133,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             prepare();
             initPreparedStatementExecutor();
             MergedResult mergedResult = mergeQuery(preparedStatementExecutor.executeQuery());
-            result = new ShardingResultSet(preparedStatementExecutor.getResultSets(), mergedResult, this, executionContext);
+            result = new ShardingResultSet(preparedStatementExecutor.getStatements().stream().map(this::getResultSet).collect(Collectors.toList()), mergedResult, this, executionContext);
         } finally {
             clearBatch();
         }
@@ -175,6 +176,14 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             currentResultSet = new ShardingResultSet(resultSets, mergedResult, this, executionContext);
         }
         return currentResultSet;
+    }
+    
+    private ResultSet getResultSet(final Statement statement) {
+        try {
+            return statement.getResultSet();
+        } catch (final SQLException ex) {
+            throw new ShardingSphereException(ex);
+        }
     }
     
     private List<ResultSet> getResultSets() throws SQLException {
