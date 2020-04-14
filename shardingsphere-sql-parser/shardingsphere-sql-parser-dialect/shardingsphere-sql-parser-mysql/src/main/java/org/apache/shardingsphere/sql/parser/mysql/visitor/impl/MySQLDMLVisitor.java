@@ -498,7 +498,6 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
                 subqueryTableSegment.setAlias((AliasSegment) visit(ctx.alias()));
             }
             result.setSubqueryTableSegment(subqueryTableSegment);
-//            result.setTable(subqueryTableSegment);
         }
         if (null != ctx.tableName()) {
             SimpleTableSegment table = (SimpleTableSegment) visit(ctx.tableName());
