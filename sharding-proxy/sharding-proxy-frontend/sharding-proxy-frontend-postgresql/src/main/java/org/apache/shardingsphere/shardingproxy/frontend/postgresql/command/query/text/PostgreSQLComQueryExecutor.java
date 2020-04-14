@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.postgresql.command.query.text;
 
+import lombok.Getter;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
@@ -54,6 +55,10 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     
     private volatile boolean isQuery;
     
+    @Getter
+    private volatile boolean isUpdateResponse;
+    
+    @Getter
     private volatile boolean isErrorResponse;
     
     public PostgreSQLComQueryExecutor(final PostgreSQLComQueryPacket comQueryPacket, final BackendConnection backendConnection) {
@@ -71,6 +76,7 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
             return Collections.singletonList(createErrorPacket((ErrorResponse) backendResponse));
         }
         if (backendResponse instanceof UpdateResponse) {
+            isUpdateResponse = true;
             return Collections.singletonList(createUpdatePacket((UpdateResponse) backendResponse));
         }
         Optional<PostgreSQLRowDescriptionPacket> result = createQueryPacket((QueryResponse) backendResponse);
@@ -106,11 +112,6 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     @Override
     public boolean isQuery() {
         return isQuery;
-    }
-    
-    @Override
-    public boolean isErrorResponse() {
-        return isErrorResponse;
     }
     
     @Override
