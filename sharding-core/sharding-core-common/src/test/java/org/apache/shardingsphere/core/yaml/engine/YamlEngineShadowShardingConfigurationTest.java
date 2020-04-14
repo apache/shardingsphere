@@ -109,8 +109,8 @@ public final class YamlEngineShadowShardingConfigurationTest {
     private void assertTOrderItem(final YamlRootShadowConfiguration actual) {
         assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_order_item").getActualDataNodes(), is("ds_${0..1}.t_order_item_${0..1}"));
         assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_order_item").getTableStrategy().getStandard().getShardingColumn(), is("order_id"));
-        assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_order_item").getTableStrategy().getStandard().getPreciseAlgorithmClassName(), is("TestPreciseAlgorithmClassName"));
-        assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_order_item").getTableStrategy().getStandard().getRangeAlgorithmClassName(), is("TestRangeAlgorithmClassName"));
+        assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_order_item").getTableStrategy().getStandard().getShardingAlgorithm().getType(), is("STANDARD_TEST"));
+        assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_order_item").getTableStrategy().getStandard().getShardingAlgorithm().getType(), is("STANDARD_TEST"));
     }
     
     private void assertBindingTable(final YamlRootShadowConfiguration actual) {

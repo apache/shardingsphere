@@ -24,8 +24,7 @@ import org.apache.shardingsphere.api.config.sharding.strategy.ComplexShardingStr
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.strategy.route.complex.ComplexShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.fixture.ComplexKeysShardingAlgorithmFixture;
-import org.apache.shardingsphere.core.strategy.route.fixture.PreciseShardingAlgorithmFixture;
-import org.apache.shardingsphere.core.strategy.route.fixture.RangeShardingAlgorithmFixture;
+import org.apache.shardingsphere.core.strategy.route.fixture.StandardShardingAlgorithmFixture;
 import org.apache.shardingsphere.core.strategy.route.none.NoneShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.standard.StandardShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
@@ -55,7 +54,7 @@ public final class ShardingStrategyTest {
     @Test
     public void assertDoShardingForBetweenSingleKey() {
         StandardShardingStrategy strategy = new StandardShardingStrategy(
-                new StandardShardingStrategyConfiguration("column", new PreciseShardingAlgorithmFixture(), new RangeShardingAlgorithmFixture()));
+                new StandardShardingStrategyConfiguration("column", new StandardShardingAlgorithmFixture()));
         assertThat(strategy.doSharding(targets, Collections.singletonList(new RangeRouteValue<>("column", "logicTable", Range.open(1, 3))), new ConfigurationProperties(new Properties())),
                 is(Sets.newHashSet("1")));
     }
