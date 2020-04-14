@@ -33,10 +33,12 @@ shardingRule:
       actualDataNodes: ds_${0..1}.t_order_${0..1}
       databaseStrategy:
         hint:
-          algorithmClassName: org.apache.shardingsphere.example.hint.raw.jdbc.ModuloHintShardingAlgorithm
+          shardingAlgorithm:
+            type: HINT_TEST
       tableStrategy:
         hint:
-          algorithmClassName: org.apache.shardingsphere.example.hint.raw.jdbc.ModuloHintShardingAlgorithm
+          shardingAlgorithm:
+            type: HINT_TEST
       keyGenerator:
         type: SNOWFLAKE
         column: order_id

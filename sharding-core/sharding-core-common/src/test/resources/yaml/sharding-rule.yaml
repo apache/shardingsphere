@@ -70,10 +70,12 @@ shardingRule:
       actualDataNodes: ds_${0..1}.t_stock{0..8}
       databaseStrategy: 
         hint:
-          algorithmClassName: TestDatabaseHintAlgorithmClassName
+          shardingAlgorithm:
+            type: HINT_TEST
       tableStrategy: 
         hint:
-          algorithmClassName: TestTableHintAlgorithmClassName
+          shardingAlgorithm:
+            type: HINT_TEST
     t_order: 
       actualDataNodes: ds_${0..1}.t_order_${0..1}
       tableStrategy: 

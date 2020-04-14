@@ -97,7 +97,7 @@ public final class ShardingStrategyConfigurationYamlSwapper implements YamlSwapp
         }
         if (null != yamlConfiguration.getHint()) {
             shardingStrategyConfigCount++;
-            result = new HintShardingStrategyConfiguration(ShardingAlgorithmFactory.newInstance(yamlConfiguration.getHint().getAlgorithmClassName(), HintShardingAlgorithm.class));
+            result = createHintShardingStrategyConfiguration(yamlConfiguration.getHint());
         }
         if (null != yamlConfiguration.getNone()) {
             shardingStrategyConfigCount++;
@@ -120,16 +120,13 @@ public final class ShardingStrategyConfigurationYamlSwapper implements YamlSwapp
     private YamlComplexShardingStrategyConfiguration createYamlComplexShardingStrategyConfiguration(final ComplexShardingStrategyConfiguration data) {
         YamlComplexShardingStrategyConfiguration result = new YamlComplexShardingStrategyConfiguration();
         result.setShardingColumns(data.getShardingColumns());
-        YamlShardingAlgorithmConfiguration shardingAlgorithm = new YamlShardingAlgorithmConfiguration();
-        shardingAlgorithm.setType(data.getShardingAlgorithm().getType());
-        shardingAlgorithm.setProps(data.getShardingAlgorithm().getProperties());
-        result.setShardingAlgorithm(shardingAlgorithm);
+        result.setShardingAlgorithm(createYamlShardingAlgorithmConfiguration(data.getShardingAlgorithm()));
         return result;
     }
     
     private YamlHintShardingStrategyConfiguration createYamlHintShardingStrategyConfiguration(final HintShardingStrategyConfiguration data) {
         YamlHintShardingStrategyConfiguration result = new YamlHintShardingStrategyConfiguration();
-        result.setAlgorithmClassName(data.getShardingAlgorithm().getClass().getName());
+        result.setShardingAlgorithm(createYamlShardingAlgorithmConfiguration(data.getShardingAlgorithm()));
         return result;
     }
     
@@ -143,6 +140,17 @@ public final class ShardingStrategyConfigurationYamlSwapper implements YamlSwapp
     private ComplexShardingStrategyConfiguration createComplexShardingStrategyConfiguration(final YamlComplexShardingStrategyConfiguration yamlConfiguration) {
         return new ComplexShardingStrategyConfiguration(yamlConfiguration.getShardingColumns(), 
                 createShardingAlgorithm(ComplexKeysShardingAlgorithm.class, yamlConfiguration.getShardingAlgorithm()));
+    }
+    
+    private HintShardingStrategyConfiguration createHintShardingStrategyConfiguration(final YamlHintShardingStrategyConfiguration yamlConfiguration) {
+        return new HintShardingStrategyConfiguration(createShardingAlgorithm(HintShardingAlgorithm.class, yamlConfiguration.getShardingAlgorithm()));
+    }
+    
+    private YamlShardingAlgorithmConfiguration createYamlShardingAlgorithmConfiguration(final ShardingAlgorithm shardingAlgorithm) {
+        YamlShardingAlgorithmConfiguration result = new YamlShardingAlgorithmConfiguration();
+        result.setType(shardingAlgorithm.getType());
+        result.setProps(shardingAlgorithm.getProperties());
+        return result;
     }
     
     @SuppressWarnings("unchecked")
