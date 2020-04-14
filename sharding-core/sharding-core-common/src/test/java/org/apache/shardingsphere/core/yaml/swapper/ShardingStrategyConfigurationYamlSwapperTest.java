@@ -28,7 +28,6 @@ import org.apache.shardingsphere.api.sharding.standard.PreciseShardingAlgorithm;
 import org.apache.shardingsphere.api.sharding.standard.RangeShardingAlgorithm;
 import org.apache.shardingsphere.core.shard.fixture.ComplexKeysShardingAlgorithmFixture;
 import org.apache.shardingsphere.core.shard.fixture.HintShardingAlgorithmFixture;
-import org.apache.shardingsphere.core.shard.fixture.RangeShardingAlgorithmFixture;
 import org.apache.shardingsphere.core.shard.fixture.StandardShardingAlgorithmFixture;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlComplexShardingStrategyConfiguration;
@@ -112,27 +111,24 @@ public final class ShardingStrategyConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToObjectWithStandardWithRangeShardingAlgorithm() {
-        StandardShardingStrategyConfiguration actual = (StandardShardingStrategyConfiguration) shardingStrategyConfigurationYamlSwapper.swap(createStandardShardingStrategyConfiguration(true));
+        StandardShardingStrategyConfiguration actual = (StandardShardingStrategyConfiguration) shardingStrategyConfigurationYamlSwapper.swap(createStandardShardingStrategyConfiguration());
         assertThat(actual.getShardingColumn(), is("id"));
         assertThat(actual.getShardingAlgorithm(), instanceOf(StandardShardingAlgorithmFixture.class));
     }
     
     @Test
     public void assertSwapToObjectWithStandardWithoutRangeShardingAlgorithm() {
-        StandardShardingStrategyConfiguration actual = (StandardShardingStrategyConfiguration) shardingStrategyConfigurationYamlSwapper.swap(createStandardShardingStrategyConfiguration(false));
+        StandardShardingStrategyConfiguration actual = (StandardShardingStrategyConfiguration) shardingStrategyConfigurationYamlSwapper.swap(createStandardShardingStrategyConfiguration());
         assertThat(actual.getShardingColumn(), is("id"));
         assertThat(actual.getShardingAlgorithm(), instanceOf(StandardShardingAlgorithmFixture.class));
     }
     
-    private YamlShardingStrategyConfiguration createStandardShardingStrategyConfiguration(final boolean withRangeAlgorithmClassName) {
+    private YamlShardingStrategyConfiguration createStandardShardingStrategyConfiguration() {
         YamlStandardShardingStrategyConfiguration yamlStandardShardingStrategyConfiguration = new YamlStandardShardingStrategyConfiguration();
         yamlStandardShardingStrategyConfiguration.setShardingColumn("id");
         YamlShardingAlgorithmConfiguration shardingAlgorithmConfiguration = new YamlShardingAlgorithmConfiguration();
         shardingAlgorithmConfiguration.setType("STANDARD_TEST");
         yamlStandardShardingStrategyConfiguration.setShardingAlgorithm(shardingAlgorithmConfiguration);
-        if (withRangeAlgorithmClassName) {
-            yamlStandardShardingStrategyConfiguration.setRangeAlgorithmClassName(RangeShardingAlgorithmFixture.class.getName());
-        }
         YamlShardingStrategyConfiguration result = new YamlShardingStrategyConfiguration();
         result.setStandard(yamlStandardShardingStrategyConfiguration);
         return result;
