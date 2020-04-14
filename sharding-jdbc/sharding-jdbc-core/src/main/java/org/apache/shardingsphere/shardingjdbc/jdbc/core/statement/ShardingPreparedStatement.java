@@ -78,6 +78,8 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     private final List<PreparedStatement> statements;
     
+    private final List<List<Object>> parameterSets;
+    
     private final SQLStatement sqlStatement;
     
     private final StatementOption statementOption;
@@ -119,7 +121,8 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         }
         this.connection = connection;
         this.sql = sql;
-        statements = new LinkedList<>();
+        statements = new ArrayList<>();
+        parameterSets = new ArrayList<>();
         ShardingRuntimeContext runtimeContext = connection.getRuntimeContext();
         sqlStatement = runtimeContext.getSqlParserEngine().parse(sql, true);
         parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
@@ -245,13 +248,13 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     private void cacheStatements(final Collection<InputGroup<StatementExecuteUnit>> inputGroups) {
         for (InputGroup<StatementExecuteUnit> each : inputGroups) {
             statements.addAll(each.getInputs().stream().map(statementExecuteUnit -> (PreparedStatement) statementExecuteUnit.getStatement()).collect(Collectors.toList()));
-            preparedStatementExecutor.getParameterSets().addAll(each.getInputs().stream().map(input -> input.getExecutionUnit().getSqlUnit().getParameters()).collect(Collectors.toList()));
+            parameterSets.addAll(each.getInputs().stream().map(input -> input.getExecutionUnit().getSqlUnit().getParameters()).collect(Collectors.toList()));
         }
     }
     
     private void setParametersForStatements() {
         for (int i = 0; i < statements.size(); i++) {
-            replaySetParameter(statements.get(i), preparedStatementExecutor.getParameterSets().get(i));
+            replaySetParameter(statements.get(i), parameterSets.get(i));
         }
     }
     
@@ -261,7 +264,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     private void clearPrevious() throws SQLException {
         clearStatements();
-        preparedStatementExecutor.clear();
+        parameterSets.clear();
     }
     
     private Optional<GeneratedKeyContext> findGeneratedKey() {

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingjdbc.executor;
 
-import lombok.Getter;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutor;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
@@ -40,7 +39,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -56,14 +54,10 @@ public final class PreparedStatementExecutor {
     
     private final SQLExecutor sqlExecutor;
     
-    @Getter
-    private final List<List<Object>> parameterSets;
-    
     public PreparedStatementExecutor(final Map<String, DataSource> dataSourceMap, final ShardingRuntimeContext runtimeContext, final SQLExecuteTemplate sqlExecuteTemplate) {
         this.dataSourceMap = dataSourceMap;
         this.runtimeContext = runtimeContext;
         sqlExecutor = new SQLExecutor(sqlExecuteTemplate);
-        parameterSets = new LinkedList<>();
     }
     
     /**
@@ -149,12 +143,5 @@ public final class PreparedStatementExecutor {
             refreshStrategy.get().refreshMetaData(runtimeContext.getMetaData(), sqlStatementContext,
                 tableName -> metaDataLoader.load(runtimeContext.getDatabaseType(), dataSourceMap, tableName, runtimeContext.getProperties()));
         }
-    }
-    
-    /**
-     * Clear.
-     */
-    public void clear() {
-        parameterSets.clear();
     }
 }
