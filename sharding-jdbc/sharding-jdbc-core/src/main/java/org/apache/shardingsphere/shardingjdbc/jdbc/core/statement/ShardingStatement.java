@@ -36,11 +36,13 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
 import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContextBuilder;
 import org.apache.shardingsphere.underlying.executor.group.ExecuteGroupEngine;
 import org.apache.shardingsphere.underlying.executor.group.StatementExecuteGroupEngine;
+import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 import org.apache.shardingsphere.underlying.executor.log.SQLLogger;
 import org.apache.shardingsphere.underlying.merge.MergeEngine;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
@@ -55,6 +57,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -66,6 +69,8 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     @Getter
     private final ShardingConnection connection;
+    
+    private final List<Statement> statements;
     
     private final StatementOption statementOption;
     
@@ -88,6 +93,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     public ShardingStatement(final ShardingConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         super(Statement.class);
         this.connection = connection;
+        statements = new LinkedList<>();
         statementOption = new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         statementExecutor = new StatementExecutor(connection.getDataSourceMap(), connection.getRuntimeContext(), 
                 new SQLExecuteTemplate(connection.getRuntimeContext().getExecutorKernel(), connection.isHoldTransaction()));
@@ -103,7 +109,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
             executionContext = prepare(sql);
             List<QueryResult> queryResults = statementExecutor.executeQuery();
             MergedResult mergedResult = mergeQuery(queryResults);
-            result = new ShardingResultSet(statementExecutor.getStatements().stream().map(this::getResultSet).collect(Collectors.toList()), mergedResult, this, executionContext);
+            result = new ShardingResultSet(statements.stream().map(this::getResultSet).collect(Collectors.toList()), mergedResult, this, executionContext);
         } finally {
             currentResultSet = null;
         }
@@ -223,8 +229,8 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     }
     
     private List<ResultSet> getResultSets() throws SQLException {
-        List<ResultSet> result = new ArrayList<>(statementExecutor.getStatements().size());
-        for (Statement each : statementExecutor.getStatements()) {
+        List<ResultSet> result = new ArrayList<>(statements.size());
+        for (Statement each : statements) {
             result.add(each.getResultSet());
         }
         return result;
@@ -241,6 +247,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     }
     
     private ExecutionContext prepare(final String sql) throws SQLException {
+        clearStatements();
         statementExecutor.clear();
         ShardingRuntimeContext runtimeContext = connection.getRuntimeContext();
         SQLStatement sqlStatement = runtimeContext.getSqlParserEngine().parse(sql, false);
@@ -253,9 +260,17 @@ public final class ShardingStatement extends AbstractStatementAdapter {
             SQLLogger.logSQL(sql, runtimeContext.getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
         }
         ExecuteGroupEngine executeGroupEngine = new StatementExecuteGroupEngine(runtimeContext.getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY));
-        statementExecutor.init(executeGroupEngine.generate(result.getExecutionUnits(), connection, statementOption));
-        statementExecutor.getStatements().forEach(this::replayMethodsInvocation);
+        Collection<InputGroup<StatementExecuteUnit>> inputGroups = executeGroupEngine.generate(result.getExecutionUnits(), connection, statementOption);
+        statementExecutor.init(inputGroups);
+        cacheStatements(inputGroups);
+        statements.forEach(this::replayMethodsInvocation);
         return result;
+    }
+    
+    private void cacheStatements(final Collection<InputGroup<StatementExecuteUnit>> inputGroups) {
+        for (InputGroup<StatementExecuteUnit> each : inputGroups) {
+            statements.addAll(each.getInputs().stream().map(StatementExecuteUnit::getStatement).collect(Collectors.toList()));
+        }
     }
     
     private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {
@@ -263,6 +278,13 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         MergeEngine mergeEngine = new MergeEngine(runtimeContext.getDatabaseType(), 
                 runtimeContext.getMetaData().getSchema().getConfiguredSchemaMetaData(), runtimeContext.getProperties(), runtimeContext.getRule().toRules());
         return mergeEngine.merge(queryResults, executionContext.getSqlStatementContext());
+    }
+    
+    private void clearStatements() throws SQLException {
+        statements.clear();
+        for (Statement each : statements) {
+            each.close();
+        }
     }
     
     @SuppressWarnings("MagicConstant")
@@ -289,7 +311,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     @Override
     public Collection<Statement> getRoutedStatements() {
-        return statementExecutor.getStatements();
+        return statements;
     }
     
     @Override

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingjdbc.executor;
 
-import lombok.Getter;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutor;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
@@ -43,7 +42,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Statement executor.
@@ -56,16 +54,12 @@ public final class StatementExecutor {
     
     private final SQLExecutor sqlExecutor;
     
-    @Getter
-    private final List<Statement> statements;
-    
     private final Collection<InputGroup<StatementExecuteUnit>> inputGroups;
     
     public StatementExecutor(final Map<String, DataSource> dataSourceMap, final ShardingRuntimeContext runtimeContext, final SQLExecuteTemplate sqlExecuteTemplate) {
         this.dataSourceMap = dataSourceMap;
         this.runtimeContext = runtimeContext;
         sqlExecutor = new SQLExecutor(sqlExecuteTemplate);
-        statements = new LinkedList<>();
         inputGroups = new LinkedList<>();
     }
     
@@ -76,13 +70,6 @@ public final class StatementExecutor {
      */
     public void init(final Collection<InputGroup<StatementExecuteUnit>> inputGroups) {
         this.inputGroups.addAll(inputGroups);
-        cacheStatements();
-    }
-    
-    private void cacheStatements() {
-        for (InputGroup<StatementExecuteUnit> each : inputGroups) {
-            statements.addAll(each.getInputs().stream().map(StatementExecuteUnit::getStatement).collect(Collectors.toList()));
-        }
     }
     
     /**
@@ -260,19 +247,9 @@ public final class StatementExecutor {
     
     /**
      * Clear.
-     *
-     * @throws SQLException SQL exception
      */
-    public void clear() throws SQLException {
-        closeStatements();
-        statements.clear();
+    public void clear() {
         inputGroups.clear();
-    }
-    
-    private void closeStatements() throws SQLException {
-        for (Statement each : statements) {
-            each.close();
-        }
     }
     
     private interface Updater {
