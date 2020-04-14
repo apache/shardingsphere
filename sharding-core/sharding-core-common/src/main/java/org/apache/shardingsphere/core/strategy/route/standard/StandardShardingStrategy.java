@@ -86,7 +86,7 @@ public final class StandardShardingStrategy implements ShardingStrategy {
         for (Comparable<?> each : shardingValue.getValues()) {
             String target;
             if (null != shardingAlgorithm) {
-               target = shardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), each));
+                target = shardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), each));
             } else {
                 target = preciseShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), each));
             }
