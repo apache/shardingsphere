@@ -32,9 +32,8 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRun
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.algorithm.DefaultComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.shardingjdbc.spring.algorithm.DefaultHintShardingAlgorithm;
-import org.apache.shardingsphere.shardingjdbc.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm;
-import org.apache.shardingsphere.shardingjdbc.spring.algorithm.PreciseModuloTableShardingAlgorithm;
-import org.apache.shardingsphere.shardingjdbc.spring.algorithm.RangeModuloTableShardingAlgorithm;
+import org.apache.shardingsphere.shardingjdbc.spring.algorithm.StandardModuloDatabaseShardingAlgorithm;
+import org.apache.shardingsphere.shardingjdbc.spring.algorithm.StandardModuloTableShardingAlgorithm;
 import org.apache.shardingsphere.shardingjdbc.spring.datasource.SpringShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.fixture.IncrementKeyGenerateAlgorithm;
 import org.apache.shardingsphere.shardingjdbc.spring.util.FieldValueUtil;
@@ -75,15 +74,14 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     public void assertStandardStrategy() {
         StandardShardingStrategyConfiguration standardStrategy = applicationContext.getBean("standardStrategy", StandardShardingStrategyConfiguration.class);
         assertThat(standardStrategy.getShardingColumn(), is("user_id"));
-        assertThat(standardStrategy.getPreciseShardingAlgorithm(), instanceOf(PreciseModuloDatabaseShardingAlgorithm.class));
+        assertThat(standardStrategy.getShardingAlgorithm(), instanceOf(StandardModuloDatabaseShardingAlgorithm.class));
     }
     
     @Test
     public void assertRangeStandardStrategy() {
         StandardShardingStrategyConfiguration rangeStandardStrategy = applicationContext.getBean("rangeStandardStrategy", StandardShardingStrategyConfiguration.class);
         assertThat(rangeStandardStrategy.getShardingColumn(), is("order_id"));
-        assertThat(rangeStandardStrategy.getPreciseShardingAlgorithm(), instanceOf(PreciseModuloTableShardingAlgorithm.class));
-        assertThat(rangeStandardStrategy.getRangeShardingAlgorithm(), instanceOf(RangeModuloTableShardingAlgorithm.class));
+        assertThat(rangeStandardStrategy.getShardingAlgorithm(), instanceOf(StandardModuloTableShardingAlgorithm.class));
     }
     
     @Test
