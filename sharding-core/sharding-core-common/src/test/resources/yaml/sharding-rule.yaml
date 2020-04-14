@@ -92,8 +92,8 @@ shardingRule:
       tableStrategy:
         standard:
           shardingColumn: order_id
-          preciseAlgorithmClassName: TestPreciseAlgorithmClassName
-          rangeAlgorithmClassName: TestRangeAlgorithmClassName
+          shardingAlgorithm:
+            type: STANDARD_TEST
   bindingTables:
     - t_order, t_order_item
   broadcastTables:

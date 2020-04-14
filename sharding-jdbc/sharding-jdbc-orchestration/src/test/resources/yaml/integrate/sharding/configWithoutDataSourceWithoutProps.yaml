@@ -24,7 +24,8 @@ shardingRule:
       databaseStrategy: 
         standard:
           shardingColumn: user_id
-          preciseAlgorithmClassName: org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture.SingleAlgorithm
+          shardingAlgorithm:
+            type: STANDARD_TEST
       tableStrategy: 
         inline:
           shardingColumn: order_id
@@ -37,7 +38,8 @@ shardingRule:
       databaseStrategy: 
         standard:
           shardingColumn: user_id
-          preciseAlgorithmClassName: org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture.SingleAlgorithm
+          shardingAlgorithm:
+            type: STANDARD_TEST
       tableStrategy: 
         inline:
           shardingColumn: order_id

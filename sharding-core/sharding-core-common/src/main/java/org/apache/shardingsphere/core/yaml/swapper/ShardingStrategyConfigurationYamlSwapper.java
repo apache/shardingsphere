@@ -113,7 +113,9 @@ public final class ShardingStrategyConfigurationYamlSwapper implements YamlSwapp
     private YamlStandardShardingStrategyConfiguration createYamlStandardShardingStrategyConfiguration(final StandardShardingStrategyConfiguration data) {
         YamlStandardShardingStrategyConfiguration result = new YamlStandardShardingStrategyConfiguration();
         result.setShardingColumn(data.getShardingColumn());
-        result.setPreciseAlgorithmClassName(data.getPreciseShardingAlgorithm().getClass().getName());
+        if (null != data.getPreciseShardingAlgorithm()) {
+            result.setPreciseAlgorithmClassName(data.getPreciseShardingAlgorithm().getClass().getName());
+        } 
         if (null != data.getRangeShardingAlgorithm()) {
             result.setRangeAlgorithmClassName(data.getRangeShardingAlgorithm().getClass().getName());
         }

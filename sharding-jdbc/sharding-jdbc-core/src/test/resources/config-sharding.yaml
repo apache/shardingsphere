@@ -33,10 +33,10 @@ shardingRule:
   defaultTableStrategy:
     standard:
       shardingColumn: order_id
-      preciseAlgorithmClassName: org.apache.shardingsphere.shardingjdbc.fixture.PreciseOrderShardingAlgorithm
-      rangeAlgorithmClassName: org.apache.shardingsphere.shardingjdbc.fixture.RangeOrderShardingAlgorithm
+      shardingAlgorithm:
+        type: STANDARD_TEST
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
-      preciseAlgorithmClassName: org.apache.shardingsphere.shardingjdbc.fixture.PreciseOrderShardingAlgorithm
-      rangeAlgorithmClassName: org.apache.shardingsphere.shardingjdbc.fixture.RangeOrderShardingAlgorithm
+      shardingAlgorithm:
+        type: STANDARD_TEST

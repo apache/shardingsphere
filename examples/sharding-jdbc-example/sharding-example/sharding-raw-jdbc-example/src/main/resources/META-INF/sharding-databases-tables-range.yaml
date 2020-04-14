@@ -34,8 +34,8 @@ shardingRule:
       tableStrategy: 
         standard:
           shardingColumn: order_id
-          preciseAlgorithmClassName: org.apache.shardingsphere.example.algorithm.PreciseModuloShardingTableAlgorithm
-          rangeAlgorithmClassName: org.apache.shardingsphere.example.algorithm.RangeModuloShardingTableAlgorithm
+          shardingAlgorithm:
+            type: STANDARD_TEST_TB
       keyGenerator:
         type: SNOWFLAKE
         column: order_id
@@ -46,8 +46,8 @@ shardingRule:
       tableStrategy:
         standard:
           shardingColumn: order_id
-          preciseAlgorithmClassName: org.apache.shardingsphere.example.algorithm.PreciseModuloShardingTableAlgorithm
-          rangeAlgorithmClassName: org.apache.shardingsphere.example.algorithm.RangeModuloShardingTableAlgorithm
+          shardingAlgorithm:
+            type: STANDARD_TEST_TB
       keyGenerator:
         type: SNOWFLAKE
         column: order_item_id
@@ -60,8 +60,8 @@ shardingRule:
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
-      preciseAlgorithmClassName: org.apache.shardingsphere.example.algorithm.PreciseModuloShardingDatabaseAlgorithm
-      rangeAlgorithmClassName: org.apache.shardingsphere.example.algorithm.RangeModuloShardingDatabaseAlgorithm
+      shardingAlgorithm:
+        type: STANDARD_TEST_DB
   defaultTableStrategy:
     none:
 
