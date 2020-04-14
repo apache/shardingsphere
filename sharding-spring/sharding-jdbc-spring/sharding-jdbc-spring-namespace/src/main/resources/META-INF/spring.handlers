@@ -18,3 +18,4 @@
 http\://shardingsphere.apache.org/schema/shardingsphere/sharding=org.apache.shardingsphere.shardingjdbc.spring.namespace.handler.ShardingNamespaceHandler
 http\://shardingsphere.apache.org/schema/shardingsphere/masterslave=org.apache.shardingsphere.shardingjdbc.spring.namespace.handler.MasterSlaveNamespaceHandler
 http\://shardingsphere.apache.org/schema/shardingsphere/encrypt=org.apache.shardingsphere.shardingjdbc.spring.namespace.handler.EncryptNamespaceHandler
+http\://shardingsphere.apache.org/schema/shardingsphere/spi=org.apache.shardingsphere.shardingjdbc.spring.namespace.handler.SPINamespaceHandler

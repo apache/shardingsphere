@@ -19,21 +19,21 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       xmlns:spi="http://shardingsphere.apache.org/schema/shardingsphere/spi"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
+                        http://shardingsphere.apache.org/schema/shardingsphere/spi
+                        http://shardingsphere.apache.org/schema/shardingsphere/spi/spi.xsd
                         ">
     <import resource="datasource/dataSource.xml" />
     
     <bean id="standardModuloDatabaseShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.algorithm.StandardModuloDatabaseShardingAlgorithm" />
     <bean id="standardModuloTableShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.algorithm.StandardModuloTableShardingAlgorithm" />
-    <bean id="incrementAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean">
-        <property name="type" value="INCREMENT" />
-    </bean>
-    <bean id="decrementAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean">
-        <property name="type" value="DECREMENT" />
-    </bean>
+    
+    <spi:key-generate-algorithm id="incrementAlgorithm" type="INCREMENT" />
+    <spi:key-generate-algorithm id="decrementAlgorithm" type="DECREMENT" />
     
     <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="standardModuloDatabaseShardingAlgorithm" />
     <sharding:standard-strategy id="tableStrategy" sharding-column="order_id" algorithm-ref="standardModuloTableShardingAlgorithm" />
