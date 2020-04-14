@@ -35,7 +35,7 @@ public final class StandardShardingStrategyConfigurationTest {
     
     @Test(expected = NullPointerException.class)
     public void assertConstructorWithoutPreciseShardingAlgorithm() {
-        new StandardShardingStrategyConfiguration("id", null);
+        new StandardShardingStrategyConfiguration("id", null, null);
     }
     
     @Test

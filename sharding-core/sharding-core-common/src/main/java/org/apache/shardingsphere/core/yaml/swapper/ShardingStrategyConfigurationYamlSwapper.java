@@ -28,6 +28,7 @@ import org.apache.shardingsphere.api.sharding.complex.ComplexKeysShardingAlgorit
 import org.apache.shardingsphere.api.sharding.hint.HintShardingAlgorithm;
 import org.apache.shardingsphere.api.sharding.standard.PreciseShardingAlgorithm;
 import org.apache.shardingsphere.api.sharding.standard.RangeShardingAlgorithm;
+import org.apache.shardingsphere.api.sharding.standard.StandardShardingAlgorithm;
 import org.apache.shardingsphere.core.strategy.route.ShardingAlgorithmFactory;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlComplexShardingStrategyConfiguration;
@@ -78,7 +79,9 @@ public final class ShardingStrategyConfigurationYamlSwapper implements YamlSwapp
         ShardingStrategyConfiguration result = null;
         if (null != yamlConfiguration.getStandard()) {
             shardingStrategyConfigCount++;
-            if (null == yamlConfiguration.getStandard().getRangeAlgorithmClassName()) {
+            if (null != yamlConfiguration.getStandard().getShardingAlgorithm()) {
+                result = createStandardShardingStrategyConfiguration(yamlConfiguration.getStandard());
+            } else if (null == yamlConfiguration.getStandard().getRangeAlgorithmClassName()) {
                 result = new StandardShardingStrategyConfiguration(yamlConfiguration.getStandard().getShardingColumn(),
                         ShardingAlgorithmFactory.newInstance(yamlConfiguration.getStandard().getPreciseAlgorithmClassName(), PreciseShardingAlgorithm.class));
             } else {
@@ -114,6 +117,9 @@ public final class ShardingStrategyConfigurationYamlSwapper implements YamlSwapp
         if (null != data.getRangeShardingAlgorithm()) {
             result.setRangeAlgorithmClassName(data.getRangeShardingAlgorithm().getClass().getName());
         }
+        if (null != data.getShardingAlgorithm()) {
+            result.setShardingAlgorithm(createYamlShardingAlgorithmConfiguration(data.getShardingAlgorithm()));
+        }
         return result;
     }
     
@@ -135,6 +141,11 @@ public final class ShardingStrategyConfigurationYamlSwapper implements YamlSwapp
         result.setShardingColumn(data.getShardingColumn());
         result.setAlgorithmExpression(data.getAlgorithmExpression());
         return result;
+    }
+    
+    private StandardShardingStrategyConfiguration createStandardShardingStrategyConfiguration(final YamlStandardShardingStrategyConfiguration yamlConfiguration) {
+        return new StandardShardingStrategyConfiguration(yamlConfiguration.getShardingColumn(),
+                createShardingAlgorithm(StandardShardingAlgorithm.class, yamlConfiguration.getShardingAlgorithm()));
     }
     
     private ComplexShardingStrategyConfiguration createComplexShardingStrategyConfiguration(final YamlComplexShardingStrategyConfiguration yamlConfiguration) {
