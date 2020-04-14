@@ -61,7 +61,8 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     @Override
     public void setUp() throws SQLException {
         super.setUp();
-        actual = spy(new PreparedStatementExecutor(getConnection(), new SQLExecuteTemplate(getExecutorKernel(), false)));
+        ShardingConnection connection = getConnection();
+        actual = spy(new PreparedStatementExecutor(connection.getDataSourceMap(), connection.getRuntimeContext(), new SQLExecuteTemplate(getExecutorKernel(), false)));
     }
     
     @Test

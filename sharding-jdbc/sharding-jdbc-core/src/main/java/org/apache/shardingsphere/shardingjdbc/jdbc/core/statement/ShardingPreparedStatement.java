@@ -120,8 +120,8 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
         statementOption = returnGeneratedKeys ? new StatementOption(true) : new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         SQLExecuteTemplate sqlExecuteTemplate = new SQLExecuteTemplate(connection.getRuntimeContext().getExecutorKernel(), connection.isHoldTransaction());
-        preparedStatementExecutor = new PreparedStatementExecutor(connection, sqlExecuteTemplate);
-        batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(connection, sqlExecuteTemplate);
+        preparedStatementExecutor = new PreparedStatementExecutor(connection.getDataSourceMap(), connection.getRuntimeContext(), sqlExecuteTemplate);
+        batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(connection.getRuntimeContext(), sqlExecuteTemplate);
     }
     
     @Override

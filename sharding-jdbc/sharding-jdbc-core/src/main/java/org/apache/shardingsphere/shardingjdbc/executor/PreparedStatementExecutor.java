@@ -23,7 +23,6 @@ import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallbac
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.MemoryQueryResult;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategy;
@@ -34,6 +33,7 @@ import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 
+import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -41,6 +41,7 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
@@ -50,7 +51,9 @@ import java.util.stream.Collectors;
  */
 public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     
-    private final ShardingConnection connection;
+    private final Map<String, DataSource> dataSourceMap;
+    
+    private final ShardingRuntimeContext runtimeContext;
     
     @Getter
     private final List<Statement> statements;
@@ -63,9 +66,10 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     
     private final Collection<InputGroup<StatementExecuteUnit>> inputGroups;
     
-    public PreparedStatementExecutor(final ShardingConnection shardingConnection, final SQLExecuteTemplate sqlExecuteTemplate) {
+    public PreparedStatementExecutor(final Map<String, DataSource> dataSourceMap, final ShardingRuntimeContext runtimeContext, final SQLExecuteTemplate sqlExecuteTemplate) {
         super(sqlExecuteTemplate);
-        connection = shardingConnection;
+        this.dataSourceMap = dataSourceMap;
+        this.runtimeContext = runtimeContext;
         statements = new LinkedList<>();
         resultSets = new CopyOnWriteArrayList<>();
         parameterSets = new LinkedList<>();
@@ -93,7 +97,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
      */
     public List<QueryResult> executeQuery() throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<QueryResult> executeCallback = new SQLExecutorCallback<QueryResult>(connection.getRuntimeContext().getDatabaseType(), isExceptionThrown) {
+        SQLExecutorCallback<QueryResult> executeCallback = new SQLExecutorCallback<QueryResult>(runtimeContext.getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected QueryResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -119,10 +123,10 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
      */
     public int executeUpdate(final SQLStatementContext sqlStatementContext) throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<Integer> executeCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(connection.getRuntimeContext().getDatabaseType(), isExceptionThrown);
+        SQLExecutorCallback<Integer> executeCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(runtimeContext.getDatabaseType(), isExceptionThrown);
         List<Integer> results = executeCallback(inputGroups, executeCallback);
-        refreshTableMetaData(connection.getRuntimeContext(), sqlStatementContext);
-        if (!connection.getRuntimeContext().getRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())) {
+        refreshTableMetaData(runtimeContext, sqlStatementContext);
+        if (!runtimeContext.getRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())) {
             return accumulate(results);
         } else {
             return results.get(0);
@@ -146,9 +150,9 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
      */
     public boolean execute(final SQLStatementContext sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<Boolean> executeCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(connection.getRuntimeContext().getDatabaseType(), isExceptionThrown);
+        SQLExecutorCallback<Boolean> executeCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(runtimeContext.getDatabaseType(), isExceptionThrown);
         List<Boolean> result = executeCallback(inputGroups, executeCallback);
-        refreshTableMetaData(connection.getRuntimeContext(), sqlStatementContext);
+        refreshTableMetaData(runtimeContext, sqlStatementContext);
         if (null == result || result.isEmpty() || null == result.get(0)) {
             return false;
         }
@@ -162,9 +166,9 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
         }
         Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
         if (refreshStrategy.isPresent()) {
-            RuleSchemaMetaDataLoader metaDataLoader = new RuleSchemaMetaDataLoader(connection.getRuntimeContext().getRule().toRules());
+            RuleSchemaMetaDataLoader metaDataLoader = new RuleSchemaMetaDataLoader(runtimeContext.getRule().toRules());
             refreshStrategy.get().refreshMetaData(runtimeContext.getMetaData(), sqlStatementContext,
-                tableName -> metaDataLoader.load(runtimeContext.getDatabaseType(), connection.getDataSourceMap(), tableName, connection.getRuntimeContext().getProperties()));
+                tableName -> metaDataLoader.load(runtimeContext.getDatabaseType(), dataSourceMap, tableName, runtimeContext.getProperties()));
         }
     }
     

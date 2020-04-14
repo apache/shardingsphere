@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
 import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
 import org.apache.shardingsphere.shardingjdbc.executor.AbstractStatementExecutor;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
  */
 public final class BatchPreparedStatementExecutor extends AbstractStatementExecutor {
     
-    private final ShardingConnection connection;
+    private final ShardingRuntimeContext runtimeContext;
     
     @Getter
     private final List<ResultSet> resultSets;
@@ -61,9 +61,9 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     
     private int batchCount;
     
-    public BatchPreparedStatementExecutor(final ShardingConnection shardingConnection, final SQLExecuteTemplate sqlExecuteTemplate) {
+    public BatchPreparedStatementExecutor(final ShardingRuntimeContext runtimeContext, final SQLExecuteTemplate sqlExecuteTemplate) {
         super(sqlExecuteTemplate);
-        connection = shardingConnection;
+        this.runtimeContext = runtimeContext;
         resultSets = new CopyOnWriteArrayList<>();
         inputGroups = new LinkedList<>();
     }
@@ -124,7 +124,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
      */
     public int[] executeBatch(final SQLStatementContext sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<int[]> callback = new SQLExecutorCallback<int[]>(connection.getRuntimeContext().getDatabaseType(), isExceptionThrown) {
+        SQLExecutorCallback<int[]> callback = new SQLExecutorCallback<int[]>(runtimeContext.getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected int[] executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -132,7 +132,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
             }
         };
         List<int[]> results = executeCallback(inputGroups, callback);
-        if (!connection.getRuntimeContext().getRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())) {
+        if (!runtimeContext.getRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())) {
             return accumulate(results);
         } else {
             return results.get(0);
