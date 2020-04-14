@@ -191,7 +191,7 @@ public final class RuleSchemaMetaDataLoader {
     }
     
     private Map<String, SchemaMetaData> getSingleSchemaMetaDataMap(final String entryKey, final SchemaMetaData schemaMetaData) {
-        Map<String, SchemaMetaData> schemaMetaDataMap = new HashMap<>(1,1);
+        Map<String, SchemaMetaData> schemaMetaDataMap = new HashMap<>(1, 1);
         schemaMetaDataMap.put(entryKey, schemaMetaData);
         return schemaMetaDataMap;
     }
