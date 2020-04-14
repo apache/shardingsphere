@@ -377,93 +377,62 @@
         <row-count value="3" parameter-index="0" />
     </select>
 
-    <select sql-case-id="select_pagination_with_row_number_and_group_by_and_order_by" parameters="1, 2, 9, 10, 5, 3">
+    <select sql-case-id="select_pagination_with_row_number_and_group_by_and_order_by" parameters="1, 2, 9, 7, 5, 3">
         <tables>
             <simple-table name="t_order" alias="order0_" start-index="146" stop-index="152" />
             <simple-table name="t_order_item" alias="i" start-index="167" stop-index="178" />
         </tables>
-        <projections start-index="58" stop-index="139">
-            <column-projection name="order_id" alias="order_id" start-index="58" stop-index="73">
-                <owner name="order0_" start-index="58" stop-index="64" />
-            </column-projection>
-            <column-projection name="status" alias="status" start-index="88" stop-index="101">
-                <owner name="order0_" start-index="88" stop-index="94" />
-            </column-projection>
-            <column-projection name="user_id" alias="user_id" start-index="114" stop-index="128">
-                <owner name="order0_" start-index="114" stop-index="120" />
-            </column-projection>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection  start-index="7" stop-index="7" />
         </projections>
-        <where start-index="386" stop-index="404" literal-start-index="387" literal-stop-index="405">
+        <table-reference>
+            <table-factor>
+                <subqueryTable start-index="14" stop-index="383" alias="t" />
+            </table-factor>
+        </table-reference>
+        <where start-index="386" stop-index="404">
             <and-predicate>
-                <!-- FIXME cannot parse subquery's predicate -->
-                <predicate start-index="392" stop-index="404" literal-start-index="393" literal-stop-index="405">
-                    <column-left-value name="rownum_" start-index="392" stop-index="400" literal-start-index="393" literal-stop-index="401">
-                        <owner name="t" start-index="392" stop-index="392" literal-start-index="393" literal-stop-index="393" />
+                <predicate start-index="392" stop-index="404">
+                    <column-left-value start-index="392" stop-index="400" name="rownum_">
+                        <owner start-index="392" stop-index="392" name="t"/>
                     </column-left-value>
                     <operator type="&gt;" />
                     <compare-right-value>
-                        <parameter-marker-expression value="5" />
-                        <literal-expression value="3" />
+                        <literal-expression start-index="404" stop-index="404" value="3" />
+                        <parameter-marker-expression start-index="404" stop-index="404" value="5"/>
                     </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
-        <group-by>
-            <column-item name="item_id">
-                <owner name="i" start-index="325" stop-index="325" literal-start-index="326" literal-stop-index="326" />
-            </column-item>
-        </group-by>
-        <order-by>
-            <column-item name="item_id" order-direction="DESC">
-                <owner name="i" start-index="344" stop-index="344" literal-start-index="345" literal-stop-index="345" />
-            </column-item>
-        </order-by>
-        <offset value="3" parameter-index="5" />
-        <row-count value="5" parameter-index="4" />
     </select>
 
-    <select sql-case-id="select_pagination_with_row_number_and_diff_group_by_and_order_by" parameters="1, 2, 9, 10, 5, 3">
+    <select sql-case-id="select_pagination_with_row_number_and_diff_group_by_and_order_by" parameters="1, 2, 9, 7, 5, 3">
         <tables>
             <simple-table name="t_order" alias="order0_" start-index="146" stop-index="152" />
             <simple-table name="t_order_item" alias="i" start-index="167" stop-index="178" />
         </tables>
-        <projections start-index="58" stop-index="139">
-            <column-projection name="order_id" alias="order_id" start-index="58" stop-index="73">
-                <owner name="order0_" start-index="58" stop-index="64" />
-            </column-projection>
-            <column-projection name="status" alias="status" start-index="88" stop-index="101">
-                <owner name="order0_" start-index="88" stop-index="94" />
-            </column-projection>
-            <column-projection name="user_id" alias="user_id" start-index="114" stop-index="128">
-                <owner name="order0_" start-index="114" stop-index="120" />
-            </column-projection>
+        <table-reference>
+            <table-factor>
+                <subqueryTable start-index="14" stop-index="383" alias="t" />
+            </table-factor>
+        </table-reference>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection  start-index="7" stop-index="7" />
         </projections>
-        <where start-index="386" stop-index="404" literal-start-index="387" literal-stop-index="405">
+        <where start-index="386" stop-index="404">
             <and-predicate>
-                <!-- FIXME cannot parse subquery's predicate -->
-                <predicate start-index="392" stop-index="404" literal-start-index="393" literal-stop-index="405">
-                    <column-left-value name="rownum_" start-index="392" stop-index="400" literal-start-index="393" literal-stop-index="401">
-                        <owner name="t" start-index="392" stop-index="392" literal-start-index="393" literal-stop-index="393" />
+                <predicate start-index="392" stop-index="404">
+                    <column-left-value start-index="392" stop-index="400" name="rownum_">
+                        <owner start-index="392" stop-index="392" name="t"/>
                     </column-left-value>
                     <operator type="&gt;" />
                     <compare-right-value>
-                        <parameter-marker-expression value="5" />
-                        <literal-expression value="3" />
+                        <literal-expression start-index="404" stop-index="404" value="3" />
+                        <parameter-marker-expression start-index="404" stop-index="404" value="5"/>
                     </compare-right-value>
                 </predicate>
             </and-predicate>
+
         </where>
-        <group-by>
-            <column-item name="user_id">
-                <owner name="i" start-index="325" stop-index="325" literal-start-index="326" literal-stop-index="326" />
-            </column-item>
-        </group-by>
-        <order-by>
-            <column-item name="item_id" order-direction="DESC">
-                <owner name="i" start-index="344" stop-index="344" literal-start-index="345" literal-stop-index="345" />
-            </column-item>
-        </order-by>
-        <offset value="3" parameter-index="5" />
-        <row-count value="5" parameter-index="4" />
     </select>
 </sql-parser-test-cases>

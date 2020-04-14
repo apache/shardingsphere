@@ -102,9 +102,6 @@ public final class SQLParserParameterizedTest {
         sqlCases.add("select_with_expression");
         // TODO Sub query is necessary
         sqlCases.add("select_pagination_with_row_number");
-        sqlCases.add("select_pagination_with_row_number_and_diff_group_by_and_order_by");
-        sqlCases.add("select_pagination_with_row_number_and_diff_group_by_and_order_by");
-        sqlCases.add("select_pagination_with_row_number_and_group_by_and_order_by");
         sqlCases.add("select_pagination_with_row_number_for_greater_than");
         sqlCases.add("select_pagination_with_row_number_for_greater_than_and_equal");
         sqlCases.add("select_pagination_with_offset_fetch");

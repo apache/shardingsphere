@@ -369,7 +369,7 @@ public final class SQL92DMLVisitor extends SQL92Visitor implements DMLVisitor {
             if (null != ctx.alias()) {
                 subqueryTableSegment.setAlias((AliasSegment) visit(ctx.alias()));
             }
-            result.setTable(subqueryTableSegment);
+            result.setSubqueryTableSegment(subqueryTableSegment);
         }
         if (null != ctx.tableName()) {
             SimpleTableSegment table = (SimpleTableSegment) visit(ctx.tableName());
