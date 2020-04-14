@@ -17,3 +17,5 @@
  
 org.apache.shardingsphere.shardingjdbc.spring.algorithm.DefaultComplexKeysShardingAlgorithm
 org.apache.shardingsphere.shardingjdbc.spring.algorithm.DefaultHintShardingAlgorithm
+org.apache.shardingsphere.shardingjdbc.spring.algorithm.StandardModuloDatabaseShardingAlgorithm
+org.apache.shardingsphere.shardingjdbc.spring.algorithm.StandardModuloTableShardingAlgorithm
