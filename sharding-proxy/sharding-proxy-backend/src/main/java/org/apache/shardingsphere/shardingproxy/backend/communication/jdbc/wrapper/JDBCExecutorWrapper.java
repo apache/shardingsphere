@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper;
 
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
+import org.apache.shardingsphere.underlying.executor.group.ExecuteGroupEngine;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -35,6 +36,13 @@ public interface JDBCExecutorWrapper {
      * @throws SQLException SQL exception
      */
     ExecutionContext route(String sql) throws SQLException;
+    
+    /**
+     * Get execute group engine.
+     * 
+     * @return execute group engine
+     */
+    ExecuteGroupEngine getExecuteGroupEngine();
     
     /**
      * Execute SQL.

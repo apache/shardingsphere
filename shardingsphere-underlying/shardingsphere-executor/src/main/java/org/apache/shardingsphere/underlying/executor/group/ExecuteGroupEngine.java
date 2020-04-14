@@ -56,14 +56,8 @@ public abstract class ExecuteGroupEngine {
      */
     public Collection<InputGroup<StatementExecuteUnit>> generate(final Collection<ExecutionUnit> executionUnits, 
                                                                  final ExecutionConnection executionConnection, final StatementOption statementOption) throws SQLException {
-        return generateSynchronizedExecuteUnitGroups(executionUnits, executionConnection, statementOption);
-    }
-    
-    private Collection<InputGroup<StatementExecuteUnit>> generateSynchronizedExecuteUnitGroups(final Collection<ExecutionUnit> executionUnits, final ExecutionConnection executionConnection, 
-                                                                                               final StatementOption statementOption) throws SQLException {
-        Map<String, List<SQLUnit>> sqlUnitGroups = generateSQLUnitGroups(executionUnits);
         Collection<InputGroup<StatementExecuteUnit>> result = new LinkedList<>();
-        for (Entry<String, List<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
+        for (Entry<String, List<SQLUnit>> entry : generateSQLUnitGroups(executionUnits).entrySet()) {
             result.addAll(generateSQLExecuteGroups(entry.getKey(), entry.getValue(), executionConnection, statementOption));
         }
         return result;
