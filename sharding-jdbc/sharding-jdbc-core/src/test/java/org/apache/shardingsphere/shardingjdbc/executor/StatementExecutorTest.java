@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingjdbc.executor;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
 import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
@@ -306,7 +305,6 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         }
     }
     
-    @SneakyThrows
     private Collection<InputGroup<StatementExecuteUnit>> getExecuteGroups(final List<Statement> statements, final boolean isQuery) {
         Collection<InputGroup<StatementExecuteUnit>> result = new LinkedList<>();
         List<StatementExecuteUnit> statementExecuteUnits = new LinkedList<>();

@@ -59,32 +59,21 @@ public final class PreparedStatementExecutor {
     @Getter
     private final List<List<Object>> parameterSets;
     
-    private final Collection<InputGroup<StatementExecuteUnit>> inputGroups;
-    
     public PreparedStatementExecutor(final Map<String, DataSource> dataSourceMap, final ShardingRuntimeContext runtimeContext, final SQLExecuteTemplate sqlExecuteTemplate) {
         this.dataSourceMap = dataSourceMap;
         this.runtimeContext = runtimeContext;
         sqlExecutor = new SQLExecutor(sqlExecuteTemplate);
         parameterSets = new LinkedList<>();
-        inputGroups = new LinkedList<>();
-    }
-    
-    /**
-     * Initialize executor.
-     *
-     * @param inputGroups input groups
-     */
-    public void init(final Collection<InputGroup<StatementExecuteUnit>> inputGroups) {
-        this.inputGroups.addAll(inputGroups);
     }
     
     /**
      * Execute query.
      *
+     * @param inputGroups input groups
      * @return result set list
      * @throws SQLException SQL exception
      */
-    public List<QueryResult> executeQuery() throws SQLException {
+    public List<QueryResult> executeQuery(final Collection<InputGroup<StatementExecuteUnit>> inputGroups) throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         SQLExecutorCallback<QueryResult> executeCallback = new SQLExecutorCallback<QueryResult>(runtimeContext.getDatabaseType(), isExceptionThrown) {
             
@@ -105,11 +94,12 @@ public final class PreparedStatementExecutor {
     /**
      * Execute update.
      * 
+     * @param inputGroups input groups
      * @param sqlStatementContext SQL statement context
      * @return effected records count
      * @throws SQLException SQL exception
      */
-    public int executeUpdate(final SQLStatementContext sqlStatementContext) throws SQLException {
+    public int executeUpdate(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLStatementContext sqlStatementContext) throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         SQLExecutorCallback<Integer> executeCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(runtimeContext.getDatabaseType(), isExceptionThrown);
         List<Integer> results = sqlExecutor.execute(inputGroups, executeCallback);
@@ -132,11 +122,12 @@ public final class PreparedStatementExecutor {
     /**
      * Execute SQL.
      *
+     * @param inputGroups input groups
      * @param sqlStatementContext SQL statement context
      * @return return true if is DQL, false if is DML
      * @throws SQLException SQL exception
      */
-    public boolean execute(final SQLStatementContext sqlStatementContext) throws SQLException {
+    public boolean execute(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLStatementContext sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         SQLExecutorCallback<Boolean> executeCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(runtimeContext.getDatabaseType(), isExceptionThrown);
         List<Boolean> result = sqlExecutor.execute(inputGroups, executeCallback);
@@ -164,7 +155,6 @@ public final class PreparedStatementExecutor {
      * Clear.
      */
     public void clear() {
-        inputGroups.clear();
         parameterSets.clear();
     }
 }
