@@ -16,11 +16,11 @@ You can report a bug, submit a new function enhancement suggestion, or submit a 
  - Choose a label after issue created, for example: bug，enhancement，discussion.
  - Please pay attention for your issue, you may need provide more information during discussion.
 
-## Develop Flow
+## Developer Flow
 
-### Fork shardingsphere repo
+### Fork ShardingSphere repo
 
- - Fork a shardingsphere repo to your own repo to work, then setting upstream.
+ - Fork a `ShardingSphere` repo to your own repo to work, then setting upstream.
 
 ```shell
 git remote add upstream https://github.com/apache/incubator-shardingsphere.git
@@ -57,7 +57,7 @@ git push origin issueNo
 
 ### Submit Pull Request
 
- - Send a pull request to the master branch rather than the master branch of shardingsphere after it is finished.
+ - Send a pull request to the master branch.
  - The mentor will do code review before discussing some details (including the design, the implementation and the performance) with you. The request will be merged into the branch of current development version after the edit is well enough.
  - At last, congratulate to be an official contributor of ShardingSphere
 

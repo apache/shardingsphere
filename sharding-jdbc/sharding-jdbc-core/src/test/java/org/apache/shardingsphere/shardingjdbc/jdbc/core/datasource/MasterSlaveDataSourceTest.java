@@ -117,14 +117,14 @@ public final class MasterSlaveDataSourceTest {
         assertThat(((MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, 
                 new MasterSlaveRuleConfiguration("ds", "masterDataSource", Arrays.asList("slaveDataSource1", "slaveDataSource2"), new LoadBalanceStrategyConfiguration("ROUND_ROBIN")),
                 new Properties())).getDatabaseType(), instanceOf(H2DatabaseType.class));
-        verify(slaveConnection1, times(2)).close();
-        verify(slaveConnection2, times(2)).close();
+        verify(slaveConnection1, times(3)).close();
+        verify(slaveConnection2, times(3)).close();
     }
     
     private Connection mockConnection(final String url) throws SQLException {
         Connection result = mock(Connection.class);
         DatabaseMetaData metaData = mock(DatabaseMetaData.class);
-        when(metaData.getTables(ArgumentMatchers.<String>any(), ArgumentMatchers.<String>any(), ArgumentMatchers.<String>any(), ArgumentMatchers.<String[]>any())).thenReturn(mock(ResultSet.class));
+        when(metaData.getTables(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(mock(ResultSet.class));
         when(result.getMetaData()).thenReturn(metaData);
         when(metaData.getURL()).thenReturn(url);
         return result;

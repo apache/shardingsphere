@@ -17,21 +17,20 @@
 
 package org.apache.shardingsphere.shadow.rewrite.judgement.impl;
 
-import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.rewrite.condition.ShadowCondition;
 import org.apache.shardingsphere.shadow.rewrite.condition.ShadowConditionEngine;
 import org.apache.shardingsphere.shadow.rewrite.judgement.ShadowJudgementEngine;
-import org.apache.shardingsphere.sql.parser.relation.segment.insert.InsertValueContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
+import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.InsertValueContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.type.WhereAvailable;
 
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Simple shadow judgement engine.
@@ -45,33 +44,33 @@ public final class SimpleJudgementEngine implements ShadowJudgementEngine {
     
     @Override
     public boolean isShadowSQL() {
-        if (sqlStatementContext.getSqlStatement() instanceof InsertStatement) {
-            for (InsertValueContext each : ((InsertSQLStatementContext) sqlStatementContext).getInsertValueContexts()) {
-                if (judgeShadowSqlForInsert(each, (InsertSQLStatementContext) sqlStatementContext)) {
+        if (sqlStatementContext instanceof InsertStatementContext) {
+            for (InsertValueContext each : ((InsertStatementContext) sqlStatementContext).getInsertValueContexts()) {
+                if (judgeShadowSqlForInsert(each, (InsertStatementContext) sqlStatementContext)) {
                     return true;
                 }
             }
             return false;
         }
-        if (sqlStatementContext.getSqlStatement() instanceof WhereSegmentAvailable) {
+        if (sqlStatementContext instanceof WhereAvailable) {
             Optional<ShadowCondition> shadowCondition = new ShadowConditionEngine(shadowRule).createShadowCondition(sqlStatementContext);
             if (!shadowCondition.isPresent()) {
                 return false;
             }
             List<Object> values = shadowCondition.get().getValues(Collections.emptyList());
-            return values.size() != 0 && "TRUE".equals((String.valueOf(values.get(0))).toUpperCase());
+            return values.size() != 0 && isShadowField(values.get(0));
         }
         return false;
     }
     
-    private boolean judgeShadowSqlForInsert(final InsertValueContext insertValueContext, final InsertSQLStatementContext insertSQLStatementContext) {
-        Iterator<String> descendingColumnNames = insertSQLStatementContext.getDescendingColumnNames();
+    private boolean judgeShadowSqlForInsert(final InsertValueContext insertValueContext, final InsertStatementContext insertStatementContext) {
+        Iterator<String> descendingColumnNames = insertStatementContext.getDescendingColumnNames();
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
             if (shadowRule.getColumn().equals(columnName)) {
-                int columnIndex = insertSQLStatementContext.getColumnNames().indexOf(columnName);
+                int columnIndex = insertStatementContext.getColumnNames().indexOf(columnName);
                 Object value = insertValueContext.getValue(columnIndex);
-                return "TRUE".equals((String.valueOf(value)).toUpperCase());
+                return isShadowField(value);
             }
         }
         return false;

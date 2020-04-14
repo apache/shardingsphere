@@ -23,11 +23,12 @@ import org.apache.shardingsphere.api.sharding.standard.PreciseShardingAlgorithm;
 import org.apache.shardingsphere.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.api.sharding.standard.RangeShardingAlgorithm;
 import org.apache.shardingsphere.api.sharding.standard.RangeShardingValue;
+import org.apache.shardingsphere.api.sharding.standard.StandardShardingAlgorithm;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -44,16 +45,20 @@ public final class StandardShardingStrategy implements ShardingStrategy {
     
     private final RangeShardingAlgorithm rangeShardingAlgorithm;
     
+    private final StandardShardingAlgorithm shardingAlgorithm;
+    
     public StandardShardingStrategy(final StandardShardingStrategyConfiguration standardShardingStrategyConfig) {
         Preconditions.checkNotNull(standardShardingStrategyConfig.getShardingColumn(), "Sharding column cannot be null.");
-        Preconditions.checkNotNull(standardShardingStrategyConfig.getPreciseShardingAlgorithm(), "precise sharding algorithm cannot be null.");
+        Preconditions.checkState(null != standardShardingStrategyConfig.getShardingAlgorithm() 
+                        || null != standardShardingStrategyConfig.getPreciseShardingAlgorithm(), "sharding algorithm cannot be null.");
         shardingColumn = standardShardingStrategyConfig.getShardingColumn();
         preciseShardingAlgorithm = standardShardingStrategyConfig.getPreciseShardingAlgorithm();
         rangeShardingAlgorithm = standardShardingStrategyConfig.getRangeShardingAlgorithm();
+        shardingAlgorithm = standardShardingStrategyConfig.getShardingAlgorithm();
     }
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<RouteValue> shardingValues, final ShardingSphereProperties properties) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<RouteValue> shardingValues, final ConfigurationProperties properties) {
         RouteValue shardingValue = shardingValues.iterator().next();
         Collection<String> shardingResult = shardingValue instanceof ListRouteValue
                 ? doSharding(availableTargetNames, (ListRouteValue) shardingValue) : doSharding(availableTargetNames, (RangeRouteValue) shardingValue);
@@ -64,6 +69,10 @@ public final class StandardShardingStrategy implements ShardingStrategy {
     
     @SuppressWarnings("unchecked")
     private Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeRouteValue<?> shardingValue) {
+        if (null != shardingAlgorithm) {
+            return shardingAlgorithm.doSharding(availableTargetNames,
+                    new RangeShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), shardingValue.getValueRange()));
+        }
         if (null == rangeShardingAlgorithm) {
             throw new UnsupportedOperationException("Cannot find range sharding strategy in sharding rule.");
         }
@@ -75,7 +84,12 @@ public final class StandardShardingStrategy implements ShardingStrategy {
     private Collection<String> doSharding(final Collection<String> availableTargetNames, final ListRouteValue<?> shardingValue) {
         Collection<String> result = new LinkedList<>();
         for (Comparable<?> each : shardingValue.getValues()) {
-            String target = preciseShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), each));
+            String target;
+            if (null != shardingAlgorithm) {
+                target = shardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), each));
+            } else {
+                target = preciseShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), each));
+            }
             if (null != target) {
                 result.add(target);
             }

@@ -65,13 +65,6 @@ public final class UnsupportedOperationPreparedStatementTest extends AbstractSha
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetParameterMetaData() throws SQLException {
-        for (PreparedStatement each : statements) {
-            each.getParameterMetaData();
-        }
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertSetNString() throws SQLException {
         for (PreparedStatement each : statements) {
             each.setNString(1, "");

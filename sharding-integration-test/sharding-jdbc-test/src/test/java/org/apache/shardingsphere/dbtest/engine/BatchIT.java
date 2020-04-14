@@ -19,8 +19,7 @@ package org.apache.shardingsphere.dbtest.engine;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.core.rule.DataNode;
-import org.apache.shardingsphere.underlying.common.config.inline.InlineExpressionParser;
+import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.dbtest.cases.dataset.DataSet;
@@ -33,6 +32,7 @@ import org.apache.shardingsphere.dbtest.env.EnvironmentPath;
 import org.apache.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.loader.SQLCasesRegistry;
+import org.apache.shardingsphere.underlying.common.config.inline.InlineExpressionParser;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -74,15 +74,15 @@ public abstract class BatchIT extends BaseIT {
     private final Collection<String> expectedDataFiles;
     
     public BatchIT(final String sqlCaseId, final IntegrateTestCase integrateTestCase,
-                   final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, JAXBException, SQLException {
-        super(shardingRuleType, databaseTypeEnvironment);
+                   final String ruleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, JAXBException, SQLException {
+        super(ruleType, databaseTypeEnvironment);
         this.integrateTestCase = integrateTestCase;
         sql = SQLCasesRegistry.getInstance().getSqlCasesLoader().getSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList());
         expectedDataFiles = new LinkedList<>();
         for (IntegrateTestCaseAssertion each : integrateTestCase.getIntegrateTestCaseAssertions()) {
-            expectedDataFiles.add(getExpectedDataFile(integrateTestCase.getPath(), shardingRuleType, databaseTypeEnvironment.getDatabaseType(), each.getExpectedDataFile()));
+            expectedDataFiles.add(getExpectedDataFile(integrateTestCase.getPath(), ruleType, databaseTypeEnvironment.getDatabaseType(), each.getExpectedDataFile()));
         }
-        dataSetEnvironmentManager = databaseTypeEnvironment.isEnabled() ? new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(shardingRuleType), getDataSourceMap()) : null;
+        dataSetEnvironmentManager = databaseTypeEnvironment.isEnabled() ? new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(ruleType), getDataSourceMap()) : null;
     }
     
     @Parameters(name = "{0} -> Rule:{2} -> {3}")
@@ -171,13 +171,7 @@ public abstract class BatchIT extends BaseIT {
     }
     
     private void sortRow(final DataSet dataSet) {
-        Collections.sort(dataSet.getRows(), new Comparator<DataSetRow>() {
-            
-            @Override
-            public int compare(final DataSetRow o1, final DataSetRow o2) {
-                return Integer.parseInt(o1.getValues().get(0)) - Integer.parseInt(o2.getValues().get(0));
-            }
-        });
+        dataSet.getRows().sort(Comparator.comparingInt(o -> Integer.parseInt(o.getValues().get(0))));
     }
     
     private void assertMetaData(final ResultSetMetaData actualMetaData, final List<DataSetColumn> columnMetadataList) throws SQLException {

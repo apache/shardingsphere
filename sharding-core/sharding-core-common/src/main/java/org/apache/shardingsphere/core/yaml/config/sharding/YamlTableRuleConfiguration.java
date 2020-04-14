@@ -26,7 +26,7 @@ import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration
  */
 @Getter
 @Setter
-public class YamlTableRuleConfiguration implements YamlConfiguration {
+public final class YamlTableRuleConfiguration implements YamlConfiguration {
     
     private String logicTable;
     

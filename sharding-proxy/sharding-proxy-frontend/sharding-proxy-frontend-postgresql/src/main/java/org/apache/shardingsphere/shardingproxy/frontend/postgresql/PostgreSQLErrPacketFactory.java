@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.frontend.postgresql;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.postgresql.util.PSQLException;
 import org.postgresql.util.ServerErrorMessage;
 
@@ -45,6 +45,8 @@ public final class PostgreSQLErrPacketFactory {
             errorResponsePacket.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_POSITION, Integer.toString(serverErrorMessage.getPosition()));
             return errorResponsePacket;
         }
-        return new PostgreSQLErrorResponsePacket();
+        PostgreSQLErrorResponsePacket errorResponsePacket = new PostgreSQLErrorResponsePacket();
+        errorResponsePacket.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, cause.getMessage());
+        return errorResponsePacket;
     }
 }

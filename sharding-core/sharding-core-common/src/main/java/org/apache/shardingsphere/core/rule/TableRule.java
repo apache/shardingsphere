@@ -23,25 +23,26 @@ import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
-import org.apache.shardingsphere.core.strategy.route.none.NoneShardingStrategy;
-import org.apache.shardingsphere.spi.algorithm.keygen.ShardingKeyGeneratorServiceLoader;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategyFactory;
+import org.apache.shardingsphere.core.strategy.route.none.NoneShardingStrategy;
+import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.underlying.common.config.inline.InlineExpressionParser;
-import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
+import org.apache.shardingsphere.underlying.common.rule.DataNode;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Table rule.
@@ -64,25 +65,14 @@ public final class TableRule {
     
     private final ShardingStrategy tableShardingStrategy;
     
+    @Getter(AccessLevel.NONE)
     private final String generateKeyColumn;
     
-    private final ShardingKeyGenerator shardingKeyGenerator;
+    private final KeyGenerateAlgorithm keyGenerateAlgorithm;
     
     private final Collection<String> actualDatasourceNames = new LinkedHashSet<>();
     
     private final Map<String, Collection<String>> datasourceToTablesMap = new HashMap<>();
-    
-    public TableRule(final String defaultDataSourceName, final String logicTableName) {
-        logicTable = logicTableName.toLowerCase();
-        actualDataNodes = Collections.singletonList(new DataNode(defaultDataSourceName, logicTableName));
-        actualTables = getActualTables();
-        cacheActualDatasourcesAndTables();
-        dataNodeIndexMap = Collections.emptyMap();
-        databaseShardingStrategy = null;
-        tableShardingStrategy = null;
-        generateKeyColumn = null;
-        shardingKeyGenerator = null;
-    }
     
     public TableRule(final Collection<String> dataSourceNames, final String logicTableName) {
         logicTable = logicTableName.toLowerCase();
@@ -92,7 +82,7 @@ public final class TableRule {
         databaseShardingStrategy = null;
         tableShardingStrategy = null;
         generateKeyColumn = null;
-        shardingKeyGenerator = null;
+        keyGenerateAlgorithm = null;
     }
     
     public TableRule(final TableRuleConfiguration tableRuleConfig, final ShardingDataSourceNames shardingDataSourceNames, final String defaultGenerateKeyColumn) {
@@ -104,45 +94,22 @@ public final class TableRule {
         actualTables = getActualTables();
         databaseShardingStrategy = null == tableRuleConfig.getDatabaseShardingStrategyConfig() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getDatabaseShardingStrategyConfig());
         tableShardingStrategy = null == tableRuleConfig.getTableShardingStrategyConfig() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getTableShardingStrategyConfig());
-        generateKeyColumn = getGenerateKeyColumn(tableRuleConfig.getKeyGeneratorConfig(), defaultGenerateKeyColumn);
-        shardingKeyGenerator = containsKeyGeneratorConfiguration(tableRuleConfig)
-                ? new ShardingKeyGeneratorServiceLoader().newService(tableRuleConfig.getKeyGeneratorConfig().getType(), tableRuleConfig.getKeyGeneratorConfig().getProperties()) : null;
+        final KeyGeneratorConfiguration keyGeneratorConfiguration = tableRuleConfig.getKeyGeneratorConfig();
+        generateKeyColumn = null != keyGeneratorConfiguration && !Strings.isNullOrEmpty(keyGeneratorConfiguration.getColumn()) ? keyGeneratorConfiguration.getColumn() : defaultGenerateKeyColumn;
+        keyGenerateAlgorithm = containsKeyGenerateAlgorithm(tableRuleConfig) ? tableRuleConfig.getKeyGeneratorConfig().getKeyGenerateAlgorithm() : null;
         checkRule(dataNodes);
     }
     
-    private void cacheActualDatasourcesAndTables() {
-        for (DataNode each : actualDataNodes) {
-            actualDatasourceNames.add(each.getDataSourceName());
-            addActualTable(each.getDataSourceName(), each.getTableName());
-        }
-    }
-    
     private Set<String> getActualTables() {
-        Set<String> result = new HashSet<>(actualDataNodes.size(), 1);
-        for (DataNode each : actualDataNodes) {
-            result.add(each.getTableName());
-        }
-        return result;
+        return actualDataNodes.stream().map(DataNode::getTableName).collect(Collectors.toSet());
     }
     
     private void addActualTable(final String datasourceName, final String tableName) {
-        Collection<String> actualTables = datasourceToTablesMap.get(datasourceName);
-        if (null == actualTables) {
-            actualTables = new LinkedHashSet<>();
-            datasourceToTablesMap.put(datasourceName, actualTables);
-        }
-        actualTables.add(tableName);
+        datasourceToTablesMap.computeIfAbsent(datasourceName, k -> new LinkedHashSet<>()).add(tableName);
     }
     
-    private boolean containsKeyGeneratorConfiguration(final TableRuleConfiguration tableRuleConfiguration) {
-        return null != tableRuleConfiguration.getKeyGeneratorConfig() && !Strings.isNullOrEmpty(tableRuleConfiguration.getKeyGeneratorConfig().getType());
-    }
-    
-    private String getGenerateKeyColumn(final KeyGeneratorConfiguration keyGeneratorConfiguration, final String defaultGenerateKeyColumn) {
-        if (null != keyGeneratorConfiguration && !Strings.isNullOrEmpty(keyGeneratorConfiguration.getColumn())) {
-            return keyGeneratorConfiguration.getColumn();
-        }
-        return defaultGenerateKeyColumn;
+    private boolean containsKeyGenerateAlgorithm(final TableRuleConfiguration tableRuleConfiguration) {
+        return null != tableRuleConfiguration.getKeyGeneratorConfig() && null != tableRuleConfiguration.getKeyGeneratorConfig().getKeyGenerateAlgorithm();
     }
     
     private boolean isEmptyDataNodes(final List<String> dataNodes) {
@@ -190,7 +157,7 @@ public final class TableRule {
         for (DataNode each : actualDataNodes) {
             String dataSourceName = each.getDataSourceName();
             if (!result.containsKey(dataSourceName)) {
-                result.put(dataSourceName, new LinkedList<DataNode>());
+                result.put(dataSourceName, new LinkedList<>());
             }
             result.get(dataSourceName).add(each);
         }
@@ -213,16 +180,11 @@ public final class TableRule {
      * @return names of actual tables
      */
     public Collection<String> getActualTableNames(final String targetDataSource) {
-        Collection<String> result = datasourceToTablesMap.get(targetDataSource);
-        if (null == result) {
-            result = Collections.emptySet();
-        }
-        return result;
+        return datasourceToTablesMap.getOrDefault(targetDataSource, Collections.emptySet());
     }
     
     int findActualTableIndex(final String dataSourceName, final String actualTableName) {
-        DataNode dataNode = new DataNode(dataSourceName, actualTableName);
-        return dataNodeIndexMap.containsKey(dataNode) ? dataNodeIndexMap.get(dataNode) : -1;
+        return dataNodeIndexMap.getOrDefault(new DataNode(dataSourceName, actualTableName), -1);
     }
     
     boolean isExisted(final String actualTableName) {
@@ -233,5 +195,14 @@ public final class TableRule {
         if (isEmptyDataNodes(dataNodes) && null != tableShardingStrategy && !(tableShardingStrategy instanceof NoneShardingStrategy)) {
             throw new ShardingSphereConfigurationException("ActualDataNodes must be configured if want to shard tables for logicTable [%s]", logicTable);
         }
+    }
+    
+    /**
+     * Get generate key column.
+     *
+     * @return generate key column
+     */
+    public Optional<String> getGenerateKeyColumn() {
+        return Optional.ofNullable(generateKeyColumn);
     }
 }

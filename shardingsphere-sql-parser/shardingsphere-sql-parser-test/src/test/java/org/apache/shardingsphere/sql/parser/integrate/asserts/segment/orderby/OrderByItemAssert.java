@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.orderby;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.orderby.ExpectedOrderByClause;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.orderby.item.ExpectedOrderByItem;
@@ -30,6 +31,8 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrd
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
 
@@ -79,8 +82,6 @@ public final class OrderByItemAssert {
                 count++;
             }
         }
-        // TODO assert start index and stop index
-        //        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
     private static void assertOrderInfo(final SQLCaseAssertContext assertContext, final OrderByItemSegment actual, final ExpectedOrderByItem expected, final String type) {
@@ -92,25 +93,24 @@ public final class OrderByItemAssert {
         assertThat(assertContext.getText(String.format("%s item column name assertion error: ", type)), actual.getColumn().getIdentifier().getValue(), is(expected.getName()));
         if (null != expected.getOwner()) {
             assertTrue(assertContext.getText("Actual owner should exist."), actual.getColumn().getOwner().isPresent());
-            TableAssert.assertOwner(assertContext, actual.getColumn().getOwner().get(), expected.getOwner());
+            // TODO OwnerAssert is needed.
+            OwnerSegment owner = actual.getColumn().getOwner().get();
+            TableAssert.assertOwner(assertContext, new SimpleTableSegment(owner.getStartIndex(), owner.getStopIndex(), owner.getIdentifier()), expected.getOwner());
         } else {
             assertFalse(assertContext.getText("Actual owner should not exist."), actual.getColumn().getOwner().isPresent());
         }
-        // TODO assert start index and stop index
-        //        SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
     private static void assertIndexOrderByItem(final SQLCaseAssertContext assertContext,
                                                final IndexOrderByItemSegment actual, final ExpectedIndexOrderByItem expected, final String type) {
         assertThat(assertContext.getText(String.format("%s item index assertion error: ", type)), actual.getColumnIndex(), is(expected.getIndex()));
-        // TODO assert start index and stop index
-        //        SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
     private static void assertExpressionOrderByItem(final SQLCaseAssertContext assertContext,
                                                     final ExpressionOrderByItemSegment actual, final ExpectedExpressionOrderByItem expected, final String type) {
         assertThat(assertContext.getText(String.format("%s item expression assertion error: ", type)), actual.getExpression(), is(expected.getExpression()));
-        // TODO assert start index and stop index
-        //        SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
 }

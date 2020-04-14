@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteCallback;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationStatement;
 
@@ -48,13 +47,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     public final void close() throws SQLException {
         closed = true;
         try {
-            forceExecuteTemplate.execute((Collection) getRoutedStatements(), new ForceExecuteCallback<Statement>() {
-        
-                @Override
-                public void execute(final Statement statement) throws SQLException {
-                    statement.close();
-                }
-            });
+            forceExecuteTemplate.execute((Collection) getRoutedStatements(), Statement::close);
         } finally {
             getRoutedStatements().clear();
         }
@@ -75,13 +68,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     public final void setPoolable(final boolean poolable) throws SQLException {
         this.poolable = poolable;
         recordMethodInvocation(targetClass, "setPoolable", new Class[] {boolean.class}, new Object[] {poolable});
-        forceExecuteTemplate.execute((Collection) getRoutedStatements(), new ForceExecuteCallback<Statement>() {
-            
-            @Override
-            public void execute(final Statement statement) throws SQLException {
-                statement.setPoolable(poolable);
-            }
-        });
+        forceExecuteTemplate.execute((Collection) getRoutedStatements(), statement -> statement.setPoolable(poolable));
     }
     
     @Override
@@ -94,38 +81,20 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     public final void setFetchSize(final int rows) throws SQLException {
         this.fetchSize = rows;
         recordMethodInvocation(targetClass, "setFetchSize", new Class[] {int.class}, new Object[] {rows});
-        forceExecuteTemplate.execute((Collection) getRoutedStatements(), new ForceExecuteCallback<Statement>() {
-            
-            @Override
-            public void execute(final Statement statement) throws SQLException {
-                statement.setFetchSize(rows);
-            }
-        });
+        forceExecuteTemplate.execute((Collection) getRoutedStatements(), statement -> statement.setFetchSize(rows));
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public final void setEscapeProcessing(final boolean enable) throws SQLException {
         recordMethodInvocation(targetClass, "setEscapeProcessing", new Class[] {boolean.class}, new Object[] {enable});
-        forceExecuteTemplate.execute((Collection) getRoutedStatements(), new ForceExecuteCallback<Statement>() {
-            
-            @Override
-            public void execute(final Statement statement) throws SQLException {
-                statement.setEscapeProcessing(enable);
-            }
-        });
+        forceExecuteTemplate.execute((Collection) getRoutedStatements(), statement -> statement.setEscapeProcessing(enable));
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public final void cancel() throws SQLException {
-        forceExecuteTemplate.execute((Collection) getRoutedStatements(), new ForceExecuteCallback<Statement>() {
-        
-            @Override
-            public void execute(final Statement statement) throws SQLException {
-                statement.cancel();
-            }
-        });
+        forceExecuteTemplate.execute((Collection) getRoutedStatements(), Statement::cancel);
     }
     
     @Override
@@ -189,13 +158,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     @Override
     public final void setMaxFieldSize(final int max) throws SQLException {
         recordMethodInvocation(targetClass, "setMaxFieldSize", new Class[] {int.class}, new Object[] {max});
-        forceExecuteTemplate.execute((Collection) getRoutedStatements(), new ForceExecuteCallback<Statement>() {
-            
-            @Override
-            public void execute(final Statement statement) throws SQLException {
-                statement.setMaxFieldSize(max);
-            }
-        });
+        forceExecuteTemplate.execute((Collection) getRoutedStatements(), statement -> statement.setMaxFieldSize(max));
     }
     
     // TODO Confirm MaxRows for multiple databases is need special handle. eg: 10 statements maybe MaxRows / 10
@@ -208,13 +171,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     @Override
     public final void setMaxRows(final int max) throws SQLException {
         recordMethodInvocation(targetClass, "setMaxRows", new Class[] {int.class}, new Object[] {max});
-        forceExecuteTemplate.execute((Collection) getRoutedStatements(), new ForceExecuteCallback<Statement>() {
-            
-            @Override
-            public void execute(final Statement statement) throws SQLException {
-                statement.setMaxRows(max);
-            }
-        });
+        forceExecuteTemplate.execute((Collection) getRoutedStatements(), statement -> statement.setMaxRows(max));
     }
     
     @Override
@@ -226,13 +183,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     @Override
     public final void setQueryTimeout(final int seconds) throws SQLException {
         recordMethodInvocation(targetClass, "setQueryTimeout", new Class[] {int.class}, new Object[] {seconds});
-        forceExecuteTemplate.execute((Collection) getRoutedStatements(), new ForceExecuteCallback<Statement>() {
-        
-            @Override
-            public void execute(final Statement statement) throws SQLException {
-                statement.setQueryTimeout(seconds);
-            }
-        });
+        forceExecuteTemplate.execute((Collection) getRoutedStatements(), statement -> statement.setQueryTimeout(seconds));
     }
     
     protected abstract boolean isAccumulate();

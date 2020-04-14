@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.route.spi;
 
-import com.google.common.base.Optional;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.sharding.route.fixture.TimeServiceFixture;
 import org.junit.Test;
@@ -26,10 +25,11 @@ import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class SPITimeServiceTest {
     
@@ -67,6 +67,6 @@ public final class SPITimeServiceTest {
                 return Optional.of((TimeServiceFixture) timeService);
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 }

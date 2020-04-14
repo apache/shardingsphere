@@ -216,6 +216,7 @@ The following components are provided under the Apache License. See project link
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
     groovy 2.4.5-indy: https://github.com/apache/groovy, Apache 2.0
+    echarts 4.6.0: https://github.com/apache/incubator-echarts, Apache 2.0
 
 ========================================================================
 Apache 2.0 licenses
@@ -230,6 +231,8 @@ The text of each license is the standard Apache 2.0 license.
     curator-framework 2.10.0:  https://github.com/apache/curator,  Apache 2.0
     curator-recipes 2.10.0:  https://github.com/apache/curator,  Apache 2.0
     guava 18.0: https://github.com/google/guava, Apache 2.0
+    httpclient 4.5.8: https://github.com/apache/httpcomponents-client, Apache 2.0
+    httpcore 4.4.11: https://github.com/apache/httpcomponents-core, Apache 2.0
     log4j 1.2.16: http://logging.apache.org/log4j/1.2/, Apache 2.0
     SnakeYAML 1.16: http://www.snakeyaml.org , Apache 2.0
     zookeeper 3.4.6: https://github.com/apache/zookeeper, Apache 2.0
@@ -280,3 +283,6 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
    vue-i18n 8.4.0: https://github.com/kazupon/vue-i18n, MIT
    vue-router 3.0.1: https://github.com/vuejs/vue-router, MIT
    vuex 3.0.1: https://github.com/vuejs/vuex, MIT
+   resize-detector 0.2.1: https://github.com/Justineo/resize-detector, MIT
+   echarts-liquidfill 2.0.5: https://github.com/ecomfe/echarts-liquidfill, MIT
+   moment 2.24.0: https://github.com/moment/moment, MIT

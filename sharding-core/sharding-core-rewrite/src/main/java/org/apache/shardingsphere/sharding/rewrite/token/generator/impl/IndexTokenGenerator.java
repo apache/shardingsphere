@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.IndexToken;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import lombok.Setter;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.rule.aware.ShardingRuleAware;
+import org.apache.shardingsphere.sharding.rewrite.token.pojo.IndexToken;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.type.IndexAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.IndexSegmentAvailable;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.IndexSegmentsAvailable;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 
 import java.util.Collection;
@@ -31,32 +33,24 @@ import java.util.LinkedList;
 /**
  * Index token generator.
  */
-public final class IndexTokenGenerator implements CollectionSQLTokenGenerator {
+@Setter
+public final class IndexTokenGenerator implements CollectionSQLTokenGenerator, ShardingRuleAware {
+    
+    private ShardingRule shardingRule;
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        if (sqlStatementContext.getSqlStatement() instanceof IndexSegmentAvailable && null != ((IndexSegmentAvailable) sqlStatementContext.getSqlStatement()).getIndex()) {
-            return true;
-        }
-        if (sqlStatementContext.getSqlStatement() instanceof IndexSegmentsAvailable && !((IndexSegmentsAvailable) sqlStatementContext.getSqlStatement()).getIndexes().isEmpty()) {
-            return true;
-        }
-        return false;
+        return sqlStatementContext instanceof IndexAvailable && !((IndexAvailable) sqlStatementContext).getIndexes().isEmpty();
     }
     
     @Override
     public Collection<IndexToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<IndexToken> result = new LinkedList<>();
-        if (sqlStatementContext.getSqlStatement() instanceof IndexSegmentAvailable) {
-            IndexSegment indexSegment = ((IndexSegmentAvailable) sqlStatementContext.getSqlStatement()).getIndex();
-            result.add(new IndexToken(indexSegment.getStartIndex(), indexSegment.getStopIndex(), indexSegment.getIdentifier()));
-        }
-        if (sqlStatementContext.getSqlStatement() instanceof IndexSegmentsAvailable) {
-            for (SQLSegment each : ((IndexSegmentsAvailable) sqlStatementContext.getSqlStatement()).getIndexes()) {
-                result.add(new IndexToken(each.getStartIndex(), each.getStopIndex(), ((IndexSegment) each).getIdentifier()));
+        if (sqlStatementContext instanceof IndexAvailable) {
+            for (SQLSegment each : ((IndexAvailable) sqlStatementContext).getIndexes()) {
+                result.add(new IndexToken(each.getStartIndex(), each.getStopIndex(), ((IndexSegment) each).getIdentifier(), sqlStatementContext, shardingRule));
             }
         }
-        
         return result;
     }
 }

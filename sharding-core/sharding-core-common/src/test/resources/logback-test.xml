@@ -25,8 +25,10 @@
     <logger name="org.apache.shardingsphere" level="info" additivity="false">
         <appender-ref ref="console"/>
     </logger>
+    <logger name="org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler" level="off" />
     <logger name="org.apache.shardingsphere.core.log.ConfigurationLogger" level="off" />
-
+    <logger name="ShardingSphere-metadata" level="off" />
+    
     <root>
         <level value="error" />
         <appender-ref ref="console" />

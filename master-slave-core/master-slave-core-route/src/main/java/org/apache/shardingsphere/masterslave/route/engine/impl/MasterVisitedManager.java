@@ -24,13 +24,7 @@ package org.apache.shardingsphere.masterslave.route.engine.impl;
  */
 public final class MasterVisitedManager {
     
-    private static final ThreadLocal<Boolean> MASTER_VISITED = new ThreadLocal<Boolean>() {
-        
-        @Override
-        protected Boolean initialValue() {
-            return false;
-        }
-    };
+    private static final ThreadLocal<Boolean> MASTER_VISITED = ThreadLocal.withInitial(() -> false);
     
     /**
      * Judge master data source visited in current thread.

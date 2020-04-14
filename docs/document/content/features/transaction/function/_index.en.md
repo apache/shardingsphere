@@ -11,5 +11,4 @@ This chapter mainly introduces the core functions of distributed transactions, i
 
 * Local transaction
 * 2PC transaction-XA
-* Saga BASE transaction
 * Seata BASE transaction

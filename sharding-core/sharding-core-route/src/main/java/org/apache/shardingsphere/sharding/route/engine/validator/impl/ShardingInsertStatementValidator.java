@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.impl;
 
-import com.google.common.base.Optional;
-import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Sharding insert statement validator.
@@ -35,7 +35,7 @@ public final class ShardingInsertStatementValidator implements ShardingStatement
     @Override
     public void validate(final ShardingRule shardingRule, final InsertStatement sqlStatement, final List<Object> parameters) {
         Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = sqlStatement.getOnDuplicateKeyColumns();
-        if (onDuplicateKeyColumnsSegment.isPresent() && isUpdateShardingKey(shardingRule, onDuplicateKeyColumnsSegment.get(), sqlStatement.getTable().getIdentifier().getValue())) {
+        if (onDuplicateKeyColumnsSegment.isPresent() && isUpdateShardingKey(shardingRule, onDuplicateKeyColumnsSegment.get(), sqlStatement.getTable().getTableName().getIdentifier().getValue())) {
             throw new ShardingSphereException("INSERT INTO .... ON DUPLICATE KEY UPDATE can not support update for sharding column.");
         }
     }

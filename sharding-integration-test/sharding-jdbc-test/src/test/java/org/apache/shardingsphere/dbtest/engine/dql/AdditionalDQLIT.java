@@ -44,15 +44,15 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     
     private final DQLIntegrateTestCaseAssertion assertion;
     
-    public AdditionalDQLIT(final String sqlCaseId, final String path, final DQLIntegrateTestCaseAssertion assertion, final String shardingRuleType,
+    public AdditionalDQLIT(final String sqlCaseId, final String path, final DQLIntegrateTestCaseAssertion assertion, final String ruleType,
                            final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
-        super(sqlCaseId, path, assertion, shardingRuleType, databaseTypeEnvironment, caseType);
+        super(sqlCaseId, path, assertion, ruleType, databaseTypeEnvironment, caseType);
         this.assertion = assertion;
     }
     
     @Parameters(name = "{0} -> Rule:{3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
-        return IntegrateTestEnvironment.getInstance().isRunAdditionalTestCases() ? IntegrateTestParameters.getParametersWithAssertion(SQLType.DQL) : Collections.<Object[]>emptyList();
+        return IntegrateTestEnvironment.getInstance().isRunAdditionalTestCases() ? IntegrateTestParameters.getParametersWithAssertion(SQLType.DQL) : Collections.emptyList();
     }
     
     @Test

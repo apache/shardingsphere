@@ -46,6 +46,6 @@ public class YamlRangeDataSourceFactory {
     }
     
     private static File getFile(final String fileName) {
-        return new File(Thread.currentThread().getClass().getResource(fileName).getFile());
+        return new File(YamlRangeDataSourceFactory.class.getResource(fileName).getFile());
     }
 }

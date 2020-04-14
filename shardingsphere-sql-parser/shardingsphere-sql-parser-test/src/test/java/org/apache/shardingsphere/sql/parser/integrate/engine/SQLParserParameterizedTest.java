@@ -34,12 +34,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Properties;
 
 import static org.junit.Assert.fail;
 
@@ -52,21 +49,11 @@ public final class SQLParserParameterizedTest {
     
     private static final SQLParserTestCasesRegistry SQL_PARSER_TEST_CASES_REGISTRY = SQLParserTestCasesRegistryFactory.getInstance().getRegistry();
     
-    private static final Properties PROPS = new Properties();
-    
     private final String sqlCaseId;
     
     private final String databaseType;
     
     private final SQLCaseType sqlCaseType;
-    
-    static {
-        try {
-            PROPS.load(new FileInputStream(SQLParserParameterizedTest.class.getProtectionDomain().getCodeSource().getLocation().getPath() + "/runtime-config.properties"));
-        } catch (final IOException ex) {
-            log.warn("Can not find file `runtime-config.properties`, use default properties configuration.", ex);
-        }
-    }
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
@@ -137,13 +124,6 @@ public final class SQLParserParameterizedTest {
         sqlCases.add("create_table_with_exist_index");
         // TODO cannot support insert all
         sqlCases.add("insert_all_with_all_placeholders");
-        // TODO Correct for new parser, please remove them after using new parser
-        sqlCases.add("insert_on_duplicate_key_update_with_base64_aes_encrypt");
-        sqlCases.add("insert_with_one_auto_increment_column");
-        sqlCases.add("insert_on_duplicate_key_update_with_complicated_expression");
-        sqlCases.add("insert_without_columns_and_with_generate_key_column");
-        sqlCases.add("insert_without_columns_and_without_generate_key_column");
-        sqlCases.add("insert_without_columns_with_all_placeholders");
         return sqlCases.contains(sqlCaseId);
     }
     
@@ -154,14 +134,9 @@ public final class SQLParserParameterizedTest {
     @Test
     public void assertSupportedSQL() {
         SQLParserTestCase expected = SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId);
-        if (expected.isLongSQL() && Boolean.parseBoolean(PROPS.getProperty("long.sql.skip", Boolean.TRUE.toString()))) {
-            return;
-        }
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
         String sql = SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
         SQLStatement actual = SQLParserEngineFactory.getSQLParserEngine(databaseType).parse(sql, false);
-        if (!expected.isLongSQL()) {
-            SQLStatementAssert.assertIs(new SQLCaseAssertContext(sqlCaseId, sqlCaseType), actual, expected);
-        }
+        SQLStatementAssert.assertIs(new SQLCaseAssertContext(sqlCaseId, sqlCaseType), actual, expected);
     }
 }

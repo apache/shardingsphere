@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.underlying.rewrite.sql.token.generator;
 
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
 
 /**
  * SQL token generator for optional.
+ * 
+ * @param <T> type of SQL statement context
  */
-public interface OptionalSQLTokenGenerator extends SQLTokenGenerator {
+public interface OptionalSQLTokenGenerator<T extends SQLStatementContext> extends SQLTokenGenerator {
     
     /**
      * Generate SQL token.
@@ -31,5 +33,5 @@ public interface OptionalSQLTokenGenerator extends SQLTokenGenerator {
      * @param sqlStatementContext SQL statement context
      * @return SQL token
      */
-    SQLToken generateSQLToken(SQLStatementContext sqlStatementContext);
+    SQLToken generateSQLToken(T sqlStatementContext);
 }

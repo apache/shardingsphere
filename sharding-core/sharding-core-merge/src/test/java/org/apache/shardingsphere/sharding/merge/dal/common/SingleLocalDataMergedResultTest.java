@@ -34,34 +34,34 @@ public final class SingleLocalDataMergedResultTest {
     
     @Test
     public void assertNext() {
-        SingleLocalDataMergedResult actual = new SingleLocalDataMergedResult(Collections.<Object>singleton("value"));
+        SingleLocalDataMergedResult actual = new SingleLocalDataMergedResult(Collections.singleton("value"));
         assertTrue(actual.next());
         assertFalse(actual.next());
     }
     
     @Test
     public void assertGetValue() {
-        SingleLocalDataMergedResult actual = new SingleLocalDataMergedResult(Collections.<Object>singleton("value"));
+        SingleLocalDataMergedResult actual = new SingleLocalDataMergedResult(Collections.singleton("value"));
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("value"));
     }
     
     @Test
     public void assertGetCalendarValue() {
-        SingleLocalDataMergedResult actual = new SingleLocalDataMergedResult(Collections.<Object>singleton(new Date(0L)));
+        SingleLocalDataMergedResult actual = new SingleLocalDataMergedResult(Collections.singleton(new Date(0L)));
         assertTrue(actual.next());
-        assertThat(actual.getCalendarValue(1, Object.class, Calendar.getInstance()), is((Object) new Date(0L)));
+        assertThat(actual.getCalendarValue(1, Object.class, Calendar.getInstance()), is(new Date(0L)));
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetInputStream() throws SQLException {
-        SingleLocalDataMergedResult actual = new SingleLocalDataMergedResult(Collections.<Object>singleton("value"));
+        SingleLocalDataMergedResult actual = new SingleLocalDataMergedResult(Collections.singleton("value"));
         actual.getInputStream(1, "Ascii");
     }
     
     @Test
     public void assertWasNull() {
-        SingleLocalDataMergedResult actual = new SingleLocalDataMergedResult(Collections.<Object>singleton("value"));
+        SingleLocalDataMergedResult actual = new SingleLocalDataMergedResult(Collections.singleton("value"));
         assertTrue(actual.next());
         assertFalse(actual.wasNull());
     }

@@ -17,15 +17,17 @@
 
 package org.apache.shardingsphere.underlying.rewrite.parameter.rewriter;
 
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.ParameterBuilder;
 
 import java.util.List;
 
 /**
  * Parameter rewriter.
+ * 
+ * @param <T> type of SQL statement context
  */
-public interface ParameterRewriter {
+public interface ParameterRewriter<T extends SQLStatementContext> {
     
     /**
      * Judge whether need rewrite.
@@ -42,5 +44,5 @@ public interface ParameterRewriter {
      * @param sqlStatementContext SQL statement context
      * @param parameters SQL parameters
      */
-    void rewrite(ParameterBuilder parameterBuilder, SQLStatementContext sqlStatementContext, List<Object> parameters);
+    void rewrite(ParameterBuilder parameterBuilder, T sqlStatementContext, List<Object> parameters);
 }

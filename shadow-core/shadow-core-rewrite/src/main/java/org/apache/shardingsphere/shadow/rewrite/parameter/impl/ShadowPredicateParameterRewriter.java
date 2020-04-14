@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.shadow.rewrite.parameter.impl;
 
-import com.google.common.base.Optional;
-import org.apache.shardingsphere.shadow.rewrite.condition.ShadowCondition;
 import org.apache.shardingsphere.shadow.rewrite.condition.ShadowConditionEngine;
 import org.apache.shardingsphere.shadow.rewrite.parameter.ShadowParameterRewriter;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.StandardParameterBuilder;
 
@@ -31,7 +29,7 @@ import java.util.Map;
 /**
  * Predicate parameter rewriter for shadow.
  */
-public final class ShadowPredicateParameterRewriter extends ShadowParameterRewriter {
+public final class ShadowPredicateParameterRewriter extends ShadowParameterRewriter<SQLStatementContext> {
     
     @Override
     protected boolean isNeedRewriteForShadow(final SQLStatementContext sqlStatementContext) {
@@ -40,10 +38,8 @@ public final class ShadowPredicateParameterRewriter extends ShadowParameterRewri
     
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
-        Optional<ShadowCondition> shadowCondition = new ShadowConditionEngine(getShadowRule()).createShadowCondition(sqlStatementContext);
-        if (shadowCondition.isPresent()) {
-            replaceShadowParameter(parameterBuilder, shadowCondition.get().getPositionIndexMap());
-        }
+        new ShadowConditionEngine(getShadowRule()).createShadowCondition(sqlStatementContext).ifPresent(
+            shadowCondition -> replaceShadowParameter(parameterBuilder, shadowCondition.getPositionIndexMap()));
     }
     
     private void replaceShadowParameter(final ParameterBuilder parameterBuilder, final Map<Integer, Integer> positionIndexes) {

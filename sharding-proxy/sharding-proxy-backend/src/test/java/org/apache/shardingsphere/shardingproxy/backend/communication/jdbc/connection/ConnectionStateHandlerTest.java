@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection;
 
-import lombok.SneakyThrows;
 import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -33,24 +32,24 @@ public final class ConnectionStateHandlerTest {
     @Test
     public void assertWaitUntilConnectionReleaseForNoneTransaction() throws InterruptedException {
         final AtomicBoolean flag = new AtomicBoolean(true);
-        Thread waitThread = new Thread(new Runnable() {
-            @Override
-            @SneakyThrows
-            public void run() {
-                connectionStateHandler.setStatus(ConnectionStatus.RUNNING);
+        Thread waitThread = new Thread(() -> {
+            connectionStateHandler.setStatus(ConnectionStatus.RUNNING);
+            try {
                 connectionStateHandler.waitUntilConnectionReleasedIfNecessary();
-                if (ConnectionStatus.RUNNING != connectionStateHandler.getStatus()) {
-                    flag.getAndSet(false);
-                }
+            } catch (final InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }
+            if (ConnectionStatus.RUNNING != connectionStateHandler.getStatus()) {
+                flag.getAndSet(false);
             }
         });
-        Thread notifyThread = new Thread(new Runnable() {
-            @Override
-            @SneakyThrows
-            public void run() {
+        Thread notifyThread = new Thread(() -> {
+            try {
                 Thread.sleep(2000);
-                connectionStateHandler.doNotifyIfNecessary();
+            } catch (final InterruptedException ex) {
+                Thread.currentThread().interrupt();
             }
+            connectionStateHandler.doNotifyIfNecessary();
         });
         waitThread.start();
         notifyThread.start();
@@ -62,24 +61,24 @@ public final class ConnectionStateHandlerTest {
     @Test
     public void assertWaitUntilConnectionReleaseForTransaction() throws InterruptedException {
         final AtomicBoolean flag = new AtomicBoolean(true);
-        Thread waitThread = new Thread(new Runnable() {
-            @Override
-            @SneakyThrows
-            public void run() {
-                connectionStateHandler.setStatus(ConnectionStatus.TERMINATED);
+        Thread waitThread = new Thread(() -> {
+            connectionStateHandler.setStatus(ConnectionStatus.TERMINATED);
+            try {
                 connectionStateHandler.waitUntilConnectionReleasedIfNecessary();
-                if (ConnectionStatus.RUNNING != connectionStateHandler.getStatus()) {
-                    flag.getAndSet(false);
-                }
+            } catch (final InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }
+            if (ConnectionStatus.RUNNING != connectionStateHandler.getStatus()) {
+                flag.getAndSet(false);
             }
         });
-        Thread notifyThread = new Thread(new Runnable() {
-            @Override
-            @SneakyThrows
-            public void run() {
+        Thread notifyThread = new Thread(() -> {
+            try {
                 Thread.sleep(2000);
-                connectionStateHandler.doNotifyIfNecessary();
+            } catch (final InterruptedException ex) {
+                Thread.currentThread().interrupt();
             }
+            connectionStateHandler.doNotifyIfNecessary();
         });
         waitThread.start();
         notifyThread.start();

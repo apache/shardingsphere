@@ -17,25 +17,23 @@
 
 package org.apache.shardingsphere.shardingjdbc.executor;
 
-import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
-import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
-import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
-import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.rule.TableRule;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.strategy.EncryptTable;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
+import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
+import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
+import org.apache.shardingsphere.underlying.executor.kernel.ExecutorKernel;
 import org.junit.After;
 import org.junit.Before;
 import org.mockito.MockitoAnnotations;
@@ -46,6 +44,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.mockito.ArgumentMatchers.anyString;
@@ -55,7 +54,7 @@ import static org.mockito.Mockito.when;
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractBaseExecutorTest {
     
-    private ExecutorEngine executorEngine;
+    private ExecutorKernel executorKernel;
     
     private ShardingConnection connection;
     
@@ -63,13 +62,13 @@ public abstract class AbstractBaseExecutorTest {
     public void setUp() throws SQLException {
         MockitoAnnotations.initMocks(this);
         ExecutorExceptionHandler.setExceptionThrown(false);
-        executorEngine = new ExecutorEngine(Runtime.getRuntime().availableProcessors());
+        executorKernel = new ExecutorKernel(Runtime.getRuntime().availableProcessors());
         setConnection();
     }
     
     private void setConnection() throws SQLException {
         ShardingRuntimeContext runtimeContext = mock(ShardingRuntimeContext.class);
-        when(runtimeContext.getExecutorEngine()).thenReturn(executorEngine);
+        when(runtimeContext.getExecutorKernel()).thenReturn(executorKernel);
         when(runtimeContext.getProperties()).thenReturn(getProperties());
         when(runtimeContext.getDatabaseType()).thenReturn(DatabaseTypes.getActualDatabaseType("H2"));
         ShardingRule shardingRule = getShardingRule();
@@ -85,7 +84,7 @@ public abstract class AbstractBaseExecutorTest {
     
     private ShardingRule getShardingRule() {
         ShardingRule shardingRule = mock(ShardingRule.class);
-        when(shardingRule.getLogicTableNames(anyString())).thenReturn(Collections.<String>emptyList());
+        when(shardingRule.getLogicTableNames(anyString())).thenReturn(Collections.emptyList());
         Encryptor encryptor = mock(Encryptor.class);
         when(encryptor.decrypt(anyString())).thenReturn("decryptValue");
         EncryptRule encryptRule = mock(EncryptRule.class);
@@ -95,11 +94,11 @@ public abstract class AbstractBaseExecutorTest {
         when(encryptRule.findEncryptTable("table_x")).thenReturn(Optional.of(encryptTable));
         when(encryptTable.getCipherColumns()).thenReturn(Collections.singleton("column"));
         when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
-        when(shardingRule.findTableRuleByActualTable("table_x")).thenReturn(Optional.<TableRule>absent());
+        when(shardingRule.findTableRuleByActualTable("table_x")).thenReturn(Optional.empty());
         return shardingRule;
     }
 
-    protected SQLStatementContext getSQLStatementContext() {
+    protected final SQLStatementContext getSQLStatementContext() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
         TablesContext tablesContext = mock(TablesContext.class);
         when(tablesContext.getTableNames()).thenReturn(Collections.singleton("table_x"));
@@ -107,14 +106,14 @@ public abstract class AbstractBaseExecutorTest {
         return sqlStatementContext;
     }
     
-    private ShardingSphereProperties getProperties() {
+    private ConfigurationProperties getProperties() {
         Properties props = new Properties();
-        props.setProperty(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY.getDefaultValue());
-        return new ShardingSphereProperties(props);
+        props.setProperty(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY.getDefaultValue());
+        return new ConfigurationProperties(props);
     }
     
     @After
     public void tearDown() {
-        executorEngine.close();
+        executorKernel.close();
     }
 }

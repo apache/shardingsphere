@@ -19,16 +19,20 @@ package org.apache.shardingsphere.underlying.route.context;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+
+import java.util.List;
 
 /**
  * Route context.
  */
 @RequiredArgsConstructor
 @Getter
-public class RouteContext {
+public final class RouteContext {
     
     private final SQLStatementContext sqlStatementContext;
+    
+    private final List<Object> parameters;
     
     private final RouteResult routeResult;
 }

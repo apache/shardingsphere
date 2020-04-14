@@ -17,31 +17,40 @@
 
 package org.apache.shardingsphere.sharding.rewrite.context;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
+import lombok.Setter;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rewrite.parameter.ShardingParameterRewriterBuilder;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.ShardingTokenGenerateBuilder;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.sharding.rewrite.token.pojo.ShardingTokenGenerateBuilder;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriter;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 /**
  * SQL rewrite context decorator for sharding.
  */
-@RequiredArgsConstructor
+@Setter
 public final class ShardingSQLRewriteContextDecorator implements SQLRewriteContextDecorator<ShardingRule> {
     
-    private final ShardingRouteContext shardingRouteContext;
-    
+    @SuppressWarnings("unchecked")
     @Override
-    public void decorate(final ShardingRule shardingRule, final ShardingSphereProperties properties, final SQLRewriteContext sqlRewriteContext) {
-        for (ParameterRewriter each : new ShardingParameterRewriterBuilder(shardingRule, shardingRouteContext).getParameterRewriters(sqlRewriteContext.getRelationMetas())) {
+    public void decorate(final ShardingRule shardingRule, final ConfigurationProperties properties, final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
+        for (ParameterRewriter each : new ShardingParameterRewriterBuilder(shardingRule, routeContext).getParameterRewriters(sqlRewriteContext.getSchemaMetaData())) {
             if (!sqlRewriteContext.getParameters().isEmpty() && each.isNeedRewrite(sqlRewriteContext.getSqlStatementContext())) {
                 each.rewrite(sqlRewriteContext.getParameterBuilder(), sqlRewriteContext.getSqlStatementContext(), sqlRewriteContext.getParameters());
             }
         }
-        sqlRewriteContext.addSQLTokenGenerators(new ShardingTokenGenerateBuilder(shardingRule, shardingRouteContext).getSQLTokenGenerators());
+        sqlRewriteContext.addSQLTokenGenerators(new ShardingTokenGenerateBuilder(shardingRule, routeContext).getSQLTokenGenerators());
+    }
+    
+    @Override
+    public int getOrder() {
+        return 0;
+    }
+    
+    @Override
+    public Class<ShardingRule> getTypeClass() {
+        return ShardingRule.class;
     }
 }

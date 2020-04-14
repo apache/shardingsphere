@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.shardingjdbc.executor;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
-import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
-import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
+import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -44,7 +45,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -61,16 +61,14 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     @Override
     public void setUp() throws SQLException {
         super.setUp();
-        PreparedStatementExecutor preparedStatementExecutor = new PreparedStatementExecutor(1, 1, 1, false, getConnection());
-        preparedStatementExecutor.setSqlStatementContext(getSQLStatementContext());
-        actual = spy(preparedStatementExecutor);
-        doReturn(true).when(actual).isAccumulate();
+        ShardingConnection connection = getConnection();
+        actual = spy(new PreparedStatementExecutor(connection.getDataSourceMap(), connection.getRuntimeContext(), new SQLExecuteTemplate(getExecutorKernel(), false)));
     }
     
     @Test
     public void assertNoStatement() throws SQLException {
-        assertFalse(actual.execute());
-        assertThat(actual.executeUpdate(), is(0));
+        assertFalse(actual.execute(getSQLStatementContext()));
+        assertThat(actual.executeUpdate(getSQLStatementContext()), is(0));
         assertThat(actual.executeQuery().size(), is(0));
     }
     
@@ -88,7 +86,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         setExecuteGroups(Collections.singletonList(preparedStatement), true);
-        assertThat((String) actual.executeQuery().iterator().next().getValue(1, String.class), is("value"));
+        assertThat(actual.executeQuery().iterator().next().getValue(1, String.class), is("value"));
     }
     
     @Test
@@ -146,7 +144,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         PreparedStatement preparedStatement = getPreparedStatement();
         when(preparedStatement.executeUpdate()).thenReturn(10);
         setExecuteGroups(Collections.singletonList(preparedStatement), false);
-        assertThat(actual.executeUpdate(), is(10));
+        assertThat(actual.executeUpdate(getSQLStatementContext()), is(10));
         verify(preparedStatement).executeUpdate();
     }
     
@@ -157,7 +155,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         when(preparedStatement1.executeUpdate()).thenReturn(10);
         when(preparedStatement2.executeUpdate()).thenReturn(20);
         setExecuteGroups(Arrays.asList(preparedStatement1, preparedStatement2), false);
-        assertThat(actual.executeUpdate(), is(30));
+        assertThat(actual.executeUpdate(getSQLStatementContext()), is(30));
         verify(preparedStatement1).executeUpdate();
         verify(preparedStatement2).executeUpdate();
     }
@@ -168,7 +166,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         SQLException exp = new SQLException();
         when(preparedStatement.executeUpdate()).thenThrow(exp);
         setExecuteGroups(Collections.singletonList(preparedStatement), false);
-        assertThat(actual.executeUpdate(), is(0));
+        assertThat(actual.executeUpdate(getSQLStatementContext()), is(0));
         verify(preparedStatement).executeUpdate();
     }
     
@@ -180,7 +178,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         when(preparedStatement1.executeUpdate()).thenThrow(exp);
         when(preparedStatement2.executeUpdate()).thenThrow(exp);
         setExecuteGroups(Arrays.asList(preparedStatement1, preparedStatement2), false);
-        assertThat(actual.executeUpdate(), is(0));
+        assertThat(actual.executeUpdate(getSQLStatementContext()), is(0));
         verify(preparedStatement1).executeUpdate();
         verify(preparedStatement2).executeUpdate();
     }
@@ -190,7 +188,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         PreparedStatement preparedStatement = getPreparedStatement();
         when(preparedStatement.execute()).thenReturn(false);
         setExecuteGroups(Collections.singletonList(preparedStatement), false);
-        assertFalse(actual.execute());
+        assertFalse(actual.execute(getSQLStatementContext()));
         verify(preparedStatement).execute();
     }
     
@@ -201,7 +199,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         when(preparedStatement1.execute()).thenReturn(false);
         when(preparedStatement2.execute()).thenReturn(false);
         setExecuteGroups(Arrays.asList(preparedStatement1, preparedStatement2), false);
-        assertFalse(actual.execute());
+        assertFalse(actual.execute(getSQLStatementContext()));
         verify(preparedStatement1).execute();
         verify(preparedStatement2).execute();
     }
@@ -212,7 +210,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         SQLException exp = new SQLException();
         when(preparedStatement.execute()).thenThrow(exp);
         setExecuteGroups(Collections.singletonList(preparedStatement), false);
-        assertFalse(actual.execute());
+        assertFalse(actual.execute(getSQLStatementContext()));
         verify(preparedStatement).execute();
     }
     
@@ -224,7 +222,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         when(preparedStatement1.execute()).thenThrow(exp);
         when(preparedStatement2.execute()).thenThrow(exp);
         setExecuteGroups(Arrays.asList(preparedStatement1, preparedStatement2), false);
-        assertFalse(actual.execute());
+        assertFalse(actual.execute(getSQLStatementContext()));
         verify(preparedStatement1).execute();
         verify(preparedStatement2).execute();
     }
@@ -234,7 +232,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         PreparedStatement preparedStatement = getPreparedStatement();
         when(preparedStatement.execute()).thenReturn(true);
         setExecuteGroups(Collections.singletonList(preparedStatement), true);
-        assertTrue(actual.execute());
+        assertTrue(actual.execute(getSQLStatementContext()));
         verify(preparedStatement).execute();
     }
     
@@ -245,7 +243,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         when(preparedStatement1.execute()).thenReturn(true);
         when(preparedStatement2.execute()).thenReturn(true);
         setExecuteGroups(Arrays.asList(preparedStatement1, preparedStatement2), true);
-        assertTrue(actual.execute());
+        assertTrue(actual.execute(getSQLStatementContext()));
         verify(preparedStatement1).execute();
         verify(preparedStatement2).execute();
     }
@@ -267,9 +265,9 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         executeGroups.add(new InputGroup<>(preparedStatementExecuteUnits));
         for (PreparedStatement each : preparedStatements) {
             preparedStatementExecuteUnits.add(
-                    new StatementExecuteUnit(new ExecutionUnit("ds_0", new SQLUnit(isQuery ? DQL_SQL : DML_SQL, Collections.singletonList((Object) 1))), each, ConnectionMode.MEMORY_STRICTLY));
+                    new StatementExecuteUnit(new ExecutionUnit("ds_0", new SQLUnit(isQuery ? DQL_SQL : DML_SQL, Collections.singletonList(1))), each, ConnectionMode.MEMORY_STRICTLY));
         }
-        Field field = PreparedStatementExecutor.class.getSuperclass().getDeclaredField("inputGroups");
+        Field field = PreparedStatementExecutor.class.getDeclaredField("inputGroups");
         field.setAccessible(true);
         field.set(actual, executeGroups);
     }

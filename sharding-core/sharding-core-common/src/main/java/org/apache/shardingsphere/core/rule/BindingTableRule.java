@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.core.rule;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Binding table rule.
@@ -40,12 +41,12 @@ public final class BindingTableRule {
     /**
      * Judge contains this logic table in this rule.
      * 
-     * @param logicTableName logic table name
+     * @param logicTable logic table name
      * @return contains this logic table or not
      */
-    public boolean hasLogicTable(final String logicTableName) {
+    public boolean hasLogicTable(final String logicTable) {
         for (TableRule each : tableRules) {
-            if (each.getLogicTable().equals(logicTableName.toLowerCase())) {
+            if (each.getLogicTable().equals(logicTable.toLowerCase())) {
                 return true;
             }
         }
@@ -80,12 +81,17 @@ public final class BindingTableRule {
     }
     
     Collection<String> getAllLogicTables() {
-        return Lists.transform(tableRules, new Function<TableRule, String>() {
-            
-            @Override
-            public String apply(final TableRule input) {
-                return input.getLogicTable().toLowerCase();
+        return tableRules.stream().map(input -> input.getLogicTable().toLowerCase()).collect(Collectors.toList());
+    }
+    
+    Map<String, String> getLogicAndActualTables(final String dataSource, final String logicTable, final String actualTable, final Collection<String> availableLogicBindingTables) {
+        Map<String, String> result = new LinkedHashMap<>();
+        for (String each : availableLogicBindingTables) {
+            String availableLogicTable = each.toLowerCase();
+            if (!availableLogicTable.equalsIgnoreCase(logicTable) && hasLogicTable(availableLogicTable)) {
+                result.put(availableLogicTable, getBindingActualTable(dataSource, availableLogicTable, actualTable));
             }
-        });
+        }
+        return result;
     }
 }

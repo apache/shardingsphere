@@ -82,7 +82,7 @@ public final class MemoryMergedResultTest {
     @Test
     public void assertGetCalendarValue() {
         when(memoryResultSetRow.getCell(1)).thenReturn(new Date(0L));
-        assertThat((Date) memoryMergedResult.getCalendarValue(1, Object.class, Calendar.getInstance()), is(new Date(0L)));
+        assertThat(memoryMergedResult.getCalendarValue(1, Object.class, Calendar.getInstance()), is(new Date(0L)));
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)

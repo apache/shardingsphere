@@ -69,7 +69,6 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
     private BeanDefinition parseShardingRuleConfiguration(final Element element) {
         Element shardingRuleElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.SHARDING_RULE_CONFIG_TAG);
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingRuleConfiguration.class);
-        parseDefaultDataSource(factory, shardingRuleElement);
         parseDefaultDatabaseShardingStrategy(factory, shardingRuleElement);
         parseDefaultTableShardingStrategy(factory, shardingRuleElement);
         factory.addPropertyValue("tableRuleConfigs", parseTableRulesConfiguration(shardingRuleElement));
@@ -85,13 +84,6 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
         String defaultKeyGeneratorConfig = element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.DEFAULT_KEY_GENERATOR_REF_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(defaultKeyGeneratorConfig)) {
             factory.addPropertyReference("defaultKeyGeneratorConfig", defaultKeyGeneratorConfig);
-        }
-    }
-    
-    private void parseDefaultDataSource(final BeanDefinitionBuilder factory, final Element element) {
-        String defaultDataSource = element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.DEFAULT_DATA_SOURCE_NAME_TAG);
-        if (!Strings.isNullOrEmpty(defaultDataSource)) {
-            factory.addPropertyValue("defaultDataSourceName", defaultDataSource);
         }
     }
     

@@ -21,20 +21,21 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.underlying.common.hook.RootInvokeHook;
-import org.apache.shardingsphere.underlying.common.hook.SPIRootInvokeHook;
+import org.apache.shardingsphere.database.protocol.packet.CommandPacket;
+import org.apache.shardingsphere.database.protocol.packet.CommandPacketType;
+import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.engine.CommandExecuteEngine;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseProtocolFrontendEngine;
-import org.apache.shardingsphere.shardingproxy.transport.packet.CommandPacket;
-import org.apache.shardingsphere.shardingproxy.transport.packet.CommandPacketType;
-import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
-import org.apache.shardingsphere.shardingproxy.transport.payload.PacketPayload;
+import org.apache.shardingsphere.underlying.common.hook.RootInvokeHook;
+import org.apache.shardingsphere.underlying.common.hook.SPIRootInvokeHook;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Command executor task.
@@ -74,6 +75,8 @@ public final class CommandExecutorTask implements Runnable {
             // CHECKSTYLE:ON
             log.error("Exception occur: ", ex);
             context.writeAndFlush(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(ex));
+            Optional<DatabasePacket> databasePacket = databaseProtocolFrontendEngine.getCommandExecuteEngine().getOtherPacket();
+            databasePacket.ifPresent(context::writeAndFlush);
         } finally {
             if (isNeedFlush) {
                 context.flush();

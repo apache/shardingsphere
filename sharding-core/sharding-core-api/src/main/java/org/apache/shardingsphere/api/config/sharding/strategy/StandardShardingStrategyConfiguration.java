@@ -22,6 +22,7 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.api.sharding.standard.PreciseShardingAlgorithm;
 import org.apache.shardingsphere.api.sharding.standard.RangeShardingAlgorithm;
+import org.apache.shardingsphere.api.sharding.standard.StandardShardingAlgorithm;
 
 /**
  * Standard strategy configuration.
@@ -35,6 +36,8 @@ public final class StandardShardingStrategyConfiguration implements ShardingStra
     
     private final RangeShardingAlgorithm rangeShardingAlgorithm;
     
+    private final StandardShardingAlgorithm shardingAlgorithm;
+    
     public StandardShardingStrategyConfiguration(final String shardingColumn, final PreciseShardingAlgorithm preciseShardingAlgorithm) {
         this(shardingColumn, preciseShardingAlgorithm, null);
     }
@@ -45,5 +48,13 @@ public final class StandardShardingStrategyConfiguration implements ShardingStra
         this.shardingColumn = shardingColumn;
         this.preciseShardingAlgorithm = preciseShardingAlgorithm;
         this.rangeShardingAlgorithm = rangeShardingAlgorithm;
+        this.shardingAlgorithm = null;
+    }
+    
+    public StandardShardingStrategyConfiguration(final String shardingColumn, final StandardShardingAlgorithm shardingAlgorithm) {
+        this.shardingColumn = shardingColumn;
+        this.shardingAlgorithm = shardingAlgorithm;
+        this.preciseShardingAlgorithm = null;
+        this.rangeShardingAlgorithm = null;
     }
 }

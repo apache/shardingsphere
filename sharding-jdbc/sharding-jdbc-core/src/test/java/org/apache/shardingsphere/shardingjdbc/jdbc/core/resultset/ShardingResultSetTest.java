@@ -17,17 +17,15 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.execute.context.ShardingExecutionContext;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
-import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,6 +47,7 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -71,15 +70,15 @@ public final class ShardingResultSetTest {
         mergeResultSet = mock(MergedResult.class);
         ShardingRuntimeContext shardingRuntimeContext = mock(ShardingRuntimeContext.class);
         when(shardingRuntimeContext.getRule()).thenReturn(mock(ShardingRule.class));
-        when(shardingRuntimeContext.getProperties()).thenReturn(new ShardingSphereProperties(new Properties()));
+        when(shardingRuntimeContext.getProperties()).thenReturn(new ConfigurationProperties(new Properties()));
         shardingResultSet = new ShardingResultSet(getResultSets(), mergeResultSet, getShardingStatement(), createExecutionContext());
     }
     
-    private ShardingExecutionContext createExecutionContext() {
-        ShardingExecutionContext result = mock(ShardingExecutionContext.class);
+    private ExecutionContext createExecutionContext() {
+        ExecutionContext result = mock(ExecutionContext.class);
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
         TablesContext tablesContext = mock(TablesContext.class);
-        when(tablesContext.getTableNames()).thenReturn(Collections.<String>emptyList());
+        when(tablesContext.getTableNames()).thenReturn(Collections.emptyList());
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         when(result.getSqlStatementContext()).thenReturn(sqlStatementContext);
         return result;
@@ -100,10 +99,10 @@ public final class ShardingResultSetTest {
         ShardingRule shardingRule = mock(ShardingRule.class);
         when(shardingRule.getLogicTableNames(anyString())).thenReturn(Collections.singletonList("test"));
         EncryptRule encryptRule = mock(EncryptRule.class);
-        when(encryptRule.findEncryptor(anyString(), anyString())).thenReturn(Optional.<Encryptor>absent());
+        when(encryptRule.findEncryptor(anyString(), anyString())).thenReturn(Optional.empty());
         when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
         when(runtimeContext.getRule()).thenReturn(shardingRule);
-        when(runtimeContext.getProperties()).thenReturn(new ShardingSphereProperties(new Properties()));
+        when(runtimeContext.getProperties()).thenReturn(new ConfigurationProperties(new Properties()));
         when(shardingConnection.getRuntimeContext()).thenReturn(runtimeContext);
         ShardingStatement statement = mock(ShardingStatement.class);
         when(statement.getConnection()).thenReturn(shardingConnection);
@@ -444,12 +443,12 @@ public final class ShardingResultSetTest {
     @Test
     public void assertGetObjectWithColumnIndex() throws SQLException {
         when(mergeResultSet.getValue(1, Object.class)).thenReturn("object_value");
-        assertThat(shardingResultSet.getObject(1), is((Object) "object_value"));
+        assertThat(shardingResultSet.getObject(1), is("object_value"));
     }
     
     @Test
     public void assertGetObjectWithColumnLabel() throws SQLException {
         when(mergeResultSet.getValue(1, Object.class)).thenReturn("object_value");
-        assertThat(shardingResultSet.getObject("label"), is((Object) "object_value"));
+        assertThat(shardingResultSet.getObject("label"), is("object_value"));
     }
 }

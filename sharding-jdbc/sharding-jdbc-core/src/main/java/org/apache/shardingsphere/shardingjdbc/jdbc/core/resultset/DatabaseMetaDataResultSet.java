@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 import lombok.EqualsAndHashCode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedDatabaseMetaDataResultSet;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -40,7 +41,7 @@ import java.util.Set;
 /**
  * Database meta data result set.
  */
-public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabaseMetaDataResultSet {
+public final class DatabaseMetaDataResultSet<T extends BaseRule> extends AbstractUnsupportedDatabaseMetaDataResultSet {
     
     private static final String TABLE_NAME = "TABLE_NAME";
     
@@ -50,7 +51,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     
     private final int concurrency;
     
-    private final ShardingRule shardingRule;
+    private final T rule;
     
     private final ResultSetMetaData resultSetMetaData;
     
@@ -62,10 +63,10 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     
     private DatabaseMetaDataObject currentDatabaseMetaDataObject;
     
-    public DatabaseMetaDataResultSet(final ResultSet resultSet, final ShardingRule shardingRule) throws SQLException {
+    public DatabaseMetaDataResultSet(final ResultSet resultSet, final T rule) throws SQLException {
         this.type = resultSet.getType();
         this.concurrency = resultSet.getConcurrency();
-        this.shardingRule = shardingRule;
+        this.rule = rule;
         this.resultSetMetaData = resultSet.getMetaData();
         this.columnLabelIndexMap = initIndexMap();
         this.databaseMetaDataObjectIterator = initIterator(resultSet);
@@ -82,8 +83,8 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     private Iterator<DatabaseMetaDataObject> initIterator(final ResultSet resultSet) throws SQLException {
         LinkedList<DatabaseMetaDataObject> result = new LinkedList<>();
         Set<DatabaseMetaDataObject> removeDuplicationSet = new HashSet<>();
-        int tableNameColumnIndex = columnLabelIndexMap.containsKey(TABLE_NAME) ? columnLabelIndexMap.get(TABLE_NAME) : -1;
-        int indexNameColumnIndex = columnLabelIndexMap.containsKey(INDEX_NAME) ? columnLabelIndexMap.get(INDEX_NAME) : -1;
+        int tableNameColumnIndex = columnLabelIndexMap.getOrDefault(TABLE_NAME, -1);
+        int indexNameColumnIndex = columnLabelIndexMap.getOrDefault(INDEX_NAME, -1);
         while (resultSet.next()) {
             DatabaseMetaDataObject databaseMetaDataObject = generateDatabaseMetaDataObject(tableNameColumnIndex, indexNameColumnIndex, resultSet);
             if (!removeDuplicationSet.contains(databaseMetaDataObject)) {
@@ -99,7 +100,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
         for (int i = 1; i <= columnLabelIndexMap.size(); i++) {
             if (tableNameColumnIndex == i) {
                 String tableName = resultSet.getString(i);
-                Collection<String> logicTableNames = null == shardingRule ? Collections.<String>emptyList() : shardingRule.getLogicTableNames(tableName);
+                Collection<String> logicTableNames = rule instanceof ShardingRule ? ((ShardingRule) rule).getLogicTableNames(tableName) : Collections.emptyList();
                 result.addObject(logicTableNames.isEmpty() ? tableName : logicTableNames.iterator().next());
             } else if (indexNameColumnIndex == i) {
                 String tableName = resultSet.getString(tableNameColumnIndex);

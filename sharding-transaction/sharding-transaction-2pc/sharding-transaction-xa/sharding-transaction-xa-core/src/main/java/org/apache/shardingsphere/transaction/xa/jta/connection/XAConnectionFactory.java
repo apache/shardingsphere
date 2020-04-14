@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction.xa.jta.connection;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.transaction.xa.jta.connection.dialect.H2XAConnectionWrapper;
 import org.apache.shardingsphere.transaction.xa.jta.connection.dialect.MariaDBXAConnectionWrapper;
 import org.apache.shardingsphere.transaction.xa.jta.connection.dialect.MySQLXAConnectionWrapper;

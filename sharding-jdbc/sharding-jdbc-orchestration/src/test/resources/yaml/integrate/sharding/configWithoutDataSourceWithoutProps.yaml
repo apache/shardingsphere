@@ -24,7 +24,8 @@ shardingRule:
       databaseStrategy: 
         standard:
           shardingColumn: user_id
-          preciseAlgorithmClassName: org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture.SingleAlgorithm
+          shardingAlgorithm:
+            type: STANDARD_TEST
       tableStrategy: 
         inline:
           shardingColumn: order_id
@@ -37,7 +38,8 @@ shardingRule:
       databaseStrategy: 
         standard:
           shardingColumn: user_id
-          preciseAlgorithmClassName: org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture.SingleAlgorithm
+          shardingAlgorithm:
+            type: STANDARD_TEST
       tableStrategy: 
         inline:
           shardingColumn: order_id
@@ -49,7 +51,8 @@ shardingRule:
   defaultTableStrategy:
     complex:
       shardingColumns: id, order_id
-      algorithmClassName: org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture.MultiAlgorithm
+      shardingAlgorithm:
+        type: COMPLEX_TEST
 
 orchestration:
   test_sharding_registry_name:
@@ -68,6 +71,17 @@ orchestration:
     instanceType: FirstTestConfigCenter
     serverLists: localhost:3181
     namespace: test_sharding_config
+    props:
+      overwrite: true
+      retryIntervalMilliseconds: 10
+      timeToLiveSeconds: 10
+      maxRetries: 10
+      operationTimeoutMilliseconds: 10
+  test_sharding_metadata_name:
+    orchestrationType: metadata_center
+    instanceType: FirstTestMetaDataCenter
+    serverLists: localhost:3181
+    namespace: test_sharding_metadata
     props:
       overwrite: true
       retryIntervalMilliseconds: 10

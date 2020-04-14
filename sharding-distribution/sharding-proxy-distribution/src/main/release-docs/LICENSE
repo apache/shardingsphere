@@ -235,13 +235,13 @@ The text of each license is the standard Apache 2.0 license.
     curator-framework 2.10.0:  https://github.com/apache/curator,  Apache 2.0
     curator-recipes 2.10.0:  https://github.com/apache/curator,  Apache 2.0
     guava 18.0: https://github.com/google/guava , Apache 2.0
-    HikariCP java7-2.4.11: https://github.com/brettwooldridge/HikariCP, Apache 2.0
+    HikariCP 3.4.2: https://github.com/brettwooldridge/HikariCP, Apache 2.0
     log4j 1.2.16: http://logging.apache.org/log4j/1.2/, Apache 2.0
-    netty-all 4.1.16: https://github.com/netty, Apache 2.0
+    netty-all 4.1.42: https://github.com/netty, Apache 2.0
     opentracing-api 0.30.0: https://opentracing.io, Apache 2.0
     opentracing-noop 0.30.0: https://opentracing.io, Apache 2.0
     opentracing-util 0.30.0: https://opentracing.io, Apache 2.0
-    SnakeYAML 1.18: http://www.snakeyaml.org , Apache 2.0
+    SnakeYAML 1.16: http://www.snakeyaml.org , Apache 2.0
     zookeeper 3.4.6: https://github.com/apache/zookeeper, Apache 2.0
 
 ========================================================================
@@ -251,7 +251,7 @@ BSD licenses
 The following components are provided under a BSD license. See project link for details.
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
-    antlr4-runtime 4.7.1: https://github.com/antlr/antlr4, BSD-3-Clause
+    antlr4-runtime 4.7.2: https://github.com/antlr/antlr4, BSD-3-Clause
     jline 0.9.94: https://github.com/jline/jline1, BSD-3-Clause
     postgresql 42.2.5: https://github.com/pgjdbc/pgjdbc, BSD 2-Clause
 

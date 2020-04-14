@@ -31,8 +31,9 @@ public interface TextProtocolBackendHandler {
      * Execute command.
      *
      * @return backend response
+     * @throws SQLException SQL exception
      */
-    BackendResponse execute();
+    BackendResponse execute() throws SQLException;
     
     /**
      * Goto next result value.
