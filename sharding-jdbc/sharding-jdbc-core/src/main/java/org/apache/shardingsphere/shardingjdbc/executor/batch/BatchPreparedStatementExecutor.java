@@ -54,7 +54,7 @@ public final class BatchPreparedStatementExecutor {
     private final Collection<InputGroup<StatementExecuteUnit>> inputGroups;
     
     @Getter
-    private final Collection<BatchRouteUnit> routeUnits = new LinkedList<>();
+    private final Collection<BatchRouteUnit> routeUnits;
     
     private int batchCount;
     
@@ -62,6 +62,7 @@ public final class BatchPreparedStatementExecutor {
         this.runtimeContext = runtimeContext;
         sqlExecutor = new SQLExecutor(sqlExecuteTemplate);
         inputGroups = new LinkedList<>();
+        routeUnits = new LinkedList<>();
     }
     
     /**
