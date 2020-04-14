@@ -33,9 +33,18 @@ import org.apache.shardingsphere.underlying.common.rule.TablesAggregationRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.*;
+import java.util.Optional;
+import java.util.TreeSet;
+import java.util.LinkedList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Rule schema meta data loader.
@@ -165,7 +174,8 @@ public final class RuleSchemaMetaDataLoader {
         ExecutorService executorService = Executors.newFixedThreadPool(dataSourceMap.size());
         Collection<Future<Map<String, SchemaMetaData>>> futures = new LinkedList<>();
         for (Entry<String, DataSource> dataSourceEntry : dataSourceMap.entrySet()) {
-            futures.add(executorService.submit(() -> getSingleSchemaMetaDataMap(dataSourceEntry.getKey(), SchemaMetaDataLoader.load(dataSourceEntry.getValue(), maxConnectionCount, databaseTypeName, excludedTableNames))));
+            futures.add(executorService.submit(() -> getSingleSchemaMetaDataMap(dataSourceEntry.getKey(),
+                    SchemaMetaDataLoader.load(dataSourceEntry.getValue(), maxConnectionCount, databaseTypeName, excludedTableNames))));
         }
         for (Future<Map<String, SchemaMetaData>> each : futures) {
             try {
