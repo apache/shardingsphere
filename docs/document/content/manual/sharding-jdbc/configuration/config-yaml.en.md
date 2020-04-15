@@ -414,7 +414,7 @@ masterSlaveRule: #Omit read-write split rule configurations
 encryptRule: #Omit encrypt rule configurations
 
 orchestration:
-  orchestration: #Orchestration instance name
+  orchestration_ds: #Orchestration instance name
     orchestrationType: #The type of orchestration center: config_center or registry_center or metadata_center
     instanceType: #Center type. Example:zookeeper
     serverLists: #The list of servers that connect to registry center, including IP and port number; use commas to seperate addresses, such as: host1:2181,host2:2181

@@ -410,7 +410,7 @@ masterSlaveRule: #省略读写分离规则配置
 encryptRule: #省略数据脱敏规则配置
 
 orchestration:
-  orchestration: #治理实例名称
+  orchestration_ds: #治理实例名称
     orchestrationType: #配置/注册/元数据中心的类型，例如config_center/registry_center/metadata_center
     instanceType: #配置/注册/元数据中心类型。如：zookeeper
     serverLists: #连接配置/注册/元数据中心服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181
