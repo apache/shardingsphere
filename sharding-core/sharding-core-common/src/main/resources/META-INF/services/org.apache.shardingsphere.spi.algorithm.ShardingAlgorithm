@@ -14,31 +14,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-shadowRule:
-  column: shadow
-  shadowMappings:
-    db: shadow_db
-  shardingRule:
-    tables:
-      t_order_item:
-        actualDataNodes: db.t_order_item
-        databaseStrategy:
-          standard:
-            shardingColumn: item_id
-            shardingAlgorithm:
-              type: INLINE
-              props:
-                algorithm.expression: db
-        tableStrategy:
-          standard:
-            shardingColumn: item_id
-            shardingAlgorithm:
-              type: INLINE
-              props:
-                algorithm.expression: t_order_item
-        keyGenerator:
-          type: Constant
-          column: item_id
-    defaultTableStrategy:
-      none:
+ 
+org.apache.shardingsphere.core.strategy.sharding.InlineShardingAlgorithm

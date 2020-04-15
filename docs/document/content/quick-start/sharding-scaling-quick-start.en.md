@@ -13,7 +13,7 @@ weight = 3
 
 ```
 git clone https://github.com/apache/incubator-shardingsphere.git；
-cd incubarot-shardingsphere;
+cd incubator-shardingsphere;
 mvn clean install -Prelease;
 ```
 
