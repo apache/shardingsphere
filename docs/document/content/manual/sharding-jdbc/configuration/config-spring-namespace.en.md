@@ -20,10 +20,13 @@ example: [shardingsphere-example](https://github.com/apache/incubator-shardingsp
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
+       xmlns:spi="http://shardingsphere.apache.org/schema/shardingsphere/spi"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
+                        http://shardingsphere.apache.org/schema/shardingsphere/spi
+                        http://shardingsphere.apache.org/schema/shardingsphere/spi/spi.xsd
                         http://www.springframework.org/schema/context
                         http://www.springframework.org/schema/context/spring-context.xsd
                         http://www.springframework.org/schema/tx
@@ -67,9 +70,7 @@ example: [shardingsphere-example](https://github.com/apache/incubator-shardingsp
     <sharding:standard-strategy id="databaseShardingStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
     <sharding:standard-strategy id="tableShardingStrategy" sharding-column="order_id" precise-algorithm-ref="preciseModuloTableShardingAlgorithm" />
 
-    <bean id="snowflakeAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean">
-        <property name="type" value="SNOWFLAKE" />
-    </bean>
+    <spi:key-generate-algorithm id="snowflakeAlgorithm" type="SNOWFLAKE" />
 
     <sharding:key-generator id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
     <sharding:key-generator id="itemKeyGenerator" column="order_item_id" algorithm-ref="snowflakeAlgorithm" />
@@ -224,6 +225,7 @@ example: [shardingsphere-example](https://github.com/apache/incubator-shardingsp
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
        xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
+       xmlns:spi="http://shardingsphere.apache.org/schema/shardingsphere/spi"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://www.springframework.org/schema/context
@@ -233,7 +235,9 @@ example: [shardingsphere-example](https://github.com/apache/incubator-shardingsp
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
                         http://shardingsphere.apache.org/schema/shardingsphere/masterslave
-                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd">
+                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd
+                        http://shardingsphere.apache.org/schema/shardingsphere/spi
+                        http://shardingsphere.apache.org/schema/shardingsphere/spi/spi.xsd">
     <context:annotation-config />
     <context:component-scan base-package="org.apache.shardingsphere.example.core.jpa" />
 
@@ -306,9 +310,7 @@ example: [shardingsphere-example](https://github.com/apache/incubator-shardingsp
     <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order$->{order_id % 2}" />
     <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item$->{order_id % 2}" />
 
-    <bean id="snowflakeAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean">
-        <property name="type" value="SNOWFLAKE" />
-    </bean>
+    <spi:key-generate-algorithm id="snowflakeAlgorithm" type="SNOWFLAKE" />
 
     <sharding:key-generator id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
     <sharding:key-generator id="itemKeyGenerator" column="order_item_id" algorithm-ref="snowflakeAlgorithm" />
@@ -346,6 +348,7 @@ example: [shardingsphere-example](https://github.com/apache/incubator-shardingsp
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:bean="http://www.springframework.org/schema/util"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
+       xmlns:spi="http://shardingsphere.apache.org/schema/shardingsphere/spi"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding
@@ -354,6 +357,8 @@ example: [shardingsphere-example](https://github.com/apache/incubator-shardingsp
                         http://www.springframework.org/schema/context/spring-context.xsd
                         http://shardingsphere.apache.org/schema/shardingsphere/encrypt
                         http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd
+                        http://shardingsphere.apache.org/schema/shardingsphere/spi
+                        http://shardingsphere.apache.org/schema/shardingsphere/spi/spi.xsd
                         http://www.springframework.org/schema/tx
                         http://www.springframework.org/schema/tx/spring-tx.xsd
                         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
@@ -399,9 +404,7 @@ example: [shardingsphere-example](https://github.com/apache/incubator-shardingsp
     <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item_${order_id % 2}" />
     <sharding:inline-strategy id="orderEncryptTableStrategy" sharding-column="order_id" algorithm-expression="t_order_encrypt_${order_id % 2}" />
 
-    <bean id="snowflakeAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean">
-        <property name="type" value="SNOWFLAKE" />
-    </bean>
+    <spi:key-generate-algorithm id="snowflakeAlgorithm" type="SNOWFLAKE" />
 
     <sharding:key-generator id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
     <sharding:key-generator id="itemKeyGenerator" column="order_item_id" algorithm-ref="snowflakeAlgorithm" />
@@ -467,6 +470,19 @@ example: [shardingsphere-example](https://github.com/apache/incubator-shardingsp
 ```
 
 ## Configuration Item Explanation
+
+### SPI
+
+Namespace：http://shardingsphere.apache.org/schema/shardingsphere/spi/spi.xsd
+
+#### \<spi:key-generate-algorithm />
+
+| *Name*    | *Type*    | *Explanation*                                                   |
+| --------- | ----------| --------------------------------------------------------------- |
+| id        | Attribute | Spring Bean Id                                                  |
+| type      | Attribute | Auto-increment key generate algorithm `Type`; self-defined generate algorithm or internal Type generate algorithm (SNOWFLAKE/UUID) can both be selected |
+| props-ref | Attribute | The Property configuration reference of key generate algorithms |
+
 
 ### Sharding
 
@@ -572,19 +588,12 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/sharding/shard
 | ------ | --------- | -------------- |
 | id     | Attribute | Spring Bean Id |
 
-#### \<bean id="xxxx" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean" />
-
-| *Name*     | *Type*    | *Explanation*                                                   |
-| -----------| --------- | --------------------------------------------------------------- |
-| type       | Attribute | Auto-increment key generate algorithm `Type`; self-defined generate algorithm or internal Type generate algorithm (SNOWFLAKE/UUID) can both be selected |
-| properties | Attribute | The Property configuration reference of key generate algorithms |
-
 #### \<sharding:key-generator />
 
 | *Name*        | *Type*    | *Explanation*                                                |
 | --------------| --------- | ------------------------------------------------------------ |
 | column        | Attribute | Auto-increment column name                                   |
-| algorithm-ref | Attribute | The reference of key generate algorithm; reference a bean of class KeyGenerateAlgorithmFactoryBean |
+| algorithm-ref | Attribute | Key generate algorithm reference; the class needs to implement `KeyGenerateAlgorithm` interface |
 
 #### Properties
 

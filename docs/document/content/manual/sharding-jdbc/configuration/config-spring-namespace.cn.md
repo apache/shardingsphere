@@ -20,10 +20,13 @@ weight = 4
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
+       xmlns:spi="http://shardingsphere.apache.org/schema/shardingsphere/spi"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
+                        http://shardingsphere.apache.org/schema/shardingsphere/spi
+                        http://shardingsphere.apache.org/schema/shardingsphere/spi/spi.xsd
                         http://www.springframework.org/schema/context
                         http://www.springframework.org/schema/context/spring-context.xsd
                         http://www.springframework.org/schema/tx
@@ -67,9 +70,7 @@ weight = 4
     <sharding:standard-strategy id="databaseShardingStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
     <sharding:standard-strategy id="tableShardingStrategy" sharding-column="order_id" precise-algorithm-ref="preciseModuloTableShardingAlgorithm" />
 
-    <bean id="snowflakeAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean">
-        <property name="type" value="SNOWFLAKE" />
-    </bean>
+    <spi:key-generate-algorithm id="snowflakeAlgorithm" type="SNOWFLAKE" />
 
     <sharding:key-generator id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
     <sharding:key-generator id="itemKeyGenerator" column="order_item_id" algorithm-ref="snowflakeAlgorithm" />
@@ -224,6 +225,7 @@ weight = 4
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
        xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
+       xmlns:spi="http://shardingsphere.apache.org/schema/shardingsphere/spi"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://www.springframework.org/schema/context
@@ -233,7 +235,9 @@ weight = 4
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
                         http://shardingsphere.apache.org/schema/shardingsphere/masterslave
-                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd">
+                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd
+                        http://shardingsphere.apache.org/schema/shardingsphere/spi
+                        http://shardingsphere.apache.org/schema/shardingsphere/spi/spi.xsd">
     <context:annotation-config />
     <context:component-scan base-package="org.apache.shardingsphere.example.core.jpa" />
 
@@ -306,9 +310,7 @@ weight = 4
     <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order$->{order_id % 2}" />
     <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item$->{order_id % 2}" />
 
-    <bean id="snowflakeAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean">
-        <property name="type" value="SNOWFLAKE" />
-    </bean>
+    <spi:key-generate-algorithm id="snowflakeAlgorithm" type="SNOWFLAKE" />
 
     <sharding:key-generator id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
     <sharding:key-generator id="itemKeyGenerator" column="order_item_id" algorithm-ref="snowflakeAlgorithm" />
@@ -346,10 +348,13 @@ weight = 4
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:bean="http://www.springframework.org/schema/util"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
+       xmlns:spi="http://shardingsphere.apache.org/schema/shardingsphere/spi"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
+                        http://shardingsphere.apache.org/schema/shardingsphere/spi
+                        http://shardingsphere.apache.org/schema/shardingsphere/spi/spi.xsd
                         http://www.springframework.org/schema/context
                         http://www.springframework.org/schema/context/spring-context.xsd
                         http://shardingsphere.apache.org/schema/shardingsphere/encrypt
@@ -399,9 +404,7 @@ weight = 4
     <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item_${order_id % 2}" />
     <sharding:inline-strategy id="orderEncryptTableStrategy" sharding-column="order_id" algorithm-expression="t_order_encrypt_${order_id % 2}" />
 
-    <bean id="snowflakeAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean">
-        <property name="type" value="SNOWFLAKE" />
-    </bean>
+    <spi:key-generate-algorithm id="snowflakeAlgorithm" type="SNOWFLAKE" />
 
     <sharding:key-generator id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
     <sharding:key-generator id="itemKeyGenerator" column="order_item_id" algorithm-ref="snowflakeAlgorithm" />
@@ -458,6 +461,18 @@ weight = 4
 ```
 
 ## 配置项说明
+
+### SPI
+
+命名空间：http://shardingsphere.apache.org/schema/shardingsphere/spi/spi.xsd
+
+#### \<spi:key-generate-algorithm />
+
+| *名称*      | *类型* | *说明*                                                                           |
+| ---------- | ------ | ------------------------------------------------------------------------------- |
+| id         | 属性    | Spring Bean Id                                                                  |
+| type       | 属性    | 自增列值生成算法类型，可自定义或选择内置类型：SNOWFLAKE/UUID                           |
+| props-ref  | 属性    | 自增列值生成算法的属性配置引用                                                       |
 
 ### 分库分表
 
@@ -563,19 +578,12 @@ weight = 4
 | ----- | ------ | -------------- |
 | id    | 属性    | Spring Bean Id |
 
-#### \<bean id="xxxx" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean" />
-
-| *名称*             | *类型*                       | *说明*                                                                           |
-| ----------------- | ---------------------------- | ------------------------------------------------------------------------------- |
-| type              | 属性                          | 自增列值生成算法类型，可自定义或选择内置类型：SNOWFLAKE/UUID                            |
-| properties        | 属性                          | 自增列值生成算法的属性配置引用                                                       |
-
 #### \<sharding:key-generator />
 
-| *名称*             | *类型*                       | *说明*                                                                           |
-| ----------------- | ---------------------------- | ------------------------------------------------------------------------------- |
-| column            | 属性                          | 自增列名称                                                                       |
-| algorithm-ref     | 属性                          | 自增列值生成算法引用。引用KeyGenerateAlgorithmFactoryBean类型的bean                  |
+| *名称*          | *类型* | *说明*                                               |
+| -------------- | ----- | ---------------------------------------------------- |
+| column         | 属性   | 自增列名称                                            |
+| algorithm-ref  | 属性   | 自增列值生成算法引用。 该类需实现KeyGenerateAlgorithm接口 |
 
 #### Properties
 
