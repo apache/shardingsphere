@@ -31,7 +31,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 @ContextConfiguration(locations = "classpath:META-INF/rdb/datasource/dataSource.xml")
-public final class GenerateKeyAlgorithmTest extends AbstractJUnit4SpringContextTests {
+public final class KeyGenerateAlgorithmTest extends AbstractJUnit4SpringContextTests {
     
     @Test(expected = BeanCreationException.class)
     public void assertTypelessKeyGenerateAlgorithm() {
@@ -45,7 +45,7 @@ public final class GenerateKeyAlgorithmTest extends AbstractJUnit4SpringContextT
     @Test
     public void assertKeyGenerateAlgorithm() {
         GenericApplicationContext context = (GenericApplicationContext) applicationContext;
-        BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(KeyGenerateAlgorithmFactoryBean.class).addPropertyValue("type", "INCREMENT");
+        BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(KeyGenerateAlgorithmFactoryBean.class).addConstructorArgValue("INCREMENT");
         BeanDefinition beanDefinition = builder.getBeanDefinition();
         context.registerBeanDefinition("incrementAlgorithm", beanDefinition);
         KeyGenerateAlgorithm incrementKeyGenerateAlgorithm = (KeyGenerateAlgorithm) context.getBean("incrementAlgorithm");
