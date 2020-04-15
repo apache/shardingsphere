@@ -35,7 +35,7 @@ shardingRule:
         standard:
           shardingColumn: order_id
           shardingAlgorithm:
-            type: STANDARD_TEST_TB
+            type: STANDARD_TEST_TBL
       keyGenerator:
         type: SNOWFLAKE
         column: order_id
@@ -47,7 +47,7 @@ shardingRule:
         standard:
           shardingColumn: order_id
           shardingAlgorithm:
-            type: STANDARD_TEST_TB
+            type: STANDARD_TEST_TBL
       keyGenerator:
         type: SNOWFLAKE
         column: order_item_id
