@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrd
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.executor.sql.queryresult.QueryResult;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.execute.sql.execute.result;
+package org.apache.shardingsphere.underlying.executor.sql.queryresult.impl;
 
 import org.junit.Test;
 

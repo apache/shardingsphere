@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.callback;
 
 import org.apache.shardingsphere.underlying.executor.sql.executor.SQLExecutorCallback;
-import org.apache.shardingsphere.sharding.execute.sql.execute.result.MemoryQueryResult;
-import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
+import org.apache.shardingsphere.underlying.executor.sql.queryresult.impl.MemoryQueryResult;
+import org.apache.shardingsphere.underlying.executor.sql.queryresult.impl.StreamQueryResult;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteQueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteResponse;
@@ -30,7 +30,7 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.executor.sql.queryresult.QueryResult;
 import org.apache.shardingsphere.underlying.executor.sql.connection.ConnectionMode;
 
 import java.sql.ResultSet;

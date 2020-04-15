@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDat
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.executor.sql.queryresult.QueryResult;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
