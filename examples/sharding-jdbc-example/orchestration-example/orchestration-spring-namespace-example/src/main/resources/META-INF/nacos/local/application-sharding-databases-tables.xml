@@ -22,6 +22,7 @@
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
        xmlns:orchestraion="http://shardingsphere.apache.org/schema/shardingsphere/orchestration"
+       xmlns:spi="http://shardingsphere.apache.org/schema/shardingsphere/spi"
        xmlns:bean="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans.xsd 
@@ -32,7 +33,9 @@
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
                         http://shardingsphere.apache.org/schema/shardingsphere/orchestration
-                        http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+                        http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd
+                        http://shardingsphere.apache.org/schema/shardingsphere/spi
+                        http://shardingsphere.apache.org/schema/shardingsphere/spi/spi.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
     <import resource="classpath*:META-INF/nacos/registry-center.xml" />
     <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />
     <bean id="demo_ds_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
@@ -57,10 +60,7 @@
         <prop key="worker.id">123</prop>
     </bean:properties>
     
-    <bean id="snowflakeAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean">
-        <property name="type" value="SNOWFLAKE" />
-        <property name="properties" ref="properties"/>
-    </bean>
+    <spi:key-generate-algorithm id="snowflakeAlgorithm" type="SNOWFLAKE" props-ref="properties"/>
     
     <sharding:key-generator id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
     <sharding:key-generator id="itemKeyGenerator" column="order_item_id" algorithm-ref="snowflakeAlgorithm" />

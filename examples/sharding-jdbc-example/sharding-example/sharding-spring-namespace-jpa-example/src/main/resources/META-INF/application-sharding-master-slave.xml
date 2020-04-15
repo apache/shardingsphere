@@ -23,6 +23,7 @@
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
        xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
+       xmlns:spi="http://shardingsphere.apache.org/schema/shardingsphere/spi"
        xmlns:bean="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans.xsd
@@ -33,7 +34,9 @@
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
                         http://shardingsphere.apache.org/schema/shardingsphere/masterslave
-                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd
+                        http://shardingsphere.apache.org/schema/shardingsphere/spi
+                        http://shardingsphere.apache.org/schema/shardingsphere/spi/spi.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
     <context:annotation-config />
     <context:component-scan base-package="org.apache.shardingsphere.example.core.jpa"/>
 
@@ -111,13 +114,10 @@
         <prop key="worker.id">123</prop>
     </bean:properties>
     
-    <bean id="snowflakeAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean">
-        <property name="type" value="SNOWFLAKE" />
-        <property name="properties" ref="properties"/>
-    </bean>
+    <spi:key-generate-algorithm id="snowflakeAlgorithm" type="SNOWFLAKE" props-ref="properties"/>
     
-    <sharding:key-generator id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgrithm" />
-    <sharding:key-generator id="itemKeyGenerator" column="order_item_id" algorithm-ref="snowflakeAlgrithm" />
+    <sharding:key-generator id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
+    <sharding:key-generator id="itemKeyGenerator" column="order_item_id" algorithm-ref="snowflakeAlgorithm" />
     
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-source-names="demo_ds_master_0,demo_ds_master_1,demo_ds_master_0_slave_0, demo_ds_master_0_slave_1,demo_ds_master_1_slave_0, demo_ds_master_1_slave_1">
