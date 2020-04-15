@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingscaling.core.controller;
 
 import org.apache.shardingsphere.shardingscaling.core.ShardingScalingJob;
-import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.controller.task.SyncTaskControlStatus;
 import org.apache.shardingsphere.shardingscaling.core.controller.task.SyncTaskController;
 import org.apache.shardingsphere.shardingscaling.core.exception.ScalingJobNotFoundException;
@@ -52,8 +51,8 @@ public final class ScalingJobController {
             return;
         }
         List<SyncTaskController> syncTaskControllers = new LinkedList<>();
-        for (SyncConfiguration syncConfiguration : shardingScalingJob.getSyncConfigurations()) {
-            SyncTaskController syncTaskController = new SyncTaskController(syncConfiguration);
+        for (int i = 0; i < shardingScalingJob.getSyncConfigurations().size(); i++) {
+            SyncTaskController syncTaskController = new SyncTaskController(shardingScalingJob.getSyncConfigurations().get(i), shardingScalingJob.getInventoryDataTasks().get(i));
             syncTaskController.start();
             syncTaskControllers.add(syncTaskController);
         }
