@@ -39,7 +39,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.executor.sql.queryresult.QueryResult;
-import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.underlying.executor.sql.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContextBuilder;

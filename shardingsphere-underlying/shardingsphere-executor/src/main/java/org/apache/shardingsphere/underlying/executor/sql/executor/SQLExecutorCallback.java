@@ -20,7 +20,7 @@ package org.apache.shardingsphere.underlying.executor.sql.executor;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
-import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.underlying.executor.sql.connection.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.hook.SPISQLExecutionHook;
