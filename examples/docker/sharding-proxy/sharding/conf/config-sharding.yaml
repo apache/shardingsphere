@@ -70,9 +70,12 @@ shardingRule:
   bindingTables:
     - t_order,t_order_item
   defaultDatabaseStrategy:
-    inline:
+    standard:
       shardingColumn: user_id
-      algorithmExpression: ds_${user_id % 2}
+      shardingAlgorithm:
+        type: INLINE
+        props:
+          algorithm.expression: ds_${user_id % 2}
   defaultTableStrategy:
     none:
   defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
