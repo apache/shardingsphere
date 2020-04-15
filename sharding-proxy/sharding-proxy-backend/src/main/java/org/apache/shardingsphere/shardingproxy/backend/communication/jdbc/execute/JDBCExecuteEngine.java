@@ -31,7 +31,9 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeade
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
 import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
@@ -75,8 +77,19 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
                 new ProxySQLExecuteCallback(sqlStatementContext, backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, true),
                 new ProxySQLExecuteCallback(sqlStatementContext, backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, false));
         ExecuteResponse executeResponse = executeResponses.iterator().next();
-        return executeResponse instanceof ExecuteQueryResponse
-                ? getExecuteQueryResponse(((ExecuteQueryResponse) executeResponse).getQueryHeaders(), executeResponses) : new UpdateResponse(executeResponses);
+        if (executeResponse instanceof ExecuteQueryResponse) {
+            return getExecuteQueryResponse(((ExecuteQueryResponse) executeResponse).getQueryHeaders(), executeResponses);
+        } else {
+            UpdateResponse updateResponse = new UpdateResponse(executeResponses);
+            if (sqlStatementContext.getSqlStatement() instanceof InsertStatement) {
+                updateResponse.setType("INSERT");
+            } else if (sqlStatementContext.getSqlStatement() instanceof DeleteStatement) {
+                updateResponse.setType("DELETE");
+            } else if (sqlStatementContext.getSqlStatement() instanceof UpdateStatement) {
+                updateResponse.setType("UPDATE");
+            }
+            return updateResponse;
+        }
     }
     
     private BackendResponse getExecuteQueryResponse(final List<QueryHeader> queryHeaders, final Collection<ExecuteResponse> executeResponses) {
