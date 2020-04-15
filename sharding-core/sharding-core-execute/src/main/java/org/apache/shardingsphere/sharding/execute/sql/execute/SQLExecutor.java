@@ -49,8 +49,7 @@ public final class SQLExecutor {
      * @return result
      * @throws SQLException SQL exception
      */
-    @SuppressWarnings("unchecked")
     public <T> List<T> execute(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLExecutorCallback<T> executeCallback) throws SQLException {
-        return sqlExecuteTemplate.execute((Collection) inputGroups, executeCallback);
+        return sqlExecuteTemplate.execute(inputGroups, executeCallback);
     }
 }

@@ -47,7 +47,7 @@ public final class SQLExecuteTemplate {
      * @return execute result
      * @throws SQLException SQL exception
      */
-    public <T> List<T> execute(final Collection<InputGroup<? extends StatementExecuteUnit>> inputGroups, final SQLExecutorCallback<T> callback) throws SQLException {
+    public <T> List<T> execute(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLExecutorCallback<T> callback) throws SQLException {
         return execute(inputGroups, null, callback);
     }
     
@@ -62,8 +62,7 @@ public final class SQLExecuteTemplate {
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("unchecked")
-    public <T> List<T> execute(final Collection<InputGroup<? extends StatementExecuteUnit>> inputGroups,
-                               final SQLExecutorCallback<T> firstCallback, final SQLExecutorCallback<T> callback) throws SQLException {
+    public <T> List<T> execute(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLExecutorCallback<T> firstCallback, final SQLExecutorCallback<T> callback) throws SQLException {
         try {
             return executorKernel.execute((Collection) inputGroups, firstCallback, callback, serial);
         } catch (final SQLException ex) {
