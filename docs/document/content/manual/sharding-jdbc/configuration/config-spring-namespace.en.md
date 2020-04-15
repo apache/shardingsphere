@@ -722,7 +722,7 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/orchestration/
 | id                  | Attribute | ID                                                           |
 | data-source-ref (?) | Attribute | Orchestrated database id                                     |
 | registry-center-ref | Attribute | Registry center id                                           |
-| overwrite           | Attribute | Whether to overwrite local configurations with registry center configurations; if it can, each initialization should refer to local configurations; default means not to overwrite |
+| overwrite           | Attribute | Whether to overwrite local configurations with config center configurations; if it can, each initialization should refer to local configurations; default means not to overwrite |
 
 ### Read-Write Split + Orchestration
 
@@ -735,7 +735,7 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/orchestration/
 | id                  | Attribute | ID                                                          |
 | data-source-ref (?) | Attribute | The id of data source to be orchestrated                    |
 | registry-center-ref | Attribute | The id of registry center                                   |
-| overwrite           | Attribute | Use local configuration to overwrite registry center or not |
+| overwrite           | Attribute | Use local configuration to overwrite config center or not |
 
 ### Data Masking + Orchestration
 
@@ -748,7 +748,7 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/orchestration/
 | id                  | Attribute | ID                                                          |
 | data-source-ref (?) | Attribute | The id of data source to be orchestrated                    |
 | registry-center-ref | Attribute | The id of registry center                                   |
-| overwrite           | Attribute | Use local configuration to overwrite registry center or not |
+| overwrite           | Attribute | Use local configuration to overwrite config center or not |
 
 
 ### Orchestration registry center

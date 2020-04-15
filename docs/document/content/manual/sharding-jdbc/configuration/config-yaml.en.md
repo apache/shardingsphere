@@ -420,6 +420,12 @@ orchestration:
     serverLists: #The list of servers that connect to registry center, including IP and port number; use commas to seperate addresses, such as: host1:2181,host2:2181
     namespace: #Center namespace
     props: #Other properties
+      overwrite: #Whether to overwrite local configurations with config center configurations; if it can, each initialization should refer to local configurations
+      digest: #The token that connects to the center; default means there is no need for authentication
+      operationTimeoutMilliseconds: #Default value: 500 milliseconds
+      maxRetries: #Maximum retry time after failing; default value: 3 times
+      retryIntervalMilliseconds: #Interval time to retry; default value: 500 milliseconds
+      timeToLiveSeconds: #Living time of temporary nodes; default value: 60 seconds
 ```
 
 ## Yaml Syntax Explanation

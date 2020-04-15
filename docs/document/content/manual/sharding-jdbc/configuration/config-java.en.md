@@ -454,7 +454,7 @@ Common configuration in properties as follow:
 
 | *Name*                           | *Data Type* | *Explanation*                                                |
 | -------------------------------- | ----------- | ------------------------------------------------------------ |
-| overwrite                         | boolean    | Local configurations overwrite center configurations or not; if they overwrite, each start takes reference of local configurations                          |
+| overwrite                         | boolean    | Local configurations overwrite config center configurations or not; if they overwrite, each start takes reference of local configurations                          |
 
 If type of center is `zookeeper` with config-center&registry-center&metadata-center, properties could be set with the follow options:
 
