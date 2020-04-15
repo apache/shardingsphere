@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingjdbc.executor;
 
-import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutor;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.MemoryQueryResult;
@@ -54,10 +53,10 @@ public final class PreparedStatementExecutor {
     
     private final SQLExecutor sqlExecutor;
     
-    public PreparedStatementExecutor(final Map<String, DataSource> dataSourceMap, final ShardingRuntimeContext runtimeContext, final SQLExecuteTemplate sqlExecuteTemplate) {
+    public PreparedStatementExecutor(final Map<String, DataSource> dataSourceMap, final ShardingRuntimeContext runtimeContext, final SQLExecutor sqlExecutor) {
         this.dataSourceMap = dataSourceMap;
         this.runtimeContext = runtimeContext;
-        sqlExecutor = new SQLExecutor(sqlExecuteTemplate);
+        this.sqlExecutor = sqlExecutor;
     }
     
     /**
