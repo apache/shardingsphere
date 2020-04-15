@@ -25,7 +25,7 @@ import org.apache.shardingsphere.underlying.common.exception.ShardingSphereExcep
 import java.sql.SQLException;
 
 /**
- * Executor runtime exception handler.
+ * Executor exception handler.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
