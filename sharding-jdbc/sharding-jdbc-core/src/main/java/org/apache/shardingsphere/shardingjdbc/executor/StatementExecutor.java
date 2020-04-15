@@ -29,7 +29,7 @@ import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefr
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.sql.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 
 import javax.sql.DataSource;

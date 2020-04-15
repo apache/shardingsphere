@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.execute.sql.execute;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.sql.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;

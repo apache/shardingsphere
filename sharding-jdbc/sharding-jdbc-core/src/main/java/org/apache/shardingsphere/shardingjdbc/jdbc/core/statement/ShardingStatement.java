@@ -38,7 +38,7 @@ import org.apache.shardingsphere.underlying.common.config.properties.Configurati
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
+import org.apache.shardingsphere.underlying.executor.sql.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContextBuilder;
 import org.apache.shardingsphere.underlying.executor.group.StatementExecuteGroupEngine;

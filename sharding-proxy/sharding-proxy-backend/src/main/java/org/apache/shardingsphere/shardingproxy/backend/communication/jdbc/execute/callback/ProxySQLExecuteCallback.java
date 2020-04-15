@@ -31,7 +31,7 @@ import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.Pro
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
-import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.sql.constant.ConnectionMode;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;

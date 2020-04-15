@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.executor.connection;
+package org.apache.shardingsphere.underlying.executor.sql.connection;
 
 import lombok.AccessLevel;
 import lombok.Getter;
