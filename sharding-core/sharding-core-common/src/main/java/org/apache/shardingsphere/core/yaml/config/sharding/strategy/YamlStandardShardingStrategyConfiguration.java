@@ -29,9 +29,5 @@ public final class YamlStandardShardingStrategyConfiguration implements YamlBase
     
     private String shardingColumn;
     
-    private String preciseAlgorithmClassName;
-    
-    private String rangeAlgorithmClassName;
-    
     private YamlShardingAlgorithmConfiguration shardingAlgorithm;
 }
