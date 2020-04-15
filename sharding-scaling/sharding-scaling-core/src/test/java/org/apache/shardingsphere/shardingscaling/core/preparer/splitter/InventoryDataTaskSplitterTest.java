@@ -28,12 +28,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import javax.sql.DataSource;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -95,7 +95,7 @@ public class InventoryDataTaskSplitterTest {
     }
     
     @Test
-    public void assertSplitInventoryDataWithoutPrimary() throws NoSuchFieldException, IllegalAccessException {
+    public void assertSplitInventoryDataWithoutPrimary() {
         initNoPrimaryEnvironment(syncConfiguration.getDumperConfiguration());
         Collection<SyncTask> actual = inventoryDataTaskSplitter.splitInventoryData(syncConfiguration, dataSourceManager);
         assertNotNull(actual);
