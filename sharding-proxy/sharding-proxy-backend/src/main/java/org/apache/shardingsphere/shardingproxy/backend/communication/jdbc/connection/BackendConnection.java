@@ -33,7 +33,7 @@ import org.apache.shardingsphere.underlying.common.database.type.dialect.Postgre
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.executor.sql.connection.ExecutionConnection;
 import org.apache.shardingsphere.underlying.executor.sql.connection.StatementOption;
-import org.apache.shardingsphere.underlying.executor.sql.constant.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.sql.connection.ConnectionMode;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

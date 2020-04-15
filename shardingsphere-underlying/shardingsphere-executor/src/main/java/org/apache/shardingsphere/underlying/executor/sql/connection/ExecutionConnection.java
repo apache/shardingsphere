@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.underlying.executor.sql.connection;
 
-import org.apache.shardingsphere.underlying.executor.sql.constant.ConnectionMode;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

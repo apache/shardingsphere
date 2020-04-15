@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal;
+package org.apache.shardingsphere.underlying.executor.sql.executor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

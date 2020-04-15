@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.executor.sql.constant;
+package org.apache.shardingsphere.underlying.executor.sql.connection;
 
 /**
  * Connection Mode.
