@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.Pro
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.executor.sql.queryresult.QueryResult;
 import org.apache.shardingsphere.underlying.merge.result.impl.memory.MemoryQueryResultRow;
 import org.junit.Test;
 

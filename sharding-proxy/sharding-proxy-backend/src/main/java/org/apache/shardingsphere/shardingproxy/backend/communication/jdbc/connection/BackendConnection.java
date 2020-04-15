@@ -31,9 +31,9 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.underlying.common.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.underlying.common.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
-import org.apache.shardingsphere.underlying.executor.connection.ExecutionConnection;
-import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
-import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.sql.connection.ExecutionConnection;
+import org.apache.shardingsphere.underlying.executor.sql.connection.StatementOption;
+import org.apache.shardingsphere.underlying.executor.sql.connection.ConnectionMode;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

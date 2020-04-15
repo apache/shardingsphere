@@ -33,7 +33,6 @@
         <module>sharding-core-route</module>
         <module>database-time-service</module>
         <module>sharding-core-rewrite</module>
-        <module>sharding-core-execute</module>
         <module>sharding-core-merge</module>
     </modules>
 </project>

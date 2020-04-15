@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
-import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
+import org.apache.shardingsphere.underlying.executor.sql.queryresult.impl.StreamQueryResult;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.EncryptRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
