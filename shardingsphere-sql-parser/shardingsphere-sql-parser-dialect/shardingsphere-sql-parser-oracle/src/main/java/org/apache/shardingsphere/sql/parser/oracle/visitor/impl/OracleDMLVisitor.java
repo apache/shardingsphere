@@ -400,7 +400,7 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
             if (null != ctx.alias()) {
                 subqueryTableSegment.setAlias((AliasSegment) visit(ctx.alias()));
             }
-            result.setSubqueryTableSegment(subqueryTableSegment);
+            result.setTable(subqueryTableSegment);
         }
         if (null != ctx.tableName()) {
             SimpleTableSegment table = (SimpleTableSegment) visit(ctx.tableName());
