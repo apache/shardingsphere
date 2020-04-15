@@ -28,9 +28,12 @@ shardingRule:
           shardingAlgorithm:
             type: STANDARD_TEST
       tableStrategy: 
-        inline:
+        standard:
           shardingColumn: order_id
-          algorithmExpression: t_order_${order_id % 2}
+          shardingAlgorithm:
+            type: INLINE
+            props:
+              algorithm.expression: t_order_${order_id % 2}
       keyGenerator:
         type: INCREMENT
         column: order_id
@@ -42,9 +45,12 @@ shardingRule:
           shardingAlgorithm:
             type: STANDARD_TEST
       tableStrategy:
-        inline:
+        standard:
           shardingColumn: order_id
-          algorithmExpression: t_order_item_${order_id % 2}
+          shardingAlgorithm:
+            type: INLINE
+            props:
+              algorithm.expression: t_order_item_${order_id % 2}
 
   bindingTables:
     - t_order,t_order_item
