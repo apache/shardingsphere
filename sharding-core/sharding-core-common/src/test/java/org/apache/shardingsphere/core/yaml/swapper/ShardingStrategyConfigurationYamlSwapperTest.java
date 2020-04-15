@@ -54,18 +54,6 @@ public final class ShardingStrategyConfigurationYamlSwapperTest {
         YamlShardingStrategyConfiguration actual = shardingStrategyConfigurationYamlSwapper.swap(new StandardShardingStrategyConfiguration("id", standardShardingAlgorithm));
         assertThat(actual.getStandard().getShardingColumn(), is("id"));
         assertThat(actual.getStandard().getShardingAlgorithm(), instanceOf(YamlShardingAlgorithmConfiguration.class));
-        assertNull(actual.getInline());
-        assertNull(actual.getComplex());
-        assertNull(actual.getHint());
-        assertNull(actual.getNone());
-    }
-    
-    @Test
-    public void assertSwapToYamlWithInline() {
-        YamlShardingStrategyConfiguration actual = shardingStrategyConfigurationYamlSwapper.swap(new InlineShardingStrategyConfiguration("id", "xxx_$->{id % 10}"));
-        assertThat(actual.getInline().getShardingColumn(), is("id"));
-        assertThat(actual.getInline().getAlgorithmExpression(), is("xxx_$->{id % 10}"));
-        assertNull(actual.getStandard());
         assertNull(actual.getComplex());
         assertNull(actual.getHint());
         assertNull(actual.getNone());
@@ -79,7 +67,6 @@ public final class ShardingStrategyConfigurationYamlSwapperTest {
         assertThat(actual.getComplex().getShardingColumns(), is("id, creation_date"));
         assertThat(actual.getComplex().getShardingAlgorithm().getType(), is("COMPLEX_TEST"));
         assertNull(actual.getStandard());
-        assertNull(actual.getInline());
         assertNull(actual.getHint());
         assertNull(actual.getNone());
     }
@@ -91,7 +78,6 @@ public final class ShardingStrategyConfigurationYamlSwapperTest {
         YamlShardingStrategyConfiguration actual = shardingStrategyConfigurationYamlSwapper.swap(new HintShardingStrategyConfiguration(hintShardingAlgorithm));
         assertThat(actual.getHint().getShardingAlgorithm().getType(), is("HINT_TEST"));
         assertNull(actual.getStandard());
-        assertNull(actual.getInline());
         assertNull(actual.getComplex());
         assertNull(actual.getNone());
     }
@@ -100,7 +86,6 @@ public final class ShardingStrategyConfigurationYamlSwapperTest {
     public void assertSwapToYamlWithNone() {
         YamlShardingStrategyConfiguration actual = shardingStrategyConfigurationYamlSwapper.swap(new NoneShardingStrategyConfiguration());
         assertNull(actual.getStandard());
-        assertNull(actual.getInline());
         assertNull(actual.getComplex());
         assertNull(actual.getHint());
         assertThat(actual.getNone(), instanceOf(YamlNoneShardingStrategyConfiguration.class));
