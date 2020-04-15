@@ -29,14 +29,14 @@ shadowRule:
             shardingAlgorithm:
               type: INLINE
               props:
-                algorithm.expression: t_order_item_${order_id % 2}
+                algorithm.expression: db
         tableStrategy:
           standard:
             shardingColumn: item_id
             shardingAlgorithm:
               type: INLINE
               props:
-                algorithm.expression: t_order_item_${order_id % 2}
+                algorithm.expression: t_order_item
         keyGenerator:
           type: Constant
           column: item_id
