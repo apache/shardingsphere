@@ -26,10 +26,7 @@ import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyCo
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.api.sharding.hint.HintShardingAlgorithm;
-import org.apache.shardingsphere.api.sharding.standard.PreciseShardingAlgorithm;
-import org.apache.shardingsphere.api.sharding.standard.RangeShardingAlgorithm;
 import org.apache.shardingsphere.api.sharding.standard.StandardShardingAlgorithm;
-import org.apache.shardingsphere.core.strategy.route.ShardingAlgorithmFactory;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlHintShardingStrategyConfiguration;
@@ -79,16 +76,7 @@ public final class ShardingStrategyConfigurationYamlSwapper implements YamlSwapp
         ShardingStrategyConfiguration result = null;
         if (null != yamlConfiguration.getStandard()) {
             shardingStrategyConfigCount++;
-            if (null != yamlConfiguration.getStandard().getShardingAlgorithm()) {
-                result = createStandardShardingStrategyConfiguration(yamlConfiguration.getStandard());
-            } else if (null == yamlConfiguration.getStandard().getRangeAlgorithmClassName()) {
-                result = new StandardShardingStrategyConfiguration(yamlConfiguration.getStandard().getShardingColumn(),
-                        ShardingAlgorithmFactory.newInstance(yamlConfiguration.getStandard().getPreciseAlgorithmClassName(), PreciseShardingAlgorithm.class));
-            } else {
-                result = new StandardShardingStrategyConfiguration(yamlConfiguration.getStandard().getShardingColumn(),
-                        ShardingAlgorithmFactory.newInstance(yamlConfiguration.getStandard().getPreciseAlgorithmClassName(), PreciseShardingAlgorithm.class),
-                        ShardingAlgorithmFactory.newInstance(yamlConfiguration.getStandard().getRangeAlgorithmClassName(), RangeShardingAlgorithm.class));
-            }
+            result = createStandardShardingStrategyConfiguration(yamlConfiguration.getStandard());
         }
         if (null != yamlConfiguration.getComplex()) {
             shardingStrategyConfigCount++;
@@ -113,15 +101,7 @@ public final class ShardingStrategyConfigurationYamlSwapper implements YamlSwapp
     private YamlStandardShardingStrategyConfiguration createYamlStandardShardingStrategyConfiguration(final StandardShardingStrategyConfiguration data) {
         YamlStandardShardingStrategyConfiguration result = new YamlStandardShardingStrategyConfiguration();
         result.setShardingColumn(data.getShardingColumn());
-        if (null != data.getPreciseShardingAlgorithm()) {
-            result.setPreciseAlgorithmClassName(data.getPreciseShardingAlgorithm().getClass().getName());
-        } 
-        if (null != data.getRangeShardingAlgorithm()) {
-            result.setRangeAlgorithmClassName(data.getRangeShardingAlgorithm().getClass().getName());
-        }
-        if (null != data.getShardingAlgorithm()) {
-            result.setShardingAlgorithm(createYamlShardingAlgorithmConfiguration(data.getShardingAlgorithm()));
-        }
+        result.setShardingAlgorithm(createYamlShardingAlgorithmConfiguration(data.getShardingAlgorithm()));
         return result;
     }
     

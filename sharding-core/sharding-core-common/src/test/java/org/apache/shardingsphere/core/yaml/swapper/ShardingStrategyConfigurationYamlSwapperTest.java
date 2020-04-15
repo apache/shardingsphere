@@ -24,8 +24,7 @@ import org.apache.shardingsphere.api.config.sharding.strategy.NoneShardingStrate
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.api.sharding.hint.HintShardingAlgorithm;
-import org.apache.shardingsphere.api.sharding.standard.PreciseShardingAlgorithm;
-import org.apache.shardingsphere.api.sharding.standard.RangeShardingAlgorithm;
+import org.apache.shardingsphere.api.sharding.standard.StandardShardingAlgorithm;
 import org.apache.shardingsphere.core.shard.fixture.ComplexKeysShardingAlgorithmFixture;
 import org.apache.shardingsphere.core.shard.fixture.HintShardingAlgorithmFixture;
 import org.apache.shardingsphere.core.shard.fixture.StandardShardingAlgorithmFixture;
@@ -51,12 +50,10 @@ public final class ShardingStrategyConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYamlWithStandard() {
-        PreciseShardingAlgorithm preciseShardingAlgorithm = mock(PreciseShardingAlgorithm.class);
-        RangeShardingAlgorithm rangeShardingAlgorithm = mock(RangeShardingAlgorithm.class);
-        YamlShardingStrategyConfiguration actual = shardingStrategyConfigurationYamlSwapper.swap(new StandardShardingStrategyConfiguration("id", preciseShardingAlgorithm, rangeShardingAlgorithm));
+        StandardShardingAlgorithm standardShardingAlgorithm = mock(StandardShardingAlgorithm.class);
+        YamlShardingStrategyConfiguration actual = shardingStrategyConfigurationYamlSwapper.swap(new StandardShardingStrategyConfiguration("id", standardShardingAlgorithm));
         assertThat(actual.getStandard().getShardingColumn(), is("id"));
-        assertThat(actual.getStandard().getPreciseAlgorithmClassName(), is(preciseShardingAlgorithm.getClass().getName()));
-        assertThat(actual.getStandard().getRangeAlgorithmClassName(), is(rangeShardingAlgorithm.getClass().getName()));
+        assertThat(actual.getStandard().getShardingAlgorithm(), instanceOf(YamlShardingAlgorithmConfiguration.class));
         assertNull(actual.getInline());
         assertNull(actual.getComplex());
         assertNull(actual.getHint());
