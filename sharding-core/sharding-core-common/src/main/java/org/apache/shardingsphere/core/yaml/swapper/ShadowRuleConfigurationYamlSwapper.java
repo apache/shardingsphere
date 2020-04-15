@@ -15,12 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.yaml.swapper.impl;
+package org.apache.shardingsphere.core.yaml.swapper;
 
 import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.shadow.YamlShadowRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
 
@@ -40,7 +38,6 @@ public final class ShadowRuleConfigurationYamlSwapper implements YamlSwapper<Yam
         YamlShadowRuleConfiguration result = new YamlShadowRuleConfiguration();
         result.setColumn(data.getColumn());
         result.setShadowMappings(data.getShadowMappings());
-        
         if (data.isEncrypt()) {
             result.setEncryptRule(encryptRuleConfigurationYamlSwapper.swap(data.getEncryptRuleConfig()));
         } else if (data.isMasterSlave()) {
@@ -56,7 +53,6 @@ public final class ShadowRuleConfigurationYamlSwapper implements YamlSwapper<Yam
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         result.setColumn(yamlConfiguration.getColumn());
         result.setShadowMappings(yamlConfiguration.getShadowMappings());
-        
         if (yamlConfiguration.isEncrypt()) {
             result.setEncryptRuleConfig(encryptRuleConfigurationYamlSwapper.swap(yamlConfiguration.getEncryptRule()));
         } else if (yamlConfiguration.isMasterSlave()) {
