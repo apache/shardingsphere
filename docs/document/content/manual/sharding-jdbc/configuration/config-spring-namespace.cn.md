@@ -457,7 +457,7 @@ weight = 4
         <prop key="max-retries">3</prop>
         <prop key="operation-timeout-milliseconds">3000</prop>
     </util:properties>
-    <orchestraion:instance id="regCenter" orchestration-type="registry_center,config_center" instance-type="zookeeper" server-lists="localhost:2181" namespace="orchestration-spring-namespace-demo"
+    <orchestraion:instance id="regCenter" orchestration-type="registry_center,config_center,metadata_center" instance-type="zookeeper" server-lists="localhost:2181" namespace="orchestration-spring-namespace-demo"
                            props-ref="instance-props" />
 </beans>
 ```
