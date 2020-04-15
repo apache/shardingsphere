@@ -140,7 +140,7 @@ public final class MySQLHandshakePacket implements MySQLPacket {
     }
     
     private boolean isClientPluginAuth() {
-        return 0 != ((capabilityFlagsUpper << 16) & MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue());
+        return 0 != (capabilityFlagsUpper & MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue());
     }
     
     @Override
