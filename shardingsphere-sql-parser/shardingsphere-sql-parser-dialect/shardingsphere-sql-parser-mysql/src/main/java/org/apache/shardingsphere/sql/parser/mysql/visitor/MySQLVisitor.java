@@ -23,8 +23,6 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DataTypeLengthContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DataTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BitExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BitValueLiteralsContext;
@@ -36,6 +34,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CharFun
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ConvertFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DataTypeContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DataTypeLengthContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DataTypeNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DateTimeLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExprContext;
@@ -563,7 +563,9 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public final ASTNode visitRegularFunction(final RegularFunctionContext ctx) {
-        calculateParameterCount(ctx.expr());
+        if (null != ctx.completeRegularFunction()) {
+            calculateParameterCount(ctx.completeRegularFunction().expr());
+        }
         return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
     

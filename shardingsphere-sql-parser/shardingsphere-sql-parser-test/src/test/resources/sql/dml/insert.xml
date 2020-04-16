@@ -866,7 +866,7 @@
     <insert sql-case-id="insert_with_function" parameters="1000, 10">
         <table name="t_order" start-index="12" stop-index="18" />
         <columns start-index="19" stop-index="51">
-            <column name="current_date" start-index="20" stop-index="31" />
+            <column name="present_date" start-index="20" stop-index="31" />
             <column name="order_id" start-index="34" stop-index="41" />
             <column name="user_id" start-index="44" stop-index="50" />
         </columns>
@@ -979,7 +979,7 @@
     <insert sql-case-id="insert_with_str_to_date" parameters="2019-12-10, 1, 1">
         <table name="t_order" start-index="12" stop-index="18" />
         <columns start-index="19" stop-index="51">
-            <column name="current_date" start-index="20" stop-index="31" />
+            <column name="present_date" start-index="20" stop-index="31" />
             <column name="order_id" start-index="34" stop-index="41" />
             <column name="user_id" start-index="44" stop-index="50" />
         </columns>
@@ -1092,7 +1092,7 @@
     <insert sql-case-id="insert_with_str_date_add" parameters="1, 1, 1">
         <table name="t_order" start-index="12" stop-index="18" />
         <columns start-index="19" stop-index="51">
-            <column name="current_date" start-index="20" stop-index="31" />
+            <column name="present_date" start-index="20" stop-index="31" />
             <column name="order_id" start-index="34" stop-index="41" />
             <column name="user_id" start-index="44" stop-index="50" />
         </columns>
