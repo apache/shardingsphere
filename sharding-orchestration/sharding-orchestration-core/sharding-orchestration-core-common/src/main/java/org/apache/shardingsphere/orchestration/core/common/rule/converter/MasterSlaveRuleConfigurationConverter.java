@@ -45,3 +45,4 @@ public final class MasterSlaveRuleConfigurationConverter implements RuleConfigur
         return YamlEngine.marshal(new MasterSlaveRuleConfigurationYamlSwapper().swap(masterSlaveRuleConfiguration));
     }
 }
+

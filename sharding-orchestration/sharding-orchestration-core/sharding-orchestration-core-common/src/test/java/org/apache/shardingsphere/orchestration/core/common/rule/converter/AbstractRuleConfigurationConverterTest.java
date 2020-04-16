@@ -39,5 +39,5 @@ public abstract class AbstractRuleConfigurationConverterTest {
             + "  ds: shadow_ds\n";
     
     protected static final String SHARDING_NAME = "sharding_db";
-    
 }
+

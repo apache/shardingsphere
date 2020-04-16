@@ -52,3 +52,4 @@ public interface RuleConfigurationConverter<T extends RuleConfiguration> {
      */
     String marshal(T ruleConfiguration, String shardingSchemaName);
 }
+

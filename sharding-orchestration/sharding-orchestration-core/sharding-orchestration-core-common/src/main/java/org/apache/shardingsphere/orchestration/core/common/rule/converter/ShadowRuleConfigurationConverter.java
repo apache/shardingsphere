@@ -45,5 +45,3 @@ public final class ShadowRuleConfigurationConverter implements RuleConfiguration
         return YamlEngine.marshal(new ShadowRuleConfigurationYamlSwapper().swap(shadowRuleConfiguration));
     }
 }
-
-

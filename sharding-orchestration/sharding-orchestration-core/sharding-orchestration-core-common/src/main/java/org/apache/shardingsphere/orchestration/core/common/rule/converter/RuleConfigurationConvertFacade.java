@@ -72,6 +72,3 @@ public final class RuleConfigurationConvertFacade {
         return RuleConfigurationConvertFactory.newInstance(ruleConfiguration).marshal(ruleConfiguration, shardingSchemaName);
     }
 }
-
-
-

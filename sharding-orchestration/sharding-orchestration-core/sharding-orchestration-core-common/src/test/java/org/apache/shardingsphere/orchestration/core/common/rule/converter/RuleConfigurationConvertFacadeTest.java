@@ -61,3 +61,4 @@ public final class RuleConfigurationConvertFacadeTest extends AbstractRuleConfig
         assertNotNull(RuleConfigurationConvertFacade.marshal(RuleConfigurationConvertFacade.convert(MasterSlaveRuleConfiguration.class, MASTER_SLAVE_RULE_YAML), SHARDING_NAME));
     }
 }
+

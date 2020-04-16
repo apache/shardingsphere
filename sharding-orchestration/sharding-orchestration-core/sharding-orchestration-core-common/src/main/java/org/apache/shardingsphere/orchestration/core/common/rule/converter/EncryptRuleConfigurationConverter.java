@@ -45,3 +45,4 @@ public final class EncryptRuleConfigurationConverter implements RuleConfiguratio
         return YamlEngine.marshal(new EncryptRuleConfigurationYamlSwapper().swap(encryptRuleConfiguration));
     }
 }
+
