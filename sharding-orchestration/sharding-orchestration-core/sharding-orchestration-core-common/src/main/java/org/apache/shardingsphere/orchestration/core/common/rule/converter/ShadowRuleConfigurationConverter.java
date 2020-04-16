@@ -20,7 +20,7 @@ package org.apache.shardingsphere.orchestration.core.common.rule.converter;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.shadow.YamlShadowRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.swapper.impl.ShadowRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.ShadowRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
 /**
@@ -45,3 +45,4 @@ public final class ShadowRuleConfigurationConverter implements RuleConfiguration
         return YamlEngine.marshal(new ShadowRuleConfigurationYamlSwapper().swap(shadowRuleConfiguration));
     }
 }
+
