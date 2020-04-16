@@ -100,8 +100,9 @@ public final class YamlEngineShadowShardingConfigurationTest {
     
     private void assertTOrder(final YamlRootShadowConfiguration actual) {
         assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_order").getActualDataNodes(), is("ds_${0..1}.t_order_${0..1}"));
-        assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_order").getTableStrategy().getInline().getShardingColumn(), is("order_id"));
-        assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_order").getTableStrategy().getInline().getAlgorithmExpression(), is("t_order_${order_id % 2}"));
+        assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_order").getTableStrategy().getStandard().getShardingColumn(), is("order_id"));
+        assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_order").getTableStrategy().getStandard().getShardingAlgorithm().getProps().getProperty("algorithm.expression"),
+                is("t_order_${order_id % 2}"));
         assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_order").getKeyGenerator().getColumn(), is("order_id"));
         assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_order").getKeyGenerator().getType(), is("SNOWFLAKE"));
     }

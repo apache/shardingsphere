@@ -142,5 +142,9 @@ The list here will be shown according to the registration date.
 1. <a href="https://www.cloudm.com/" rel="nofollow">CloudM</a>
 1. <a href="http://read.zhulang.com/" rel="nofollow">LianShang Literature</a>
 1. <a href="http://www.dtchuxing.com/" rel="nofollow">Bus Cloud</a>
+1. <a href="http://tigosoft.com/" rel="nofollow">TIGO</a>
+1. <a href="https://www.can-dao.com/" rel="nofollow">can-dao</a>
+1. <a href="https://www.yy.com/" rel="nofollow">YY</a>
+1. <a href="https://www.ddky.com/" rel="nofollow">DDKY</a>
 
 <img src="https://shardingsphere.apache.org/community/image/powered-by.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />

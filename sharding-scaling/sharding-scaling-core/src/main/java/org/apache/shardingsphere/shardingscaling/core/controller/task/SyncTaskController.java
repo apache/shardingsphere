@@ -44,10 +44,10 @@ public final class SyncTaskController implements Runnable {
     
     private SyncTaskControlStatus syncTaskControlStatus;
     
-    public SyncTaskController(final SyncConfiguration syncConfiguration) {
+    public SyncTaskController(final SyncConfiguration syncConfiguration, final SyncTask inventoryDataSyncTaskGroup) {
         SyncTaskFactory syncTaskFactory = new DefaultSyncTaskFactory();
         syncTaskId = generateSyncTaskId(syncConfiguration.getDumperConfiguration().getDataSourceConfiguration());
-        this.inventoryDataSyncTaskGroup = syncTaskFactory.createInventoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
+        this.inventoryDataSyncTaskGroup = inventoryDataSyncTaskGroup;
         this.incrementalDataSyncTask = syncTaskFactory.createIncrementalDataSyncTask(syncConfiguration, dataSourceManager);
         syncTaskControlStatus = SyncTaskControlStatus.PREPARING;
     }

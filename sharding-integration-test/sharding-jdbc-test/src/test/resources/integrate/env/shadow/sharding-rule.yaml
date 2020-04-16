@@ -24,13 +24,19 @@ shadowRule:
       t_order_item:
         actualDataNodes: db.t_order_item
         databaseStrategy:
-          inline:
+          standard:
             shardingColumn: item_id
-            algorithmExpression: db
+            shardingAlgorithm:
+              type: INLINE
+              props:
+                algorithm.expression: db
         tableStrategy:
-          inline:
+          standard:
             shardingColumn: item_id
-            algorithmExpression: t_order_item
+            shardingAlgorithm:
+              type: INLINE
+              props:
+                algorithm.expression: t_order_item
         keyGenerator:
           type: Constant
           column: item_id

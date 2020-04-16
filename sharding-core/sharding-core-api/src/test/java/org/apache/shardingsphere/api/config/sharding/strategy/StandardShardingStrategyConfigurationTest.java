@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.api.config.sharding.strategy;
 
-import org.apache.shardingsphere.api.sharding.standard.PreciseShardingAlgorithm;
-import org.apache.shardingsphere.api.sharding.standard.RangeShardingAlgorithm;
+import org.apache.shardingsphere.api.sharding.standard.StandardShardingAlgorithm;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -30,30 +28,19 @@ public final class StandardShardingStrategyConfigurationTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertConstructorWithoutShardingColumn() {
-        new StandardShardingStrategyConfiguration("", mock(PreciseShardingAlgorithm.class));
+        new StandardShardingStrategyConfiguration("", mock(StandardShardingAlgorithm.class));
     }
     
     @Test(expected = NullPointerException.class)
     public void assertConstructorWithoutPreciseShardingAlgorithm() {
-        new StandardShardingStrategyConfiguration("id", null, null);
+        new StandardShardingStrategyConfiguration("id", null);
     }
     
     @Test
-    public void assertConstructorWithMinArguments() {
-        PreciseShardingAlgorithm preciseShardingAlgorithm = mock(PreciseShardingAlgorithm.class);
-        StandardShardingStrategyConfiguration actual = new StandardShardingStrategyConfiguration("id", preciseShardingAlgorithm);
+    public void assertConstructorWithArguments() {
+        StandardShardingAlgorithm standardShardingAlgorithm = mock(StandardShardingAlgorithm.class);
+        StandardShardingStrategyConfiguration actual = new StandardShardingStrategyConfiguration("id", standardShardingAlgorithm);
         assertThat(actual.getShardingColumn(), is("id"));
-        assertThat(actual.getPreciseShardingAlgorithm(), is(preciseShardingAlgorithm));
-        assertNull(actual.getRangeShardingAlgorithm());
-    }
-    
-    @Test
-    public void assertConstructorWithMaxArguments() {
-        PreciseShardingAlgorithm preciseShardingAlgorithm = mock(PreciseShardingAlgorithm.class);
-        RangeShardingAlgorithm rangeShardingAlgorithm = mock(RangeShardingAlgorithm.class);
-        StandardShardingStrategyConfiguration actual = new StandardShardingStrategyConfiguration("id", preciseShardingAlgorithm, rangeShardingAlgorithm);
-        assertThat(actual.getShardingColumn(), is("id"));
-        assertThat(actual.getPreciseShardingAlgorithm(), is(preciseShardingAlgorithm));
-        assertThat(actual.getRangeShardingAlgorithm(), is(rangeShardingAlgorithm));
+        assertThat(actual.getShardingAlgorithm(), is(standardShardingAlgorithm));
     }
 }

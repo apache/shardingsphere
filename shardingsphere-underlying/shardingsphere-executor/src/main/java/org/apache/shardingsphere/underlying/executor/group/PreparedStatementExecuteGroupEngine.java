@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.underlying.executor.group;
 
-import org.apache.shardingsphere.underlying.executor.connection.ExecutionConnection;
-import org.apache.shardingsphere.underlying.executor.connection.StatementOption;
-import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.sql.connection.ExecutionConnection;
+import org.apache.shardingsphere.underlying.executor.sql.connection.StatementOption;
+import org.apache.shardingsphere.underlying.executor.sql.connection.ConnectionMode;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

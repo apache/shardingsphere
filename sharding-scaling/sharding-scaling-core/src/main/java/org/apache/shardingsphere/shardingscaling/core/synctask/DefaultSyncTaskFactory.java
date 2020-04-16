@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.shardingscaling.core.synctask;
 
+import java.util.Collection;
+
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.synctask.inventory.InventoryDataSyncTask;
 import org.apache.shardingsphere.shardingscaling.core.synctask.inventory.InventoryDataSyncTaskGroup;
@@ -29,8 +31,8 @@ import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManag
 public final class DefaultSyncTaskFactory implements SyncTaskFactory {
     
     @Override
-    public InventoryDataSyncTaskGroup createInventoryDataSyncTaskGroup(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
-        return new InventoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
+    public InventoryDataSyncTaskGroup createInventoryDataSyncTaskGroup(final SyncConfiguration syncConfiguration, final Collection<SyncTask> inventoryDataSyncTasks) {
+        return new InventoryDataSyncTaskGroup(syncConfiguration, inventoryDataSyncTasks);
     }
     
     @Override
