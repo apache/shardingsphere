@@ -26,21 +26,12 @@ import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.config.shadow.YamlShadowRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.constructor.YamlRootShardingConfigurationConstructor;
-import org.apache.shardingsphere.core.yaml.representer.processor.ShardingTupleProcessorFactory;
 import org.apache.shardingsphere.core.yaml.swapper.AuthenticationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.impl.ShadowRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
-import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration;
+import org.apache.shardingsphere.orchestration.core.common.rule.converter.RuleConfigurationConvertFacade;
 import org.apache.shardingsphere.orchestration.core.configuration.DataSourceConfigurationYamlSwapper;
+import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
@@ -104,17 +95,9 @@ public final class ConfigCenter {
         return !Strings.isNullOrEmpty(repository.get(node.getDataSourcePath(shardingSchemaName)));
     }
     
-    private void persistRuleConfiguration(final String shardingSchemaName, final RuleConfiguration ruleConfig, final boolean isOverwrite) {
+    private void persistRuleConfiguration(final String shardingSchemaName, final RuleConfiguration ruleConfiguration, final boolean isOverwrite) {
         if (isOverwrite || !hasRuleConfiguration(shardingSchemaName)) {
-            if (ruleConfig instanceof ShardingRuleConfiguration) {
-                persistShardingRuleConfiguration(shardingSchemaName, (ShardingRuleConfiguration) ruleConfig);
-            } else if (ruleConfig instanceof EncryptRuleConfiguration) {
-                persistEncryptRuleConfiguration(shardingSchemaName, (EncryptRuleConfiguration) ruleConfig);
-            } else if (ruleConfig instanceof ShadowRuleConfiguration) {
-                persistShadowRuleConfiguration(shardingSchemaName, (ShadowRuleConfiguration) ruleConfig);
-            } else {
-                persistMasterSlaveRuleConfiguration(shardingSchemaName, (MasterSlaveRuleConfiguration) ruleConfig);
-            }
+            repository.persist(node.getRulePath(shardingSchemaName), RuleConfigurationConvertFacade.marshal(ruleConfiguration, shardingSchemaName));
         }
     }
     
@@ -126,32 +109,6 @@ public final class ConfigCenter {
      */
     public boolean hasRuleConfiguration(final String shardingSchemaName) {
         return !Strings.isNullOrEmpty(repository.get(node.getRulePath(shardingSchemaName)));
-    }
-    
-    private void persistShardingRuleConfiguration(final String shardingSchemaName, final ShardingRuleConfiguration shardingRuleConfiguration) {
-        Preconditions.checkState(null != shardingRuleConfiguration
-                        && (!shardingRuleConfiguration.getTableRuleConfigs().isEmpty() || shardingRuleConfiguration.getDefaultTableShardingStrategyConfig() != null),
-                "No available sharding rule configuration in `%s` for orchestration.", shardingSchemaName);
-        repository.persist(node.getRulePath(shardingSchemaName),
-            YamlEngine.marshal(new ShardingRuleConfigurationYamlSwapper().swap(shardingRuleConfiguration), ShardingTupleProcessorFactory.newInstance()));
-    }
-    
-    private void persistEncryptRuleConfiguration(final String shardingSchemaName, final EncryptRuleConfiguration encryptRuleConfiguration) {
-        Preconditions.checkState(null != encryptRuleConfiguration && !encryptRuleConfiguration.getEncryptors().isEmpty(),
-            "No available encrypt rule configuration in `%s` for orchestration.", shardingSchemaName);
-        repository.persist(node.getRulePath(shardingSchemaName), YamlEngine.marshal(new EncryptRuleConfigurationYamlSwapper().swap(encryptRuleConfiguration)));
-    }
-    
-    private void persistShadowRuleConfiguration(final String shardingSchemaName, final ShadowRuleConfiguration shadowRuleConfiguration) {
-        Preconditions.checkState(null != shadowRuleConfiguration && !shadowRuleConfiguration.getColumn().isEmpty() && null != shadowRuleConfiguration.getShadowMappings(),
-                "No available shadow rule configuration in `%s` for orchestration.", shardingSchemaName);
-        repository.persist(node.getRulePath(shardingSchemaName), YamlEngine.marshal(new ShadowRuleConfigurationYamlSwapper().swap(shadowRuleConfiguration)));
-    }
-    
-    private void persistMasterSlaveRuleConfiguration(final String shardingSchemaName, final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration) {
-        Preconditions.checkState(null != masterSlaveRuleConfiguration && !masterSlaveRuleConfiguration.getMasterDataSourceName().isEmpty(),
-                "No available master-slave rule configuration in `%s` for orchestration.", shardingSchemaName);
-        repository.persist(node.getRulePath(shardingSchemaName), YamlEngine.marshal(new MasterSlaveRuleConfigurationYamlSwapper().swap(masterSlaveRuleConfiguration)));
     }
     
     private void persistAuthentication(final Authentication authentication, final boolean isOverwrite) {
@@ -196,17 +153,16 @@ public final class ConfigCenter {
      * @return is sharding rule or not
      */
     public boolean isShardingRule(final String shardingSchemaName) {
-        if (repository.get(node.getRulePath(shardingSchemaName)).contains("encryptRule:\n")) {
-            return true;
-        }
-        if (repository.get(node.getRulePath(shardingSchemaName)).contains("tables:\n")
-            && !repository.get(node.getRulePath(shardingSchemaName)).contains("encryptors:\n")) {
-            return true;
-        }
-        if (repository.get(node.getRulePath(shardingSchemaName)).contains("defaultTableStrategy:\n")) {
-            return true;
-        }
-        return false;
+        return RuleConfigurationConvertFacade.match(ShardingRuleConfiguration.class, repository.get(node.getRulePath(shardingSchemaName)));
+    }
+    
+    /**
+     * Get data from config center.
+     * @param shardingSchemaName sharding schema name
+     * @return data from config center
+     */
+    public String getData(final String shardingSchemaName) {
+        return repository.get(node.getRulePath(shardingSchemaName));
     }
     
     /**
@@ -215,8 +171,7 @@ public final class ConfigCenter {
      * @return is encrypt rule or not
      */
     public boolean isEncryptRule(final String shardingSchemaName) {
-        return !repository.get(node.getRulePath(shardingSchemaName)).contains("encryptRule:\n")
-                && repository.get(node.getRulePath(shardingSchemaName)).contains("encryptors:\n");
+        return RuleConfigurationConvertFacade.match(EncryptRuleConfiguration.class, repository.get(node.getRulePath(shardingSchemaName)));
     }
     
     /**
@@ -225,8 +180,7 @@ public final class ConfigCenter {
      * @return is shadow rule or not
      */
     public boolean isShadowRule(final String shardingSchemaName) {
-        return !repository.get(node.getRulePath(shardingSchemaName)).contains("shadowRule:\n")
-                && repository.get(node.getRulePath(shardingSchemaName)).contains("shadowMappings:\n");
+        return RuleConfigurationConvertFacade.match(ShadowRuleConfiguration.class, repository.get(node.getRulePath(shardingSchemaName)));
     }
     
     /**
@@ -249,8 +203,7 @@ public final class ConfigCenter {
      * @return sharding rule configuration
      */
     public ShardingRuleConfiguration loadShardingRuleConfiguration(final String shardingSchemaName) {
-        return new ShardingRuleConfigurationYamlSwapper().swap(
-            YamlEngine.unmarshal(repository.get(node.getRulePath(shardingSchemaName)), YamlShardingRuleConfiguration.class, new YamlRootShardingConfigurationConstructor()));
+        return (ShardingRuleConfiguration) RuleConfigurationConvertFacade.convert(ShardingRuleConfiguration.class, repository.get(node.getRulePath(shardingSchemaName)));
     }
     
     /**
@@ -260,7 +213,7 @@ public final class ConfigCenter {
      * @return master-slave rule configuration
      */
     public MasterSlaveRuleConfiguration loadMasterSlaveRuleConfiguration(final String shardingSchemaName) {
-        return new MasterSlaveRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(repository.get(node.getRulePath(shardingSchemaName)), YamlMasterSlaveRuleConfiguration.class));
+        return (MasterSlaveRuleConfiguration) RuleConfigurationConvertFacade.convert(MasterSlaveRuleConfiguration.class, repository.get(node.getRulePath(shardingSchemaName)));
     }
     
     /**
@@ -270,7 +223,7 @@ public final class ConfigCenter {
      * @return encrypt rule configuration
      */
     public EncryptRuleConfiguration loadEncryptRuleConfiguration(final String shardingSchemaName) {
-        return new EncryptRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(repository.get(node.getRulePath(shardingSchemaName)), YamlEncryptRuleConfiguration.class));
+        return (EncryptRuleConfiguration) RuleConfigurationConvertFacade.convert(EncryptRuleConfiguration.class, repository.get(node.getRulePath(shardingSchemaName)));
     }
     
     /**
@@ -280,7 +233,7 @@ public final class ConfigCenter {
      * @return shadow rule configuration
      */
     public ShadowRuleConfiguration loadShadowRuleConfiguration(final String shardingSchemaName) {
-        return new ShadowRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(repository.get(node.getRulePath(shardingSchemaName)), YamlShadowRuleConfiguration.class));
+        return (ShadowRuleConfiguration) RuleConfigurationConvertFacade.convert(ShadowRuleConfiguration.class, repository.get(node.getRulePath(shardingSchemaName)));
     }
     
     /**

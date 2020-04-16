@@ -32,6 +32,7 @@ import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYa
 import org.apache.shardingsphere.opentracing.ShardingTracer;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.swapper.OrchestrationConfigurationYamlSwapper;
+import org.apache.shardingsphere.orchestration.core.common.rule.converter.RuleConfigurationConvertFacade;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.config.ShardingConfiguration;
@@ -161,15 +162,7 @@ public final class Bootstrap {
     private static Map<String, RuleConfiguration> getSchemaRules(final ShardingOrchestrationFacade shardingOrchestrationFacade) {
         Map<String, RuleConfiguration> result = new LinkedHashMap<>();
         for (String each : shardingOrchestrationFacade.getConfigCenter().getAllShardingSchemaNames()) {
-            if (shardingOrchestrationFacade.getConfigCenter().isEncryptRule(each)) {
-                result.put(each, shardingOrchestrationFacade.getConfigCenter().loadEncryptRuleConfiguration(each));
-            } else if (shardingOrchestrationFacade.getConfigCenter().isShardingRule(each)) {
-                result.put(each, shardingOrchestrationFacade.getConfigCenter().loadShardingRuleConfiguration(each));
-            } else if (shardingOrchestrationFacade.getConfigCenter().isShadowRule(each)) {
-                result.put(each, shardingOrchestrationFacade.getConfigCenter().loadShadowRuleConfiguration(each));
-            } else {
-                result.put(each, shardingOrchestrationFacade.getConfigCenter().loadMasterSlaveRuleConfiguration(each));
-            }
+            RuleConfigurationConvertFacade.matchAndConvert(shardingOrchestrationFacade.getConfigCenter().getData(each)).ifPresent(ruleConfiguration -> result.put(each, ruleConfiguration));
         }
         return result;
     }
