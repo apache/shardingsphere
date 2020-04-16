@@ -19,13 +19,21 @@ package org.apache.shardingsphere.sql.parser.sql.statement.dml;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.JoinSpecificationSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.JoinedTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.TableFactorSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.TableReferenceSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.LockSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
@@ -98,34 +106,5 @@ public final class SelectStatement extends DMLStatement {
      */
     public Optional<LockSegment> getLock() {
         return Optional.ofNullable(lock);
-    }
-    
-    /**
-     * Get simple table segments.
-     * 
-     * @return simple table segments
-     */
-    public Collection<SimpleTableSegment> getSimpleTableSegments() {
-        Collection<SimpleTableSegment> result = new LinkedList<>();
-        Collection<SimpleTableSegment> tables = new LinkedList<>();
-        for (TableReferenceSegment each : tableReferences) {
-            result.addAll(each.getSimpleTableSegments());
-        }
-        for (SimpleTableSegment each : result) {
-            if (isTable(each, result)) {
-                tables.add(each);
-            }
-        }
-        return tables;
-    }
-    
-    private boolean isTable(final SimpleTableSegment owner, final Collection<SimpleTableSegment> tableSegments) {
-        for (SimpleTableSegment each : tableSegments) {
-            String tableName = owner.getTableName().getIdentifier().getValue();
-            if (tableName.equals(each.getAlias().orElse(null)) && !tableName.equals(each.getTableName().getIdentifier().getValue())) {
-                return false;
-            }
-        }
-        return true;
     }
 }
