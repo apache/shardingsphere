@@ -19,22 +19,13 @@ package org.apache.shardingsphere.sql.parser.sql.statement.dml;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.JoinSpecificationSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.JoinedTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.TableFactorSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.TableReferenceSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.LockSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
