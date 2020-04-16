@@ -29,17 +29,17 @@ public class ShardingRuleConfigurationConverterTest extends AbstractRuleConfigur
     
     @Test
     public void testMatch() {
-        assertThat(shardingRuleConfigurationConverter.match(SHADOW_RULE_YAML), is(true));
+        assertThat(shardingRuleConfigurationConverter.match(SHARDING_RULE_YAML), is(true));
     }
     
     @Test
     public void testUnmarshal() {
-        assertNotNull(shardingRuleConfigurationConverter.unmarshal(SHADOW_RULE_YAML).getClass());
+        assertNotNull(shardingRuleConfigurationConverter.unmarshal(SHARDING_RULE_YAML).getClass());
     }
     
     @Test
     public void testMarshal() {
-        assertNotNull(shardingRuleConfigurationConverter.marshal(shardingRuleConfigurationConverter.unmarshal(SHADOW_RULE_YAML), SHARDING_NAME));
+        assertNotNull(shardingRuleConfigurationConverter.marshal(shardingRuleConfigurationConverter.unmarshal(SHARDING_RULE_YAML), SHARDING_NAME));
     }
 }
 
