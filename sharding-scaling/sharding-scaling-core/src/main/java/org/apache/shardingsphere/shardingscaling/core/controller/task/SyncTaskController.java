@@ -87,8 +87,6 @@ public final class SyncTaskController implements Runnable {
     
     @Override
     public void run() {
-        incrementalDataSyncTask.prepare();
-        inventoryDataSyncTaskGroup.prepare();
         syncTaskControlStatus = SyncTaskControlStatus.MIGRATE_INVENTORY_DATA;
         inventoryDataSyncTaskGroup.start(event -> {
             log.info("inventory data migrate task {} finished, execute result: {}", event.getTaskId(), event.getEventType().name());

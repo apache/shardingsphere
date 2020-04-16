@@ -65,10 +65,6 @@ public final class IncrementalDataSyncTask implements SyncTask {
     }
     
     @Override
-    public void prepare() {
-    }
-    
-    @Override
     public void start(final ReportCallback callback) {
         syncConfiguration.getDumperConfiguration().setTableNameMap(syncConfiguration.getTableNameMap());
         SyncExecutorGroup syncExecutorGroup = new SyncExecutorGroup(new SyncTaskExecuteCallback(this.getClass().getSimpleName(), syncTaskId, callback));
