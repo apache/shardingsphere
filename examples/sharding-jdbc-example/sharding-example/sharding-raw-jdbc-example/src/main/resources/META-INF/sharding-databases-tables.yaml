@@ -32,9 +32,12 @@ shardingRule:
     t_order: 
       actualDataNodes: ds_${0..1}.t_order_${0..1}
       tableStrategy: 
-        inline:
+        standard:
           shardingColumn: order_id
-          algorithmExpression: t_order_${order_id % 2}
+          shardingAlgorithm:
+            type: INLINE
+            props:
+              algorithm.expression: t_order_${order_id % 2}
       keyGenerator:
         type: SNOWFLAKE
         column: order_id
@@ -43,9 +46,12 @@ shardingRule:
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item_${0..1}
       tableStrategy:
-        inline:
+        standard:
           shardingColumn: order_id
-          algorithmExpression: t_order_item_${order_id % 2}
+          shardingAlgorithm:
+            type: INLINE
+            props:
+              algorithm.expression: t_order_item_${order_id % 2}
       keyGenerator:
         type: SNOWFLAKE
         column: order_item_id
@@ -56,9 +62,12 @@ shardingRule:
   broadcastTables:
     - t_address
   defaultDatabaseStrategy:
-    inline:
+    standard:
       shardingColumn: user_id
-      algorithmExpression: ds_${user_id % 2}
+      shardingAlgorithm:
+        type: INLINE
+        props:
+          algorithm.expression: ds_${user_id % 2}
   defaultTableStrategy:
     none:
 

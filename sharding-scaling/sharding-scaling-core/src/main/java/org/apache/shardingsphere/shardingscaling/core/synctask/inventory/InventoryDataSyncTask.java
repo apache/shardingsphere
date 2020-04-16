@@ -62,6 +62,10 @@ public final class InventoryDataSyncTask implements SyncTask {
     
     private Dumper dumper;
     
+    public InventoryDataSyncTask(final SyncConfiguration syncConfiguration) {
+        this(syncConfiguration, new DataSourceManager());
+    }
+    
     public InventoryDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
         this.syncConfiguration = syncConfiguration;
         this.dataSourceManager = dataSourceManager;

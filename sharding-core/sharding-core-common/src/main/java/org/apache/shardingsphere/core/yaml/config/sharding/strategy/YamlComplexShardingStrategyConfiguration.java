@@ -29,5 +29,5 @@ public final class YamlComplexShardingStrategyConfiguration implements YamlBaseS
     
     private String shardingColumns;
     
-    private String algorithmClassName;
+    private YamlShardingAlgorithmConfiguration shardingAlgorithm;
 }

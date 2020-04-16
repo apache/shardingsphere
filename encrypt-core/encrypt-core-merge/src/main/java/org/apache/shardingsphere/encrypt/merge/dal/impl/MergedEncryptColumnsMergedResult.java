@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.merge.dal.impl;
 
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.executor.sql.queryresult.QueryResult;
 
 import java.sql.SQLException;
 

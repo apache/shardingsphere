@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
+import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTask;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -40,6 +41,8 @@ public final class ShardingScalingJob {
     private final int jobId = ID_AUTO_INCREASE_GENERATOR.incrementAndGet();
     
     private final transient List<SyncConfiguration> syncConfigurations = new LinkedList<>();
+    
+    private final List<SyncTask> inventoryDataTasks = new LinkedList<>();
     
     private final String jobName;
     

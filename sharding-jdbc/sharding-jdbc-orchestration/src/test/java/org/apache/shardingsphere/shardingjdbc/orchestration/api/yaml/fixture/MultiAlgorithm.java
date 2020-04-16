@@ -21,11 +21,26 @@ import org.apache.shardingsphere.api.sharding.complex.ComplexKeysShardingAlgorit
 import org.apache.shardingsphere.api.sharding.complex.ComplexKeysShardingValue;
 
 import java.util.Collection;
+import java.util.Properties;
 
 public final class MultiAlgorithm implements ComplexKeysShardingAlgorithm<String> {
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<String> shardingValue) {
         return null;
+    }
+    
+    @Override
+    public String getType() {
+        return "COMPLEX_TEST";
+    }
+    
+    @Override
+    public Properties getProperties() {
+        return new Properties();
+    }
+    
+    @Override
+    public void setProperties(final Properties properties) {
     }
 }

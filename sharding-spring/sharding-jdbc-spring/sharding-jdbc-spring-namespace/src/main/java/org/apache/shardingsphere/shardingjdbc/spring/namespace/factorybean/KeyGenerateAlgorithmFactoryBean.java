@@ -19,22 +19,18 @@ package org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import java.util.Properties;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.spi.type.TypedSPIRegistry;
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.InitializingBean;
-
-import java.util.Properties;
 
 /**
  * Key generate algorithm FactoryBean.
  */
-@Setter
 @Getter
-public final class KeyGenerateAlgorithmFactoryBean implements FactoryBean<KeyGenerateAlgorithm>, InitializingBean {
+public final class KeyGenerateAlgorithmFactoryBean implements FactoryBean<KeyGenerateAlgorithm> {
     
     static {
         ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
@@ -42,7 +38,13 @@ public final class KeyGenerateAlgorithmFactoryBean implements FactoryBean<KeyGen
     
     private String type;
     
-    private Properties properties = new Properties();
+    private Properties properties;
+    
+    public KeyGenerateAlgorithmFactoryBean(final String type, final Properties properties) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(type), "The type of keyGenerateAlgorithm is required.");
+        this.type = type;
+        this.properties = properties;
+    }
     
     @Override
     public KeyGenerateAlgorithm getObject() {
@@ -57,10 +59,5 @@ public final class KeyGenerateAlgorithmFactoryBean implements FactoryBean<KeyGen
     @Override
     public boolean isSingleton() {
         return true;
-    }
-    
-    @Override
-    public void afterPropertiesSet() {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(type), "The type of keyGenerateAlgorithm is required.");
     }
 }

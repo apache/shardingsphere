@@ -24,7 +24,7 @@ import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.shard.fixture.PreciseShardingAlgorithmFixture;
+import org.apache.shardingsphere.core.shard.fixture.StandardShardingAlgorithmFixture;
 import org.apache.shardingsphere.core.strategy.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.core.strategy.keygen.fixture.IncrementKeyGenerateAlgorithm;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
@@ -220,7 +220,7 @@ public final class ShardingRuleTest {
     public void assertIsShardingColumnForDefaultDatabaseShardingStrategy() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(createTableRuleConfigWithAllStrategies());
-        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("column", new PreciseShardingAlgorithmFixture()));
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("column", new StandardShardingAlgorithmFixture()));
         assertTrue(new ShardingRule(shardingRuleConfig, createDataSourceNames()).isShardingColumn("column", "LOGIC_TABLE"));
     }
     
@@ -228,7 +228,7 @@ public final class ShardingRuleTest {
     public void assertIsShardingColumnForDefaultTableShardingStrategy() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(createTableRuleConfigWithAllStrategies());
-        shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("column", new PreciseShardingAlgorithmFixture()));
+        shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("column", new StandardShardingAlgorithmFixture()));
         assertTrue(new ShardingRule(shardingRuleConfig, createDataSourceNames()).isShardingColumn("column", "LOGIC_TABLE"));
     }
     
@@ -380,14 +380,14 @@ public final class ShardingRuleTest {
     
     private TableRuleConfiguration createTableRuleConfigWithAllStrategies() {
         TableRuleConfiguration result = new TableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
-        result.setDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("column", new PreciseShardingAlgorithmFixture()));
+        result.setDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("column", new StandardShardingAlgorithmFixture()));
         result.setTableShardingStrategyConfig(new NoneShardingStrategyConfiguration());
         return result;
     }
     
     private TableRuleConfiguration createTableRuleConfigWithTableStrategies() {
         TableRuleConfiguration result = new TableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
-        result.setTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("column", new PreciseShardingAlgorithmFixture()));
+        result.setTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("column", new StandardShardingAlgorithmFixture()));
         return result;
     }
 }

@@ -22,15 +22,15 @@ shardingRule:
       tableStrategy:
         standard:
           shardingColumn: order_id
-          preciseAlgorithmClassName: org.apache.shardingsphere.dbtest.fixture.PreciseModuloAlgorithm
-          rangeAlgorithmClassName: org.apache.shardingsphere.dbtest.fixture.RangeModuloAlgorithm
+          shardingAlgorithm:
+            type: STANDARD_TEST
     t_order_item:
       actualDataNodes: tbl.t_order_item_${0..9}
       tableStrategy:
         standard:
           shardingColumn: order_id
-          preciseAlgorithmClassName: org.apache.shardingsphere.dbtest.fixture.PreciseModuloAlgorithm
-          rangeAlgorithmClassName: org.apache.shardingsphere.dbtest.fixture.RangeModuloAlgorithm
+          shardingAlgorithm:
+            type: STANDARD_TEST
       keyGenerator:
         type: Constant
         column: item_id

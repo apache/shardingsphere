@@ -37,8 +37,6 @@ public final class JoinSpecificationSegment implements SQLSegment {
     
     private int stopIndex;
     
-    private PredicateSegment predicateSegment;
-    
     private final Collection<AndPredicate> andPredicates = new LinkedList<>();
     
     private final Collection<ColumnSegment> usingColumns = new LinkedList<>();
@@ -49,14 +47,16 @@ public final class JoinSpecificationSegment implements SQLSegment {
      */
     public Collection<SimpleTableSegment> getSimpleTableSegments() {
         Collection<SimpleTableSegment> tables = new LinkedList<>();
-        if (null != predicateSegment) {
-            if (null != predicateSegment.getColumn() && (predicateSegment.getColumn().getOwner().isPresent())) {
-                OwnerSegment ownerSegment = predicateSegment.getColumn().getOwner().get();
-                tables.add(new SimpleTableSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier()));
-            }
-            if (null != predicateSegment.getRightValue() && (predicateSegment.getRightValue() instanceof ColumnSegment) && ((ColumnSegment) predicateSegment.getRightValue()).getOwner().isPresent()) {
-                OwnerSegment ownerSegment = ((ColumnSegment) predicateSegment.getRightValue()).getOwner().get();
-                tables.add(new SimpleTableSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier()));
+        for (AndPredicate each : andPredicates) {
+            for (PredicateSegment e : each.getPredicates()) {
+                if (null != e.getColumn() && (e.getColumn().getOwner().isPresent())) {
+                    OwnerSegment ownerSegment = e.getColumn().getOwner().get();
+                    tables.add(new SimpleTableSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier()));
+                }
+                if (null != e.getRightValue() && (e.getRightValue() instanceof ColumnSegment) && ((ColumnSegment) e.getRightValue()).getOwner().isPresent()) {
+                    OwnerSegment ownerSegment = ((ColumnSegment) e.getRightValue()).getOwner().get();
+                    tables.add(new SimpleTableSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier()));
+                }
             }
         }
         return tables;

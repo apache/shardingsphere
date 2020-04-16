@@ -35,7 +35,7 @@ import org.apache.shardingsphere.transaction.base.seata.at.fixture.MockSeataServ
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
-import org.apache.shardingsphere.underlying.executor.engine.ExecutorDataMap;
+import org.apache.shardingsphere.underlying.executor.kernel.ExecutorDataMap;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

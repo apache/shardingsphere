@@ -142,5 +142,9 @@ chapter = true
 1. <a href="https://www.cloudm.com/" rel="nofollow">聚励云机械</a>
 1. <a href="http://read.zhulang.com/" rel="nofollow">连尚文学</a>
 1. <a href="http://www.dtchuxing.com/" rel="nofollow">公交云</a>
+1. <a href="http://tigosoft.com/" rel="nofollow">泰古信息</a>
+1. <a href="https://www.can-dao.com/" rel="nofollow">餐道</a>
+1. <a href="https://www.yy.com/" rel="nofollow">欢聚时代(YY)</a>
+1. <a href="https://www.ddky.com/" rel="nofollow">叮当快药</a>
 
 <img src="https://shardingsphere.apache.org/community/image/powered-by.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />

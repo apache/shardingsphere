@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingscaling.core.synctask.inventory;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingscaling.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
@@ -26,22 +25,15 @@ import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.controller.task.ReportCallback;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTask;
-import org.apache.shardingsphere.shardingscaling.core.util.ReflectionUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.Statement;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -76,115 +68,25 @@ public final class InventoryDataSyncTaskGroupTest {
     }
     
     @Test
-    public void assertPrepareWithIntPrimaryRangeSplit() throws NoSuchFieldException, IllegalAccessException {
-        initIntPrimaryEnvironment(syncConfiguration.getDumperConfiguration());
-        InventoryDataSyncTaskGroup inventoryDataSyncTaskGroup = new InventoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
-        inventoryDataSyncTaskGroup.prepare();
-        List<SyncTask> syncTasks = ReflectionUtil.getFieldValueFromClass(inventoryDataSyncTaskGroup, "syncTasks", List.class);
-        assertNotNull(syncTasks);
-        assertThat(syncTasks.size(), is(3));
-    }
-    
-    @Test
-    public void assertPrepareWithCharPrimaryRangeSplit() throws NoSuchFieldException, IllegalAccessException {
-        initCharPrimaryEnvironment(syncConfiguration.getDumperConfiguration());
-        InventoryDataSyncTaskGroup inventoryDataSyncTaskGroup = new InventoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
-        inventoryDataSyncTaskGroup.prepare();
-        List<SyncTask> syncTasks = ReflectionUtil.getFieldValueFromClass(inventoryDataSyncTaskGroup, "syncTasks", List.class);
-        assertNotNull(syncTasks);
-        assertThat(syncTasks.size(), is(1));
-    }
-    
-    @Test
-    public void assertPrepareWithUnionPrimaryRangeSplit() throws NoSuchFieldException, IllegalAccessException {
-        initUnionPrimaryEnvironment(syncConfiguration.getDumperConfiguration());
-        InventoryDataSyncTaskGroup inventoryDataSyncTaskGroup = new InventoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
-        inventoryDataSyncTaskGroup.prepare();
-        List<SyncTask> syncTasks = ReflectionUtil.getFieldValueFromClass(inventoryDataSyncTaskGroup, "syncTasks", List.class);
-        assertNotNull(syncTasks);
-        assertThat(syncTasks.size(), is(1));
-    }
-    
-    @Test
-    public void assertPrepareWithoutPrimaryRangeSplit() throws NoSuchFieldException, IllegalAccessException {
-        initNoPrimaryEnvironment(syncConfiguration.getDumperConfiguration());
-        InventoryDataSyncTaskGroup inventoryDataSyncTaskGroup = new InventoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
-        inventoryDataSyncTaskGroup.prepare();
-        List<SyncTask> syncTasks = ReflectionUtil.getFieldValueFromClass(inventoryDataSyncTaskGroup, "syncTasks", List.class);
-        assertNotNull(syncTasks);
-        assertThat(syncTasks.size(), is(1));
-    }
-    
-    @Test
-    public void assertStart() throws NoSuchFieldException, IllegalAccessException {
+    public void assertStart() {
         SyncTask syncTask = mock(SyncTask.class);
-        InventoryDataSyncTaskGroup inventoryDataSyncTaskGroup = new InventoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
-        List<SyncTask> syncTasks = new LinkedList<>();
-        syncTasks.add(syncTask);
-        ReflectionUtil.setFieldValueToClass(inventoryDataSyncTaskGroup, "syncTasks", syncTasks);
+        InventoryDataSyncTaskGroup inventoryDataSyncTaskGroup = new InventoryDataSyncTaskGroup(syncConfiguration, Collections.singletonList(syncTask));
         inventoryDataSyncTaskGroup.start(event -> { });
         verify(syncTask).start(any(ReportCallback.class));
     }
     
     @Test
-    public void assertStop() throws NoSuchFieldException, IllegalAccessException {
+    public void assertStop() {
         SyncTask syncTask = mock(SyncTask.class);
-        InventoryDataSyncTaskGroup inventoryDataSyncTaskGroup = new InventoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
-        List<SyncTask> syncTasks = new LinkedList<>();
-        syncTasks.add(syncTask);
-        ReflectionUtil.setFieldValueToClass(inventoryDataSyncTaskGroup, "syncTasks", syncTasks);
+        InventoryDataSyncTaskGroup inventoryDataSyncTaskGroup = new InventoryDataSyncTaskGroup(syncConfiguration, Collections.singletonList(syncTask));
         inventoryDataSyncTaskGroup.stop();
         verify(syncTask).stop();
     }
     
     @Test
     public void assertGetProgress() {
-        InventoryDataSyncTaskGroup inventoryDataSyncTaskGroup = new InventoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
+        InventoryDataSyncTaskGroup inventoryDataSyncTaskGroup = new InventoryDataSyncTaskGroup(syncConfiguration, Collections.emptyList());
         assertThat(inventoryDataSyncTaskGroup.getProgress(), instanceOf(SyncProgress.class));
-    }
-    
-    @SneakyThrows
-    private void initIntPrimaryEnvironment(final RdbmsConfiguration dumperConfig) {
-        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfiguration());
-        try (Connection connection = dataSource.getConnection();
-            Statement statement = connection.createStatement()) {
-            statement.execute("DROP TABLE IF EXISTS t_order");
-            statement.execute("CREATE TABLE t_order (id INT PRIMARY KEY, user_id VARCHAR(12))");
-            statement.execute("INSERT INTO t_order (id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");
-        }
-    }
-    
-    @SneakyThrows
-    private void initCharPrimaryEnvironment(final RdbmsConfiguration dumperConfig) {
-        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfiguration());
-        try (Connection connection = dataSource.getConnection();
-            Statement statement = connection.createStatement()) {
-            statement.execute("DROP TABLE IF EXISTS t_order");
-            statement.execute("CREATE TABLE t_order (id CHAR(3) PRIMARY KEY, user_id VARCHAR(12))");
-            statement.execute("INSERT INTO t_order (id, user_id) VALUES ('1', 'xxx'), ('999', 'yyy')");
-        }
-    }
-    
-    @SneakyThrows
-    private void initUnionPrimaryEnvironment(final RdbmsConfiguration dumperConfig) {
-        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfiguration());
-        try (Connection connection = dataSource.getConnection();
-            Statement statement = connection.createStatement()) {
-            statement.execute("DROP TABLE IF EXISTS t_order");
-            statement.execute("CREATE TABLE t_order (id INT, user_id VARCHAR(12), PRIMARY KEY (id, user_id))");
-            statement.execute("INSERT INTO t_order (id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");
-        }
-    }
-    
-    @SneakyThrows
-    private void initNoPrimaryEnvironment(final RdbmsConfiguration dumperConfig) {
-        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfiguration());
-        try (Connection connection = dataSource.getConnection();
-            Statement statement = connection.createStatement()) {
-            statement.execute("DROP TABLE IF EXISTS t_order");
-            statement.execute("CREATE TABLE t_order (id INT, user_id VARCHAR(12))");
-            statement.execute("INSERT INTO t_order (id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");
-        }
     }
     
     private RdbmsConfiguration mockDumperConfig() {
