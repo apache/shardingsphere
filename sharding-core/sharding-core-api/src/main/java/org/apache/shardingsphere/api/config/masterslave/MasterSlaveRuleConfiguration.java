@@ -27,7 +27,7 @@ import java.util.List;
  * Master-slave rule configuration.
  */
 @Getter
-public class MasterSlaveRuleConfiguration implements RuleConfiguration {
+public final class MasterSlaveRuleConfiguration implements RuleConfiguration {
     
     private final String name;
     

@@ -22,11 +22,11 @@ import C from './conf'
 axios.defaults.headers.post['Content-Type'] = 'application/jsoncharset=UTF-8'
 axios.defaults.withCredentials = true
 
-function ajax(url, type, options) {
+function ajax(url, type, options, config) {
   return new Promise((resolve, reject) => {
     axios({
       method: type,
-      url: C.HOST + url,
+      url: config ? C[config.host] + url : C.HOST + url,
       timeout: 10000,
       headers: {
         'Access-Token': window.localStorage.getItem('Access-Token') || ''
@@ -50,6 +50,7 @@ function ajax(url, type, options) {
             location.href = '#/login'
             return
           }
+          reject(data)
           Message({
             message: data.errorMsg,
             type: 'error',

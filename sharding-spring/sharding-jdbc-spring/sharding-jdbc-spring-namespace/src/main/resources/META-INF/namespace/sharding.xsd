@@ -44,7 +44,6 @@
                 <xsd:element name="encrypt-rule" type="encrypt:encrypt-rule" minOccurs="0" />
             </xsd:all>
             <xsd:attribute name="data-source-names" type="xsd:string" use="required" />
-            <xsd:attribute name="default-data-source-name" type="xsd:string" />
             <xsd:attribute name="default-database-strategy-ref" type="xsd:string" />
             <xsd:attribute name="default-table-strategy-ref" type="xsd:string" />
             <xsd:attribute name="default-key-generator-ref" type="xsd:string" />
@@ -95,8 +94,7 @@
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="sharding-column" type="xsd:string" use="required" />
-            <xsd:attribute name="precise-algorithm-ref" type="xsd:string" use="required" />
-            <xsd:attribute name="range-algorithm-ref" type="xsd:string" />
+            <xsd:attribute name="algorithm-ref" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>
     <xsd:element name="complex-strategy">
@@ -143,9 +141,8 @@
     <xsd:element name="key-generator">
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required" />
-            <xsd:attribute name="column" type="xsd:string" />
-            <xsd:attribute name="type" type="xsd:string" />
-            <xsd:attribute name="props-ref" type="xsd:string" />
+            <xsd:attribute name="column" type="xsd:string" use="required" />
+            <xsd:attribute name="algorithm-ref" type="xsd:string" />
         </xsd:complexType>
     </xsd:element>
     <xsd:element name="props">
@@ -155,4 +152,5 @@
             </xsd:complexContent>
         </xsd:complexType>
     </xsd:element>
+    <xsd:element name="tx-type-annotation-driven" />
 </xsd:schema>

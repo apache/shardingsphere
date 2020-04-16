@@ -135,6 +135,8 @@ https://github.com/apache/incubator-shardingsphere/blob/master/RELEASE-NOTES.md
 创建`${RELEASE.VERSION}-release`分支，接下来的操作都在该分支进行。
 
 ```shell
+## ${name}为源码所在分支，如：master，dev-4.x
+git clone --branch ${name} https://github.com/apache/incubator-shardingsphere.git ~/incubator-shardingsphere
 cd ~/incubator-shardingsphere/
 git pull
 git checkout -b ${RELEASE.VERSION}-release
@@ -233,6 +235,8 @@ cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-j
 cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-jdbc-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-proxy-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-proxy-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-scaling-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-scaling-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-ui-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-ui-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 ```
@@ -243,6 +247,7 @@ cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-u
 shasum -a 512 apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip >> apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip.sha512
 shasum -b -a 512 apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz >> apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz.sha512
 shasum -b -a 512 apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz >> apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz.sha512
+shasum -b -a 512 apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz >> apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz.sha512
 shasum -b -a 512 apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin.tar.gz >> apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin.tar.gz.sha512
 
 ```
@@ -261,6 +266,7 @@ svn --username=${APACHE LDAP 用户名} commit -m "release ${RELEASE.VERSION}"
 shasum -c apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip.sha512
 shasum -c apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz.sha512
 shasum -c apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz.sha512
+shasum -c apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz.sha512
 shasum -c apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin.tar.gz.sha512
 ```
 
@@ -295,14 +301,21 @@ Your decision? 5
 gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip.asc apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip
 gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz.asc apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz
 gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz.asc apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz
+gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz.asc apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz
 gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin.tar.gz.asc apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin.tar.gz
 ```
 
 ### 检查发布文件内容
 
-#### 检查源码包的文件内容
+#### 对比源码包与Github上tag的内容差异
 
-解压缩`apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip`，进行如下检查:
+```
+curl -Lo tag-${RELEASE.VERSION}.zip https://github.com/apache/incubator-shardingsphere/archive/${RELEASE.VERSION}.zip | unzip
+unzip apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip
+diff -r apache-shardingsphere-incubating-${RELEASE.VERSION}-src tag-${RELEASE.VERSION}
+```
+
+#### 检查源码包的文件内容
 
 - 检查源码包是否包含由于包含不必要文件，致使tarball过于庞大
 - 文件夹包含单词`incubating`
@@ -311,14 +324,13 @@ gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin
 - `NOTICE`文件中的年份正确
 - 只存在文本文件，不存在二进制文件
 - 所有文件的开头都有ASF许可证
-- 能够正确编译，单元测试可以通过 (mvn install)
-- 版本内容与Github上tag的内容相符 (diff -r a verify_dir tag_dir)
+- 能够正确编译，单元测试可以通过 (./mvnw install)
 - 检查是否有多余文件或文件夹，例如空文件夹等
 
 #### 检查二进制包的文件内容
 
-解压缩`apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz`，`apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz`
-和 `apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin.tar.gz`
+解压缩`apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz`，`apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz`，
+`apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz` 和 `apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin.tar.gz`
 进行如下检查:
 
 - 文件夹包含单词`incubating`

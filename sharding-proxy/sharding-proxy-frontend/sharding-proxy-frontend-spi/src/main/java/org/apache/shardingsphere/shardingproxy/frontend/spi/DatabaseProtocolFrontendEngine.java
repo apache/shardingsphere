@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.spi;
 
+import org.apache.shardingsphere.database.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.shardingproxy.frontend.engine.AuthenticationEngine;
 import org.apache.shardingsphere.shardingproxy.frontend.engine.CommandExecuteEngine;
-import org.apache.shardingsphere.shardingproxy.transport.codec.DatabasePacketCodecEngine;
-import org.apache.shardingsphere.spi.database.type.DatabaseTypeAwareSPI;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypeAwareSPI;
 
 /**
  * Database protocol frontend engine.

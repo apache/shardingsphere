@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.underlying.merge.result.impl.stream;
 
-import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.executor.sql.queryresult.QueryResult;
 import org.apache.shardingsphere.underlying.merge.result.impl.stream.fixture.TestStreamMergedResult;
 import org.junit.Test;
 
@@ -55,7 +55,7 @@ public final class StreamMergedResultTest {
         Calendar calendar = Calendar.getInstance();
         when(queryResult.getCalendarValue(1, Date.class, calendar)).thenReturn(new Date(0L));
         streamMergedResult.setCurrentQueryResult(queryResult);
-        assertThat((Date) streamMergedResult.getCalendarValue(1, Date.class, calendar), is(new Date(0L)));
+        assertThat(streamMergedResult.getCalendarValue(1, Date.class, calendar), is(new Date(0L)));
     }
     
     @Test

@@ -71,4 +71,11 @@ public interface ShardingSchemaService {
      * @param dataSourceConfiguration data source configuration
      */
     void addSchemaConfiguration(String schemaName, String ruleConfiguration, String dataSourceConfiguration);
+    
+    /**
+     * Delete schema configuration.
+     *
+     * @param schemaName schema name
+     */
+    void deleteSchemaConfiguration(String schemaName);
 }

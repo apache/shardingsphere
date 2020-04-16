@@ -18,26 +18,22 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 
 import com.google.common.base.Preconditions;
-import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.execute.context.ShardingExecutionContext;
-import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteCallback;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteTemplate;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.ShardingResultSetMetaData;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingPreparedStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Adapter for {@code ResultSet}.
@@ -55,71 +51,34 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     private final ForceExecuteTemplate<ResultSet> forceExecuteTemplate = new ForceExecuteTemplate<>();
     
     @Getter
-    private final ShardingExecutionContext shardingExecutionContext;
+    private final ExecutionContext executionContext;
     
-    @Getter(AccessLevel.PROTECTED)
-    private final Map<String, String> logicAndActualColumns; 
-    
-    public AbstractResultSetAdapter(final List<ResultSet> resultSets, final Statement statement, final ShardingExecutionContext shardingExecutionContext) {
+    public AbstractResultSetAdapter(final List<ResultSet> resultSets, final Statement statement, final ExecutionContext executionContext) {
         Preconditions.checkArgument(!resultSets.isEmpty());
         this.resultSets = resultSets;
         this.statement = statement;
-        this.shardingExecutionContext = shardingExecutionContext;
-        logicAndActualColumns = createLogicAndActualColumns();
+        this.executionContext = executionContext;
     }
     
     @Override
     public final ResultSetMetaData getMetaData() throws SQLException {
-        return new ShardingResultSetMetaData(resultSets.get(0).getMetaData(), getShardingRule(), shardingExecutionContext.getSqlStatementContext(), logicAndActualColumns);
-    }
-    
-    private Map<String, String> createLogicAndActualColumns() {
-        return isQueryWithCipherColumn() ? createLogicAndCipherColumns() : createLogicAndPlainColumns();
-    }
-    
-    private Map<String, String> createLogicAndCipherColumns() {
-        Map<String, String> result = new LinkedHashMap<>();
-        for (String each : shardingExecutionContext.getSqlStatementContext().getTablesContext().getTableNames()) {
-            result.putAll(getShardingRule().getEncryptRule().getLogicAndCipherColumns(each));
-        }
-        return result;
-    }
-    
-    private Map<String, String> createLogicAndPlainColumns() {
-        Map<String, String> result = new LinkedHashMap<>();
-        for (String each : shardingExecutionContext.getSqlStatementContext().getTablesContext().getTableNames()) {
-            result.putAll(getShardingRule().getEncryptRule().getLogicAndPlainColumns(each));
-        }
-        return result;
+        return new ShardingResultSetMetaData(resultSets.get(0).getMetaData(), getShardingRule(), executionContext.getSqlStatementContext());
     }
     
     private ShardingRule getShardingRule() {
-        return statement instanceof ShardingPreparedStatement 
-                ? ((ShardingPreparedStatement) statement).getConnection().getRuntimeContext().getRule() 
-                : ((ShardingStatement) statement).getConnection().getRuntimeContext().getRule();
-    }
-    
-    private boolean isQueryWithCipherColumn() {
-        return statement instanceof ShardingPreparedStatement
-                ? ((ShardingPreparedStatement) statement).getConnection().getRuntimeContext().getProperties().<Boolean>getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN)
-                : ((ShardingStatement) statement).getConnection().getRuntimeContext().getProperties().<Boolean>getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
+        ShardingConnection connection = statement instanceof ShardingPreparedStatement ? ((ShardingPreparedStatement) statement).getConnection() : ((ShardingStatement) statement).getConnection();
+        return connection.getRuntimeContext().getRule();
     }
     
     @Override
     public final int findColumn(final String columnLabel) throws SQLException {
-        return resultSets.get(0).findColumn(getActualColumnLabel(columnLabel));
+        return resultSets.get(0).findColumn(columnLabel);
     }
     
     @Override
     public final void close() throws SQLException {
         closed = true;
-        forceExecuteTemplate.execute(resultSets, new ForceExecuteCallback<ResultSet>() {
-            
-            @Override
-            public void execute(final ResultSet resultSet) throws SQLException {
-                resultSet.close();
-            }
-        });
+        forceExecuteTemplate.execute(resultSets, ResultSet::close);
     }
     
     @Override
@@ -129,13 +88,7 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     @Override
     public final void setFetchDirection(final int direction) throws SQLException {
-        forceExecuteTemplate.execute(resultSets, new ForceExecuteCallback<ResultSet>() {
-            
-            @Override
-            public void execute(final ResultSet resultSet) throws SQLException {
-                resultSet.setFetchDirection(direction);
-            }
-        });
+        forceExecuteTemplate.execute(resultSets, resultSet -> resultSet.setFetchDirection(direction));
     }
     
     @Override
@@ -145,13 +98,7 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     @Override
     public final void setFetchSize(final int rows) throws SQLException {
-        forceExecuteTemplate.execute(resultSets, new ForceExecuteCallback<ResultSet>() {
-            
-            @Override
-            public void execute(final ResultSet resultSet) throws SQLException {
-                resultSet.setFetchSize(rows);
-            }
-        });
+        forceExecuteTemplate.execute(resultSets, resultSet -> resultSet.setFetchSize(rows));
     }
     
     @Override
@@ -176,16 +123,6 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     @Override
     public final void clearWarnings() throws SQLException {
-        forceExecuteTemplate.execute(resultSets, new ForceExecuteCallback<ResultSet>() {
-            
-            @Override
-            public void execute(final ResultSet resultSet) throws SQLException {
-                resultSet.clearWarnings();
-            }
-        });
-    }
-    
-    protected final String getActualColumnLabel(final String columnLabel) {
-        return getLogicAndActualColumns().keySet().contains(columnLabel) ? getLogicAndActualColumns().get(columnLabel) : columnLabel;
+        forceExecuteTemplate.execute(resultSets, ResultSet::clearWarnings);
     }
 }

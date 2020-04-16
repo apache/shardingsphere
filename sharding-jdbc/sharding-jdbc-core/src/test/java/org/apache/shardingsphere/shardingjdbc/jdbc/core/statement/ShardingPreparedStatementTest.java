@@ -276,4 +276,11 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
             preparedStatement.executeQuery();
         }
     }
+    
+    @Test
+    public void assertGetParameterMetaData() throws SQLException {
+        try (PreparedStatement preparedStatement = getShardingDataSource().getConnection().prepareStatement(SELECT_SQL_WITH_PARAMETER_MARKER)) {
+            assertThat(preparedStatement.getParameterMetaData().getParameterCount(), is(2));
+        }
+    }
 }

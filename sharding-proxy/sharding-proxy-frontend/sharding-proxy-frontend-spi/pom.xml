@@ -29,7 +29,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-proxy-transport-core</artifactId>
+            <artifactId>shardingsphere-database-protocol-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

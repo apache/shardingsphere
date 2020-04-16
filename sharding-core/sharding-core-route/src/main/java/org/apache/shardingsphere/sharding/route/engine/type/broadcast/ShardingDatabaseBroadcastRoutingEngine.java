@@ -19,8 +19,11 @@ package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.underlying.route.context.RouteMapper;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
+
+import java.util.Collections;
 
 /**
  * Sharding broadcast routing engine for databases.
@@ -31,7 +34,7 @@ public final class ShardingDatabaseBroadcastRoutingEngine implements ShardingRou
     public RouteResult route(final ShardingRule shardingRule) {
         RouteResult result = new RouteResult();
         for (String each : shardingRule.getShardingDataSourceNames().getDataSourceNames()) {
-            result.getRouteUnits().add(new RouteUnit(each));
+            result.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
         }
         return result;
     }

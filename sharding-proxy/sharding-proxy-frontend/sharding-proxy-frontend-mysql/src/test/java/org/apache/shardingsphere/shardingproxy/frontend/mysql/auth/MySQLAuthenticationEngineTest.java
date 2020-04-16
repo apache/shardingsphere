@@ -17,20 +17,18 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.auth;
 
-import com.google.common.base.Optional;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCapabilityFlag;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLServerErrorCode;
+import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLHandshakePacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLHandshakeResponse41Packet;
+import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLCapabilityFlag;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLAuthenticationHandler;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLHandshakePacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLHandshakeResponse41Packet;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,6 +36,7 @@ import java.lang.reflect.Field;
 import java.net.SocketAddress;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -94,7 +93,7 @@ public final class MySQLAuthenticationEngineTest {
     @Test
     public void assertAuth() throws NoSuchFieldException, IllegalAccessException {
         ChannelHandlerContext context = getContext();
-        when(authenticationHandler.login(any(MySQLHandshakeResponse41Packet.class))).thenReturn(Optional.<MySQLServerErrorCode>absent());
+        when(authenticationHandler.login(any(MySQLHandshakeResponse41Packet.class))).thenReturn(Optional.empty());
         setLogicSchemas(Collections.singletonMap("sharding_db", mock(LogicSchema.class)));
         authenticationEngine.auth(context, getPayload("root", "sharding_db", authResponse), mock(BackendConnection.class));
         verify(context).writeAndFlush(any(MySQLOKPacket.class));

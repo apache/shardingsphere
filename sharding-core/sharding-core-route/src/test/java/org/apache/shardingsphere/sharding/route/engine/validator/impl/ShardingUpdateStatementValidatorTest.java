@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredica
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
@@ -64,27 +64,27 @@ public final class ShardingUpdateStatementValidatorTest {
     @Test
     public void assertValidateUpdateWithoutShardingKeyAndParameters() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(false);
-        List<Object> parameters = Arrays.<Object>asList(1, 1);
+        List<Object> parameters = Arrays.asList(1, 1);
         new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatement(), parameters);
     }
     
     @Test
     public void assertValidateUpdateWithShardingKeyAndShardingParameterEquals() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
-        List<Object> parameters = Arrays.<Object>asList(1, 1);
+        List<Object> parameters = Arrays.asList(1, 1);
         new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatementAndParameters(1), parameters);
     }
     
     @Test(expected = ShardingSphereException.class)
     public void assertValidateUpdateWithShardingKeyAndShardingParameterNotEquals() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
-        List<Object> parameters = Arrays.<Object>asList(1, 1);
+        List<Object> parameters = Arrays.asList(1, 1);
         new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatementAndParameters(2), parameters);
     }
     
     private UpdateStatement createUpdateStatement() {
         UpdateStatement result = new UpdateStatement();
-        result.getTables().add(new TableSegment(0, 0, new IdentifierValue("user")));
+        result.getTables().add(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
         result.setSetAssignment(
                 new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("id")), new LiteralExpressionSegment(0, 0, "")))));
         return result;
@@ -92,7 +92,7 @@ public final class ShardingUpdateStatementValidatorTest {
     
     private UpdateStatement createUpdateStatementAndParameters(final Object shardingColumnParameter) {
         UpdateStatement result = new UpdateStatement();
-        result.getTables().add(new TableSegment(0, 0, new IdentifierValue("user")));
+        result.getTables().add(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
         Collection<AssignmentSegment> assignments = Collections.singletonList(
                 new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("id")), new LiteralExpressionSegment(0, 0, shardingColumnParameter)));
         SetAssignmentSegment setAssignmentSegment = new SetAssignmentSegment(0, 0, assignments);

@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper;
 
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
-import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
+import org.apache.shardingsphere.underlying.executor.group.ExecuteGroupEngine;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -34,19 +33,16 @@ public interface JDBCExecutorWrapper {
      * 
      * @param sql SQL to be routed
      * @return execution context
-     */
-    ExecutionContext route(String sql);
-    
-    /**
-     * Create statement.
-     * 
-     * @param connection connection
-     * @param sqlUnit sql unit
-     * @param isReturnGeneratedKeys is return generated keys
-     * @return statement
      * @throws SQLException SQL exception
      */
-    Statement createStatement(Connection connection, SQLUnit sqlUnit, boolean isReturnGeneratedKeys) throws SQLException;
+    ExecutionContext route(String sql) throws SQLException;
+    
+    /**
+     * Get execute group engine.
+     * 
+     * @return execute group engine
+     */
+    ExecuteGroupEngine getExecuteGroupEngine();
     
     /**
      * Execute SQL.

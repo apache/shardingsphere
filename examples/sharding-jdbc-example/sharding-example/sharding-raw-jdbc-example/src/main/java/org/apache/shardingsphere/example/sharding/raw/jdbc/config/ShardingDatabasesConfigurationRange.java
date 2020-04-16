@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.example.sharding.raw.jdbc.config;
 
+import org.apache.shardingsphere.core.strategy.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.example.algorithm.PreciseModuloShardingDatabaseAlgorithm;
 import org.apache.shardingsphere.example.algorithm.RangeModuloShardingDatabaseAlgorithm;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
+import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -48,13 +50,13 @@ public final class ShardingDatabasesConfigurationRange implements ExampleConfigu
     
     private static TableRuleConfiguration getOrderTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration("t_order");
-        result.setKeyGeneratorConfig(new KeyGeneratorConfiguration("SNOWFLAKE", "order_id", getProperties()));
+        result.setKeyGeneratorConfig(new KeyGeneratorConfiguration("order_id", getSnowflakeKeyGenerateAlgorithm()));
         return result;
     }
     
     private static TableRuleConfiguration getOrderItemTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration("t_order_item");
-        result.setKeyGeneratorConfig(new KeyGeneratorConfiguration("SNOWFLAKE", "order_item_id", getProperties()));
+        result.setKeyGeneratorConfig(new KeyGeneratorConfiguration("order_item_id", getSnowflakeKeyGenerateAlgorithm()));
         return result;
     }
     
@@ -62,6 +64,12 @@ public final class ShardingDatabasesConfigurationRange implements ExampleConfigu
         Map<String, DataSource> result = new HashMap<>();
         result.put("demo_ds_0", DataSourceUtil.createDataSource("demo_ds_0"));
         result.put("demo_ds_1", DataSourceUtil.createDataSource("demo_ds_1"));
+        return result;
+    }
+    
+    private static KeyGenerateAlgorithm getSnowflakeKeyGenerateAlgorithm() {
+        KeyGenerateAlgorithm result = new SnowflakeKeyGenerateAlgorithm();
+        result.setProperties(getProperties());
         return result;
     }
     

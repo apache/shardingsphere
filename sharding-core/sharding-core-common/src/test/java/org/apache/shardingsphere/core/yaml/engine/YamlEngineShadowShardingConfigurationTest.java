@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.yaml.engine;
 
 import org.apache.shardingsphere.core.yaml.config.shadow.YamlRootShadowConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -28,7 +27,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -69,7 +67,6 @@ public final class YamlEngineShadowShardingConfigurationTest {
         assertTOrderItem(actual);
         assertBindingTable(actual);
         assertBroadcastTable(actual);
-        assertShardingRuleDefault(actual);
         assertMasterSlaveRules(actual);
         assertProps(actual);
         assertShadowDataSourceMapping(actual);
@@ -90,21 +87,22 @@ public final class YamlEngineShadowShardingConfigurationTest {
     private void assertTUser(final YamlRootShadowConfiguration actual) {
         assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_user").getActualDataNodes(), is("ds_${0..1}.t_user_${0..15}"));
         assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_user").getDatabaseStrategy().getComplex().getShardingColumns(), is("region_id, user_id"));
-        assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_user").getDatabaseStrategy().getComplex().getAlgorithmClassName(), is("TestDatabaseComplexAlgorithmClassName"));
+        assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_user").getDatabaseStrategy().getComplex().getShardingAlgorithm().getType(), is("COMPLEX_TEST"));
         assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_user").getTableStrategy().getComplex().getShardingColumns(), is("region_id, user_id"));
-        assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_user").getTableStrategy().getComplex().getAlgorithmClassName(), is("TestTableComplexAlgorithmClassName"));
+        assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_user").getTableStrategy().getComplex().getShardingAlgorithm().getType(), is("COMPLEX_TEST"));
     }
     
     private void assertTStock(final YamlRootShadowConfiguration actual) {
         assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_stock").getActualDataNodes(), is("ds_${0..1}.t_stock{0..8}"));
-        assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_stock").getDatabaseStrategy().getHint().getAlgorithmClassName(), is("TestDatabaseHintAlgorithmClassName"));
-        assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_stock").getTableStrategy().getHint().getAlgorithmClassName(), is("TestTableHintAlgorithmClassName"));
+        assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_stock").getDatabaseStrategy().getHint().getShardingAlgorithm().getType(), is("HINT_TEST"));
+        assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_stock").getTableStrategy().getHint().getShardingAlgorithm().getType(), is("HINT_TEST"));
     }
     
     private void assertTOrder(final YamlRootShadowConfiguration actual) {
         assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_order").getActualDataNodes(), is("ds_${0..1}.t_order_${0..1}"));
-        assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_order").getTableStrategy().getInline().getShardingColumn(), is("order_id"));
-        assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_order").getTableStrategy().getInline().getAlgorithmExpression(), is("t_order_${order_id % 2}"));
+        assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_order").getTableStrategy().getStandard().getShardingColumn(), is("order_id"));
+        assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_order").getTableStrategy().getStandard().getShardingAlgorithm().getProps().getProperty("algorithm.expression"),
+                is("t_order_${order_id % 2}"));
         assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_order").getKeyGenerator().getColumn(), is("order_id"));
         assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_order").getKeyGenerator().getType(), is("SNOWFLAKE"));
     }
@@ -112,8 +110,8 @@ public final class YamlEngineShadowShardingConfigurationTest {
     private void assertTOrderItem(final YamlRootShadowConfiguration actual) {
         assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_order_item").getActualDataNodes(), is("ds_${0..1}.t_order_item_${0..1}"));
         assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_order_item").getTableStrategy().getStandard().getShardingColumn(), is("order_id"));
-        assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_order_item").getTableStrategy().getStandard().getPreciseAlgorithmClassName(), is("TestPreciseAlgorithmClassName"));
-        assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_order_item").getTableStrategy().getStandard().getRangeAlgorithmClassName(), is("TestRangeAlgorithmClassName"));
+        assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_order_item").getTableStrategy().getStandard().getShardingAlgorithm().getType(), is("STANDARD_TEST"));
+        assertThat(actual.getShadowRule().getShardingRule().getTables().get("t_order_item").getTableStrategy().getStandard().getShardingAlgorithm().getType(), is("STANDARD_TEST"));
     }
     
     private void assertBindingTable(final YamlRootShadowConfiguration actual) {
@@ -126,12 +124,6 @@ public final class YamlEngineShadowShardingConfigurationTest {
         assertThat(actual.getShadowRule().getShardingRule().getBroadcastTables().iterator().next(), is("t_config"));
     }
     
-    private void assertShardingRuleDefault(final YamlRootShadowConfiguration actual) {
-        assertThat(actual.getShadowRule().getShardingRule().getDefaultDataSourceName(), is("default_ds"));
-        assertThat(actual.getShadowRule().getShardingRule().getDefaultDatabaseStrategy().getInline().getShardingColumn(), is("order_id"));
-        assertThat(actual.getShadowRule().getShardingRule().getDefaultDatabaseStrategy().getInline().getAlgorithmExpression(), is("ds_${order_id % 2}"));
-    }
-    
     private void assertMasterSlaveRules(final YamlRootShadowConfiguration actual) {
         assertThat(actual.getShadowRule().getShardingRule().getMasterSlaveRules().size(), is(2));
         assertMasterSlaveRuleForDs0(actual);
@@ -140,21 +132,19 @@ public final class YamlEngineShadowShardingConfigurationTest {
     
     private void assertMasterSlaveRuleForDs0(final YamlRootShadowConfiguration actual) {
         assertThat(actual.getShadowRule().getShardingRule().getMasterSlaveRules().get("ds_0").getMasterDataSourceName(), is("master_ds_0"));
-        assertThat(actual.getShadowRule().getShardingRule().getMasterSlaveRules().get("ds_0").getSlaveDataSourceNames(),
-                CoreMatchers.<Collection<String>>is(Arrays.asList("master_ds_0_slave_0", "master_ds_0_slave_1")));
+        assertThat(actual.getShadowRule().getShardingRule().getMasterSlaveRules().get("ds_0").getSlaveDataSourceNames(), is(Arrays.asList("master_ds_0_slave_0", "master_ds_0_slave_1")));
         assertThat(actual.getShadowRule().getShardingRule().getMasterSlaveRules().get("ds_0").getLoadBalanceAlgorithmType(), is("ROUND_ROBIN"));
     }
     
     private void assertMasterSlaveRuleForDs1(final YamlRootShadowConfiguration actual) {
         assertThat(actual.getShadowRule().getShardingRule().getMasterSlaveRules().get("ds_1").getMasterDataSourceName(), is("master_ds_1"));
-        assertThat(actual.getShadowRule().getShardingRule().getMasterSlaveRules().get("ds_1").getSlaveDataSourceNames(),
-                CoreMatchers.<Collection<String>>is(Arrays.asList("master_ds_1_slave_0", "master_ds_1_slave_1")));
+        assertThat(actual.getShadowRule().getShardingRule().getMasterSlaveRules().get("ds_1").getSlaveDataSourceNames(), is(Arrays.asList("master_ds_1_slave_0", "master_ds_1_slave_1")));
         assertThat(actual.getShadowRule().getShardingRule().getMasterSlaveRules().get("ds_1").getLoadBalanceAlgorithmType(), is("RANDOM"));
     }
     
     private void assertProps(final YamlRootShadowConfiguration actual) {
         assertThat(actual.getProps().size(), is(1));
-        assertThat(actual.getProps().get("sql.show"), is((Object) true));
+        assertThat(actual.getProps().get("sql.show"), is(true));
     }
     
     private void assertShadowDataSourceMapping(final YamlRootShadowConfiguration actual) {

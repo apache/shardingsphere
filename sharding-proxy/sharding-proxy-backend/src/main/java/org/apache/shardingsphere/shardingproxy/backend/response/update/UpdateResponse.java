@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.backend.response.update;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteResponse;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteUpdateResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
@@ -40,8 +41,12 @@ public final class UpdateResponse implements BackendResponse {
     @Getter
     private long updateCount;
     
+    @Getter
+    @Setter
+    private String type;
+    
     public UpdateResponse() {
-        this(Collections.<ExecuteResponse>emptyList());
+        this(Collections.emptyList());
     }
     
     public UpdateResponse(final Collection<ExecuteResponse> responseUnits) {

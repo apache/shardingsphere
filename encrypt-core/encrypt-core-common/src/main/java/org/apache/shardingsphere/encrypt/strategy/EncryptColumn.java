@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.encrypt.strategy;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Optional;
 
 /**
  * Encrypt column.
@@ -43,7 +44,7 @@ public final class EncryptColumn {
      * @return assisted query column
      */
     public Optional<String> getAssistedQueryColumn() {
-        return Strings.isNullOrEmpty(assistedQueryColumn) ? Optional.<String>absent() : Optional.of(assistedQueryColumn);
+        return Strings.isNullOrEmpty(assistedQueryColumn) ? Optional.empty() : Optional.of(assistedQueryColumn);
     }
     
     /**
@@ -52,6 +53,6 @@ public final class EncryptColumn {
      * @return plain column
      */
     public Optional<String> getPlainColumn() {
-        return Strings.isNullOrEmpty(plainColumn) ? Optional.<String>absent() : Optional.of(plainColumn);
+        return Strings.isNullOrEmpty(plainColumn) ? Optional.empty() : Optional.of(plainColumn);
     }
 }

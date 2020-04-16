@@ -34,7 +34,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-orchestration-core</artifactId>
+            <artifactId>sharding-orchestration-core-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>sharding-orchestration-core-facade</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -44,7 +49,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-entry</artifactId>
+            <artifactId>sharding-orchestration-center-configuration</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -53,7 +58,7 @@
         </dependency>
         <dependency>
             <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP-java7</artifactId>
+            <artifactId>HikariCP</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

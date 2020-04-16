@@ -21,7 +21,7 @@ import com.google.common.base.Splitter;
 import lombok.Getter;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.dbtest.env.datasource.DatabaseEnvironment;
-import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 
 import java.io.IOException;
 import java.util.Collection;

@@ -19,13 +19,15 @@ package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
+import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
+import org.apache.shardingsphere.underlying.route.context.RouteMapper;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -40,7 +42,8 @@ public final class ShardingDataSourceGroupBroadcastRoutingEngine implements Shar
         RouteResult result = new RouteResult();
         Collection<Set<String>> broadcastDataSourceGroup = getBroadcastDataSourceGroup(getDataSourceGroup(shardingRule));
         for (Set<String> each : broadcastDataSourceGroup) {
-            result.getRouteUnits().add(new RouteUnit(getRandomDataSourceName(each)));
+            String dataSourceName = getRandomDataSourceName(each);
+            result.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.emptyList()));
         }
         return result;
     }
@@ -57,9 +60,6 @@ public final class ShardingDataSourceGroupBroadcastRoutingEngine implements Shar
         Collection<Set<String>> result = new LinkedList<>();
         for (TableRule each : shardingRule.getTableRules()) {
             result.add(each.getDataNodeGroups().keySet());
-        }
-        if (null != shardingRule.getShardingDataSourceNames().getDefaultDataSourceName()) {
-            result.add(Sets.newHashSet(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName()));
         }
         return result;
     }

@@ -136,6 +136,8 @@ Suppose ShardingSphere source codes downloaded from github is under `~/incubator
 Create `${RELEASE.VERSION}-release` branch, where all the following operations are performed.
 
 ```shell
+## ${name} is the properly branch, e.g. master, dev-4.x
+git clone --branch ${name} https://github.com/apache/incubator-shardingsphere.git ~/incubator-shardingsphere
 cd ~/incubator-shardingsphere/
 git pull
 git checkout -b ${RELEASE.VERSION}-release
@@ -235,6 +237,8 @@ cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-j
 cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-jdbc-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-proxy-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-proxy-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-scaling-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-scaling-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-ui-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-ui-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 ```
@@ -245,6 +249,7 @@ cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-u
 shasum -a 512 apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip >> apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip.sha512
 shasum -b -a 512 apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz >> apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz.sha512
 shasum -b -a 512 apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz >> apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz.sha512
+shasum -b -a 512 apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz >> apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz.sha512
 shasum -b -a 512 apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin.tar.gz >> apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin.tar.gz.sha512
 ```
 
@@ -263,6 +268,7 @@ svn --username=${APACHE LDAP username} commit -m "release ${RELEASE.VERSION}"
 shasum -c apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip.sha512
 shasum -c apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz.sha512
 shasum -c apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz.sha512
+shasum -c apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz.sha512
 shasum -c apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin.tar.gz.sha512
 ```
 
@@ -298,14 +304,21 @@ Then, check the gpg signature.
 gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip.asc apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip
 gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz.asc apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz
 gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz.asc apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz
+gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz.asc apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz
 gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin.tar.gz.asc apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin.tar.gz
 ```
 
 ### Check Released Files
 
-#### Check source package
+#### compare release source with github tag
 
-Decompress `apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip` and check the following items:
+```
+curl -Lo tag-${RELEASE.VERSION}.zip https://github.com/apache/incubator-shardingsphere/archive/${RELEASE.VERSION}.zip | unzip
+unzip apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip
+diff -r apache-shardingsphere-incubating-${RELEASE.VERSION}-src tag-${RELEASE.VERSION}
+```
+
+#### Check source package
 
 *   Check whether source tarball is oversized for including nonessential files
 *   The release files have the word `incubating` in their name
@@ -314,14 +327,13 @@ Decompress `apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip` and che
 *   Correct year in `NOTICE` file
 *   There is only text files but no binary files
 *   All source files have ASF headers
-*   Codes can be compiled and pass the unit tests (mvn install)
-*   The contents of the release match with what's tagged in version control (diff -r a verify_dir tag_dir)
+*   Codes can be compiled and pass the unit tests (./mvnw install)
 *   Check if there is any extra files or folders, empty folders for example
 
 #### Check binary packages
 
-Decompress `apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz`, `apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz` 
-and `apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin.tar.gz`
+Decompress `apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz`, `apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz` ,
+`apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz` and `apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin.tar.gz`
 to check the following items:
 
 *   The release files have the word `incubating` in their name

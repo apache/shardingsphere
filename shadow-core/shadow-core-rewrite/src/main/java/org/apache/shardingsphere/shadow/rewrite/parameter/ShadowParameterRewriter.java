@@ -21,15 +21,17 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.shadow.rewrite.aware.ShadowRuleAware;
 import org.apache.shardingsphere.core.rule.ShadowRule;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriter;
 
 /**
  * Parameter rewriter for shadow.
+ * 
+ * @param <T> type of SQL statement context
  */
 @Getter
 @Setter
-public abstract class ShadowParameterRewriter implements ParameterRewriter, ShadowRuleAware {
+public abstract class ShadowParameterRewriter<T extends SQLStatementContext> implements ParameterRewriter<T>, ShadowRuleAware {
     
     private ShadowRule shadowRule;
     

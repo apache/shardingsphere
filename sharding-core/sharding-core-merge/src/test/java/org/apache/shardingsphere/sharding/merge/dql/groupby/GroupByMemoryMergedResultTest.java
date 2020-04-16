@@ -17,21 +17,21 @@
 
 package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
-import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
-import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByContext;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.PaginationContext;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.Projection;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationProjection;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.groupby.GroupByContext;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByContext;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.pagination.PaginationContext;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.AggregationProjection;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
+import org.apache.shardingsphere.underlying.executor.sql.queryresult.QueryResult;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import org.junit.Test;
 
@@ -52,7 +52,7 @@ public final class GroupByMemoryMergedResultTest {
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult()), createSelectSQLStatementContext(), null);
+        MergedResult actual = resultMerger.merge(Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult()), createSelectStatementContext(), null);
         assertFalse(actual.next());
     }
     
@@ -74,23 +74,23 @@ public final class GroupByMemoryMergedResultTest {
         when(queryResult3.getValue(4, Object.class)).thenReturn(2, 2, 3);
         when(queryResult3.getValue(5, Object.class)).thenReturn(20, 20, 30);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2, queryResult3), createSelectSQLStatementContext(), null);
+        MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2, queryResult3), createSelectStatementContext(), null);
         assertTrue(actual.next());
-        assertThat((BigDecimal) actual.getValue(1, Object.class), is(new BigDecimal(30)));
+        assertThat(actual.getValue(1, Object.class), is(new BigDecimal(30)));
         assertThat(((BigDecimal) actual.getValue(2, Object.class)).intValue(), is(10));
-        assertThat((Integer) actual.getValue(3, Object.class), is(3));
-        assertThat((BigDecimal) actual.getValue(4, Object.class), is(new BigDecimal(3)));
-        assertThat((BigDecimal) actual.getValue(5, Object.class), is(new BigDecimal(30)));
+        assertThat(actual.getValue(3, Object.class), is(3));
+        assertThat(actual.getValue(4, Object.class), is(new BigDecimal(3)));
+        assertThat(actual.getValue(5, Object.class), is(new BigDecimal(30)));
         assertTrue(actual.next());
-        assertThat((BigDecimal) actual.getValue(1, Object.class), is(new BigDecimal(40)));
+        assertThat(actual.getValue(1, Object.class), is(new BigDecimal(40)));
         assertThat(((BigDecimal) actual.getValue(2, Object.class)).intValue(), is(10));
-        assertThat((Integer) actual.getValue(3, Object.class), is(2));
-        assertThat((BigDecimal) actual.getValue(4, Object.class), is(new BigDecimal(4)));
-        assertThat((BigDecimal) actual.getValue(5, Object.class), is(new BigDecimal(40)));
+        assertThat(actual.getValue(3, Object.class), is(2));
+        assertThat(actual.getValue(4, Object.class), is(new BigDecimal(4)));
+        assertThat(actual.getValue(5, Object.class), is(new BigDecimal(40)));
         assertFalse(actual.next());
     }
     
-    private SelectSQLStatementContext createSelectSQLStatementContext() {
+    private SelectStatementContext createSelectStatementContext() {
         AggregationProjection aggregationProjection1 = new AggregationProjection(AggregationType.COUNT, "(*)", null);
         aggregationProjection1.setIndex(1);
         AggregationProjection aggregationProjection2 = new AggregationProjection(AggregationType.AVG, "(num)", null);
@@ -101,8 +101,11 @@ public final class GroupByMemoryMergedResultTest {
         AggregationProjection derivedAggregationProjection2 = new AggregationProjection(AggregationType.SUM, "(num)", "AVG_DERIVED_SUM_0");
         aggregationProjection2.setIndex(5);
         aggregationProjection2.getDerivedAggregationProjections().add(derivedAggregationProjection2);
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Arrays.<Projection>asList(aggregationProjection1, aggregationProjection2), Collections.<String>emptyList());
-        return new SelectSQLStatementContext(new SelectStatement(),
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Arrays.asList(aggregationProjection1, aggregationProjection2));
+        SelectStatement selectStatement = new SelectStatement();
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        selectStatement.setProjections(projectionsSegment);
+        return new SelectStatementContext(selectStatement,
                 new GroupByContext(Collections.singletonList(createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))), 0),
                 new OrderByContext(Collections.singletonList(createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, OrderDirection.ASC))), false),
                 projectionsContext, new PaginationContext(null, null, Collections.emptyList()));

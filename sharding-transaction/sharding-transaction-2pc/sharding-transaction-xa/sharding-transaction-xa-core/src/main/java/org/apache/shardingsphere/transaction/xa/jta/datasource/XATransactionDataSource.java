@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource;
 
 import com.google.common.collect.Sets;
-import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionFactory;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManager;
@@ -43,12 +43,7 @@ public final class XATransactionDataSource implements AutoCloseable {
     
     private static final Set<String> CONTAINER_DATASOURCE_NAMES = Sets.newHashSet("AtomikosDataSourceBean", "BasicManagedDataSource");
     
-    private final ThreadLocal<Set<Transaction>> enlistedTransactions = new ThreadLocal<Set<Transaction>>() {
-        @Override
-        public Set<Transaction> initialValue() {
-            return new HashSet<>();
-        }
-    };
+    private final ThreadLocal<Set<Transaction>> enlistedTransactions = ThreadLocal.withInitial(HashSet::new);
     
     private final DatabaseType databaseType;
     

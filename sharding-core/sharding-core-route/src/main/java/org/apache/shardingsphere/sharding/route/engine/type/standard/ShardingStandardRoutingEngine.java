@@ -17,31 +17,30 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
-import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
-import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
-import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
-import org.apache.shardingsphere.underlying.route.context.RouteResult;
-import org.apache.shardingsphere.underlying.route.context.RouteUnit;
-import org.apache.shardingsphere.underlying.route.context.TableUnit;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
-import org.apache.shardingsphere.core.rule.DataNode;
+import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.hint.HintShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
+import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
+import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
+import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.DeleteStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.UpdateStatementContext;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
+import org.apache.shardingsphere.underlying.route.context.RouteResult;
+import org.apache.shardingsphere.underlying.route.context.RouteUnit;
+import org.apache.shardingsphere.underlying.route.context.RouteMapper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,6 +48,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Sharding standard routing engine.
@@ -61,27 +61,29 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     private final SQLStatementContext sqlStatementContext;
     
     private final ShardingConditions shardingConditions;
-
-    private final ShardingSphereProperties properties;
+    
+    private final ConfigurationProperties properties;
+    
+    private final Collection<Collection<DataNode>> originalDataNodes = new LinkedList<>();
     
     @Override
     public RouteResult route(final ShardingRule shardingRule) {
-        if (isDMLForModify(sqlStatementContext.getSqlStatement()) && !sqlStatementContext.getTablesContext().isSingleTable()) {
+        if (isDMLForModify(sqlStatementContext) && 1 != ((TableAvailable) sqlStatementContext).getAllTables().size()) {
             throw new ShardingSphereException("Cannot support Multiple-Table for '%s'.", sqlStatementContext.getSqlStatement());
         }
         return generateRouteResult(getDataNodes(shardingRule, shardingRule.getTableRule(logicTableName)));
     }
     
-    private boolean isDMLForModify(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof InsertStatement || sqlStatement instanceof UpdateStatement || sqlStatement instanceof DeleteStatement;
+    private boolean isDMLForModify(final SQLStatementContext sqlStatementContext) {
+        return sqlStatementContext instanceof InsertStatementContext || sqlStatementContext instanceof UpdateStatementContext || sqlStatementContext instanceof DeleteStatementContext;
     }
     
     private RouteResult generateRouteResult(final Collection<DataNode> routedDataNodes) {
         RouteResult result = new RouteResult();
+        result.getOriginalDataNodes().addAll(originalDataNodes);
         for (DataNode each : routedDataNodes) {
-            RouteUnit routeUnit = new RouteUnit(each.getDataSourceName());
-            routeUnit.getTableUnits().add(new TableUnit(logicTableName, each.getTableName()));
-            result.getRouteUnits().add(routeUnit);
+            result.getRouteUnits().add(
+                    new RouteUnit(new RouteMapper(each.getDataSourceName(), each.getDataSourceName()), Collections.singletonList(new RouteMapper(logicTableName, each.getTableName()))));
         }
         return result;
     }
@@ -110,7 +112,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     
     private Collection<DataNode> routeByShardingConditions(final ShardingRule shardingRule, final TableRule tableRule) {
         return shardingConditions.getConditions().isEmpty()
-                ? route0(shardingRule, tableRule, Collections.<RouteValue>emptyList(), Collections.<RouteValue>emptyList()) : routeByShardingConditionsWithCondition(shardingRule, tableRule);
+                ? route0(shardingRule, tableRule, Collections.emptyList(), Collections.emptyList()) : routeByShardingConditionsWithCondition(shardingRule, tableRule);
     }
     
     private Collection<DataNode> routeByShardingConditionsWithCondition(final ShardingRule shardingRule, final TableRule tableRule) {
@@ -119,8 +121,8 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
             Collection<DataNode> dataNodes = route0(shardingRule, tableRule, 
                     getShardingValuesFromShardingConditions(shardingRule, shardingRule.getDatabaseShardingStrategy(tableRule).getShardingColumns(), each),
                     getShardingValuesFromShardingConditions(shardingRule, shardingRule.getTableShardingStrategy(tableRule).getShardingColumns(), each));
-            each.getDataNodes().addAll(dataNodes);
             result.addAll(dataNodes);
+            originalDataNodes.add(dataNodes);
         }
         return result;
     }
@@ -133,17 +135,17 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
         Collection<DataNode> result = new LinkedList<>();
         for (ShardingCondition each : shardingConditions.getConditions()) {
             Collection<DataNode> dataNodes = route0(shardingRule, tableRule, getDatabaseShardingValues(shardingRule, tableRule, each), getTableShardingValues(shardingRule, tableRule, each));
-            each.getDataNodes().addAll(dataNodes);
             result.addAll(dataNodes);
+            originalDataNodes.add(dataNodes);
         }
         return result;
     }
     
     private Collection<DataNode> routeByMixedConditionsWithHint(final ShardingRule shardingRule, final TableRule tableRule) {
         if (shardingRule.getDatabaseShardingStrategy(tableRule) instanceof HintShardingStrategy) {
-            return route0(shardingRule, tableRule, getDatabaseShardingValuesFromHint(), Collections.<RouteValue>emptyList());
+            return route0(shardingRule, tableRule, getDatabaseShardingValuesFromHint(), Collections.emptyList());
         }
-        return route0(shardingRule, tableRule, Collections.<RouteValue>emptyList(), getTableShardingValuesFromHint());
+        return route0(shardingRule, tableRule, Collections.emptyList(), getTableShardingValuesFromHint());
     }
     
     private List<RouteValue> getDatabaseShardingValues(final ShardingRule shardingRule, final TableRule tableRule, final ShardingCondition shardingCondition) {
@@ -171,7 +173,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     }
     
     private List<RouteValue> getRouteValues(final Collection<Comparable<?>> shardingValue) {
-        return shardingValue.isEmpty() ? Collections.<RouteValue>emptyList() : Collections.<RouteValue>singletonList(new ListRouteValue<>("", logicTableName, shardingValue));
+        return shardingValue.isEmpty() ? Collections.emptyList() : Collections.singletonList(new ListRouteValue<>("", logicTableName, shardingValue));
     }
     
     private List<RouteValue> getShardingValuesFromShardingConditions(final ShardingRule shardingRule, final Collection<String> shardingColumns, final ShardingCondition shardingCondition) {

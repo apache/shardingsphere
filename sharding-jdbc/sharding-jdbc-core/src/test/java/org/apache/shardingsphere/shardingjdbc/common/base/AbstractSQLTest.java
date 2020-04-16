@@ -23,7 +23,7 @@ import lombok.Getter;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.shardingjdbc.common.env.DatabaseEnvironment;
-import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.h2.tools.RunScript;
 import org.junit.BeforeClass;
 
@@ -40,7 +40,7 @@ import java.util.Set;
 
 public abstract class AbstractSQLTest {
     
-    private static final List<String> DB_NAMES = Arrays.asList("jdbc_0", "jdbc_1", "encrypt");
+    private static final List<String> DB_NAMES = Arrays.asList("jdbc_0", "jdbc_1", "encrypt", "test_ds_master", "test_ds_slave");
     
     private static Set<DatabaseType> databaseTypes = Sets.newHashSet(DatabaseTypes.getActualDatabaseType("H2"));
     
@@ -61,13 +61,7 @@ public abstract class AbstractSQLTest {
     }
     
     private static void createDataSources(final String dbName, final DatabaseType databaseType) {
-        Map<String, DataSource> dataSourceMap = databaseTypeMap.get(databaseType);
-        if (null == dataSourceMap) {
-            dataSourceMap = new LinkedHashMap<>();
-            databaseTypeMap.put(databaseType, dataSourceMap);
-        }
-        BasicDataSource result = buildDataSource(dbName, databaseType);
-        dataSourceMap.put(dbName, result);
+        databaseTypeMap.computeIfAbsent(databaseType, k -> new LinkedHashMap<>()).put(dbName, buildDataSource(dbName, databaseType));
         createSchema(dbName, databaseType);
     }
     

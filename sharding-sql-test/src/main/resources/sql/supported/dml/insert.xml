@@ -48,11 +48,11 @@
     <sql-case id="insert_with_double_value" value="INSERT INTO t_double_test(col1) VALUES(1.22)" db-types="MySQL" />
     <sql-case id="insert_with_null_value" value="INSERT INTO t_null_value_test(col1) VALUES(null)" db-types="MySQL" />
     <sql-case id="insert_with_blob_value" value="INSERT INTO t_blob_value_test(col1) VALUES(_BINARY'This is a binary value.')" db-types="MySQL" />
-    <sql-case id="insert_with_function" value="INSERT INTO t_order(current_date, order_id, user_id) VALUES (curdate(), ?, ?)" db-types="MySQL" />
+    <sql-case id="insert_with_function" value="INSERT INTO t_order(present_date, order_id, user_id) VALUES (curdate(), ?, ?)" db-types="MySQL" />
     <sql-case id="insert_with_unix_timestamp_function" value="INSERT INTO t_order(status, order_id, user_id) VALUES (unix_timestamp(?), ?, ?)" db-types="MySQL" />
     <sql-case id="insert_with_aggregation_function_column_name" value="INSERT INTO t_order (order_id, user_id, count) VALUES (?, ?, ?)" db-types="SQLServer" />
-    <sql-case id="insert_with_str_to_date" value="INSERT INTO t_order(current_date, order_id, user_id) VALUES (str_to_date(?, '%Y-%m-%d'), ?, ?)" db-types="MySQL" />
+    <sql-case id="insert_with_str_to_date" value="INSERT INTO t_order(present_date, order_id, user_id) VALUES (str_to_date(?, '%Y-%m-%d'), ?, ?)" db-types="MySQL" />
     <sql-case id="insert_on_duplicate_key_update_with_base64_aes_encrypt" value="INSERT INTO t_order SET order_id = ?, user_id = ?, status = convert(to_base64(aes_encrypt(?, 'key')) USING utf8) ON DUPLICATE KEY UPDATE status = VALUES(status)" db-types="MySQL" />
     <sql-case id="insert_all_with_all_placeholders" value="INSERT ALL INTO t_order (order_id, user_id, status) VALUES (?, ?, ?) INTO t_order (order_id, user_id, status) VALUES (?, ?, ?) INTO t_order (order_id, user_id, status) VALUES (?, ?, ?) SELECT * FROM dual" db-types="Oracle"/>
-    <sql-case id="insert_with_str_date_add" value="INSERT INTO t_order(current_date, order_id, user_id) VALUES (date_add(now(),interval ? second), ?, ?)" db-types="MySQL" />
+    <sql-case id="insert_with_str_date_add" value="INSERT INTO t_order(present_date, order_id, user_id) VALUES (date_add(now(),interval ? second), ?, ?)" db-types="MySQL" />
 </sql-cases>

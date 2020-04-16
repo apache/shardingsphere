@@ -19,8 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datas
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
-import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
+import org.apache.shardingsphere.underlying.executor.sql.connection.ConnectionMode;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -47,7 +46,7 @@ import static org.junit.Assert.assertTrue;
 
 public final class JDBCBackendDataSourceTest {
     
-    private final JDBCBackendDataSource jdbcBackendDataSource = new JDBCBackendDataSource(Collections.<String, YamlDataSourceParameter>emptyMap());
+    private final JDBCBackendDataSource jdbcBackendDataSource = new JDBCBackendDataSource(Collections.emptyMap());
     
     @Before
     public void setUp() {
@@ -77,13 +76,13 @@ public final class JDBCBackendDataSourceTest {
     
     @Test
     public void assertGetConnectionsSucceed() throws SQLException {
-        List<Connection> actual = jdbcBackendDataSource.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds_1", 5);
+        List<Connection> actual = jdbcBackendDataSource.getConnections("ds_1", 5, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actual.size(), is(5));
     }
     
     @Test(expected = SQLException.class)
     public void assertGetConnectionsFailed() throws SQLException {
-        jdbcBackendDataSource.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds_1", 6);
+        jdbcBackendDataSource.getConnections("ds_1", 6, ConnectionMode.MEMORY_STRICTLY);
     }
     
     @Test
@@ -91,7 +90,7 @@ public final class JDBCBackendDataSourceTest {
         ExecutorService executorService = Executors.newFixedThreadPool(20);
         List<Future<List<Connection>>> futures = new ArrayList<>();
         for (int i = 0; i < 200; i++) {
-            futures.add(executorService.submit(new CallableTask(ConnectionMode.MEMORY_STRICTLY, "ds_1", 6)));
+            futures.add(executorService.submit(new CallableTask("ds_1", 6, ConnectionMode.MEMORY_STRICTLY)));
         }
         List<Connection> actual = new ArrayList<>();
         for (Future<List<Connection>> each : futures) {
@@ -108,15 +107,15 @@ public final class JDBCBackendDataSourceTest {
     @RequiredArgsConstructor
     private class CallableTask implements Callable<List<Connection>> {
         
-        private final ConnectionMode connectionMode;
-        
         private final String datasourceName;
         
         private final int connectionSize;
+    
+        private final ConnectionMode connectionMode;
         
         @Override
         public List<Connection> call() throws SQLException {
-            return jdbcBackendDataSource.getConnections(connectionMode, datasourceName, connectionSize);
+            return jdbcBackendDataSource.getConnections(datasourceName, connectionSize, connectionMode);
         }
     }
 }

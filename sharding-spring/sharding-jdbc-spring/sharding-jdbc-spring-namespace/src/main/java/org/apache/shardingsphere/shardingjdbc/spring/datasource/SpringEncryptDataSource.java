@@ -28,7 +28,7 @@ import java.util.Properties;
 /**
  * Encrypt datasource for spring namespace.
  */
-public class SpringEncryptDataSource extends EncryptDataSource {
+public final class SpringEncryptDataSource extends EncryptDataSource {
     
     public SpringEncryptDataSource(final DataSource dataSource, final EncryptRuleConfiguration encryptRuleConfiguration, final Properties props) throws SQLException {
         super(dataSource, new EncryptRule(encryptRuleConfiguration), null == props ? new Properties() : props);

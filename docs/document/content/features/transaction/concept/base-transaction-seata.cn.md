@@ -1,8 +1,8 @@
 +++
-pre = "<b>3.4.1.3 </b>"
+pre = "<b>3.4.1.2 </b>"
 toc = true
 title = "Seata柔性事务"
-weight = 4
+weight = 3
 +++
 
 ### Seata柔性事务

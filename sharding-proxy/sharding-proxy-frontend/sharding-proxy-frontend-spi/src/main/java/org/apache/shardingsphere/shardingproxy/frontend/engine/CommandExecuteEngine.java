@@ -18,15 +18,16 @@
 package org.apache.shardingsphere.shardingproxy.frontend.engine;
 
 import io.netty.channel.ChannelHandlerContext;
+import org.apache.shardingsphere.database.protocol.packet.CommandPacket;
+import org.apache.shardingsphere.database.protocol.packet.CommandPacketType;
+import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
-import org.apache.shardingsphere.shardingproxy.transport.packet.CommandPacket;
-import org.apache.shardingsphere.shardingproxy.transport.packet.CommandPacketType;
-import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
-import org.apache.shardingsphere.shardingproxy.transport.payload.PacketPayload;
 
 import java.sql.SQLException;
+import java.util.Optional;
 
 /**
  * Command execute engine.
@@ -69,6 +70,13 @@ public interface CommandExecuteEngine {
      * @return error packet
      */
     DatabasePacket getErrorPacket(Exception cause);
+    
+    /**
+     * Get other packet.
+     *
+     * @return other packet
+     */
+    Optional<DatabasePacket> getOtherPacket();
     
     /**
      * Write query data.

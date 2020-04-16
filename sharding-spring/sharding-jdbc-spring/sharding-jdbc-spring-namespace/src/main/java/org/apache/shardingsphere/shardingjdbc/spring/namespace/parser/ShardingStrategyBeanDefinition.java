@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring.namespace.parser;
 
-import com.google.common.base.Strings;
-import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.ShardingStrategyBeanDefinitionParserTag;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.api.config.sharding.strategy.ComplexShardingStrategyConfiguration;
@@ -26,6 +24,7 @@ import org.apache.shardingsphere.api.config.sharding.strategy.HintShardingStrate
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.ShardingStrategyBeanDefinitionParserTag;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -58,10 +57,7 @@ public final class ShardingStrategyBeanDefinition {
     private static AbstractBeanDefinition getStandardShardingStrategyConfigBeanDefinition(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(StandardShardingStrategyConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(ShardingStrategyBeanDefinitionParserTag.SHARDING_COLUMN_ATTRIBUTE));
-        factory.addConstructorArgReference(element.getAttribute(ShardingStrategyBeanDefinitionParserTag.PRECISE_ALGORITHM_REF_ATTRIBUTE));
-        if (!Strings.isNullOrEmpty(element.getAttribute(ShardingStrategyBeanDefinitionParserTag.RANGE_ALGORITHM_REF_ATTRIBUTE))) {
-            factory.addConstructorArgReference(element.getAttribute(ShardingStrategyBeanDefinitionParserTag.RANGE_ALGORITHM_REF_ATTRIBUTE));
-        }
+        factory.addConstructorArgReference(element.getAttribute(ShardingStrategyBeanDefinitionParserTag.ALGORITHM_REF_ATTRIBUTE));
         return factory.getBeanDefinition();
     }
     

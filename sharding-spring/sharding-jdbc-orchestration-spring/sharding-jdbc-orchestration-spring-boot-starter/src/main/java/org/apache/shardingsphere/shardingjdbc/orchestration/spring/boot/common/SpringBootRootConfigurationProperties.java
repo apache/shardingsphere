@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.orchestration.center.yaml.config.YamlInstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -34,5 +34,5 @@ public class SpringBootRootConfigurationProperties {
     
     private Properties props = new Properties();
     
-    private Map<String, YamlInstanceConfiguration> orchestration;
+    private Map<String, YamlCenterRepositoryConfiguration> orchestration;
 }

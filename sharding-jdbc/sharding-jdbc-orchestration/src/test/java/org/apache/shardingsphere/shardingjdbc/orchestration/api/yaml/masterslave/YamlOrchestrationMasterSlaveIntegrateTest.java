@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.masterslave;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.AbstractYamlDataSourceTest;
 import org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationMasterSlaveDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -61,12 +60,8 @@ public final class YamlOrchestrationMasterSlaveIntegrateTest extends AbstractYam
         if (hasDataSource) {
             dataSource = YamlOrchestrationMasterSlaveDataSourceFactory.createDataSource(yamlFile);
         } else {
-            dataSource = YamlOrchestrationMasterSlaveDataSourceFactory.createDataSource(Maps.asMap(Sets.newHashSet("db_master", "db_slave_0", "db_slave_1"), new Function<String, DataSource>() {
-                @Override
-                public DataSource apply(final String key) {
-                    return AbstractYamlDataSourceTest.createDataSource(key);
-                }
-            }), yamlFile);
+            dataSource = YamlOrchestrationMasterSlaveDataSourceFactory.createDataSource(
+                    Maps.asMap(Sets.newHashSet("db_master", "db_slave_0", "db_slave_1"), AbstractYamlDataSourceTest::createDataSource), yamlFile);
         }
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {

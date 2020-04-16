@@ -26,7 +26,7 @@ incubator-shardingsphere
   ├─community
   │  ├─archetypes
   │  ├─content
-  │  │  ├─poweredby
+  │  │  ├─users
   │  │  ├─contribute
   │  │  ├─team
   │  │  └─security

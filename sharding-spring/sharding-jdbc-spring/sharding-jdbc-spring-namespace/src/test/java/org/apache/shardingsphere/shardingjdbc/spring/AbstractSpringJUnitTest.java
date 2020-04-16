@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
-import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.h2.tools.RunScript;
 import org.junit.Before;
@@ -41,6 +40,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @TestExecutionListeners(inheritListeners = false, listeners =
     {DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class})
@@ -85,7 +85,7 @@ public abstract class AbstractSpringJUnitTest extends AbstractJUnit4SpringContex
     @SuppressWarnings("unchecked")
     @SneakyThrows
     private void reInitMetaData() {
-        Map<String, DataSource> dataSourceMap = (Map<String, DataSource>) getFieldValue(shardingDataSource.getRuntimeContext().getCachedDatabaseMetaData(), "dataSourceMap");
+        Map<String, DataSource> dataSourceMap = shardingDataSource.getDataSourceMap();
         ShardingSphereMetaData newMetaData = (ShardingSphereMetaData) getCreateMetaDataMethod().invoke(
                 shardingDataSource.getRuntimeContext(), dataSourceMap, shardingDataSource.getRuntimeContext().getDatabaseType());
         setFieldValue(shardingDataSource.getRuntimeContext(), "metaData", newMetaData);
@@ -93,19 +93,9 @@ public abstract class AbstractSpringJUnitTest extends AbstractJUnit4SpringContex
     
     @SneakyThrows
     private Method getCreateMetaDataMethod() {
-        Method method = shardingDataSource.getRuntimeContext().getClass().getSuperclass().getDeclaredMethod("createMetaData", Map.class, DatabaseType.class);
-        method.setAccessible(true);
-        return method;
-    }
-    
-    @SneakyThrows
-    private Object getFieldValue(final Object object, final String name) {
-        Optional<Field> field = getField(object, name);
-        if (field.isPresent()) {
-            field.get().setAccessible(true);
-            return field.get().get(object);
-        }
-        return null;
+        Method result = shardingDataSource.getRuntimeContext().getClass().getSuperclass().getDeclaredMethod("createMetaData", Map.class, DatabaseType.class);
+        result.setAccessible(true);
+        return result;
     }
     
     @SneakyThrows
@@ -119,7 +109,7 @@ public abstract class AbstractSpringJUnitTest extends AbstractJUnit4SpringContex
     
     private Optional<Field> getField(final Object object, final String name) {
         Class clazz = object.getClass();
-        Optional<Field> result = Optional.absent();
+        Optional<Field> result = Optional.empty();
         while (!result.isPresent() && null != clazz) {
             try {
                 result = Optional.of(clazz.getDeclaredField(name));

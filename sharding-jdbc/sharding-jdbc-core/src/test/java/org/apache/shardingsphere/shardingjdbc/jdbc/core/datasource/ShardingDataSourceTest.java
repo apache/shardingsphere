@@ -29,7 +29,7 @@ import org.apache.shardingsphere.underlying.common.database.type.dialect.MySQLDa
 import org.apache.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.fixture.XAShardingTransactionManagerFixture;
-import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.junit.After;
@@ -129,7 +129,7 @@ public final class ShardingDataSourceTest {
     private DataSource mockDataSource(final DatabaseType databaseType) throws SQLException {
         DataSource result = mock(DataSource.class);
         Connection connection = mock(Connection.class);
-        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        DatabaseMetaData databaseMetaData = mockDatabaseMetaData();
         Statement statement = mock(Statement.class);
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.next()).thenReturn(false);
@@ -138,14 +138,21 @@ public final class ShardingDataSourceTest {
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(statement.getConnection()).thenReturn(connection);
         when(connection.createStatement()).thenReturn(statement);
-        when(statement.executeQuery(ArgumentMatchers.<String>any())).thenReturn(resultSet);
-        when(statement.getConnection().getMetaData().getTables(ArgumentMatchers.<String>any(), ArgumentMatchers.<String>any(),
-                ArgumentMatchers.<String>any(), ArgumentMatchers.<String[]>any())).thenReturn(resultSet);
+        when(statement.executeQuery(ArgumentMatchers.any())).thenReturn(resultSet);
+        when(statement.getConnection().getMetaData().getTables(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(resultSet);
         if (databaseType instanceof MySQLDatabaseType) {
             when(result.getConnection().getMetaData().getURL()).thenReturn("jdbc:mysql://localhost:3306/test");
         } else if (databaseType instanceof H2DatabaseType) {
             when(statement.getConnection().getMetaData().getURL()).thenReturn("jdbc:h2:mem:demo_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         }
+        return result;
+    }
+    
+    private DatabaseMetaData mockDatabaseMetaData() throws SQLException {
+        DatabaseMetaData result = mock(DatabaseMetaData.class);
+        when(result.getColumns(null, null, "table_0", "%")).thenReturn(mock(ResultSet.class));
+        when(result.getPrimaryKeys(null, null, "table_0")).thenReturn(mock(ResultSet.class));
+        when(result.getIndexInfo(null, null, "table_0", false, false)).thenReturn(mock(ResultSet.class));
         return result;
     }
     

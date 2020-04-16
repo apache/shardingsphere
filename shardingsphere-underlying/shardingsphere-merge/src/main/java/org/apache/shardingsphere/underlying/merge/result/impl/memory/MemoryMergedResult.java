@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.underlying.merge.result.impl.memory;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.executor.sql.queryresult.QueryResult;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 
 import java.io.InputStream;
@@ -49,15 +49,15 @@ public abstract class MemoryMergedResult<T extends BaseRule> implements MergedRe
     
     private boolean wasNull;
     
-    protected MemoryMergedResult(final T rule, final RelationMetas relationMetas, final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
-        List<MemoryQueryResultRow> memoryQueryResultRowList = init(rule, relationMetas, sqlStatementContext, queryResults);
+    protected MemoryMergedResult(final T rule, final SchemaMetaData schemaMetaData, final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
+        List<MemoryQueryResultRow> memoryQueryResultRowList = init(rule, schemaMetaData, sqlStatementContext, queryResults);
         memoryResultSetRows = memoryQueryResultRowList.iterator();
         if (!memoryQueryResultRowList.isEmpty()) {
             currentResultSetRow = memoryQueryResultRowList.get(0);
         }
     }
     
-    protected abstract List<MemoryQueryResultRow> init(T rule, RelationMetas relationMetas, SQLStatementContext sqlStatementContext, List<QueryResult> queryResults) throws SQLException;
+    protected abstract List<MemoryQueryResultRow> init(T rule, SchemaMetaData schemaMetaData, SQLStatementContext sqlStatementContext, List<QueryResult> queryResults) throws SQLException;
     
     @Override
     public final boolean next() {

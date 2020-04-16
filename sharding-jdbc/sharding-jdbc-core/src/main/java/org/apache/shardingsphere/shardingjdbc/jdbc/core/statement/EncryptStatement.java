@@ -17,42 +17,35 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionConstant;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.EncryptRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.EncryptRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.EncryptResultSet;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationStatement;
-import org.apache.shardingsphere.sql.parser.relation.SQLStatementContextFactory;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetaData;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionContextBuilder;
+import org.apache.shardingsphere.underlying.executor.log.SQLLogger;
 import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
-import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
-import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
-import org.apache.shardingsphere.underlying.rewrite.engine.impl.DefaultSQLRewriteEngine;
+import org.apache.shardingsphere.underlying.rewrite.engine.result.SQLRewriteResult;
+import org.apache.shardingsphere.underlying.route.DataNodeRouter;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Encrypt statement.
  */
-@Slf4j
 public final class EncryptStatement extends AbstractUnsupportedOperationStatement {
     
     @Getter
@@ -99,39 +92,19 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
         return resultSet;
     }
     
-    @SuppressWarnings("unchecked")
     private String getRewriteSQL(final String sql) {
-        SQLStatement sqlStatement = runtimeContext.getSqlParserEngine().parse(sql, false);
-        RelationMetas relationMetas = getRelationMetas(runtimeContext.getMetaData().getTables());
-        sqlStatementContext = SQLStatementContextFactory.newInstance(relationMetas, sql, Collections.emptyList(), sqlStatement);
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(runtimeContext.getMetaData(), 
-                runtimeContext.getProperties()).createSQLRewriteContext(sql, Collections.emptyList(), sqlStatementContext, createSQLRewriteContextDecorator(runtimeContext.getRule()));
-        String result = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext).getSql();
-        showSQL(result);
-        return result;
-    }
-    
-    private RelationMetas getRelationMetas(final TableMetas tableMetas) {
-        Map<String, RelationMetaData> result = new HashMap<>(tableMetas.getAllTableNames().size());
-        for (String each : tableMetas.getAllTableNames()) {
-            TableMetaData tableMetaData = tableMetas.get(each);
-            result.put(each, new RelationMetaData(tableMetaData.getColumns().keySet()));
+        Collection<BaseRule> rules = Collections.singletonList(runtimeContext.getRule());
+        RouteContext routeContext = new DataNodeRouter(runtimeContext.getMetaData(), runtimeContext.getProperties(),
+                rules).route(runtimeContext.getSqlParserEngine().parse(sql, false), sql, Collections.emptyList());
+        sqlStatementContext = routeContext.getSqlStatementContext();
+        SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(
+                runtimeContext.getMetaData().getSchema().getConfiguredSchemaMetaData(), runtimeContext.getProperties(), rules).rewrite(sql, Collections.emptyList(), routeContext);
+        ExecutionContext executionContext = new ExecutionContext(sqlStatementContext, ExecutionContextBuilder.build(runtimeContext.getMetaData(), sqlRewriteResult));
+        Preconditions.checkArgument(1 == executionContext.getExecutionUnits().size());
+        if (runtimeContext.getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
+            SQLLogger.logSQL(sql, runtimeContext.getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
         }
-        return new RelationMetas(result);
-    }
-    
-    private Map<BaseRule, SQLRewriteContextDecorator> createSQLRewriteContextDecorator(final EncryptRule encryptRule) {
-        Map<BaseRule, SQLRewriteContextDecorator> result = new HashMap<>(1, 1);
-        result.put(encryptRule, new EncryptSQLRewriteContextDecorator());
-        return result;
-    }
-    
-    private void showSQL(final String sql) {
-        boolean showSQL = runtimeContext.getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW);
-        if (showSQL) {
-            log.info("Rule Type: encrypt");
-            log.info("SQL: {}", sql);
-        }
+        return executionContext.getExecutionUnits().iterator().next().getSqlUnit().getSql();
     }
     
     @Override
