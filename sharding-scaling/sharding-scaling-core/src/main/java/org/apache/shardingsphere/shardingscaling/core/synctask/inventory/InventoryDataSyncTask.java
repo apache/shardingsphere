@@ -79,10 +79,6 @@ public final class InventoryDataSyncTask implements SyncTask {
     }
     
     @Override
-    public void prepare() {
-    }
-    
-    @Override
     public void start(final ReportCallback callback) {
         getEstimatedRows();
         SyncExecutorGroup syncExecutorGroup = new SyncExecutorGroup(new SyncTaskExecuteCallback(this.getClass().getSimpleName(), syncTaskId, callback));

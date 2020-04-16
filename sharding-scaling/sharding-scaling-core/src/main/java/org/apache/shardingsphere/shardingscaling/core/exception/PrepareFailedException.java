@@ -18,19 +18,21 @@
 package org.apache.shardingsphere.shardingscaling.core.exception;
 
 /**
- * Datasource checks failed exception.
+ * Prepare failed exception.
  */
-public class DatasourceCheckFailedException extends RuntimeException {
-
-    public DatasourceCheckFailedException(final String message) {
+public class PrepareFailedException extends RuntimeException {
+    
+    private static final long serialVersionUID = 1409505606319197767L;
+    
+    public PrepareFailedException(final String message) {
         super(message);
     }
 
-    public DatasourceCheckFailedException(final Throwable cause) {
+    public PrepareFailedException(final Throwable cause) {
         super(cause);
     }
 
-    public DatasourceCheckFailedException(final String message, final Throwable cause) {
+    public PrepareFailedException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }

@@ -23,9 +23,7 @@ import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.shardingscaling.core.execute.EventType;
-import org.apache.shardingsphere.shardingscaling.core.synctask.DefaultSyncTaskFactory;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTask;
-import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTaskFactory;
 import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
 
 /**
@@ -44,11 +42,10 @@ public final class SyncTaskController implements Runnable {
     
     private SyncTaskControlStatus syncTaskControlStatus;
     
-    public SyncTaskController(final SyncConfiguration syncConfiguration, final SyncTask inventoryDataSyncTaskGroup) {
-        SyncTaskFactory syncTaskFactory = new DefaultSyncTaskFactory();
+    public SyncTaskController(final SyncConfiguration syncConfiguration, final SyncTask inventoryDataSyncTaskGroup, final SyncTask incrementalDataSyncTask) {
         syncTaskId = generateSyncTaskId(syncConfiguration.getDumperConfiguration().getDataSourceConfiguration());
         this.inventoryDataSyncTaskGroup = inventoryDataSyncTaskGroup;
-        this.incrementalDataSyncTask = syncTaskFactory.createIncrementalDataSyncTask(syncConfiguration, dataSourceManager);
+        this.incrementalDataSyncTask = incrementalDataSyncTask;
         syncTaskControlStatus = SyncTaskControlStatus.PREPARING;
     }
     
@@ -90,8 +87,6 @@ public final class SyncTaskController implements Runnable {
     
     @Override
     public void run() {
-        incrementalDataSyncTask.prepare();
-        inventoryDataSyncTaskGroup.prepare();
         syncTaskControlStatus = SyncTaskControlStatus.MIGRATE_INVENTORY_DATA;
         inventoryDataSyncTaskGroup.start(event -> {
             log.info("inventory data migrate task {} finished, execute result: {}", event.getTaskId(), event.getEventType().name());

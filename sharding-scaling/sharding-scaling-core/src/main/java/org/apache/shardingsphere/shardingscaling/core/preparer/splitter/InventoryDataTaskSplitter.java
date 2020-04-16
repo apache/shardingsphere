@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.shardingscaling.core.exception.PrepareFailedException;
 import org.apache.shardingsphere.shardingscaling.core.metadata.MetaDataManager;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTask;
 import org.apache.shardingsphere.shardingscaling.core.synctask.inventory.InventoryDataSyncTask;
@@ -131,7 +132,7 @@ public final class InventoryDataTaskSplitter {
                     splitDumperConfig, RdbmsConfiguration.clone(syncConfiguration.getImporterConfiguration())));
             }
         } catch (SQLException e) {
-            throw new RuntimeException("getTableNames error", e);
+            throw new PrepareFailedException(String.format("Split task for table %s by primary key %s error", dumperConfiguration.getTableName(), primaryKey), e);
         }
         return result;
     }
