@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingscaling.core.synctask;
 import java.util.Collection;
 
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPosition;
 import org.apache.shardingsphere.shardingscaling.core.synctask.inventory.InventoryDataSyncTask;
 import org.apache.shardingsphere.shardingscaling.core.synctask.inventory.InventoryDataSyncTaskGroup;
 import org.apache.shardingsphere.shardingscaling.core.synctask.incremental.IncrementalDataSyncTask;
@@ -41,7 +42,7 @@ public final class DefaultSyncTaskFactory implements SyncTaskFactory {
     }
     
     @Override
-    public IncrementalDataSyncTask createIncrementalDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
-        return new IncrementalDataSyncTask(syncConfiguration, dataSourceManager);
+    public IncrementalDataSyncTask createIncrementalDataSyncTask(final SyncConfiguration syncConfiguration, final LogPosition logPosition) {
+        return new IncrementalDataSyncTask(syncConfiguration, logPosition);
     }
 }

@@ -44,6 +44,8 @@ public final class ShardingScalingJob {
     
     private final List<SyncTask> inventoryDataTasks = new LinkedList<>();
     
+    private final List<SyncTask> incrementalDataTasks = new LinkedList<>();
+    
     private final String jobName;
     
     private String status = "RUNNING";
