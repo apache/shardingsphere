@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling.core.preparer.checker;
 
-import org.apache.shardingsphere.shardingscaling.core.exception.DatasourceCheckFailedException;
+import org.apache.shardingsphere.shardingscaling.core.exception.PrepareFailedException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -65,7 +65,7 @@ public final class AbstractDataSourceCheckerTest {
         verify(dataSource).getConnection();
     }
 
-    @Test(expected = DatasourceCheckFailedException.class)
+    @Test(expected = PrepareFailedException.class)
     public void assertCheckConnectionFailed() throws SQLException {
         when(dataSource.getConnection()).thenThrow(new SQLException());
         dataSourceChecker.checkConnection(dataSources);

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.shardingscaling.core.ShardingScalingJob;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.controller.task.SyncTaskControlStatus;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.shardingscaling.core.exception.DatasourceCheckFailedException;
+import org.apache.shardingsphere.shardingscaling.core.exception.PrepareFailedException;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManagerFactory;
 import org.apache.shardingsphere.shardingscaling.core.preparer.checker.DataSourceChecker;
@@ -55,7 +55,7 @@ public final class ShardingScalingJobPreparer {
             checkDatasources(databaseType, dataSourceManager);
             splitInventoryDataTasks(shardingScalingJob, dataSourceManager);
             initIncrementalDataTasks(databaseType, shardingScalingJob, dataSourceManager);
-        } catch (DatasourceCheckFailedException ex) {
+        } catch (PrepareFailedException ex) {
             log.warn("Preparing sharding scaling job {} : {} failed", shardingScalingJob.getJobId(), shardingScalingJob.getJobName(), ex);
             shardingScalingJob.setStatus(SyncTaskControlStatus.PREPARING_FAILURE.name());
         }
