@@ -62,6 +62,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
         dataSource = new MasterSlaveDataSource(DataSourceConverter.getDataSourceMap(configService.loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME)),
                 new OrchestrationMasterSlaveRule(masterSlaveRuleConfig), configService.loadProperties());
         initShardingOrchestrationFacade();
+        persistMetaData(dataSource.getRuntimeContext().getMetaData().getSchema());
     }
     
     public OrchestrationMasterSlaveDataSource(final MasterSlaveDataSource masterSlaveDataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
@@ -69,6 +70,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
         dataSource = masterSlaveDataSource;
         initShardingOrchestrationFacade(Collections.singletonMap(DefaultSchema.LOGIC_NAME, DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap())),
                 getRuleConfigurationMap(), dataSource.getRuntimeContext().getProperties().getProps());
+        persistMetaData(dataSource.getRuntimeContext().getMetaData().getSchema());
     }
     
     private Map<String, RuleConfiguration> getRuleConfigurationMap() {
