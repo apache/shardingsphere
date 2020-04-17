@@ -73,16 +73,16 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
             authResponse = response41.getAuthResponse();
             database = response41.getDatabase();
             sequenceId = response41.getSequenceId();
+            if (!Strings.isNullOrEmpty(database) && !LogicSchemas.getInstance().schemaExists(database)) {
+                context.writeAndFlush(new MySQLErrPacket(++sequenceId, MySQLServerErrorCode.ER_BAD_DB_ERROR, database));
+                return false;
+            }
             if (0 != (response41.getCapabilityFlags() & MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue())
                 && !MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName().equals(response41.getAuthPluginName())) {
                 connectionPhase = MySQLConnectionPhase.AUTHENTICATION_METHOD_MISMATCH;
                 context.writeAndFlush(new MySQLAuthSwitchRequestPacket(++sequenceId,
                     MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName(), authenticationHandler.getAuthPluginData()));
                 return false;
-            }
-            if (!Strings.isNullOrEmpty(database) && !LogicSchemas.getInstance().schemaExists(database)) {
-                context.writeAndFlush(new MySQLErrPacket(++sequenceId, MySQLServerErrorCode.ER_BAD_DB_ERROR, database));
-                return true;
             }
         } else if (MySQLConnectionPhase.AUTHENTICATION_METHOD_MISMATCH == connectionPhase) {
             MySQLAuthSwitchResponsePacket authSwitchResponsePacket = new MySQLAuthSwitchResponsePacket((MySQLPacketPayload) payload);
