@@ -5,13 +5,13 @@ weight = 6
 chapter = true
 +++
 
-#### 1. How to debug when SQL can not be executed rightly in ShardingSphere?
+## 1. How to debug when SQL can not be executed rightly in ShardingSphere?
 
 Answer:
 
 `sql.show` configuration is provided in Sharding-Proxy and post-1.5.0 version of Sharding-JDBC, enabling the context parsing, rewritten SQL and the routed data source printed to info log. `sql.show` configuration is off in default, and users can turn it on in configurations.
 
-#### 2. Why do some compiling errors appear?
+## 2. Why do some compiling errors appear?
 
 Answer:
 
@@ -19,7 +19,7 @@ ShardingSphere uses lombok to enable minimal coding. For more details about usin
 
 Sharding-orchestration-reg module needs to execute `mvn install` command first, and generate gRPC java files according to protobuf files.
 
-#### 3. Why is xsd unable to be found when Spring Namespace is used?
+## 3. Why is xsd unable to be found when Spring Namespace is used?
 
 Answer:
 
@@ -27,19 +27,19 @@ The use norm of Spring Namespace does not require to deploy xsd files to the off
 
 Actually, META-INF\spring.schemas in the jar package of sharding-jdbc-spring-namespace has been configured with the position of xsd files: META-INF\namespace\sharding.xsd and META-INF\namespace\master-slave.xsd, so you only need to make sure that the file is in the jar package.
 
-#### 4. How to solve `Cloud not resolve placeholder … in string value …` error?
+## 4. How to solve `Cloud not resolve placeholder … in string value …` error?
 
 Answer:
 
 `${...}` or `$->{...}` can be used in inline expression identifiers, but the former one clashes with place holders in Spring property files, so `$->{...}` is recommended to be used in Spring as inline expression identifiers.
 
-#### 5. Why does float number appear in the return result of inline expression?
+## 5. Why does float number appear in the return result of inline expression?
 
 Answer:
 
 The division result of Java integers is also integer, but in Groovy syntax of inline expression, the division result of integers is float number. To obtain integer division result, A/B needs to be modified as A.intdiv(B).
 
-#### 6. If sharding database is partial, should tables without sharding database & table be configured in sharding rules?
+## 6. If sharding database is partial, should tables without sharding database & table be configured in sharding rules?
 
 Answer:
 
@@ -49,7 +49,7 @@ Option 1: configure default-data-source. All the tables in default data sources 
 
 Option 2: isolate data sources without sharding database & table from ShardingSphere; use multiple data sources to process sharding situations or non-sharding situations.
 
-#### 7. In addition to internal distributed primary key, does ShardingSphere support other native auto-increment keys?
+## 7. In addition to internal distributed primary key, does ShardingSphere support other native auto-increment keys?
 
 Answer:
 
@@ -59,13 +59,13 @@ Since ShardingSphere does not have the database table structure and native auto-
 
 The premise for returning native auto-increment key is that INSERT SQL is eventually routed to one table. Therefore, auto-increment key will return zero when INSERT SQL returns multiple tables.
 
-#### 8. When generic Long type `SingleKeyTableShardingAlgorithm` is used, why does`ClassCastException: Integer can not cast to Long` exception appear?
+## 8. When generic Long type `SingleKeyTableShardingAlgorithm` is used, why does`ClassCastException: Integer can not cast to Long` exception appear?
 
 Answer:
 
 You must make sure the field in database table consistent with that in sharding algorithms. For example, the field type in database is int(11) and the sharding type corresponds to genetic type is Integer, if you want to configure Long type, please make sure the field type in the database is bigint.
 
-#### 9. In SQLSever and PostgreSQL, why does the aggregation column without alias throw exception?
+## 9. In SQLSever and PostgreSQL, why does the aggregation column without alias throw exception?
 
 Answer:
 
@@ -83,7 +83,7 @@ The right SQL should be written as:
 SELECT SUM(num) AS sum_num, SUM(num2) AS sum_num2 FROM tablexxx;
 ```
 
-#### 10. Why does Oracle database throw “Order by value must implements Comparable” exception when using Timestamp Order By?
+## 10. Why does Oracle database throw “Order by value must implements Comparable” exception when using Timestamp Order By?
 
 Answer:
 
@@ -136,7 +136,7 @@ After using resultSet.getObject(int index), for TimeStamp oracle, the system wil
     }
 ```
 
-#### 11. Why is the database sharding result not correct when using `Proxool`?
+## 11. Why is the database sharding result not correct when using `Proxool`?
 
 Answer:
 
@@ -152,7 +152,7 @@ The followings are core codes from ProxoolDataSource getConnection method in `Pr
 
 For more alias usages, please refer to [Proxool](http://proxool.sourceforge.net/configure.html) official website.
 
-#### 12. Why are the default distributed auto-augment key strategy provided by ShardingSphere not continuous and most of them end with even numbers?
+## 12. Why are the default distributed auto-augment key strategy provided by ShardingSphere not continuous and most of them end with even numbers?
 
 Answer:
 
@@ -162,7 +162,7 @@ But the last four numbers of snowflake algorithm are incremental value within on
 
 In 3.1.0 version, the problem of ending with even numbers has been totally solved, please refer to: https://github.com/sharding-sphere/sharding-sphere/issues/1617
 
-#### 13. In Windows environment,when cloning ShardingSphere source code through Git, why prompt filename too long and how to solve it?
+## 13. In Windows environment,when cloning ShardingSphere source code through Git, why prompt filename too long and how to solve it?
 
 Answer:
 
@@ -186,7 +186,7 @@ Reference material:
 https://docs.microsoft.com/zh-cn/windows/desktop/FileIO/naming-a-file
 https://ourcodeworld.com/articles/read/109/how-to-solve-filename-too-long-error-in-git-powershell-and-github-application-for-windows
 
-#### 14. In Windows environment, could not find or load main class org.apache.shardingshpere.shardingproxy.Bootstrap, how to solve it?
+## 14. In Windows environment, could not find or load main class org.apache.shardingshpere.shardingproxy.Bootstrap, how to solve it?
 
 Answer:
 
@@ -199,13 +199,13 @@ Open cmd.exe and execute the following command:
 tar zxvf apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz
 ```
 
-#### 15.  How to solve `Type is required` error?
+## 15.  How to solve `Type is required` error?
 
 Answer:
 
 In Apache ShardingSphere, many functionality implementation are uploaded through [SPI](https://shardingsphere.apache.org/document/current/en/features/spi/), such as Distributed Primary Key. These functions load SPI implementation by configuring the `type`，so the `type` must be specified in the configuration file.
 
-#### 16. Why does my custom distributed primary key do not work after implementing `ShardingKeyGenerator` interface and configuring `type` property?
+## 16. Why does my custom distributed primary key do not work after implementing `ShardingKeyGenerator` interface and configuring `type` property?
 
 Answer:
 
@@ -215,7 +215,7 @@ More detail for SPI usage, please search by yourself.
 
 Other ShardingSphere [functionality implementation](https://shardingsphere.apache.org/document/current/en/features/spi/) will take effect in the same way.
 
-#### 17. How to solve that `DATA MASKING` can't work with JPA?
+## 17. How to solve that `DATA MASKING` can't work with JPA?
 
 Answer:
 
@@ -227,14 +227,14 @@ The solutions are as follows:
 2. Disable JPA auto-ddl, For example setting auto-ddl=none.
 3. Create table manually. Table structure should use `cipherColumn`,`plainColumn` and `assistedQueryColumn` to replace the logicColumn.
 
-#### 18. How to speed up the metadata loading when service starts up?
+## 18. How to speed up the metadata loading when service starts up?
 
 Answer:
 
 1. Update to 4.0.1 above, which helps speed up the process of loading table metadata from `the default dataSource`.
 2. Configure `max.connections.size.per.query`(Default value is 1) higher referring to connection pool you adopt(Version >= 3.0.0.M3).
 
-#### 19. How to allow range query with using inline sharding strategy(BETWEEN AND, \>, \<, \>=, \<=)?
+## 19. How to allow range query with using inline sharding strategy(BETWEEN AND, \>, \<, \>=, \<=)?
 
 Answer:
 
@@ -242,21 +242,21 @@ Answer:
 2. Configure`allow.range.query.with.inline.sharding` to `true` (Default value is `false`).
 3. A tip here: then each range query will be broadcast to every sharding table.
 
-#### 20. Why there may be an error when configure both sharding-jdbc-spring-boot-starter and a spring-boot-starter of certain datasource pool(such as druid)?
+## 20. Why there may be an error when configure both sharding-jdbc-spring-boot-starter and a spring-boot-starter of certain datasource pool(such as druid)?
  
 Answer:
  
 1. Because the spring-boot-starter of certain datasource pool (such as druid) will configured before sharding-jdbc-spring-boot-starter and create a default datasource, then conflict occur when sharding-jdbc create datasources.
 2. A simple way to solve this issue is removing the the spring-boot-starter of certain datasource pool, sharding-jdbc create datasources with suitable pools. 
  
-#### 21. How to add a new logic schema dynamically when use sharing-proxy?
+## 21. How to add a new logic schema dynamically when use sharing-proxy?
  
 Answer:
  
 1. Before version 4.1.0, sharing-proxy can't support adding a new logic schema dynamically, for example, when a proxy starting with two logic schemas, it always hold the two schemas and will be notified about the table/rule changed events in the two schemas.
 2. Since version 4.1.0, sharing-proxy support adding a new logic schema dynamically via sharding-ui or zookeeper, and it's a plan to support removing a exist logic schema dynamically in runtime.
  
-#### 22. How to use a suitable database tools connecting sharding-proxy? 
+## 22. How to use a suitable database tools connecting sharding-proxy? 
  
 Answer:
  
