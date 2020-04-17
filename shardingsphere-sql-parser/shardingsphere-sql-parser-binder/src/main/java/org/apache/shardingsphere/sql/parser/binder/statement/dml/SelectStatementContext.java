@@ -287,14 +287,14 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
      * @return tables.
      */
     public Collection<SimpleTableSegment> getSimpleTableSegments() {
-        Collection<SimpleTableSegment> result = getTables();
-        Collection<SimpleTableSegment> tables = new LinkedList<>();
-        for (SimpleTableSegment each : result) {
-            if (isTable(each, result)) {
-                tables.add(each);
+        Collection<SimpleTableSegment> tables = getTables();
+        Collection<SimpleTableSegment> result = new LinkedList<>();
+        for (SimpleTableSegment each : tables) {
+            if (isTable(each, tables)) {
+                result.add(each);
             }
         }
-        return tables;
+        return result;
     }
     
     private Collection<SimpleTableSegment> getTables() {

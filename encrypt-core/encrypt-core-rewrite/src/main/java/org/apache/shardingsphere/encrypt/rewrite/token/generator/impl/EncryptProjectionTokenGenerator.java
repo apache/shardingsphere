@@ -52,7 +52,6 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
-        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getSimpleTableSegments().isEmpty();
     }
     
