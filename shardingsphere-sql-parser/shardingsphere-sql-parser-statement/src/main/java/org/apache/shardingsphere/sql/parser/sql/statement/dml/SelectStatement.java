@@ -26,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -98,34 +97,5 @@ public final class SelectStatement extends DMLStatement {
      */
     public Optional<LockSegment> getLock() {
         return Optional.ofNullable(lock);
-    }
-    
-    /**
-     * Get simple table segments.
-     * 
-     * @return simple table segments
-     */
-    public Collection<SimpleTableSegment> getSimpleTableSegments() {
-        Collection<SimpleTableSegment> result = new LinkedList<>();
-        Collection<SimpleTableSegment> tables = new LinkedList<>();
-        for (TableReferenceSegment each : tableReferences) {
-            result.addAll(each.getSimpleTableSegments());
-        }
-        for (SimpleTableSegment each : result) {
-            if (isTable(each, result)) {
-                tables.add(each);
-            }
-        }
-        return tables;
-    }
-    
-    private boolean isTable(final SimpleTableSegment owner, final Collection<SimpleTableSegment> tableSegments) {
-        for (SimpleTableSegment each : tableSegments) {
-            String tableName = owner.getTableName().getIdentifier().getValue();
-            if (tableName.equals(each.getAlias().orElse(null)) && !tableName.equals(each.getTableName().getIdentifier().getValue())) {
-                return false;
-            }
-        }
-        return true;
     }
 }
