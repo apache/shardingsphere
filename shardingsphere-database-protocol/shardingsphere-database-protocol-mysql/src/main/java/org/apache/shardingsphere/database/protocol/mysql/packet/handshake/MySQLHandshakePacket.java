@@ -61,7 +61,7 @@ public final class MySQLHandshakePacket implements MySQLPacket {
         this.statusFlag = MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT;
         this.capabilityFlagsUpper = MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper();
         this.authPluginData = authPluginData;
-        this.authPluginName = "mysql_native_password";
+        this.authPluginName = MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName();
     }
     
     public MySQLHandshakePacket(final MySQLPacketPayload payload) {

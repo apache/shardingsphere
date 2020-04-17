@@ -24,7 +24,6 @@ import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLServerErr
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLHandshakePacket;
-import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLHandshakeResponse41Packet;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
@@ -40,6 +39,7 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -77,7 +77,7 @@ public final class MySQLAuthenticationEngineTest {
     public void assertAuthWithLoginFail() throws NoSuchFieldException, IllegalAccessException {
         ChannelHandlerContext context = getContext();
         setLogicSchemas(Collections.singletonMap("sharding_db", mock(LogicSchema.class)));
-        when(authenticationHandler.login(any(MySQLHandshakeResponse41Packet.class))).thenReturn(Optional.of(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR));
+        when(authenticationHandler.login(anyString(), any(), anyString())).thenReturn(Optional.of(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR));
         authenticationEngine.auth(context, getPayload("root", "sharding_db", authResponse), mock(BackendConnection.class));
         verify(context).writeAndFlush(any(MySQLErrPacket.class));
     }
@@ -93,7 +93,7 @@ public final class MySQLAuthenticationEngineTest {
     @Test
     public void assertAuth() throws NoSuchFieldException, IllegalAccessException {
         ChannelHandlerContext context = getContext();
-        when(authenticationHandler.login(any(MySQLHandshakeResponse41Packet.class))).thenReturn(Optional.empty());
+        when(authenticationHandler.login(anyString(), any(), anyString())).thenReturn(Optional.empty());
         setLogicSchemas(Collections.singletonMap("sharding_db", mock(LogicSchema.class)));
         authenticationEngine.auth(context, getPayload("root", "sharding_db", authResponse), mock(BackendConnection.class));
         verify(context).writeAndFlush(any(MySQLOKPacket.class));
