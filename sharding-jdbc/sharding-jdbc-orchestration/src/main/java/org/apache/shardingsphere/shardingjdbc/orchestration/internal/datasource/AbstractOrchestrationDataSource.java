@@ -142,7 +142,7 @@ public abstract class AbstractOrchestrationDataSource extends AbstractUnsupporte
         return Maps.filterEntries(dataSourceConfigurations, input -> !AbstractOrchestrationDataSource.this.dataSourceConfigurations.containsKey(input.getKey()));
     }
     
-    protected final void persistMetaData(RuleSchemaMetaData ruleSchemaMetaData) {
+    protected final void persistMetaData(final RuleSchemaMetaData ruleSchemaMetaData) {
         ShardingOrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(DefaultSchema.LOGIC_NAME, ruleSchemaMetaData);
     }
 }
