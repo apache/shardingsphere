@@ -61,7 +61,7 @@ public final class MySQLHandshakePacket implements MySQLPacket {
         this.statusFlag = MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT;
         this.capabilityFlagsUpper = MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper();
         this.authPluginData = authPluginData;
-        this.authPluginName = null;
+        this.authPluginName = MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName();
     }
     
     public MySQLHandshakePacket(final MySQLPacketPayload payload) {
@@ -117,7 +117,7 @@ public final class MySQLHandshakePacket implements MySQLPacket {
         payload.writeInt1(characterSet);
         payload.writeInt2(statusFlag.getValue());
         payload.writeInt2(capabilityFlagsUpper);
-        payload.writeInt1(isClientPluginAuth() ? authPluginData.getAuthPluginData().length : 0);
+        payload.writeInt1(isClientPluginAuth() ? authPluginData.getAuthPluginData().length + 1 : 0);
         payload.writeReserved(10);
         writeAuthPluginDataPart2(payload);
         writeAuthPluginName(payload);
@@ -136,11 +136,11 @@ public final class MySQLHandshakePacket implements MySQLPacket {
     }
     
     private boolean isClientSecureConnection() {
-        return 0 != (capabilityFlagsLower & MySQLCapabilityFlag.CLIENT_SECURE_CONNECTION.getValue());
+        return 0 != (capabilityFlagsLower & MySQLCapabilityFlag.CLIENT_SECURE_CONNECTION.getValue() & 0x00000ffff);
     }
     
     private boolean isClientPluginAuth() {
-        return 0 != ((capabilityFlagsUpper << 16) & MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue());
+        return 0 != (capabilityFlagsUpper & MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue() >> 16);
     }
     
     @Override
