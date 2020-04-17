@@ -27,7 +27,6 @@ import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.Pro
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.ShorthandProjection;
-import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
@@ -35,7 +34,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrde
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.TextOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -59,18 +57,20 @@ public final class ProjectionsContextEngine {
      * Create projections context.
      *
      * @param sql SQL
-     * @param context SQL statement context
+     * @param tables tables
+     * @param projectionsSegment projection Segments
      * @param groupByContext group by context
      * @param orderByContext order by context
      * @return projections context
      */
-    public ProjectionsContext createProjectionsContext(final String sql, final SelectStatementContext context, final GroupByContext groupByContext, final OrderByContext orderByContext) {
-        SelectStatement selectStatement = context.getSqlStatement();
-        ProjectionsSegment projectionsSegment = selectStatement.getProjections();
-        Collection<Projection> projections = getProjections(sql, context.getSimpleTableSegments(selectStatement), projectionsSegment);
+    public ProjectionsContext createProjectionsContext(final String sql, final Collection<SimpleTableSegment> tables, final ProjectionsSegment projectionsSegment,
+                                                       final GroupByContext groupByContext, final OrderByContext orderByContext) {
+//        SelectStatement selectStatement = context.getSqlStatement();
+//        ProjectionsSegment projectionsSegment = selectStatement.getProjections();
+        Collection<Projection> projections = getProjections(sql, tables, projectionsSegment);
         ProjectionsContext result = new ProjectionsContext(projectionsSegment.getStartIndex(), projectionsSegment.getStopIndex(), projectionsSegment.isDistinctRow(), projections);
-        result.getProjections().addAll(getDerivedGroupByColumns(projections, groupByContext, context));
-        result.getProjections().addAll(getDerivedOrderByColumns(projections, orderByContext, context));
+        result.getProjections().addAll(getDerivedGroupByColumns(projections, groupByContext, tables));
+        result.getProjections().addAll(getDerivedOrderByColumns(projections, orderByContext, tables));
         return result;
     }
     
@@ -82,29 +82,29 @@ public final class ProjectionsContextEngine {
         return result;
     }
     
-    private Collection<Projection> getDerivedGroupByColumns(final Collection<Projection> projections, final GroupByContext groupByContext, final SelectStatementContext selectStatementContext) {
-        return getDerivedOrderColumns(projections, groupByContext.getItems(), DerivedColumn.GROUP_BY_ALIAS, selectStatementContext);
+    private Collection<Projection> getDerivedGroupByColumns(final Collection<Projection> projections, final GroupByContext groupByContext, final Collection<SimpleTableSegment> tables) {
+        return getDerivedOrderColumns(projections, groupByContext.getItems(), DerivedColumn.GROUP_BY_ALIAS, tables);
     }
     
-    private Collection<Projection> getDerivedOrderByColumns(final Collection<Projection> projections, final OrderByContext orderByContext, final SelectStatementContext selectStatementContext) {
-        return getDerivedOrderColumns(projections, orderByContext.getItems(), DerivedColumn.ORDER_BY_ALIAS, selectStatementContext);
+    private Collection<Projection> getDerivedOrderByColumns(final Collection<Projection> projections, final OrderByContext orderByContext, final Collection<SimpleTableSegment> tables) {
+        return getDerivedOrderColumns(projections, orderByContext.getItems(), DerivedColumn.ORDER_BY_ALIAS, tables);
     }
     
     private Collection<Projection> getDerivedOrderColumns(final Collection<Projection> projections, 
-                                                          final Collection<OrderByItem> orderItems, final DerivedColumn derivedColumn, final SelectStatementContext selectStatementContext) {
+                                                          final Collection<OrderByItem> orderItems, final DerivedColumn derivedColumn, final Collection<SimpleTableSegment> tables) {
         Collection<Projection> result = new LinkedList<>();
         int derivedColumnOffset = 0;
         for (OrderByItem each : orderItems) {
-            if (!containsProjection(projections, each.getSegment(), selectStatementContext)) {
+            if (!containsProjection(projections, each.getSegment(), tables)) {
                 result.add(new DerivedProjection(((TextOrderByItemSegment) each.getSegment()).getText(), derivedColumn.getDerivedColumnAlias(derivedColumnOffset++)));
             }
         }
         return result;
     }
     
-    private boolean containsProjection(final Collection<Projection> projections, final OrderByItemSegment orderByItemSegment, final SelectStatementContext selectStatementContext) {
+    private boolean containsProjection(final Collection<Projection> projections, final OrderByItemSegment orderByItemSegment, final Collection<SimpleTableSegment> tables) {
         return orderByItemSegment instanceof IndexOrderByItemSegment
-                || containsItemInShorthandProjection(projections, orderByItemSegment, selectStatementContext) || containsProjection(projections, orderByItemSegment);
+                || containsItemInShorthandProjection(projections, orderByItemSegment, tables) || containsProjection(projections, orderByItemSegment);
     }
     
     private boolean containsProjection(final Collection<Projection> projections, final OrderByItemSegment orderItem) {
@@ -119,9 +119,9 @@ public final class ProjectionsContextEngine {
         return false;
     }
     
-    private boolean containsItemInShorthandProjection(final Collection<Projection> projections, final OrderByItemSegment orderByItemSegment, final SelectStatementContext selectStatementContext) {
-        return isUnqualifiedShorthandProjection(projections) || containsItemWithOwnerInShorthandProjections(projections, orderByItemSegment, selectStatementContext)
-                || containsItemWithoutOwnerInShorthandProjections(projections, orderByItemSegment, selectStatementContext);
+    private boolean containsItemInShorthandProjection(final Collection<Projection> projections, final OrderByItemSegment orderByItemSegment, final Collection<SimpleTableSegment> tables) {
+        return isUnqualifiedShorthandProjection(projections) || containsItemWithOwnerInShorthandProjections(projections, orderByItemSegment, tables)
+                || containsItemWithoutOwnerInShorthandProjections(projections, orderByItemSegment, tables);
     }
     
     private boolean isUnqualifiedShorthandProjection(final Collection<Projection> projections) {
@@ -132,33 +132,33 @@ public final class ProjectionsContextEngine {
         return projection instanceof ShorthandProjection && !((ShorthandProjection) projection).getOwner().isPresent();
     }
     
-    private boolean containsItemWithOwnerInShorthandProjections(final Collection<Projection> projections, final OrderByItemSegment orderItem, final SelectStatementContext selectStatementContext) {
+    private boolean containsItemWithOwnerInShorthandProjections(final Collection<Projection> projections, final OrderByItemSegment orderItem, final Collection<SimpleTableSegment> tables) {
         return orderItem instanceof ColumnOrderByItemSegment && ((ColumnOrderByItemSegment) orderItem).getColumn().getOwner().isPresent()
-                && findShorthandProjection(projections, ((ColumnOrderByItemSegment) orderItem).getColumn().getOwner().get().getIdentifier().getValue(), selectStatementContext).isPresent();
+                && findShorthandProjection(projections, ((ColumnOrderByItemSegment) orderItem).getColumn().getOwner().get().getIdentifier().getValue(), tables).isPresent();
     }
     
-    private Optional<ShorthandProjection> findShorthandProjection(final Collection<Projection> projections, final String tableNameOrAlias, final SelectStatementContext selectStatementContext) {
-        SimpleTableSegment tableSegment = find(tableNameOrAlias, selectStatementContext);
+    private Optional<ShorthandProjection> findShorthandProjection(final Collection<Projection> projections, final String tableNameOrAlias, final Collection<SimpleTableSegment> tables) {
+        SimpleTableSegment tableSegment = find(tableNameOrAlias, tables);
         for (Projection each : projections) {
             if (!(each instanceof ShorthandProjection)) {
                 continue;
             }
             ShorthandProjection shorthandProjection = (ShorthandProjection) each;
             if (shorthandProjection.getOwner().isPresent() && find(
-                    shorthandProjection.getOwner().get(), selectStatementContext).getTableName().getIdentifier().getValue().equalsIgnoreCase(tableSegment.getTableName().getIdentifier().getValue())) {
+                    shorthandProjection.getOwner().get(), tables).getTableName().getIdentifier().getValue().equalsIgnoreCase(tableSegment.getTableName().getIdentifier().getValue())) {
                 return Optional.of(shorthandProjection);
             }
         }
         return Optional.empty();
     }
     
-    private boolean containsItemWithoutOwnerInShorthandProjections(final Collection<Projection> projections, final OrderByItemSegment orderItem, final SelectStatementContext selectStatementContext) {
+    private boolean containsItemWithoutOwnerInShorthandProjections(final Collection<Projection> projections, final OrderByItemSegment orderItem, final Collection<SimpleTableSegment> tables) {
         if (!(orderItem instanceof ColumnOrderByItemSegment)) {
             return false;
         }
         if (!((ColumnOrderByItemSegment) orderItem).getColumn().getOwner().isPresent()) {
             for (ShorthandProjection each : getQualifiedShorthandProjections(projections)) {
-                if (isSameProjection(each, (ColumnOrderByItemSegment) orderItem, selectStatementContext)) {
+                if (isSameProjection(each, (ColumnOrderByItemSegment) orderItem, tables)) {
                     return true;
                 }
             }
@@ -176,9 +176,9 @@ public final class ProjectionsContextEngine {
         return result;
     }
     
-    private boolean isSameProjection(final ShorthandProjection shorthandProjection, final ColumnOrderByItemSegment orderItem, final SelectStatementContext selectStatementContext) {
+    private boolean isSameProjection(final ShorthandProjection shorthandProjection, final ColumnOrderByItemSegment orderItem, final Collection<SimpleTableSegment> tables) {
         Preconditions.checkState(shorthandProjection.getOwner().isPresent());
-        SimpleTableSegment tableSegment = find(shorthandProjection.getOwner().get(), selectStatementContext);
+        SimpleTableSegment tableSegment = find(shorthandProjection.getOwner().get(), tables);
         return schemaMetaData.containsColumn(tableSegment.getTableName().getIdentifier().getValue(), orderItem.getColumn().getIdentifier().getValue());
     }
     
@@ -190,8 +190,8 @@ public final class ProjectionsContextEngine {
         return !projection.getAlias().isPresent() && projection.getExpression().equalsIgnoreCase(orderItem.getText());
     }
     
-    private SimpleTableSegment find(final String tableNameOrAlias, final SelectStatementContext selectStatementContext) {
-        for (SimpleTableSegment each : selectStatementContext.getSimpleTableSegments(selectStatementContext.getSqlStatement())) {
+    private SimpleTableSegment find(final String tableNameOrAlias, final Collection<SimpleTableSegment> tables) {
+        for (SimpleTableSegment each : tables) {
             if (tableNameOrAlias.equalsIgnoreCase(each.getTableName().getIdentifier().getValue()) || tableNameOrAlias.equals(each.getAlias().orElse(null))) {
                 return each;
             }

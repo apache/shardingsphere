@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.binder.statement.dml;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.groupby.engine.GroupByContextEngine;
@@ -89,7 +88,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     public SelectStatementContext(final SelectStatement sqlStatement, final GroupByContext groupByContext,
                                   final OrderByContext orderByContext, final ProjectionsContext projectionsContext, final PaginationContext paginationContext) {
         super(sqlStatement);
-        tablesContext = new TablesContext(getSimpleTableSegments(sqlStatement));
+        tablesContext = new TablesContext(getSimpleTableSegments());
         this.groupByContext = groupByContext;
         this.orderByContext = orderByContext;
         this.projectionsContext = projectionsContext;
@@ -99,10 +98,10 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     public SelectStatementContext(final SchemaMetaData schemaMetaData, final String sql, final List<Object> parameters, final SelectStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(getSimpleTableSegments(sqlStatement));
+        tablesContext = new TablesContext(getSimpleTableSegments());
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
-        projectionsContext = new ProjectionsContextEngine(schemaMetaData).createProjectionsContext(sql, this, groupByContext, orderByContext);
+        projectionsContext = new ProjectionsContextEngine(schemaMetaData).createProjectionsContext(sql, getSimpleTableSegments(), getSqlStatement().getProjections(), groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters);
         containsSubquery = containsSubquery();
     }
@@ -193,7 +192,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        Collection<SimpleTableSegment> result = new LinkedList<>(getSimpleTableSegments(getSqlStatement()));
+        Collection<SimpleTableSegment> result = new LinkedList<>(getSimpleTableSegments());
         if (getSqlStatement().getWhere().isPresent()) {
             result.addAll(getAllTablesFromWhere(getSqlStatement().getWhere().get()));
         }
@@ -211,7 +210,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         Collection<SimpleTableSegment> result = new LinkedList<>();
         for (AndPredicate each : where.getAndPredicates()) {
             for (PredicateSegment predicate : each.getPredicates()) {
-                result.addAll(new PredicateExtractor(getSimpleTableSegments(getSqlStatement()), predicate).extractTables());
+                result.addAll(new PredicateExtractor(getSimpleTableSegments(), predicate).extractTables());
             }
         }
         return result;
@@ -228,7 +227,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     private Optional<SimpleTableSegment> getTableSegment(final ProjectionSegment each) {
         Optional<OwnerSegment> owner = getTableOwner(each);
-        if (owner.isPresent() && isTable(owner.get(), getSimpleTableSegments(getSqlStatement()))) {
+        if (owner.isPresent() && isTable(owner.get(), getSimpleTableSegments())) {
             return Optional .of(new SimpleTableSegment(owner.get().getStartIndex(), owner.get().getStopIndex(), owner.get().getIdentifier()));
         }
         return Optional.empty();
@@ -249,7 +248,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         for (OrderByItemSegment each : orderByItems) {
             if (each instanceof ColumnOrderByItemSegment) {
                 Optional<OwnerSegment> owner = ((ColumnOrderByItemSegment) each).getColumn().getOwner();
-                if (owner.isPresent() && isTable(owner.get(), getSimpleTableSegments(getSqlStatement()))) {
+                if (owner.isPresent() && isTable(owner.get(), getSimpleTableSegments())) {
                     Preconditions.checkState(((ColumnOrderByItemSegment) each).getColumn().getOwner().isPresent());
                     OwnerSegment segment = ((ColumnOrderByItemSegment) each).getColumn().getOwner().get();
                     result.add(new SimpleTableSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier()));
@@ -285,13 +284,10 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     /**
      * get tables.
-     *
-     * @param selectStatement SelectStatement.
-     *
      * @return tables.
      */
-    public Collection<SimpleTableSegment> getSimpleTableSegments(final SelectStatement selectStatement) {
-        Collection<SimpleTableSegment> result = getTables(selectStatement);
+    public Collection<SimpleTableSegment> getSimpleTableSegments() {
+        Collection<SimpleTableSegment> result = getTables();
         Collection<SimpleTableSegment> tables = new LinkedList<>();
         for (SimpleTableSegment each : result) {
             if (isTable(each, result)) {
@@ -301,52 +297,66 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         return tables;
     }
     
-    private Collection<SimpleTableSegment> getTables(final ASTNode astNode) {
+    private Collection<SimpleTableSegment> getTables() {
+        SelectStatement selectStatement = getSqlStatement();
         Collection<SimpleTableSegment> result = new LinkedList<>();
-        if (astNode instanceof SelectStatement) {
-            for (TableReferenceSegment each : ((SelectStatement) astNode).getTableReferences()) {
-                result.addAll(getTables(each));
+        for (TableReferenceSegment each : selectStatement.getTableReferences()) {
+            result.addAll(getTablesFromTableReference(each));
+        }
+        return result;
+    }
+    
+    private Collection<SimpleTableSegment> getTablesFromTableFactor(final TableFactorSegment tableFactorSegment) {
+        Collection<SimpleTableSegment> result = new LinkedList<>();
+        if (null != tableFactorSegment.getTable() && tableFactorSegment.getTable() instanceof SimpleTableSegment) {
+            result.add((SimpleTableSegment) tableFactorSegment.getTable());
+        }
+        if (null != tableFactorSegment.getTableReferences() && !tableFactorSegment.getTableReferences().isEmpty()) {
+            for (TableReferenceSegment each: tableFactorSegment.getTableReferences()) {
+                result.addAll(getTablesFromTableReference(each));
             }
-        } else if (astNode instanceof TableReferenceSegment) {
-            if (null != ((TableReferenceSegment) astNode).getTableFactor()) {
-                result.addAll(getTables(((TableReferenceSegment) astNode).getTableFactor()));
+        }
+        return result;
+    }
+    
+    private Collection<SimpleTableSegment> getTablesFromTableReference(final TableReferenceSegment tableReferenceSegment) {
+        Collection<SimpleTableSegment> result = new LinkedList<>();
+        if (null != tableReferenceSegment.getTableFactor()) {
+            result.addAll(getTablesFromTableFactor(tableReferenceSegment.getTableFactor()));
+        }
+        if (null != tableReferenceSegment.getJoinedTables()) {
+            for (JoinedTableSegment each : tableReferenceSegment.getJoinedTables()) {
+                result.addAll(getTablesFromJoinTable(each));
             }
-            if (null != ((TableReferenceSegment) astNode).getJoinedTables()) {
-                for (JoinedTableSegment each : ((TableReferenceSegment) astNode).getJoinedTables()) {
-                    result.addAll(getTables(each));
+        }
+        return result;
+    }
+    
+    private Collection<SimpleTableSegment> getTablesFromJoinTable(final JoinedTableSegment joinedTableSegment) {
+        Collection<SimpleTableSegment> result = new LinkedList<>();
+        if (null != joinedTableSegment.getTableFactor()) {
+            result.addAll(getTablesFromTableFactor(joinedTableSegment.getTableFactor()));
+        }
+        if (null != joinedTableSegment.getJoinSpecification()) {
+            result.addAll(getTablesFromJoinSpecification(joinedTableSegment.getJoinSpecification()));
+        }
+        return result;
+    }
+    
+    private Collection<SimpleTableSegment> getTablesFromJoinSpecification(final JoinSpecificationSegment joinSpecificationSegment) {
+        Collection<SimpleTableSegment> result = new LinkedList<>();
+        Collection<AndPredicate> andPredicates = joinSpecificationSegment.getAndPredicates();
+        for (AndPredicate each : andPredicates) {
+            for (PredicateSegment e : each.getPredicates()) {
+                if (null != e.getColumn() && (e.getColumn().getOwner().isPresent())) {
+                    OwnerSegment ownerSegment = e.getColumn().getOwner().get();
+                    result.add(new SimpleTableSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier()));
+                }
+                if (null != e.getRightValue() && (e.getRightValue() instanceof ColumnSegment) && ((ColumnSegment) e.getRightValue()).getOwner().isPresent()) {
+                    OwnerSegment ownerSegment = ((ColumnSegment) e.getRightValue()).getOwner().get();
+                    result.add(new SimpleTableSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier()));
                 }
             }
-        } else if (astNode instanceof TableFactorSegment) {
-            if (null != ((TableFactorSegment) astNode).getTable() && ((TableFactorSegment) astNode).getTable() instanceof SimpleTableSegment) {
-                result.add((SimpleTableSegment) ((TableFactorSegment) astNode).getTable());
-            }
-            if (null != ((TableFactorSegment) astNode).getTableReferences() && !((TableFactorSegment) astNode).getTableReferences().isEmpty()) {
-                for (TableReferenceSegment each: ((TableFactorSegment) astNode).getTableReferences()) {
-                    result.addAll(getTables(each));
-                }
-            }
-        } else if (astNode instanceof JoinedTableSegment) {
-            if (null != ((JoinedTableSegment) astNode).getTableFactor()) {
-                result.addAll(getTables(((JoinedTableSegment) astNode).getTableFactor()));
-            }
-            if (null != ((JoinedTableSegment) astNode).getJoinSpecification()) {
-                result.addAll(getTables(((JoinedTableSegment) astNode).getJoinSpecification()));
-            }
-        } else if (astNode instanceof JoinSpecificationSegment) {
-            Collection<AndPredicate> andPredicates = ((JoinSpecificationSegment) astNode).getAndPredicates();
-            for (AndPredicate each : andPredicates) {
-                for (PredicateSegment e : each.getPredicates()) {
-                    if (null != e.getColumn() && (e.getColumn().getOwner().isPresent())) {
-                        OwnerSegment ownerSegment = e.getColumn().getOwner().get();
-                        result.add(new SimpleTableSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier()));
-                    }
-                    if (null != e.getRightValue() && (e.getRightValue() instanceof ColumnSegment) && ((ColumnSegment) e.getRightValue()).getOwner().isPresent()) {
-                        OwnerSegment ownerSegment = ((ColumnSegment) e.getRightValue()).getOwner().get();
-                        result.add(new SimpleTableSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier()));
-                    }
-                }
-            }
-            
         }
         return result;
     }
