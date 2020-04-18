@@ -1,6 +1,5 @@
 +++
 pre = "<b>4.2.3. </b>"
-toc = true
 title = "Docker Clone"
 weight = 3
 +++

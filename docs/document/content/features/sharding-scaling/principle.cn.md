@@ -1,6 +1,5 @@
 +++
 pre = "<b>3.7.3. </b>"
-toc = true
 title = "实现原理"
 weight = 3
 +++

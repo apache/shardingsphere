@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "分布式事务"
 weight = 5
 +++

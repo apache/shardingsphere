@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "Hint"
 weight = 3
 +++

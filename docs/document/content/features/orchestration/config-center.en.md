@@ -1,6 +1,5 @@
 +++
 pre = "<b>3.3.1. </b>"
-toc = true
 title = "Config Center"
 weight = 1
 +++

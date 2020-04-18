@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "Configuration"
 weight = 3
 +++

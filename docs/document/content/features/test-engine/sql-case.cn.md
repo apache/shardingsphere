@@ -1,6 +1,5 @@
 +++
 pre = "<b>3.6.1. </b>"
-toc = true
 title = "SQL测试用例"
 weight = 1
 +++

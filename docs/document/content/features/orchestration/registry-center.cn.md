@@ -1,6 +1,5 @@
 +++
 pre = "<b>3.3.2. </b>"
-toc = true
 title = "注册中心"
 weight = 2
 +++

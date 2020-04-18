@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "Config Center"
 weight = 2
 +++

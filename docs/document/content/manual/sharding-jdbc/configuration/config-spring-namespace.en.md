@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "Spring Namespace Configuration"
 weight = 4
 +++
