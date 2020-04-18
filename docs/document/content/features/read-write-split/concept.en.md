@@ -1,6 +1,5 @@
 +++
 pre = "<b>3.2.1. </b>"
-toc = true
 title = "Core Concept"
 weight = 1
 +++

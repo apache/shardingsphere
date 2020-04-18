@@ -1,6 +1,5 @@
 +++
 pre = "<b>3.2.2. </b>"
-toc = true
 title = "核心功能"
 weight = 2
 +++

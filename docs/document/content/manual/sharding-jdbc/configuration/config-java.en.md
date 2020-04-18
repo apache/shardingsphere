@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "Java Configuration"
 weight = 1
 +++

@@ -1,6 +1,5 @@
 +++
 pre = "<b>4.5.2. </b>"
-toc = true
 title = "Manual"
 weight = 2
 +++

@@ -1,6 +1,5 @@
 +++
 pre = "<b>4.1.2. </b>"
-toc = true
 title = "Configuration manual"
 weight = 2
 chapter = true

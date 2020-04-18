@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "Registry Center"
 weight = 3
 +++

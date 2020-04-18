@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "Sharding"
 weight = 1
 +++

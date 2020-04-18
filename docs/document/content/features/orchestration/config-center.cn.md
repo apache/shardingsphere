@@ -1,6 +1,5 @@
 +++
 pre = "<b>3.3.1. </b>"
-toc = true
 title = "配置中心"
 weight = 1
 +++

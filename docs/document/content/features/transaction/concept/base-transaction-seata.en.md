@@ -1,6 +1,5 @@
 +++
 pre = "<b>3.4.1.2 </b>"
-toc = true
 title = "Seata BASE transaction"
 weight = 3
 +++

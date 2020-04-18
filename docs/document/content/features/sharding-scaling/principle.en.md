@@ -1,6 +1,5 @@
 +++
 pre = "<b>3.7.3. </b>"
-toc = true
 title = "Principle"
 weight = 3
 +++

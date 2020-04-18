@@ -3,7 +3,6 @@ pre = "<b>6. </b>"
 title = "FAQ"
 weight = 6
 chapter = true
-toc = true
 +++
 
 ## 1. 如果SQL在ShardingSphere中执行不正确，该如何调试？
