@@ -24,7 +24,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.core.rule.ProxyUser;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLAuthPluginData;
-import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLHandshakeResponse41Packet;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 
 import java.util.Arrays;
@@ -45,15 +44,17 @@ public final class MySQLAuthenticationHandler {
     /**
      * Login.
      *
-     * @param response41 handshake response
+     * @param userName user name.
+     * @param authResponse auth response
+     * @param database database
      * @return login success or failure
      */
-    public Optional<MySQLServerErrorCode> login(final MySQLHandshakeResponse41Packet response41) {
-        Optional<ProxyUser> user = getUser(response41.getUsername());
-        if (!user.isPresent() || !isPasswordRight(user.get().getPassword(), response41.getAuthResponse())) {
+    public Optional<MySQLServerErrorCode> login(final String userName, final byte[] authResponse, final String database) {
+        Optional<ProxyUser> user = getUser(userName);
+        if (!user.isPresent() || !isPasswordRight(user.get().getPassword(), authResponse)) {
             return Optional.of(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR);
         }
-        if (!isAuthorizedSchema(user.get().getAuthorizedSchemas(), response41.getDatabase())) {
+        if (!isAuthorizedSchema(user.get().getAuthorizedSchemas(), database)) {
             return Optional.of(MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR);
         }
         return Optional.empty();

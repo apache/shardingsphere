@@ -15,22 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.exception;
+package org.apache.shardingsphere.database.protocol.mysql.constant;
 
 /**
- * Datasource checks failed exception.
+ * MySQL connection phase.
+ *
+ * @see <a href="https://dev.mysql.com/doc/internals/en/connection-phase.html">Connection Phase</a>
  */
-public class DatasourceCheckFailedException extends RuntimeException {
-
-    public DatasourceCheckFailedException(final String message) {
-        super(message);
-    }
-
-    public DatasourceCheckFailedException(final Throwable cause) {
-        super(cause);
-    }
-
-    public DatasourceCheckFailedException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
+public enum MySQLConnectionPhase {
+    
+    INITIAL_HANDSHAKE, AUTH_PHASE_FAST_PATH, AUTHENTICATION_METHOD_MISMATCH
 }

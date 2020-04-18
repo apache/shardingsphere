@@ -3,16 +3,17 @@ pre = "<b>6. </b>"
 title = "FAQ"
 weight = 6
 chapter = true
+toc = true
 +++
 
-#### 1. 如果SQL在ShardingSphere中执行不正确，该如何调试？
+## 1. 如果SQL在ShardingSphere中执行不正确，该如何调试？
 
 回答：
 
 在Sharding-Proxy以及Sharding-JDBC 1.5.0版本之后提供了`sql.show`的配置，可以将解析上下文和改写后的SQL以及最终路由至的数据源的细节信息全部打印至info日志。
 `sql.show`配置默认关闭，如果需要请通过配置开启。
 
-#### 2. 阅读源码时为什么会出现编译错误?
+## 2. 阅读源码时为什么会出现编译错误?
 
 回答：
 
@@ -20,7 +21,7 @@ ShardingSphere使用lombok实现极简代码。关于更多使用和安装细节
 
 sharding-orchestration-reg模块需要先执行`mvn install`命令，根据protobuf文件生成gRPC相关的java文件。
 
-#### 3. 使用Spring命名空间时找不到xsd?
+## 3. 使用Spring命名空间时找不到xsd?
 
 回答：
 
@@ -28,20 +29,20 @@ Spring命名空间使用规范并未强制要求将xsd文件部署至公网地�
 
 实际上sharding-jdbc-spring-namespace的jar包中META-INF\spring.schemas配置了xsd文件的位置：META-INF\namespace\sharding.xsd和META-INF\namespace\master-slave.xsd，只需确保jar包中该文件存在即可。
 
-#### 4. Cloud not resolve placeholder ... in string value ...异常的解决方法?
+## 4. Cloud not resolve placeholder ... in string value ...异常的解决方法?
 
 回答：
 
 行表达式标识符可以使用`${...}`或`$->{...}`，但前者与Spring本身的属性文件占位符冲突，因此在Spring环境中使用行表达式标识符建议使用`$->{...}`。
 
-#### 5. inline表达式返回结果为何出现浮点数？
+## 5. inline表达式返回结果为何出现浮点数？
 
 回答：
 
 Java的整数相除结果是整数，但是对于inline表达式中的Groovy语法则不同，整数相除结果是浮点数。
 想获得除法整数结果需要将A/B改为A.intdiv(B)。
 
-#### 6. 如果只有部分数据库分库分表，是否需要将不分库分表的表也配置在分片规则中？
+## 6. 如果只有部分数据库分库分表，是否需要将不分库分表的表也配置在分片规则中？
 
 回答：
 
@@ -52,7 +53,7 @@ Java的整数相除结果是整数，但是对于inline表达式中的Groovy语�
 
 方法2：将不参与分库分表的数据源独立于ShardingSphere之外，在应用中使用多个数据源分别处理分片和不分片的情况。
 
-#### 7. ShardingSphere除了支持自带的分布式自增主键之外，还能否支持原生的自增主键？
+## 7. ShardingSphere除了支持自带的分布式自增主键之外，还能否支持原生的自增主键？
 
 回答：是的，可以支持。但原生自增主键有使用限制，即不能将原生自增主键同时作为分片键使用。
 
@@ -60,13 +61,13 @@ Java的整数相除结果是整数，但是对于inline表达式中的Groovy语�
 
 而原生自增主键返回的前提条件是INSERT SQL必须最终路由至一张表，因此，面对返回多表的INSERT SQL，自增主键则会返回零。
 
-#### 8. 指定了泛型为Long的`SingleKeyTableShardingAlgorithm`，遇到`ClassCastException: Integer can not cast to Long`?
+## 8. 指定了泛型为Long的`SingleKeyTableShardingAlgorithm`，遇到`ClassCastException: Integer can not cast to Long`?
 
 回答：
 
 必须确保数据库表中该字段和分片算法该字段类型一致，如：数据库中该字段类型为int(11)，泛型所对应的分片类型应为Integer，如果需要配置为Long类型，请确保数据库中该字段类型为bigint。
 
-#### 9. 使用SQLSever和PostgreSQL时，聚合列不加别名会抛异常？
+## 9. 使用SQLSever和PostgreSQL时，聚合列不加别名会抛异常？
 
 回答：
 
@@ -84,7 +85,7 @@ SQLServer获取到的列为空字符串和(2)，PostgreSQL获取到的列为空s
 SELECT SUM(num) AS sum_num, SUM(num2) AS sum_num2 FROM tablexxx;
 ```
 
-#### 10. Oracle数据库使用Timestamp类型的Order By语句抛出异常提示“Order by value must implements Comparable”?
+## 10. Oracle数据库使用Timestamp类型的Order By语句抛出异常提示“Order by value must implements Comparable”?
 
 回答：
 
@@ -140,7 +141,7 @@ com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByValue#getOrderValues()�
     }
 ```
 
-#### 11. 使用`Proxool`时分库结果不正确？
+## 11. 使用`Proxool`时分库结果不正确？
 
 回答：
 
@@ -158,7 +159,7 @@ com.dangdang.ddframe.rdb.sharding.merger.orderby.OrderByValue#getOrderValues()�
 
 PS：sourceforge网站需要翻墙访问。
 
-#### 12. ShardingSphere提供的默认分布式自增主键策略为什么是不连续的，且尾数大多为偶数？
+## 12. ShardingSphere提供的默认分布式自增主键策略为什么是不连续的，且尾数大多为偶数？
 
 回答：
 
@@ -168,7 +169,7 @@ ShardingSphere采用snowflake算法作为默认的分布式自增主键策略，
 
 在3.1.0版本中，尾数大多为偶数的问题已彻底解决，参见：https://github.com/sharding-sphere/sharding-sphere/issues/1617
 
-#### 13. Windows环境下，通过Git克隆ShardingSphere源码时为什么提示文件名过长，如何解决？
+## 13. Windows环境下，通过Git克隆ShardingSphere源码时为什么提示文件名过长，如何解决？
 
 回答：
 
@@ -189,7 +190,7 @@ git config --global core.longpaths true
 https://docs.microsoft.com/zh-cn/windows/desktop/FileIO/naming-a-file
 https://ourcodeworld.com/articles/read/109/how-to-solve-filename-too-long-error-in-git-powershell-and-github-application-for-windows
 
-#### 14. Windows环境下，运行Sharding-Proxy，找不到或无法加载主类 org.apache.shardingshpere.shardingproxy.Bootstrap，如何解决？
+## 14. Windows环境下，运行Sharding-Proxy，找不到或无法加载主类 org.apache.shardingshpere.shardingproxy.Bootstrap，如何解决？
 
 回答：
 
@@ -202,13 +203,13 @@ https://ourcodeworld.com/articles/read/109/how-to-solve-filename-too-long-error-
 tar zxvf apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz
 ```
 
-#### 15. Type is required 异常的解决方法?
+## 15. Type is required 异常的解决方法?
 
 回答：
 
 ShardingSphere中很多功能实现类的加载方式是通过[SPI](https://shardingsphere.apache.org/document/current/cn/features/spi/)注入的方式完成的，如分布式主键，注册中心等；这些功能通过配置中type类型来寻找对应的SPI实现，因此必须在配置文件中指定类型。
 
-#### 16. 为什么我实现了`ShardingKeyGenerator`接口，也配置了Type，但是自定义的分布式主键依然不生效？
+## 16. 为什么我实现了`ShardingKeyGenerator`接口，也配置了Type，但是自定义的分布式主键依然不生效？
 
 回答：
 
@@ -218,7 +219,7 @@ ShardingSphere中很多功能实现类的加载方式是通过[SPI](https://shar
 
 与分布式主键`ShardingKeyGenerator`接口相同，其他ShardingSphere的[扩展功能](https://shardingsphere.apache.org/document/current/cn/features/spi/)也需要用相同的方式注入才能生效。
 
-#### 17. JPA 和 数据脱敏无法一起使用，如何解决？
+## 17. JPA 和 数据脱敏无法一起使用，如何解决？
 
 回答：
 
@@ -230,14 +231,14 @@ ShardingSphere中很多功能实现类的加载方式是通过[SPI](https://shar
 2. 关闭JPA的auto-ddl，如 auto-ddl=none。
 3. 手动建表，建表时应使用数据脱敏配置的`cipherColumn`,`plainColumn`和`assistedQueryColumn`代替逻辑列。
 
-#### 18. 服务启动时如何加快`metadata`加载速度？
+## 18. 服务启动时如何加快`metadata`加载速度？
 
 回答：
 
 1. 升级到`4.0.1`以上的版本，以提高`default dataSource`的table metadata的加载速度。
 2. 参照你采用的连接池，将配置项`max.connections.size.per.query`（默认值为1）调高（版本 >= 3.0.0.M3）。
 
-#### 19. 如何在inline分表策略时，允许执行范围查询操作（BETWEEN AND、\>、\<、\>=、\<=）？
+## 19. 如何在inline分表策略时，允许执行范围查询操作（BETWEEN AND、\>、\<、\>=、\<=）？
 
 回答：
 
@@ -245,21 +246,21 @@ ShardingSphere中很多功能实现类的加载方式是通过[SPI](https://shar
 2. 将配置项`allow.range.query.with.inline.sharding`设置为true即可（默认为false）。
 3. 需要注意的是，此时所有的范围查询将会使用广播的方式查询每一个分表。
 
-#### 20. 为什么配置了某个数据连接池的spring-boot-starter（比如druid）和sharding-jdbc-spring-boot-starter时，系统启动会报错？
+## 20. 为什么配置了某个数据连接池的spring-boot-starter（比如druid）和sharding-jdbc-spring-boot-starter时，系统启动会报错？
 
 回答：
 
 1. 因为数据连接池的starter（比如druid）可能会先加载并且其创建一个默认数据源，这将会使得sharding-jdbc创建数据源时发生冲突。
 2. 解决办法为，去掉数据连接池的starter即可，sharing-jdbc自己会创建数据连接池。
 
-#### 21. 在使用sharing-proxy的时候，如何动态在sharding-ui上添加新的logic schema？
+## 21. 在使用sharing-proxy的时候，如何动态在sharding-ui上添加新的logic schema？
 
 回答：
 
 1. 4.1.0之前的版本不支持动态添加或删除logic schema的功能，例如一个proxy启动的时候有2个logic schema，就会一直持有这2个schema，只能感知这两个schema内部的表和rule的变更事件。
 2. 4.1.0版本支持在sharding-ui或直接在zookeeper上增加新的logic schema，删除logic schema的功能计划在5.0.0版本支持。
 
-#### 22. 在使用sharing-proxy时，怎么使用合适的工具连接到proxy？
+## 22. 在使用sharing-proxy时，怎么使用合适的工具连接到proxy？
 
 回答：
 

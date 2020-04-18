@@ -15,38 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core;
+package org.apache.shardingsphere.database.protocol.mysql.packet.handshake;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-
-import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTask;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import org.apache.shardingsphere.database.protocol.mysql.packet.MySQLPacket;
+import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 
 /**
- * Sharding scaling out job.
+ * MySQL auth switch request packet.
+ *
+ * @see <a href="https://dev.mysql.com/doc/internals/en/connection-phase-packets.html#packet-Protocol::AuthSwitchRequest">AuthSwitchRequest</a>
  */
-@Getter
-@Setter
 @RequiredArgsConstructor
-public final class ShardingScalingJob {
+public final class MySQLAuthSwitchRequestPacket implements MySQLPacket {
     
-    private static final AtomicInteger ID_AUTO_INCREASE_GENERATOR = new AtomicInteger();
+    @Getter
+    private final int sequenceId;
     
-    private final int jobId = ID_AUTO_INCREASE_GENERATOR.incrementAndGet();
+    private final String authPluginName;
     
-    private final transient List<SyncConfiguration> syncConfigurations = new LinkedList<>();
+    private final MySQLAuthPluginData authPluginData;
     
-    private final List<SyncTask> inventoryDataTasks = new LinkedList<>();
-    
-    private final List<SyncTask> incrementalDataTasks = new LinkedList<>();
-    
-    private final String jobName;
-    
-    private String status = "RUNNING";
+    @Override
+    public void write(final MySQLPacketPayload payload) {
+        payload.writeInt1(0xfe);
+        payload.writeStringNul(authPluginName);
+        payload.writeStringNul(new String(authPluginData.getAuthPluginData()));
+    }
 }

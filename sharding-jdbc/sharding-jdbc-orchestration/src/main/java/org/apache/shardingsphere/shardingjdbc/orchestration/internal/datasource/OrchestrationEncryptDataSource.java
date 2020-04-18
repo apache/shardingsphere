@@ -61,14 +61,16 @@ public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSou
         dataSource = new EncryptDataSource(
                 DataSourceConverter.getDataSourceMap(dataSourceConfigurations).values().iterator().next(), new EncryptRule(encryptRuleConfig), configService.loadProperties());
         initShardingOrchestrationFacade();
+        persistMetaData(dataSource.getRuntimeContext().getMetaData().getSchema());
     }
     
-    public OrchestrationEncryptDataSource(final EncryptDataSource dataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
+    public OrchestrationEncryptDataSource(final EncryptDataSource dataSource, final OrchestrationConfiguration orchestrationConfig) {
         super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(DefaultSchema.LOGIC_NAME)));
         this.dataSource = dataSource;
         initShardingOrchestrationFacade(
             Collections.singletonMap(DefaultSchema.LOGIC_NAME, DataSourceConverter.getDataSourceConfigurationMap(Collections.singletonMap(ENCRYPT_DATASOURCE, dataSource.getDataSource()))),
             getRuleConfigurationMap(), dataSource.getRuntimeContext().getProperties().getProps());
+        persistMetaData(dataSource.getRuntimeContext().getMetaData().getSchema());
     }
     
     private void checkDataSourceConfiguration(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {

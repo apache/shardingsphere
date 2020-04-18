@@ -23,7 +23,6 @@ import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.rule.ProxyUser;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLAuthPluginData;
-import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLHandshakeResponse41Packet;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,8 +33,6 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class MySQLAuthenticationHandlerTest {
     
@@ -62,43 +59,35 @@ public final class MySQLAuthenticationHandlerTest {
     public void assertLoginWithPassword() {
         setAuthentication(new ProxyUser("root", Collections.singleton("db1")));
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
-        assertFalse(authenticationHandler.login(getResponse41("root", authResponse, "db1")).isPresent());
+        assertFalse(authenticationHandler.login("root", authResponse, "db1").isPresent());
     }
     
     @Test
     public void assertLoginWithAbsentUser() {
         setAuthentication(new ProxyUser("root", Collections.singleton("db1")));
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
-        assertThat(authenticationHandler.login(getResponse41("root1", authResponse, "db1")).orElse(null), is(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR));
+        assertThat(authenticationHandler.login("root1", authResponse, "db1").orElse(null), is(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR));
     }
     
     @Test
     public void assertLoginWithIncorrectPassword() {
         setAuthentication(new ProxyUser("root", Collections.singleton("db1")));
         byte[] authResponse = {0, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
-        assertThat(authenticationHandler.login(getResponse41("root", authResponse, "db1")).orElse(null), is(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR));
+        assertThat(authenticationHandler.login("root", authResponse, "db1").orElse(null), is(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR));
     }
     
     @Test
     public void assertLoginWithoutPassword() {
         setAuthentication(new ProxyUser(null, null));
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
-        assertFalse(authenticationHandler.login(getResponse41("root", authResponse, "db1")).isPresent());
+        assertFalse(authenticationHandler.login("root", authResponse, "db1").isPresent());
     }
     
     @Test
     public void assertLoginWithUnauthorizedSchema() {
         setAuthentication(new ProxyUser("root", Collections.singleton("db1")));
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
-        assertThat(authenticationHandler.login(getResponse41("root", authResponse, "db2")).orElse(null), is(MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR));
-    }
-    
-    private MySQLHandshakeResponse41Packet getResponse41(final String userName, final byte[] authResponse, final String database) {
-        MySQLHandshakeResponse41Packet result = mock(MySQLHandshakeResponse41Packet.class);
-        when(result.getUsername()).thenReturn(userName);
-        when(result.getAuthResponse()).thenReturn(authResponse);
-        when(result.getDatabase()).thenReturn(database);
-        return result;
+        assertThat(authenticationHandler.login("root", authResponse, "db2").orElse(null), is(MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR));
     }
     
     @SneakyThrows

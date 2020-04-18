@@ -32,6 +32,7 @@ import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.DataSo
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
+import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -139,5 +140,9 @@ public abstract class AbstractOrchestrationDataSource extends AbstractUnsupporte
     
     private synchronized Map<String, DataSourceConfiguration> getAddedDataSources(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
         return Maps.filterEntries(dataSourceConfigurations, input -> !AbstractOrchestrationDataSource.this.dataSourceConfigurations.containsKey(input.getKey()));
+    }
+    
+    protected final void persistMetaData(final RuleSchemaMetaData ruleSchemaMetaData) {
+        ShardingOrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(DefaultSchema.LOGIC_NAME, ruleSchemaMetaData);
     }
 }

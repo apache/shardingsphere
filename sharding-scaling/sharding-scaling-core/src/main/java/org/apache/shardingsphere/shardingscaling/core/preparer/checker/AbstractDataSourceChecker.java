@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling.core.preparer.checker;
 
-import org.apache.shardingsphere.shardingscaling.core.exception.DatasourceCheckFailedException;
+import org.apache.shardingsphere.shardingscaling.core.exception.PrepareFailedException;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -35,7 +35,7 @@ public abstract class AbstractDataSourceChecker implements DataSourceChecker {
                 each.getConnection().close();
             }
         } catch (SQLException e) {
-            throw new DatasourceCheckFailedException("Datasources can't connected!");
+            throw new PrepareFailedException("Datasources can't connected!");
         }
     }
 }

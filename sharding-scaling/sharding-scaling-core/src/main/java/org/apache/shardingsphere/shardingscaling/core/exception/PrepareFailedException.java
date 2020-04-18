@@ -15,27 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.mysql.constant;
+package org.apache.shardingsphere.shardingscaling.core.exception;
 
-import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class MySQLCapabilityFlagTest {
+/**
+ * Prepare failed exception.
+ */
+public class PrepareFailedException extends RuntimeException {
     
-    @Test
-    public void assertGetValue() {
-        assertThat(MySQLCapabilityFlag.CLIENT_LONG_PASSWORD.getValue(), is(0x00000001));
+    private static final long serialVersionUID = 1409505606319197767L;
+    
+    public PrepareFailedException(final String message) {
+        super(message);
     }
-    
-    @Test
-    public void assertCalculateHandshakeCapabilityFlagsLower() {
-        assertThat(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower(), is(46927));
+
+    public PrepareFailedException(final Throwable cause) {
+        super(cause);
     }
-    
-    @Test
-    public void assertCalculateHandshakeCapabilityFlagsUpper() {
-        assertThat(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper(), is(0x0008));
+
+    public PrepareFailedException(final String message, final Throwable cause) {
+        super(message, cause);
     }
 }

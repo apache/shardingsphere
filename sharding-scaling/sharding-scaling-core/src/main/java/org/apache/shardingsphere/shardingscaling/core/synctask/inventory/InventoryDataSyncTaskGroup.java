@@ -53,10 +53,6 @@ public final class InventoryDataSyncTaskGroup implements SyncTask {
     }
     
     @Override
-    public void prepare() {
-    }
-    
-    @Override
     public void start(final ReportCallback callback) {
         final AtomicInteger finishedTask = new AtomicInteger();
         for (final SyncTask each : syncTasks) {

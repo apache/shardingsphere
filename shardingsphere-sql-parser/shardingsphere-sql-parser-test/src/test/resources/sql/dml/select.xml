@@ -22,6 +22,12 @@
             <expression-projection alias="a" start-index="7" stop-index="12" />
         </projections>
     </select>
+    
+    <select sql-case-id="select_with_function_name" >
+        <projections start-index="7" stop-index="23">
+            <expression-projection start-index="7" stop-index="23" />
+        </projections>
+    </select>
 
     <select sql-case-id="select_with_same_table_name_and_alias" parameters="1, 1">
         <table-reference>

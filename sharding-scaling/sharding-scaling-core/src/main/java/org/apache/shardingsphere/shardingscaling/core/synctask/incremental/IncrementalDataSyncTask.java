@@ -26,8 +26,7 @@ import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManag
 import org.apache.shardingsphere.shardingscaling.core.execute.engine.SyncTaskExecuteCallback;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncExecutorGroup;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.DistributionChannel;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManagerFactory;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPosition;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.Dumper;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.DumperFactory;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
@@ -51,29 +50,18 @@ public final class IncrementalDataSyncTask implements SyncTask {
     
     private final String syncTaskId;
     
-    private LogPositionManager logPositionManager;
+    private LogPosition logPosition;
     
     private Dumper dumper;
     
     private long delayMillisecond;
     
-    public IncrementalDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
+    public IncrementalDataSyncTask(final SyncConfiguration syncConfiguration, final LogPosition logPosition) {
         this.syncConfiguration = syncConfiguration;
-        this.dataSourceManager = dataSourceManager;
+        this.dataSourceManager = new DataSourceManager();
+        this.logPosition = logPosition;
         DataSourceMetaData dataSourceMetaData = syncConfiguration.getDumperConfiguration().getDataSourceConfiguration().getDataSourceMetaData();
         syncTaskId = String.format("incremental-%s", null != dataSourceMetaData.getCatalog() ? dataSourceMetaData.getCatalog() : dataSourceMetaData.getSchema());
-    }
-    
-    @Override
-    public void prepare() {
-        this.logPositionManager = instanceLogPositionManager();
-        logPositionManager.getCurrentPosition();
-    }
-    
-    private LogPositionManager instanceLogPositionManager() {
-        return LogPositionManagerFactory.newInstanceLogManager(
-                syncConfiguration.getDumperConfiguration().getDataSourceConfiguration().getDatabaseType().getName(),
-                dataSourceManager.getDataSource(syncConfiguration.getDumperConfiguration().getDataSourceConfiguration()));
     }
     
     @Override
@@ -85,7 +73,7 @@ public final class IncrementalDataSyncTask implements SyncTask {
     }
     
     private void instanceSyncExecutors(final SyncExecutorGroup syncExecutorGroup) {
-        dumper = DumperFactory.newInstanceLogDumper(syncConfiguration.getDumperConfiguration(), logPositionManager.getCurrentPosition());
+        dumper = DumperFactory.newInstanceLogDumper(syncConfiguration.getDumperConfiguration(), logPosition);
         List<Importer> importers = instanceImporters();
         DistributionChannel channel = instanceChannel(importers);
         dumper.setChannel(channel);
@@ -108,7 +96,7 @@ public final class IncrementalDataSyncTask implements SyncTask {
     private DistributionChannel instanceChannel(final List<Importer> importers) {
         return new DistributionChannel(importers.size(), records -> {
             Record lastHandledRecord = records.get(records.size() - 1);
-            logPositionManager.updateCurrentPosition(lastHandledRecord.getLogPosition());
+            logPosition = lastHandledRecord.getLogPosition();
             delayMillisecond = System.currentTimeMillis() - lastHandledRecord.getCommitTime();
         });
     }
@@ -123,6 +111,6 @@ public final class IncrementalDataSyncTask implements SyncTask {
     
     @Override
     public SyncProgress getProgress() {
-        return new IncrementalDataSyncTaskProgress(syncTaskId, delayMillisecond, logPositionManager.getCurrentPosition());
+        return new IncrementalDataSyncTaskProgress(syncTaskId, delayMillisecond, logPosition);
     }
 }
