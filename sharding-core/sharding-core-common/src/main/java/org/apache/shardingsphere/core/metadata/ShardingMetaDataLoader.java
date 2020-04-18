@@ -53,7 +53,7 @@ import java.util.concurrent.TimeoutException;
 @RequiredArgsConstructor
 @Slf4j(topic = "ShardingSphere-metadata")
 public final class ShardingMetaDataLoader {
-
+    
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
     
     private static final int CORES = Runtime.getRuntime().availableProcessors();
@@ -67,7 +67,7 @@ public final class ShardingMetaDataLoader {
     private final int maxConnectionsSizePerQuery;
     
     private final boolean isCheckingMetaData;
-
+    
     /**
      * Load table meta data.
      *
@@ -77,25 +77,11 @@ public final class ShardingMetaDataLoader {
      * @throws SQLException SQL exception
      */
     public TableMetaData load(final String logicTableName, final DatabaseType databaseType) throws SQLException {
-        return load(logicTableName, databaseType, null);
-    }
-    
-    /**
-     * Load table meta data.
-     * 
-     * @param logicTableName logic table name
-     * @param databaseType database type
-     * @param schemaMetaData origin schema metadata
-     * @return table meta data
-     * @throws SQLException SQL exception
-     */
-    public TableMetaData load(final String logicTableName, final DatabaseType databaseType, final SchemaMetaData schemaMetaData) throws SQLException {
         TableRule tableRule = shardingRule.getTableRule(logicTableName);
         if (!isCheckingMetaData) {
             DataNode dataNode = tableRule.getActualDataNodes().iterator().next();
-            return null != schemaMetaData ? schemaMetaData.get(dataNode.getTableName())
-                    : TableMetaDataLoader.load(dataSourceMap.get(shardingRule.getShardingDataSourceNames()
-                     .getRawMasterDataSourceName(dataNode.getDataSourceName())), dataNode.getTableName(), databaseType.getName());
+            return TableMetaDataLoader.load(dataSourceMap.get(shardingRule.getShardingDataSourceNames().getRawMasterDataSourceName(
+                dataNode.getDataSourceName())), dataNode.getTableName(), databaseType.getName());
         }
         Map<String, List<DataNode>> dataNodeGroups = tableRule.getDataNodeGroups();
         Map<String, TableMetaData> actualTableMetaDataMap = new HashMap<>(dataNodeGroups.size(), 1);
@@ -119,7 +105,7 @@ public final class ShardingMetaDataLoader {
         checkUniformed(logicTableName, actualTableMetaDataMap);
         return actualTableMetaDataMap.values().iterator().next();
     }
-
+    
     private TableMetaData load(final DataNode dataNode, final DatabaseType databaseType) {
         try {
             return TableMetaDataLoader.load(dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName(), databaseType.getName());
@@ -132,21 +118,20 @@ public final class ShardingMetaDataLoader {
      * Load schema Meta data.
      *
      * @param databaseType database type
-     * @param schemaMetaData origin schema Meta data
      * @return schema Meta data
      * @throws SQLException SQL exception
      */
-    public SchemaMetaData load(final DatabaseType databaseType, final SchemaMetaData schemaMetaData) throws SQLException {
-        SchemaMetaData result = loadShardingSchemaMetaData(databaseType, schemaMetaData);
+    public SchemaMetaData load(final DatabaseType databaseType) throws SQLException {
+        SchemaMetaData result = loadShardingSchemaMetaData(databaseType);
         result.merge(loadDefaultSchemaMetaData(databaseType));
         return result;
     }
     
-    private SchemaMetaData loadShardingSchemaMetaData(final DatabaseType databaseType, final SchemaMetaData schemaMetaData) throws SQLException {
+    private SchemaMetaData loadShardingSchemaMetaData(final DatabaseType databaseType) throws SQLException {
         log.info("Loading {} logic tables' meta data.", shardingRule.getTableRules().size());
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(shardingRule.getTableRules().size(), 1);
         for (TableRule each : shardingRule.getTableRules()) {
-            tableMetaDataMap.put(each.getLogicTable(), load(each.getLogicTable(), databaseType, schemaMetaData));
+            tableMetaDataMap.put(each.getLogicTable(), load(each.getLogicTable(), databaseType));
         }
         return new SchemaMetaData(tableMetaDataMap);
     }
@@ -154,18 +139,18 @@ public final class ShardingMetaDataLoader {
     private SchemaMetaData loadDefaultSchemaMetaData(final DatabaseType databaseType) throws SQLException {
         Optional<String> actualDefaultDataSourceName = shardingRule.findActualDefaultDataSourceName();
         return actualDefaultDataSourceName.isPresent()
-                ? SchemaMetaDataLoader.load(dataSourceMap.get(actualDefaultDataSourceName.get()), maxConnectionsSizePerQuery, databaseType.getName()) : new SchemaMetaData(Collections.emptyMap());
+            ? SchemaMetaDataLoader.load(dataSourceMap.get(actualDefaultDataSourceName.get()), maxConnectionsSizePerQuery, databaseType.getName()) : new SchemaMetaData(Collections.emptyMap());
     }
-
+    
     private void checkUniformed(final String logicTableName, final Map<String, TableMetaData> actualTableMetaDataMap) {
         ShardingTableMetaDataDecorator decorator = new ShardingTableMetaDataDecorator();
         TableMetaData sample = decorator.decorate(actualTableMetaDataMap.values().iterator().next(), logicTableName, shardingRule);
         Collection<TableMetaDataViolation> violations = actualTableMetaDataMap.entrySet().stream()
-                .filter(entry -> !sample.equals(decorator.decorate(entry.getValue(), logicTableName, shardingRule)))
-                .map(entry -> new TableMetaDataViolation(entry.getKey(), entry.getValue())).collect(Collectors.toList());
+            .filter(entry -> !sample.equals(decorator.decorate(entry.getValue(), logicTableName, shardingRule)))
+            .map(entry -> new TableMetaDataViolation(entry.getKey(), entry.getValue())).collect(Collectors.toList());
         throwExceptionIfNecessary(violations, logicTableName);
     }
-
+    
     private void throwExceptionIfNecessary(final Collection<TableMetaDataViolation> violations, final String logicTableName) {
         if (!violations.isEmpty()) {
             StringBuilder errorMessage = new StringBuilder(
@@ -176,13 +161,13 @@ public final class ShardingMetaDataLoader {
             throw new ShardingSphereException(errorMessage.toString(), logicTableName);
         }
     }
-
+    
     @RequiredArgsConstructor
     @Getter
     private final class TableMetaDataViolation {
-
+        
         private final String actualTableName;
-
+        
         private final TableMetaData tableMetaData;
     }
 }
