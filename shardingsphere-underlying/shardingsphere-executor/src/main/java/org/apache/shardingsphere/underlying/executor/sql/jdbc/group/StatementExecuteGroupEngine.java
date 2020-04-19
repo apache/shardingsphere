@@ -17,28 +17,34 @@
 
 package org.apache.shardingsphere.underlying.executor.sql.jdbc.group;
 
+import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.group.ExecuteGroupEngine;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ExecutionConnection;
 import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.StatementOption;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ConnectionMode;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
 
 /**
  * Execute group builder for statement.
  */
-public final class StatementExecuteGroupEngine extends ExecuteGroupEngine {
+public final class StatementExecuteGroupEngine extends ExecuteGroupEngine<StatementExecuteUnit> {
     
     public StatementExecuteGroupEngine(final int maxConnectionsSizePerQuery) {
         super(maxConnectionsSizePerQuery);
     }
     
     @Override
-    protected Statement createStatement(final String sql, final List<Object> parameters, final ExecutionConnection executionConnection, final Connection connection, 
-                                        final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
+    protected StatementExecuteUnit createStorageResourceExecuteUnit(final ExecutionUnit executionUnit, final ExecutionConnection executionConnection, final Connection connection, 
+                                                                          final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
+        return new StatementExecuteUnit(executionUnit, createStatement(executionConnection, connection, connectionMode, statementOption), connectionMode);
+    }
+    
+    private Statement createStatement(final ExecutionConnection executionConnection, final Connection connection, 
+                                      final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
         return executionConnection.createStatement(connection, connectionMode, statementOption);
     }
 }

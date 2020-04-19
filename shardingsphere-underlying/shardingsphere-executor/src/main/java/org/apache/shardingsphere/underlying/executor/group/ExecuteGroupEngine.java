@@ -19,17 +19,16 @@ package org.apache.shardingsphere.underlying.executor.group;
 
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
+import org.apache.shardingsphere.underlying.executor.sql.StorageResourceExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ExecutionConnection;
 import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.StatementOption;
-import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -39,9 +38,11 @@ import java.util.Map.Entry;
 
 /**
  * Execute group engine.
+ * 
+ * @param <T> type of storage resource execute unit
  */
 @RequiredArgsConstructor
-public abstract class ExecuteGroupEngine {
+public abstract class ExecuteGroupEngine<T extends StorageResourceExecuteUnit> {
     
     private final int maxConnectionsSizePerQuery;
     
@@ -54,9 +55,9 @@ public abstract class ExecuteGroupEngine {
      * @return statement execute unit groups
      * @throws SQLException SQL exception
      */
-    public Collection<InputGroup<StatementExecuteUnit>> generate(final Collection<ExecutionUnit> executionUnits, 
-                                                                 final ExecutionConnection executionConnection, final StatementOption statementOption) throws SQLException {
-        Collection<InputGroup<StatementExecuteUnit>> result = new LinkedList<>();
+    public Collection<InputGroup<T>> generate(final Collection<ExecutionUnit> executionUnits,
+                                                                                   final ExecutionConnection executionConnection, final StatementOption statementOption) throws SQLException {
+        Collection<InputGroup<T>> result = new LinkedList<>();
         for (Entry<String, List<SQLUnit>> entry : generateSQLUnitGroups(executionUnits).entrySet()) {
             result.addAll(generateSQLExecuteGroups(entry.getKey(), entry.getValue(), executionConnection, statementOption));
         }
@@ -74,9 +75,9 @@ public abstract class ExecuteGroupEngine {
         return result;
     }
     
-    private List<InputGroup<StatementExecuteUnit>> generateSQLExecuteGroups(final String dataSourceName, final List<SQLUnit> sqlUnits,
+    private List<InputGroup<T>> generateSQLExecuteGroups(final String dataSourceName, final List<SQLUnit> sqlUnits,
                                                                             final ExecutionConnection executionConnection, final StatementOption statementOption) throws SQLException {
-        List<InputGroup<StatementExecuteUnit>> result = new LinkedList<>();
+        List<InputGroup<T>> result = new LinkedList<>();
         int desiredPartitionSize = Math.max(0 == sqlUnits.size() % maxConnectionsSizePerQuery ? sqlUnits.size() / maxConnectionsSizePerQuery : sqlUnits.size() / maxConnectionsSizePerQuery + 1, 1);
         List<List<SQLUnit>> sqlUnitPartitions = Lists.partition(sqlUnits, desiredPartitionSize);
         ConnectionMode connectionMode = maxConnectionsSizePerQuery < sqlUnits.size() ? ConnectionMode.CONNECTION_STRICTLY : ConnectionMode.MEMORY_STRICTLY;
@@ -88,17 +89,15 @@ public abstract class ExecuteGroupEngine {
         return result;
     }
     
-    private InputGroup<StatementExecuteUnit> generateSQLExecuteGroup(final String dataSourceName, final List<SQLUnit> sqlUnitGroup, final ExecutionConnection executionConnection,
+    private InputGroup<T> generateSQLExecuteGroup(final String dataSourceName, final List<SQLUnit> sqlUnitGroup, final ExecutionConnection executionConnection,
                                                                      final Connection connection, final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
-        List<StatementExecuteUnit> result = new LinkedList<>();
+        List<T> result = new LinkedList<>();
         for (SQLUnit each : sqlUnitGroup) {
-            ExecutionUnit executionUnit = new ExecutionUnit(dataSourceName, each);
-            Statement statement = createStatement(each.getSql(), each.getParameters(), executionConnection, connection, connectionMode, statementOption);
-            result.add(new StatementExecuteUnit(executionUnit, statement, connectionMode));
+            result.add(createStorageResourceExecuteUnit(new ExecutionUnit(dataSourceName, each), executionConnection, connection, connectionMode, statementOption));
         }
         return new InputGroup<>(result);
     }
     
-    protected abstract Statement createStatement(String sql, List<Object> parameters, ExecutionConnection executionConnection, 
-                                                 Connection connection, ConnectionMode connectionMode, StatementOption statementOption) throws SQLException;
+    protected abstract T createStorageResourceExecuteUnit(ExecutionUnit executionUnit, ExecutionConnection executionConnection, 
+                                                                                   Connection connection, ConnectionMode connectionMode, StatementOption statementOption) throws SQLException;
 }

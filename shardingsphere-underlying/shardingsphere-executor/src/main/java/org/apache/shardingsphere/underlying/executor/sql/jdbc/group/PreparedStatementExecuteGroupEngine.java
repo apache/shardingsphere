@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.underlying.executor.sql.jdbc.group;
 
+import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.group.ExecuteGroupEngine;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ExecutionConnection;
 import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.StatementOption;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ConnectionMode;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -30,14 +32,21 @@ import java.util.List;
 /**
  * Execute group builder for prepared statement.
  */
-public final class PreparedStatementExecuteGroupEngine extends ExecuteGroupEngine {
+public final class PreparedStatementExecuteGroupEngine extends ExecuteGroupEngine<StatementExecuteUnit> {
     
     public PreparedStatementExecuteGroupEngine(final int maxConnectionsSizePerQuery) {
         super(maxConnectionsSizePerQuery);
     }
     
     @Override
-    protected PreparedStatement createStatement(final String sql, final List<Object> parameters, final ExecutionConnection executionConnection, final Connection connection,
+    protected StatementExecuteUnit createStorageResourceExecuteUnit(final ExecutionUnit executionUnit, final ExecutionConnection executionConnection, final Connection connection, 
+                                                                          final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
+        PreparedStatement preparedStatement = createPreparedStatement(
+                executionUnit.getSqlUnit().getSql(), executionUnit.getSqlUnit().getParameters(), executionConnection, connection, connectionMode, statementOption);
+        return new StatementExecuteUnit(executionUnit, preparedStatement, connectionMode);
+    }
+    
+    private PreparedStatement createPreparedStatement(final String sql, final List<Object> parameters, final ExecutionConnection executionConnection, final Connection connection,
                                                 final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
         return executionConnection.createPreparedStatement(sql, parameters, connection, connectionMode, statementOption);
     }
