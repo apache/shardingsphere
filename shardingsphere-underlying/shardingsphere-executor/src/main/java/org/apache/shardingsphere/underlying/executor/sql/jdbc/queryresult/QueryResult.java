@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.executor.sql.queryresult;
+package org.apache.shardingsphere.underlying.executor.sql.jdbc.queryresult;
 
 import java.io.InputStream;
 import java.sql.SQLException;

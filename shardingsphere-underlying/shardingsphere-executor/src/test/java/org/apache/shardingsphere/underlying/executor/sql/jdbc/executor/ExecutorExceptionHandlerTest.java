@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.executor.sql.executor;
+package org.apache.shardingsphere.underlying.executor.sql.jdbc.executor;
 
 import lombok.SneakyThrows;
 import org.junit.After;

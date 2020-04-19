@@ -19,13 +19,13 @@ package org.apache.shardingsphere.shardingjdbc.executor.batch;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.executor.sql.executor.SQLExecutor;
-import org.apache.shardingsphere.underlying.executor.sql.executor.SQLExecutorCallback;
-import org.apache.shardingsphere.underlying.executor.sql.executor.ExecutorExceptionHandler;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.executor.SQLExecutor;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.executor.SQLExecutorCallback;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.executor.ExecutorExceptionHandler;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.executor.sql.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.executor.sql.connection.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
@@ -174,7 +174,7 @@ public final class BatchPreparedStatementExecutor {
     public List<Statement> getStatements() {
         List<Statement> result = new LinkedList<>();
         for (InputGroup<StatementExecuteUnit> each : inputGroups) {
-            result.addAll(each.getInputs().stream().map(StatementExecuteUnit::getStatement).collect(Collectors.toList()));
+            result.addAll(each.getInputs().stream().map(StatementExecuteUnit::getStorageResource).collect(Collectors.toList()));
         }
         return result;
     }
@@ -199,7 +199,7 @@ public final class BatchPreparedStatementExecutor {
     
     private Optional<StatementExecuteUnit> getStatementExecuteUnit(final Statement statement, final InputGroup<StatementExecuteUnit> executeGroup) {
         for (StatementExecuteUnit each : executeGroup.getInputs()) {
-            if (each.getStatement().equals(statement)) {
+            if (each.getStorageResource().equals(statement)) {
                 return Optional.of(each);
             }
         }

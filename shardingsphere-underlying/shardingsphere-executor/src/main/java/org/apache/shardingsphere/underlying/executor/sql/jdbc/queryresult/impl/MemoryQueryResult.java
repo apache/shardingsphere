@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.executor.sql.queryresult.impl;
+package org.apache.shardingsphere.underlying.executor.sql.jdbc.queryresult.impl;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.underlying.executor.sql.queryresult.QueryResult;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.queryresult.QueryResult;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

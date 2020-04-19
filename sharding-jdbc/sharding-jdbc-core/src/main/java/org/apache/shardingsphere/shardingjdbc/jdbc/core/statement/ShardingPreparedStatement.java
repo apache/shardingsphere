@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.executor.sql.executor.SQLExecutor;
-import org.apache.shardingsphere.underlying.executor.sql.queryresult.impl.StreamQueryResult;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.executor.SQLExecutor;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.queryresult.impl.StreamQueryResult;
 import org.apache.shardingsphere.shardingjdbc.executor.PreparedStatementExecutor;
 import org.apache.shardingsphere.shardingjdbc.executor.batch.BatchPreparedStatementExecutor;
 import org.apache.shardingsphere.shardingjdbc.executor.batch.BatchRouteUnit;
@@ -38,9 +38,9 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
-import org.apache.shardingsphere.underlying.executor.sql.queryresult.QueryResult;
-import org.apache.shardingsphere.underlying.executor.sql.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.executor.sql.connection.StatementOption;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.queryresult.QueryResult;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContextBuilder;
 import org.apache.shardingsphere.underlying.executor.group.ExecuteGroupEngine;
@@ -248,7 +248,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     private void cacheStatements(final Collection<InputGroup<StatementExecuteUnit>> inputGroups) {
         for (InputGroup<StatementExecuteUnit> each : inputGroups) {
-            statements.addAll(each.getInputs().stream().map(statementExecuteUnit -> (PreparedStatement) statementExecuteUnit.getStatement()).collect(Collectors.toList()));
+            statements.addAll(each.getInputs().stream().map(statementExecuteUnit -> (PreparedStatement) statementExecuteUnit.getStorageResource()).collect(Collectors.toList()));
             parameterSets.addAll(each.getInputs().stream().map(input -> input.getExecutionUnit().getSqlUnit().getParameters()).collect(Collectors.toList()));
         }
     }

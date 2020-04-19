@@ -19,12 +19,12 @@ package org.apache.shardingsphere.underlying.executor.group;
 
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.executor.sql.connection.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
-import org.apache.shardingsphere.underlying.executor.sql.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.executor.sql.connection.ExecutionConnection;
-import org.apache.shardingsphere.underlying.executor.sql.connection.StatementOption;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ExecutionConnection;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 
 import java.sql.Connection;

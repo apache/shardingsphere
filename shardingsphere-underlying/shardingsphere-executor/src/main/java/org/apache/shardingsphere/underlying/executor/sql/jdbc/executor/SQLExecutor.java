@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.executor.sql.executor;
+package org.apache.shardingsphere.underlying.executor.sql.jdbc.executor;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.executor.sql.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.StatementExecuteUnit;
 import org.apache.shardingsphere.underlying.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 

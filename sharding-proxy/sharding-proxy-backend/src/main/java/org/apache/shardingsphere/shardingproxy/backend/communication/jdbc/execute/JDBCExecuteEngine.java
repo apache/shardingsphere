@@ -35,10 +35,10 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.group.ExecuteGroupEngine;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
-import org.apache.shardingsphere.underlying.executor.sql.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.executor.sql.connection.StatementOption;
-import org.apache.shardingsphere.underlying.executor.sql.executor.ExecutorExceptionHandler;
-import org.apache.shardingsphere.underlying.executor.sql.executor.SQLExecutor;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.StatementOption;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.executor.ExecutorExceptionHandler;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.executor.SQLExecutor;
 
 import java.sql.SQLException;
 import java.util.Collection;
