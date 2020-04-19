@@ -36,6 +36,6 @@ public final class MySQLCapabilityFlagTest {
     
     @Test
     public void assertCalculateHandshakeCapabilityFlagsUpper() {
-        assertThat(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper(), is(0));
+        assertThat(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper(), is(0x0008));
     }
 }

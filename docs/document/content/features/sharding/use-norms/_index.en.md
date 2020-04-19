@@ -1,6 +1,5 @@
 +++
 pre = "<b>3.1.3. </b>"
-toc = true
 title = "Use Norms"
 weight = 3
 +++

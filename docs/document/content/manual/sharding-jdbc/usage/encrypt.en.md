@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "Data Masking"
 weight = 6
 +++

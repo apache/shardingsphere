@@ -52,7 +52,8 @@ public final class ScalingJobController {
         }
         List<SyncTaskController> syncTaskControllers = new LinkedList<>();
         for (int i = 0; i < shardingScalingJob.getSyncConfigurations().size(); i++) {
-            SyncTaskController syncTaskController = new SyncTaskController(shardingScalingJob.getSyncConfigurations().get(i), shardingScalingJob.getInventoryDataTasks().get(i));
+            SyncTaskController syncTaskController = new SyncTaskController(
+                shardingScalingJob.getSyncConfigurations().get(i), shardingScalingJob.getInventoryDataTasks().get(i), shardingScalingJob.getIncrementalDataTasks().get(i));
             syncTaskController.start();
             syncTaskControllers.add(syncTaskController);
         }

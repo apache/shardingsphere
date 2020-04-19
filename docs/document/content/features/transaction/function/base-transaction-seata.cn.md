@@ -1,6 +1,5 @@
 +++
 pre = "<b>3.4.2.3 </b>"
-toc = true
 title = "柔性事务-Seata"
 weight = 3
 +++

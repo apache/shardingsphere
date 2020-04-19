@@ -1,6 +1,5 @@
 +++
 pre = "<b>3.3.3. </b>"
-toc = true
 title = "Available Config Center/Registry Center"
 weight = 3
 +++

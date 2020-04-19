@@ -19,15 +19,17 @@ package org.apache.shardingsphere.shardingjdbc.spring.namespace.handler;
 
 import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.SPIBeanDefinitionParserTag;
 import org.apache.shardingsphere.shardingjdbc.spring.namespace.parser.KeyGenerateAlgorithmBeanDefinitionParser;
+import org.apache.shardingsphere.shardingjdbc.spring.namespace.parser.ShardingAlgorithmBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
  * Spring namespace handler for SPI.
  */
 public final class SPINamespaceHandler extends NamespaceHandlerSupport {
-    
+
     @Override
     public void init() {
         registerBeanDefinitionParser(SPIBeanDefinitionParserTag.KEY_GENERATE_ALGORITHM_TAG, new KeyGenerateAlgorithmBeanDefinitionParser());
+        registerBeanDefinitionParser(SPIBeanDefinitionParserTag.SHARDING_ALGORITHM_TAG, new ShardingAlgorithmBeanDefinitionParser());
     }
 }

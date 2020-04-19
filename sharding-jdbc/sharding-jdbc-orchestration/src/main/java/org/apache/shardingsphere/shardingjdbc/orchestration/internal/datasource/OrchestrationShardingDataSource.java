@@ -27,6 +27,7 @@ import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChang
 import org.apache.shardingsphere.orchestration.core.common.event.ShardingRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenter;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
+import org.apache.shardingsphere.orchestration.core.metadatacenter.event.MetaDataChangedEvent;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
@@ -39,6 +40,7 @@ import org.apache.shardingsphere.orchestration.core.common.rule.OrchestrationMas
 import org.apache.shardingsphere.orchestration.core.common.rule.OrchestrationShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
+import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -62,19 +64,35 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
         dataSource = new ShardingDataSource(DataSourceConverter.getDataSourceMap(dataSourceConfigurations), new OrchestrationShardingRule(shardingRuleConfig, dataSourceConfigurations.keySet()),
                 configService.loadProperties());
         initShardingOrchestrationFacade();
+        persistMetaData(dataSource.getRuntimeContext().getMetaData().getSchema());
     }
     
-    public OrchestrationShardingDataSource(final ShardingDataSource shardingDataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
+    public OrchestrationShardingDataSource(final ShardingDataSource shardingDataSource, final OrchestrationConfiguration orchestrationConfig) {
         super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(DefaultSchema.LOGIC_NAME)));
         dataSource = shardingDataSource;
         initShardingOrchestrationFacade(Collections.singletonMap(DefaultSchema.LOGIC_NAME, DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap())),
                 getRuleConfigurationMap(), dataSource.getRuntimeContext().getProperties().getProps());
+        persistMetaData(dataSource.getRuntimeContext().getMetaData().getSchema());
     }
     
     private Map<String, RuleConfiguration> getRuleConfigurationMap() {
         Map<String, RuleConfiguration> result = new LinkedHashMap<>(1, 1);
         result.put(DefaultSchema.LOGIC_NAME, dataSource.getRuntimeContext().getRule().getRuleConfiguration());
         return result;
+    }
+    
+    /**
+     * Renew meta data of the schema.
+     *
+     * @param event meta data changed event.
+     */
+    @Subscribe
+    public final synchronized void renew(final MetaDataChangedEvent event) {
+        for (String each : event.getSchemaNames()) {
+            if (DefaultSchema.LOGIC_NAME.equals(each)) {
+                dataSource.getRuntimeContext().setMetaData(new ShardingSphereMetaData(dataSource.getRuntimeContext().getMetaData().getDataSources(), event.getRuleSchemaMetaData()));
+            }
+        }
     }
     
     /**

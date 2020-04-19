@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling.mysql;
 
-import org.apache.shardingsphere.shardingscaling.core.exception.DatasourceCheckFailedException;
+import org.apache.shardingsphere.shardingscaling.core.exception.PrepareFailedException;
 import org.apache.shardingsphere.shardingscaling.core.preparer.checker.AbstractDataSourceChecker;
 
 import javax.sql.DataSource;
@@ -49,7 +49,7 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
             checkQueuePrivilege(connection, tableName);
             checkBinlogPrivilege(connection);
         } catch (SQLException e) {
-            throw new DatasourceCheckFailedException("Datasources privileges check failed!");
+            throw new PrepareFailedException("Datasources privileges check failed!");
         }
     }
     
@@ -58,7 +58,7 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
             if (tables.next()) {
                 return tables.getString(3);
             }
-            throw new DatasourceCheckFailedException("No tables find in the source datasource.");
+            throw new PrepareFailedException("No tables find in the source datasource.");
         }
     }
     
@@ -66,7 +66,7 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
         try (PreparedStatement preparedStatement = connection.prepareStatement(String.format(QUERY_SQL, tableName))) {
             preparedStatement.executeQuery();
         } catch (SQLException e) {
-            throw new DatasourceCheckFailedException("Source datasource is lack of query privileges.");
+            throw new PrepareFailedException("Source datasource is lack of query privileges.");
         }
     }
     
@@ -74,10 +74,10 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
         try (PreparedStatement preparedStatement = connection.prepareStatement(SHOW_MASTER_STATUS_SQL);
             ResultSet resultSet = preparedStatement.executeQuery()) {
             if (!resultSet.next()) {
-                throw new DatasourceCheckFailedException("Source datasource do not open binlog.");
+                throw new PrepareFailedException("Source datasource do not open binlog.");
             }
         } catch (SQLException e) {
-            throw new DatasourceCheckFailedException("Source datasource is lack of replication(binlog) privileges.");
+            throw new PrepareFailedException("Source datasource is lack of replication(binlog) privileges.");
         }
     }
 }

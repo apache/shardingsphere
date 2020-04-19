@@ -29,12 +29,12 @@
                         ">
     <import resource="../datasource/dataSource.xml" />
     <import resource="../datasource/masterSlaveDataSource.xml" />
-    
-    <bean id="standardModuloDatabaseShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.orchestration.spring.algorithm.StandardModuloDatabaseShardingAlgorithm" />
-    <bean id="standardModuloTableShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.orchestration.spring.algorithm.StandardModuloTableShardingAlgorithm" />
-    <bean id="defaultComplexKeysShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.orchestration.spring.algorithm.DefaultComplexKeysShardingAlgorithm" />
-    <bean id="defaultHintShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.orchestration.spring.algorithm.DefaultHintShardingAlgorithm" />
-    
+
+    <spi:sharding-algorithm id="standardModuloDatabaseShardingAlgorithm" type="STANDARD_TEST_DB"/>
+    <spi:sharding-algorithm id="standardModuloTableShardingAlgorithm" type="STANDARD_TEST_TBL"/>
+    <spi:sharding-algorithm id="defaultComplexKeysShardingAlgorithm" type="COMPLEX_TEST"/>
+    <spi:sharding-algorithm id="defaultHintShardingAlgorithm" type="HINT_TEST"/>
+
     <spi:key-generate-algorithm id="incrementAlgorithm" type="INCREMENT" />
     
     <sharding:standard-strategy id="standardStrategy" sharding-column="user_id" algorithm-ref="standardModuloDatabaseShardingAlgorithm" />

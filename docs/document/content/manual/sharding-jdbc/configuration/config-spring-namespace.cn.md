@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "Spring命名空间配置"
 weight = 4
 +++

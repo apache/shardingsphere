@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "Build"
 weight = 1
 +++

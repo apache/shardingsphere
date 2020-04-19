@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingscaling.mysql;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.shardingscaling.core.exception.DatasourceCheckFailedException;
+import org.apache.shardingsphere.shardingscaling.core.exception.PrepareFailedException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -98,7 +98,7 @@ public class MySQLDataSourceCheckerTest {
         when(resultSet.next()).thenReturn(false);
         try {
             dataSourceChecker.checkPrivilege(dataSources);
-        } catch (DatasourceCheckFailedException checkFailedEx) {
+        } catch (PrepareFailedException checkFailedEx) {
             assertThat(checkFailedEx.getMessage(), is("No tables find in the source datasource."));
         }
     }
@@ -108,7 +108,7 @@ public class MySQLDataSourceCheckerTest {
         when(preparedStatement.executeQuery()).thenThrow(new SQLException());
         try {
             dataSourceChecker.checkPrivilege(dataSources);
-        } catch (DatasourceCheckFailedException checkFailedEx) {
+        } catch (PrepareFailedException checkFailedEx) {
             assertThat(checkFailedEx.getMessage(), is("Source datasource is lack of query privileges."));
         }
     }
@@ -118,7 +118,7 @@ public class MySQLDataSourceCheckerTest {
         when(connection.prepareStatement("SHOW MASTER STATUS")).thenThrow(new SQLException());
         try {
             dataSourceChecker.checkPrivilege(dataSources);
-        } catch (DatasourceCheckFailedException checkFailedEx) {
+        } catch (PrepareFailedException checkFailedEx) {
             assertThat(checkFailedEx.getMessage(), is("Source datasource is lack of replication(binlog) privileges."));
         }
     }
@@ -128,7 +128,7 @@ public class MySQLDataSourceCheckerTest {
         when(resultSet.next()).thenReturn(true, false);
         try {
             dataSourceChecker.checkPrivilege(dataSources);
-        } catch (DatasourceCheckFailedException checkFailedEx) {
+        } catch (PrepareFailedException checkFailedEx) {
             assertThat(checkFailedEx.getMessage(), is("Source datasource do not open binlog."));
         }
     }

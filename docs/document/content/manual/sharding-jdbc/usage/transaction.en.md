@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "Distributed Transaction"
 weight = 5
 +++

@@ -28,10 +28,10 @@
                         http://shardingsphere.apache.org/schema/shardingsphere/spi/spi.xsd
                         ">
     <import resource="datasource/dataSource.xml" />
-    
-    <bean id="standardModuloDatabaseShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.algorithm.StandardModuloDatabaseShardingAlgorithm" />
-    <bean id="standardModuloTableShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.algorithm.StandardModuloTableShardingAlgorithm" />
-    
+
+    <spi:sharding-algorithm id="standardModuloDatabaseShardingAlgorithm" type="STANDARD_TEST_DB"/>
+    <spi:sharding-algorithm id="standardModuloTableShardingAlgorithm" type="STANDARD_TEST_TBL"/>
+
     <spi:key-generate-algorithm id="incrementAlgorithm" type="INCREMENT" />
     <spi:key-generate-algorithm id="decrementAlgorithm" type="DECREMENT" />
     

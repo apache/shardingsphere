@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "Rewrite Engine"
 weight = 3
 +++
