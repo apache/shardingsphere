@@ -31,4 +31,10 @@ public final class SPIBeanDefinitionParserTag {
     public static final String KEY_GENERATE_ALGORITHM_TYPE_ATTRIBUTE = "type";
     
     public static final String KEY_GENERATE_ALGORITHM_PROPERTY_REF_ATTRIBUTE = "props-ref";
+
+    public static final String SHARDING_ALGORITHM_TAG = "sharding-algorithm";
+
+    public static final String SHARDING_ALGORITHM_TYPE_ATTRIBUTE = "type";
+
+    public static final String SHARDING_ALGORITHM_PROPERTY_REF_ATTRIBUTE = "props-ref";
 }
