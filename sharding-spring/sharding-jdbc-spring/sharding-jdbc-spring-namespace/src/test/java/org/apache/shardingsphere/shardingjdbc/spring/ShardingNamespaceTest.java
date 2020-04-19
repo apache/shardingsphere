@@ -17,21 +17,8 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Map;
-import javax.sql.DataSource;
 import org.apache.shardingsphere.api.config.sharding.strategy.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.HintShardingStrategyConfiguration;
-import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
@@ -57,6 +44,19 @@ import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+
+import javax.sql.DataSource;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = "classpath:META-INF/rdb/shardingNamespace.xml")
 public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
@@ -92,9 +92,9 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @Test
     public void assertInlineStrategy() {
-        InlineShardingStrategyConfiguration inlineStrategy = applicationContext.getBean("inlineStrategy", InlineShardingStrategyConfiguration.class);
+        StandardShardingStrategyConfiguration inlineStrategy = applicationContext.getBean("inlineStrategy", StandardShardingStrategyConfiguration.class);
         assertThat(inlineStrategy.getShardingColumn(), is("order_id"));
-        assertThat(inlineStrategy.getAlgorithmExpression(), is("t_order_${order_id % 4}"));
+        assertThat(inlineStrategy.getShardingAlgorithm().getProperties().getProperty("algorithm.expression"), is("t_order_${order_id % 4}"));
     }
     
     @Test
@@ -159,7 +159,7 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
         assertTrue(Arrays.equals(shardingRule.getDefaultDatabaseShardingStrategy().getShardingColumns().toArray(new String[]{}), 
                 new String[]{applicationContext.getBean("standardStrategy", StandardShardingStrategyConfiguration.class).getShardingColumn()}));
         assertTrue(Arrays.equals(shardingRule.getDefaultTableShardingStrategy().getShardingColumns().toArray(new String[]{}), 
-                new String[]{applicationContext.getBean("inlineStrategy", InlineShardingStrategyConfiguration.class).getShardingColumn()}));
+                new String[]{applicationContext.getBean("inlineStrategy", StandardShardingStrategyConfiguration.class).getShardingColumn()}));
         assertThat(shardingRule.getDefaultKeyGenerateAlgorithm(), instanceOf(IncrementKeyGenerateAlgorithm.class));
     }
     
@@ -181,7 +181,7 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
         assertTrue(Arrays.equals(tableRule.getDatabaseShardingStrategy().getShardingColumns().toArray(new String[]{}), 
                 new String[]{applicationContext.getBean("standardStrategy", StandardShardingStrategyConfiguration.class).getShardingColumn()}));
         assertTrue(Arrays.equals(tableRule.getTableShardingStrategy().getShardingColumns().toArray(new String[]{}), 
-                new String[]{applicationContext.getBean("inlineStrategy", InlineShardingStrategyConfiguration.class).getShardingColumn()}));
+                new String[]{applicationContext.getBean("inlineStrategy", StandardShardingStrategyConfiguration.class).getShardingColumn()}));
         assertTrue(tableRule.getGenerateKeyColumn().isPresent());
         assertThat(tableRule.getGenerateKeyColumn().get(), is("order_id"));
         assertThat(tableRule.getKeyGenerateAlgorithm(), instanceOf(IncrementKeyGenerateAlgorithm.class));
