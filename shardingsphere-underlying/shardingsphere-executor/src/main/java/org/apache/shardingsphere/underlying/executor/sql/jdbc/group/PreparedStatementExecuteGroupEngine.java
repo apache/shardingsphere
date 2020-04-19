@@ -30,7 +30,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Execute group builder for prepared statement.
+ * Execute group engine for prepared statement.
  */
 public final class PreparedStatementExecuteGroupEngine extends ExecuteGroupEngine<StatementExecuteUnit> {
     

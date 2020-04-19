@@ -29,7 +29,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * Execute group builder for statement.
+ * Execute group engine for statement.
  */
 public final class StatementExecuteGroupEngine extends ExecuteGroupEngine<StatementExecuteUnit> {
     
