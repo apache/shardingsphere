@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.executor.sql.jdbc.connection;
+package org.apache.shardingsphere.underlying.executor.sql.jdbc.group;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.underlying.executor.sql.StorageResourceOption;
 
 import java.sql.ResultSet;
 
@@ -28,7 +29,7 @@ import java.sql.ResultSet;
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public final class StatementOption {
+public final class StatementOption implements StorageResourceOption {
     
     private final int resultSetType;
     

@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.executor.SQLExecutor;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.queryresult.impl.StreamQueryResult;
 import org.apache.shardingsphere.shardingjdbc.executor.PreparedStatementExecutor;
 import org.apache.shardingsphere.shardingjdbc.executor.batch.BatchPreparedStatementExecutor;
 import org.apache.shardingsphere.shardingjdbc.executor.batch.BatchRouteUnit;
@@ -38,15 +36,16 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.queryresult.QueryResult;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContextBuilder;
-import org.apache.shardingsphere.underlying.executor.group.ExecuteGroupEngine;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.group.PreparedStatementExecuteGroupEngine;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 import org.apache.shardingsphere.underlying.executor.log.SQLLogger;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.executor.SQLExecutor;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.group.PreparedStatementExecuteGroupEngine;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.group.StatementOption;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.queryresult.QueryResult;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.queryresult.impl.StreamQueryResult;
 import org.apache.shardingsphere.underlying.merge.MergeEngine;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
@@ -138,7 +137,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         try {
             clearPrevious();
             executionContext = createExecutionContext();
-            ExecuteGroupEngine executeGroupEngine = new PreparedStatementExecuteGroupEngine(
+            PreparedStatementExecuteGroupEngine executeGroupEngine = new PreparedStatementExecuteGroupEngine(
                     connection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY));
             Collection<InputGroup<StatementExecuteUnit>> inputGroups = executeGroupEngine.generate(executionContext.getExecutionUnits(), connection, statementOption);
             cacheStatements(inputGroups);
@@ -157,7 +156,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         try {
             clearPrevious();
             executionContext = createExecutionContext();
-            ExecuteGroupEngine executeGroupEngine = new PreparedStatementExecuteGroupEngine(
+            PreparedStatementExecuteGroupEngine executeGroupEngine = new PreparedStatementExecuteGroupEngine(
                     connection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY));
             Collection<InputGroup<StatementExecuteUnit>> inputGroups = executeGroupEngine.generate(executionContext.getExecutionUnits(), connection, statementOption);
             cacheStatements(inputGroups);
@@ -173,7 +172,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         try {
             clearPrevious();
             executionContext = createExecutionContext();
-            ExecuteGroupEngine executeGroupEngine = new PreparedStatementExecuteGroupEngine(
+            PreparedStatementExecuteGroupEngine executeGroupEngine = new PreparedStatementExecuteGroupEngine(
                     connection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY));
             Collection<InputGroup<StatementExecuteUnit>> inputGroups = executeGroupEngine.generate(executionContext.getExecutionUnits(), connection, statementOption);
             cacheStatements(inputGroups);
@@ -313,7 +312,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     }
     
     private void initBatchPreparedStatementExecutor() throws SQLException {
-        ExecuteGroupEngine executeGroupEngine = new PreparedStatementExecuteGroupEngine(
+        PreparedStatementExecuteGroupEngine executeGroupEngine = new PreparedStatementExecuteGroupEngine(
                 connection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY));
         batchPreparedStatementExecutor.init(executeGroupEngine.generate(
                 new ArrayList<>(batchPreparedStatementExecutor.getRouteUnits()).stream().map(BatchRouteUnit::getExecutionUnit).collect(Collectors.toList()), connection, statementOption));

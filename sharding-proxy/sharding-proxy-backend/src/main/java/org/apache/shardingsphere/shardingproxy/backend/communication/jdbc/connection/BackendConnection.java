@@ -32,7 +32,7 @@ import org.apache.shardingsphere.underlying.common.database.type.dialect.MySQLDa
 import org.apache.shardingsphere.underlying.common.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ExecutionConnection;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.StatementOption;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.group.StatementOption;
 import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ConnectionMode;
 
 import java.sql.Connection;

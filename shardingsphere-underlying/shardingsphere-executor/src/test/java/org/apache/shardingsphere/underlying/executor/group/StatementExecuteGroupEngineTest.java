@@ -22,7 +22,7 @@ import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
 import org.apache.shardingsphere.underlying.executor.sql.jdbc.StatementExecuteUnit;
 import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ExecutionConnection;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.StatementOption;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.group.StatementOption;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 import org.apache.shardingsphere.underlying.executor.sql.jdbc.group.StatementExecuteGroupEngine;
 import org.junit.Test;
@@ -45,7 +45,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class StatementExecuteGroupEngineTest {
     
-    private ExecuteGroupEngine executeGroupEngine;
+    private StatementExecuteGroupEngine executeGroupEngine;
     
     @Test
     public void assertGetExecuteUnitGroupForOneShardMemoryStrictly() throws SQLException {

@@ -22,7 +22,6 @@ import org.apache.shardingsphere.underlying.executor.group.ExecuteGroupEngine;
 import org.apache.shardingsphere.underlying.executor.sql.jdbc.StatementExecuteUnit;
 import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ExecutionConnection;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.StatementOption;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -32,7 +31,7 @@ import java.util.List;
 /**
  * Execute group engine for prepared statement.
  */
-public final class PreparedStatementExecuteGroupEngine extends ExecuteGroupEngine<StatementExecuteUnit> {
+public final class PreparedStatementExecuteGroupEngine extends ExecuteGroupEngine<StatementExecuteUnit, StatementOption> {
     
     public PreparedStatementExecuteGroupEngine(final int maxConnectionsSizePerQuery) {
         super(maxConnectionsSizePerQuery);
