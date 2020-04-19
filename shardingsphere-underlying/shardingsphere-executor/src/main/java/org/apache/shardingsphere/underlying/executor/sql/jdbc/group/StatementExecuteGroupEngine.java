@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.executor.group;
+package org.apache.shardingsphere.underlying.executor.sql.jdbc.group;
 
+import org.apache.shardingsphere.underlying.executor.group.ExecuteGroupEngine;
 import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ExecutionConnection;
 import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ConnectionMode;

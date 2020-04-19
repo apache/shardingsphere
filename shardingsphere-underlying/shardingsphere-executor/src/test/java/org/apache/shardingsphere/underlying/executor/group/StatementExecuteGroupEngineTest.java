@@ -24,6 +24,7 @@ import org.apache.shardingsphere.underlying.executor.sql.jdbc.StatementExecuteUn
 import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ExecutionConnection;
 import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.group.StatementExecuteGroupEngine;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;

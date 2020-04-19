@@ -38,7 +38,7 @@ import org.apache.shardingsphere.underlying.executor.context.ExecutionContextBui
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
 import org.apache.shardingsphere.underlying.executor.group.ExecuteGroupEngine;
-import org.apache.shardingsphere.underlying.executor.group.PreparedStatementExecuteGroupEngine;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.group.PreparedStatementExecuteGroupEngine;
 import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.underlying.rewrite.engine.result.GenericSQLRewriteResult;
 import org.apache.shardingsphere.underlying.rewrite.engine.result.SQLRewriteResult;

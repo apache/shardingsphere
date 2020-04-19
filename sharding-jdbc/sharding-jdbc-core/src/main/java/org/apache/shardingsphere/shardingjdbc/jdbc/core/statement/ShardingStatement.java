@@ -41,7 +41,7 @@ import org.apache.shardingsphere.underlying.executor.sql.jdbc.StatementExecuteUn
 import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.StatementOption;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContextBuilder;
-import org.apache.shardingsphere.underlying.executor.group.StatementExecuteGroupEngine;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.group.StatementExecuteGroupEngine;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 import org.apache.shardingsphere.underlying.executor.log.SQLLogger;
 import org.apache.shardingsphere.underlying.merge.MergeEngine;
