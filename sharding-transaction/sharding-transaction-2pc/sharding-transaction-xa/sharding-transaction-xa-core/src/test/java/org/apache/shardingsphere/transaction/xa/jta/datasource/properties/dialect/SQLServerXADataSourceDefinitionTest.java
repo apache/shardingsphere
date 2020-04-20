@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect;
 
-import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -31,15 +29,5 @@ public final class SQLServerXADataSourceDefinitionTest {
     @Test
     public void assertGetXADriverClassName() {
         assertThat(new SQLServerXADataSourceDefinition().getXADriverClassName(), is(Collections.singletonList("com.microsoft.sqlserver.jdbc.SQLServerXADataSource")));
-    }
-    
-    @Test
-    public void assertGetXAProperties() {
-        Properties actual = new SQLServerXADataSourceDefinition().getXAProperties(new DatabaseAccessConfiguration("jdbc:sqlserver://db.sqlserver:1433;DatabaseName=test_db", "root", "root"));
-        assertThat(actual.getProperty("user"), is("root"));
-        assertThat(actual.getProperty("password"), is("root"));
-        assertThat(actual.getProperty("serverName"), is("db.sqlserver"));
-        assertThat(actual.getProperty("portNumber"), is("1433"));
-        assertThat(actual.getProperty("databaseName"), is("test_db"));
     }
 }

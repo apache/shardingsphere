@@ -68,7 +68,7 @@ public final class XATransactionDataSourceTest {
     public void assertGetAtomikosConnection() throws SQLException, RollbackException, SystemException {
         DataSource dataSource = DataSourceUtils.build(AtomikosDataSourceBean.class, DatabaseTypes.getActualDatabaseType("H2"), "ds1");
         XATransactionDataSource transactionDataSource = new XATransactionDataSource(DatabaseTypes.getActualDatabaseType("H2"), "ds1", dataSource, xaTransactionManager);
-        try (Connection connection = transactionDataSource.getConnection()) {
+        try (Connection ignored = transactionDataSource.getConnection()) {
             verify(xaTransactionManager, times(0)).getTransactionManager();
         }
     }
@@ -77,11 +77,11 @@ public final class XATransactionDataSourceTest {
     public void assertGetHikariConnection() throws SQLException, RollbackException, SystemException {
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, DatabaseTypes.getActualDatabaseType("H2"), "ds1");
         XATransactionDataSource transactionDataSource = new XATransactionDataSource(DatabaseTypes.getActualDatabaseType("H2"), "ds1", dataSource, xaTransactionManager);
-        try (Connection connection = transactionDataSource.getConnection()) {
+        try (Connection ignored = transactionDataSource.getConnection()) {
             verify(transaction).enlistResource(ArgumentMatchers.any(SingleXAResource.class));
             verify(transaction).registerSynchronization(ArgumentMatchers.any(Synchronization.class));
         }
-        try (Connection connection = transactionDataSource.getConnection()) {
+        try (Connection ignored = transactionDataSource.getConnection()) {
             verify(transaction).enlistResource(ArgumentMatchers.any(SingleXAResource.class));
             verify(transaction).registerSynchronization(ArgumentMatchers.any(Synchronization.class));
         }
@@ -89,8 +89,8 @@ public final class XATransactionDataSourceTest {
     
     @Test
     public void assertCloseAtomikosDataSourceBean() {
-        DataSource dataSource = DataSourceUtils.build(AtomikosDataSourceBean.class, DatabaseTypes.getActualDatabaseType("H2"), "ds1");
-        XATransactionDataSource transactionDataSource = new XATransactionDataSource(DatabaseTypes.getActualDatabaseType("H2"), "ds1", dataSource, xaTransactionManager);
+        DataSource dataSource = DataSourceUtils.build(AtomikosDataSourceBean.class, DatabaseTypes.getActualDatabaseType("H2"), "ds11");
+        XATransactionDataSource transactionDataSource = new XATransactionDataSource(DatabaseTypes.getActualDatabaseType("H2"), "ds11", dataSource, xaTransactionManager);
         transactionDataSource.close();
         verify(xaTransactionManager, times(0)).removeRecoveryResource(anyString(), any(XADataSource.class));
        
