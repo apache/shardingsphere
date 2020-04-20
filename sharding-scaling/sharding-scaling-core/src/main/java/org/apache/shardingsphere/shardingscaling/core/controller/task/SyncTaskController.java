@@ -19,10 +19,13 @@ package org.apache.shardingsphere.shardingscaling.core.controller.task;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingscaling.core.config.DataSourceConfiguration;
+import org.apache.shardingsphere.shardingscaling.core.config.ScalingContext;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.shardingscaling.core.execute.EventType;
+import org.apache.shardingsphere.shardingscaling.core.execute.engine.ExecuteCallback;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.ShardingScalingExecutor;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTask;
 import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
 
@@ -88,14 +91,18 @@ public final class SyncTaskController implements Runnable {
     @Override
     public void run() {
         syncTaskControlStatus = SyncTaskControlStatus.MIGRATE_INVENTORY_DATA;
-        inventoryDataSyncTaskGroup.start(event -> {
-            log.info("inventory data migrate task {} finished, execute result: {}", event.getTaskId(), event.getEventType().name());
-            if (EventType.EXCEPTION_EXIT.equals(event.getEventType())) {
+        ScalingContext.getInstance().getTaskExecuteEngine().submit((ShardingScalingExecutor) inventoryDataSyncTaskGroup, new ExecuteCallback() {
+            
+            @Override
+            public void onSuccess() {
+                executeIncrementalDataSyncTask();
+            }
+    
+            @Override
+            public void onFailure(final Throwable throwable) {
                 stop();
                 dataSourceManager.close();
                 syncTaskControlStatus = SyncTaskControlStatus.MIGRATE_INVENTORY_DATA_FAILURE;
-            } else {
-                executeIncrementalDataSyncTask();
             }
         });
     }

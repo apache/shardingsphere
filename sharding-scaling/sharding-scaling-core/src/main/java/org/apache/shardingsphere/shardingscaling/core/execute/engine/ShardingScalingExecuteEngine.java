@@ -25,6 +25,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 
+import java.util.concurrent.Future;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -45,9 +46,10 @@ public class ShardingScalingExecuteEngine {
      * Submit a {@code ShardingScalingExecutor} without callback to execute.
      *
      * @param shardingScalingExecutor sharding scaling executor
+     * @return execute future
      */
-    public void submit(final ShardingScalingExecutor shardingScalingExecutor) {
-        executorService.submit(shardingScalingExecutor);
+    public Future submit(final ShardingScalingExecutor shardingScalingExecutor) {
+        return executorService.submit(shardingScalingExecutor);
     }
     
     /**
@@ -55,10 +57,11 @@ public class ShardingScalingExecuteEngine {
      *
      * @param shardingScalingExecutor sharding scaling executor
      * @param executeCallback execute callback
+     * @return execute future
      */
-    public void submit(final ShardingScalingExecutor shardingScalingExecutor, final ExecuteCallback executeCallback) {
-        ListenableFuture future = executorService.submit(shardingScalingExecutor);
-        Futures.addCallback(future, new FutureCallback<Object>() {
+    public Future submit(final ShardingScalingExecutor shardingScalingExecutor, final ExecuteCallback executeCallback) {
+        ListenableFuture result = executorService.submit(shardingScalingExecutor);
+        Futures.addCallback(result, new FutureCallback<Object>() {
             
             @Override
             public void onSuccess(final Object result) {
@@ -70,5 +73,6 @@ public class ShardingScalingExecuteEngine {
                 executeCallback.onFailure(t);
             }
         });
+        return result;
     }
 }
