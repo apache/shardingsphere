@@ -22,7 +22,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncExecutor;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.ShardingScalingExecutor;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncExecutorGroup;
 
 import java.util.ArrayList;
@@ -52,7 +52,7 @@ public final class DefaultSyncTaskExecuteEngine implements SyncTaskExecuteEngine
     
     @Override
     public void submitGroup(final SyncExecutorGroup syncExecutorGroup) {
-        Iterable<ListenableFuture<Object>> listenableFutures = submit(syncExecutorGroup.getSyncExecutors());
+        Iterable<ListenableFuture<Object>> listenableFutures = submit(syncExecutorGroup.getShardingScalingExecutors());
         ListenableFuture allListenableFuture = Futures.allAsList(listenableFutures);
         Futures.addCallback(allListenableFuture, new FutureCallback<List<Object>>() {
         
@@ -69,17 +69,17 @@ public final class DefaultSyncTaskExecuteEngine implements SyncTaskExecuteEngine
     }
     
     @Override
-    public synchronized List<ListenableFuture<Object>> submit(final Collection<SyncExecutor> syncExecutors) {
-        if (null == syncExecutors || 0 == syncExecutors.size()) {
+    public synchronized List<ListenableFuture<Object>> submit(final Collection<ShardingScalingExecutor> shardingScalingExecutors) {
+        if (null == shardingScalingExecutors || 0 == shardingScalingExecutors.size()) {
             return Collections.emptyList();
         }
-        if (availableWorkerThread.get() < syncExecutors.size()) {
+        if (availableWorkerThread.get() < shardingScalingExecutors.size()) {
             throw new RejectedExecutionException("The execute engine does not have enough threads to execute sync executor.");
         }
-        List<ListenableFuture<Object>> result = new ArrayList<>(syncExecutors.size());
-        availableWorkerThread.addAndGet(-syncExecutors.size());
-        for (SyncExecutor syncExecutor : syncExecutors) {
-            ListenableFuture listenableFuture = executorService.submit(syncExecutor);
+        List<ListenableFuture<Object>> result = new ArrayList<>(shardingScalingExecutors.size());
+        availableWorkerThread.addAndGet(-shardingScalingExecutors.size());
+        for (ShardingScalingExecutor each : shardingScalingExecutors) {
+            ListenableFuture listenableFuture = executorService.submit(each);
             addReleaseWorkerThreadCallback(listenableFuture);
             result.add(listenableFuture);
         }
