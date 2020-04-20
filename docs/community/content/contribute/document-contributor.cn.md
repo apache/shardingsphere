@@ -17,12 +17,12 @@ chapter = true
 
 ## Fork文档项目
 
-Fork [ShardingSphere](https://github.com/apache/incubator-shardingsphere)的master分支。
+Fork [ShardingSphere](https://github.com/apache/shardingsphere)的master分支。
 
 ## 目录结构说明
 
 ```
-incubator-shardingsphere
+shardingsphere
 ├─docs
   ├─community
   │  ├─archetypes
@@ -70,12 +70,12 @@ incubator-shardingsphere
 
 ## 文档基础知识
 
-ShardingSphere文档使用Markdown编写，并使用Hugo进行处理生成html，部署于[asf-site](https://github.com/apache/incubator-shardingsphere-doc/tree/asf-site)分支，源代码位于[Github](https://github.com/apache/incubator-shardingsphere/tree/master) 。
+ShardingSphere文档使用Markdown编写，并使用Hugo进行处理生成html，部署于[asf-site](https://github.com/apache/shardingsphere-doc/tree/asf-site)分支，源代码位于[Github](https://github.com/apache/shardingsphere/tree/master) 。
 
 - [官方教程最新版本](https://shardingsphere.apache.org/document/current/cn/overview/)源存储在`/document/`
 - [社区介绍及贡献](https://shardingsphere.apache.org/community/cn/contribute/)相关文档源都储存在`/community/content/`
 
-您可以从[Github](https://github.com/apache/incubator-shardingsphere/issues)网站上提交问题，编辑内容和查看其他人的更改
+您可以从[Github](https://github.com/apache/shardingsphere/issues)网站上提交问题，编辑内容和查看其他人的更改
 
 ## 页面模板
 
@@ -95,7 +95,7 @@ ShardingSphere文档使用Markdown编写，并使用Hugo进行处理生成html�
 
 1. 提出建议修复的方式
 
-1. 在[Issues](https://github.com/apache/incubator-shardingsphere/issues)中`New issue` 提出您的问题
+1. 在[Issues](https://github.com/apache/shardingsphere/issues)中`New issue` 提出您的问题
 
 ## 提交更改
 

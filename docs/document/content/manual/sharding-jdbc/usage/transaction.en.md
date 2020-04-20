@@ -210,4 +210,4 @@ client {
 
 ## Distributed Transaction Example
 
-* [official example](https://github.com/apache/incubator-shardingsphere/tree/master/examples/sharding-jdbc-example/sharding-example)
+* [official example](https://github.com/apache/shardingsphere/tree/master/examples/sharding-jdbc-example/sharding-example)

@@ -200,7 +200,7 @@ https://ourcodeworld.com/articles/read/109/how-to-solve-filename-too-long-error-
 
 打开cmd.exe并执行下面的命令：
 ```
-tar zxvf apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz
+tar zxvf apache-shardingsphere-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz
 ```
 
 ## 15. Type is required 异常的解决方法?

@@ -196,7 +196,7 @@ The solutions:
 
 Open cmd.exe and execute the following command: 
 ```
-tar zxvf apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz
+tar zxvf apache-shardingsphere-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz
 ```
 
 ## 15.  How to solve `Type is required` error?

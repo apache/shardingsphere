@@ -9,7 +9,7 @@ weight = 4
 Inline expression identifier can can use `${...} ` or `$->{...}`, but the former one clashes with the placeholder in property documents of Spring, so it is suggested to use `$->{...}` for inline expression identifier under Spring environment.
 
 ## Example
-example: [shardingsphere-example](https://github.com/apache/incubator-shardingsphere-example/tree/dev/sharding-jdbc-example/sharding-example/sharding-spring-namespace-jpa-example/src/main/resources/META-INF)
+example: [shardingsphere-example](https://github.com/apache/shardingsphere-example/tree/dev/sharding-jdbc-example/sharding-example/sharding-spring-namespace-jpa-example/src/main/resources/META-INF)
 ### Sharding
 
 ```xml
