@@ -19,16 +19,15 @@ package org.apache.shardingsphere.shardingjdbc.executor.batch;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.executor.SQLExecutor;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.executor.SQLExecutorCallback;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.executor.ExecutorExceptionHandler;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ConnectionMode;
-import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.executor.ExecutorExceptionHandler;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.executor.SQLExecutor;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.executor.SQLExecutorCallback;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -76,11 +75,11 @@ public final class BatchPreparedStatementExecutor {
     /**
      * Add batch for route units.
      *
-     * @param executionContext execution context
+     * @param executionUnits execution units
      */
-    public void addBatchForRouteUnits(final ExecutionContext executionContext) {
-        handleOldBatchRouteUnits(createBatchRouteUnits(executionContext.getExecutionUnits()));
-        handleNewBatchRouteUnits(createBatchRouteUnits(executionContext.getExecutionUnits()));
+    public void addBatchForRouteUnits(final Collection<ExecutionUnit> executionUnits) {
+        handleOldBatchRouteUnits(createBatchRouteUnits(executionUnits));
+        handleNewBatchRouteUnits(createBatchRouteUnits(executionUnits));
         batchCount++;
     }
     

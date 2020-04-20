@@ -294,7 +294,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     public void addBatch() {
         try {
             executionContext = createExecutionContext();
-            batchPreparedStatementExecutor.addBatchForRouteUnits(executionContext);
+            batchPreparedStatementExecutor.addBatchForRouteUnits(executionContext.getExecutionUnits());
         } finally {
             currentResultSet = null;
             clearParameters();
