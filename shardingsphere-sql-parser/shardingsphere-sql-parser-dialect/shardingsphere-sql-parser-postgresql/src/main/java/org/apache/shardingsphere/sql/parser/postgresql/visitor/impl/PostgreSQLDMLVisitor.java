@@ -529,4 +529,9 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
         }
         return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
     }
+    
+    @Override
+    public ASTNode visitSubquery(final PostgreSQLStatementParser.SubqueryContext ctx) {
+        return visit(ctx.unionClause());
+    }
 }

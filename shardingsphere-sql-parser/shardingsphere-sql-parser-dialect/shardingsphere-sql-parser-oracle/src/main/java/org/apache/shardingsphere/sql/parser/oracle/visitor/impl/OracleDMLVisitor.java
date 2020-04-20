@@ -474,4 +474,9 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
         }
         return new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
     }
+    
+    @Override
+    public ASTNode visitSubquery(final OracleStatementParser.SubqueryContext ctx) {
+        return visit(ctx.unionClause());
+    }
 }

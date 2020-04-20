@@ -469,4 +469,9 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
         }
         return new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
     }
+    
+    @Override
+    public ASTNode visitSubquery(final SQLServerStatementParser.SubqueryContext ctx) {
+        return visit(ctx.unionClause());
+    }
 }
