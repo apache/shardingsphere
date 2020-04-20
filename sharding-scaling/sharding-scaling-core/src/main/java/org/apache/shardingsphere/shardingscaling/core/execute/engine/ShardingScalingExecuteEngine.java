@@ -15,20 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.execute.executor;
+package org.apache.shardingsphere.shardingscaling.core.execute.engine;
 
 /**
- * sync executor.
+ * Sharding scaling executor engine.
  */
-public interface SyncExecutor extends Runnable {
+public interface ShardingScalingExecuteEngine {
 
-    /**
-     * Start run execute.
-     */
-    void start();
-
-    /**
-     * Stop running execute.
-     */
-    void stop();
+    
 }

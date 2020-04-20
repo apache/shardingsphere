@@ -37,26 +37,26 @@ public final class SyncExecutorGroup {
     
     private final ExecuteCallback executeCallback;
     
-    private final Collection<SyncExecutor> syncExecutors = new LinkedList<>();
+    private final Collection<ShardingScalingExecutor> shardingScalingExecutors = new LinkedList<>();
     
     private Channel channel;
     
     /**
-     * Add {@code SyncExecutor}.
+     * Add {@code ShardingScalingExecutor}.
      *
-     * @param syncExecutor sync executor
+     * @param shardingScalingExecutor sync executor
      */
-    public void addSyncExecutor(final SyncExecutor syncExecutor) {
-        syncExecutors.add(syncExecutor);
+    public void addSyncExecutor(final ShardingScalingExecutor shardingScalingExecutor) {
+        shardingScalingExecutors.add(shardingScalingExecutor);
     }
     
     /**
-     * Add all {@code SyncExecutor}.
+     * Add all {@code ShardingScalingExecutor}.
      *
      * @param syncExecutors collection of sync executors
      */
-    public void addAllSyncExecutor(final Collection<? extends SyncExecutor> syncExecutors) {
-        this.syncExecutors.addAll(syncExecutors);
+    public void addAllSyncExecutor(final Collection<? extends ShardingScalingExecutor> syncExecutors) {
+        this.shardingScalingExecutors.addAll(syncExecutors);
     }
     
     /**
@@ -73,7 +73,7 @@ public final class SyncExecutorGroup {
      * @param throwable throwable
      */
     public void onFailure(final Throwable throwable) {
-        for (SyncExecutor each : syncExecutors) {
+        for (ShardingScalingExecutor each : shardingScalingExecutors) {
             each.stop();
         }
         channel.close();

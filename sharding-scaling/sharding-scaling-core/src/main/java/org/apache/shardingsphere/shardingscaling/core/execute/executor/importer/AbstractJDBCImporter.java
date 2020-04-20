@@ -21,7 +21,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.exception.SyncTaskExecuteException;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.AbstractSyncExecutor;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.AbstractShardingScalingExecutor;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.Channel;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.DataRecord;
@@ -42,7 +42,7 @@ import java.util.List;
  * Abstract JDBC importer implementation.
  */
 @Slf4j
-public abstract class AbstractJDBCImporter extends AbstractSyncExecutor implements Importer {
+public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecutor implements Importer {
     
     private final RdbmsConfiguration rdbmsConfiguration;
     

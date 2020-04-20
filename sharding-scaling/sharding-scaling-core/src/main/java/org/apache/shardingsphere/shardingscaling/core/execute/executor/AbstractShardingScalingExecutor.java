@@ -15,27 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper;
+package org.apache.shardingsphere.shardingscaling.core.execute.executor;
 
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.ShardingScalingExecutor;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.Channel;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Dumper interface.
+ * Abstract sharding scaling executor.
  */
-public interface Dumper extends ShardingScalingExecutor {
-    
+public abstract class AbstractShardingScalingExecutor implements ShardingScalingExecutor {
+
+    @Setter(AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PROTECTED)
+    private boolean running;
+
     /**
-     * Set channel.
-     *
-     * @param channel channel
+     * Generic start implement.
      */
-    void setChannel(Channel channel);
-    
+    @Override
+    public void start() {
+        running = true;
+    }
+
     /**
-     * Read Record to channel.
-     *
-     * @param channel channel
+     * Generic stop implement.
      */
-    void dump(Channel channel);
+    @Override
+    public void stop() {
+        running = false;
+    }
 }
