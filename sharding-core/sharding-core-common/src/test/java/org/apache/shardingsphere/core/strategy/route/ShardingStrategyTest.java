@@ -24,14 +24,13 @@ import org.apache.shardingsphere.api.config.sharding.strategy.ComplexShardingStr
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.strategy.route.complex.ComplexShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.fixture.ComplexKeysShardingAlgorithmFixture;
-import org.apache.shardingsphere.core.strategy.route.fixture.PreciseShardingAlgorithmFixture;
-import org.apache.shardingsphere.core.strategy.route.fixture.RangeShardingAlgorithmFixture;
+import org.apache.shardingsphere.core.strategy.route.fixture.StandardShardingAlgorithmFixture;
 import org.apache.shardingsphere.core.strategy.route.none.NoneShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.standard.StandardShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -49,14 +48,14 @@ public final class ShardingStrategyTest {
     @Test
     public void assertDoShardingWithoutShardingColumns() {
         NoneShardingStrategy strategy = new NoneShardingStrategy();
-        assertThat(strategy.doSharding(targets, Collections.emptySet(), new ShardingSphereProperties(new Properties())), is(targets));
+        assertThat(strategy.doSharding(targets, Collections.emptySet(), new ConfigurationProperties(new Properties())), is(targets));
     }
     
     @Test
     public void assertDoShardingForBetweenSingleKey() {
         StandardShardingStrategy strategy = new StandardShardingStrategy(
-                new StandardShardingStrategyConfiguration("column", new PreciseShardingAlgorithmFixture(), new RangeShardingAlgorithmFixture()));
-        assertThat(strategy.doSharding(targets, Collections.singletonList(new RangeRouteValue<>("column", "logicTable", Range.open(1, 3))), new ShardingSphereProperties(new Properties())),
+                new StandardShardingStrategyConfiguration("column", new StandardShardingAlgorithmFixture()));
+        assertThat(strategy.doSharding(targets, Collections.singletonList(new RangeRouteValue<>("column", "logicTable", Range.open(1, 3))), new ConfigurationProperties(new Properties())),
                 is(Sets.newHashSet("1")));
     }
     
@@ -65,6 +64,6 @@ public final class ShardingStrategyTest {
         ComplexShardingStrategy strategy = new ComplexShardingStrategy(new ComplexShardingStrategyConfiguration("column1, column2", new ComplexKeysShardingAlgorithmFixture()));
         List<RouteValue> routeValues = Lists.newArrayList(
                 new ListRouteValue<>("column1", "logicTable", Collections.singletonList(1)), new RangeRouteValue<>("column2", "logicTable", Range.open(1, 3)));
-        assertThat(strategy.doSharding(targets, routeValues, new ShardingSphereProperties(new Properties())), is(Sets.newHashSet("1", "2", "3")));
+        assertThat(strategy.doSharding(targets, routeValues, new ConfigurationProperties(new Properties())), is(Sets.newHashSet("1", "2", "3")));
     }
 }

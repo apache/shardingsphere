@@ -20,15 +20,24 @@ export default {
     home: 'Home',
     menuData: [
       {
-        title: 'Data governance',
+        title: 'Config Center',
         child: [
           {
-            title: 'Registry Center',
-            href: '/registry-center'
+            title: 'Config Server',
+            href: '/config-center'
           },
           {
             title: 'Rule Config',
             href: '/rule-config'
+          }
+        ]
+      },
+      {
+        title: 'Registry Center',
+        child: [
+          {
+            title: 'Registry Server',
+            href: '/registry-center'
           },
           {
             title: 'Runtime Status',
@@ -37,13 +46,8 @@ export default {
         ]
       },
       {
-        title: 'Data move',
-        child: [
-          {
-            title: 'Data scaling',
-            href: '/data-scaling'
-          }
-        ]
+        title: 'Data scaling',
+        href: '/data-scaling'
       }
     ],
     connected: 'Connected',
@@ -51,12 +55,15 @@ export default {
     del: 'Delete',
     notify: {
       title: 'Prompt',
+      addSucMessage: 'Add Succeeded',
+      editSucMessage: 'Edit Succeeded',
       conSucMessage: 'Connection Succeeded',
       conFailMessage: 'Connection Failed',
       delSucMessage: 'Delete Succeeded',
       delFailMessage: 'Delete Failed',
       updateCompletedMessage: 'Update Completed',
-      updateFaildMessage: 'Update Faild'
+      updateFaildMessage: 'Update Faild',
+      confirmDelOperator: 'Confirm delete'
     },
     loginOut: 'Sign Out',
     dropdownList: [
@@ -78,7 +85,8 @@ export default {
   btn: {
     submit: 'Submit',
     reset: 'Reset',
-    cancel: 'Cancel'
+    cancel: 'Cancel',
+    confirm: 'Confirm'
   },
   input: {
     pUserName: 'Please enter user name',
@@ -87,9 +95,10 @@ export default {
   registryCenter: {
     btnTxt: 'ADD',
     registDialog: {
-      title: 'Add a registry',
+      title: 'Add a registry center',
+      editTitle: 'Edit registry center',
       name: 'Name',
-      centerType: 'Center Type',
+      centerType: 'Instance Type',
       address: 'Address',
       orchestrationName: 'Orchestration Name',
       namespaces: 'Namespace',
@@ -101,11 +110,42 @@ export default {
       operate: 'Operate',
       operateConnect: 'Connect',
       operateConnected: 'Connected',
-      operateDel: 'Del'
+      operateDel: 'Del',
+      operateEdit: 'Edit'
     },
     rules: {
       name: 'Please enter the name of the registration center',
       address: 'Please enter the registration center Address',
+      namespaces: 'Please enter a Namespace',
+      centerType: 'Please select a Center Type',
+      orchestrationName: 'Please enter a Orchestration Name',
+      digest: 'Please enter a digest'
+    }
+  },
+  configCenter: {
+    btnTxt: 'ADD',
+    configDialog: {
+      title: 'Add a config center',
+      editTitle: 'Edit config center',
+      name: 'Name',
+      centerType: 'Instance Type',
+      address: 'Address',
+      orchestrationName: 'Orchestration Name',
+      namespaces: 'Namespace',
+      digest: 'Digest',
+      btnConfirmTxt: 'Confirm',
+      btnCancelTxt: 'Cancel'
+    },
+    table: {
+      operate: 'Operate',
+      operateConnect: 'Connect',
+      operateConnected: 'Connected',
+      operateDel: 'Del',
+      operateEdit: 'Edit'
+    },
+    rules: {
+      name: 'Please enter the name of the config center',
+      address: 'Please enter the config center Address',
       namespaces: 'Please enter a Namespace',
       centerType: 'Please select a Center Type',
       orchestrationName: 'Please enter a Orchestration Name',

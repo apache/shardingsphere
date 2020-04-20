@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.execute;
 
+import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
+
 import lombok.Getter;
 
 /**
@@ -34,6 +36,18 @@ public final class MySQLNullBitmap {
     public MySQLNullBitmap(final int columnsNumbers, final int offset) {
         this.offset = offset;
         nullBitmap = new int[calculateLength(columnsNumbers, offset)];
+    }
+    
+    public MySQLNullBitmap(final int columnNumbers, final MySQLPacketPayload payload) {
+        this.offset = 0;
+        nullBitmap = new int[calculateLength(columnNumbers, 0)];
+        fillBitmap(payload);
+    }
+    
+    private void fillBitmap(final MySQLPacketPayload payload) {
+        for (int i = 0; i < nullBitmap.length; i++) {
+            nullBitmap[i] = payload.readInt1();
+        }
     }
     
     private int calculateLength(final int columnsNumbers, final int offset) {

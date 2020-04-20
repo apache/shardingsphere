@@ -64,6 +64,17 @@ public final class ShardingSchemaController {
     }
     
     /**
+     * Delete schema configuration
+     * @param schemaName schema name
+     * @return
+     */
+    @RequestMapping(value = "/{schemaName}", method = RequestMethod.DELETE)
+    public ResponseResult deleteSchema(@PathVariable("schemaName") final String schemaName) {
+        shardingSchemaService.deleteSchemaConfiguration(schemaName);
+        return ResponseResultUtil.success();
+    }
+    
+    /**
      * Load rule configuration.
      *
      * @param schemaName schema name

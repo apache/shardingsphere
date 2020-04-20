@@ -1,6 +1,5 @@
 +++
 pre = "<b>3.6.5. </b>"
-toc = true
 title = "Performance Test"
 weight = 5
 +++

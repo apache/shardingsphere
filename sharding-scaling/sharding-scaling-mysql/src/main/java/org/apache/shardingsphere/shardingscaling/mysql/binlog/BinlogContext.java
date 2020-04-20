@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.shardingscaling.mysql.binlog;
 
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog.ColumnDef;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog.TableMapEventPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.MySQLBinlogTableMapEventPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,7 +37,7 @@ public final class BinlogContext {
     
     private int checksumLength;
     
-    private Map<Long, TableMapEventPacket> tableMap = new HashMap<>();
+    private Map<Long, MySQLBinlogTableMapEventPacket> tableMap = new HashMap<>();
     
     /**
      * Cache table map event.
@@ -44,8 +45,18 @@ public final class BinlogContext {
      * @param tableId table id
      * @param tableMapEventPacket table map event
      */
-    public void putTableMapEvent(final long tableId, final TableMapEventPacket tableMapEventPacket) {
+    public void putTableMapEvent(final long tableId, final MySQLBinlogTableMapEventPacket tableMapEventPacket) {
         tableMap.put(tableId, tableMapEventPacket);
+    }
+    
+    /**
+     * Get table map event by table id.
+     *
+     * @param tableId table id
+     * @return table map event
+     */
+    public MySQLBinlogTableMapEventPacket getTableMapEvent(final long tableId) {
+        return tableMap.get(tableId);
     }
     
     /**
@@ -74,7 +85,7 @@ public final class BinlogContext {
      * @param tableId table id
      * @return array of column defined
      */
-    public ColumnDef[] getColumnDefs(final long tableId) {
+    public List<MySQLBinlogColumnDef> getColumnDefs(final long tableId) {
         return tableMap.get(tableId).getColumnDefs();
     }
 }

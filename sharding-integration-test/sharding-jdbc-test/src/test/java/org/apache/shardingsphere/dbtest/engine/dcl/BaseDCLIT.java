@@ -23,8 +23,8 @@ import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import org.apache.shardingsphere.dbtest.env.EnvironmentPath;
 import org.apache.shardingsphere.dbtest.env.authority.AuthorityEnvironmentManager;
 import org.apache.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
-import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.spi.database.metadata.MemorizedDataSourceMetaData;
+import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.underlying.common.database.metadata.MemorizedDataSourceMetaData;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -48,11 +48,11 @@ public abstract class BaseDCLIT extends SingleIT {
     
     private final AuthorityEnvironmentManager authorityEnvironmentManager;
     
-    public BaseDCLIT(final String sqlCaseId, final String path, final DCLIntegrateTestCaseAssertion assertion, final String shardingRuleType,
+    public BaseDCLIT(final String sqlCaseId, final String path, final DCLIntegrateTestCaseAssertion assertion, final String ruleType,
                      final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
-        super(sqlCaseId, path, assertion, shardingRuleType, databaseTypeEnvironment, caseType);
+        super(sqlCaseId, path, assertion, ruleType, databaseTypeEnvironment, caseType);
         authorityEnvironmentManager = new AuthorityEnvironmentManager(
-                EnvironmentPath.getAuthorityResourcesPath(shardingRuleType), null == getDataSourceMap() ? null : createInstanceDataSourceMap(), getDatabaseTypeEnvironment().getDatabaseType());
+                EnvironmentPath.getAuthorityResourcesPath(ruleType), null == getDataSourceMap() ? null : createInstanceDataSourceMap(), getDatabaseTypeEnvironment().getDatabaseType());
     }
     
     private Map<String, DataSource> createInstanceDataSourceMap() throws SQLException {

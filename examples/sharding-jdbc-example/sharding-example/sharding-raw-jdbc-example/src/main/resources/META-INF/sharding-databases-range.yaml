@@ -50,8 +50,8 @@ shardingRule:
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
-      preciseAlgorithmClassName: org.apache.shardingsphere.example.algorithm.PreciseModuloShardingDatabaseAlgorithm
-      rangeAlgorithmClassName: org.apache.shardingsphere.example.algorithm.RangeModuloShardingDatabaseAlgorithm
+      shardingAlgorithm:
+        type: STANDARD_TEST_DB
   defaultTableStrategy:
     none:
 

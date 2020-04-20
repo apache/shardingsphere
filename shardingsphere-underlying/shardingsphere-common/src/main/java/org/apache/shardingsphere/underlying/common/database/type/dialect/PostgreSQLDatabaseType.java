@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.underlying.common.database.type.dialect;
 
 import org.apache.shardingsphere.underlying.common.database.metadata.dialect.PostgreSQLDataSourceMetaData;
-import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 
 import java.util.Collection;
 import java.util.Collections;

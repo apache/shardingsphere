@@ -1,6 +1,5 @@
 +++
 pre = "<b>4.2.2. </b>"
-toc = true
 title = "配置手册"
 weight = 2
 +++
@@ -326,17 +325,22 @@ shardingRule:
 Sharding-Proxy使用conf/server.yaml配置注册中心、认证信息以及公用属性。
 
 ### 治理
+治理模块目前支持配置中心和注册中心，具体配置为：
+- `orchestrationType: config_center`   #配置配置中心
+- `orchestrationType: registry_center` #配置注册中心
+- `orchestrationType: config_center,registry_center` #同时配置配置中心和注册中心
 
 ```yaml
 #省略数据分片和读写分离配置
 
 orchestration:
-  name: orchestration_ds
-  overwrite: true
-  registry:
-    type: zookeeper
-    namespace: orchestration
+  orchestration_ds: 
+    orchestrationType: config_center,registry_center
+    instanceType: zookeeper
     serverLists: localhost:2181
+    namespace: orchestration
+    props:
+      overwrite: true
 ```
 
 ### 认证信息

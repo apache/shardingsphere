@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.AbstractExpectedSQLSegment;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.column.ExpectedColumn;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedTable;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedSimpleTable;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
@@ -35,7 +35,7 @@ import java.util.List;
 public final class ExpectedConstraintDefinition extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "referenced-table")
-    private ExpectedTable referencedTable;
+    private ExpectedSimpleTable referencedTable;
     
     @XmlElement(name = "primary-key-column")
     private List<ExpectedColumn> primaryKeyColumns = new LinkedList<>();

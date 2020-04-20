@@ -30,7 +30,7 @@ import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.local.Loc
 import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.local.LocalShardingDatabasesAndTablesConfiguration;
 import org.apache.shardingsphere.example.type.RegistryCenterType;
 import org.apache.shardingsphere.example.type.ShardingType;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 
 import javax.sql.DataSource;
@@ -64,18 +64,18 @@ public class JavaConfigurationExampleMain {
     }
     
     private static DataSource getDataSource(final ShardingType shardingType, final boolean loadConfigFromRegCenter) throws SQLException {
-        Map<String, InstanceConfiguration> instanceConfigurationMap = getRegistryCenterConfiguration(registryCenterType, shardingType);
+        Map<String, CenterConfiguration> centerConfigurationMap = getRegistryCenterConfiguration(registryCenterType, shardingType);
         ExampleConfiguration configuration;
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
                 configuration = loadConfigFromRegCenter
-                    ? new CloudShardingDatabasesAndTablesConfiguration(instanceConfigurationMap) : new LocalShardingDatabasesAndTablesConfiguration(instanceConfigurationMap);
+                    ? new CloudShardingDatabasesAndTablesConfiguration(centerConfigurationMap) : new LocalShardingDatabasesAndTablesConfiguration(centerConfigurationMap);
                 break;
             case MASTER_SLAVE:
-                configuration = loadConfigFromRegCenter ? new CloudMasterSlaveConfiguration(instanceConfigurationMap) : new LocalMasterSlaveConfiguration(instanceConfigurationMap);
+                configuration = loadConfigFromRegCenter ? new CloudMasterSlaveConfiguration(centerConfigurationMap) : new LocalMasterSlaveConfiguration(centerConfigurationMap);
                 break;
             case ENCRYPT:
-                configuration = loadConfigFromRegCenter ? new CloudEncryptConfiguration(instanceConfigurationMap) : new LocalEncryptConfiguration(instanceConfigurationMap);
+                configuration = loadConfigFromRegCenter ? new CloudEncryptConfiguration(centerConfigurationMap) : new LocalEncryptConfiguration(centerConfigurationMap);
                 break;
             default:
                 throw new UnsupportedOperationException(shardingType.name());
@@ -83,7 +83,7 @@ public class JavaConfigurationExampleMain {
         return configuration.getDataSource();
     }
     
-    private static Map<String, InstanceConfiguration> getRegistryCenterConfiguration(final RegistryCenterType registryCenterType, ShardingType shardingType) {
+    private static Map<String, CenterConfiguration> getRegistryCenterConfiguration(final RegistryCenterType registryCenterType, ShardingType shardingType) {
         return RegistryCenterType.ZOOKEEPER == registryCenterType ? RegistryCenterConfigurationUtil.getZooKeeperConfiguration(String.valueOf(!loadConfigFromRegCenter), shardingType) :
             RegistryCenterConfigurationUtil.getNacosConfiguration(String.valueOf(!loadConfigFromRegCenter), shardingType);
     }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.dbtest.engine;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.core.rule.DataNode;
+import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.dbtest.cases.dataset.DataSet;
@@ -74,15 +74,15 @@ public abstract class BatchIT extends BaseIT {
     private final Collection<String> expectedDataFiles;
     
     public BatchIT(final String sqlCaseId, final IntegrateTestCase integrateTestCase,
-                   final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, JAXBException, SQLException {
-        super(shardingRuleType, databaseTypeEnvironment);
+                   final String ruleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, JAXBException, SQLException {
+        super(ruleType, databaseTypeEnvironment);
         this.integrateTestCase = integrateTestCase;
         sql = SQLCasesRegistry.getInstance().getSqlCasesLoader().getSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList());
         expectedDataFiles = new LinkedList<>();
         for (IntegrateTestCaseAssertion each : integrateTestCase.getIntegrateTestCaseAssertions()) {
-            expectedDataFiles.add(getExpectedDataFile(integrateTestCase.getPath(), shardingRuleType, databaseTypeEnvironment.getDatabaseType(), each.getExpectedDataFile()));
+            expectedDataFiles.add(getExpectedDataFile(integrateTestCase.getPath(), ruleType, databaseTypeEnvironment.getDatabaseType(), each.getExpectedDataFile()));
         }
-        dataSetEnvironmentManager = databaseTypeEnvironment.isEnabled() ? new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(shardingRuleType), getDataSourceMap()) : null;
+        dataSetEnvironmentManager = databaseTypeEnvironment.isEnabled() ? new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(ruleType), getDataSourceMap()) : null;
     }
     
     @Parameters(name = "{0} -> Rule:{2} -> {3}")

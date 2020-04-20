@@ -88,7 +88,7 @@ public enum MySQLCapabilityFlag {
      */
     public static int calculateHandshakeCapabilityFlagsLower() {
         return calculateCapabilityFlags(CLIENT_LONG_PASSWORD, CLIENT_FOUND_ROWS, CLIENT_LONG_FLAG, CLIENT_CONNECT_WITH_DB, CLIENT_ODBC, CLIENT_IGNORE_SPACE,
-                CLIENT_PROTOCOL_41, CLIENT_INTERACTIVE, CLIENT_IGNORE_SIGPIPE, CLIENT_TRANSACTIONS, CLIENT_SECURE_CONNECTION);
+                CLIENT_PROTOCOL_41, CLIENT_INTERACTIVE, CLIENT_IGNORE_SIGPIPE, CLIENT_TRANSACTIONS, CLIENT_SECURE_CONNECTION) & 0x0000ffff;
     }
     
     /**
@@ -97,11 +97,16 @@ public enum MySQLCapabilityFlag {
      * @return handshake capability flags upper bit
      */
     public static int calculateHandshakeCapabilityFlagsUpper() {
-        return 0;
+        return calculateCapabilityFlags(CLIENT_PLUGIN_AUTH) >> 16;
     }
     
-    // TODO use xor to calculate lower and upper
-    private static int calculateCapabilityFlags(final MySQLCapabilityFlag... capabilities) {
+    /**
+     * Calculate capability flags.
+     *
+     * @param capabilities single capabilities of need to be calculated
+     * @return combined capabilities
+     */
+    public static int calculateCapabilityFlags(final MySQLCapabilityFlag... capabilities) {
         int result = 0;
         for (MySQLCapabilityFlag each : capabilities) {
             result |= each.value;

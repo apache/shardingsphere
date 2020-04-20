@@ -20,8 +20,7 @@ package org.apache.shardingsphere.api.config.sharding.strategy;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.api.sharding.standard.PreciseShardingAlgorithm;
-import org.apache.shardingsphere.api.sharding.standard.RangeShardingAlgorithm;
+import org.apache.shardingsphere.api.sharding.standard.StandardShardingAlgorithm;
 
 /**
  * Standard strategy configuration.
@@ -31,19 +30,12 @@ public final class StandardShardingStrategyConfiguration implements ShardingStra
     
     private final String shardingColumn;
     
-    private final PreciseShardingAlgorithm preciseShardingAlgorithm;
+    private final StandardShardingAlgorithm shardingAlgorithm;
     
-    private final RangeShardingAlgorithm rangeShardingAlgorithm;
-    
-    public StandardShardingStrategyConfiguration(final String shardingColumn, final PreciseShardingAlgorithm preciseShardingAlgorithm) {
-        this(shardingColumn, preciseShardingAlgorithm, null);
-    }
-    
-    public StandardShardingStrategyConfiguration(final String shardingColumn, final PreciseShardingAlgorithm preciseShardingAlgorithm, final RangeShardingAlgorithm rangeShardingAlgorithm) {
+    public StandardShardingStrategyConfiguration(final String shardingColumn, final StandardShardingAlgorithm shardingAlgorithm) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(shardingColumn), "ShardingColumns is required.");
-        Preconditions.checkNotNull(preciseShardingAlgorithm, "PreciseShardingAlgorithm is required.");
+        Preconditions.checkNotNull(shardingAlgorithm, "ShardingAlgorithm is required.");
         this.shardingColumn = shardingColumn;
-        this.preciseShardingAlgorithm = preciseShardingAlgorithm;
-        this.rangeShardingAlgorithm = rangeShardingAlgorithm;
+        this.shardingAlgorithm = shardingAlgorithm;
     }
 }

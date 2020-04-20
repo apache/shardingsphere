@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.orchestration.center;
 
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
-import org.apache.shardingsphere.spi.TypeBasedSPI;
-import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
+import org.apache.shardingsphere.spi.type.TypedSPI;
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 
 import java.util.List;
 
 /**
  * An interface for center to get/persist data.
  */
-public interface CenterRepository extends TypeBasedSPI {
+public interface CenterRepository extends TypedSPI {
     
     /**
      * Initialize config center.
@@ -73,4 +73,11 @@ public interface CenterRepository extends TypeBasedSPI {
      * @param dataChangedEventListener data changed event listener
      */
     void watch(String key, DataChangedEventListener dataChangedEventListener);
+    
+    /**
+     * Delete node.
+     *
+     * @param key key of data
+     */
+    void delete(String key);
 }

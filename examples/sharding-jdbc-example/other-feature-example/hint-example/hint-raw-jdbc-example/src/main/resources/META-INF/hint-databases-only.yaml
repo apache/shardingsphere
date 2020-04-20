@@ -40,7 +40,8 @@ shardingRule:
   
   defaultDatabaseStrategy:
     hint:
-      algorithmClassName: org.apache.shardingsphere.example.hint.raw.jdbc.ModuloHintShardingAlgorithm
+      shardingAlgorithm:
+        type: HINT_TEST
   defaultTableStrategy:
     none:
 

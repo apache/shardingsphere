@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.example.orchestration.raw.jdbc.config.cloud;
 
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
-import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.shardingjdbc.orchestration.api.OrchestrationEncryptDataSourceFactory;
 
 import javax.sql.DataSource;
@@ -28,14 +28,14 @@ import java.util.Map;
 
 public class CloudEncryptConfiguration implements ExampleConfiguration {
     
-    private final Map<String, InstanceConfiguration> instanceConfigurationMap;
+    private final Map<String, CenterConfiguration> centerConfigurationMap;
     
-    public CloudEncryptConfiguration(final Map<String, InstanceConfiguration> instanceConfigurationMap) {
-        this.instanceConfigurationMap = instanceConfigurationMap;
+    public CloudEncryptConfiguration(final Map<String, CenterConfiguration> centerConfigurationMap) {
+        this.centerConfigurationMap = centerConfigurationMap;
     }
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        return OrchestrationEncryptDataSourceFactory.createDataSource(new OrchestrationConfiguration(instanceConfigurationMap));
+        return OrchestrationEncryptDataSourceFactory.createDataSource(new OrchestrationConfiguration(centerConfigurationMap));
     }
 }

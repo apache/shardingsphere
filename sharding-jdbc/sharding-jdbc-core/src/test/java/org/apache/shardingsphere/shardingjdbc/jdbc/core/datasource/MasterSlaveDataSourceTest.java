@@ -117,8 +117,8 @@ public final class MasterSlaveDataSourceTest {
         assertThat(((MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, 
                 new MasterSlaveRuleConfiguration("ds", "masterDataSource", Arrays.asList("slaveDataSource1", "slaveDataSource2"), new LoadBalanceStrategyConfiguration("ROUND_ROBIN")),
                 new Properties())).getDatabaseType(), instanceOf(H2DatabaseType.class));
-        verify(slaveConnection1, times(2)).close();
-        verify(slaveConnection2, times(2)).close();
+        verify(slaveConnection1, times(3)).close();
+        verify(slaveConnection2, times(3)).close();
     }
     
     private Connection mockConnection(final String url) throws SQLException {

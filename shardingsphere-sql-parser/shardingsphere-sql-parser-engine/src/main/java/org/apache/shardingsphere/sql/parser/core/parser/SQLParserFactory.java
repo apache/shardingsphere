@@ -25,7 +25,7 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
 
@@ -36,7 +36,7 @@ import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
 public final class SQLParserFactory {
     
     static {
-        NewInstanceServiceLoader.register(SQLParserConfiguration.class);
+        ShardingSphereServiceLoader.register(SQLParserConfiguration.class);
     }
     
     /** 
@@ -47,7 +47,7 @@ public final class SQLParserFactory {
      * @return SQL parser
      */
     public static SQLParser newInstance(final String databaseTypeName, final String sql) {
-        for (SQLParserConfiguration each : NewInstanceServiceLoader.newServiceInstances(SQLParserConfiguration.class)) {
+        for (SQLParserConfiguration each : ShardingSphereServiceLoader.newServiceInstances(SQLParserConfiguration.class)) {
             if (each.getDatabaseTypeName().equals(databaseTypeName)) {
                 return createSQLParser(sql, each);
             }

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.orderby;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.orderby.ExpectedOrderByClause;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.orderby.item.ExpectedOrderByItem;
@@ -98,21 +99,18 @@ public final class OrderByItemAssert {
         } else {
             assertFalse(assertContext.getText("Actual owner should not exist."), actual.getColumn().getOwner().isPresent());
         }
-        // TODO assert start index and stop index
-        //        SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
     private static void assertIndexOrderByItem(final SQLCaseAssertContext assertContext,
                                                final IndexOrderByItemSegment actual, final ExpectedIndexOrderByItem expected, final String type) {
         assertThat(assertContext.getText(String.format("%s item index assertion error: ", type)), actual.getColumnIndex(), is(expected.getIndex()));
-        // TODO assert start index and stop index
-        //        SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
     private static void assertExpressionOrderByItem(final SQLCaseAssertContext assertContext,
                                                     final ExpressionOrderByItemSegment actual, final ExpectedExpressionOrderByItem expected, final String type) {
         assertThat(assertContext.getText(String.format("%s item expression assertion error: ", type)), actual.getExpression(), is(expected.getExpression()));
-        // TODO assert start index and stop index
-        //        SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
 }

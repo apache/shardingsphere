@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "Pagination"
 weight = 2
 +++

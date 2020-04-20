@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "Spring Namespace Configuration"
 weight = 4
 +++
@@ -568,7 +567,7 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/sharding/shard
 | type      | Attribute | Auto-increment key generator `Type`; self-defined generator or internal Type generator (SNOWFLAKE/UUID) can both be selected |
 | props-ref | Attribute | The Property configuration reference of key generators       |
 
-#### PropertiesConstant
+#### Properties
 
 Property configuration that can include these properties of these key generators.
 

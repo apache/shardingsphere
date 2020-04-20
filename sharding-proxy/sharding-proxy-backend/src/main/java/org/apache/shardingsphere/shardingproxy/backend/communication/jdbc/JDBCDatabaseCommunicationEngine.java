@@ -20,12 +20,10 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
-import org.apache.shardingsphere.sharding.merge.ShardingResultMergerEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.ConnectionStatus;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.JDBCExecuteEngine;
-import org.apache.shardingsphere.shardingproxy.backend.communication.merge.ProxyResultDecoratorEngine;
 import org.apache.shardingsphere.shardingproxy.backend.exception.TableModifyInTransactionException;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
@@ -43,19 +41,16 @@ import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
-import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.executor.sql.queryresult.QueryResult;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
-import org.apache.shardingsphere.underlying.merge.MergeEntry;
-import org.apache.shardingsphere.underlying.merge.engine.ResultProcessEngine;
+import org.apache.shardingsphere.underlying.executor.log.SQLLogger;
+import org.apache.shardingsphere.underlying.merge.MergeEngine;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -78,6 +73,9 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     public BackendResponse execute() {
         try {
             ExecutionContext executionContext = executeEngine.getJdbcExecutorWrapper().route(sql);
+            if (ShardingProxyContext.getInstance().getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
+                SQLLogger.logSQL(sql, ShardingProxyContext.getInstance().getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
+            }
             return execute(executionContext);
         } catch (final SQLException ex) {
             return new ErrorResponse(ex);
@@ -93,6 +91,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             return new ErrorResponse(new TableModifyInTransactionException(getTableName(sqlStatementContext)));
         }
         response = executeEngine.execute(executionContext);
+        // TODO refresh non-sharding table meta data
         if (logicSchema instanceof ShardingSchema) {
             logicSchema.refreshTableMetaData(executionContext.getSqlStatementContext());
         }
@@ -119,7 +118,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             mergeUpdateCount(sqlStatementContext);
             return response;
         }
-        this.mergedResult = createMergedResult(sqlStatementContext, ((QueryResponse) response).getQueryResults());
+        mergedResult = mergeQuery(sqlStatementContext, ((QueryResponse) response).getQueryResults());
         return response;
     }
     
@@ -133,20 +132,10 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return logicSchema instanceof ShardingSchema && logicSchema.getShardingRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames());
     }
     
-    private MergedResult createMergedResult(final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
-        Map<BaseRule, ResultProcessEngine> engines = new HashMap<>(2, 1);
-        engines.put(logicSchema.getShardingRule(), new ShardingResultMergerEngine());
-        EncryptRule encryptRule = getEncryptRule();
-        if (!encryptRule.getEncryptTableNames().isEmpty()) {
-            engines.put(encryptRule, new ProxyResultDecoratorEngine(((QueryResponse) response).getQueryHeaders()));
-        }
-        MergeEntry mergeEntry = new MergeEntry(
-                LogicSchemas.getInstance().getDatabaseType(), logicSchema.getMetaData().getTables(), ShardingProxyContext.getInstance().getProperties(), engines);
-        return mergeEntry.process(queryResults, sqlStatementContext);
-    }
-    
-    private EncryptRule getEncryptRule() {
-        return logicSchema instanceof EncryptSchema ? ((EncryptSchema) logicSchema).getEncryptRule() : logicSchema.getShardingRule().getEncryptRule();
+    private MergedResult mergeQuery(final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
+        MergeEngine mergeEngine = new MergeEngine(LogicSchemas.getInstance().getDatabaseType(), 
+                logicSchema.getMetaData().getSchema().getConfiguredSchemaMetaData(), ShardingProxyContext.getInstance().getProperties(), logicSchema.getShardingRule().toRules());
+        return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     
     @Override
@@ -157,7 +146,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     @Override
     public QueryData getQueryData() throws SQLException {
         Optional<EncryptRule> encryptRule = findEncryptRule();
-        boolean isQueryWithCipherColumn = ShardingProxyContext.getInstance().getProperties().getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
+        boolean isQueryWithCipherColumn = ShardingProxyContext.getInstance().getProperties().getValue(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN);
         List<QueryHeader> queryHeaders = ((QueryResponse) response).getQueryHeaders();
         List<Object> row = new ArrayList<>(queryHeaders.size());
         for (int columnIndex = 1; columnIndex <= queryHeaders.size(); columnIndex++) {

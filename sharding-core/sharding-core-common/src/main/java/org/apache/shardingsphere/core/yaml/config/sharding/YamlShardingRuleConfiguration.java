@@ -41,8 +41,6 @@ public class YamlShardingRuleConfiguration implements YamlConfiguration {
     
     private Collection<String> broadcastTables = new ArrayList<>();
     
-    private String defaultDataSourceName;
-    
     private YamlShardingStrategyConfiguration defaultDatabaseStrategy;
     
     private YamlShardingStrategyConfiguration defaultTableStrategy;

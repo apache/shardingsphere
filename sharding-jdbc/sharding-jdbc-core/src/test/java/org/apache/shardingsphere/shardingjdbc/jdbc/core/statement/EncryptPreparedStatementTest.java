@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.shardingjdbc.common.base.AbstractEncryptJDBCDatabaseAndTableTest;
 import org.junit.Test;
 
@@ -46,7 +46,7 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
     
     private static final String SELECT_SQL = "SELECT * FROM t_query_encrypt WHERE pwd = ?";
  
-    private static final String SELECT_SQL_OR = "SELECT * FROM t_query_encrypt WHERE pwd = ? and (id = ? or id =?)";
+    private static final String SELECT_SQL_OR = "SELECT * FROM t_query_encrypt WHERE pwd = ? AND (id = ? OR id =?)";
     
     private static final String SELECT_ALL_SQL = "SELECT id, cipher_pwd, assist_pwd FROM t_query_encrypt";
     
@@ -56,7 +56,7 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
     
     @Test
     public void assertSqlShow() throws SQLException {
-        assertTrue(getEncryptConnectionWithProps().getRuntimeContext().getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW));
+        assertTrue(getEncryptConnectionWithProps().getRuntimeContext().getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
     }
     
     @Test

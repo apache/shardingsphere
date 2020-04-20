@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.ui.servcie.impl;
 
-import org.apache.shardingsphere.ui.servcie.RegistryCenterService;
+import org.apache.shardingsphere.ui.servcie.ConfigCenterService;
 import org.apache.shardingsphere.ui.servcie.ShardingPropertiesService;
 import org.apache.shardingsphere.ui.util.ConfigurationYamlConverter;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,23 +33,23 @@ import java.util.Properties;
 public final class ShardingPropertiesServiceImpl implements ShardingPropertiesService {
     
     @Autowired
-    private RegistryCenterService registryCenterService;
+    private ConfigCenterService configCenterService;
     
     @Override
     public String loadShardingProperties() {
-        return registryCenterService.getActivatedRegistryCenter().get(registryCenterService.getActivateConfigurationNode().getPropsPath());
+        return configCenterService.getActivatedConfigCenter().get(configCenterService.getActivateConfigurationNode().getPropsPath());
     }
     
     @Override
     public void updateShardingProperties(final String configData) {
         checkShardingProperties(configData);
-        registryCenterService.getActivatedRegistryCenter().persist(registryCenterService.getActivateConfigurationNode().getPropsPath(), configData);
+        configCenterService.getActivatedConfigCenter().persist(configCenterService.getActivateConfigurationNode().getPropsPath(), configData);
     }
     
     private void checkShardingProperties(final String configData) {
         try {
             Properties properties = ConfigurationYamlConverter.loadProperties(configData);
-            new ShardingSphereProperties(properties);
+            new ConfigurationProperties(properties);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON

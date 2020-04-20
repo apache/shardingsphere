@@ -25,21 +25,12 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.log.ConfigurationLogger;
 import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.orchestration.internal.registry.config.event.ShadowRuleChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.ShadowRuleChangedEvent;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
-import org.apache.shardingsphere.shardingproxy.backend.schema.ProxyConnectionManager;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
-import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
-import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializer;
-import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializerEntry;
-import org.apache.shardingsphere.underlying.common.metadata.table.init.loader.impl.DefaultTableMetaDataLoader;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -48,29 +39,14 @@ import java.util.Map;
 @Getter
 public final class ShadowSchema extends LogicSchema {
     
-    private final ShardingSphereMetaData metaData;
-    
     private final ShardingRule shardingRule;
     
     private ShadowRule shadowRule;
     
     public ShadowSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final ShadowRuleConfiguration shadowRuleConfiguration) throws SQLException {
-        super(name, dataSources);
+        super(name, dataSources, Collections.singletonList(new ShadowRule(shadowRuleConfiguration)));
         shadowRule = new ShadowRule(shadowRuleConfiguration);
         shardingRule = new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet());
-        metaData = createMetaData();
-    }
-    
-    private ShardingSphereMetaData createMetaData() throws SQLException {
-        DataSourceMetas dataSourceMetas = new DataSourceMetas(LogicSchemas.getInstance().getDatabaseType(), getDatabaseAccessConfigurationMap());
-        TableMetas tableMetas = createTableMetaDataInitializerEntry(dataSourceMetas).initAll();
-        return new ShardingSphereMetaData(dataSourceMetas, tableMetas);
-    }
-    
-    private TableMetaDataInitializerEntry createTableMetaDataInitializerEntry(final DataSourceMetas dataSourceMetas) {
-        Map<BaseRule, TableMetaDataInitializer> tableMetaDataInitializes = new HashMap<>(1, 1);
-        tableMetaDataInitializes.put(shadowRule, new DefaultTableMetaDataLoader(dataSourceMetas, new ProxyConnectionManager(getBackendDataSource())));
-        return new TableMetaDataInitializerEntry(tableMetaDataInitializes);
     }
     
     /**

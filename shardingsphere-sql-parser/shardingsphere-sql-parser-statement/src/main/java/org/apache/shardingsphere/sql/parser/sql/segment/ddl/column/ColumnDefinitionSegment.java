@@ -20,9 +20,9 @@ package org.apache.shardingsphere.sql.parser.sql.segment.ddl.column;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.CreateDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.util.SQLUtil;
-
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -37,18 +37,18 @@ public final class ColumnDefinitionSegment implements CreateDefinitionSegment {
     
     private final int stopIndex;
     
-    private String columnName;
+    private ColumnSegment columnName;
     
-    private String dataType;
+    private DataTypeSegment dataType;
     
     private boolean primaryKey;
     
     private final Collection<SimpleTableSegment> referencedTables = new LinkedList<>();
     
-    public ColumnDefinitionSegment(final int startIndex, final int stopIndex, final String columnName, final String dataType, final boolean primaryKey) {
+    public ColumnDefinitionSegment(final int startIndex, final int stopIndex, final ColumnSegment columnName, final DataTypeSegment dataType, final boolean primaryKey) {
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
-        this.columnName = SQLUtil.getExactlyValue(columnName);
+        this.columnName = columnName;
         this.dataType = dataType;
         this.primaryKey = primaryKey;
     }

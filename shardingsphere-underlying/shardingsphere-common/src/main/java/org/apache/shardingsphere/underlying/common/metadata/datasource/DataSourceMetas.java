@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.underlying.common.metadata.datasource;
 
-import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.spi.database.metadata.MemorizedDataSourceMetaData;
-import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.underlying.common.database.metadata.MemorizedDataSourceMetaData;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Data source metas.
@@ -41,11 +41,8 @@ public final class DataSourceMetas {
     }
     
     private Map<String, DataSourceMetaData> getDataSourceMetaDataMap(final DatabaseType databaseType, final Map<String, DatabaseAccessConfiguration> databaseAccessConfigurationMap) {
-        Map<String, DataSourceMetaData> result = new HashMap<>(databaseAccessConfigurationMap.size(), 1);
-        for (Entry<String, DatabaseAccessConfiguration> entry : databaseAccessConfigurationMap.entrySet()) {
-            result.put(entry.getKey(), databaseType.getDataSourceMetaData(entry.getValue().getUrl(), entry.getValue().getUsername()));
-        }
-        return result;
+        return databaseAccessConfigurationMap.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> databaseType.getDataSourceMetaData(entry.getValue().getUrl(), entry.getValue().getUsername())));
     }
     
     /**
@@ -64,13 +61,7 @@ public final class DataSourceMetas {
     }
     
     private boolean isExisted(final String dataSourceName, final Collection<String> existedDataSourceNames) {
-        DataSourceMetaData sample = dataSourceMetaDataMap.get(dataSourceName);
-        for (String each : existedDataSourceNames) {
-            if (isInSameDatabaseInstance(sample, dataSourceMetaDataMap.get(each))) {
-                return true;
-            }
-        }
-        return false;
+        return existedDataSourceNames.stream().anyMatch(each -> isInSameDatabaseInstance(dataSourceMetaDataMap.get(dataSourceName), dataSourceMetaDataMap.get(each)));
     }
     
     private boolean isInSameDatabaseInstance(final DataSourceMetaData sample, final DataSourceMetaData target) {

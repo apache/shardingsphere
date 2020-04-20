@@ -74,6 +74,13 @@ public enum MySQLColumnType {
     
     MYSQL_TYPE_TIME2(0x13),
     
+    /**
+     * Do not describe in document, but actual exist.
+     *
+     * @see <a href="https://github.com/apache/incubator-shardingsphere/issues/4795"></a>
+     */
+    MySQL_TYPE_JSON(0xf5),
+    
     MYSQL_TYPE_NEWDECIMAL(0xf6),
     
     MYSQL_TYPE_ENUM(0xf7),
@@ -95,6 +102,8 @@ public enum MySQLColumnType {
     MYSQL_TYPE_GEOMETRY(0xff);
     
     private static final Map<Integer, MySQLColumnType> JDBC_TYPE_AND_COLUMN_TYPE_MAP = new HashMap<>(MySQLColumnType.values().length, 1);
+    
+    private static final Map<Integer, MySQLColumnType> VALUE_AND_COLUMN_TYPE_MAP = new HashMap<>(MySQLColumnType.values().length, 1);
     
     private final int value;
     
@@ -120,6 +129,9 @@ public enum MySQLColumnType {
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.LONGVARBINARY, MYSQL_TYPE_VAR_STRING);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.NULL, MYSQL_TYPE_NULL);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.BLOB, MYSQL_TYPE_BLOB);
+        for (MySQLColumnType each : MySQLColumnType.values()) {
+            VALUE_AND_COLUMN_TYPE_MAP.put(each.value, each);
+        }
     }
     
     /**
@@ -142,10 +154,8 @@ public enum MySQLColumnType {
      * @return column type
      */
     public static MySQLColumnType valueOf(final int value) {
-        for (MySQLColumnType each : MySQLColumnType.values()) {
-            if (value == each.value) {
-                return each;
-            }
+        if (VALUE_AND_COLUMN_TYPE_MAP.containsKey(value)) {
+            return VALUE_AND_COLUMN_TYPE_MAP.get(value);
         }
         throw new IllegalArgumentException(String.format("Cannot find value '%s' in column type", value));
     }

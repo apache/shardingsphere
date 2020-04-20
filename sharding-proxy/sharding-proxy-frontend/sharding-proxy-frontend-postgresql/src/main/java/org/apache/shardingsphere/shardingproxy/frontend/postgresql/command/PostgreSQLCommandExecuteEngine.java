@@ -35,9 +35,10 @@ import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.engine.CommandExecuteEngine;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 
 import java.sql.SQLException;
+import java.util.Optional;
 
 /**
  * Command execute engine for PostgreSQL.
@@ -61,7 +62,14 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
     
     @Override
     public DatabasePacket getErrorPacket(final Exception cause) {
-        return new PostgreSQLErrorResponsePacket();
+        PostgreSQLErrorResponsePacket errorResponsePacket = new PostgreSQLErrorResponsePacket();
+        errorResponsePacket.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, cause.getMessage());
+        return errorResponsePacket;
+    }
+    
+    @Override
+    public Optional<DatabasePacket> getOtherPacket() {
+        return Optional.of(new PostgreSQLReadyForQueryPacket());
     }
     
     @Override
@@ -72,12 +80,12 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
             context.write(new PostgreSQLReadyForQueryPacket());
             return;
         }
-        if (queryCommandExecutor.isErrorResponse()) {
+        if (queryCommandExecutor.isErrorResponse() || queryCommandExecutor.isUpdateResponse()) {
             context.write(new PostgreSQLReadyForQueryPacket());
             return;
         }
         int count = 0;
-        int proxyFrontendFlushThreshold = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(PropertiesConstant.PROXY_FRONTEND_FLUSH_THRESHOLD);
+        int proxyFrontendFlushThreshold = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD);
         while (queryCommandExecutor.next()) {
             count++;
             while (!context.channel().isWritable() && context.channel().isActive()) {

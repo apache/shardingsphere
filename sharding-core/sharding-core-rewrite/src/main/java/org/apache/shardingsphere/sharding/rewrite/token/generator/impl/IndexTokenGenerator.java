@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.IndexToken;
+import lombok.Setter;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.rule.aware.ShardingRuleAware;
+import org.apache.shardingsphere.sharding.rewrite.token.pojo.IndexToken;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.type.IndexAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.binder.type.IndexAvailable;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 
 import java.util.Collection;
@@ -30,7 +33,10 @@ import java.util.LinkedList;
 /**
  * Index token generator.
  */
-public final class IndexTokenGenerator implements CollectionSQLTokenGenerator {
+@Setter
+public final class IndexTokenGenerator implements CollectionSQLTokenGenerator, ShardingRuleAware {
+    
+    private ShardingRule shardingRule;
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -42,7 +48,7 @@ public final class IndexTokenGenerator implements CollectionSQLTokenGenerator {
         Collection<IndexToken> result = new LinkedList<>();
         if (sqlStatementContext instanceof IndexAvailable) {
             for (SQLSegment each : ((IndexAvailable) sqlStatementContext).getIndexes()) {
-                result.add(new IndexToken(each.getStartIndex(), each.getStopIndex(), ((IndexSegment) each).getIdentifier()));
+                result.add(new IndexToken(each.getStartIndex(), each.getStopIndex(), ((IndexSegment) each).getIdentifier(), sqlStatementContext, shardingRule));
             }
         }
         return result;

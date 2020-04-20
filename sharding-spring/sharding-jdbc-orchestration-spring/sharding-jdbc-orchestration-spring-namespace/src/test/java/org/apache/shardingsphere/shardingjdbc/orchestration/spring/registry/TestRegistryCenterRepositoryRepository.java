@@ -25,7 +25,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
-import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 
 public final class TestRegistryCenterRepositoryRepository implements RegistryCenterRepository, ConfigCenterRepository {
     
@@ -57,6 +57,10 @@ public final class TestRegistryCenterRepositoryRepository implements RegistryCen
     
     @Override
     public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
+    }
+    
+    @Override
+    public void delete(final String key) {
     }
     
     @Override

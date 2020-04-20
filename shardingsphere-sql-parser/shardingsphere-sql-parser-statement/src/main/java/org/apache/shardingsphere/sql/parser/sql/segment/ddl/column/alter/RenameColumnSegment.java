@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 
 /**
  * Rename column segment.
@@ -32,7 +33,7 @@ public final class RenameColumnSegment implements SQLSegment {
     
     private final int stopIndex;
     
-    private final String oldColumnName;
+    private final ColumnSegment oldColumnName;
     
-    private final String columnName;
+    private final ColumnSegment columnName;
 }

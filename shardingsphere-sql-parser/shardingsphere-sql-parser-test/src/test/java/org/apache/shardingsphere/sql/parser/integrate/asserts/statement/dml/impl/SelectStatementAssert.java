@@ -21,16 +21,18 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.SQLSegmentAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.TableReferencesAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.groupby.GroupByClauseAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.limit.LimitClauseAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.orderby.OrderByClauseAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.projection.ProjectionAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.where.WhereClauseAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dml.SelectStatementTestCase;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.TableReferenceSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertFalse;
@@ -51,19 +53,19 @@ public final class SelectStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
         assertProjection(assertContext, actual, expected);
-        assertTable(assertContext, actual, expected);
         assertWhereClause(assertContext, actual, expected);
         assertGroupByClause(assertContext, actual, expected);
         assertOrderByClause(assertContext, actual, expected);
         assertLimitClause(assertContext, actual, expected);
+        assertTableReferences(assertContext, actual, expected);
+    }
+    
+    private static void assertTableReferences(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
+        TableReferencesAssert.assertIs(assertContext, (List<TableReferenceSegment>) actual.getTableReferences(), expected.getTableReferences());
     }
     
     private static void assertProjection(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
         ProjectionAssert.assertIs(assertContext, actual.getProjections(), expected.getProjections());
-    }
-    
-    private static void assertTable(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
-        TableAssert.assertIs(assertContext, actual.getSimpleTableSegments(), expected.getTables());
     }
     
     private static void assertWhereClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {

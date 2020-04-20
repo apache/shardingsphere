@@ -19,9 +19,11 @@ package org.apache.shardingsphere.shardingjdbc.spring.namespace.handler;
 
 import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
 import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.ShardingStrategyBeanDefinitionParserTag;
+import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.ShardingTransactionTypeScannerBeanDefinitionParserTag;
 import org.apache.shardingsphere.shardingjdbc.spring.namespace.parser.KeyGeneratorBeanDefinitionParser;
 import org.apache.shardingsphere.shardingjdbc.spring.namespace.parser.ShardingDataSourceBeanDefinitionParser;
 import org.apache.shardingsphere.shardingjdbc.spring.namespace.parser.ShardingStrategyBeanDefinitionParser;
+import org.apache.shardingsphere.shardingjdbc.spring.namespace.parser.ShardingTransactionTypeScannerBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
@@ -38,5 +40,6 @@ public final class ShardingNamespaceHandler extends NamespaceHandlerSupport {
         registerBeanDefinitionParser(ShardingStrategyBeanDefinitionParserTag.NONE_STRATEGY_ROOT_TAG, new ShardingStrategyBeanDefinitionParser());
         registerBeanDefinitionParser(ShardingDataSourceBeanDefinitionParserTag.KEY_GENERATOR_REF_TAG, new KeyGeneratorBeanDefinitionParser());
         registerBeanDefinitionParser(ShardingDataSourceBeanDefinitionParserTag.ROOT_TAG, new ShardingDataSourceBeanDefinitionParser());
+        registerBeanDefinitionParser(ShardingTransactionTypeScannerBeanDefinitionParserTag.ROOT_TAG, new ShardingTransactionTypeScannerBeanDefinitionParser());
     }
 }

@@ -24,17 +24,16 @@ import org.apache.shardingsphere.api.config.sharding.strategy.NoneShardingStrate
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.api.sharding.hint.HintShardingAlgorithm;
-import org.apache.shardingsphere.api.sharding.standard.PreciseShardingAlgorithm;
-import org.apache.shardingsphere.api.sharding.standard.RangeShardingAlgorithm;
+import org.apache.shardingsphere.api.sharding.standard.StandardShardingAlgorithm;
 import org.apache.shardingsphere.core.shard.fixture.ComplexKeysShardingAlgorithmFixture;
 import org.apache.shardingsphere.core.shard.fixture.HintShardingAlgorithmFixture;
-import org.apache.shardingsphere.core.shard.fixture.PreciseShardingAlgorithmFixture;
-import org.apache.shardingsphere.core.shard.fixture.RangeShardingAlgorithmFixture;
+import org.apache.shardingsphere.core.shard.fixture.StandardShardingAlgorithmFixture;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlHintShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlInlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlNoneShardingStrategyConfiguration;
+import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlShardingAlgorithmConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlStandardShardingStrategyConfiguration;
 import org.junit.Test;
 
@@ -43,6 +42,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class ShardingStrategyConfigurationYamlSwapperTest {
     
@@ -50,24 +50,10 @@ public final class ShardingStrategyConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYamlWithStandard() {
-        PreciseShardingAlgorithm preciseShardingAlgorithm = mock(PreciseShardingAlgorithm.class);
-        RangeShardingAlgorithm rangeShardingAlgorithm = mock(RangeShardingAlgorithm.class);
-        YamlShardingStrategyConfiguration actual = shardingStrategyConfigurationYamlSwapper.swap(new StandardShardingStrategyConfiguration("id", preciseShardingAlgorithm, rangeShardingAlgorithm));
+        StandardShardingAlgorithm standardShardingAlgorithm = mock(StandardShardingAlgorithm.class);
+        YamlShardingStrategyConfiguration actual = shardingStrategyConfigurationYamlSwapper.swap(new StandardShardingStrategyConfiguration("id", standardShardingAlgorithm));
         assertThat(actual.getStandard().getShardingColumn(), is("id"));
-        assertThat(actual.getStandard().getPreciseAlgorithmClassName(), is(preciseShardingAlgorithm.getClass().getName()));
-        assertThat(actual.getStandard().getRangeAlgorithmClassName(), is(rangeShardingAlgorithm.getClass().getName()));
-        assertNull(actual.getInline());
-        assertNull(actual.getComplex());
-        assertNull(actual.getHint());
-        assertNull(actual.getNone());
-    }
-    
-    @Test
-    public void assertSwapToYamlWithInline() {
-        YamlShardingStrategyConfiguration actual = shardingStrategyConfigurationYamlSwapper.swap(new InlineShardingStrategyConfiguration("id", "xxx_$->{id % 10}"));
-        assertThat(actual.getInline().getShardingColumn(), is("id"));
-        assertThat(actual.getInline().getAlgorithmExpression(), is("xxx_$->{id % 10}"));
-        assertNull(actual.getStandard());
+        assertThat(actual.getStandard().getShardingAlgorithm(), instanceOf(YamlShardingAlgorithmConfiguration.class));
         assertNull(actual.getComplex());
         assertNull(actual.getHint());
         assertNull(actual.getNone());
@@ -76,11 +62,11 @@ public final class ShardingStrategyConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToYamlWithComplex() {
         ComplexKeysShardingAlgorithm complexKeysShardingAlgorithm = mock(ComplexKeysShardingAlgorithm.class);
+        when(complexKeysShardingAlgorithm.getType()).thenReturn("COMPLEX_TEST");
         YamlShardingStrategyConfiguration actual = shardingStrategyConfigurationYamlSwapper.swap(new ComplexShardingStrategyConfiguration("id, creation_date", complexKeysShardingAlgorithm));
         assertThat(actual.getComplex().getShardingColumns(), is("id, creation_date"));
-        assertThat(actual.getComplex().getAlgorithmClassName(), is(complexKeysShardingAlgorithm.getClass().getName()));
+        assertThat(actual.getComplex().getShardingAlgorithm().getType(), is("COMPLEX_TEST"));
         assertNull(actual.getStandard());
-        assertNull(actual.getInline());
         assertNull(actual.getHint());
         assertNull(actual.getNone());
     }
@@ -88,10 +74,10 @@ public final class ShardingStrategyConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToYamlWithHint() {
         HintShardingAlgorithm hintShardingAlgorithm = mock(HintShardingAlgorithm.class);
+        when(hintShardingAlgorithm.getType()).thenReturn("HINT_TEST");
         YamlShardingStrategyConfiguration actual = shardingStrategyConfigurationYamlSwapper.swap(new HintShardingStrategyConfiguration(hintShardingAlgorithm));
-        assertThat(actual.getHint().getAlgorithmClassName(), is(hintShardingAlgorithm.getClass().getName()));
+        assertThat(actual.getHint().getShardingAlgorithm().getType(), is("HINT_TEST"));
         assertNull(actual.getStandard());
-        assertNull(actual.getInline());
         assertNull(actual.getComplex());
         assertNull(actual.getNone());
     }
@@ -100,7 +86,6 @@ public final class ShardingStrategyConfigurationYamlSwapperTest {
     public void assertSwapToYamlWithNone() {
         YamlShardingStrategyConfiguration actual = shardingStrategyConfigurationYamlSwapper.swap(new NoneShardingStrategyConfiguration());
         assertNull(actual.getStandard());
-        assertNull(actual.getInline());
         assertNull(actual.getComplex());
         assertNull(actual.getHint());
         assertThat(actual.getNone(), instanceOf(YamlNoneShardingStrategyConfiguration.class));
@@ -108,27 +93,24 @@ public final class ShardingStrategyConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToObjectWithStandardWithRangeShardingAlgorithm() {
-        StandardShardingStrategyConfiguration actual = (StandardShardingStrategyConfiguration) shardingStrategyConfigurationYamlSwapper.swap(createStandardShardingStrategyConfiguration(true));
+        StandardShardingStrategyConfiguration actual = (StandardShardingStrategyConfiguration) shardingStrategyConfigurationYamlSwapper.swap(createStandardShardingStrategyConfiguration());
         assertThat(actual.getShardingColumn(), is("id"));
-        assertThat(actual.getPreciseShardingAlgorithm(), instanceOf(PreciseShardingAlgorithmFixture.class));
-        assertThat(actual.getRangeShardingAlgorithm(), instanceOf(RangeShardingAlgorithmFixture.class));
+        assertThat(actual.getShardingAlgorithm(), instanceOf(StandardShardingAlgorithmFixture.class));
     }
     
     @Test
     public void assertSwapToObjectWithStandardWithoutRangeShardingAlgorithm() {
-        StandardShardingStrategyConfiguration actual = (StandardShardingStrategyConfiguration) shardingStrategyConfigurationYamlSwapper.swap(createStandardShardingStrategyConfiguration(false));
+        StandardShardingStrategyConfiguration actual = (StandardShardingStrategyConfiguration) shardingStrategyConfigurationYamlSwapper.swap(createStandardShardingStrategyConfiguration());
         assertThat(actual.getShardingColumn(), is("id"));
-        assertThat(actual.getPreciseShardingAlgorithm(), instanceOf(PreciseShardingAlgorithmFixture.class));
-        assertNull(actual.getRangeShardingAlgorithm());
+        assertThat(actual.getShardingAlgorithm(), instanceOf(StandardShardingAlgorithmFixture.class));
     }
     
-    private YamlShardingStrategyConfiguration createStandardShardingStrategyConfiguration(final boolean withRangeAlgorithmClassName) {
+    private YamlShardingStrategyConfiguration createStandardShardingStrategyConfiguration() {
         YamlStandardShardingStrategyConfiguration yamlStandardShardingStrategyConfiguration = new YamlStandardShardingStrategyConfiguration();
         yamlStandardShardingStrategyConfiguration.setShardingColumn("id");
-        yamlStandardShardingStrategyConfiguration.setPreciseAlgorithmClassName(PreciseShardingAlgorithmFixture.class.getName());
-        if (withRangeAlgorithmClassName) {
-            yamlStandardShardingStrategyConfiguration.setRangeAlgorithmClassName(RangeShardingAlgorithmFixture.class.getName());
-        }
+        YamlShardingAlgorithmConfiguration shardingAlgorithmConfiguration = new YamlShardingAlgorithmConfiguration();
+        shardingAlgorithmConfiguration.setType("STANDARD_TEST");
+        yamlStandardShardingStrategyConfiguration.setShardingAlgorithm(shardingAlgorithmConfiguration);
         YamlShardingStrategyConfiguration result = new YamlShardingStrategyConfiguration();
         result.setStandard(yamlStandardShardingStrategyConfiguration);
         return result;
@@ -160,7 +142,8 @@ public final class ShardingStrategyConfigurationYamlSwapperTest {
     private YamlShardingStrategyConfiguration createComplexShardingStrategyConfiguration() {
         YamlComplexShardingStrategyConfiguration yamlComplexShardingStrategyConfiguration = new YamlComplexShardingStrategyConfiguration();
         yamlComplexShardingStrategyConfiguration.setShardingColumns("id, creation_date");
-        yamlComplexShardingStrategyConfiguration.setAlgorithmClassName(ComplexKeysShardingAlgorithmFixture.class.getName());
+        yamlComplexShardingStrategyConfiguration.setShardingAlgorithm(new YamlShardingAlgorithmConfiguration());
+        yamlComplexShardingStrategyConfiguration.getShardingAlgorithm().setType("COMPLEX_TEST");
         YamlShardingStrategyConfiguration result = new YamlShardingStrategyConfiguration();
         result.setComplex(yamlComplexShardingStrategyConfiguration);
         return result;
@@ -174,7 +157,8 @@ public final class ShardingStrategyConfigurationYamlSwapperTest {
     
     private YamlShardingStrategyConfiguration createHintShardingStrategyConfiguration() {
         YamlHintShardingStrategyConfiguration yamlHintShardingStrategyConfiguration = new YamlHintShardingStrategyConfiguration();
-        yamlHintShardingStrategyConfiguration.setAlgorithmClassName(HintShardingAlgorithmFixture.class.getName());
+        yamlHintShardingStrategyConfiguration.setShardingAlgorithm(new YamlShardingAlgorithmConfiguration());
+        yamlHintShardingStrategyConfiguration.getShardingAlgorithm().setType("HINT_TEST");
         YamlShardingStrategyConfiguration result = new YamlShardingStrategyConfiguration();
         result.setHint(yamlHintShardingStrategyConfiguration);
         return result;

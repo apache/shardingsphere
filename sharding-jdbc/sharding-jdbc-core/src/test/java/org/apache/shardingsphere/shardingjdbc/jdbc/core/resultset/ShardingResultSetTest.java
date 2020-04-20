@@ -19,13 +19,13 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.sharding.execute.context.ShardingExecutionContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,12 +70,12 @@ public final class ShardingResultSetTest {
         mergeResultSet = mock(MergedResult.class);
         ShardingRuntimeContext shardingRuntimeContext = mock(ShardingRuntimeContext.class);
         when(shardingRuntimeContext.getRule()).thenReturn(mock(ShardingRule.class));
-        when(shardingRuntimeContext.getProperties()).thenReturn(new ShardingSphereProperties(new Properties()));
+        when(shardingRuntimeContext.getProperties()).thenReturn(new ConfigurationProperties(new Properties()));
         shardingResultSet = new ShardingResultSet(getResultSets(), mergeResultSet, getShardingStatement(), createExecutionContext());
     }
     
-    private ShardingExecutionContext createExecutionContext() {
-        ShardingExecutionContext result = mock(ShardingExecutionContext.class);
+    private ExecutionContext createExecutionContext() {
+        ExecutionContext result = mock(ExecutionContext.class);
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
         TablesContext tablesContext = mock(TablesContext.class);
         when(tablesContext.getTableNames()).thenReturn(Collections.emptyList());
@@ -102,7 +102,7 @@ public final class ShardingResultSetTest {
         when(encryptRule.findEncryptor(anyString(), anyString())).thenReturn(Optional.empty());
         when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
         when(runtimeContext.getRule()).thenReturn(shardingRule);
-        when(runtimeContext.getProperties()).thenReturn(new ShardingSphereProperties(new Properties()));
+        when(runtimeContext.getProperties()).thenReturn(new ConfigurationProperties(new Properties()));
         when(shardingConnection.getRuntimeContext()).thenReturn(runtimeContext);
         ShardingStatement statement = mock(ShardingStatement.class);
         when(statement.getConnection()).thenReturn(shardingConnection);

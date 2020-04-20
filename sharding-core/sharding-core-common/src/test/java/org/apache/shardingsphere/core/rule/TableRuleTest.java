@@ -23,8 +23,13 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.NoneShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.strategy.keygen.fixture.IncrementShardingKeyGenerator;
+import org.apache.shardingsphere.core.strategy.keygen.fixture.IncrementKeyGenerateAlgorithm;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.underlying.common.rule.DataNode;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -41,6 +46,11 @@ import static org.junit.Assert.assertTrue;
 
 public final class TableRuleTest {
     
+    @BeforeClass
+    public static void beforeClass() {
+        ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
+    }
+    
     @Test
     public void assertCreateMinTableRule() {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration("LOGIC_TABLE");
@@ -55,10 +65,12 @@ public final class TableRuleTest {
     
     @Test
     public void assertCreateFullTableRule() {
+        ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}");
         tableRuleConfig.setDatabaseShardingStrategyConfig(new NoneShardingStrategyConfiguration());
         tableRuleConfig.setTableShardingStrategyConfig(new NoneShardingStrategyConfiguration());
-        tableRuleConfig.setKeyGeneratorConfig(new KeyGeneratorConfiguration("INCREMENT", "col_1", new Properties()));
+        KeyGenerateAlgorithm keyGenerateAlgorithm = TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class, "INCREMENT", new Properties());
+        tableRuleConfig.setKeyGeneratorConfig(new KeyGeneratorConfiguration("col_1", keyGenerateAlgorithm));
         TableRule actual = new TableRule(tableRuleConfig, createShardingDataSourceNames(), null);
         assertThat(actual.getLogicTable(), is("logic_table"));
         assertThat(actual.getActualDataNodes().size(), is(6));
@@ -70,8 +82,9 @@ public final class TableRuleTest {
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds1", "table_2")));
         assertNotNull(actual.getDatabaseShardingStrategy());
         assertNotNull(actual.getTableShardingStrategy());
-        assertThat(actual.getGenerateKeyColumn(), is("col_1"));
-        assertThat(actual.getShardingKeyGenerator(), instanceOf(IncrementShardingKeyGenerator.class));
+        assertTrue(actual.getGenerateKeyColumn().isPresent());
+        assertThat(actual.getGenerateKeyColumn().get(), is("col_1"));
+        assertThat(actual.getKeyGenerateAlgorithm(), instanceOf(IncrementKeyGenerateAlgorithm.class));
     }
     
     @Test
@@ -117,15 +130,6 @@ public final class TableRuleTest {
         TableRuleConfiguration tableRuleConfiguration = new TableRuleConfiguration("LOGIC_TABLE", "");
         tableRuleConfiguration.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("shardingColumn", "table_${shardingColumn % 3}"));
         new TableRule(tableRuleConfiguration, createShardingDataSourceNames(), null);
-    }
-    
-    @Test
-    public void assertToString() {
-        TableRule actual = new TableRule(new TableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}"), createShardingDataSourceNames(), null);
-        String actualString = "TableRule(logicTable=logic_table, actualDataNodes=[DataNode(dataSourceName=ds0, tableName=table_0), DataNode(dataSourceName=ds0, tableName=table_1), "
-                + "DataNode(dataSourceName=ds0, tableName=table_2), DataNode(dataSourceName=ds1, tableName=table_0), DataNode(dataSourceName=ds1, tableName=table_1), "
-                + "DataNode(dataSourceName=ds1, tableName=table_2)], databaseShardingStrategy=null, tableShardingStrategy=null, generateKeyColumn=null, shardingKeyGenerator=null)";
-        assertThat(actual.toString(), is(actualString));
     }
     
     private ShardingDataSourceNames createShardingDataSourceNames() {

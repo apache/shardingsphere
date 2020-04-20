@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "分片"
 weight = 2
 +++
@@ -50,7 +49,7 @@ SQL中如果无分片字段，将执行全路由，性能较差。
 
 - Hint分片策略
 
-对应HintShardingStrategy。通过Hint而非SQL解析的方式分片的策略。
+对应HintShardingStrategy。通过Hint指定分片值而非从SQL中提取分片值的方式进行分片的策略。
 
 - 不分片策略
 

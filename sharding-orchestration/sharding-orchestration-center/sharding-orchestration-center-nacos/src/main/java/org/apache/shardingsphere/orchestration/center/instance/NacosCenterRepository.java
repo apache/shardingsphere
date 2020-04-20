@@ -29,7 +29,7 @@ import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 import org.apache.shardingsphere.orchestration.center.util.ConfigKeyUtils;
-import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 
 import java.util.List;
 import java.util.Properties;
@@ -76,9 +76,9 @@ public final class NacosCenterRepository implements ConfigCenterRepository {
     @Override
     public String get(final String key) {
         try {
-            String dataId = ConfigKeyUtils.path2Key(key);
-            String group = nacosProperties.getValue(NacosPropertiesEnum.GROUP);
-            long timeoutMs = nacosProperties.getValue(NacosPropertiesEnum.TIMEOUT);
+            String dataId = ConfigKeyUtils.pathToKey(key);
+            String group = nacosProperties.getValue(NacosPropertyKey.GROUP);
+            long timeoutMs = nacosProperties.getValue(NacosPropertyKey.TIMEOUT);
             return configService.getConfig(dataId, group, timeoutMs);
         } catch (final NacosException ex) {
             log.debug("Nacos get config value exception for: {}", ex.toString());
@@ -106,8 +106,8 @@ public final class NacosCenterRepository implements ConfigCenterRepository {
     @Override
     public void persist(final String key, final String value) {
         try {
-            String dataId = ConfigKeyUtils.path2Key(key);
-            String group = nacosProperties.getValue(NacosPropertiesEnum.GROUP);
+            String dataId = ConfigKeyUtils.pathToKey(key);
+            String group = nacosProperties.getValue(NacosPropertyKey.GROUP);
             configService.publishConfig(dataId, group, value);
         } catch (final NacosException ex) {
             log.debug("Nacos persist config exception for: {}", ex.toString());
@@ -123,8 +123,8 @@ public final class NacosCenterRepository implements ConfigCenterRepository {
     @Override
     public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
         try {
-            String dataId = ConfigKeyUtils.path2Key(key);
-            String group = nacosProperties.getValue(NacosPropertiesEnum.GROUP);
+            String dataId = ConfigKeyUtils.pathToKey(key);
+            String group = nacosProperties.getValue(NacosPropertyKey.GROUP);
             configService.addListener(dataId, group, new Listener() {
                 
                 @Override
@@ -139,6 +139,16 @@ public final class NacosCenterRepository implements ConfigCenterRepository {
             });
         } catch (final NacosException ex) {
             log.debug("Nacos watch key exception for: {}", ex.toString());
+        }
+    }
+    
+    @Override
+    public void delete(final String key) {
+        try {
+            String dataId = ConfigKeyUtils.pathToKey(key);
+            configService.removeConfig(dataId, nacosProperties.getValue(NacosPropertyKey.GROUP));
+        } catch (NacosException ex) {
+            log.debug("Nacos remove config exception for: {}", ex.toString());
         }
     }
     

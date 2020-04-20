@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "Java Configuration"
 weight = 1
 +++
@@ -186,17 +185,25 @@ The implementation of DataSource in the following configuration is [DataSourceUt
 
 ```java
     DataSource getDataSource() throws SQLException {
-        // OrchestrationShardingDataSourceFactory can be replaced by OrchestrationMasterSlaveDataSourceFactory or OrchestrationEncryptDataSourceFactory
+        // OrchestrationShardingDataSourceFactory 可替换成 OrchestrationMasterSlaveDataSourceFactory 或 OrchestrationEncryptDataSourceFactory
         return OrchestrationShardingDataSourceFactory.createDataSource(
                 createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
-                new OrchestrationConfiguration("orchestration-sharding-data-source", getRegistryCenterConfiguration(), false));
+                new OrchestrationConfiguration(createCenterConfigurationMap()));
     }
-    
-    private RegistryCenterConfiguration getRegistryCenterConfiguration() {
-        RegistryCenterConfiguration regConfig = new RegistryCenterConfiguration("zookeeper");//The type of registry center can be Zookeeper, Etcd and so on
-        regConfig.setServerLists("localhost:2181");
-        regConfig.setNamespace("sharding-sphere-orchestration");
-        return regConfig;
+    private Map<String, CenterConfiguration> createCenterConfigurationMap() {
+        Map<String, CenterConfiguration> instanceConfigurationMap = new HashMap<String, CenterConfiguration>();
+        CenterConfiguration config = createCenterConfiguration();
+        instanceConfigurationMap.put("orchestration-sharding-data-source", config);
+        return instanceConfigurationMap;
+    }
+    private CenterConfiguration createCenterConfiguration() {
+        Properties properties = new Properties();
+        properties.setProperty("overwrite", overwrite);
+        CenterConfiguration result = new CenterConfiguration("zookeeper", properties);
+        result.setServerLists("localhost:2181");
+        result.setNamespace("sharding-sphere-orchestration");
+        result.setOrchestrationType("registry_center,config_center");
+        return result;
     }
 ```
 
@@ -285,7 +292,7 @@ The implementation class of `ShardingStrategyConfiguration`, used to configure n
 | type   | String     | Type of key generator, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID |
 | props  | Properties | The Property configuration of key generators                 |
 
-#### PropertiesConstant
+#### Properties
 
 Property configuration that can include these properties of these key generators.
 
@@ -326,7 +333,7 @@ Property configuration that can include these properties of these key generators
 | assistedQueryColumn | String                       | AssistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data  |
 | encryptor           | String                       | Encryptor name                                                                                        |
 
-#### ShardingPropertiesConstant
+#### Properties
 
 Property configuration items, can be of the following properties.
 
@@ -337,6 +344,7 @@ Property configuration items, can be of the following properties.
 | max.connections.size.per.query (?) | int        | The maximum connection number allocated by each query of each physical database. default value: 1 |
 | check.table.metadata.enabled (?)   | boolean    | Check meta-data consistency or not in initialization, default value: false                        |
 | query.with.cipher.column (?)       | boolean    | When there is a plainColumn, use cipherColumn or not to query, default value: true                |
+| allow.range.query.with.inline.sharding (?)    | boolean   | Allow or not execute range query with inline sharding strategy, default value: false        |
 
 ### Read-Write Split
 
@@ -357,7 +365,7 @@ Property configuration items, can be of the following properties.
 | slaveDataSourceNames     | Collection\<String\>            | Slave database source name list   |
 | loadBalanceAlgorithm (?) | MasterSlaveLoadBalanceAlgorithm | Slave database load balance       |
 
-#### ShardingPropertiesConstant
+#### Properties
 
 Property configuration items, can be of the following properties.
 
@@ -385,7 +393,7 @@ Property configuration items, can be of the following properties.
 | encryptors          | Map<String, EncryptorRuleConfiguration>     | Encryptor names and encryptors                              |
 | tables              | Map<String, EncryptTableRuleConfiguration>  | Encrypt table names and encrypt tables                      |
 
-#### PropertiesConstant
+#### Properties
 
 Property configuration items, can be of the following properties.
 
@@ -429,18 +437,57 @@ Property configuration items, can be of the following properties.
 
 | *Name*          | *Data Type*                 | *Explanation*                                                |
 | --------------- | --------------------------- | ------------------------------------------------------------ |
-| name            | String                      | Orchestration example name                              |
-| overwrite       | boolean                     | Local configurations overwrite registry center configurations or not; if they overwrite, each start takes reference of local configurations |
-| regCenterConfig | RegistryCenterConfiguration | Registry center configurations                               |
+| instanceConfigurationMap | Map\<String, CenterConfiguration\>  | config map of config-center&registry-center，the key is center's name，the value is the config-center/registry-center   |
 
-#### RegistryCenterConfiguration
+
+#### CenterConfiguration
 
 | *Name*                           | *Data Type* | *Explanation*                                                |
 | -------------------------------- | ----------- | ------------------------------------------------------------ |
-| serverLists                      | String      | Connect to server lists in registry center, including IP address and port number; addresses are separated by commas, such as `host1:2181,host2:2181` |
-| namespace (?)                    | String      | Name space of registry center                                |
+| type                              | String     | The type of center instance(zookeeper/etcd/apollo/nacos)                                       |
+| properties                        | String     | Properties for center instance config, such as options of zookeeper                        |
+| orchestrationType                 | String     | The type of orchestration center: config-center or registry-center, if both, use "setOrchestrationType("registry_center,config_center");"                  |
+| serverLists                       | String     | Connect to server lists in center, including IP address and port number; addresses are separated by commas, such as `host1:2181,host2:2181` |
+| namespace (?)                     | String     | Namespace of center instance                                                                    |
+
+Common configuration in properties as follow:
+
+| *Name*                           | *Data Type* | *Explanation*                                                |
+| -------------------------------- | ----------- | ------------------------------------------------------------ |
+| overwrite                         | boolean    | Local configurations overwrite center configurations or not; if they overwrite, each start takes reference of local configurations                          |
+
+If type of center is `zookeeper` with config-center&registry-center, properties could be set with the follow options:
+
+| *Name*                           | *Data Type* | *Explanation*                                                |
+| -------------------------------- | ----------- | ------------------------------------------------------------ |
 | digest (?)                       | String      | Connect to authority tokens in registry center; default indicates no need for authority |
 | operationTimeoutMilliseconds (?) | int         | The operation timeout millisecond number, default to be 500 milliseconds |
 | maxRetries (?)                   | int         | The maximum retry count, default to be 3 times               |
 | retryIntervalMilliseconds (?)    | int         | The retry interval millisecond number, default to be 500 milliseconds |
 | timeToLiveSeconds (?)            | int         | The living time for temporary nodes, default to be 60 seconds |
+
+If type of center is `etcd` with config-center&registry-center, properties could be set with the follow options:
+
+| *Name*                           | *Data Type* | *Explanation*                                                |
+| -------------------------------- | ----------- | ------------------------------------------------------------ |
+| timeToLiveSeconds (?)            | long        | The etcd TTL in seconds, default to be 30 seconds            |
+
+If type of center is `apollo` with config-center&registry-center, properties could be set with the follow options:
+
+| *Name*                           | *Data Type* | *Explanation*                                                |
+| -------------------------------- | ----------- | ------------------------------------------------------------ |
+| appId (?)          | String        | Apollo appId, default to be "APOLLO_SHARDINGSPHERE"                                |
+| env (?)            | String        | Apollo env, default to be "DEV"                                                    |
+| clusterName (?)    | String        | Apollo clusterName, default to be "default"                                        |
+| administrator (?)  | String        | Apollo administrator, default to be ""                                             |
+| token (?)          | String        | Apollo token, default to be ""                                                     |
+| portalUrl (?)      | String        | Apollo portalUrl, default to be ""                                                 |
+| connectTimeout (?) | int           | Apollo connectTimeout, default to be 1000 milliseconds                             |
+| readTimeout (?)    | int           | Apollo readTimeout, default to be 5000 milliseconds                                |
+
+If type of center is `nacos` with config-center&registry-center, properties could be set with the follow options:
+
+| *Name*                           | *Data Type* | *Explanation*                                                |
+| -------------------------------- | ----------- | ------------------------------------------------------------ |
+| group (?)          | String        | Nacos group, "SHARDING_SPHERE_DEFAULT_GROUP" in default                  |
+| timeout (?)        | long          | Nacos timeout, default to be 3000 milliseconds                           |

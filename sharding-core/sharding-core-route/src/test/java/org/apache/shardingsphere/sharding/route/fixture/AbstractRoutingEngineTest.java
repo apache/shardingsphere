@@ -83,7 +83,6 @@ public abstract class AbstractRoutingEngineTest {
         shardingRuleConfig.getTableRuleConfigs().add(createInlineTableRuleConfig("t_user", "ds_${0..1}.t_user_${0..1}", "t_user_${user_id % 2}", "ds_${user_id % 2}"));
         shardingRuleConfig.getTableRuleConfigs().add(createTableRuleWithHintConfig());
         shardingRuleConfig.getBindingTableGroups().add("t_order,t_order_item");
-        shardingRuleConfig.setDefaultDataSourceName("main");
         return new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1", "main"));
     }
     

@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.sql.parser.binder.segment.table;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
@@ -55,18 +56,35 @@ public final class TablesContext {
     /**
      * Find table name.
      *
-     * @param predicate predicate
-     * @param tableMetas table metas
+     * @param column column segment
+     * @param schemaMetaData schema meta data
      * @return table name
      */
-    public Optional<String> findTableName(final PredicateSegment predicate, final TableMetas tableMetas) {
+    public Optional<String> findTableName(final ColumnSegment column, final SchemaMetaData schemaMetaData) {
         if (1 == tables.size()) {
             return Optional.of(tables.iterator().next().getTableName().getIdentifier().getValue());
         }
-        if (predicate.getColumn().getOwner().isPresent()) {
-            return Optional.of(findTableNameFromSQL(predicate.getColumn().getOwner().get().getIdentifier().getValue()));
+        if (column.getOwner().isPresent()) {
+            return Optional.of(findTableNameFromSQL(column.getOwner().get().getIdentifier().getValue()));
         }
-        return findTableNameFromMetaData(predicate.getColumn().getIdentifier().getValue(), tableMetas);
+        return findTableNameFromMetaData(column.getIdentifier().getValue(), schemaMetaData);
+    }
+    
+    /**
+     * Find table name.
+     *
+     * @param column column projection
+     * @param schemaMetaData schema meta data
+     * @return table name
+     */
+    public Optional<String> findTableName(final ColumnProjection column, final SchemaMetaData schemaMetaData) {
+        if (1 == tables.size()) {
+            return Optional.of(tables.iterator().next().getTableName().getIdentifier().getValue());
+        }
+        if (null != column.getOwner()) {
+            return Optional.of(findTableNameFromSQL(column.getOwner()));
+        }
+        return findTableNameFromMetaData(column.getName(), schemaMetaData);
     }
     
     private String findTableNameFromSQL(final String tableNameOrAlias) {
@@ -78,9 +96,9 @@ public final class TablesContext {
         throw new IllegalStateException("Can not find owner from table.");
     }
     
-    private Optional<String> findTableNameFromMetaData(final String columnName, final TableMetas tableMetas) {
+    private Optional<String> findTableNameFromMetaData(final String columnName, final SchemaMetaData schemaMetaData) {
         for (SimpleTableSegment each : tables) {
-            if (tableMetas.containsColumn(each.getTableName().getIdentifier().getValue(), columnName)) {
+            if (schemaMetaData.containsColumn(each.getTableName().getIdentifier().getValue(), columnName)) {
                 return Optional.of(each.getTableName().getIdentifier().getValue());
             }
         }

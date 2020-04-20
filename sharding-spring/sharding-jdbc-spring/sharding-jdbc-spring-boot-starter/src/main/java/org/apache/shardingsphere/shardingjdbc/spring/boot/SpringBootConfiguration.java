@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.impl.ShadowRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.ShadowRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.shardingjdbc.api.EncryptDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
@@ -39,6 +39,7 @@ import org.apache.shardingsphere.shardingjdbc.spring.boot.sharding.SpringBootSha
 import org.apache.shardingsphere.spring.boot.datasource.DataSourcePropertiesSetterHolder;
 import org.apache.shardingsphere.spring.boot.util.DataSourceUtil;
 import org.apache.shardingsphere.spring.boot.util.PropertyUtil;
+import org.apache.shardingsphere.transaction.spring.ShardingTransactionTypeScanner;
 import org.apache.shardingsphere.underlying.common.config.inline.InlineExpressionParser;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -136,6 +137,16 @@ public class SpringBootConfiguration implements EnvironmentAware {
     @Conditional(ShadowRuleCondition.class)
     public DataSource shadowDataSource() throws SQLException {
         return ShadowDataSourceFactory.createDataSource(dataSourceMap, new ShadowRuleConfigurationYamlSwapper().swap(shadowRule), props.getProps());
+    }
+    
+    /**
+     * Create sharding transaction type scanner.
+     *
+     * @return sharding transaction type scanner
+     */
+    @Bean
+    public ShardingTransactionTypeScanner shardingTransactionTypeScanner() {
+        return new ShardingTransactionTypeScanner();
     }
     
     @Override

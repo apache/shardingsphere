@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -69,8 +69,11 @@ public final class ShardingDataSourceFactoryTest {
         when(statement.getConnection()).thenReturn(connection);
         when(statement.getConnection().getMetaData().getTables(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
-        Map<String, DataSource> result = new HashMap<>(1);
         when(statement.getConnection().getMetaData().getURL()).thenReturn("jdbc:h2:mem:demo_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        when(statement.getConnection().getMetaData().getColumns(null, null, "table_0", "%")).thenReturn(mock(ResultSet.class));
+        when(statement.getConnection().getMetaData().getPrimaryKeys(null, null, "table_0")).thenReturn(mock(ResultSet.class));
+        when(statement.getConnection().getMetaData().getIndexInfo(null, null, "table_0", false, false)).thenReturn(mock(ResultSet.class));
+        Map<String, DataSource> result = new HashMap<>(1);
         result.put("ds", dataSource);
         return result;
     }

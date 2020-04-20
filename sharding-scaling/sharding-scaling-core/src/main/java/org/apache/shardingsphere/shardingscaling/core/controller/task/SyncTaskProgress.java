@@ -39,20 +39,20 @@ public final class SyncTaskProgress implements SyncProgress {
     
     private final String status;
     
-    private final List<SyncProgress> historySyncTaskProgress = new LinkedList<>();
+    private final List<SyncProgress> inventorySyncTaskProgress = new LinkedList<>();
     
-    private SyncProgress realTimeSyncTaskProgress;
+    private SyncProgress incrementalSyncTaskProgress;
     
     /**
-     * Set history sync task progress.
+     * Set inventory sync task progress.
      *
-     * @param historySyncTaskProgress history sync task progress
+     * @param inventorySyncTaskProgress inventory sync task progress
      */
-    public void setHistorySyncTaskProgress(final SyncProgress historySyncTaskProgress) {
-        if (historySyncTaskProgress instanceof SyncProgressGroup) {
-            this.historySyncTaskProgress.addAll(((SyncProgressGroup) historySyncTaskProgress).getSyncProgresses());
+    public void setInventorySyncTaskProgress(final SyncProgress inventorySyncTaskProgress) {
+        if (inventorySyncTaskProgress instanceof SyncProgressGroup) {
+            this.inventorySyncTaskProgress.addAll(((SyncProgressGroup) inventorySyncTaskProgress).getSyncProgresses());
         } else {
-            this.historySyncTaskProgress.add(historySyncTaskProgress);
+            this.inventorySyncTaskProgress.add(inventorySyncTaskProgress);
         }
     }
 }

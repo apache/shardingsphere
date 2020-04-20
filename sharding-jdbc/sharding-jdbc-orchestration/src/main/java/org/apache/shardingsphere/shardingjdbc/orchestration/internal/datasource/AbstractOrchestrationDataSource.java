@@ -22,16 +22,17 @@ import com.google.common.eventbus.Subscribe;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
-import org.apache.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;
-import org.apache.shardingsphere.orchestration.internal.registry.state.event.CircuitStateChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
+import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
+import org.apache.shardingsphere.orchestration.core.registrycenter.event.CircuitStateChangedEvent;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
+import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
+import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -44,6 +45,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Abstract orchestration data source.
@@ -103,13 +105,13 @@ public abstract class AbstractOrchestrationDataSource extends AbstractUnsupporte
     
     protected final void initShardingOrchestrationFacade() {
         shardingOrchestrationFacade.init();
-        dataSourceConfigurations.putAll(shardingOrchestrationFacade.getConfigService().loadDataSourceConfigurations(ShardingConstant.LOGIC_SCHEMA_NAME));
+        dataSourceConfigurations.putAll(shardingOrchestrationFacade.getConfigCenter().loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME));
     }
     
     protected final void initShardingOrchestrationFacade(
             final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigurations, final Map<String, RuleConfiguration> schemaRuleMap, final Properties props) {
         shardingOrchestrationFacade.init(dataSourceConfigurations, schemaRuleMap, null, props);
-        this.dataSourceConfigurations.putAll(dataSourceConfigurations.get(ShardingConstant.LOGIC_SCHEMA_NAME));
+        this.dataSourceConfigurations.putAll(dataSourceConfigurations.get(DefaultSchema.LOGIC_NAME));
     }
     
     protected final synchronized Map<String, DataSource> getChangedDataSources(final Map<String, DataSource> oldDataSources, final Map<String, DataSourceConfiguration> newDataSources) {
@@ -123,13 +125,7 @@ public abstract class AbstractOrchestrationDataSource extends AbstractUnsupporte
     }
     
     protected final synchronized Map<String, DataSourceConfiguration> getModifiedDataSources(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
-        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>();
-        for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigurations.entrySet()) {
-            if (isModifiedDataSource(entry)) {
-                result.put(entry.getKey(), entry.getValue());
-            }
-        }
-        return result;
+        return dataSourceConfigurations.entrySet().stream().filter(this::isModifiedDataSource).collect(Collectors.toMap(Entry::getKey, Entry::getValue, (key, repeatKey) -> key, LinkedHashMap::new));
     }
     
     private synchronized boolean isModifiedDataSource(final Entry<String, DataSourceConfiguration> dataSourceNameAndConfig) {
@@ -144,5 +140,9 @@ public abstract class AbstractOrchestrationDataSource extends AbstractUnsupporte
     
     private synchronized Map<String, DataSourceConfiguration> getAddedDataSources(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
         return Maps.filterEntries(dataSourceConfigurations, input -> !AbstractOrchestrationDataSource.this.dataSourceConfigurations.containsKey(input.getKey()));
+    }
+    
+    protected final void persistMetaData(final RuleSchemaMetaData ruleSchemaMetaData) {
+        ShardingOrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(DefaultSchema.LOGIC_NAME, ruleSchemaMetaData);
     }
 }

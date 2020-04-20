@@ -34,7 +34,7 @@ import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.instance.handler.CuratorZookeeperExceptionHandler;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
-import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException.OperationTimeoutException;
 import org.apache.zookeeper.ZooDefs;
@@ -45,7 +45,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -70,11 +69,11 @@ public final class CuratorZookeeperCenterRepository implements ConfigCenterRepos
     }
     
     private CuratorFramework buildCuratorClient(final CenterConfiguration config, final ZookeeperProperties zookeeperProperties) {
-        int retryIntervalMilliseconds = zookeeperProperties.getValue(ZookeeperPropertiesEnum.RETRY_INTERVAL_MILLISECONDS);
-        int maxRetries = zookeeperProperties.getValue(ZookeeperPropertiesEnum.MAX_RETRIES);
-        int timeToLiveSeconds = zookeeperProperties.getValue(ZookeeperPropertiesEnum.TIME_TO_LIVE_SECONDS);
-        int operationTimeoutMilliseconds = zookeeperProperties.getValue(ZookeeperPropertiesEnum.OPERATION_TIMEOUT_MILLISECONDS);
-        String digest = zookeeperProperties.getValue(ZookeeperPropertiesEnum.DIGEST);
+        int retryIntervalMilliseconds = zookeeperProperties.getValue(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS);
+        int maxRetries = zookeeperProperties.getValue(ZookeeperPropertyKey.MAX_RETRIES);
+        int timeToLiveSeconds = zookeeperProperties.getValue(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS);
+        int operationTimeoutMilliseconds = zookeeperProperties.getValue(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS);
+        String digest = zookeeperProperties.getValue(ZookeeperPropertyKey.DIGEST);
         CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder()
             .connectString(config.getServerLists())
             .retryPolicy(new ExponentialBackoffRetry(retryIntervalMilliseconds, maxRetries, retryIntervalMilliseconds * maxRetries))
@@ -106,8 +105,8 @@ public final class CuratorZookeeperCenterRepository implements ConfigCenterRepos
     private void initCuratorClient(final ZookeeperProperties zookeeperProperties) {
         client.start();
         try {
-            int retryIntervalMilliseconds = zookeeperProperties.getValue(ZookeeperPropertiesEnum.RETRY_INTERVAL_MILLISECONDS);
-            int maxRetries = zookeeperProperties.getValue(ZookeeperPropertiesEnum.MAX_RETRIES);
+            int retryIntervalMilliseconds = zookeeperProperties.getValue(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS);
+            int maxRetries = zookeeperProperties.getValue(ZookeeperPropertyKey.MAX_RETRIES);
             if (!client.blockUntilConnected(retryIntervalMilliseconds * maxRetries, TimeUnit.MILLISECONDS)) {
                 client.close();
                 throw new OperationTimeoutException();
@@ -131,12 +130,7 @@ public final class CuratorZookeeperCenterRepository implements ConfigCenterRepos
     }
     
     private TreeCache findTreeCache(final String key) {
-        for (Entry<String, TreeCache> entry : caches.entrySet()) {
-            if (key.startsWith(entry.getKey())) {
-                return entry.getValue();
-            }
-        }
-        return null;
+        return caches.entrySet().stream().filter(entry -> key.startsWith(entry.getKey())).findFirst().map(Map.Entry::getValue).orElse(null);
     }
     
     @Override
@@ -228,9 +222,22 @@ public final class CuratorZookeeperCenterRepository implements ConfigCenterRepos
             }
             DataChangedEvent.ChangedType changedType = getChangedType(event);
             if (DataChangedEvent.ChangedType.IGNORED != changedType) {
-                dataChangedEventListener.onChange(new DataChangedEvent(data.getPath(), null == data.getData() ? null : new String(data.getData(), "UTF-8"), changedType));
+                dataChangedEventListener.onChange(new DataChangedEvent(data.getPath(), null == data.getData() ? null : new String(data.getData(), Charsets.UTF_8), changedType));
             }
         });
+    }
+    
+    @Override
+    public void delete(final String key) {
+        try {
+            if (isExisted(key)) {
+                client.delete().deletingChildrenIfNeeded().forPath(key);
+            }
+            // CHECKSTYLE:OFF
+        } catch (Exception ex) {
+            // CHECKSTYLE:ON
+            CuratorZookeeperExceptionHandler.handleException(ex);
+        }
     }
     
     private DataChangedEvent.ChangedType getChangedType(final TreeCacheEvent event) {
@@ -258,9 +265,7 @@ public final class CuratorZookeeperCenterRepository implements ConfigCenterRepos
     
     @Override
     public void close() {
-        for (Entry<String, TreeCache> each : caches.entrySet()) {
-            each.getValue().close();
-        }
+        caches.values().forEach(TreeCache::close);
         waitForCacheClose();
         CloseableUtils.closeQuietly(client);
     }

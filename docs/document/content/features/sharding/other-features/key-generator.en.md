@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "Distributed Primary Key"
 weight = 2
 +++

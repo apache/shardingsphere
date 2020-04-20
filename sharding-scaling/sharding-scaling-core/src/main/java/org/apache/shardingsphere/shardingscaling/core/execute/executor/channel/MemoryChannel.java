@@ -27,7 +27,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-
 /**
  * Memory channel.
  */
@@ -47,7 +46,7 @@ public final class MemoryChannel implements Channel {
     
     @Override
     public void pushRecord(final Record dataRecord) throws InterruptedException {
-        if (!queue.offer(dataRecord, PUSH_TIMEOUT, TimeUnit.HOURS)) {
+        if (!queue.offer(dataRecord, PUSH_TIMEOUT, TimeUnit.MILLISECONDS)) {
             throw new RuntimeException();
         }
     }

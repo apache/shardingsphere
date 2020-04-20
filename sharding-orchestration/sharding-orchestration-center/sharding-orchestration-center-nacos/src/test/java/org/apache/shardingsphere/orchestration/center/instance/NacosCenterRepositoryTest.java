@@ -24,7 +24,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.ChangedType;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
-import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.AdditionalAnswers;
@@ -150,6 +150,13 @@ public final class NacosCenterRepositoryTest {
         DataChangedEventListener listener = dataChangedEvent -> actualType[0] = dataChangedEvent.getChangedType();
         configCenterRepository.watch("/sharding/test", listener);
         assertThat(actualType[0], is(ChangedType.UPDATED));
+    }
+    
+    @Test
+    @SneakyThrows
+    public void assertDelete() {
+        configCenterRepository.delete("/sharding/test");
+        verify(configService).removeConfig("sharding.test", group);
     }
     
     private VoidAnswer3 getListenerAnswer(final String expectValue) {

@@ -22,6 +22,8 @@ package org.apache.shardingsphere.shardingscaling.core.exception;
  */
 public final class SyncTaskExecuteException extends RuntimeException {
     
+    private static final long serialVersionUID = 1797495940081148743L;
+    
     public SyncTaskExecuteException(final String message) {
         super(message);
     }

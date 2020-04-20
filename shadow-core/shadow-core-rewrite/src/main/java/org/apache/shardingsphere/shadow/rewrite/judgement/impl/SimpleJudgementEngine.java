@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.rewrite.condition.ShadowCondition;
 import org.apache.shardingsphere.shadow.rewrite.condition.ShadowConditionEngine;
 import org.apache.shardingsphere.shadow.rewrite.judgement.ShadowJudgementEngine;
-import org.apache.shardingsphere.sql.parser.binder.segment.insert.InsertValueContext;
+import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.WhereAvailable;
@@ -58,7 +58,7 @@ public final class SimpleJudgementEngine implements ShadowJudgementEngine {
                 return false;
             }
             List<Object> values = shadowCondition.get().getValues(Collections.emptyList());
-            return values.size() != 0 && "TRUE".equals((String.valueOf(values.get(0))).toUpperCase());
+            return values.size() != 0 && isShadowField(values.get(0));
         }
         return false;
     }
@@ -70,7 +70,7 @@ public final class SimpleJudgementEngine implements ShadowJudgementEngine {
             if (shadowRule.getColumn().equals(columnName)) {
                 int columnIndex = insertStatementContext.getColumnNames().indexOf(columnName);
                 Object value = insertValueContext.getValue(columnIndex);
-                return "TRUE".equals((String.valueOf(value)).toUpperCase());
+                return isShadowField(value);
             }
         }
         return false;

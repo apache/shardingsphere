@@ -28,8 +28,10 @@ if [ ! -d ${LOGS_DIR} ]; then
 fi
 
 STDOUT_FILE=${LOGS_DIR}/stdout.log
+EXT_LIB=${DEPLOY_DIR}/ext-lib
 
-CLASS_PATH=.:..:${DEPLOY_DIR}/lib/*
+CLASS_PATH=.:..:${DEPLOY_DIR}/lib/*:${DEPLOY_DIR}/lib/*:${EXT_LIB}/*
+
 JAVA_OPTS=" -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true "
 
 JAVA_MEM_OPTS=" -server -Xmx2g -Xms2g -Xmn1g -Xss256k -XX:+DisableExplicitGC -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:LargePageSizeInBytes=128m -XX:+UseFastAccessorMethods -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70 "

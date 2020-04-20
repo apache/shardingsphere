@@ -20,29 +20,33 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
        xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
+       xmlns:spi="http://shardingsphere.apache.org/schema/shardingsphere/spi"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
                         http://shardingsphere.apache.org/schema/shardingsphere/masterslave
                         http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd
+                        http://shardingsphere.apache.org/schema/shardingsphere/spi
+                        http://shardingsphere.apache.org/schema/shardingsphere/spi/spi.xsd
                         ">
 
     <import resource="../datasource/masterSlaveDataSource.xml" />
+
+    <spi:sharding-algorithm id="standardModuloDatabaseShardingAlgorithm" type="STANDARD_TEST_DB"/>
+    <spi:sharding-algorithm id="standardModuloTableShardingAlgorithm" type="STANDARD_TEST_TBL"/>
+    <spi:sharding-algorithm id="defaultComplexKeysShardingAlgorithm" type="COMPLEX_TEST"/>
+    <spi:sharding-algorithm id="defaultHintShardingAlgorithm" type="HINT_TEST"/>
+
+    <spi:key-generate-algorithm id="incrementAlgorithm" type="INCREMENT" />
     
-    <bean id="preciseModuloDatabaseShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.orchestration.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
-    <bean id="preciseModuloTableShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.orchestration.spring.algorithm.PreciseModuloTableShardingAlgorithm" />
-    <bean id="rangeModuloTableShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.orchestration.spring.algorithm.RangeModuloTableShardingAlgorithm" />
-    <bean id="defaultComplexKeysShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.orchestration.spring.algorithm.DefaultComplexKeysShardingAlgorithm" />
-    <bean id="defaultHintShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.orchestration.spring.algorithm.DefaultHintShardingAlgorithm" />
-    
-    <sharding:standard-strategy id="standardStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
-    <sharding:standard-strategy id="rangeStandardStrategy" sharding-column="order_id" precise-algorithm-ref="preciseModuloTableShardingAlgorithm" range-algorithm-ref="rangeModuloTableShardingAlgorithm" />
+    <sharding:standard-strategy id="standardStrategy" sharding-column="user_id" algorithm-ref="standardModuloDatabaseShardingAlgorithm" />
+    <sharding:standard-strategy id="rangeStandardStrategy" sharding-column="order_id" algorithm-ref="standardModuloTableShardingAlgorithm" />
     <sharding:inline-strategy id="inlineStrategy" sharding-column="order_id" algorithm-expression="t_order_${order_id % 4}" />
     <sharding:hint-strategy id="hintStrategy" algorithm-ref="defaultHintShardingAlgorithm" />
     <sharding:none-strategy id="noneStrategy" />
     
-    <sharding:key-generator id="keyGenerator" type="INCREMENT" column="order_id" />
+    <sharding:key-generator id="keyGenerator" column="order_id" algorithm-ref="incrementAlgorithm" />
     <master-slave:load-balance-algorithm id="randomLoadBalanceAlgorithm" type="RANDOM"/>
 
     <sharding:data-source id="masterSlaveShardingDataSourceByDefaultStrategy">

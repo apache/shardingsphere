@@ -102,9 +102,6 @@ public final class SQLParserParameterizedTest {
         sqlCases.add("select_with_expression");
         // TODO Sub query is necessary
         sqlCases.add("select_pagination_with_row_number");
-        sqlCases.add("select_pagination_with_row_number_and_diff_group_by_and_order_by");
-        sqlCases.add("select_pagination_with_row_number_and_diff_group_by_and_order_by");
-        sqlCases.add("select_pagination_with_row_number_and_group_by_and_order_by");
         sqlCases.add("select_pagination_with_row_number_for_greater_than");
         sqlCases.add("select_pagination_with_row_number_for_greater_than_and_equal");
         sqlCases.add("select_pagination_with_offset_fetch");
@@ -124,13 +121,6 @@ public final class SQLParserParameterizedTest {
         sqlCases.add("create_table_with_exist_index");
         // TODO cannot support insert all
         sqlCases.add("insert_all_with_all_placeholders");
-        // TODO Correct for new parser, please remove them after using new parser
-        sqlCases.add("insert_on_duplicate_key_update_with_base64_aes_encrypt");
-        sqlCases.add("insert_with_one_auto_increment_column");
-        sqlCases.add("insert_on_duplicate_key_update_with_complicated_expression");
-        sqlCases.add("insert_without_columns_and_with_generate_key_column");
-        sqlCases.add("insert_without_columns_and_without_generate_key_column");
-        sqlCases.add("insert_without_columns_with_all_placeholders");
         return sqlCases.contains(sqlCaseId);
     }
     

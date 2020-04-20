@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.ui.web.controller;
 
-import org.apache.shardingsphere.ui.common.domain.RegistryCenterConfig;
-import org.apache.shardingsphere.ui.servcie.RegistryCenterConfigService;
-import org.apache.shardingsphere.ui.util.RegistryCenterRepositoryFactory;
+import org.apache.shardingsphere.ui.common.constant.OrchestrationType;
+import org.apache.shardingsphere.ui.common.domain.CenterConfig;
+import org.apache.shardingsphere.ui.common.dto.CenterConfigDTO;
+import org.apache.shardingsphere.ui.servcie.CenterConfigService;
+import org.apache.shardingsphere.ui.util.CenterRepositoryFactory;
 import org.apache.shardingsphere.ui.web.response.ResponseResult;
 import org.apache.shardingsphere.ui.web.response.ResponseResultUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +40,7 @@ import java.util.List;
 public final class RegistryCenterController {
     
     @Autowired
-    private RegistryCenterConfigService registryCenterConfigService;
+    private CenterConfigService centerConfigService;
     
     /**
      * Load all registry center configs.
@@ -46,8 +48,8 @@ public final class RegistryCenterController {
      * @return response result
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseResult<List<RegistryCenterConfig>> loadConfigs() {
-        return ResponseResultUtil.build(registryCenterConfigService.loadAll().getRegistryCenterConfigs());
+    public ResponseResult<List<CenterConfig>> loadConfigs() {
+        return ResponseResultUtil.build(centerConfigService.loadAll(OrchestrationType.REGISTRY_CENTER.getValue()).getCenterConfigs());
     }
     
     /**
@@ -57,8 +59,8 @@ public final class RegistryCenterController {
      * @return response result
      */
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public ResponseResult add(@RequestBody final RegistryCenterConfig config) {
-        registryCenterConfigService.add(config);
+    public ResponseResult add(@RequestBody final CenterConfig config) {
+        centerConfigService.add(config);
         return ResponseResultUtil.success();
     }
     
@@ -69,8 +71,8 @@ public final class RegistryCenterController {
      * @return response result
      */
     @RequestMapping(value = "", method = RequestMethod.DELETE)
-    public ResponseResult delete(@RequestBody final RegistryCenterConfig config) {
-        registryCenterConfigService.delete(config.getName());
+    public ResponseResult delete(@RequestBody final CenterConfig config) {
+        centerConfigService.delete(config.getName(), OrchestrationType.REGISTRY_CENTER.getValue());
         return ResponseResultUtil.success();
     }
     
@@ -81,9 +83,9 @@ public final class RegistryCenterController {
      * @return response result
      */
     @RequestMapping(value = "/connect", method = RequestMethod.POST)
-    public ResponseResult<Boolean> connect(@RequestBody final RegistryCenterConfig config) {
-        RegistryCenterRepositoryFactory.createRegistryCenter(registryCenterConfigService.load(config.getName()));
-        registryCenterConfigService.setActivated(config.getName());
+    public ResponseResult<Boolean> connect(@RequestBody final CenterConfig config) {
+        CenterRepositoryFactory.createRegistryCenter(centerConfigService.load(config.getName(), OrchestrationType.REGISTRY_CENTER.getValue()));
+        centerConfigService.setActivated(config.getName(), OrchestrationType.REGISTRY_CENTER.getValue());
         return ResponseResultUtil.build(Boolean.TRUE);
     }
     
@@ -93,8 +95,19 @@ public final class RegistryCenterController {
      * @return response result
      */
     @RequestMapping(value = "/activated", method = RequestMethod.GET)
-    public ResponseResult<RegistryCenterConfig> activated() {
-        return ResponseResultUtil.build(registryCenterConfigService.loadActivated().orElse(null));
+    public ResponseResult<CenterConfig> activated() {
+        return ResponseResultUtil.build(centerConfigService.loadActivated(OrchestrationType.REGISTRY_CENTER.getValue()).orElse(null));
     }
     
+    /**
+     * Update registry center.
+     *
+     * @param config registry center config
+     * @return response result
+     */
+    @RequestMapping(value = "/update", method = RequestMethod.POST)
+    public ResponseResult update(@RequestBody final CenterConfigDTO config) {
+        centerConfigService.update(config);
+        return ResponseResultUtil.success();
+    }
 }

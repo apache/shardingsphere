@@ -20,7 +20,8 @@ package org.apache.shardingsphere.shardingproxy.backend.response.query;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
-import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.ExpressionProjection;
@@ -28,7 +29,8 @@ import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaDa
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
 import org.junit.Test;
 
 import java.sql.ResultSetMetaData;
@@ -125,11 +127,13 @@ public final class QueryHeaderTest {
     @SneakyThrows
     private ShardingSchema getShardingSchema() {
         ShardingSchema result = mock(ShardingSchema.class);
-        ColumnMetaData columnMetaData = new ColumnMetaData("order_id", "int", true);
-        TableMetas tableMetas = mock(TableMetas.class);
-        when(tableMetas.get("t_logic_order")).thenReturn(new TableMetaData(Collections.singletonList(columnMetaData), Collections.singletonList("order_id")));
+        ColumnMetaData columnMetaData = new ColumnMetaData("order_id", Types.INTEGER, "int", true, false, false);
+        SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
+        when(schemaMetaData.get("t_logic_order")).thenReturn(new TableMetaData(Collections.singletonList(columnMetaData), Collections.singletonList(new IndexMetaData("order_id"))));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getTables()).thenReturn(tableMetas);
+        RuleSchemaMetaData ruleSchemaMetaData = mock(RuleSchemaMetaData.class);
+        when(ruleSchemaMetaData.getConfiguredSchemaMetaData()).thenReturn(schemaMetaData);
+        when(metaData.getSchema()).thenReturn(ruleSchemaMetaData);
         DataSourceMetas dataSourceMetas = mock(DataSourceMetas.class);
         when(dataSourceMetas.getDataSourceMetaData("ds_0")).thenReturn(mock(DataSourceMetaData.class));
         when(metaData.getDataSources()).thenReturn(dataSourceMetas);

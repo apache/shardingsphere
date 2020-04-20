@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.expr.complex.ExpectedCommonExpression;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.expr.complex.ExpectedSubquery;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.expr.simple.ExpectedSubquery;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.expr.simple.ExpectedLiteralExpression;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.expr.simple.ExpectedParameterMarkerExpression;
 
@@ -42,7 +42,7 @@ public final class ExpectedPredicateBetweenRightValue implements ExpectedPredica
     @XmlElement(name = "between-common-expression")
     private ExpectedCommonExpression betweenCommonExpression;
     
-    @XmlElement(name = "between-subquery")
+    @XmlElement(name = "between-subquery-expression")
     private ExpectedSubquery betweenSubquery;
     
     @XmlElement(name = "and-parameter-marker-expression")
@@ -54,6 +54,6 @@ public final class ExpectedPredicateBetweenRightValue implements ExpectedPredica
     @XmlElement(name = "and-common-expression")
     private ExpectedCommonExpression andCommonExpression;
     
-    @XmlElement(name = "and-subquery")
+    @XmlElement(name = "and-subquery-expression")
     private ExpectedSubquery andSubquery;
 }

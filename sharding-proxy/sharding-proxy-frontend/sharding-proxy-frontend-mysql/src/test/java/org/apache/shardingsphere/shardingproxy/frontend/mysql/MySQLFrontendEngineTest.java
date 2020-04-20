@@ -22,6 +22,7 @@ import io.netty.channel.ChannelHandlerContext;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.rule.ProxyUser;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConnectionPhase;
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLHandshakePacket;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayl
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.shardingproxy.frontend.ConnectionIdGenerator;
+import org.apache.shardingsphere.shardingproxy.frontend.mysql.auth.MySQLAuthenticationEngine;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -79,6 +81,7 @@ public final class MySQLFrontendEngineTest {
     
     @Test
     public void assertAuthWhenLoginSuccess() {
+        setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
         ProxyUser proxyUser = new ProxyUser("", Collections.singleton("db1"));
         setAuthentication(proxyUser);
         when(payload.readStringNul()).thenReturn("root");
@@ -88,12 +91,13 @@ public final class MySQLFrontendEngineTest {
     
     @Test
     public void assertAuthWhenLoginFailure() {
+        setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
         ProxyUser proxyUser = new ProxyUser("error", Collections.singleton("db1"));
         setAuthentication(proxyUser);
         when(payload.readStringNul()).thenReturn("root");
         when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
-        when(context.channel()).thenReturn(channel);
         when(channel.remoteAddress()).thenReturn(new InetSocketAddress("localhost", 3307));
+        when(context.channel()).thenReturn(channel);
         assertTrue(mysqlFrontendEngine.getAuthEngine().auth(context, payload, mock(BackendConnection.class)));
         verify(context).writeAndFlush(isA(MySQLErrPacket.class));
     }
@@ -101,6 +105,7 @@ public final class MySQLFrontendEngineTest {
     @Test
     @SneakyThrows
     public void assertErrorMsgWhenLoginFailure() {
+        setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
         ProxyUser proxyUser = new ProxyUser("error", Collections.singleton("db1"));
         setAuthentication(proxyUser);
         when(payload.readStringNul()).thenReturn("root");
@@ -119,5 +124,12 @@ public final class MySQLFrontendEngineTest {
         Field field = ShardingProxyContext.class.getDeclaredField("authentication");
         field.setAccessible(true);
         field.set(ShardingProxyContext.getInstance(), authentication);
+    }
+    
+    @SneakyThrows
+    private void setConnectionPhase(final MySQLConnectionPhase connectionPhase) {
+        Field field = MySQLAuthenticationEngine.class.getDeclaredField("connectionPhase");
+        field.setAccessible(true);
+        field.set(mysqlFrontendEngine.getAuthEngine(), connectionPhase);
     }
 }

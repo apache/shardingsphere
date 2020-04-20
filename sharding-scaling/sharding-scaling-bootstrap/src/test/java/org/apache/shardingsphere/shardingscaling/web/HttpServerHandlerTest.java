@@ -27,9 +27,9 @@ import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.util.CharsetUtil;
+import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.ScalingConfiguration;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -66,21 +66,8 @@ public class HttpServerHandlerTest {
     }
     
     @Test
-    @Ignore
-    // TODO ignore the test because spi reason temporarily.
-    public void assertChannelReadStartFailed() {
-        ByteBuf byteBuf = Unpooled.copiedBuffer(GSON.toJson(scalingConfiguration), CharsetUtil.UTF_8);
-        fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "/shardingscaling/job/start", byteBuf);
-        httpServerHandler.channelRead0(channelHandlerContext, fullHttpRequest);
-        ArgumentCaptor argumentCaptor = ArgumentCaptor.forClass(FullHttpResponse.class);
-        verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
-        FullHttpResponse fullHttpResponse = (FullHttpResponse) argumentCaptor.getValue();
-        assertTrue(fullHttpResponse.content().toString(CharsetUtil.UTF_8).contains("Datasources check failed!"));
-    }
-    
-    @Test
     public void assertChannelReadStartSuccess() {
-        scalingConfiguration.getRuleConfiguration().setSourceDatasource("ds_0: !!org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration\n  "
+        scalingConfiguration.getRuleConfiguration().setSourceDatasource("ds_0: !!" + YamlDataSourceConfiguration.class.getName() + "\n  "
                 + "dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n  properties:\n    "
                 + "jdbcUrl: jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL\n    username: root\n    password: 'password'\n    connectionTimeout: 30000\n    "
                 + "idleTimeout: 60000\n    maxLifetime: 1800000\n    maxPoolSize: 50\n    minPoolSize: 1\n    maintenanceIntervalMilliseconds: 30000\n    readOnly: false\n");

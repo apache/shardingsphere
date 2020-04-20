@@ -1,8 +1,7 @@
 +++
-pre = "<b>3.4.2.4 </b>"
-toc = true
+pre = "<b>3.4.2.3 </b>"
 title = "Seata BASE transaction"
-weight = 4
+weight = 3
 +++
 
 ## Function

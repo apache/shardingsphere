@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position;
 
 import lombok.Getter;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 
 /**
  * Column after position segment.
@@ -25,10 +26,7 @@ import lombok.Getter;
 @Getter
 public final class ColumnAfterPositionSegment extends ColumnPositionSegment {
     
-    private final String afterColumnName;
-    
-    public ColumnAfterPositionSegment(final int startIndex, final int stopIndex, final String columnName, final String afterColumnName) {
+    public ColumnAfterPositionSegment(final int startIndex, final int stopIndex, final ColumnSegment columnName) {
         super(startIndex, stopIndex, columnName);
-        this.afterColumnName = afterColumnName;
     }
 }

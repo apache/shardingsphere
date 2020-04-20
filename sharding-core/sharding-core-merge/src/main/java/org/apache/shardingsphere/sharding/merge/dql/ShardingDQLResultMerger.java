@@ -25,8 +25,8 @@ import org.apache.shardingsphere.sharding.merge.dql.orderby.OrderByStreamMergedR
 import org.apache.shardingsphere.sharding.merge.dql.pagination.LimitDecoratorMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.pagination.RowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.pagination.TopAndRowNumberDecoratorMergedResult;
-import org.apache.shardingsphere.spi.database.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
@@ -35,7 +35,7 @@ import org.apache.shardingsphere.sql.parser.sql.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.util.SQLUtil;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
-import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.executor.sql.queryresult.QueryResult;
 import org.apache.shardingsphere.underlying.merge.engine.merger.ResultMerger;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 
@@ -53,14 +53,14 @@ public final class ShardingDQLResultMerger implements ResultMerger {
     private final DatabaseType databaseType;
     
     @Override
-    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext, final TableMetas tableMetas) throws SQLException {
+    public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext, final SchemaMetaData schemaMetaData) throws SQLException {
         if (1 == queryResults.size()) {
             return new IteratorStreamMergedResult(queryResults);
         }
         Map<String, Integer> columnLabelIndexMap = getColumnLabelIndexMap(queryResults.get(0));
         SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
         selectStatementContext.setIndexes(columnLabelIndexMap);
-        MergedResult mergedResult = build(queryResults, selectStatementContext, columnLabelIndexMap);
+        MergedResult mergedResult = build(queryResults, selectStatementContext, columnLabelIndexMap, schemaMetaData);
         return decorate(queryResults, selectStatementContext, mergedResult);
     }
     
@@ -72,16 +72,17 @@ public final class ShardingDQLResultMerger implements ResultMerger {
         return result;
     }
     
-    private MergedResult build(final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext, final Map<String, Integer> columnLabelIndexMap) throws SQLException {
+    private MergedResult build(final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext,
+                               final Map<String, Integer> columnLabelIndexMap, final SchemaMetaData schemaMetaData) throws SQLException {
         if (isNeedProcessGroupBy(selectStatementContext)) {
-            return getGroupByMergedResult(queryResults, selectStatementContext, columnLabelIndexMap);
+            return getGroupByMergedResult(queryResults, selectStatementContext, columnLabelIndexMap, schemaMetaData);
         }
         if (isNeedProcessDistinctRow(selectStatementContext)) {
             setGroupByForDistinctRow(selectStatementContext);
-            return getGroupByMergedResult(queryResults, selectStatementContext, columnLabelIndexMap);
+            return getGroupByMergedResult(queryResults, selectStatementContext, columnLabelIndexMap, schemaMetaData);
         }
         if (isNeedProcessOrderBy(selectStatementContext)) {
-            return new OrderByStreamMergedResult(queryResults, selectStatementContext.getOrderByContext().getItems());
+            return new OrderByStreamMergedResult(queryResults, selectStatementContext, schemaMetaData);
         }
         return new IteratorStreamMergedResult(queryResults);
     }
@@ -102,10 +103,11 @@ public final class ShardingDQLResultMerger implements ResultMerger {
         }
     }
     
-    private MergedResult getGroupByMergedResult(final List<QueryResult> queryResults,
-                                                final SelectStatementContext selectStatementContext, final Map<String, Integer> columnLabelIndexMap) throws SQLException {
+    private MergedResult getGroupByMergedResult(final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext,
+                                                final Map<String, Integer> columnLabelIndexMap, final SchemaMetaData schemaMetaData) throws SQLException {
         return selectStatementContext.isSameGroupByAndOrderByItems()
-                ? new GroupByStreamMergedResult(columnLabelIndexMap, queryResults, selectStatementContext) : new GroupByMemoryMergedResult(queryResults, selectStatementContext);
+                ? new GroupByStreamMergedResult(columnLabelIndexMap, queryResults, selectStatementContext, schemaMetaData)
+                : new GroupByMemoryMergedResult(queryResults, selectStatementContext, schemaMetaData);
     }
     
     private boolean isNeedProcessOrderBy(final SelectStatementContext selectStatementContext) {

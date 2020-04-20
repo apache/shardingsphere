@@ -41,35 +41,35 @@ public final class EnvironmentPath {
     /**
      * Get database environment resource File.
      * 
-     * @param shardingRuleType Sharding rule type
+     * @param ruleType rule type
      * @return database environment resource file
      */
-    public static String getDatabaseEnvironmentResourceFile(final String shardingRuleType) {
-        return getResourceFile(DATABASE_ENVIRONMENT_RESOURCES_PATH, shardingRuleType);
+    public static String getDatabaseEnvironmentResourceFile(final String ruleType) {
+        return getResourceFile(DATABASE_ENVIRONMENT_RESOURCES_PATH, ruleType);
     }
     
     /**
      * Get data initialize resource File.
      *
-     * @param shardingRuleType Sharding rule type
+     * @param ruleType rule type
      * @return data initialize resource file
      */
-    public static String getDataInitializeResourceFile(final String shardingRuleType) {
-        return getResourceFile(DATA_INITIALIZE_RESOURCES_PATH, shardingRuleType);
+    public static String getDataInitializeResourceFile(final String ruleType) {
+        return getResourceFile(DATA_INITIALIZE_RESOURCES_PATH, ruleType);
     }
     
     /**
-     * Get sharding rule resource File.
+     * Get rule resource File.
      *
-     * @param shardingRuleType Sharding rule type
+     * @param ruleType rule type
      * @return database environment resource file
      */
-    public static String getShardingRuleResourceFile(final String shardingRuleType) {
-        return getResourceFile(SHARDING_RULE_RESOURCES_PATH, shardingRuleType);
+    public static String getRuleResourceFile(final String ruleType) {
+        return getResourceFile(SHARDING_RULE_RESOURCES_PATH, ruleType);
     }
     
-    private static String getResourceFile(final String resourcePath, final String shardingRuleType) {
-        URL resourceURL = EnvironmentPath.class.getClassLoader().getResource(String.format(resourcePath, shardingRuleType));
+    private static String getResourceFile(final String resourcePath, final String ruleType) {
+        URL resourceURL = EnvironmentPath.class.getClassLoader().getResource(String.format(resourcePath, ruleType));
         assertNotNull(resourceURL);
         return resourceURL.getFile();
     }
@@ -77,10 +77,10 @@ public final class EnvironmentPath {
     /**
      * Get authority resource File.
      *
-     * @param shardingRuleType Sharding rule type
+     * @param ruleType rule type
      * @return authority resource file
      */
-    public static String getAuthorityResourcesPath(final String shardingRuleType) {
-        return getResourceFile(AUTHORITY_RESOURCES_PATH, shardingRuleType);
+    public static String getAuthorityResourcesPath(final String ruleType) {
+        return getResourceFile(AUTHORITY_RESOURCES_PATH, ruleType);
     }
 }

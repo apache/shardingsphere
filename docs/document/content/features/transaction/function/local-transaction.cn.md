@@ -1,6 +1,5 @@
 +++
 pre = "<b>3.4.2.1 </b>"
-toc = true
 title = "本地事务"
 weight = 1
 +++

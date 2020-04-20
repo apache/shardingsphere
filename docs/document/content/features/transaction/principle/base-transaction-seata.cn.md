@@ -1,8 +1,7 @@
 +++
-pre = "<b>3.4.3.3 </b>"
-toc = true
+pre = "<b>3.4.3.2 </b>"
 title = "Seata柔性事务"
-weight = 4
+weight = 3
 +++
 
 ## 实现原理

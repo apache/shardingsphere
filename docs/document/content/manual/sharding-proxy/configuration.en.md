@@ -1,6 +1,5 @@
 +++
 pre = "<b>4.2.2. </b>"
-toc = true
 title = "Configuration Manual"
 weight = 2
 +++
@@ -325,17 +324,22 @@ shardingRule:
 Sharding-Proxy uses `conf/server.yaml` to configure the registry center, authentication information and common properties.
 
 ### Orchestration
+Orchestration can config config-center and registry-center now, as follow:
+- `orchestrationType: config_center`   #config config-center
+- `orchestrationType: registry_center` #config registry_center
+- `orchestrationType: config_center,registry_center` #config config-center and registry_center
 
 ```yaml
 #Omit data sharding and read-write split configurations
 
 orchestration:
-  name: orchestration_ds
-  overwrite: true
-  registry:
-    type: zookeeper
-    namespace: orchestration
+  orchestration_ds: 
+    orchestrationType: config_center,registry_center
+    instanceType: zookeeper
     serverLists: localhost:2181
+    namespace: orchestration
+    props:
+      overwrite: true
 ```
 
 ### Authentication

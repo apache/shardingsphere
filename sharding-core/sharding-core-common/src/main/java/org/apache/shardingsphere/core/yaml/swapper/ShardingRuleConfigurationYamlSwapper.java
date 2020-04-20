@@ -53,7 +53,6 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlSwapper<Y
         }
         result.getBindingTables().addAll(data.getBindingTableGroups());
         result.getBroadcastTables().addAll(data.getBroadcastTables());
-        result.setDefaultDataSourceName(data.getDefaultDataSourceName());
         if (null != data.getDefaultDatabaseShardingStrategyConfig()) {
             result.setDefaultDatabaseStrategy(shardingStrategyConfigurationYamlSwapper.swap(data.getDefaultDatabaseShardingStrategyConfig()));
         }
@@ -80,7 +79,6 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlSwapper<Y
             tableRuleConfig.setLogicTable(entry.getKey());
             result.getTableRuleConfigs().add(tableRuleConfigurationYamlSwapper.swap(tableRuleConfig));
         }
-        result.setDefaultDataSourceName(yamlConfiguration.getDefaultDataSourceName());
         result.getBindingTableGroups().addAll(yamlConfiguration.getBindingTables());
         result.getBroadcastTables().addAll(yamlConfiguration.getBroadcastTables());
         if (null != yamlConfiguration.getDefaultDatabaseStrategy()) {

@@ -1,6 +1,5 @@
 +++
 pre = "<b>2.1. </b>"
-toc = true
 title = "Sharding-JDBC"
 weight = 1
 +++

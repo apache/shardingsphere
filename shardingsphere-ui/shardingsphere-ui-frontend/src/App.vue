@@ -19,9 +19,12 @@
   <div id="app">
     <s-container v-if="localStorage.getItem('Access-Token')">
       <el-breadcrumb separator="/" class="bread-wrap">
-        <el-breadcrumb-item :to="{ path: '/' }">{{ $t('common.home') }}</el-breadcrumb-item>
-        <el-breadcrumb-item>{{ parentMenuTitle }}</el-breadcrumb-item>
-        <el-breadcrumb-item>{{ childMenuTitle }}</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '/' }">{{
+          $t('common.home')
+        }}</el-breadcrumb-item>
+        <el-breadcrumb-item v-for="each in menus" :key="each">
+          {{ each }}
+        </el-breadcrumb-item>
       </el-breadcrumb>
       <router-view />
     </s-container>
@@ -40,18 +43,20 @@ export default {
   },
   data() {
     return {
-      childMenuTitle: '',
-      parentMenuTitle: '',
+      menus: [],
       localStorage: window.localStorage
     }
   },
   watch: {
     $route(to, from) {
       for (const parentMenuItem of this.$t('common').menuData) {
+        if (!parentMenuItem.child && parentMenuItem.href === to.path) {
+          this.menus = [parentMenuItem.title]
+          break
+        }
         for (const childMenuItem of parentMenuItem.child) {
           if (childMenuItem.href === to.path) {
-            this.childMenuTitle = childMenuItem.title
-            this.parentMenuTitle = parentMenuItem.title
+            this.menus = [parentMenuItem.title, childMenuItem.title]
             break
           }
         }
@@ -65,4 +70,3 @@ export default {
   margin-bottom: 15px;
 }
 </style>
-

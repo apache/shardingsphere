@@ -22,6 +22,8 @@ package org.apache.shardingsphere.shardingscaling.core.exception;
  */
 public final class ScalingJobNotFoundException extends RuntimeException {
     
+    private static final long serialVersionUID = -903289953649758722L;
+    
     public ScalingJobNotFoundException(final String message) {
         super(message);
     }

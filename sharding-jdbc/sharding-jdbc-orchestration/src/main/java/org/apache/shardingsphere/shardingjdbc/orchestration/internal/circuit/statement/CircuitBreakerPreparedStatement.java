@@ -30,6 +30,7 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.Date;
+import java.sql.ParameterMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLXML;
 import java.sql.Statement;
@@ -47,148 +48,119 @@ public final class CircuitBreakerPreparedStatement extends AbstractUnsupportedOp
     
     @Override
     public void setNull(final int parameterIndex, final int sqlType) {
-        
     }
     
     @Override
     public void setNull(final int parameterIndex, final int sqlType, final String typeName) {
-        
     }
     
     @Override
     public void setBoolean(final int parameterIndex, final boolean x) {
-        
     }
     
     @Override
     public void setByte(final int parameterIndex, final byte x) {
-        
     }
     
     @Override
     public void setShort(final int parameterIndex, final short x) {
-        
     }
     
     @Override
     public void setInt(final int parameterIndex, final int x) {
-        
     }
     
     @Override
     public void setLong(final int parameterIndex, final long x) {
-        
     }
     
     @Override
     public void setFloat(final int parameterIndex, final float x) {
-        
     }
     
     @Override
     public void setDouble(final int parameterIndex, final double x) {
-        
     }
     
     @Override
     public void setBigDecimal(final int parameterIndex, final BigDecimal x) {
-        
     }
     
     @Override
     public void setString(final int parameterIndex, final String x) {
-        
     }
     
     @Override
     public void setBytes(final int parameterIndex, final byte[] x) {
-        
     }
     
     @Override
     public void setDate(final int parameterIndex, final Date x) {
-        
     }
     
     @Override
     public void setDate(final int parameterIndex, final Date x, final Calendar cal) {
-        
     }
     
     @Override
     public void setTime(final int parameterIndex, final Time x) {
-        
     }
     
     @Override
     public void setTime(final int parameterIndex, final Time x, final Calendar cal) {
-        
     }
     
     @Override
     public void setTimestamp(final int parameterIndex, final Timestamp x) {
-        
     }
     
     @Override
     public void setTimestamp(final int parameterIndex, final Timestamp x, final Calendar cal) {
-        
     }
     
     @Override
     public void setAsciiStream(final int parameterIndex, final InputStream x, final int length) {
-        
     }
     
     @Override
     public void setAsciiStream(final int parameterIndex, final InputStream x) {
-        
     }
     
     @Override
     public void setAsciiStream(final int parameterIndex, final InputStream x, final long length) {
-        
     }
     
     @SuppressWarnings("deprecation")
     @Override
     public void setUnicodeStream(final int parameterIndex, final InputStream x, final int length) {
-        
     }
     
     @Override
     public void setBinaryStream(final int parameterIndex, final InputStream x, final int length) {
-        
     }
     
     @Override
     public void setBinaryStream(final int parameterIndex, final InputStream x, final long length) {
-        
     }
     
     @Override
     public void setBinaryStream(final int parameterIndex, final InputStream x) {
-        
     }
     
     @Override
     public void clearParameters() {
-        
     }
     
     @Override
     public void setObject(final int parameterIndex, final Object x) {
-        
     }
     
     @Override
     public void setObject(final int parameterIndex, final Object x, final int targetSqlType) {
-        
     }
     
     @Override
     public void setObject(final int parameterIndex, final Object x, final int targetSqlType, final int scaleOrLength) {
-        
     }
     
     @Override
@@ -206,57 +178,51 @@ public final class CircuitBreakerPreparedStatement extends AbstractUnsupportedOp
     
     @Override
     public void setCharacterStream(final int parameterIndex, final Reader reader, final int length) {
-        
     }
     
     @Override
     public void setCharacterStream(final int parameterIndex, final Reader reader, final long length) {
-        
     }
     
     @Override
     public void setCharacterStream(final int parameterIndex, final Reader reader) {
-        
     }
     
     @Override
     public void setBlob(final int parameterIndex, final Blob x) {
-        
     }
     
     @Override
     public void setBlob(final int parameterIndex, final InputStream inputStream, final long length) {
-        
     }
     
     @Override
     public void setBlob(final int parameterIndex, final InputStream inputStream) {
-        
     }
     
     @Override
     public void setClob(final int parameterIndex, final Clob x) {
-        
     }
     
     @Override
     public void setClob(final int parameterIndex, final Reader reader, final long length) {
-        
     }
     
     @Override
     public void setClob(final int parameterIndex, final Reader reader) {
-        
     }
     
     @Override
     public void setURL(final int parameterIndex, final URL x) {
-        
+    }
+    
+    @Override
+    public ParameterMetaData getParameterMetaData() {
+        return null;
     }
     
     @Override
     public void setSQLXML(final int parameterIndex, final SQLXML xmlObject) {
-        
     }
     
     @Override

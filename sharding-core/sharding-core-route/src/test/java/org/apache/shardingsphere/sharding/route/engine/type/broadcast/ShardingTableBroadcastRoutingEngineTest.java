@@ -21,17 +21,18 @@ import com.google.common.collect.Lists;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
-import org.apache.shardingsphere.underlying.route.context.TableUnit;
+import org.apache.shardingsphere.underlying.route.context.RouteMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,7 +40,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -56,7 +59,7 @@ public final class ShardingTableBroadcastRoutingEngineTest {
     private TablesContext tablesContext;
     
     @Mock
-    private TableMetas tableMetas;
+    private SchemaMetaData schemaMetaData;
     
     @Mock
     private TableMetaData tableMetaData;
@@ -72,10 +75,12 @@ public final class ShardingTableBroadcastRoutingEngineTest {
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         when(tablesContext.getTableNames()).thenReturn(Lists.newArrayList("t_order"));
-        when(tableMetas.getAllTableNames()).thenReturn(Lists.newArrayList("t_order"));
-        when(tableMetas.get("t_order")).thenReturn(tableMetaData);
-        when(tableMetaData.containsIndex("index_name")).thenReturn(true);
-        tableBroadcastRoutingEngine = new ShardingTableBroadcastRoutingEngine(tableMetas, sqlStatementContext);
+        when(schemaMetaData.getAllTableNames()).thenReturn(Lists.newArrayList("t_order"));
+        when(schemaMetaData.get("t_order")).thenReturn(tableMetaData);
+        Map<String, IndexMetaData> indexMetaDataMap = new HashMap<>(1, 1);
+        indexMetaDataMap.put("index_name", new IndexMetaData("index_name"));
+        when(tableMetaData.getIndexes()).thenReturn(indexMetaDataMap);
+        tableBroadcastRoutingEngine = new ShardingTableBroadcastRoutingEngine(schemaMetaData, sqlStatementContext);
         shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds0", "ds1"));
     }
     
@@ -107,7 +112,7 @@ public final class ShardingTableBroadcastRoutingEngineTest {
     }
     
     private void assertRouteResult(final RouteResult actual) {
-        assertThat(actual.getDataSourceNames().size(), is(2));
+        assertThat(actual.getActualDataSourceNames().size(), is(2));
         assertThat(actual.getRouteUnits().size(), is(6));
         Iterator<RouteUnit> routeUnits = actual.getRouteUnits().iterator();
         assertRouteUnit(routeUnits.next(), "ds0", "t_order_0");
@@ -119,8 +124,8 @@ public final class ShardingTableBroadcastRoutingEngineTest {
     }
     
     private void assertRouteUnit(final RouteUnit routeUnit, final String dataSourceName, final String actualTableName) {
-        assertThat(routeUnit.getActualDataSourceName(), is(dataSourceName));
-        assertThat(routeUnit.getTableUnits().size(), is(1));
-        assertThat(routeUnit.getTableUnits().get(0), is(new TableUnit("t_order", actualTableName)));
+        assertThat(routeUnit.getDataSourceMapper().getActualName(), is(dataSourceName));
+        assertThat(routeUnit.getTableMappers().size(), is(1));
+        assertThat(routeUnit.getTableMappers().iterator().next(), is(new RouteMapper("t_order", actualTableName)));
     }
 }

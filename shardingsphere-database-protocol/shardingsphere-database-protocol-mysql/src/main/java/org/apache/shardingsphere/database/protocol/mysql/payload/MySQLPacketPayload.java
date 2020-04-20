@@ -130,9 +130,12 @@ public final class MySQLPacketPayload implements PacketPayload {
      *
      * @return 6 byte fixed length integer
      */
-    public int readInt6() {
-        // TODO
-        return 0;
+    public long readInt6() {
+        long result = 0;
+        for (int i = 0; i < 6; i++) {
+            result |= ((long) (0xff & byteBuf.readByte())) << (8 * i);
+        }
+        return result;
     }
     
     /**
@@ -393,8 +396,21 @@ public final class MySQLPacketPayload implements PacketPayload {
     }
     
     /**
-     * Read rest of packet string from byte buffers.
+     * Read rest of packet string from byte buffers and return bytes.
      * 
+     * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::RestOfPacketString">RestOfPacketString</a>
+     *
+     * @return rest of packet string bytes
+     */
+    public byte[] readStringEOFByBytes() {
+        byte[] result = new byte[byteBuf.readableBytes()];
+        byteBuf.readBytes(result);
+        return result;
+    }
+    
+    /**
+     * Read rest of packet string from byte buffers.
+     *
      * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::RestOfPacketString">RestOfPacketString</a>
      *
      * @return rest of packet string

@@ -34,8 +34,6 @@ public final class ShardingDataSourceBeanDefinitionParserTag {
     
     public static final String DATA_SOURCE_NAMES_TAG = "data-source-names";
     
-    public static final String DEFAULT_DATA_SOURCE_NAME_TAG = "default-data-source-name";
-    
     public static final String TABLE_RULES_TAG = "table-rules";
     
     public static final String TABLE_RULE_TAG = "table-rule";
@@ -76,9 +74,7 @@ public final class ShardingDataSourceBeanDefinitionParserTag {
     
     public static final String GENERATE_KEY_COLUMN_ATTRIBUTE = "column";
     
-    public static final String GENERATE_KEY_TYPE_ATTRIBUTE = "type";
-    
-    public static final String GENERATE_KEY_PROPERTY_REF_ATTRIBUTE = "props-ref";
+    public static final String GENERATE_KEY_ALGORITHM_REF_TAG = "algorithm-ref";
     
     public static final String LOGIC_INDEX = "logic-index";
 }

@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "Yaml配置"
 weight = 2
 +++
@@ -291,93 +290,6 @@ orchestration:
 ```
 
 ## 配置项说明
-
-### 数据分片
-
-```yaml
-dataSources:
-  ds0: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds0
-    username: root
-    password: 
-  ds1: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds1
-    username: root
-    password: 
-
-shardingRule:  
-  tables:
-    t_order: 
-      actualDataNodes: ds${0..1}.t_order${0..1}
-      databaseStrategy:
-        inline:
-          shardingColumn: user_id
-          algorithmExpression: ds${user_id % 2}
-      tableStrategy: 
-        inline:
-          shardingColumn: order_id
-          algorithmExpression: t_order${order_id % 2}
-      keyGenerator:
-        type: SNOWFLAKE
-        column: order_id
-    t_order_item:
-      actualDataNodes: ds${0..1}.t_order_item${0..1}
-      databaseStrategy:
-        inline:
-          shardingColumn: user_id
-          algorithmExpression: ds${user_id % 2}
-      tableStrategy:
-        inline:
-          shardingColumn: order_id
-          algorithmExpression: t_order_item${order_id % 2}  
-  bindingTables:
-    - t_order,t_order_item
-  broadcastTables:
-    - t_config
-  
-  defaultDataSourceName: ds0
-  defaultTableStrategy:
-    none:
-  defaultKeyGenerator:
-    type: SNOWFLAKE
-    column: order_id
-  
-props:
-  sql.show: true
-```
-
-### 读写分离
-
-```yaml
-dataSources:
-  ds_master: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_master
-    username: root
-    password: 
-  ds_slave0: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_slave0
-    username: root
-    password: 
-  ds_slave1: !!org.apache.commons.dbcp.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds_slave1
-    username: root
-    password: 
-
-masterSlaveRule:
-  name: ds_ms
-  masterDataSourceName: ds_master
-  slaveDataSourceNames: 
-    - ds_slave0
-    - ds_slave1
-
-props:
-    sql.show: true
-```
 
 ### 数据分片
 

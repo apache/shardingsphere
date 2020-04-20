@@ -29,7 +29,7 @@ import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSource
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShadowDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
-import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.junit.After;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -86,24 +86,24 @@ public abstract class BaseIT {
     private DataSource createDataSource() throws SQLException, IOException {
         switch (ruleType) {
             case "masterslave":
-                return YamlMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(ruleType)));
+                return YamlMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRuleResourceFile(ruleType)));
             case "shadow":
-                return YamlShadowDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(ruleType)));
+                return YamlShadowDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRuleResourceFile(ruleType)));
             default:
-                return YamlShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getShardingRuleResourceFile(ruleType)));
+                return YamlShardingDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRuleResourceFile(ruleType)));
         }
     }
     
-    protected final String getExpectedDataFile(final String path, final String shardingRuleType, final DatabaseType databaseType, final String expectedDataFile) {
+    protected final String getExpectedDataFile(final String path, final String ruleType, final DatabaseType databaseType, final String expectedDataFile) {
         if (null == expectedDataFile) {
             return null;
         }
         String prefix = path.substring(0, path.lastIndexOf(File.separator));
-        String result = Joiner.on("/").join(prefix, "dataset", shardingRuleType, databaseType.getName().toLowerCase(), expectedDataFile);
+        String result = Joiner.on("/").join(prefix, "dataset", ruleType, databaseType.getName().toLowerCase(), expectedDataFile);
         if (new File(result).exists()) {
             return result;
         }
-        result = Joiner.on("/").join(prefix, "dataset", shardingRuleType, expectedDataFile);
+        result = Joiner.on("/").join(prefix, "dataset", ruleType, expectedDataFile);
         if (new File(result).exists()) {
             return result;
         }
@@ -162,7 +162,7 @@ public abstract class BaseIT {
     @After
     public void tearDown() {
         if (dataSource instanceof ShardingDataSource) {
-            ((ShardingDataSource) dataSource).getRuntimeContext().getExecutorEngine().close();
+            ((ShardingDataSource) dataSource).getRuntimeContext().getExecutorKernel().close();
         }
     }
 }

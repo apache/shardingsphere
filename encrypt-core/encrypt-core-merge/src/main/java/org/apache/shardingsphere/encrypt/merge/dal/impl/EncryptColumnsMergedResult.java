@@ -18,45 +18,49 @@
 package org.apache.shardingsphere.encrypt.merge.dal.impl;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.strategy.EncryptTable;
-import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
+import org.apache.shardingsphere.encrypt.metadata.EncryptColumnMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Encrypt column merged result.
  */
 public abstract class EncryptColumnsMergedResult implements MergedResult {
     
-    private final EncryptRule encryptRule;
+    private final SchemaMetaData schemaMetaData;
     
     private final String tableName;
     
-    protected EncryptColumnsMergedResult(final SQLStatementContext sqlStatementContext, final EncryptRule encryptRule) {
-        this.encryptRule = encryptRule;
+    protected EncryptColumnsMergedResult(final SQLStatementContext sqlStatementContext, final SchemaMetaData schemaMetaData) {
+        this.schemaMetaData = schemaMetaData;
         Preconditions.checkState(sqlStatementContext instanceof TableAvailable && 1 == ((TableAvailable) sqlStatementContext).getAllTables().size());
         tableName = ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
     }
     
     @Override
-    public final boolean next() throws SQLException {
-        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
+    public final boolean next() throws SQLException { 
         boolean hasNext = nextValue();
-        if (hasNext && !encryptTable.isPresent()) {
+        if (hasNext && getTableEncryptColumnMetaDatas().isEmpty()) {
             return true;
         }
         if (!hasNext) {
             return false;
         }
         String columnName = getOriginalValue(1, String.class).toString();
-        while (encryptTable.get().getAssistedQueryColumns().contains(columnName) || encryptTable.get().getPlainColumns().contains(columnName)) {
+        while (getAssistedQueryColumns().contains(columnName) || getPlainColumns().contains(columnName)) {
             hasNext = nextValue();
             if (!hasNext) {
                 return false;
@@ -66,17 +70,46 @@ public abstract class EncryptColumnsMergedResult implements MergedResult {
         return true;
     }
     
+    private Collection<String> getAssistedQueryColumns() {
+        return getTableEncryptColumnMetaDatas().stream().map(EncryptColumnMetaData::getAssistedQueryColumnName)
+                .collect(Collectors.toList());
+    }
+    
+    private Collection<String> getPlainColumns() {
+        return getTableEncryptColumnMetaDatas().stream().map(EncryptColumnMetaData::getPlainColumnName)
+                .collect(Collectors.toList());
+    }
+    
+    private Collection<EncryptColumnMetaData> getTableEncryptColumnMetaDatas() {
+        Collection<EncryptColumnMetaData> result = new LinkedList<>();
+        for (Entry<String, ColumnMetaData> entry : schemaMetaData.get(tableName).getColumns().entrySet()) {
+            if (entry.getValue() instanceof EncryptColumnMetaData) {
+                result.add((EncryptColumnMetaData) entry.getValue());
+            }
+        }
+        return result;
+    }
+    
     @Override
     public final Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
         if (1 == columnIndex) {
             String columnName = getOriginalValue(columnIndex, type).toString();
-            Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-            if (encryptTable.isPresent() && encryptTable.get().getCipherColumns().contains(columnName)) {
-                return encryptTable.get().getLogicColumnOfCipher(columnName);
-            }
-            return columnName;
+            Optional<String> logicColumn = getLogicColumnOfCipher(columnName);
+            return logicColumn.isPresent() ? logicColumn.get() : columnName;
         }
         return getOriginalValue(columnIndex, type);
+    }
+    
+    private Optional<String> getLogicColumnOfCipher(final String cipherColumn) {
+        for (Entry<String, ColumnMetaData> entry : schemaMetaData.get(tableName).getColumns().entrySet()) {
+            if (entry.getValue() instanceof EncryptColumnMetaData) {
+                EncryptColumnMetaData encryptColumnMetaData = (EncryptColumnMetaData) entry.getValue();
+                if (encryptColumnMetaData.getCipherColumnName().equalsIgnoreCase(cipherColumn)) {
+                    return Optional.of(entry.getKey());
+                }
+            }
+        }
+        return Optional.empty();
     }
     
     @Override

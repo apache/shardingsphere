@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.value.ValueASTNode;
 
 /**
- * Key word value.
+ * Keyword value.
  */
 @RequiredArgsConstructor
 @Getter
