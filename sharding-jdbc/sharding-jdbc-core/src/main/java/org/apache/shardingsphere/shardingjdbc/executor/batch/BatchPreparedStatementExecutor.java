@@ -188,7 +188,7 @@ public final class BatchPreparedStatementExecutor {
     public List<List<Object>> getParameterSet(final Statement statement) {
         List<List<Object>> result = new LinkedList<>();
         for (InputGroup<StatementExecuteUnit> each : inputGroups) {
-            Optional<StatementExecuteUnit> target = getStatementExecuteUnit(statement, each);
+            Optional<StatementExecuteUnit> target = findStatementExecuteUnit(statement, each);
             if (target.isPresent()) {
                 result = getParameterSets(target.get());
                 break;
@@ -197,7 +197,7 @@ public final class BatchPreparedStatementExecutor {
         return result;
     }
     
-    private Optional<StatementExecuteUnit> getStatementExecuteUnit(final Statement statement, final InputGroup<StatementExecuteUnit> executeGroup) {
+    private Optional<StatementExecuteUnit> findStatementExecuteUnit(final Statement statement, final InputGroup<StatementExecuteUnit> executeGroup) {
         for (StatementExecuteUnit each : executeGroup.getInputs()) {
             if (each.getStorageResource().equals(statement)) {
                 return Optional.of(each);
