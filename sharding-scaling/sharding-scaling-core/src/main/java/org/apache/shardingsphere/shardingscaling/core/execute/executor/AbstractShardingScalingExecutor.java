@@ -45,4 +45,9 @@ public abstract class AbstractShardingScalingExecutor implements ShardingScaling
     public void stop() {
         running = false;
     }
+    
+    @Override
+    public final void run() {
+        start();
+    }
 }

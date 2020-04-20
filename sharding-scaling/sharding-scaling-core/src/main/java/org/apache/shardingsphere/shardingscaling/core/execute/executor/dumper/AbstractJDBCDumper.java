@@ -72,8 +72,8 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
     }
     
     @Override
-    public final void run() {
-        start();
+    public final void start() {
+        super.start();
         dump(channel);
     }
     

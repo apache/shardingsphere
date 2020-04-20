@@ -67,8 +67,8 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     protected abstract AbstractSqlBuilder createSqlBuilder();
     
     @Override
-    public final void run() {
-        start();
+    public final void start() {
+        super.start();
         write();
     }
     

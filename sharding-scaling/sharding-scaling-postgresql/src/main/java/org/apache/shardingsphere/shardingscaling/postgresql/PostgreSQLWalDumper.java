@@ -68,8 +68,8 @@ public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor i
     }
     
     @Override
-    public void run() {
-        start();
+    public void start() {
+        super.start();
         dump(channel);
     }
     
