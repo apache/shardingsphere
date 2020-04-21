@@ -78,8 +78,9 @@ public final class BatchPreparedStatementExecutor {
      * @param executionUnits execution units
      */
     public void addBatchForExecutionUnits(final Collection<ExecutionUnit> executionUnits) {
-        handleOldBatchExecutionUnits(createBatchExecutionUnits(executionUnits));
-        handleNewBatchExecutionUnits(createBatchExecutionUnits(executionUnits));
+        Collection<BatchExecutionUnit> batchExecutionUnits = createBatchExecutionUnits(executionUnits);
+        handleOldBatchExecutionUnits(batchExecutionUnits);
+        handleNewBatchExecutionUnits(batchExecutionUnits);
         batchCount++;
     }
     
@@ -88,18 +89,20 @@ public final class BatchPreparedStatementExecutor {
     }
     
     private void handleOldBatchExecutionUnits(final Collection<BatchExecutionUnit> newExecutionUnits) {
-        for (BatchExecutionUnit each : newExecutionUnits) {
-            for (BatchExecutionUnit unit : batchExecutionUnits) {
-                if (unit.equals(each)) {
-                    reviseBatchExecutionUnit(unit, each);
-                }
+        newExecutionUnits.forEach(this::reviseBatchExecutionUnits);
+    }
+    
+    private void reviseBatchExecutionUnits(final BatchExecutionUnit batchExecutionUnit) {
+        for (BatchExecutionUnit each : batchExecutionUnits) {
+            if (each.equals(batchExecutionUnit)) {
+                reviseBatchExecutionUnit(each, batchExecutionUnit);
             }
         }
     }
     
-    private void reviseBatchExecutionUnit(final BatchExecutionUnit oldBatchUnit, final BatchExecutionUnit newBatchExecutionUnit) {
-        oldBatchUnit.getExecutionUnit().getSqlUnit().getParameters().addAll(newBatchExecutionUnit.getExecutionUnit().getSqlUnit().getParameters());
-        oldBatchUnit.mapAddBatchCount(batchCount);
+    private void reviseBatchExecutionUnit(final BatchExecutionUnit oldBatchExecutionUnit, final BatchExecutionUnit newBatchExecutionUnit) {
+        oldBatchExecutionUnit.getExecutionUnit().getSqlUnit().getParameters().addAll(newBatchExecutionUnit.getExecutionUnit().getSqlUnit().getParameters());
+        oldBatchExecutionUnit.mapAddBatchCount(batchCount);
     }
     
     private void handleNewBatchExecutionUnits(final Collection<BatchExecutionUnit> newExecutionUnits) {
