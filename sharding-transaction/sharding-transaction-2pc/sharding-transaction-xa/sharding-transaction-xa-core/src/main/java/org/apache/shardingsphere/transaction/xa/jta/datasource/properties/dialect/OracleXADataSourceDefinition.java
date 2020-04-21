@@ -40,16 +40,4 @@ public final class OracleXADataSourceDefinition implements XADataSourceDefinitio
     public Collection<String> getXADriverClassName() {
         return Collections.singletonList("oracle.jdbc.xa.client.OracleXADataSource");
     }
-    
-    @Override
-    public Properties getXAProperties(final DatabaseAccessConfiguration databaseAccessConfiguration) {
-        Properties result = new Properties();
-        OracleDataSourceMetaData dataSourceMetaData = new OracleDataSourceMetaData(databaseAccessConfiguration.getUrl(), null);
-        result.setProperty("user", databaseAccessConfiguration.getUsername());
-        result.setProperty("password", Optional.ofNullable(databaseAccessConfiguration.getPassword()).orElse(""));
-        result.setProperty("serverName", dataSourceMetaData.getHostName());
-        result.setProperty("portNumber", String.valueOf(dataSourceMetaData.getPort()));
-        result.setProperty("databaseName", dataSourceMetaData.getCatalog());
-        return result;
-    }
 }

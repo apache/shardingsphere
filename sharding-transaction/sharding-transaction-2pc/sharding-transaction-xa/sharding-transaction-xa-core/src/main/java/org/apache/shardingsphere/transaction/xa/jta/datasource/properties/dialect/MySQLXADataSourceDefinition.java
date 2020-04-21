@@ -39,26 +39,4 @@ public final class MySQLXADataSourceDefinition implements XADataSourceDefinition
     public Collection<String> getXADriverClassName() {
         return Arrays.asList("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource", "com.mysql.cj.jdbc.MysqlXADataSource");
     }
-    
-    @Override
-    public Properties getXAProperties(final DatabaseAccessConfiguration databaseAccessConfiguration) {
-        Properties result = new Properties();
-        result.setProperty("user", databaseAccessConfiguration.getUsername());
-        result.setProperty("password", Optional.ofNullable(databaseAccessConfiguration.getPassword()).orElse(""));
-        result.setProperty("URL", databaseAccessConfiguration.getUrl());
-        result.setProperty("pinGlobalTxToPhysicalConnection", Boolean.TRUE.toString());
-        result.setProperty("autoReconnect", Boolean.TRUE.toString());
-        result.setProperty("useServerPrepStmts", Boolean.TRUE.toString());
-        result.setProperty("cachePrepStmts", Boolean.TRUE.toString());
-        result.setProperty("prepStmtCacheSize", "250");
-        result.setProperty("prepStmtCacheSqlLimit", "2048");
-        result.setProperty("useLocalSessionState", Boolean.TRUE.toString());
-        result.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
-        result.setProperty("cacheResultSetMetadata", Boolean.FALSE.toString());
-        result.setProperty("cacheServerConfiguration", Boolean.TRUE.toString());
-        result.setProperty("elideSetAutoCommits", Boolean.TRUE.toString());
-        result.setProperty("maintainTimeStats", Boolean.FALSE.toString());
-        result.setProperty("netTimeoutForStreamingResults", "0");
-        return result;
-    }
 }

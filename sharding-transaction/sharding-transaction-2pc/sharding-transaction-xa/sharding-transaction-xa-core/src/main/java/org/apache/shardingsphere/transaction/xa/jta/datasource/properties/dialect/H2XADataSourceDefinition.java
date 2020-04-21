@@ -39,13 +39,4 @@ public final class H2XADataSourceDefinition implements XADataSourceDefinition {
     public Collection<String> getXADriverClassName() {
         return Collections.singletonList("org.h2.jdbcx.JdbcDataSource");
     }
-    
-    @Override
-    public Properties getXAProperties(final DatabaseAccessConfiguration databaseAccessConfiguration) {
-        Properties result = new Properties();
-        result.setProperty("user", databaseAccessConfiguration.getUsername());
-        result.setProperty("password", Optional.ofNullable(databaseAccessConfiguration.getPassword()).orElse(""));
-        result.setProperty("URL", databaseAccessConfiguration.getUrl());
-        return result;
-    }
 }

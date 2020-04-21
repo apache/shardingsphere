@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect;
 
-import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
 import org.junit.Test;
 import org.mariadb.jdbc.MariaDbDataSource;
 
 import java.util.Collections;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -32,16 +30,5 @@ public final class MariaDBXADataSourceDefinitionTest {
     @Test
     public void assertGetXADriverClassName() {
         assertThat(new MariaDBXADataSourceDefinition().getXADriverClassName(), is(Collections.singletonList(MariaDbDataSource.class.getName())));
-    }
-    
-    @Test
-    public void assertGetXAProperties() {
-        Properties actual = new MariaDBXADataSourceDefinition().getXAProperties(new DatabaseAccessConfiguration("jdbc:mysql://127.0.0.1:3306/demo", "root", "root"));
-        assertThat(actual.getProperty("user"), is("root"));
-        assertThat(actual.getProperty("password"), is("root"));
-        assertThat(actual.getProperty("url"), is("jdbc:mysql://127.0.0.1:3306/demo"));
-        assertThat(actual.getProperty("ServerName"), is("127.0.0.1"));
-        assertThat(actual.getProperty("port"), is("3306"));
-        assertThat(actual.getProperty("DatabaseName"), is("demo"));
     }
 }

@@ -40,16 +40,4 @@ public final class SQLServerXADataSourceDefinition implements XADataSourceDefini
     public Collection<String> getXADriverClassName() {
         return Collections.singletonList("com.microsoft.sqlserver.jdbc.SQLServerXADataSource");
     }
-    
-    @Override
-    public Properties getXAProperties(final DatabaseAccessConfiguration databaseAccessConfiguration) {
-        Properties result = new Properties();
-        SQLServerDataSourceMetaData dataSourceMetaData = new SQLServerDataSourceMetaData(databaseAccessConfiguration.getUrl());
-        result.setProperty("user", databaseAccessConfiguration.getUsername());
-        result.setProperty("password", Optional.ofNullable(databaseAccessConfiguration.getPassword()).orElse(""));
-        result.setProperty("serverName", dataSourceMetaData.getHostName());
-        result.setProperty("portNumber", String.valueOf(dataSourceMetaData.getPort()));
-        result.setProperty("databaseName", dataSourceMetaData.getCatalog());
-        return result;
-    }
 }

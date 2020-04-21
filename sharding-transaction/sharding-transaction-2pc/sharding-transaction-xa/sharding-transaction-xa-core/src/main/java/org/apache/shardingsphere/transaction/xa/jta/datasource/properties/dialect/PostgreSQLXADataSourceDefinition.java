@@ -40,16 +40,4 @@ public final class PostgreSQLXADataSourceDefinition implements XADataSourceDefin
     public Collection<String> getXADriverClassName() {
         return Collections.singletonList("org.postgresql.xa.PGXADataSource");
     }
-    
-    @Override
-    public Properties getXAProperties(final DatabaseAccessConfiguration databaseAccessConfiguration) {
-        Properties result = new Properties();
-        PostgreSQLDataSourceMetaData dataSourceMetaData = new PostgreSQLDataSourceMetaData(databaseAccessConfiguration.getUrl());
-        result.setProperty("user", databaseAccessConfiguration.getUsername());
-        result.setProperty("password", Optional.ofNullable(databaseAccessConfiguration.getPassword()).orElse(""));
-        result.setProperty("serverName", dataSourceMetaData.getHostName());
-        result.setProperty("portNumber", String.valueOf(dataSourceMetaData.getPort()));
-        result.setProperty("databaseName", dataSourceMetaData.getCatalog());
-        return result;
-    }
 }

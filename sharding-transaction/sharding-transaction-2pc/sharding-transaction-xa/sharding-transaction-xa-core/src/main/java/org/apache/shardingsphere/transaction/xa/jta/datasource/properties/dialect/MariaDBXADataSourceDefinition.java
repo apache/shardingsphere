@@ -40,17 +40,4 @@ public final class MariaDBXADataSourceDefinition implements XADataSourceDefiniti
     public Collection<String> getXADriverClassName() {
         return Collections.singletonList("org.mariadb.jdbc.MariaDbDataSource");
     }
-    
-    @Override
-    public Properties getXAProperties(final DatabaseAccessConfiguration databaseAccessConfiguration) {
-        Properties result = new Properties();
-        MariaDBDataSourceMetaData dataSourceMetaData = new MariaDBDataSourceMetaData(databaseAccessConfiguration.getUrl());
-        result.setProperty("user", databaseAccessConfiguration.getUsername());
-        result.setProperty("password", Optional.ofNullable(databaseAccessConfiguration.getPassword()).orElse(""));
-        result.setProperty("url", databaseAccessConfiguration.getUrl());
-        result.setProperty("ServerName", dataSourceMetaData.getHostName());
-        result.setProperty("port", String.valueOf(dataSourceMetaData.getPort()));
-        result.setProperty("DatabaseName", dataSourceMetaData.getCatalog());
-        return result;
-    }
 }
