@@ -18,35 +18,53 @@
 package org.apache.shardingsphere.example.algorithm;
 
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.api.sharding.standard.RangeShardingAlgorithm;
+import org.apache.shardingsphere.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.api.sharding.standard.RangeShardingValue;
+import org.apache.shardingsphere.api.sharding.standard.StandardShardingAlgorithm;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.Properties;
 import java.util.Set;
 
-public final class RangeModuloShardingDatabaseAlgorithm implements RangeShardingAlgorithm<Integer> {
+public final class StandardModuloShardingTableAlgorithm implements StandardShardingAlgorithm<Long> {
     
     @Override
-    public Collection<String> doSharding(final Collection<String> databaseNames, final RangeShardingValue<Integer> shardingValueRange) {
+    public String doSharding(final Collection<String> tableNames, final PreciseShardingValue<Long> shardingValue) {
+        for (String each : tableNames) {
+            if (each.endsWith(shardingValue.getValue() % 2 + "")) {
+                return each;
+            }
+        }
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public Collection<String> doSharding(final Collection<String> tableNames, final RangeShardingValue<Long> shardingValue) {
         Set<String> result = new LinkedHashSet<>();
-        if (Range.closed(1, 5).encloses(shardingValueRange.getValueRange())) {
-            for (String each : databaseNames) {
+        if (Range.closed(200000000000000000L, 400000000000000000L).encloses(shardingValue.getValueRange())) {
+            for (String each : tableNames) {
                 if (each.endsWith("0")) {
                     result.add(each);
                 }
             }
-        } else if (Range.closed(6, 10).encloses(shardingValueRange.getValueRange())) {
-            for (String each : databaseNames) {
-                if (each.endsWith("1")) {
-                    result.add(each);
-                }
-            }
-        } else if (Range.closed(1, 10).encloses(shardingValueRange.getValueRange())) {
-            result.addAll(databaseNames);
         } else {
             throw new UnsupportedOperationException();
         }
         return result;
+    }
+    
+    @Override
+    public String getType() {
+        return "STANDARD_TEST_TBL";
+    }
+    
+    @Override
+    public Properties getProperties() {
+        return new Properties();
+    }
+    
+    @Override
+    public void setProperties(final Properties properties) {
     }
 }
