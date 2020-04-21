@@ -445,8 +445,8 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
         }
         if (null != ctx.USING()) {
             Collection<ColumnSegment> columnSegmentList = new LinkedList<>();
-            for (ColumnNameContext cname :ctx.columnNames().columnName()) {
-                columnSegmentList.add((ColumnSegment) visit(cname));
+            for (ColumnNameContext each : ctx.columnNames().columnName()) {
+                columnSegmentList.add((ColumnSegment) visit(each));
             }
             result.getUsingColumns().addAll(columnSegmentList);
         }

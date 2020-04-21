@@ -19,7 +19,8 @@ package org.apache.shardingsphere.sql.parser.sqlserver.visitor.impl;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.DMLVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNameWithSortContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SubqueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AssignmentValueContext;
@@ -439,8 +440,8 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
         }
         if (null != ctx.USING()) {
             Collection<ColumnSegment> columnSegmentList = new LinkedList<>();
-            for (SQLServerStatementParser.ColumnNameWithSortContext cname :ctx.columnNames().columnNameWithSort()) {
-                columnSegmentList.add((ColumnSegment) visit(cname));
+            for (ColumnNameWithSortContext each : ctx.columnNames().columnNameWithSort()) {
+                columnSegmentList.add((ColumnSegment) visit(each));
             }
             result.getUsingColumns().addAll(columnSegmentList);
         }
@@ -471,7 +472,7 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
     }
     
     @Override
-    public ASTNode visitSubquery(final SQLServerStatementParser.SubqueryContext ctx) {
+    public ASTNode visitSubquery(final SubqueryContext ctx) {
         return visit(ctx.unionClause());
     }
 }
