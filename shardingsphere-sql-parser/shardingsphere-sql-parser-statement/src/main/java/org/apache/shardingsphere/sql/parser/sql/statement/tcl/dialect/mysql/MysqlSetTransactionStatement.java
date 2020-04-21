@@ -15,51 +15,21 @@
  * limitations under the License.
  */
 
-grammar TCLStatement;
+package org.apache.shardingsphere.sql.parser.sql.statement.tcl.dialect.mysql;
 
-import Symbol, Keyword, MySQLKeyword, Literals, BaseRule;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.segment.tcl.dialect.mysql.TransactionCharacteristicSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetTransactionStatement;
 
-setTransaction
-    : SET scope_? TRANSACTION transactionCharacteristic_ (COMMA_ transactionCharacteristic_)*
-    ;
+import java.util.Collection;
+import java.util.LinkedList;
 
-setAutoCommit
-    : SET scope_? AUTOCOMMIT EQ_ autoCommitValue
-    ;
-
-scope_
-    : (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)
-    | AT_ AT_ (GLOBAL | PERSIST | PERSIST_ONLY | SESSION) DOT_
-    ;
-
-autoCommitValue
-    : NUMBER_ | ON | OFF
-    ;
-
-beginTransaction
-    : BEGIN | START TRANSACTION
-    ;
-
-commit
-    : COMMIT
-    ;
-
-rollback
-    : ROLLBACK
-    ;
-
-savepoint
-    : SAVEPOINT
-    ;
-
-transactionCharacteristic_
-   : ISOLATION LEVEL level_ | accessMode_
-   ;
-
-level_
-   : REPEATABLE READ | READ COMMITTED | READ UNCOMMITTED | SERIALIZABLE
-   ;
-
-accessMode_
-   : READ (WRITE | ONLY)
-   ;
+@Getter
+@Setter
+public final class MysqlSetTransactionStatement extends SetTransactionStatement {
+    
+    private String scope;
+    
+    private Collection<TransactionCharacteristicSegment> transactionCharacteristics = new LinkedList<>();
+}

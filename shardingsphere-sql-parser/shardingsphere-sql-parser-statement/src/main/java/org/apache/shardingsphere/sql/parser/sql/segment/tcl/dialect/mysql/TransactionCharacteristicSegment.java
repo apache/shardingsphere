@@ -15,51 +15,21 @@
  * limitations under the License.
  */
 
-grammar TCLStatement;
+package org.apache.shardingsphere.sql.parser.sql.segment.tcl.dialect.mysql;
 
-import Symbol, Keyword, MySQLKeyword, Literals, BaseRule;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 
-setTransaction
-    : SET scope_? TRANSACTION transactionCharacteristic_ (COMMA_ transactionCharacteristic_)*
-    ;
-
-setAutoCommit
-    : SET scope_? AUTOCOMMIT EQ_ autoCommitValue
-    ;
-
-scope_
-    : (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)
-    | AT_ AT_ (GLOBAL | PERSIST | PERSIST_ONLY | SESSION) DOT_
-    ;
-
-autoCommitValue
-    : NUMBER_ | ON | OFF
-    ;
-
-beginTransaction
-    : BEGIN | START TRANSACTION
-    ;
-
-commit
-    : COMMIT
-    ;
-
-rollback
-    : ROLLBACK
-    ;
-
-savepoint
-    : SAVEPOINT
-    ;
-
-transactionCharacteristic_
-   : ISOLATION LEVEL level_ | accessMode_
-   ;
-
-level_
-   : REPEATABLE READ | READ COMMITTED | READ UNCOMMITTED | SERIALIZABLE
-   ;
-
-accessMode_
-   : READ (WRITE | ONLY)
-   ;
+@Setter
+@Getter
+public class TransactionCharacteristicSegment implements SQLSegment {
+    
+    private int startIndex;
+    
+    private int stopIndex;
+    
+    private String isolationLevel;
+    
+    private String accessMode;
+}
