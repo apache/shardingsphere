@@ -23,7 +23,6 @@ import org.apache.shardingsphere.shardingscaling.core.config.ScalingContext;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.shardingscaling.core.execute.EventType;
 import org.apache.shardingsphere.shardingscaling.core.execute.engine.ExecuteCallback;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.ShardingScalingExecutor;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTask;
@@ -113,10 +112,21 @@ public final class SyncTaskController implements Runnable {
             syncTaskControlStatus = SyncTaskControlStatus.STOPPED;
             return;
         }
-        incrementalDataSyncTask.start(event -> {
-            log.info("incremental data sync task {} finished, execute result: {}", syncTaskId, event.getEventType().name());
-            dataSourceManager.close();
-            syncTaskControlStatus = EventType.FINISHED.equals(event.getEventType()) ? SyncTaskControlStatus.STOPPED : SyncTaskControlStatus.SYNCHRONIZE_INCREMENTAL_DATA_FAILURE;
+        ScalingContext.getInstance().getTaskExecuteEngine().submit((ShardingScalingExecutor) incrementalDataSyncTask, new ExecuteCallback() {
+            
+            @Override
+            public void onSuccess() {
+                log.info("incremental data sync task {} finished", syncTaskId);
+                dataSourceManager.close();
+                syncTaskControlStatus = SyncTaskControlStatus.STOPPED;
+            }
+    
+            @Override
+            public void onFailure(final Throwable throwable) {
+                stop();
+                dataSourceManager.close();
+                syncTaskControlStatus = SyncTaskControlStatus.SYNCHRONIZE_INCREMENTAL_DATA_FAILURE;
+            }
         });
         syncTaskControlStatus = SyncTaskControlStatus.SYNCHRONIZE_INCREMENTAL_DATA;
     }

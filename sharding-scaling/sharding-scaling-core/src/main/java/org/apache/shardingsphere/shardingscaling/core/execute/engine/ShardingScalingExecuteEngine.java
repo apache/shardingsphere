@@ -25,10 +25,14 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.concurrent.Future;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * Sharding scaling executor engine.
@@ -61,18 +65,41 @@ public class ShardingScalingExecuteEngine {
      */
     public Future submit(final ShardingScalingExecutor shardingScalingExecutor, final ExecuteCallback executeCallback) {
         ListenableFuture result = executorService.submit(shardingScalingExecutor);
-        Futures.addCallback(result, new FutureCallback<Object>() {
-            
-            @Override
-            public void onSuccess(final Object result) {
-                executeCallback.onSuccess();
-            }
-    
-            @Override
-            public void onFailure(final Throwable t) {
-                executeCallback.onFailure(t);
-            }
-        });
+        Futures.addCallback(result, new ExecuteFutureCallback<>(executeCallback));
         return result;
+    }
+    
+    /**
+     * Submit a collection of {@code ShardingScalingExecutor} with callback {@code ExecuteCallback} to execute.
+     *
+     * @param shardingScalingExecutors sharding scaling executor
+     * @param executeCallback execute callback
+     * @return execute future of all
+     */
+    public Future submitAll(final Collection<? extends ShardingScalingExecutor> shardingScalingExecutors, final ExecuteCallback executeCallback) {
+        Collection<ListenableFuture<Object>> listenableFutures = new ArrayList<>(shardingScalingExecutors.size());
+        for (ShardingScalingExecutor each : shardingScalingExecutors) {
+            ListenableFuture listenableFuture = executorService.submit(each);
+            listenableFutures.add(listenableFuture);
+        }
+        ListenableFuture result = Futures.allAsList(listenableFutures);
+        Futures.addCallback(result, new ExecuteFutureCallback<Collection<Object>>(executeCallback));
+        return result;
+    }
+    
+    @RequiredArgsConstructor
+    private static class ExecuteFutureCallback<V> implements FutureCallback<V> {
+        
+        private final ExecuteCallback executeCallback;
+        
+        @Override
+        public void onSuccess(final V result) {
+            executeCallback.onSuccess();
+        }
+    
+        @Override
+        public void onFailure(final Throwable throwable) {
+            executeCallback.onFailure(throwable);
+        }
     }
 }
