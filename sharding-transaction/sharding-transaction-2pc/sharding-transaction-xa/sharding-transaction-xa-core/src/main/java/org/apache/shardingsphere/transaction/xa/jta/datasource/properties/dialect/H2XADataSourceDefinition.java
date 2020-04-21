@@ -18,12 +18,9 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect;
 
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
-import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
-import java.util.Properties;
 
 /**
  * XA data source definition for H2.
