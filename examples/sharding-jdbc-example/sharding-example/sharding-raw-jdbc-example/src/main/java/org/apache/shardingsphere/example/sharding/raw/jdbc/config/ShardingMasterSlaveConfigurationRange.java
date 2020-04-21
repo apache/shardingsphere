@@ -18,18 +18,16 @@
 package org.apache.shardingsphere.example.sharding.raw.jdbc.config;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.core.strategy.keygen.SnowflakeKeyGenerateAlgorithm;
-import org.apache.shardingsphere.example.algorithm.PreciseModuloShardingDatabaseAlgorithm;
-import org.apache.shardingsphere.example.algorithm.PreciseModuloShardingTableAlgorithm;
-import org.apache.shardingsphere.example.algorithm.RangeModuloShardingDatabaseAlgorithm;
-import org.apache.shardingsphere.example.algorithm.RangeModuloShardingTableAlgorithm;
-import org.apache.shardingsphere.example.core.api.DataSourceUtil;
-import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.core.strategy.keygen.SnowflakeKeyGenerateAlgorithm;
+import org.apache.shardingsphere.example.algorithm.StandardModuloShardingDatabaseAlgorithm;
+import org.apache.shardingsphere.example.algorithm.StandardModuloShardingTableAlgorithm;
+import org.apache.shardingsphere.example.config.ExampleConfiguration;
+import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 
@@ -51,9 +49,9 @@ public final class ShardingMasterSlaveConfigurationRange implements ExampleConfi
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
         shardingRuleConfig.getBroadcastTables().add("t_address");
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(
-                new StandardShardingStrategyConfiguration("user_id", new PreciseModuloShardingDatabaseAlgorithm(), new RangeModuloShardingDatabaseAlgorithm()));
+                new StandardShardingStrategyConfiguration("user_id", new StandardModuloShardingDatabaseAlgorithm()));
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(
-                new StandardShardingStrategyConfiguration("order_id", new PreciseModuloShardingTableAlgorithm(), new RangeModuloShardingTableAlgorithm()));
+                new StandardShardingStrategyConfiguration("order_id", new StandardModuloShardingTableAlgorithm()));
         shardingRuleConfig.setMasterSlaveRuleConfigs(getMasterSlaveRuleConfigurations());
         return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new Properties());
     }
