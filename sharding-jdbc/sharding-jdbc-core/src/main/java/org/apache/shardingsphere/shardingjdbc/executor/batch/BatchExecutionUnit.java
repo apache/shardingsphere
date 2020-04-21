@@ -32,13 +32,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Batch route unit.
+ * Batch execution unit.
  */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode(of = { "executionUnit" })
 @ToString
-public final class BatchRouteUnit {
+public final class BatchExecutionUnit {
     
     private final ExecutionUnit executionUnit;
     

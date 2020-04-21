@@ -52,7 +52,7 @@ public final class BatchPreparedStatementExecutor {
     private final Collection<InputGroup<StatementExecuteUnit>> inputGroups;
     
     @Getter
-    private final Collection<BatchRouteUnit> routeUnits;
+    private final Collection<BatchExecutionUnit> batchExecutionUnits;
     
     private int batchCount;
     
@@ -60,7 +60,7 @@ public final class BatchPreparedStatementExecutor {
         this.runtimeContext = runtimeContext;
         this.sqlExecutor = sqlExecutor;
         inputGroups = new LinkedList<>();
-        routeUnits = new LinkedList<>();
+        batchExecutionUnits = new LinkedList<>();
     }
     
     /**
@@ -73,45 +73,41 @@ public final class BatchPreparedStatementExecutor {
     }
     
     /**
-     * Add batch for route units.
+     * Add batch for execution units.
      *
      * @param executionUnits execution units
      */
-    public void addBatchForRouteUnits(final Collection<ExecutionUnit> executionUnits) {
-        handleOldBatchRouteUnits(createBatchRouteUnits(executionUnits));
-        handleNewBatchRouteUnits(createBatchRouteUnits(executionUnits));
+    public void addBatchForExecutionUnits(final Collection<ExecutionUnit> executionUnits) {
+        handleOldBatchExecutionUnits(createBatchExecutionUnits(executionUnits));
+        handleNewBatchExecutionUnits(createBatchExecutionUnits(executionUnits));
         batchCount++;
     }
     
-    private Collection<BatchRouteUnit> createBatchRouteUnits(final Collection<ExecutionUnit> executionUnits) {
-        Collection<BatchRouteUnit> result = new LinkedList<>();
-        for (ExecutionUnit each : executionUnits) {
-            result.add(new BatchRouteUnit(each));
-        }
-        return result;
+    private Collection<BatchExecutionUnit> createBatchExecutionUnits(final Collection<ExecutionUnit> executionUnits) {
+        return executionUnits.stream().map(BatchExecutionUnit::new).collect(Collectors.toList());
     }
     
-    private void handleOldBatchRouteUnits(final Collection<BatchRouteUnit> newRouteUnits) {
-        for (BatchRouteUnit each : newRouteUnits) {
-            for (BatchRouteUnit unit : routeUnits) {
+    private void handleOldBatchExecutionUnits(final Collection<BatchExecutionUnit> newExecutionUnits) {
+        for (BatchExecutionUnit each : newExecutionUnits) {
+            for (BatchExecutionUnit unit : batchExecutionUnits) {
                 if (unit.equals(each)) {
-                    reviseBatchRouteUnit(unit, each);
+                    reviseBatchExecutionUnit(unit, each);
                 }
             }
         }
     }
     
-    private void reviseBatchRouteUnit(final BatchRouteUnit oldBatchRouteUnit, final BatchRouteUnit newBatchRouteUnit) {
-        oldBatchRouteUnit.getExecutionUnit().getSqlUnit().getParameters().addAll(newBatchRouteUnit.getExecutionUnit().getSqlUnit().getParameters());
-        oldBatchRouteUnit.mapAddBatchCount(batchCount);
+    private void reviseBatchExecutionUnit(final BatchExecutionUnit oldBatchUnit, final BatchExecutionUnit newBatchExecutionUnit) {
+        oldBatchUnit.getExecutionUnit().getSqlUnit().getParameters().addAll(newBatchExecutionUnit.getExecutionUnit().getSqlUnit().getParameters());
+        oldBatchUnit.mapAddBatchCount(batchCount);
     }
     
-    private void handleNewBatchRouteUnits(final Collection<BatchRouteUnit> newRouteUnits) {
-        newRouteUnits.removeAll(routeUnits);
-        for (BatchRouteUnit each : newRouteUnits) {
+    private void handleNewBatchExecutionUnits(final Collection<BatchExecutionUnit> newExecutionUnits) {
+        newExecutionUnits.removeAll(batchExecutionUnits);
+        for (BatchExecutionUnit each : newExecutionUnits) {
             each.mapAddBatchCount(batchCount);
         }
-        routeUnits.addAll(newRouteUnits);
+        batchExecutionUnits.addAll(newExecutionUnits);
     }
     
     /**
@@ -144,9 +140,9 @@ public final class BatchPreparedStatementExecutor {
         for (InputGroup<StatementExecuteUnit> each : inputGroups) {
             for (StatementExecuteUnit eachUnit : each.getInputs()) {
                 Map<Integer, Integer> jdbcAndActualAddBatchCallTimesMap = Collections.emptyMap();
-                for (BatchRouteUnit eachRouteUnit : routeUnits) {
-                    if (isSameDataSourceAndSQL(eachRouteUnit, eachUnit)) {
-                        jdbcAndActualAddBatchCallTimesMap = eachRouteUnit.getJdbcAndActualAddBatchCallTimesMap();
+                for (BatchExecutionUnit eachExecutionUnit : batchExecutionUnits) {
+                    if (isSameDataSourceAndSQL(eachExecutionUnit, eachUnit)) {
+                        jdbcAndActualAddBatchCallTimesMap = eachExecutionUnit.getJdbcAndActualAddBatchCallTimesMap();
                         break;
                     }
                 }
@@ -160,9 +156,9 @@ public final class BatchPreparedStatementExecutor {
         return result;
     }
     
-    private boolean isSameDataSourceAndSQL(final BatchRouteUnit batchRouteUnit, final StatementExecuteUnit statementExecuteUnit) {
-        return batchRouteUnit.getExecutionUnit().getDataSourceName().equals(statementExecuteUnit.getExecutionUnit().getDataSourceName())
-                && batchRouteUnit.getExecutionUnit().getSqlUnit().getSql().equals(statementExecuteUnit.getExecutionUnit().getSqlUnit().getSql());
+    private boolean isSameDataSourceAndSQL(final BatchExecutionUnit batchExecutionUnit, final StatementExecuteUnit statementExecuteUnit) {
+        return batchExecutionUnit.getExecutionUnit().getDataSourceName().equals(statementExecuteUnit.getExecutionUnit().getDataSourceName())
+                && batchExecutionUnit.getExecutionUnit().getSqlUnit().getSql().equals(statementExecuteUnit.getExecutionUnit().getSqlUnit().getSql());
     }
     
     /**
@@ -206,9 +202,9 @@ public final class BatchPreparedStatementExecutor {
     }
     
     private List<List<Object>> getParameterSets(final StatementExecuteUnit executeUnit) {
-        Optional<BatchRouteUnit> batchRouteUnit = routeUnits.stream().filter(routeUnit -> isSameDataSourceAndSQL(routeUnit, executeUnit)).findFirst();
-        Preconditions.checkState(batchRouteUnit.isPresent());
-        return batchRouteUnit.get().getParameterSets();
+        Optional<BatchExecutionUnit> batchExecutionUnit = batchExecutionUnits.stream().filter(each -> isSameDataSourceAndSQL(each, executeUnit)).findFirst();
+        Preconditions.checkState(batchExecutionUnit.isPresent());
+        return batchExecutionUnit.get().getParameterSets();
     }
     
     /**
@@ -221,7 +217,7 @@ public final class BatchPreparedStatementExecutor {
         getStatements().clear();
         inputGroups.clear();
         batchCount = 0;
-        routeUnits.clear();
+        batchExecutionUnits.clear();
     }
     
     private void closeStatements() throws SQLException {
