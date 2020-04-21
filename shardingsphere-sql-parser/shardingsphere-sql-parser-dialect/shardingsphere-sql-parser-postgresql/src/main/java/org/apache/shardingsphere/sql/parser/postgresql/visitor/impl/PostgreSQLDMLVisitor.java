@@ -19,7 +19,8 @@ package org.apache.shardingsphere.sql.parser.postgresql.visitor.impl;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.DMLVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SubqueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AssignmentValueContext;
@@ -452,8 +453,8 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
         }
         if (null != ctx.USING()) {
             Collection<ColumnSegment> columnSegmentList = new LinkedList<>();
-            for (PostgreSQLStatementParser.ColumnNameContext cname :ctx.columnNames().columnName()) {
-                columnSegmentList.add((ColumnSegment) visit(cname));
+            for (ColumnNameContext each : ctx.columnNames().columnName()) {
+                columnSegmentList.add((ColumnSegment) visit(each));
             }
             result.getUsingColumns().addAll(columnSegmentList);
         }
@@ -528,5 +529,10 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
             return new NumberLiteralLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((NumberLiteralValue) visit(ctx.numberLiterals())).getValue().longValue());
         }
         return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
+    }
+    
+    @Override
+    public ASTNode visitSubquery(final SubqueryContext ctx) {
+        return visit(ctx.unionClause());
     }
 }
