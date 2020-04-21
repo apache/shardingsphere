@@ -19,7 +19,8 @@ package org.apache.shardingsphere.sql.parser.oracle.visitor.impl;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.DMLVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SubqueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AssignmentValueContext;
@@ -444,7 +445,7 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
         }
         if (null != ctx.USING()) {
             Collection<ColumnSegment> columnSegmentList = new LinkedList<>();
-            for (OracleStatementParser.ColumnNameContext cname :ctx.columnNames().columnName()) {
+            for (ColumnNameContext cname :ctx.columnNames().columnName()) {
                 columnSegmentList.add((ColumnSegment) visit(cname));
             }
             result.getUsingColumns().addAll(columnSegmentList);
@@ -476,7 +477,7 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
     }
     
     @Override
-    public ASTNode visitSubquery(final OracleStatementParser.SubqueryContext ctx) {
+    public ASTNode visitSubquery(final SubqueryContext ctx) {
         return visit(ctx.unionClause());
     }
 }
