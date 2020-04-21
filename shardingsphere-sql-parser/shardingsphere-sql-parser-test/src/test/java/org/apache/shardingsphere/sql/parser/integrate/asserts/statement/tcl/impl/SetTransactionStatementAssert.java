@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.tcl.SetTransactionStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetTransactionStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.tcl.dialect.mysql.MysqlSetTransactionStatement;
 
 /**
  * Set transaction statement assert.
