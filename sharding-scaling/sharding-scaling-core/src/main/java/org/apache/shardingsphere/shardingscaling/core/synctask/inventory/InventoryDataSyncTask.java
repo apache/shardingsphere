@@ -25,8 +25,7 @@ import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.controller.task.ReportCallback;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.shardingscaling.core.exception.SyncTaskExecuteException;
-import org.apache.shardingsphere.shardingscaling.core.execute.engine.SyncTaskExecuteCallback;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncExecutorGroup;
+import org.apache.shardingsphere.shardingscaling.core.execute.engine.ExecuteCallback;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.MemoryChannel;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.Dumper;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.DumperFactory;
@@ -42,6 +41,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -81,9 +82,22 @@ public final class InventoryDataSyncTask implements SyncTask {
     @Override
     public void start(final ReportCallback callback) {
         getEstimatedRows();
-        SyncExecutorGroup syncExecutorGroup = new SyncExecutorGroup(new SyncTaskExecuteCallback(this.getClass().getSimpleName(), syncTaskId, callback));
-        instanceSyncExecutors(syncExecutorGroup);
-        ScalingContext.getInstance().getSyncTaskExecuteEngine().submitGroup(syncExecutorGroup);
+        instanceDumper();
+        Importer importer = ImporterFactory.newInstance(syncConfiguration.getImporterConfiguration(), dataSourceManager);
+        instanceChannel(importer);
+        Future future = ScalingContext.getInstance().getImporterExecuteEngine().submit(importer, new ExecuteCallback() {
+            
+            @Override
+            public void onSuccess() {
+            }
+    
+            @Override
+            public void onFailure(final Throwable throwable) {
+                dumper.stop();
+            }
+        });
+        dumper.start();
+        checkResult(future);
     }
     
     private void getEstimatedRows() {
@@ -100,20 +114,13 @@ public final class InventoryDataSyncTask implements SyncTask {
         }
     }
     
-    private void instanceSyncExecutors(final SyncExecutorGroup syncExecutorGroup) {
+    private void instanceDumper() {
         syncConfiguration.getDumperConfiguration().setTableNameMap(syncConfiguration.getTableNameMap());
         dumper = DumperFactory.newInstanceJdbcDumper(syncConfiguration.getDumperConfiguration(), dataSourceManager);
-        Importer importer = ImporterFactory.newInstance(syncConfiguration.getImporterConfiguration(), dataSourceManager);
-        MemoryChannel channel = instanceChannel();
-        dumper.setChannel(channel);
-        importer.setChannel(channel);
-        syncExecutorGroup.setChannel(channel);
-        syncExecutorGroup.addSyncExecutor(dumper);
-        syncExecutorGroup.addSyncExecutor(importer);
     }
     
-    private MemoryChannel instanceChannel() {
-        return new MemoryChannel(records -> {
+    private void instanceChannel(final Importer importer) {
+        MemoryChannel channel = new MemoryChannel(records -> {
             int count = 0;
             for (Record record : records) {
                 if (DataRecord.class.equals(record.getClass())) {
@@ -122,6 +129,17 @@ public final class InventoryDataSyncTask implements SyncTask {
             }
             syncedRows.addAndGet(count);
         });
+        dumper.setChannel(channel);
+        importer.setChannel(channel);
+    }
+    
+    private void checkResult(final Future future) {
+        try {
+            future.get();
+        } catch (InterruptedException ignored) {
+        } catch (ExecutionException e) {
+            throw new SyncTaskExecuteException(String.format("Task %s execute failed ", syncTaskId), e.getCause());
+        }
     }
     
     @Override

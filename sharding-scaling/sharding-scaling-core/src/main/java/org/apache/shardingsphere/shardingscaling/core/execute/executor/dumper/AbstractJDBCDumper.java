@@ -94,6 +94,8 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
                 pushRecord(record);
             }
         } catch (SQLException e) {
+            stop();
+            channel.close();
             throw new SyncTaskExecuteException(e);
         } finally {
             pushRecord(new FinishedRecord(new NopLogPosition()));
