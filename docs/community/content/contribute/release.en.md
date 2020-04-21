@@ -343,26 +343,19 @@ to check the following items:
     *   All the third party dependency licenses are under `licenses` folder
     *   If it depends on Apache license and has a `NOTICE` file, that `NOTICE` file need to be added to `NOTICE` file of the release
 
-For the whole check list, please see [here](https://cwiki.apache.org/confluence/display/INCUBATOR/Incubator+Release+Checklist).
-
 ## Call for a Vote
 
 ### Vote procedure
 
 1. ShardingSphere community vote: send the vote e-mail to `dev@shardingsphere.apache.org`. 
-PPMC needs to check the rightness of the version according to the document before they vote. 
-After at least 72 hours and with at least 3 `+1 PPMC member` votes, it can come to the next stage of the vote.
+PMC needs to check the rightness of the version according to the document before they vote. 
+After at least 72 hours and with at least 3 `+1 PMC member` votes, it can come to the next stage of the vote.
 
-2. Apache community vote: send the vote e-mail to `general@apache.org`.
-After at least 72 hours and with at least 3 `+1 binding` votes (only IPMC's votes are binding), it can be officially released.
-
-3. Announce the vote result: send the result vote e-mail to `general@apache.org`.
+2. Announce the vote result: send the result vote e-mail to `dev@shardingsphere.apache.org`.
 
 ### Vote Templates
 
 1. ShardingSphere Community Vote Template
-
-NOTE: Must invite all mentors to vote during the community vote.
 
 Title:
 
@@ -409,6 +402,8 @@ Please vote accordingly:
  
 [ ] -1 disapprove with the reason
 
+PMC vote is +1 binding, all others is +1 non-binding.
+
 Checklist for reference:
 
 [ ] Download links are valid.
@@ -433,126 +428,23 @@ Body:
 ```
 The vote to release Apache ShardingSphere ${RELEASE.VERSION} has passed.
 
-7 PPMC member +1 votes:
+7 PMC member +1 binding votes:
 
-xxx (mentor)
-xxx
-xxx (mentor)
 xxx
 xxx
-xxx (mentor)
+xxx
+xxx
+xxx
+xxx
 xxx
 
-1 community +1 vote:
+1 community +1 non-binding vote:
 xxx
 
 Thank you everyone for taking the time to review the release and help us. 
 ```
 
-3. Apache Community Vote Template:
-
-Title:
-
-```
-[VOTE] Release Apache ShardingSphere ${RELEASE.VERSION}
-
-```
-
-Body:
-
-```
-Hello all,
-
-This is a call for vote to release Apache ShardingSphere version ${RELEASE.VERSION}.
-
-The Apache ShardingSphere community has voted on and approved a proposal to release
-Apache ShardingSphere version ${RELEASE.VERSION}.
-
-We now kindly request the PMC members review and vote on this release.
-
-ShardingSphere is an open-source ecosystem consisted of a set of distributed database middleware solutions, including 2 independent products, Sharding-JDBC & Sharding-Proxy. 
-They both provide functions of data sharding, distributed transaction and database orchestration, applicable in a variety of situations such as Java isomorphism, heterogeneous language. 
-Aiming at reasonably making full use of the computation and storage capacity of the database in a distributed system, ShardingSphere defines itself as a middleware, rather than a totally new type of database. 
-As the cornerstone of many enterprises, relational database still takes a huge market share. 
-Therefore, at the current stage, we prefer to focus on its increment instead of a total overturn.
-
-Sharding-JDBC defines itself as a lightweight Java framework that provides extra service at Java JDBC layer. 
-With the client end connecting directly to the database, it provides service in the form of jar and requires no extra deployment and dependence. 
-It can be considered as an enhanced JDBC driver, which is fully compatible with JDBC and all kinds of ORM frameworks.
-
-* Applicable in any ORM framework based on Java, such as JPA, Hibernate, Mybatis, Spring JDBC Template or direct use of JDBC.
-* Based on any third-party database connection pool, such as DBCP, C3P0, BoneCP, Druid, HikariCP.
-* Support any kind of database that conforms to JDBC standard: MySQL, Oracle, SQLServer and PostgreSQL for now.
-
-Sharding-Proxy defines itself as a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages. 
-Friendlier to DBA, the MySQL/PostgreSQL version provided now can use any kind of terminal (such as MySQL Command Client, MySQL Workbench, Navicat etc.) that is compatible of MySQL/PostgreSQL protocol to operate data.
-
-* Totally transparent to applications, it can be used directly as MySQL and PostgreSQL.
-
-* Applicable to any kind of terminal that is compatible with MySQL and PostgreSQL protocol.
-
-ShardingSphere community vote and result thread:
-https://lists.apache.org/thread.html/xxxxxxxxxxxxxxxxxxxxxxx
-
-Release notes:
-https://github.com/apache/shardingsphere/blob/master/RELEASE-NOTES.md
-
-The release candidates:
-https://dist.apache.org/repos/dist/dev/shardingsphere/${RELEASE.VERSION}/
-
-Maven 2 staging repository:
-https://repository.apache.org/content/repositories/${STAGING.REPOSITORY}/org/apache/shardingsphere/
-
-Git tag for the release:
-https://github.com/apache/shardingsphere/tree/${RELEASE.VERSION}
-
-Release Commit ID:
-https://github.com/apache/shardingsphere/commit/xxxxxxxxxxxxxxxxxxxxxxx
-
-Keys to verify the Release Candidate:
-https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS
-
-Look at here for how to verify this release candidate:
-https://shardingsphere.apache.org/community/en/contribute/release/
-
-The vote will be open for at least 72 hours or until necessary number of
-votes are reached.
-
-Please vote accordingly:
-
-[ ] +1 approve
-
-[ ] +0 no opinion
-
-[ ] -1 disapprove with the reason
-
-Checklist for reference:
-
-[ ] Download links are valid.
-
-[ ] Checksums and PGP signatures are valid.
-
-[ ] DISCLAIMER is included.
-
-[ ] Source code distributions have correct names matching the current release.
-
-[ ] LICENSE and NOTICE files are correct for each ShardingSphere repo.
-
-[ ] All files have license headers if necessary.
-
-[ ] No compiled archives bundled in source archive.
-
-The following votes are carried over from ShardingSphere dev mailing list,
-
-+1 binding, xxx
-+1 binding, xxx
-
-+1 non-binding, xxx
-+1 non-binding, xxx
-
-```
-
-4. Announce the vote result:
+3. Announce the vote result:
 
 **Notice: Please include the votes from ShardingSphere community above.**
 
@@ -615,7 +507,7 @@ https://shardingsphere.apache.org/document/current/en/downloads/
 
 https://shardingsphere.apache.org/document/current/cn/downloads/
 
-Keep two latest versions in `Latest releases`. All old versions will be archived automatically in [Archive repository](https://archive.apache.org/dist/shardingsphere/)
+Keep two latest versions in `Latest releases`. Incubating stage versions will be archived automatically in [Archive repository](https://archive.apache.org/dist/incubator/shardingsphere/)
 
 ### Docker Release
 
@@ -656,11 +548,7 @@ Click `Edit` in [GitHub Releases](https://github.com/apache/shardingsphere/relea
 
 Edit version number and release notes, click `Publish release`
 
-### Tag ShardingSphere's Example Project
-
-[GitHub repository](https://github.com/apache/shardingsphere-example)
-
-### Send e-mail to `general@apache.org` and `dev@shardingsphere.apache.org` to announce the release is finished
+### Send e-mail to `dev@shardingsphere.apache.org` to announce the release is finished
 
 Announcement e-mail template:
 
@@ -675,7 +563,7 @@ Body:
 ```
 Hi all,
 
-Apache ShardingSphere Team is glad to announce the first release of Apache ShardingSphere ${RELEASE.VERSION}.
+Apache ShardingSphere Team is glad to announce the new release of Apache ShardingSphere ${RELEASE.VERSION}.
 
 ShardingSphere is an open-source ecosystem consisted of a set of distributed database middleware solutions, including 2 independent products, Sharding-JDBC & Sharding-Proxy. 
 They both provide functions of data sharding, distributed transaction and database orchestration, applicable in a variety of situations such as Java isomorphism, heterogeneous language. 
