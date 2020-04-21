@@ -17,23 +17,42 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.datasource.swapper;
 
+import com.google.common.collect.ImmutableList;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
+import org.h2.jdbcx.JdbcDataSource;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
+import javax.sql.XADataSource;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class DataSourceSwapperTest {
     
-    private final DataSourceSwapper swapper = new DataSourceSwapper();
+    @Mock
+    private XADataSourceDefinition xaDataSourceDefinition;
+    
+    private DataSourceSwapper swapper;
+    
+    @Before
+    public void before() {
+        when(xaDataSourceDefinition.getXADriverClassName()).thenReturn(ImmutableList.of("org.h2.jdbcx.JdbcDataSource"));
+    }
     
     @Test
     public void assertSwapByDefaultProvider() {
-        assertDatabaseAccessConfiguration(swapper.swap(createDBCPDataSource()));
+        swapper = new DataSourceSwapper(xaDataSourceDefinition);
+        assertResult(swapper.swap(createDBCPDataSource()));
     }
     
     private DataSource createDBCPDataSource() {
@@ -46,7 +65,8 @@ public final class DataSourceSwapperTest {
     
     @Test
     public void assertSwapBySPIProvider() {
-        assertDatabaseAccessConfiguration(swapper.swap(createHikariCPDataSource()));
+        swapper = new DataSourceSwapper(xaDataSourceDefinition);
+        assertResult(swapper.swap(createHikariCPDataSource()));
     }
     
     private DataSource createHikariCPDataSource() {
@@ -57,9 +77,11 @@ public final class DataSourceSwapperTest {
         return dataSource;
     }
     
-    private void assertDatabaseAccessConfiguration(final DatabaseAccessConfiguration databaseAccessConfiguration) {
-        assertThat(databaseAccessConfiguration.getUrl(), is("jdbc:mysql://localhost:3306/demo_ds"));
-        assertThat(databaseAccessConfiguration.getUsername(), is("root"));
-        assertThat(databaseAccessConfiguration.getPassword(), is("root"));
+    private void assertResult(final XADataSource xaDataSource) {
+        assertThat(xaDataSource, instanceOf(JdbcDataSource.class));
+        JdbcDataSource h2XADataSource = (JdbcDataSource) xaDataSource;
+        assertThat(h2XADataSource.getUrl(), is("jdbc:mysql://localhost:3306/demo_ds"));
+        assertThat(h2XADataSource.getUser(), is("root"));
+        assertThat(h2XADataSource.getPassword(), is("root"));
     }
 }

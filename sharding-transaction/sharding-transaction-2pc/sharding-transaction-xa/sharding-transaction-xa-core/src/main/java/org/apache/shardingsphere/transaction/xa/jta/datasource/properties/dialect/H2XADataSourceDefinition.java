@@ -18,12 +18,9 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect;
 
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
-import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
-import java.util.Properties;
 
 /**
  * XA data source definition for H2.
@@ -38,14 +35,5 @@ public final class H2XADataSourceDefinition implements XADataSourceDefinition {
     @Override
     public Collection<String> getXADriverClassName() {
         return Collections.singletonList("org.h2.jdbcx.JdbcDataSource");
-    }
-    
-    @Override
-    public Properties getXAProperties(final DatabaseAccessConfiguration databaseAccessConfiguration) {
-        Properties result = new Properties();
-        result.setProperty("user", databaseAccessConfiguration.getUsername());
-        result.setProperty("password", Optional.ofNullable(databaseAccessConfiguration.getPassword()).orElse(""));
-        result.setProperty("URL", databaseAccessConfiguration.getUrl());
-        return result;
     }
 }
