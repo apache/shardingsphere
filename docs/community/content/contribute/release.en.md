@@ -231,16 +231,16 @@ cd ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 Add source code packages, binary packages and executable binary packages of sharding-proxy to SVN working directory.
 
 ```shell
-cp -f ~/shardingsphere/shardingsphere/sharding-distribution/shardingsphere-src-distribution/target/*.zip ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere/sharding-distribution/shardingsphere-src-distribution/target/*.zip.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere/sharding-distribution/sharding-jdbc-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere/sharding-distribution/sharding-jdbc-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere/sharding-distribution/sharding-proxy-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere/sharding-distribution/sharding-proxy-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere/sharding-distribution/sharding-scaling-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere/sharding-distribution/sharding-scaling-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere/sharding-distribution/sharding-ui-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere/sharding-distribution/sharding-ui-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/sharding-distribution/shardingsphere-src-distribution/target/*.zip ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/sharding-distribution/shardingsphere-src-distribution/target/*.zip.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/sharding-distribution/sharding-jdbc-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/sharding-distribution/sharding-jdbc-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/sharding-distribution/sharding-proxy-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/sharding-distribution/sharding-proxy-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/sharding-distribution/sharding-scaling-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/sharding-distribution/sharding-scaling-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/sharding-distribution/sharding-ui-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/sharding-distribution/sharding-ui-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 ```
 
 ### Generate sign files
@@ -491,7 +491,7 @@ git push
 git push --delete origin ${RELEASE.VERSION}-release
 ```
 
-### Update READEME files
+### Update README files
 
 Update `${RELEASE.VERSION}` to `${NEXT.RELEASE.VERSION}` in README.md and README_ZH.md
 
@@ -518,7 +518,7 @@ Install docker locally and start the docker service
 #### Compile Docker Image
 
 ```shell
-cd ~/shardingsphere/shardingsphere/sharding-distribution/sharding-proxy-distribution/
+cd ~/shardingsphere/sharding-distribution/sharding-proxy-distribution/
 mvn clean package docker:build
 ```
 
