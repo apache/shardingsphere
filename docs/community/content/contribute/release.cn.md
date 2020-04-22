@@ -340,24 +340,18 @@ diff -r apache-shardingsphere-${RELEASE.VERSION}-src tag-${RELEASE.VERSION}
   - 依赖许可证的完整版全部在`license`目录
   - 如果依赖的是Apache许可证并且存在`NOTICE`文件，那么这些`NOTICE`文件也需要加入到版本的`NOTICE`文件中
 
-全部的检查列表参见[这里](https://cwiki.apache.org/confluence/display/INCUBATOR/Incubator+Release+Checklist)。
-
 ## 发起投票
 
 ### 投票阶段
 
-1. ShardingSphere社区投票，发起投票邮件到`dev@shardingsphere.apache.org`。PPMC需要先按照文档检查版本的正确性，然后再进行投票。
-经过至少72小时并统计到3个`+1 PPMC member`票后，即可进入下一阶段的投票。
+1. ShardingSphere社区投票，发起投票邮件到`dev@shardingsphere.apache.org`。PMC需要先按照文档检查版本的正确性，然后再进行投票。
+经过至少72小时并统计到3个`+1 PMC member`票后，即可进入下一阶段的投票。
 
-2. Apache社区投票，发起投票邮件到`general@apache.org`。经过至少72小时并统计到3个`+1 binding`票后（只有IPMC的票才是binding），即可进行正式发布。
-
-3. 宣布投票结果,发起投票结果邮件到`general@apache.org`。
+2. 宣布投票结果,发起投票结果邮件到`dev@shardingsphere.apache.org`。
 
 ### 投票模板
 
 1. ShardingSphere社区投票模板
-
-注意： 在社区投票过程中，需要邀请所有mentor参加投票。
 
 标题：
 
@@ -403,6 +397,8 @@ Please vote accordingly:
  
 [ ] -1 disapprove with the reason
 
+PMC vote is +1 binding, all others is +1 non-binding.
+
 Checklist for reference:
 
 [ ] Download links are valid.
@@ -427,126 +423,23 @@ Checklist for reference:
 ```
 The vote to release Apache ShardingSphere ${RELEASE.VERSION} has passed.
 
-7 PPMC member +1 votes:
+7 PMC member +1 binding votes:
 
-xxx (mentor)
-xxx
-xxx (mentor)
 xxx
 xxx
-xxx (mentor)
+xxx
+xxx
+xxx
+xxx
 xxx
 
-1 community +1 vote:
+1 community +1 non-binding vote:
 xxx
 
 Thank you everyone for taking the time to review the release and help us. 
 ```
 
-3. Apache社区投票邮件模板：
-
-标题：
-
-```
-[VOTE] Release Apache ShardingSphere ${RELEASE.VERSION}
-```
-
-正文：
-
-```
-Hello all,
-
-This is a call for vote to release Apache ShardingSphere version ${RELEASE.VERSION}.
-
-The Apache ShardingSphere community has voted on and approved a proposal to release
-Apache ShardingSphere version ${RELEASE.VERSION}.
-
-We now kindly request the PMC members review and vote on this release.
-
-ShardingSphere is an open-source ecosystem consisted of a set of distributed database middleware solutions, including 2 independent products, Sharding-JDBC & Sharding-Proxy. 
-They both provide functions of data sharding, distributed transaction and database orchestration, applicable in a variety of situations such as Java isomorphism, heterogeneous language. 
-Aiming at reasonably making full use of the computation and storage capacity of the database in a distributed system, ShardingSphere defines itself as a middleware, rather than a totally new type of database. 
-As the cornerstone of many enterprises, relational database still takes a huge market share. 
-Therefore, at the current stage, we prefer to focus on its increment instead of a total overturn.
-
-Sharding-JDBC defines itself as a lightweight Java framework that provides extra service at Java JDBC layer. 
-With the client end connecting directly to the database, it provides service in the form of jar and requires no extra deployment and dependence. 
-It can be considered as an enhanced JDBC driver, which is fully compatible with JDBC and all kinds of ORM frameworks.
-
-* Applicable in any ORM framework based on Java, such as JPA, Hibernate, Mybatis, Spring JDBC Template or direct use of JDBC.
-* Based on any third-party database connection pool, such as DBCP, C3P0, BoneCP, Druid, HikariCP.
-* Support any kind of database that conforms to JDBC standard: MySQL, Oracle, SQLServer and PostgreSQL for now.
-
-Sharding-Proxy defines itself as a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages. 
-Friendlier to DBA, the MySQL/PostgreSQL version provided now can use any kind of terminal (such as MySQL Command Client, MySQL Workbench, Navicat etc.) that is compatible of MySQL/PostgreSQL protocol to operate data.
-
-* Totally transparent to applications, it can be used directly as MySQL and PostgreSQL.
-
-* Applicable to any kind of terminal that is compatible with MySQL and PostgreSQL protocol.
-
-ShardingSphere community vote and result thread:
-https://lists.apache.org/thread.html/xxxxxxxxxxxxxxxxxxxxxxx
-
-Release notes:
-https://github.com/apache/shardingsphere/blob/master/RELEASE-NOTES.md
-
-The release candidates:
-https://dist.apache.org/repos/dist/dev/shardingsphere/${RELEASE.VERSION}/
-
-Maven 2 staging repository:
-https://repository.apache.org/content/repositories/${STAGING.REPOSITORY}/org/apache/shardingsphere/
-
-Git tag for the release:
-https://github.com/apache/shardingsphere/tree/${RELEASE.VERSION}
-
-Release Commit ID:
-https://github.com/apache/shardingsphere/commit/xxxxxxxxxxxxxxxxxxxxxxx/
-
-Keys to verify the Release Candidate:
-https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS
-
-Look at here for how to verify this release candidate:
-https://shardingsphere.apache.org/community/en/contribute/release/
-
-The vote will be open for at least 72 hours or until necessary number of
-votes are reached.
-
-Please vote accordingly:
-
-[ ] +1 approve
-
-[ ] +0 no opinion
-
-[ ] -1 disapprove with the reason
-
-Checklist for reference:
-
-[ ] Download links are valid.
-
-[ ] Checksums and PGP signatures are valid.
-
-[ ] DISCLAIMER is included.
-
-[ ] Source code distributions have correct names matching the current release.
-
-[ ] LICENSE and NOTICE files are correct for each ShardingSphere repo.
-
-[ ] All files have license headers if necessary.
-
-[ ] No compiled archives bundled in source archive.
-
-The following votes are carried over from ShardingSphere dev mailing list,
-
-+1 binding, xxx
-+1 binding, xxx
-
-+1 non-binding, xxx
-+1 non-binding, xxx
-```
-
-4. 宣布投票结果模板：
-
-**注意：计算投票结果时，社区投票结果也需要包含在内。**
+3. 宣布投票结果模板：
 
 标题：
 
@@ -606,7 +499,7 @@ https://shardingsphere.apache.org/document/current/en/downloads/
 
 https://shardingsphere.apache.org/document/current/cn/downloads/
 
-`最新版本`中保留两个最新的版本。历史版本会自动归档到[Archive repository](https://archive.apache.org/dist/shardingsphere/)
+`最新版本`中保留两个最新的版本。Incubator阶段历史版本会自动归档到[Archive repository](https://archive.apache.org/dist/incubator/shardingsphere/)
 
 ### 发布Docker
 
@@ -647,11 +540,7 @@ docker push apache/sharding-proxy:${RELEASE_VERSION}
 
 编辑版本号及版本说明，并点击`Publish release`
 
-### 为ShardingSphere的Example项目打标记
-
-[GitHub仓库地址](https://github.com/apache/shardingsphere-example)
-
-### 发送邮件到`general@apache.org`和`dev@shardingsphere.apache.org`通知完成版本发布
+### 发送邮件到`dev@shardingsphere.apache.org`和`announce@apache.org`通知完成版本发布
 
 通知邮件模板：
 
@@ -666,7 +555,7 @@ docker push apache/sharding-proxy:${RELEASE_VERSION}
 ```
 Hi all,
 
-Apache ShardingSphere Team is glad to announce the first release of Apache ShardingSphere ${RELEASE.VERSION}.
+Apache ShardingSphere Team is glad to announce the new release of Apache ShardingSphere ${RELEASE.VERSION}.
 
 ShardingSphere is an open-source ecosystem consisted of a set of distributed database middleware solutions, including 2 independent products, Sharding-JDBC & Sharding-Proxy. 
 They both provide functions of data sharding, distributed transaction and database orchestration, applicable in a variety of situations such as Java isomorphism, heterogeneous language. 
