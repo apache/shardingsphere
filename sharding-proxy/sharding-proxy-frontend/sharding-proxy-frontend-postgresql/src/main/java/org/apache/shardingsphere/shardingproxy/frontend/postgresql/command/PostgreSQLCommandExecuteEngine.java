@@ -80,7 +80,7 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
             context.write(new PostgreSQLReadyForQueryPacket());
             return;
         }
-        if (queryCommandExecutor.isErrorResponse()) {
+        if (queryCommandExecutor.isErrorResponse() || queryCommandExecutor.isUpdateResponse()) {
             context.write(new PostgreSQLReadyForQueryPacket());
             return;
         }

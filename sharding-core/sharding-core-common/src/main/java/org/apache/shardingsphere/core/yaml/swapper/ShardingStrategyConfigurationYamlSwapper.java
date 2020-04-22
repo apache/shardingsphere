@@ -26,9 +26,7 @@ import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyCo
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.api.sharding.hint.HintShardingAlgorithm;
-import org.apache.shardingsphere.api.sharding.standard.PreciseShardingAlgorithm;
-import org.apache.shardingsphere.api.sharding.standard.RangeShardingAlgorithm;
-import org.apache.shardingsphere.core.strategy.route.ShardingAlgorithmFactory;
+import org.apache.shardingsphere.api.sharding.standard.StandardShardingAlgorithm;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlHintShardingStrategyConfiguration;
@@ -78,14 +76,7 @@ public final class ShardingStrategyConfigurationYamlSwapper implements YamlSwapp
         ShardingStrategyConfiguration result = null;
         if (null != yamlConfiguration.getStandard()) {
             shardingStrategyConfigCount++;
-            if (null == yamlConfiguration.getStandard().getRangeAlgorithmClassName()) {
-                result = new StandardShardingStrategyConfiguration(yamlConfiguration.getStandard().getShardingColumn(),
-                        ShardingAlgorithmFactory.newInstance(yamlConfiguration.getStandard().getPreciseAlgorithmClassName(), PreciseShardingAlgorithm.class));
-            } else {
-                result = new StandardShardingStrategyConfiguration(yamlConfiguration.getStandard().getShardingColumn(),
-                        ShardingAlgorithmFactory.newInstance(yamlConfiguration.getStandard().getPreciseAlgorithmClassName(), PreciseShardingAlgorithm.class),
-                        ShardingAlgorithmFactory.newInstance(yamlConfiguration.getStandard().getRangeAlgorithmClassName(), RangeShardingAlgorithm.class));
-            }
+            result = createStandardShardingStrategyConfiguration(yamlConfiguration.getStandard());
         }
         if (null != yamlConfiguration.getComplex()) {
             shardingStrategyConfigCount++;
@@ -110,10 +101,7 @@ public final class ShardingStrategyConfigurationYamlSwapper implements YamlSwapp
     private YamlStandardShardingStrategyConfiguration createYamlStandardShardingStrategyConfiguration(final StandardShardingStrategyConfiguration data) {
         YamlStandardShardingStrategyConfiguration result = new YamlStandardShardingStrategyConfiguration();
         result.setShardingColumn(data.getShardingColumn());
-        result.setPreciseAlgorithmClassName(data.getPreciseShardingAlgorithm().getClass().getName());
-        if (null != data.getRangeShardingAlgorithm()) {
-            result.setRangeAlgorithmClassName(data.getRangeShardingAlgorithm().getClass().getName());
-        }
+        result.setShardingAlgorithm(createYamlShardingAlgorithmConfiguration(data.getShardingAlgorithm()));
         return result;
     }
     
@@ -135,6 +123,11 @@ public final class ShardingStrategyConfigurationYamlSwapper implements YamlSwapp
         result.setShardingColumn(data.getShardingColumn());
         result.setAlgorithmExpression(data.getAlgorithmExpression());
         return result;
+    }
+    
+    private StandardShardingStrategyConfiguration createStandardShardingStrategyConfiguration(final YamlStandardShardingStrategyConfiguration yamlConfiguration) {
+        return new StandardShardingStrategyConfiguration(yamlConfiguration.getShardingColumn(),
+                createShardingAlgorithm(StandardShardingAlgorithm.class, yamlConfiguration.getShardingAlgorithm()));
     }
     
     private ComplexShardingStrategyConfiguration createComplexShardingStrategyConfiguration(final YamlComplexShardingStrategyConfiguration yamlConfiguration) {

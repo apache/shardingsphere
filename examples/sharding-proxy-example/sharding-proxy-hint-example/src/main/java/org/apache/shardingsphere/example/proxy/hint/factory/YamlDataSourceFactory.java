@@ -37,4 +37,3 @@ public class YamlDataSourceFactory {
         return dataSource;
     }
 }
-

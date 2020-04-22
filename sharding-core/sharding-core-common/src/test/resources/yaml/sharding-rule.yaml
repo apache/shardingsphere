@@ -79,9 +79,12 @@ shardingRule:
     t_order: 
       actualDataNodes: ds_${0..1}.t_order_${0..1}
       tableStrategy: 
-        inline:
+        standard:
           shardingColumn: order_id
-          algorithmExpression: t_order_${order_id % 2}
+          shardingAlgorithm:
+            type: INLINE
+            props:
+              algorithm.expression: t_order_${order_id % 2}
       keyGenerator:
         type: SNOWFLAKE
         column: order_id
@@ -92,16 +95,19 @@ shardingRule:
       tableStrategy:
         standard:
           shardingColumn: order_id
-          preciseAlgorithmClassName: TestPreciseAlgorithmClassName
-          rangeAlgorithmClassName: TestRangeAlgorithmClassName
+          shardingAlgorithm:
+            type: STANDARD_TEST
   bindingTables:
     - t_order, t_order_item
   broadcastTables:
     - t_config
   defaultDatabaseStrategy: 
-    inline:
+    standard:
       shardingColumn: order_id
-      algorithmExpression: ds_${order_id % 2}
+      shardingAlgorithm:
+        type: INLINE
+        props:
+          algorithm.expression: ds_${order_id % 2}
   defaultTableStrategy: 
     none:
   masterSlaveRules:

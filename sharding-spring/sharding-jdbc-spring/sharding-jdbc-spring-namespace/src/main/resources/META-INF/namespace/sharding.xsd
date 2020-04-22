@@ -94,8 +94,7 @@
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="sharding-column" type="xsd:string" use="required" />
-            <xsd:attribute name="precise-algorithm-ref" type="xsd:string" use="required" />
-            <xsd:attribute name="range-algorithm-ref" type="xsd:string" />
+            <xsd:attribute name="algorithm-ref" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>
     <xsd:element name="complex-strategy">

@@ -1,6 +1,5 @@
 +++
 pre = "<b>4.2.2. </b>"
-toc = true
 title = "配置手册"
 weight = 2
 +++

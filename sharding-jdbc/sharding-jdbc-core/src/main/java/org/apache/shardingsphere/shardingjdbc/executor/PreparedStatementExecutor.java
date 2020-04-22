@@ -17,21 +17,19 @@
 
 package org.apache.shardingsphere.shardingjdbc.executor;
 
-import lombok.Getter;
-import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
-import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutor;
-import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecutorCallback;
-import org.apache.shardingsphere.sharding.execute.sql.execute.result.MemoryQueryResult;
-import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
-import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.executor.SQLExecutor;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.executor.SQLExecutorCallback;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.queryresult.impl.MemoryQueryResult;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.queryresult.impl.StreamQueryResult;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.executor.ExecutorExceptionHandler;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
-import org.apache.shardingsphere.underlying.executor.QueryResult;
-import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.queryresult.QueryResult;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 
 import javax.sql.DataSource;
@@ -40,12 +38,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
 /**
  * Prepared statement executor.
@@ -58,51 +53,20 @@ public final class PreparedStatementExecutor {
     
     private final SQLExecutor sqlExecutor;
     
-    @Getter
-    private final List<Statement> statements;
-    
-    @Getter
-    private final List<ResultSet> resultSets;
-    
-    @Getter
-    private final List<List<Object>> parameterSets;
-    
-    private final Collection<InputGroup<StatementExecuteUnit>> inputGroups;
-    
-    public PreparedStatementExecutor(final Map<String, DataSource> dataSourceMap, final ShardingRuntimeContext runtimeContext, final SQLExecuteTemplate sqlExecuteTemplate) {
+    public PreparedStatementExecutor(final Map<String, DataSource> dataSourceMap, final ShardingRuntimeContext runtimeContext, final SQLExecutor sqlExecutor) {
         this.dataSourceMap = dataSourceMap;
         this.runtimeContext = runtimeContext;
-        sqlExecutor = new SQLExecutor(sqlExecuteTemplate);
-        statements = new LinkedList<>();
-        resultSets = new CopyOnWriteArrayList<>();
-        parameterSets = new LinkedList<>();
-        inputGroups = new LinkedList<>();
-    }
-    
-    /**
-     * Initialize executor.
-     *
-     * @param inputGroups input groups
-     */
-    public void init(final Collection<InputGroup<StatementExecuteUnit>> inputGroups) {
-        this.inputGroups.addAll(inputGroups);
-        cacheStatements();
-    }
-    
-    private void cacheStatements() {
-        for (InputGroup<StatementExecuteUnit> each : inputGroups) {
-            statements.addAll(each.getInputs().stream().map(StatementExecuteUnit::getStatement).collect(Collectors.toList()));
-            parameterSets.addAll(each.getInputs().stream().map(input -> input.getExecutionUnit().getSqlUnit().getParameters()).collect(Collectors.toList()));
-        }
+        this.sqlExecutor = sqlExecutor;
     }
     
     /**
      * Execute query.
      *
+     * @param inputGroups input groups
      * @return result set list
      * @throws SQLException SQL exception
      */
-    public List<QueryResult> executeQuery() throws SQLException {
+    public List<QueryResult> executeQuery(final Collection<InputGroup<StatementExecuteUnit>> inputGroups) throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         SQLExecutorCallback<QueryResult> executeCallback = new SQLExecutorCallback<QueryResult>(runtimeContext.getDatabaseType(), isExceptionThrown) {
             
@@ -117,20 +81,26 @@ public final class PreparedStatementExecutor {
     private QueryResult getQueryResult(final Statement statement, final ConnectionMode connectionMode) throws SQLException {
         PreparedStatement preparedStatement = (PreparedStatement) statement;
         ResultSet resultSet = preparedStatement.executeQuery();
-        resultSets.add(resultSet);
         return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
     }
     
     /**
      * Execute update.
      * 
+     * @param inputGroups input groups
      * @param sqlStatementContext SQL statement context
      * @return effected records count
      * @throws SQLException SQL exception
      */
-    public int executeUpdate(final SQLStatementContext sqlStatementContext) throws SQLException {
+    public int executeUpdate(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLStatementContext sqlStatementContext) throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<Integer> executeCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(runtimeContext.getDatabaseType(), isExceptionThrown);
+        SQLExecutorCallback<Integer> executeCallback = new SQLExecutorCallback<Integer>(runtimeContext.getDatabaseType(), isExceptionThrown) {
+            
+            @Override
+            protected Integer executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+                return ((PreparedStatement) statement).executeUpdate();
+            }
+        };
         List<Integer> results = sqlExecutor.execute(inputGroups, executeCallback);
         refreshTableMetaData(runtimeContext, sqlStatementContext);
         if (!runtimeContext.getRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())) {
@@ -151,13 +121,20 @@ public final class PreparedStatementExecutor {
     /**
      * Execute SQL.
      *
+     * @param inputGroups input groups
      * @param sqlStatementContext SQL statement context
      * @return return true if is DQL, false if is DML
      * @throws SQLException SQL exception
      */
-    public boolean execute(final SQLStatementContext sqlStatementContext) throws SQLException {
-        boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<Boolean> executeCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(runtimeContext.getDatabaseType(), isExceptionThrown);
+    public boolean execute(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLStatementContext sqlStatementContext) throws SQLException {
+        final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
+        SQLExecutorCallback<Boolean> executeCallback = new SQLExecutorCallback<Boolean>(runtimeContext.getDatabaseType(), isExceptionThrown) {
+            
+            @Override
+            protected Boolean executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+                return ((PreparedStatement) statement).execute();
+            }
+        };
         List<Boolean> result = sqlExecutor.execute(inputGroups, executeCallback);
         refreshTableMetaData(runtimeContext, sqlStatementContext);
         if (null == result || result.isEmpty() || null == result.get(0)) {
@@ -176,25 +153,6 @@ public final class PreparedStatementExecutor {
             RuleSchemaMetaDataLoader metaDataLoader = new RuleSchemaMetaDataLoader(runtimeContext.getRule().toRules());
             refreshStrategy.get().refreshMetaData(runtimeContext.getMetaData(), sqlStatementContext,
                 tableName -> metaDataLoader.load(runtimeContext.getDatabaseType(), dataSourceMap, tableName, runtimeContext.getProperties()));
-        }
-    }
-    
-    /**
-     * Clear.
-     *
-     * @throws SQLException SQL exception
-     */
-    public void clear() throws SQLException {
-        closeStatements();
-        statements.clear();
-        resultSets.clear();
-        inputGroups.clear();
-        parameterSets.clear();
-    }
-    
-    private void closeStatements() throws SQLException {
-        for (Statement each : statements) {
-            each.close();
         }
     }
 }

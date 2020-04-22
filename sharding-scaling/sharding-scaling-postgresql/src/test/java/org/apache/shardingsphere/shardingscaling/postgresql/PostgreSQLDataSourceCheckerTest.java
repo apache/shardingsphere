@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingscaling.postgresql;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.shardingscaling.core.exception.DatasourceCheckFailedException;
+import org.apache.shardingsphere.shardingscaling.core.exception.PrepareFailedException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -86,7 +86,7 @@ public class PostgreSQLDataSourceCheckerTest {
         verify(preparedStatement).executeQuery();
     }
 
-    @Test(expected = DatasourceCheckFailedException.class)
+    @Test(expected = PrepareFailedException.class)
     public void assertCheckPrivilegeFailed() throws SQLException {
         when(preparedStatement.executeQuery()).thenThrow(new SQLException());
         PostgreSQLDataSourceChecker dataSourceChecker = new PostgreSQLDataSourceChecker();

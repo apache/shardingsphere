@@ -26,14 +26,12 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.groupby.Gr
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.limit.LimitClauseAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.orderby.OrderByClauseAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.projection.ProjectionAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.where.WhereClauseAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dml.SelectStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.TableReferenceSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -68,10 +66,6 @@ public final class SelectStatementAssert {
     
     private static void assertProjection(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
         ProjectionAssert.assertIs(assertContext, actual.getProjections(), expected.getProjections());
-    }
-    
-    private static void assertTable(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
-        TableAssert.assertIs(assertContext, actual.getSimpleTableSegments(), new LinkedList<>(expected.getTables().getSimpleTables()));
     }
     
     private static void assertWhereClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {

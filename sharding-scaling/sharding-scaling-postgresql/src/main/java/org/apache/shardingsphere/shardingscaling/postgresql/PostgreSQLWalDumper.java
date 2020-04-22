@@ -22,7 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.shardingscaling.core.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.exception.SyncTaskExecuteException;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.AbstractSyncExecutor;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.AbstractShardingScalingExecutor;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.Channel;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPosition;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.LogDumper;
@@ -43,7 +43,7 @@ import java.sql.SQLException;
 /**
  * PostgreSQL WAL dumper.
  */
-public final class PostgreSQLWalDumper extends AbstractSyncExecutor implements LogDumper {
+public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor implements LogDumper {
     
     private final WalPosition walPosition;
     
@@ -68,8 +68,8 @@ public final class PostgreSQLWalDumper extends AbstractSyncExecutor implements L
     }
     
     @Override
-    public void run() {
-        start();
+    public void start() {
+        super.start();
         dump(channel);
     }
     

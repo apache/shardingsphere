@@ -17,7 +17,10 @@
 
 package org.apache.shardingsphere.shardingscaling.core.synctask;
 
+import java.util.Collection;
+
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPosition;
 import org.apache.shardingsphere.shardingscaling.core.synctask.inventory.InventoryDataSyncTask;
 import org.apache.shardingsphere.shardingscaling.core.synctask.inventory.InventoryDataSyncTaskGroup;
 import org.apache.shardingsphere.shardingscaling.core.synctask.incremental.IncrementalDataSyncTask;
@@ -32,10 +35,10 @@ public interface SyncTaskFactory {
      * Create inventory data sync task group.
      *
      * @param syncConfiguration sync configuration
-     * @param dataSourceManager  data source factory
+     * @param inventoryDataSyncTasks  inventory data sync tasks
      * @return inventory data sync task group
      */
-    InventoryDataSyncTaskGroup createInventoryDataSyncTaskGroup(SyncConfiguration syncConfiguration, DataSourceManager dataSourceManager);
+    InventoryDataSyncTaskGroup createInventoryDataSyncTaskGroup(SyncConfiguration syncConfiguration, Collection<SyncTask> inventoryDataSyncTasks);
     
     /**
      * Create inventory data sync task.
@@ -50,8 +53,8 @@ public interface SyncTaskFactory {
      * Create incremental data sync task.
      *
      * @param syncConfiguration sync configuration
-     * @param dataSourceManager  data source factory
+     * @param logPosition  log position of incremental data start
      * @return incremental data sync task
      */
-    IncrementalDataSyncTask createIncrementalDataSyncTask(SyncConfiguration syncConfiguration, DataSourceManager dataSourceManager);
+    IncrementalDataSyncTask createIncrementalDataSyncTask(SyncConfiguration syncConfiguration, LogPosition logPosition);
 }

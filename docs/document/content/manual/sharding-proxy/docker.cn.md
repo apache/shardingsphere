@@ -1,6 +1,5 @@
 +++
 pre = "<b>4.2.3. </b>"
-toc = true
 title = "Docker镜像"
 weight = 3
 +++
@@ -14,7 +13,7 @@ docker pull apache/sharding-proxy
 ## 手动构建Docker镜像（可选）
 
 ``` 
-git clone https://github.com/apache/incubator-shardingsphere
+git clone https://github.com/apache/shardingsphere
 mvn clean install
 cd sharding-sphere/sharding-distribution/sharding-proxy-distribution
 mvn clean package docker:build
@@ -24,7 +23,7 @@ mvn clean package docker:build
 
 在/${your_work_dir}/conf/创建server.yaml和config-xxx.yaml文件，进行服务器和分片规则配置。
 配置规则，请参考[配置手册](/cn/manual/sharding-proxy/configuration/)。
-配置模板，请参考[配置模板](https://github.com/apache/incubator-shardingsphere/tree/master/sharding-proxy/sharding-proxy-bootstrap/src/main/resources/conf)
+配置模板，请参考[配置模板](https://github.com/apache/shardingsphere/tree/master/sharding-proxy/sharding-proxy-bootstrap/src/main/resources/conf)
 
 ## 运行Docker
 

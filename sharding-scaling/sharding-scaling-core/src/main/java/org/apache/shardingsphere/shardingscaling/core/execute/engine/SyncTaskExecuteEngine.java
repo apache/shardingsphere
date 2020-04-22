@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.shardingscaling.core.execute.engine;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncExecutor;
+
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.ShardingScalingExecutor;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncExecutorGroup;
 
 import java.util.Collection;
@@ -39,8 +40,8 @@ public interface SyncTaskExecuteEngine {
     /**
      * Submit sync executor to execute.
      *
-     * @param syncExecutors sync executor list
+     * @param shardingScalingExecutors sync executor list
      * @return listenable future
      */
-    List<ListenableFuture<Object>> submit(Collection<SyncExecutor> syncExecutors);
+    List<ListenableFuture<Object>> submit(Collection<ShardingScalingExecutor> shardingScalingExecutors);
 }

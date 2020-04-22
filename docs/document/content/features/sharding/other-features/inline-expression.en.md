@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "Inline Expression"
 weight = 1
 +++

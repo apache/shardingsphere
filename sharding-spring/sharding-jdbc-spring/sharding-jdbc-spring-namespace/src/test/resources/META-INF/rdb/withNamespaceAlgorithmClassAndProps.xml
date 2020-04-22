@@ -19,18 +19,21 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
+    xmlns:spi="http://shardingsphere.apache.org/schema/shardingsphere/spi"
     xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
+                        http://shardingsphere.apache.org/schema/shardingsphere/spi
+                        http://shardingsphere.apache.org/schema/shardingsphere/spi/spi.xsd
                         ">
     <import resource="datasource/dataSource.xml" />
-    
-    <bean id="preciseModuloDatabaseShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
-    <bean id="preciseModuloTableShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.algorithm.PreciseModuloTableShardingAlgorithm" />
-    
-    <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
-    <sharding:standard-strategy id="tableStrategy" sharding-column="order_id" precise-algorithm-ref="preciseModuloTableShardingAlgorithm" />
+
+    <spi:sharding-algorithm id="standardModuloDatabaseShardingAlgorithm" type="STANDARD_TEST_DB"/>
+    <spi:sharding-algorithm id="standardModuloTableShardingAlgorithm" type="STANDARD_TEST_TBL"/>
+
+    <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="standardModuloDatabaseShardingAlgorithm" />
+    <sharding:standard-strategy id="tableStrategy" sharding-column="order_id" algorithm-ref="standardModuloTableShardingAlgorithm" />
     
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1">

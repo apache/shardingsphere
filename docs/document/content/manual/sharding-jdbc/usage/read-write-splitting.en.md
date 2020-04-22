@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "Read-write Split"
 weight = 2
 

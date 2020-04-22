@@ -23,11 +23,11 @@ import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.controller.task.ReportCallback;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.shardingscaling.core.execute.engine.SyncTaskExecuteCallback;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncExecutorGroup;
+import org.apache.shardingsphere.shardingscaling.core.exception.SyncTaskExecuteException;
+import org.apache.shardingsphere.shardingscaling.core.execute.engine.ExecuteCallback;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.AbstractShardingScalingExecutor;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.DistributionChannel;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManagerFactory;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPosition;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.Dumper;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.DumperFactory;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
@@ -37,13 +37,16 @@ import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTask;
 import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * Incremental data execute task.
  */
 @Slf4j
-public final class IncrementalDataSyncTask implements SyncTask {
+public final class IncrementalDataSyncTask extends AbstractShardingScalingExecutor implements SyncTask {
     
     private final SyncConfiguration syncConfiguration;
     
@@ -51,50 +54,43 @@ public final class IncrementalDataSyncTask implements SyncTask {
     
     private final String syncTaskId;
     
-    private LogPositionManager logPositionManager;
+    private LogPosition logPosition;
     
     private Dumper dumper;
     
     private long delayMillisecond;
     
-    public IncrementalDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
+    public IncrementalDataSyncTask(final SyncConfiguration syncConfiguration, final LogPosition logPosition) {
         this.syncConfiguration = syncConfiguration;
-        this.dataSourceManager = dataSourceManager;
+        this.dataSourceManager = new DataSourceManager();
+        this.logPosition = logPosition;
         DataSourceMetaData dataSourceMetaData = syncConfiguration.getDumperConfiguration().getDataSourceConfiguration().getDataSourceMetaData();
         syncTaskId = String.format("incremental-%s", null != dataSourceMetaData.getCatalog() ? dataSourceMetaData.getCatalog() : dataSourceMetaData.getSchema());
     }
     
     @Override
-    public void prepare() {
-        this.logPositionManager = instanceLogPositionManager();
-        logPositionManager.getCurrentPosition();
-    }
-    
-    private LogPositionManager instanceLogPositionManager() {
-        return LogPositionManagerFactory.newInstanceLogManager(
-                syncConfiguration.getDumperConfiguration().getDataSourceConfiguration().getDatabaseType().getName(),
-                dataSourceManager.getDataSource(syncConfiguration.getDumperConfiguration().getDataSourceConfiguration()));
+    public void start() {
+        syncConfiguration.getDumperConfiguration().setTableNameMap(syncConfiguration.getTableNameMap());
+        dumper = DumperFactory.newInstanceLogDumper(syncConfiguration.getDumperConfiguration(), logPosition);
+        Collection<Importer> importers = instanceImporters();
+        instanceChannel(importers);
+        Future future = ScalingContext.getInstance().getTaskExecuteEngine().submitAll(importers, new ExecuteCallback() {
+        
+            @Override
+            public void onSuccess() {
+            }
+        
+            @Override
+            public void onFailure(final Throwable throwable) {
+                dumper.stop();
+            }
+        });
+        dumper.start();
+        checkResult(future);
     }
     
     @Override
     public void start(final ReportCallback callback) {
-        syncConfiguration.getDumperConfiguration().setTableNameMap(syncConfiguration.getTableNameMap());
-        SyncExecutorGroup syncExecutorGroup = new SyncExecutorGroup(new SyncTaskExecuteCallback(this.getClass().getSimpleName(), syncTaskId, callback));
-        instanceSyncExecutors(syncExecutorGroup);
-        ScalingContext.getInstance().getSyncTaskExecuteEngine().submitGroup(syncExecutorGroup);
-    }
-    
-    private void instanceSyncExecutors(final SyncExecutorGroup syncExecutorGroup) {
-        dumper = DumperFactory.newInstanceLogDumper(syncConfiguration.getDumperConfiguration(), logPositionManager.getCurrentPosition());
-        List<Importer> importers = instanceImporters();
-        DistributionChannel channel = instanceChannel(importers);
-        dumper.setChannel(channel);
-        for (Importer each : importers) {
-            each.setChannel(channel);
-        }
-        syncExecutorGroup.setChannel(channel);
-        syncExecutorGroup.addSyncExecutor(dumper);
-        syncExecutorGroup.addAllSyncExecutor(importers);
     }
     
     private List<Importer> instanceImporters() {
@@ -105,12 +101,25 @@ public final class IncrementalDataSyncTask implements SyncTask {
         return result;
     }
     
-    private DistributionChannel instanceChannel(final List<Importer> importers) {
-        return new DistributionChannel(importers.size(), records -> {
+    private void instanceChannel(final Collection<Importer> importers) {
+        DistributionChannel channel = new DistributionChannel(importers.size(), records -> {
             Record lastHandledRecord = records.get(records.size() - 1);
-            logPositionManager.updateCurrentPosition(lastHandledRecord.getLogPosition());
+            logPosition = lastHandledRecord.getLogPosition();
             delayMillisecond = System.currentTimeMillis() - lastHandledRecord.getCommitTime();
         });
+        dumper.setChannel(channel);
+        for (Importer each : importers) {
+            each.setChannel(channel);
+        }
+    }
+    
+    private void checkResult(final Future future) {
+        try {
+            future.get();
+        } catch (InterruptedException ignored) {
+        } catch (ExecutionException e) {
+            throw new SyncTaskExecuteException(String.format("Task %s execute failed ", syncTaskId), e.getCause());
+        }
     }
     
     @Override
@@ -123,6 +132,6 @@ public final class IncrementalDataSyncTask implements SyncTask {
     
     @Override
     public SyncProgress getProgress() {
-        return new IncrementalDataSyncTaskProgress(syncTaskId, delayMillisecond, logPositionManager.getCurrentPosition());
+        return new IncrementalDataSyncTaskProgress(syncTaskId, delayMillisecond, logPosition);
     }
 }

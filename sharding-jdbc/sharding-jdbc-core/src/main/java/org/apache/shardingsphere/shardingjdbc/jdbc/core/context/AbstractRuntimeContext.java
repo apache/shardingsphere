@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
 import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.log.ConfigurationLogger;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
@@ -64,7 +65,8 @@ public abstract class AbstractRuntimeContext<T extends BaseRule> implements Runt
     
     private final SQLParserEngine sqlParserEngine;
     
-    private final ShardingSphereMetaData metaData;
+    @Setter
+    private ShardingSphereMetaData metaData;
     
     public AbstractRuntimeContext(final Map<String, DataSource> dataSourceMap, final T rule, final Properties props, final DatabaseType databaseType) throws SQLException {
         this.rule = rule;

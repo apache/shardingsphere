@@ -21,11 +21,13 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.TableReferencesAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dml.impl.SelectStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.ExpectedTableReference;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedTableFactor;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.TableFactorSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.TableReferenceSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SubqueryTableSegment;
 
 import java.util.List;
 
@@ -43,8 +45,12 @@ public final class TableFactorAssert {
      * @param expected expected TableFactor
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final TableFactorSegment actual, final ExpectedTableFactor expected) {
-        if (null != actual.getTable() && actual.getTable() instanceof SimpleTableSegment) {
-            TableAssert.assertIs(assertContext, (SimpleTableSegment) actual.getTable(), expected.getTable());
+        if (null != actual.getTable()) {
+            if (actual.getTable() instanceof SimpleTableSegment) {
+                TableAssert.assertIs(assertContext, (SimpleTableSegment) actual.getTable(), expected.getTable());
+            } else if (actual.getTable() instanceof SubqueryTableSegment) {
+                SelectStatementAssert.assertIs(assertContext, ((SubqueryTableSegment) actual.getTable()).getSubquery().getSelect(), expected.getSubqueryTable().getSubquery().getSelectTestCases());
+            }
         }
         TableReferencesAssert.assertIs(assertContext, (List<TableReferenceSegment>) actual.getTableReferences(), (List<ExpectedTableReference>) expected.getExpectedTableReferences());
     }

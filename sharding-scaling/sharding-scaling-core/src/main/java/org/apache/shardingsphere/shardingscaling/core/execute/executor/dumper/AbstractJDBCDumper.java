@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingscaling.core.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.exception.SyncTaskExecuteException;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.AbstractSyncExecutor;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.AbstractShardingScalingExecutor;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.Channel;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.NopLogPosition;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Column;
@@ -45,7 +45,7 @@ import java.sql.SQLException;
  * Abstract JDBC dumper implement.
  */
 @Slf4j
-public abstract class AbstractJDBCDumper extends AbstractSyncExecutor implements JDBCDumper {
+public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor implements JDBCDumper {
     
     @Getter(AccessLevel.PROTECTED)
     private final RdbmsConfiguration rdbmsConfiguration;
@@ -72,8 +72,8 @@ public abstract class AbstractJDBCDumper extends AbstractSyncExecutor implements
     }
     
     @Override
-    public final void run() {
-        start();
+    public final void start() {
+        super.start();
         dump(channel);
     }
     
@@ -94,6 +94,8 @@ public abstract class AbstractJDBCDumper extends AbstractSyncExecutor implements
                 pushRecord(record);
             }
         } catch (SQLException e) {
+            stop();
+            channel.close();
             throw new SyncTaskExecuteException(e);
         } finally {
             pushRecord(new FinishedRecord(new NopLogPosition()));

@@ -41,7 +41,7 @@ public final class MySQLDataSourceMetaData implements DataSourceMetaData {
     
     private final String schema;
     
-    private final Pattern pattern = Pattern.compile("jdbc:(mysql|mysqlx)(:loadbalance|:replication)?:(\\w*:)?//([\\w\\-\\.]+):?([0-9]*)/([\\w\\-]+);?\\S*", Pattern.CASE_INSENSITIVE);
+    private final Pattern pattern = Pattern.compile("jdbc:(mysql|mysqlx)(:loadbalance|:replication)?:(\\w*:)?//([\\w\\-\\.]+):?([0-9]*),?.*?/([\\w\\-]+);?\\S*", Pattern.CASE_INSENSITIVE);
     
     public MySQLDataSourceMetaData(final String url) {
         Matcher matcher = pattern.matcher(url);

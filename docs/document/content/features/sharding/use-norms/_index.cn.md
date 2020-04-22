@@ -1,6 +1,5 @@
 +++
 pre = "<b>3.1.3. </b>"
-toc = true
 title = "使用规范"
 weight = 3
 +++

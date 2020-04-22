@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "Merger Engine"
 weight = 5
 

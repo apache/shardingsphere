@@ -98,13 +98,8 @@ public final class SQLParserParameterizedTest {
         sqlCases.add("show_index_with_indexes_with_table_and_database");
         sqlCases.add("show_index_with_database_back_quotes");
         sqlCases.add("show_index_with_table_back_quotes");
-        // TODO Stop index is wrong
-        sqlCases.add("select_with_expression");
         // TODO Sub query is necessary
         sqlCases.add("select_pagination_with_row_number");
-        sqlCases.add("select_pagination_with_row_number_and_diff_group_by_and_order_by");
-        sqlCases.add("select_pagination_with_row_number_and_diff_group_by_and_order_by");
-        sqlCases.add("select_pagination_with_row_number_and_group_by_and_order_by");
         sqlCases.add("select_pagination_with_row_number_for_greater_than");
         sqlCases.add("select_pagination_with_row_number_for_greater_than_and_equal");
         sqlCases.add("select_pagination_with_offset_fetch");
@@ -115,6 +110,8 @@ public final class SQLParserParameterizedTest {
         sqlCases.add("select_pagination_with_top_and_group_by_and_order_by_and_parentheses");
         sqlCases.add("select_pagination_with_top_and_diff_group_by_and_order_by");
         sqlCases.add("select_pagination_with_top_and_diff_group_by_and_order_by_and_parentheses");
+        // TODO Stop index is wrong
+        sqlCases.add("select_with_expression");
         // TODO Alter statement needs new segment
         sqlCases.add("alter_table_add_foreign_key");
         sqlCases.add("alter_table_add_primary_foreign_key");

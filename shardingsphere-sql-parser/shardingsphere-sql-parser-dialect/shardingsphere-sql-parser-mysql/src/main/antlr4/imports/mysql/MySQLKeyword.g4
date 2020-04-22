@@ -915,7 +915,19 @@ VERSION_TOKEN_ADMIN
 CURRENT_TIMESTAMP
     : C U R R E N T UL_ T I M E S T A M P
     ;
-
+    
+CURRENT_DATE
+    : C U R R E N T UL_ D A T E
+    ;
+    
+CURRENT_TIME
+    : C U R R E N T UL_ T I M E
+    ;
+    
+LAST_DAY
+    : L A S T UL_ D A Y
+    ;    
+      
 YEAR_MONTH
     : D A Y UL_ M O N T H
     ;

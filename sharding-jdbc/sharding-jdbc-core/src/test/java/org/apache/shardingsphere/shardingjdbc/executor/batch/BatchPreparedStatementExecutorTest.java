@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.shardingjdbc.executor.batch;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.executor.SQLExecutor;
 import org.apache.shardingsphere.shardingjdbc.executor.AbstractBaseExecutorTest;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.executor.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
@@ -60,7 +60,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     @Override
     public void setUp() throws SQLException {
         super.setUp();
-        actual = spy(new BatchPreparedStatementExecutor(getConnection().getRuntimeContext(), new SQLExecuteTemplate(getExecutorKernel(), false)));
+        actual = spy(new BatchPreparedStatementExecutor(getConnection().getRuntimeContext(), new SQLExecutor(getExecutorKernel(), false)));
         when(sqlStatementContext.getTablesContext()).thenReturn(mock(TablesContext.class));
     }
     
@@ -131,23 +131,23 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         Collection<InputGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
         List<StatementExecuteUnit> preparedStatementExecuteUnits = new LinkedList<>();
         executeGroups.add(new InputGroup<>(preparedStatementExecuteUnits));
-        Collection<BatchRouteUnit> routeUnits = new LinkedList<>();
+        Collection<BatchExecutionUnit> routeUnits = new LinkedList<>();
         for (PreparedStatement each : preparedStatements) {
-            BatchRouteUnit batchRouteUnit = new BatchRouteUnit(new ExecutionUnit("ds_0", new SQLUnit(SQL, Collections.singletonList(1))));
-            batchRouteUnit.mapAddBatchCount(0);
-            batchRouteUnit.mapAddBatchCount(1);
-            routeUnits.add(batchRouteUnit);
+            BatchExecutionUnit batchExecutionUnit = new BatchExecutionUnit(new ExecutionUnit("ds_0", new SQLUnit(SQL, Collections.singletonList(1))));
+            batchExecutionUnit.mapAddBatchCount(0);
+            batchExecutionUnit.mapAddBatchCount(1);
+            routeUnits.add(batchExecutionUnit);
             preparedStatementExecuteUnits.add(new StatementExecuteUnit(new ExecutionUnit("ds_0", new SQLUnit(SQL, Collections.singletonList(1))), each, ConnectionMode.MEMORY_STRICTLY));
         }
         setFields(executeGroups, routeUnits);
     }
     
     @SneakyThrows
-    private void setFields(final Collection<InputGroup<StatementExecuteUnit>> executeGroups, final Collection<BatchRouteUnit> routeUnits) {
+    private void setFields(final Collection<InputGroup<StatementExecuteUnit>> executeGroups, final Collection<BatchExecutionUnit> routeUnits) {
         Field field = BatchPreparedStatementExecutor.class.getDeclaredField("inputGroups");
         field.setAccessible(true);
         field.set(actual, executeGroups);
-        field = BatchPreparedStatementExecutor.class.getDeclaredField("routeUnits");
+        field = BatchPreparedStatementExecutor.class.getDeclaredField("batchExecutionUnits");
         field.setAccessible(true);
         field.set(actual, routeUnits);
         field = BatchPreparedStatementExecutor.class.getDeclaredField("batchCount");
