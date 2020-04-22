@@ -82,19 +82,6 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
      * 
      */
     QUERY_WITH_CIPHER_COLUMN("query.with.cipher.column", String.valueOf(Boolean.TRUE), boolean.class),
-
-    /**
-     * Allow or not execute range query with inline sharding strategy.
-     *
-     * <p>
-     * For inline sharding strategy, user only can config precise algorithm via inline expression, and cannot config range algorithm.
-     * So throw exception when SQL contains range conditions(such as BETWEEN AND, &lt;, &gt;, &lt;=, &gt;=) may better than query all data nodes.
-     * If query all data nodes instead of explicit exception, user may missing the potential performance issue.
-     * When turn this parameter on, query all data nodes with inline sharding to be allowed instead of explicit exception.
-     * Default: false
-     * </p>
-     */
-    ALLOW_RANGE_QUERY_WITH_INLINE_SHARDING("allow.range.query.with.inline.sharding", String.valueOf(Boolean.FALSE), boolean.class),
     
     /**
      * Sharding-Proxy's flush threshold for every records from databases.
