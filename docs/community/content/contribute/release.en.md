@@ -548,7 +548,7 @@ Click `Edit` in [GitHub Releases](https://github.com/apache/shardingsphere/relea
 
 Edit version number and release notes, click `Publish release`
 
-### Send e-mail to `dev@shardingsphere.apache.org` to announce the release is finished
+### Send e-mail to `dev@shardingsphere.apache.org` and `announce@apache.org` to announce the release is finished
 
 Announcement e-mail template:
 

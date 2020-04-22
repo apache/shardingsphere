@@ -540,7 +540,7 @@ docker push apache/sharding-proxy:${RELEASE_VERSION}
 
 编辑版本号及版本说明，并点击`Publish release`
 
-### 发送邮件到`dev@shardingsphere.apache.org`通知完成版本发布
+### 发送邮件到`dev@shardingsphere.apache.org`和`announce@apache.org`通知完成版本发布
 
 通知邮件模板：
 
