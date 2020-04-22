@@ -497,7 +497,7 @@
     </dependencies>
     
     <build>
-        <finalName>apache-shardingsphere-incubating-${project.version}</finalName>
+        <finalName>apache-shardingsphere-${project.version}</finalName>
         <extensions>
             <extension>
                 <groupId>kr.motd.maven</groupId>
@@ -925,18 +925,18 @@
     </licenses>
     
     <scm>
-        <connection>scm:git:https://github.com/apache/incubator-shardingsphere.git</connection>
-        <developerConnection>scm:git:https://github.com/apache/incubator-shardingsphere.git</developerConnection>
-        <url>https://github.com/apache/incubator-shardingsphere.git</url>
+        <connection>scm:git:https://github.com/apache/shardingsphere.git</connection>
+        <developerConnection>scm:git:https://github.com/apache/shardingsphere.git</developerConnection>
+        <url>https://github.com/apache/shardingsphere.git</url>
       <tag>HEAD</tag>
     </scm>
     
     <mailingLists>
         <mailingList>
             <name>ShardingSphere Developer List</name>
-            <post>dev@shardingsphere.incubator.apache.org</post>
-            <subscribe>dev-subscribe@shardingsphere.incubator.apache.org</subscribe>
-            <unsubscribe>dev-unsubscribe@shardingsphere.incubator.apache.org</unsubscribe>
+            <post>dev@shardingsphere.apache.org</post>
+            <subscribe>dev-subscribe@shardingsphere.apache.org</subscribe>
+            <unsubscribe>dev-unsubscribe@shardingsphere.apache.org</unsubscribe>
         </mailingList>
     </mailingLists>
 </project>
