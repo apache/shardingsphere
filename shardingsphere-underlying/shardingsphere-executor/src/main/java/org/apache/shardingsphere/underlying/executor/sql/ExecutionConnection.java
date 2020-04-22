@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.executor.sql.jdbc.connection;
+package org.apache.shardingsphere.underlying.executor.sql;
 
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.group.StatementOption;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 
 /**
  * Execution connection.
+ * 
+ * @param <C> type of resource connection
+ * @param <R> type of storage resource
+ * @param <O> type of storage resource option
  */
-public interface ExecutionConnection {
+public interface ExecutionConnection<C, R, O> {
     
     /**
      * Get connections.
@@ -39,29 +38,29 @@ public interface ExecutionConnection {
      * @return connections
      * @throws SQLException SQL exception
      */
-    List<Connection> getConnections(String dataSourceName, int connectionSize, ConnectionMode connectionMode) throws SQLException;
+    List<C> getConnections(String dataSourceName, int connectionSize, ConnectionMode connectionMode) throws SQLException;
     
     /**
-     * Create statement.
+     * Create storage resource.
      *
      * @param connection connection
      * @param connectionMode connection mode
-     * @param statementOption statement option
-     * @return SQL Statement
+     * @param option storage resource option
+     * @return storage resource
      * @throws SQLException SQL exception
      */
-    Statement createStatement(Connection connection, ConnectionMode connectionMode, StatementOption statementOption) throws SQLException;
+    R createStorageResource(C connection, ConnectionMode connectionMode, O option) throws SQLException;
     
     /**
-     * Create prepared statement.
+     * Create storage resource.
      *
      * @param sql SQL
      * @param parameters SQL parameters
      * @param connection connection
      * @param connectionMode connection mode
-     * @param statementOption statement option
-     * @return SQL prepared statement
+     * @param option storage resource option
+     * @return storage resource
      * @throws SQLException SQL exception
      */
-    PreparedStatement createPreparedStatement(String sql, List<Object> parameters, Connection connection, ConnectionMode connectionMode, StatementOption statementOption) throws SQLException;
+    R createStorageResource(String sql, List<Object> parameters, C connection, ConnectionMode connectionMode, O option) throws SQLException;
 }

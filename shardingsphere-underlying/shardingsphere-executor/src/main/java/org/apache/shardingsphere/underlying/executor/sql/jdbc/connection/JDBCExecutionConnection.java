@@ -17,10 +17,14 @@
 
 package org.apache.shardingsphere.underlying.executor.sql.jdbc.connection;
 
+import org.apache.shardingsphere.underlying.executor.sql.ExecutionConnection;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.group.StatementOption;
+
+import java.sql.Connection;
+import java.sql.Statement;
+
 /**
- * Connection Mode.
+ * Execution connection for JDBC.
  */
-public enum ConnectionMode {
-    
-    MEMORY_STRICTLY, CONNECTION_STRICTLY
+public interface JDBCExecutionConnection extends ExecutionConnection<Connection, Statement, StatementOption> {
 }

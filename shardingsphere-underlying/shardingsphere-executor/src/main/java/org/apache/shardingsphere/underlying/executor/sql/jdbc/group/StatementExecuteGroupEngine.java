@@ -19,9 +19,9 @@ package org.apache.shardingsphere.underlying.executor.sql.jdbc.group;
 
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.group.ExecuteGroupEngine;
+import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.sql.jdbc.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ConnectionMode;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ExecutionConnection;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.JDBCExecutionConnection;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -30,20 +30,20 @@ import java.sql.Statement;
 /**
  * Execute group engine for statement.
  */
-public final class StatementExecuteGroupEngine extends ExecuteGroupEngine<StatementExecuteUnit, StatementOption> {
+public final class StatementExecuteGroupEngine extends ExecuteGroupEngine<StatementExecuteUnit, JDBCExecutionConnection, Connection, StatementOption> {
     
     public StatementExecuteGroupEngine(final int maxConnectionsSizePerQuery) {
         super(maxConnectionsSizePerQuery);
     }
     
     @Override
-    protected StatementExecuteUnit createStorageResourceExecuteUnit(final ExecutionUnit executionUnit, final ExecutionConnection executionConnection, final Connection connection, 
-                                                                    final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
-        return new StatementExecuteUnit(executionUnit, createStatement(executionConnection, connection, connectionMode, statementOption), connectionMode);
+    protected StatementExecuteUnit createStorageResourceExecuteUnit(final ExecutionUnit executionUnit, final JDBCExecutionConnection executionConnection, final Connection connection, 
+                                                                    final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
+        return new StatementExecuteUnit(executionUnit, createStatement(executionConnection, connection, connectionMode, option), connectionMode);
     }
     
-    private Statement createStatement(final ExecutionConnection executionConnection, final Connection connection, 
-                                      final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
-        return executionConnection.createStatement(connection, connectionMode, statementOption);
+    private Statement createStatement(final JDBCExecutionConnection executionConnection, final Connection connection,
+                                      final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
+        return executionConnection.createStorageResource(connection, connectionMode, option);
     }
 }

@@ -17,33 +17,10 @@
 
 package org.apache.shardingsphere.underlying.executor.sql;
 
-import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
-
 /**
- * Storage resource execute unit.
- * 
- * @param <T> type of storage resource
+ * Connection Mode.
  */
-public interface StorageResourceExecuteUnit<T> {
+public enum ConnectionMode {
     
-    /**
-     * Get execution unit.
-     * 
-     * @return execution unit
-     */
-    ExecutionUnit getExecutionUnit();
-    
-    /**
-     * Get storage resource.
-     * 
-     * @return storage resource
-     */
-    T getStorageResource();
-    
-    /**
-     * Get connection mode.
-     * 
-     * @return connection mode
-     */
-    ConnectionMode getConnectionMode();
+    MEMORY_STRICTLY, CONNECTION_STRICTLY
 }

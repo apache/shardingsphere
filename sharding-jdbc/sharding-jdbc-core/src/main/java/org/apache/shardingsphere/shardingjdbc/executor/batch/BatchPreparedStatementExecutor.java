@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 import org.apache.shardingsphere.underlying.executor.sql.jdbc.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.sql.jdbc.executor.ExecutorExceptionHandler;
 import org.apache.shardingsphere.underlying.executor.sql.jdbc.executor.SQLExecutor;
 import org.apache.shardingsphere.underlying.executor.sql.jdbc.executor.SQLExecutorCallback;
@@ -196,12 +196,7 @@ public final class BatchPreparedStatementExecutor {
     }
     
     private Optional<StatementExecuteUnit> findStatementExecuteUnit(final Statement statement, final InputGroup<StatementExecuteUnit> executeGroup) {
-        for (StatementExecuteUnit each : executeGroup.getInputs()) {
-            if (each.getStorageResource().equals(statement)) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.empty();
+        return executeGroup.getInputs().stream().filter(each -> each.getStorageResource().equals(statement)).findFirst();
     }
     
     private List<List<Object>> getParameterSets(final StatementExecuteUnit executeUnit) {

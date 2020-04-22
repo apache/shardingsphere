@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.executor.sql.jdbc.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.hook.SPISQLExecutionHook;
 import org.apache.shardingsphere.underlying.executor.hook.SQLExecutionHook;

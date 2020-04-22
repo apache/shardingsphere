@@ -19,9 +19,9 @@ package org.apache.shardingsphere.underlying.executor.sql.jdbc.group;
 
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.group.ExecuteGroupEngine;
+import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.sql.jdbc.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ConnectionMode;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ExecutionConnection;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.JDBCExecutionConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -31,22 +31,22 @@ import java.util.List;
 /**
  * Execute group engine for prepared statement.
  */
-public final class PreparedStatementExecuteGroupEngine extends ExecuteGroupEngine<StatementExecuteUnit, StatementOption> {
+public final class PreparedStatementExecuteGroupEngine extends ExecuteGroupEngine<StatementExecuteUnit, JDBCExecutionConnection, Connection, StatementOption> {
     
     public PreparedStatementExecuteGroupEngine(final int maxConnectionsSizePerQuery) {
         super(maxConnectionsSizePerQuery);
     }
     
     @Override
-    protected StatementExecuteUnit createStorageResourceExecuteUnit(final ExecutionUnit executionUnit, final ExecutionConnection executionConnection, final Connection connection, 
-                                                                    final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
+    protected StatementExecuteUnit createStorageResourceExecuteUnit(final ExecutionUnit executionUnit, final JDBCExecutionConnection executionConnection, final Connection connection, 
+                                                                    final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
         PreparedStatement preparedStatement = createPreparedStatement(
-                executionUnit.getSqlUnit().getSql(), executionUnit.getSqlUnit().getParameters(), executionConnection, connection, connectionMode, statementOption);
+                executionUnit.getSqlUnit().getSql(), executionUnit.getSqlUnit().getParameters(), executionConnection, connection, connectionMode, option);
         return new StatementExecuteUnit(executionUnit, preparedStatement, connectionMode);
     }
     
-    private PreparedStatement createPreparedStatement(final String sql, final List<Object> parameters, final ExecutionConnection executionConnection, final Connection connection,
-                                                final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
-        return executionConnection.createPreparedStatement(sql, parameters, connection, connectionMode, statementOption);
+    private PreparedStatement createPreparedStatement(final String sql, final List<Object> parameters, final JDBCExecutionConnection executionConnection, final Connection connection,
+                                                      final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
+        return (PreparedStatement) executionConnection.createStorageResource(sql, parameters, connection, connectionMode, statementOption);
     }
 }
