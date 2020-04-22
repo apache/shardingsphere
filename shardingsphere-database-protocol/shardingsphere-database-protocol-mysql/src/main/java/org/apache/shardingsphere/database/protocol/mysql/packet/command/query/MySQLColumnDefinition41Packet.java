@@ -71,7 +71,7 @@ public final class MySQLColumnDefinition41Packet implements MySQLPacket {
     /**
      * Field description of column definition Packet.
      *
-     * @see <a href="https://github.com/apache/incubator-shardingsphere/issues/4358"></a>
+     * @see <a href="https://github.com/apache/shardingsphere/issues/4358"></a>
      */
     public MySQLColumnDefinition41Packet(final int sequenceId, final String schema, final String table, final String orgTable,
                                          final String name, final String orgName, final int columnLength, final MySQLColumnType columnType, final int decimals) {
