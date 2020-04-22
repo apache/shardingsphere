@@ -18,9 +18,11 @@
 package org.apache.shardingsphere.core.strategy.route.inline;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.core.strategy.route.standard.StandardShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
+import org.apache.shardingsphere.core.strategy.sharding.InlineShardingAlgorithm;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,14 +34,16 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class InlineShardingStrategyTest {
+public final class InlineShardingAlgorithmTest {
     
-    private InlineShardingStrategy shardingStrategy;
+    private StandardShardingStrategy shardingStrategy;
     
     @Before
     public void setUp() {
-        InlineShardingStrategyConfiguration shardingStrategyConfig = new InlineShardingStrategyConfiguration("order_id", "t_order_${order_id % 4}");
-        shardingStrategy = new InlineShardingStrategy(shardingStrategyConfig);
+        InlineShardingAlgorithm shardingAlgorithm = new InlineShardingAlgorithm();
+        shardingAlgorithm.getProperties().setProperty("algorithm.expression", "t_order_${order_id % 4}");
+        StandardShardingStrategyConfiguration shardingStrategyConfig = new StandardShardingStrategyConfiguration("order_id", shardingAlgorithm);
+        shardingStrategy = new StandardShardingStrategy(shardingStrategyConfig);
     }
     
     @Test
