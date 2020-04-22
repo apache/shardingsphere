@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect;
 
-import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -31,15 +29,5 @@ public final class PostgreSQLXADataSourceDefinitionTest {
     @Test
     public void assertGetXADriverClassName() {
         assertThat(new PostgreSQLXADataSourceDefinition().getXADriverClassName(), is(Collections.singletonList("org.postgresql.xa.PGXADataSource")));
-    }
-    
-    @Test
-    public void assertGetXAProperties() {
-        Properties actual = new PostgreSQLXADataSourceDefinition().getXAProperties(new DatabaseAccessConfiguration("jdbc:postgresql://db.psql:5432/test_db", "root", "root"));
-        assertThat(actual.getProperty("user"), is("root"));
-        assertThat(actual.getProperty("password"), is("root"));
-        assertThat(actual.getProperty("serverName"), is("db.psql"));
-        assertThat(actual.getProperty("portNumber"), is("5432"));
-        assertThat(actual.getProperty("databaseName"), is("test_db"));
     }
 }

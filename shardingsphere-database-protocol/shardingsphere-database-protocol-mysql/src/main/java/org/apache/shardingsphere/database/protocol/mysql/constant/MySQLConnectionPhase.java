@@ -17,25 +17,12 @@
 
 package org.apache.shardingsphere.database.protocol.mysql.constant;
 
-import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class MySQLCapabilityFlagTest {
+/**
+ * MySQL connection phase.
+ *
+ * @see <a href="https://dev.mysql.com/doc/internals/en/connection-phase.html">Connection Phase</a>
+ */
+public enum MySQLConnectionPhase {
     
-    @Test
-    public void assertGetValue() {
-        assertThat(MySQLCapabilityFlag.CLIENT_LONG_PASSWORD.getValue(), is(0x00000001));
-    }
-    
-    @Test
-    public void assertCalculateHandshakeCapabilityFlagsLower() {
-        assertThat(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower(), is(46927));
-    }
-    
-    @Test
-    public void assertCalculateHandshakeCapabilityFlagsUpper() {
-        assertThat(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper(), is(0x0008));
-    }
+    INITIAL_HANDSHAKE, AUTH_PHASE_FAST_PATH, AUTHENTICATION_METHOD_MISMATCH
 }

@@ -15,27 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.mysql.constant;
+package org.apache.shardingsphere.database.protocol.mysql.packet.handshake;
 
-import org.junit.Test;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class MySQLCapabilityFlagTest {
+/**
+ * MySQL auth switch request packet.
+ *
+ * @see <a href="https://dev.mysql.com/doc/internals/en/connection-phase-packets.html#packet-Protocol::AuthSwitchResponse">AuthSwitchResponse</a>
+ */
+@RequiredArgsConstructor
+@Getter
+public final class MySQLAuthSwitchResponsePacket {
     
-    @Test
-    public void assertGetValue() {
-        assertThat(MySQLCapabilityFlag.CLIENT_LONG_PASSWORD.getValue(), is(0x00000001));
-    }
+    @Getter
+    private final int sequenceId;
     
-    @Test
-    public void assertCalculateHandshakeCapabilityFlagsLower() {
-        assertThat(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower(), is(46927));
-    }
+    private final byte[] authPluginResponse;
     
-    @Test
-    public void assertCalculateHandshakeCapabilityFlagsUpper() {
-        assertThat(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper(), is(0x0008));
+    public MySQLAuthSwitchResponsePacket(final MySQLPacketPayload payload) {
+        sequenceId = payload.readInt1();
+        authPluginResponse = payload.readStringEOFByBytes();
     }
 }
