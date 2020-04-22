@@ -196,12 +196,7 @@ public final class BatchPreparedStatementExecutor {
     }
     
     private Optional<StatementExecuteUnit> findStatementExecuteUnit(final Statement statement, final InputGroup<StatementExecuteUnit> executeGroup) {
-        for (StatementExecuteUnit each : executeGroup.getInputs()) {
-            if (each.getStorageResource().equals(statement)) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.empty();
+        return executeGroup.getInputs().stream().filter(each -> each.getStorageResource().equals(statement)).findFirst();
     }
     
     private List<List<Object>> getParameterSets(final StatementExecuteUnit executeUnit) {
