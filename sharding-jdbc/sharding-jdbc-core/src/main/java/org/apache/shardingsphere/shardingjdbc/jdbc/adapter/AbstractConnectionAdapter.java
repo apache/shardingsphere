@@ -29,7 +29,7 @@ import org.apache.shardingsphere.underlying.common.hook.RootInvokeHook;
 import org.apache.shardingsphere.underlying.common.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ExecutionConnection;
 import org.apache.shardingsphere.underlying.executor.sql.jdbc.group.StatementOption;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

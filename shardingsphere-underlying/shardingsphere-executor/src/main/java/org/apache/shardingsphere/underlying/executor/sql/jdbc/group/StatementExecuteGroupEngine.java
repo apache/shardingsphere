@@ -20,7 +20,7 @@ package org.apache.shardingsphere.underlying.executor.sql.jdbc.group;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.group.ExecuteGroupEngine;
 import org.apache.shardingsphere.underlying.executor.sql.jdbc.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ExecutionConnection;
 
 import java.sql.Connection;

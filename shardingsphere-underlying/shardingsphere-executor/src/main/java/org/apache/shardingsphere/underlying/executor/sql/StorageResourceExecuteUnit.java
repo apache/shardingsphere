@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.underlying.executor.sql;
 
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ConnectionMode;
 
 /**
  * Storage resource execute unit.

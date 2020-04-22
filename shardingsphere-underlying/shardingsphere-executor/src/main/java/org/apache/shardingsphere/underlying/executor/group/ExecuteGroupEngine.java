@@ -24,7 +24,7 @@ import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 import org.apache.shardingsphere.underlying.executor.sql.StorageResourceExecuteUnit;
 import org.apache.shardingsphere.underlying.executor.sql.StorageResourceOption;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ExecutionConnection;
 
 import java.sql.Connection;
