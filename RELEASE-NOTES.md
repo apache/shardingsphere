@@ -17,7 +17,7 @@
 
 ### Refactor
 
-1. Migrate LeafKeyGenerator and remove distributedLock
+1. Remove leaf key generator
 
 ### Bug Fixes
 
