@@ -79,7 +79,7 @@ public abstract class LogicSchema {
             ruleSchemaMetaData = loadRuleSchemaMetaData(databaseType, rules);
             ShardingOrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(name, ruleSchemaMetaData);
         } else {
-             ruleSchemaMetaData = ShardingOrchestrationFacade.getInstance().getMetaDataCenter().loadRuleSchemaMetaData(name).orElse(loadRuleSchemaMetaData(databaseType, rules));
+            ruleSchemaMetaData = ShardingOrchestrationFacade.getInstance().getMetaDataCenter().loadRuleSchemaMetaData(name).orElse(loadRuleSchemaMetaData(databaseType, rules));
         }
         return new ShardingSphereMetaData(dataSourceMetas, ruleSchemaMetaData);
     }
