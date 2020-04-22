@@ -15,23 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.queryresult.QueryResult;
-import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
-
-import java.util.List;
+package org.apache.shardingsphere.underlying.executor.sql.jdbc.connection;
 
 /**
- * Execute query response.
+ * Connection Mode.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ExecuteQueryResponse implements ExecuteResponse {
+public enum ConnectionMode {
     
-    private final List<QueryHeader> queryHeaders;
-    
-    private final QueryResult queryResult;
+    MEMORY_STRICTLY, CONNECTION_STRICTLY
 }

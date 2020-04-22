@@ -17,23 +17,8 @@
 
 package org.apache.shardingsphere.underlying.executor.sql;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.executor.sql.connection.ConnectionMode;
-import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
-
-import java.sql.Statement;
-
 /**
- * Execute unit with resource.
+ * Storage resource option.
  */
-@RequiredArgsConstructor
-@Getter
-public final class StatementExecuteUnit {
-    
-    private final ExecutionUnit executionUnit;
-    
-    private final Statement statement;
-    
-    private final ConnectionMode connectionMode;
+public interface StorageResourceOption {
 }

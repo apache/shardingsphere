@@ -15,12 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.executor.sql.connection;
+package org.apache.shardingsphere.underlying.executor.sql;
+
+import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ConnectionMode;
 
 /**
- * Connection Mode.
+ * Storage resource execute unit.
+ * 
+ * @param <T> type of storage resource
  */
-public enum ConnectionMode {
+public interface StorageResourceExecuteUnit<T> {
     
-    MEMORY_STRICTLY, CONNECTION_STRICTLY
+    /**
+     * Get execution unit.
+     * 
+     * @return execution unit
+     */
+    ExecutionUnit getExecutionUnit();
+    
+    /**
+     * Get storage resource.
+     * 
+     * @return storage resource
+     */
+    T getStorageResource();
+    
+    /**
+     * Get connection mode.
+     * 
+     * @return connection mode
+     */
+    ConnectionMode getConnectionMode();
 }

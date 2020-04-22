@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.executor.sql.connection;
+package org.apache.shardingsphere.underlying.executor.sql.jdbc.connection;
+
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.group.StatementOption;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
