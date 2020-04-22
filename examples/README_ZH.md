@@ -1,29 +1,29 @@
 # ShardingSphere示例
 
-1.x的示例，请参阅 `https://github.com/apache/incubator-shardingsphere/tree/${tag}/sharding-jdbc-example`
+1.x的示例，请参阅 `https://github.com/apache/shardingsphere/tree/${tag}/sharding-jdbc-example`
 
-2.x或3.x或4.x的示例，请参见 `https://github.com/apache/incubator-shardingsphere-example/tree/${tag}`
+2.x或3.x或4.x的示例，请参见 `https://github.com/apache/shardingsphere-example/tree/${tag}`
 
 **需要注意**
 
 - *请不要使用`dev`分支来运行您的示例，`dev`分支的示例尚未发布。*
 
-- *手动模式初始脚本位于 `https://github.com/apache/incubator-shardingsphere-example/blob/dev/src/resources/manual_schema.sql`，请在首次运行示例之前执行它。*
+- *手动模式初始脚本位于 `https://github.com/apache/shardingsphere-example/blob/dev/src/resources/manual_schema.sql`，请在首次运行示例之前执行它。*
 
 - *请确保MySQL上的主从数据同步正确运行。否则，此示例查询从库数据将是空。*
 
 ## 如果要使用`dev`分支，请在开始该example之前
 
-请确保已安装了来自[shardingsphere](https://github.com/apache/incubator-shardingsphere) 和 [shardingsphere-spi-impl](https://github.com/OpenSharding/shardingsphere-spi-impl)的某些依赖项，因为某些示例依赖于此。如果您是shardingsphere的新手，您可以准备如下依赖：
+请确保已安装了来自[shardingsphere](https://github.com/apache/shardingsphere) 和 [shardingsphere-spi-impl](https://github.com/OpenSharding/shardingsphere-spi-impl)的某些依赖项，因为某些示例依赖于此。如果您是shardingsphere的新手，您可以准备如下依赖：
 
-1.下载并安装[shardingsphere](https://github.com/apache/incubator-shardingsphere)：
+1.下载并安装[shardingsphere](https://github.com/apache/shardingsphere)：
 
 ```bash
 ## 下载shardingsphere代码
-git clone https://github.com/apache/incubator-shardingsphere.git
+git clone https://github.com/apache/shardingsphere.git
 
 ## 检出一个指定版本，比如是 4.0.0-RC1
-cd incubator-shardingsphere && git checkout 4.0.0-RC1
+cd shardingsphere && git checkout 4.0.0-RC1
 
 ## 安装依赖
 mvn clean install -Prelease

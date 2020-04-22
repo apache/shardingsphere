@@ -1,30 +1,30 @@
 # ShardingSphere-example
 
-Example for 1.x please see tags in `https://github.com/apache/incubator-shardingsphere/tree/${tag}/sharding-jdbc-example`
+Example for 1.x please see tags in `https://github.com/apache/shardingsphere/tree/${tag}/sharding-jdbc-example`
 
-Example for 2.x or 3.x or 4.x please see tags in `https://github.com/apache/incubator-shardingsphere-example/tree/${tag}`
+Example for 2.x or 3.x or 4.x please see tags in `https://github.com/apache/shardingsphere-example/tree/${tag}`
 
 **Need attention**
 
 - *Please do not use `dev` branch to run your example, example of `dev` branch is not released yet.*
 
-- *The manual schema initial script is in `https://github.com/apache/incubator-shardingsphere-example/blob/dev/src/resources/manual_schema.sql`, please execute it before you first run the example.*
+- *The manual schema initial script is in `https://github.com/apache/shardingsphere-example/blob/dev/src/resources/manual_schema.sql`, please execute it before you first run the example.*
 
 - *Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.*
 
 ## Before start the example if you want use `dev` branch
 
-Please make sure some dependencies from [shardingsphere](https://github.com/apache/incubator-shardingsphere) and [shardingsphere-spi-impl](https://github.com/OpenSharding/shardingsphere-spi-impl) have been installed since some examples depend on that.
+Please make sure some dependencies from [shardingsphere](https://github.com/apache/shardingsphere) and [shardingsphere-spi-impl](https://github.com/OpenSharding/shardingsphere-spi-impl) have been installed since some examples depend on that.
 if you are a newbie for shardingsphere, you could prepare the dependencies as following: 
 
-1.download and install [shardingsphere](https://github.com/apache/incubator-shardingsphere): 
+1.download and install [shardingsphere](https://github.com/apache/shardingsphere): 
 
 ```bash
 ## download the code of shardingsphere
-git clone https://github.com/apache/incubator-shardingsphere.git
+git clone https://github.com/apache/shardingsphere.git
 
 ## checkout a specific version, example is 4.0.0-RC1
-cd incubator-shardingsphere && git checkout 4.0.0-RC1
+cd shardingsphere && git checkout 4.0.0-RC1
 
 ## install the dependencies
 mvn clean install -Prelease
