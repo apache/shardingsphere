@@ -61,7 +61,7 @@ public final class MetaDataCenterTest {
     @Test
     public void assertLoadRuleSchemaMetaData() {
         when(repository.get("/test/metadata/schema")).thenReturn(MetaDataTest.META_DATA);
-        RuleSchemaMetaData ruleSchemaMetaData = metaDataCenter.loadRuleSchemaMetaData("schema");
+        RuleSchemaMetaData ruleSchemaMetaData = metaDataCenter.loadRuleSchemaMetaData("schema").get();
         verify(repository).get(eq("/test/metadata/schema"));
         assertNotNull(ruleSchemaMetaData);
         assertNotNull(ruleSchemaMetaData.getConfiguredSchemaMetaData());
