@@ -485,7 +485,7 @@
                         <parameter-marker-expression value="0" start-index="119" stop-index="119" />
                         <parameter-marker-expression value="1" start-index="122" stop-index="122" />
                         <literal-expression value="1" start-index="119" stop-index="119" />
-                        <literal-expression value="2" start-index="122" stop-index="122"/>
+                        <literal-expression value="2" start-index="122" stop-index="122" />
                     </in-right-value>
                 </predicate>
                 <predicate start-index="129" stop-index="154" literal-stop-index="155">
@@ -614,7 +614,7 @@
                         <select>
                             <projections start-index="22" stop-index="43">
                                 <shorthand-projection start-index="22" stop-index="27">
-                                    <owner start-index="22" stop-index="25" name="row_"/>
+                                    <owner start-index="22" stop-index="25" name="row_" />
                                 </shorthand-projection>
                                 <column-projection start-index="30" stop-index="35" name="rownum" alias="rownum_" />
                             </projections>
@@ -625,36 +625,36 @@
                                             <select>
                                                 <projections start-index="58" stop-index="139" >
                                                     <column-projection start-index="58" stop-index="73" name="order_id" alias="order_id">
-                                                        <owner start-index="58" stop-index="64" name="order0_"/>
+                                                        <owner start-index="58" stop-index="64" name="order0_" />
                                                     </column-projection>
                                                     <column-projection start-index="88" stop-index="101" name="status" alias="status">
-                                                        <owner start-index="88" stop-index="94" name="order0_"/>
+                                                        <owner start-index="88" stop-index="94" name="order0_" />
                                                     </column-projection>
                                                     <column-projection start-index="114" stop-index="128" name="user_id" alias="user_id">
-                                                        <owner start-index="114" stop-index="120" name="order0_"/>
+                                                        <owner start-index="114" stop-index="120" name="order0_" />
                                                     </column-projection>
                                                 </projections>
                                                 <table-reference>
                                                     <table-factor>
-                                                        <table start-index="146" stop-index="152" name="t_order" alias="order0_"/>
+                                                        <table start-index="146" stop-index="152" name="t_order" alias="order0_" />
                                                     </table-factor>
                                                     <join-table>
                                                         <table-factor>
-                                                            <table start-index="167" stop-index="178" name="t_order_item" alias="i"/>
+                                                            <table start-index="167" stop-index="178" name="t_order_item" alias="i" />
                                                         </table-factor>
                                                         <joinSpecification>
                                                             <and-predicate>
                                                                 <predicate start-index="185" stop-index="211">
                                                                     <column-left-value start-index="185" stop-index="199" name="user_id">
-                                                                        <owner start-index="185" stop-index="191" name="order0_"/>
+                                                                        <owner start-index="185" stop-index="191" name="order0_" />
                                                                     </column-left-value>
                                                                     <column-right-value start-index="203" stop-index="211" name="user_id">
-                                                                        <owner start-index="203" stop-index="203" name="i"/>
+                                                                        <owner start-index="203" stop-index="203" name="i" />
                                                                     </column-right-value>
                                                                 </predicate>
                                                                 <predicate start-index="217" stop-index="245">
                                                                     <column-left-value start-index="217" stop-index="232" name="order_id">
-                                                                        <owner start-index="217" stop-index="223" name="order0_"/>
+                                                                        <owner start-index="217" stop-index="223" name="order0_" />
                                                                     </column-left-value>
                                                                     <column-right-value start-index="236" stop-index="245" name="order_id">
                                                                         <owner start-index="236" stop-index="236" name="i" />
@@ -668,31 +668,31 @@
                                                     <and-predicate>
                                                         <predicate start-index="253" stop-index="277">
                                                             <column-left-value start-index="253" stop-index="267" name="user_id">
-                                                                <owner start-index="253" stop-index="259" name="order0_"/>
+                                                                <owner start-index="253" stop-index="259" name="order0_" />
                                                             </column-left-value>
                                                             <in-right-value>
                                                                 <literal-expression start-index="273" stop-index="273" value="1" />
                                                                 <literal-expression start-index="276" stop-index="276" value="2" />
-                                                                <parameter-marker-expression start-index="273" stop-index="273" value="0"/>
+                                                                <parameter-marker-expression start-index="273" stop-index="273" value="0" />
                                                                 <parameter-marker-expression start-index="276" stop-index="276" value="1" />
                                                             </in-right-value>
                                                         </predicate>
                                                         <predicate start-index="283" stop-index="314">
                                                             <column-left-value start-index="283" stop-index="298" name="order_id">
-                                                                <owner start-index="283" stop-index="289" name="order0_"/>
+                                                                <owner start-index="283" stop-index="289" name="order0_" />
                                                             </column-left-value>
                                                             <between-right-value>
                                                                 <between-literal-expression start-index="308" stop-index="308" value="9" />
                                                                 <between-parameter-marker-expression start-index="308" stop-index="308" value="2" />
-                                                                <and-literal-expression start-index="314" stop-index="314" value="7"/>
-                                                                <and-parameter-marker-expression start-index="314" stop-index="314" value="3"/>
+                                                                <and-literal-expression start-index="314" stop-index="314" value="7" />
+                                                                <and-parameter-marker-expression start-index="314" stop-index="314" value="3" />
                                                             </between-right-value>
                                                         </predicate>
                                                     </and-predicate>
                                                 </where>
                                                 <order-by>
                                                     <column-item start-index="325" stop-index="333" name="item_id" order-direction="DESC">
-                                                        <owner start-index="325" stop-index="325" name="i"/>
+                                                        <owner start-index="325" stop-index="325" name="i" />
                                                     </column-item>
                                                 </order-by>
                                             </select>
@@ -705,10 +705,10 @@
                                 <and-predicate>
                                     <predicate start-index="352" stop-index="362">
                                         <column-left-value start-index="352" stop-index="357" name="rownum" />
-                                        <operator type="&lt;="/>
+                                        <operator type="&lt;=" />
                                         <compare-right-value>
-                                            <literal-expression start-index="362" stop-index="362" value="3"/>
-                                            <parameter-marker-expression start-index="362" stop-index="362" value="4"/>
+                                            <literal-expression start-index="362" stop-index="362" value="3" />
+                                            <parameter-marker-expression start-index="362" stop-index="362" value="4" />
                                         </compare-right-value>
                                     </predicate>
                                 </and-predicate>
@@ -733,7 +733,7 @@
                         <select>
                             <projections start-index="22" stop-index="43">
                                 <shorthand-projection start-index="22" stop-index="27">
-                                    <owner start-index="22" stop-index="25" name="row_"/>
+                                    <owner start-index="22" stop-index="25" name="row_" />
                                 </shorthand-projection>
                                 <column-projection start-index="30" stop-index="35" name="rownum" alias="rownum_" />
                             </projections>
@@ -744,36 +744,36 @@
                                             <select>
                                                 <projections start-index="58" stop-index="139" >
                                                     <column-projection start-index="58" stop-index="73" name="order_id" alias="order_id">
-                                                        <owner start-index="58" stop-index="64" name="order0_"/>
+                                                        <owner start-index="58" stop-index="64" name="order0_" />
                                                     </column-projection>
                                                     <column-projection start-index="88" stop-index="101" name="status" alias="status">
-                                                        <owner start-index="88" stop-index="94" name="order0_"/>
+                                                        <owner start-index="88" stop-index="94" name="order0_" />
                                                     </column-projection>
                                                     <column-projection start-index="114" stop-index="128" name="user_id" alias="user_id">
-                                                        <owner start-index="114" stop-index="120" name="order0_"/>
+                                                        <owner start-index="114" stop-index="120" name="order0_" />
                                                     </column-projection>
                                                 </projections>
                                                 <table-reference>
                                                     <table-factor>
-                                                        <table start-index="146" stop-index="152" name="t_order" alias="order0_"/>
+                                                        <table start-index="146" stop-index="152" name="t_order" alias="order0_" />
                                                     </table-factor>
                                                     <join-table>
                                                         <table-factor>
-                                                            <table start-index="167" stop-index="178" name="t_order_item" alias="i"/>
+                                                            <table start-index="167" stop-index="178" name="t_order_item" alias="i" />
                                                         </table-factor>
                                                         <joinSpecification>
                                                             <and-predicate>
                                                                 <predicate start-index="185" stop-index="211">
                                                                     <column-left-value start-index="185" stop-index="199" name="user_id">
-                                                                        <owner start-index="185" stop-index="191" name="order0_"/>
+                                                                        <owner start-index="185" stop-index="191" name="order0_" />
                                                                     </column-left-value>
                                                                     <column-right-value start-index="203" stop-index="211" name="user_id">
-                                                                        <owner start-index="203" stop-index="203" name="i"/>
+                                                                        <owner start-index="203" stop-index="203" name="i" />
                                                                     </column-right-value>
                                                                 </predicate>
                                                                 <predicate start-index="217" stop-index="245">
                                                                     <column-left-value start-index="217" stop-index="232" name="order_id">
-                                                                        <owner start-index="217" stop-index="223" name="order0_"/>
+                                                                        <owner start-index="217" stop-index="223" name="order0_" />
                                                                     </column-left-value>
                                                                     <column-right-value start-index="236" stop-index="245" name="order_id">
                                                                         <owner start-index="236" stop-index="236" name="i" />
@@ -787,31 +787,31 @@
                                                     <and-predicate>
                                                         <predicate start-index="253" stop-index="277">
                                                             <column-left-value start-index="253" stop-index="267" name="user_id">
-                                                                <owner start-index="253" stop-index="259" name="order0_"/>
+                                                                <owner start-index="253" stop-index="259" name="order0_" />
                                                             </column-left-value>
                                                             <in-right-value>
                                                                 <literal-expression start-index="273" stop-index="273" value="1" />
                                                                 <literal-expression start-index="276" stop-index="276" value="2" />
-                                                                <parameter-marker-expression start-index="273" stop-index="273" value="0"/>
+                                                                <parameter-marker-expression start-index="273" stop-index="273" value="0" />
                                                                 <parameter-marker-expression start-index="276" stop-index="276" value="1" />
                                                             </in-right-value>
                                                         </predicate>
                                                         <predicate start-index="283" stop-index="314">
                                                             <column-left-value start-index="283" stop-index="298" name="order_id">
-                                                                <owner start-index="283" stop-index="289" name="order0_"/>
+                                                                <owner start-index="283" stop-index="289" name="order0_" />
                                                             </column-left-value>
                                                             <between-right-value>
                                                                 <between-literal-expression start-index="308" stop-index="308" value="9" />
                                                                 <between-parameter-marker-expression start-index="308" stop-index="308" value="2" />
-                                                                <and-literal-expression start-index="314" stop-index="314" value="7"/>
-                                                                <and-parameter-marker-expression start-index="314" stop-index="314" value="3"/>
+                                                                <and-literal-expression start-index="314" stop-index="314" value="7" />
+                                                                <and-parameter-marker-expression start-index="314" stop-index="314" value="3" />
                                                             </between-right-value>
                                                         </predicate>
                                                     </and-predicate>
                                                 </where>
                                                 <order-by>
                                                     <column-item start-index="325" stop-index="333" name="item_id" order-direction="DESC">
-                                                        <owner start-index="325" stop-index="325" name="i"/>
+                                                        <owner start-index="325" stop-index="325" name="i" />
                                                     </column-item>
                                                 </order-by>
                                             </select>
@@ -824,10 +824,10 @@
                                 <and-predicate>
                                     <predicate start-index="352" stop-index="362">
                                         <column-left-value start-index="352" stop-index="357" name="rownum" />
-                                        <operator type="&lt;="/>
+                                        <operator type="&lt;=" />
                                         <compare-right-value>
-                                            <literal-expression start-index="362" stop-index="362" value="5"/>
-                                            <parameter-marker-expression start-index="362" stop-index="362" value="4"/>
+                                            <literal-expression start-index="362" stop-index="362" value="5" />
+                                            <parameter-marker-expression start-index="362" stop-index="362" value="4" />
                                         </compare-right-value>
                                     </predicate>
                                 </and-predicate>
@@ -843,10 +843,10 @@
                     <column-left-value start-index="373" stop-index="381" name="rownum_">
                         <owner start-index="373" stop-index="373" name="t" />
                     </column-left-value>
-                    <operator type="&gt;"/>
+                    <operator type="&gt;" />
                     <compare-right-value>
-                        <literal-expression start-index="385" stop-index="385" value="3"/>
-                        <parameter-marker-expression start-index="385" stop-index="385" value="5"/>
+                        <literal-expression start-index="385" stop-index="385" value="3" />
+                        <parameter-marker-expression start-index="385" stop-index="385" value="5" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>
@@ -864,7 +864,7 @@
                         <select>
                             <projections start-index="22" stop-index="43">
                                 <shorthand-projection start-index="22" stop-index="27">
-                                    <owner start-index="22" stop-index="25" name="row_"/>
+                                    <owner start-index="22" stop-index="25" name="row_" />
                                 </shorthand-projection>
                                 <column-projection start-index="30" stop-index="35" name="rownum" alias="rownum_" />
                             </projections>
@@ -875,36 +875,36 @@
                                             <select>
                                                 <projections start-index="58" stop-index="139" >
                                                     <column-projection start-index="58" stop-index="73" name="order_id" alias="order_id">
-                                                        <owner start-index="58" stop-index="64" name="order0_"/>
+                                                        <owner start-index="58" stop-index="64" name="order0_" />
                                                     </column-projection>
                                                     <column-projection start-index="88" stop-index="101" name="status" alias="status">
-                                                        <owner start-index="88" stop-index="94" name="order0_"/>
+                                                        <owner start-index="88" stop-index="94" name="order0_" />
                                                     </column-projection>
                                                     <column-projection start-index="114" stop-index="128" name="user_id" alias="user_id">
-                                                        <owner start-index="114" stop-index="120" name="order0_"/>
+                                                        <owner start-index="114" stop-index="120" name="order0_" />
                                                     </column-projection>
                                                 </projections>
                                                 <table-reference>
                                                     <table-factor>
-                                                        <table start-index="146" stop-index="152" name="t_order" alias="order0_"/>
+                                                        <table start-index="146" stop-index="152" name="t_order" alias="order0_" />
                                                     </table-factor>
                                                     <join-table>
                                                         <table-factor>
-                                                            <table start-index="167" stop-index="178" name="t_order_item" alias="i"/>
+                                                            <table start-index="167" stop-index="178" name="t_order_item" alias="i" />
                                                         </table-factor>
                                                         <joinSpecification>
                                                             <and-predicate>
                                                                 <predicate start-index="185" stop-index="211">
                                                                     <column-left-value start-index="185" stop-index="199" name="user_id">
-                                                                        <owner start-index="185" stop-index="191" name="order0_"/>
+                                                                        <owner start-index="185" stop-index="191" name="order0_" />
                                                                     </column-left-value>
                                                                     <column-right-value start-index="203" stop-index="211" name="user_id">
-                                                                        <owner start-index="203" stop-index="203" name="i"/>
+                                                                        <owner start-index="203" stop-index="203" name="i" />
                                                                     </column-right-value>
                                                                 </predicate>
                                                                 <predicate start-index="217" stop-index="245">
                                                                     <column-left-value start-index="217" stop-index="232" name="order_id">
-                                                                        <owner start-index="217" stop-index="223" name="order0_"/>
+                                                                        <owner start-index="217" stop-index="223" name="order0_" />
                                                                     </column-left-value>
                                                                     <column-right-value start-index="236" stop-index="245" name="order_id">
                                                                         <owner start-index="236" stop-index="236" name="i" />
@@ -918,31 +918,31 @@
                                                     <and-predicate>
                                                         <predicate start-index="253" stop-index="277">
                                                             <column-left-value start-index="253" stop-index="267" name="user_id">
-                                                                <owner start-index="253" stop-index="259" name="order0_"/>
+                                                                <owner start-index="253" stop-index="259" name="order0_" />
                                                             </column-left-value>
                                                             <in-right-value>
                                                                 <literal-expression start-index="273" stop-index="273" value="1" />
                                                                 <literal-expression start-index="276" stop-index="276" value="2" />
-                                                                <parameter-marker-expression start-index="273" stop-index="273" value="0"/>
+                                                                <parameter-marker-expression start-index="273" stop-index="273" value="0" />
                                                                 <parameter-marker-expression start-index="276" stop-index="276" value="1" />
                                                             </in-right-value>
                                                         </predicate>
                                                         <predicate start-index="283" stop-index="314">
                                                             <column-left-value start-index="283" stop-index="298" name="order_id">
-                                                                <owner start-index="283" stop-index="289" name="order0_"/>
+                                                                <owner start-index="283" stop-index="289" name="order0_" />
                                                             </column-left-value>
                                                             <between-right-value>
                                                                 <between-literal-expression start-index="308" stop-index="308" value="9" />
                                                                 <between-parameter-marker-expression start-index="308" stop-index="308" value="2" />
-                                                                <and-literal-expression start-index="314" stop-index="314" value="7"/>
-                                                                <and-parameter-marker-expression start-index="314" stop-index="314" value="3"/>
+                                                                <and-literal-expression start-index="314" stop-index="314" value="7" />
+                                                                <and-parameter-marker-expression start-index="314" stop-index="314" value="3" />
                                                             </between-right-value>
                                                         </predicate>
                                                     </and-predicate>
                                                 </where>
                                                 <order-by>
                                                     <column-item start-index="325" stop-index="333" name="item_id" order-direction="DESC">
-                                                        <owner start-index="325" stop-index="325" name="i"/>
+                                                        <owner start-index="325" stop-index="325" name="i" />
                                                     </column-item>
                                                 </order-by>
                                             </select>
@@ -955,10 +955,10 @@
                                 <and-predicate>
                                     <predicate start-index="352" stop-index="362">
                                         <column-left-value start-index="352" stop-index="357" name="rownum" />
-                                        <operator type="&lt;="/>
+                                        <operator type="&lt;=" />
                                         <compare-right-value>
-                                            <literal-expression start-index="362" stop-index="362" value="5"/>
-                                            <parameter-marker-expression start-index="362" stop-index="362" value="4"/>
+                                            <literal-expression start-index="362" stop-index="362" value="5" />
+                                            <parameter-marker-expression start-index="362" stop-index="362" value="4" />
                                         </compare-right-value>
                                     </predicate>
                                 </and-predicate>
@@ -974,10 +974,10 @@
                     <column-left-value start-index="373" stop-index="381" name="rownum_">
                         <owner start-index="373" stop-index="373" name="t" />
                     </column-left-value>
-                    <operator type="&gt;="/>
+                    <operator type="&gt;=" />
                     <compare-right-value>
-                        <literal-expression start-index="386" stop-index="386" value="3"/>
-                        <parameter-marker-expression start-index="386" stop-index="386" value="5"/>
+                        <literal-expression start-index="386" stop-index="386" value="3" />
+                        <parameter-marker-expression start-index="386" stop-index="386" value="5" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>
