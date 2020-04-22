@@ -71,17 +71,17 @@ public abstract class LogicSchema {
         boolean isOverwrite = null != ShardingOrchestrationFacade.getInstance() && ShardingOrchestrationFacade.getInstance().isOverwrite();
         DatabaseType databaseType = LogicSchemas.getInstance().getDatabaseType();
         DataSourceMetas dataSourceMetas = new DataSourceMetas(databaseType, getDatabaseAccessConfigurationMap());
+        RuleSchemaMetaData ruleSchemaMetaData;
         if (null == ShardingOrchestrationFacade.getInstance()) {
             return new ShardingSphereMetaData(dataSourceMetas, loadRuleSchemaMetaData(databaseType, rules));
         }
         if (isOverwrite) {
-            RuleSchemaMetaData ruleSchemaMetaData = loadRuleSchemaMetaData(databaseType, rules);
+            ruleSchemaMetaData = loadRuleSchemaMetaData(databaseType, rules);
             ShardingOrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(name, ruleSchemaMetaData);
-            return new ShardingSphereMetaData(dataSourceMetas, ruleSchemaMetaData);
         } else {
-            RuleSchemaMetaData ruleSchemaMetaData = ShardingOrchestrationFacade.getInstance().getMetaDataCenter().loadRuleSchemaMetaData(name).orElse(loadRuleSchemaMetaData(databaseType, rules));
-            return new ShardingSphereMetaData(dataSourceMetas, ruleSchemaMetaData);
+             ruleSchemaMetaData = ShardingOrchestrationFacade.getInstance().getMetaDataCenter().loadRuleSchemaMetaData(name).orElse(loadRuleSchemaMetaData(databaseType, rules));
         }
+        return new ShardingSphereMetaData(dataSourceMetas, ruleSchemaMetaData);
     }
     
     private RuleSchemaMetaData loadRuleSchemaMetaData(final DatabaseType databaseType, final Collection<BaseRule> rules) throws SQLException {
