@@ -28,7 +28,7 @@ import java.util.Map;
  * Column types for MySQL.
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query-response.html#column-type">Column Type</a>
- * @see <a href="https://github.com/apache/incubator-shardingsphere/issues/4355"></a>
+ * @see <a href="https://github.com/apache/shardingsphere/issues/4355"></a>
  */
 @RequiredArgsConstructor
 @Getter
@@ -77,7 +77,7 @@ public enum MySQLColumnType {
     /**
      * Do not describe in document, but actual exist.
      *
-     * @see <a href="https://github.com/apache/incubator-shardingsphere/issues/4795"></a>
+     * @see <a href="https://github.com/apache/shardingsphere/issues/4795"></a>
      */
     MySQL_TYPE_JSON(0xf5),
     
