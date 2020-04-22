@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.underlying.executor.group;
 
-import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ExecutionConnection;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.group.StatementOption;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
+import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.JDBCExecutionConnection;
 import org.apache.shardingsphere.underlying.executor.sql.jdbc.group.PreparedStatementExecuteGroupEngine;
+import org.apache.shardingsphere.underlying.executor.sql.jdbc.group.StatementOption;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -69,12 +69,12 @@ public final class PreparedStatementExecuteGroupEngineTest {
         }
     }
     
-    private ExecutionConnection mockExecutionConnection(final int size, final ConnectionMode connectionMode) throws SQLException {
+    private JDBCExecutionConnection mockExecutionConnection(final int size, final ConnectionMode connectionMode) throws SQLException {
         List<Connection> connections = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             connections.add(mock(Connection.class));
         }
-        ExecutionConnection result = mock(ExecutionConnection.class);
+        JDBCExecutionConnection result = mock(JDBCExecutionConnection.class);
         when(result.getConnections(anyString(), eq(size), eq(connectionMode))).thenReturn(connections);
         return result;
     }

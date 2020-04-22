@@ -22,12 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
+import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.sql.ExecutionConnection;
 import org.apache.shardingsphere.underlying.executor.sql.StorageResourceExecuteUnit;
 import org.apache.shardingsphere.underlying.executor.sql.StorageResourceOption;
-import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.ExecutionConnection;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -39,11 +38,13 @@ import java.util.Map.Entry;
 /**
  * Execute group engine.
  * 
- * @param <T> type of storage resource execute unit
+ * @param <U> type of storage resource execute unit
+ * @param <E> type of execution connection
+ * @param <C> type of resource connection
  * @param <O> type of storage resource option
  */
 @RequiredArgsConstructor
-public abstract class ExecuteGroupEngine<T extends StorageResourceExecuteUnit, O extends StorageResourceOption> {
+public abstract class ExecuteGroupEngine<U extends StorageResourceExecuteUnit, E extends ExecutionConnection<C, ?, O>, C, O extends StorageResourceOption> {
     
     private final int maxConnectionsSizePerQuery;
     
@@ -52,14 +53,14 @@ public abstract class ExecuteGroupEngine<T extends StorageResourceExecuteUnit, O
      *
      * @param executionUnits execution units
      * @param executionConnection execution connection
-     * @param storageResourceOption storage resource option
+     * @param option storage resource option
      * @return storage resource execute unit groups
      * @throws SQLException SQL exception
      */
-    public Collection<InputGroup<T>> generate(final Collection<ExecutionUnit> executionUnits, final ExecutionConnection executionConnection, final O storageResourceOption) throws SQLException {
-        Collection<InputGroup<T>> result = new LinkedList<>();
+    public Collection<InputGroup<U>> generate(final Collection<ExecutionUnit> executionUnits, final E executionConnection, final O option) throws SQLException {
+        Collection<InputGroup<U>> result = new LinkedList<>();
         for (Entry<String, List<SQLUnit>> entry : generateSQLUnitGroups(executionUnits).entrySet()) {
-            result.addAll(generateSQLExecuteGroups(entry.getKey(), entry.getValue(), executionConnection, storageResourceOption));
+            result.addAll(generateSQLExecuteGroups(entry.getKey(), entry.getValue(), executionConnection, option));
         }
         return result;
     }
@@ -75,29 +76,27 @@ public abstract class ExecuteGroupEngine<T extends StorageResourceExecuteUnit, O
         return result;
     }
     
-    private List<InputGroup<T>> generateSQLExecuteGroups(final String dataSourceName, final List<SQLUnit> sqlUnits,
-                                                         final ExecutionConnection executionConnection, final O storageResourceOption) throws SQLException {
-        List<InputGroup<T>> result = new LinkedList<>();
+    private List<InputGroup<U>> generateSQLExecuteGroups(final String dataSourceName, final List<SQLUnit> sqlUnits, final E executionConnection, final O option) throws SQLException {
+        List<InputGroup<U>> result = new LinkedList<>();
         int desiredPartitionSize = Math.max(0 == sqlUnits.size() % maxConnectionsSizePerQuery ? sqlUnits.size() / maxConnectionsSizePerQuery : sqlUnits.size() / maxConnectionsSizePerQuery + 1, 1);
         List<List<SQLUnit>> sqlUnitPartitions = Lists.partition(sqlUnits, desiredPartitionSize);
         ConnectionMode connectionMode = maxConnectionsSizePerQuery < sqlUnits.size() ? ConnectionMode.CONNECTION_STRICTLY : ConnectionMode.MEMORY_STRICTLY;
-        List<Connection> connections = executionConnection.getConnections(dataSourceName, sqlUnitPartitions.size(), connectionMode);
+        List<C> connections = executionConnection.getConnections(dataSourceName, sqlUnitPartitions.size(), connectionMode);
         int count = 0;
         for (List<SQLUnit> each : sqlUnitPartitions) {
-            result.add(generateSQLExecuteGroup(dataSourceName, each, executionConnection, connections.get(count++), connectionMode, storageResourceOption));
+            result.add(generateSQLExecuteGroup(dataSourceName, each, executionConnection, connections.get(count++), connectionMode, option));
         }
         return result;
     }
     
-    private InputGroup<T> generateSQLExecuteGroup(final String dataSourceName, final List<SQLUnit> sqlUnitGroup, final ExecutionConnection executionConnection,
-                                                  final Connection connection, final ConnectionMode connectionMode, final O storageResourceOption) throws SQLException {
-        List<T> result = new LinkedList<>();
+    private InputGroup<U> generateSQLExecuteGroup(final String dataSourceName, final List<SQLUnit> sqlUnitGroup, 
+                                                  final E executionConnection, final C connection, final ConnectionMode connectionMode, final O option) throws SQLException {
+        List<U> result = new LinkedList<>();
         for (SQLUnit each : sqlUnitGroup) {
-            result.add(createStorageResourceExecuteUnit(new ExecutionUnit(dataSourceName, each), executionConnection, connection, connectionMode, storageResourceOption));
+            result.add(createStorageResourceExecuteUnit(new ExecutionUnit(dataSourceName, each), executionConnection, connection, connectionMode, option));
         }
         return new InputGroup<>(result);
     }
     
-    protected abstract T createStorageResourceExecuteUnit(ExecutionUnit executionUnit, ExecutionConnection executionConnection, 
-                                                          Connection connection, ConnectionMode connectionMode, O storageResourceOption) throws SQLException;
+    protected abstract U createStorageResourceExecuteUnit(ExecutionUnit executionUnit, E executionConnection, C connection, ConnectionMode connectionMode, O option) throws SQLException;
 }
