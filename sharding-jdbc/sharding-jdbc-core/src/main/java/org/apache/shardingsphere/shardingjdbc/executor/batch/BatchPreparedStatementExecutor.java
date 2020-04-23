@@ -20,15 +20,19 @@ package org.apache.shardingsphere.shardingjdbc.executor.batch;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.impl.DefaultSQLExecutorCallback;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.ExecutorExceptionHandler;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutor;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutorCallback;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.impl.DefaultSQLExecutorCallback;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.impl.RuleSQLExecutorCallback;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -46,9 +50,15 @@ import java.util.stream.Collectors;
  */
 public final class BatchPreparedStatementExecutor {
     
+    static {
+        ShardingSphereServiceLoader.register(RuleSQLExecutorCallback.class);
+    }
+    
     private final ShardingRuntimeContext runtimeContext;
     
     private final SQLExecutor sqlExecutor;
+    
+    private final RuleSQLExecutorCallback ruleSQLExecutorCallback;
     
     private final Collection<InputGroup<StatementExecuteUnit>> inputGroups;
     
@@ -60,8 +70,14 @@ public final class BatchPreparedStatementExecutor {
     public BatchPreparedStatementExecutor(final ShardingRuntimeContext runtimeContext, final SQLExecutor sqlExecutor) {
         this.runtimeContext = runtimeContext;
         this.sqlExecutor = sqlExecutor;
+        ruleSQLExecutorCallback = findRuleSQLExecutorCallback().orElse(null);
         inputGroups = new LinkedList<>();
         batchExecutionUnits = new LinkedList<>();
+    }
+    
+    private Optional<RuleSQLExecutorCallback> findRuleSQLExecutorCallback() {
+        Map<BaseRule, RuleSQLExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(runtimeContext.getRule().toRules(), RuleSQLExecutorCallback.class);
+        return callbackMap.isEmpty() ? Optional.empty() : Optional.of(callbackMap.values().iterator().next());
     }
     
     /**
@@ -123,19 +139,23 @@ public final class BatchPreparedStatementExecutor {
      */
     public int[] executeBatch(final SQLStatementContext sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<int[]> callback = new DefaultSQLExecutorCallback<int[]>(runtimeContext.getDatabaseType(), isExceptionThrown) {
+        SQLExecutorCallback<int[]> callback = getSQLExecutorCallback(new DefaultSQLExecutorCallback<int[]>(runtimeContext.getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected int[] executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 return statement.executeBatch();
             }
-        };
+        });
         List<int[]> results = sqlExecutor.execute(inputGroups, callback);
         if (!runtimeContext.getRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())) {
             return accumulate(results);
         } else {
             return results.get(0);
         }
+    }
+    
+    private SQLExecutorCallback<int[]> getSQLExecutorCallback(final DefaultSQLExecutorCallback callback) {
+        return null == ruleSQLExecutorCallback ? callback : ruleSQLExecutorCallback;
     }
     
     private int[] accumulate(final List<int[]> results) {
