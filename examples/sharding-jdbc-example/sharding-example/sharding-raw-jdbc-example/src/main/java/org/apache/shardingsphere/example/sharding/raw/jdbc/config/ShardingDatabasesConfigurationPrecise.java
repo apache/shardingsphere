@@ -20,7 +20,6 @@ package org.apache.shardingsphere.example.sharding.raw.jdbc.config;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.strategy.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.core.strategy.sharding.InlineShardingAlgorithm;

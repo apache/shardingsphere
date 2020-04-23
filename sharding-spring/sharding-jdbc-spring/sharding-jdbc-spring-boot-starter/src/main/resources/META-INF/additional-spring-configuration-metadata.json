@@ -37,11 +37,6 @@
       "type": "org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlHintShardingStrategyConfiguration"
     },
     {
-      "sourceType": "org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlInlineShardingStrategyConfiguration",
-      "name": "spring.shardingsphere.sharding.default-table-strategy.inline",
-      "type": "org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlInlineShardingStrategyConfiguration"
-    },
-    {
       "sourceType": "org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlStandardShardingStrategyConfiguration",
       "name": "spring.shardingsphere.sharding.default-table-strategy.standard",
       "type": "org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlStandardShardingStrategyConfiguration"
@@ -60,11 +55,6 @@
       "sourceType": "org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlHintShardingStrategyConfiguration",
       "name": "spring.shardingsphere.sharding.default-database-strategy.hint",
       "type": "org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlHintShardingStrategyConfiguration"
-    },
-    {
-      "sourceType": "org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlInlineShardingStrategyConfiguration",
-      "name": "spring.shardingsphere.sharding.default-database-strategy.inline",
-      "type": "org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlInlineShardingStrategyConfiguration"
     },
     {
       "sourceType": "org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlStandardShardingStrategyConfiguration",
@@ -122,21 +112,6 @@
     },
     {
       "sourceType": "org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingStrategyConfiguration",
-      "name": "spring.shardingsphere.sharding.default-database-strategy.inline",
-      "type": "org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlInlineShardingStrategyConfiguration"
-    },
-    {
-      "sourceType": "org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlInlineShardingStrategyConfiguration",
-      "name": "spring.shardingsphere.sharding.default-database-strategy.inline.algorithm-expression",
-      "type": "java.lang.String"
-    },
-    {
-      "sourceType": "org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlInlineShardingStrategyConfiguration",
-      "name": "spring.shardingsphere.sharding.default-database-strategy.inline.sharding-column",
-      "type": "java.lang.String"
-    },
-    {
-      "sourceType": "org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingStrategyConfiguration",
       "name": "spring.shardingsphere.sharding.default-database-strategy.none",
       "type": "org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlNoneShardingStrategyConfiguration"
     },
@@ -183,21 +158,6 @@
     {
       "sourceType": "org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlHintShardingStrategyConfiguration",
       "name": "spring.shardingsphere.sharding.default-table-strategy.hint.algorithm-class-name",
-      "type": "java.lang.String"
-    },
-    {
-      "sourceType": "org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingStrategyConfiguration",
-      "name": "spring.shardingsphere.sharding.default-table-strategy.inline",
-      "type": "org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlInlineShardingStrategyConfiguration"
-    },
-    {
-      "sourceType": "org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlInlineShardingStrategyConfiguration",
-      "name": "spring.shardingsphere.sharding.default-table-strategy.inline.algorithm-expression",
-      "type": "java.lang.String"
-    },
-    {
-      "sourceType": "org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlInlineShardingStrategyConfiguration",
-      "name": "spring.shardingsphere.sharding.default-table-strategy.inline.sharding-column",
       "type": "java.lang.String"
     },
     {

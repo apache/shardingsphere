@@ -35,7 +35,6 @@ public final class ShardingNamespaceHandler extends NamespaceHandlerSupport {
     public void init() {
         registerBeanDefinitionParser(ShardingStrategyBeanDefinitionParserTag.STANDARD_STRATEGY_ROOT_TAG, new ShardingStrategyBeanDefinitionParser());
         registerBeanDefinitionParser(ShardingStrategyBeanDefinitionParserTag.COMPLEX_STRATEGY_ROOT_TAG, new ShardingStrategyBeanDefinitionParser());
-        registerBeanDefinitionParser(ShardingStrategyBeanDefinitionParserTag.INLINE_STRATEGY_ROOT_TAG, new ShardingStrategyBeanDefinitionParser());
         registerBeanDefinitionParser(ShardingStrategyBeanDefinitionParserTag.HINT_STRATEGY_ROOT_TAG, new ShardingStrategyBeanDefinitionParser());
         registerBeanDefinitionParser(ShardingStrategyBeanDefinitionParserTag.NONE_STRATEGY_ROOT_TAG, new ShardingStrategyBeanDefinitionParser());
         registerBeanDefinitionParser(ShardingDataSourceBeanDefinitionParserTag.KEY_GENERATOR_REF_TAG, new KeyGeneratorBeanDefinitionParser());
