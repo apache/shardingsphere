@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.core.strategy.algorithm.keygen;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
+import org.junit.Test;
 import java.util.Properties;
 
-import org.apache.shardingsphere.core.strategy.algorithm.keygen.UUIDKeyGenerateAlgorithm;
-import org.junit.Test;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public final class UUIDKeyGenerateAlgorithmTest {
     
