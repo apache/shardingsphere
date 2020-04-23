@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.config.inline;
+package org.apache.shardingsphere.core.strategy.algorithm.sharding.inline;
 
 import org.junit.Test;
 

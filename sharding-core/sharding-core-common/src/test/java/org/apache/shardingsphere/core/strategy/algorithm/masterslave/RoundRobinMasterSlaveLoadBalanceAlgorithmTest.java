@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.strategy.masterslave;
+package org.apache.shardingsphere.core.strategy.algorithm.masterslave;
 
 import org.junit.Test;
 

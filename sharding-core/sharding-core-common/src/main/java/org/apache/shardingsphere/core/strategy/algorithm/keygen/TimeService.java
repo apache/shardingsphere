@@ -15,31 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.strategy.keygen;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
-
-import java.util.Properties;
-import java.util.UUID;
+package org.apache.shardingsphere.core.strategy.algorithm.keygen;
 
 /**
- * UUID key generate algorithm.
+ * Time service.
  */
-@Getter
-@Setter
-public final class UUIDKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
+public class TimeService {
     
-    private Properties properties = new Properties();
-    
-    @Override
-    public String getType() {
-        return "UUID";
-    }
-    
-    @Override
-    public synchronized Comparable<?> generateKey() {
-        return UUID.randomUUID().toString().replaceAll("-", "");
+    /**
+     * Get current millis.
+     * 
+     * @return current millis
+     */
+    public long getCurrentMillis() {
+        return System.currentTimeMillis();
     }
 }

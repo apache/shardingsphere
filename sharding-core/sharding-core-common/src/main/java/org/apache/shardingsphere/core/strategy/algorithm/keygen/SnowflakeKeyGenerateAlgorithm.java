@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.strategy.keygen;
+package org.apache.shardingsphere.core.strategy.algorithm.keygen;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;

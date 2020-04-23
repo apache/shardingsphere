@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.strategy.keygen;
+package org.apache.shardingsphere.core.strategy.algorithm.keygen;
+
+import org.junit.Test;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-
-import java.util.Properties;
-import org.junit.Test;
 
 public final class UUIDKeyGenerateAlgorithmTest {
     

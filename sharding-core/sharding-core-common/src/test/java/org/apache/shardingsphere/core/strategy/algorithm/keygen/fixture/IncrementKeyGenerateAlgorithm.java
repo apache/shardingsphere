@@ -15,32 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.strategy.masterslave;
+package org.apache.shardingsphere.core.strategy.algorithm.keygen.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.spi.masterslave.MasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 
-import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Random slave database load-balance algorithm.
- */
-@Getter
-@Setter
-public final class RandomMasterSlaveLoadBalanceAlgorithm implements MasterSlaveLoadBalanceAlgorithm {
+public final class IncrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     
+    @Getter
+    private final String type = "INCREMENT";
+    
+    private final AtomicInteger count = new AtomicInteger();
+    
+    @Getter
+    @Setter
     private Properties properties = new Properties();
     
     @Override
-    public String getType() {
-        return "RANDOM";
-    }
-    
-    @Override
-    public String getDataSource(final String name, final String masterDataSourceName, final List<String> slaveDataSourceNames) {
-        return slaveDataSourceNames.get(ThreadLocalRandom.current().nextInt(slaveDataSourceNames.size()));
+    public Comparable<?> generateKey() {
+        return count.incrementAndGet();
     }
 }
