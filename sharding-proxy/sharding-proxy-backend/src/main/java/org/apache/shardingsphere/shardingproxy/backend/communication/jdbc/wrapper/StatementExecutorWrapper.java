@@ -38,8 +38,8 @@ import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionContex
 import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionContextBuilder;
 import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.sql.context.SQLUnit;
-import org.apache.shardingsphere.underlying.executor.sql.group.ExecuteGroupEngine;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.group.StatementExecuteGroupEngine;
+import org.apache.shardingsphere.underlying.executor.sql.group.ExecuteGroupEngine;
 import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.underlying.rewrite.engine.result.GenericSQLRewriteResult;
 import org.apache.shardingsphere.underlying.rewrite.engine.result.SQLRewriteResult;
@@ -144,7 +144,23 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     @Override
     public ExecuteGroupEngine getExecuteGroupEngine() {
         int maxConnectionsSizePerQuery = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new StatementExecuteGroupEngine(maxConnectionsSizePerQuery);
+        return new StatementExecuteGroupEngine(maxConnectionsSizePerQuery, getRules());
+    }
+    
+    private Collection<BaseRule> getRules() {
+        if (logicSchema instanceof ShardingSchema) {
+            return logicSchema.getShardingRule().toRules();
+        }
+        if (logicSchema instanceof MasterSlaveSchema) {
+            return Collections.singletonList(((MasterSlaveSchema) logicSchema).getMasterSlaveRule());
+        }
+        if (logicSchema instanceof EncryptSchema) {
+            return Collections.singletonList(((EncryptSchema) logicSchema).getEncryptRule());
+        }
+        if (logicSchema instanceof ShadowSchema) {
+            return Collections.singletonList(((ShadowSchema) logicSchema).getShadowRule());
+        }
+        return Collections.emptyList();
     }
     
     @Override

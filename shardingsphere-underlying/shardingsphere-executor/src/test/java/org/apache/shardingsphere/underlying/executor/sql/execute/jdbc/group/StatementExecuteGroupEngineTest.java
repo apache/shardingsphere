@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.group;
 
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionUnit;
@@ -31,6 +32,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -47,7 +49,7 @@ public final class StatementExecuteGroupEngineTest {
     
     @Test
     public void assertGetExecuteUnitGroupForOneShardMemoryStrictly() throws SQLException {
-        executeGroupEngine = new StatementExecuteGroupEngine(2);
+        executeGroupEngine = new StatementExecuteGroupEngine(2, Collections.singletonList(mock(BaseRule.class)));
         Collection<InputGroup<StatementExecuteUnit>> actual = executeGroupEngine.generate(
                 mockShardRouteUnit(1, 1), mockExecutionConnection(1, ConnectionMode.MEMORY_STRICTLY), new StatementOption(true));
         assertThat(actual.size(), is(1));
@@ -58,7 +60,7 @@ public final class StatementExecuteGroupEngineTest {
     
     @Test
     public void assertGetExecuteUnitGroupForMultiShardConnectionStrictly() throws SQLException {
-        executeGroupEngine = new StatementExecuteGroupEngine(1);
+        executeGroupEngine = new StatementExecuteGroupEngine(1, Collections.singletonList(mock(BaseRule.class)));
         Collection<InputGroup<StatementExecuteUnit>> actual = executeGroupEngine.generate(
                 mockShardRouteUnit(10, 2), mockExecutionConnection(1, ConnectionMode.CONNECTION_STRICTLY), new StatementOption(true));
         assertThat(actual.size(), is(10));

@@ -17,15 +17,17 @@
 
 package org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.group;
 
-import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.underlying.executor.sql.group.ExecuteGroupEngine;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.connection.JDBCExecutionConnection;
+import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.connection.JDBCExecutionConnection;
+import org.apache.shardingsphere.underlying.executor.sql.group.ExecuteGroupEngine;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -33,8 +35,8 @@ import java.util.List;
  */
 public final class PreparedStatementExecuteGroupEngine extends ExecuteGroupEngine<StatementExecuteUnit, JDBCExecutionConnection, Connection, StatementOption> {
     
-    public PreparedStatementExecuteGroupEngine(final int maxConnectionsSizePerQuery) {
-        super(maxConnectionsSizePerQuery);
+    public PreparedStatementExecuteGroupEngine(final int maxConnectionsSizePerQuery, final Collection<BaseRule> rules) {
+        super(maxConnectionsSizePerQuery, rules);
     }
     
     @Override
