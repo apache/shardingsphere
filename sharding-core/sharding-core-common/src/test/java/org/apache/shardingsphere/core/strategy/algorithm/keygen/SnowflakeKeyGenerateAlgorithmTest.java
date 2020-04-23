@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.strategy.keygen;
+package org.apache.shardingsphere.core.strategy.algorithm.keygen;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotEquals;
@@ -32,7 +32,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.strategy.keygen.fixture.FixedTimeService;
+import org.apache.shardingsphere.core.strategy.algorithm.keygen.fixture.FixedTimeService;
 import org.junit.Test;
 
 public final class SnowflakeKeyGenerateAlgorithmTest {

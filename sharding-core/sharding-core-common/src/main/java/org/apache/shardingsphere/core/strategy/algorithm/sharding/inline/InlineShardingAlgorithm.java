@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.strategy.sharding;
+package org.apache.shardingsphere.core.strategy.algorithm.sharding.inline;
 
 import com.google.common.base.Preconditions;
 import groovy.lang.Closure;
@@ -23,7 +23,6 @@ import groovy.util.Expando;
 import org.apache.shardingsphere.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.api.sharding.standard.StandardShardingAlgorithm;
-import org.apache.shardingsphere.underlying.common.config.inline.InlineExpressionParser;
 
 import java.util.Collection;
 import java.util.Properties;

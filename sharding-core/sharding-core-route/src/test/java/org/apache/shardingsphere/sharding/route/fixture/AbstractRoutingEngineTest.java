@@ -25,7 +25,7 @@ import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingSt
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
-import org.apache.shardingsphere.core.strategy.sharding.InlineShardingAlgorithm;
+import org.apache.shardingsphere.core.strategy.algorithm.sharding.inline.InlineShardingAlgorithm;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 

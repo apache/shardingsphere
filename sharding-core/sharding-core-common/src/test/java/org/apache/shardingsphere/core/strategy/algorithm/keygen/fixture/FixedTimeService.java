@@ -15,19 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.strategy.keygen;
+package org.apache.shardingsphere.core.strategy.algorithm.keygen.fixture;
 
-/**
- * Time service.
- */
-public class TimeService {
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.strategy.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
+import org.apache.shardingsphere.core.strategy.algorithm.keygen.TimeService;
+
+import java.util.concurrent.atomic.AtomicInteger;
+
+@RequiredArgsConstructor
+public final class FixedTimeService extends TimeService {
     
-    /**
-     * Get current millis.
-     * 
-     * @return current millis
-     */
+    private final int expectedInvokedTimes;
+    
+    private final AtomicInteger invokedTimes = new AtomicInteger();
+    
+    private long current = SnowflakeKeyGenerateAlgorithm.EPOCH;
+    
+    @Override
     public long getCurrentMillis() {
-        return System.currentTimeMillis();
+        if (invokedTimes.getAndIncrement() < expectedInvokedTimes) {
+            return current;
+        }
+        invokedTimes.set(0);
+        return ++current;
     }
 }

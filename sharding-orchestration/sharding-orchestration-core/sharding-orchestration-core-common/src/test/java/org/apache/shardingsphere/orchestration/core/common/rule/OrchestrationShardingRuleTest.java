@@ -23,7 +23,7 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.strategy.sharding.InlineShardingAlgorithm;
+import org.apache.shardingsphere.core.strategy.algorithm.sharding.inline.InlineShardingAlgorithm;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -32,7 +32,7 @@ import org.apache.shardingsphere.dbtest.env.EnvironmentPath;
 import org.apache.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.loader.SQLCasesRegistry;
-import org.apache.shardingsphere.underlying.common.config.inline.InlineExpressionParser;
+import org.apache.shardingsphere.core.strategy.algorithm.sharding.inline.InlineExpressionParser;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

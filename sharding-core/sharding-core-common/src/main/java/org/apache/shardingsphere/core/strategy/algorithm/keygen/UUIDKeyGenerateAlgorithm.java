@@ -15,29 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.strategy.keygen.fixture;
+package org.apache.shardingsphere.core.strategy.algorithm.keygen;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.strategy.keygen.SnowflakeKeyGenerateAlgorithm;
-import org.apache.shardingsphere.core.strategy.keygen.TimeService;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Properties;
+import java.util.UUID;
 
-@RequiredArgsConstructor
-public final class FixedTimeService extends TimeService {
+/**
+ * UUID key generate algorithm.
+ */
+@Getter
+@Setter
+public final class UUIDKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     
-    private final int expectedInvokedTimes;
-    
-    private final AtomicInteger invokedTimes = new AtomicInteger();
-    
-    private long current = SnowflakeKeyGenerateAlgorithm.EPOCH;
+    private Properties properties = new Properties();
     
     @Override
-    public long getCurrentMillis() {
-        if (invokedTimes.getAndIncrement() < expectedInvokedTimes) {
-            return current;
-        }
-        invokedTimes.set(0);
-        return ++current;
+    public String getType() {
+        return "UUID";
+    }
+    
+    @Override
+    public synchronized Comparable<?> generateKey() {
+        return UUID.randomUUID().toString().replaceAll("-", "");
     }
 }

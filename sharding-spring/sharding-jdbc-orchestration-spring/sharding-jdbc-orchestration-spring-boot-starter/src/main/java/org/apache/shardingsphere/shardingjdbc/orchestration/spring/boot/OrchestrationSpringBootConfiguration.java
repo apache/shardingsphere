@@ -50,7 +50,7 @@ import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding
 import org.apache.shardingsphere.spring.boot.datasource.DataSourcePropertiesSetterHolder;
 import org.apache.shardingsphere.spring.boot.util.DataSourceUtil;
 import org.apache.shardingsphere.spring.boot.util.PropertyUtil;
-import org.apache.shardingsphere.underlying.common.config.inline.InlineExpressionParser;
+import org.apache.shardingsphere.core.strategy.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
