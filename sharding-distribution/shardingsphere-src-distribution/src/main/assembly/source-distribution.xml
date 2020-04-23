@@ -51,13 +51,6 @@
                 <exclude>**/cobertura.ser</exclude>
                 <exclude>*.gpg</exclude>
                 
-                <!-- node ignore -->
-                <exclude>**/shardingsphere-ui-frontend/test/coverage/**</exclude>
-                <exclude>**/shardingsphere-ui-frontend/dist/**</exclude>
-                <exclude>**/shardingsphere-ui-frontend/node/**</exclude>
-                <exclude>**/shardingsphere-ui-frontend/node_modules/**</exclude>
-                <exclude>**/shardingsphere-ui-frontend/etc/**</exclude>
-                
                 <!-- eclipse ignore -->
                 <exclude>**/.settings/**</exclude>
                 <exclude>**/.project</exclude>
@@ -81,6 +74,11 @@
                 <!-- system ignore -->
                 <exclude>**/.DS_Store</exclude>
                 <exclude>**/Thumbs.db</exclude>
+    
+                <!-- modules ignore -->
+                <exclude>shardingsphere-ui/**</exclude>
+                <exclude>docs/**</exclude>
+                <exclude>examples/**</exclude>
             </excludes>
         </fileSet>
     </fileSets>
