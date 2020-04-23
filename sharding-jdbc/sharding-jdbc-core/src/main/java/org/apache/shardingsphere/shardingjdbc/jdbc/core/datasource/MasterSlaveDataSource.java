@@ -22,8 +22,6 @@ import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.MasterSlaveRuntimeContext;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.underlying.route.decorator.RouteDecorator;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -37,10 +35,6 @@ import java.util.Properties;
 public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     private final MasterSlaveRuntimeContext runtimeContext;
-    
-    static {
-        ShardingSphereServiceLoader.register(RouteDecorator.class);
-    }
     
     public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRule masterSlaveRule, final Properties props) throws SQLException {
         super(dataSourceMap);

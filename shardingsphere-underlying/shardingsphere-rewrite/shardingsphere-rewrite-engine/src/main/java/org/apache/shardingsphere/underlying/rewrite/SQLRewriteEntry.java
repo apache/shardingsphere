@@ -39,15 +39,15 @@ import java.util.Map;
  */
 public final class SQLRewriteEntry {
     
+    static {
+        ShardingSphereServiceLoader.register(SQLRewriteContextDecorator.class);
+    }
+    
     private final SchemaMetaData schemaMetaData;
     
     private final ConfigurationProperties properties;
     
     private final Map<BaseRule, SQLRewriteContextDecorator> decorators;
-    
-    static {
-        ShardingSphereServiceLoader.register(SQLRewriteContextDecorator.class);
-    }
     
     public SQLRewriteEntry(final SchemaMetaData schemaMetaData, final ConfigurationProperties properties, final Collection<BaseRule> rules) {
         this.schemaMetaData = schemaMetaData;

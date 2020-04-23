@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.underlying.merge;
 
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
@@ -43,6 +44,10 @@ import java.util.Optional;
  * Merge engine.
  */
 public final class MergeEngine {
+    
+    static {
+        ShardingSphereServiceLoader.register(ResultProcessEngine.class);
+    }
     
     private final DatabaseType databaseType;
     

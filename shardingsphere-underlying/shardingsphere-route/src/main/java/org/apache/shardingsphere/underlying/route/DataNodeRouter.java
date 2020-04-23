@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.underlying.route;
 
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
@@ -39,6 +40,10 @@ import java.util.Map.Entry;
  * Data node router.
  */
 public final class DataNodeRouter {
+    
+    static {
+        ShardingSphereServiceLoader.register(RouteDecorator.class);
+    }
     
     private final ShardingSphereMetaData metaData;
     
