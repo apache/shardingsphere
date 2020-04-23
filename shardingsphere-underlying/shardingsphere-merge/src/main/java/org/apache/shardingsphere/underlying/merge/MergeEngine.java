@@ -34,7 +34,6 @@ import org.apache.shardingsphere.underlying.merge.result.impl.transparent.Transp
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -51,13 +50,13 @@ public final class MergeEngine {
     
     private final ConfigurationProperties properties;
     
-    private final Map<BaseRule, ResultProcessEngine> engines = new LinkedHashMap<>();
+    private final Map<BaseRule, ResultProcessEngine> engines;
     
     public MergeEngine(final DatabaseType databaseType, final SchemaMetaData schemaMetaData, final ConfigurationProperties properties, final Collection<BaseRule> rules) {
         this.databaseType = databaseType;
         this.schemaMetaData = schemaMetaData;
         this.properties = properties;
-        OrderedSPIRegistry.getRegisteredServices(rules, ResultProcessEngine.class).forEach(engines::put);
+        engines = OrderedSPIRegistry.getRegisteredServices(rules, ResultProcessEngine.class);
     }
     
     /**
