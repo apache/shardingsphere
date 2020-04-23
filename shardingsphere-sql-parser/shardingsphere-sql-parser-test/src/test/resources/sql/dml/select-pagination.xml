@@ -485,7 +485,7 @@
                         <parameter-marker-expression value="0" start-index="119" stop-index="119" />
                         <parameter-marker-expression value="1" start-index="122" stop-index="122" />
                         <literal-expression value="1" start-index="119" stop-index="119" />
-                        <literal-expression value="2" start-index="122" stop-index="122"/>
+                        <literal-expression value="2" start-index="122" stop-index="122" />
                     </in-right-value>
                 </predicate>
                 <predicate start-index="129" stop-index="154" literal-stop-index="155">
@@ -603,131 +603,385 @@
         <row-count value="3" parameter-index="0" />
     </select>
 
-    <select sql-case-id="select_pagination_with_row_number" parameters="1, 2, 9, 10, 3">
-        <tables>
-            <simple-table name="t_order" alias="order0_" start-index="146" stop-index="152" />
-            <simple-table name="t_order_item" alias="i" start-index="167" stop-index="178" />
-        </tables>
-        <projections start-index="58" stop-index="139">
-            <column-projection name="order_id" alias="order_id" start-index="58" stop-index="73">
-                <owner name="order0_" start-index="58" stop-index="64" />
-            </column-projection>
-            <column-projection name="status" alias="status" start-index="88" stop-index="101">
-                <owner name="order0_" start-index="88" stop-index="94" />
-            </column-projection>
-            <column-projection name="user_id" alias="user_id" start-index="114" stop-index="128">
-                <owner name="order0_" start-index="114" stop-index="120" />
-            </column-projection>
+    <select sql-case-id="select_pagination_with_row_number" parameters="1, 2, 9, 7, 3">
+        <projections start-index="7" stop-index="7" >
+            <shorthand-projection stop-index="7" start-index="7" />
         </projections>
-        <where start-index="253" stop-index="314" literal-stop-index="315">
-            <and-predicate>
-                <!-- FIXME cannot parse subquery's predicate -->
-                <!--<predicate start-index="253" stop-index="277">-->
-                    <!--<column-left-value name="user_id" start-index="253" stop-index="267">-->
-                        <!--<owner name="order0_" start-index="253" stop-index="253" />-->
-                    <!--</column-left-value>-->
-                <!--</predicate>-->
-                <!--<predicate start-index="283" stop-index="314" literal-stop-index="315">-->
-                    <!--<column-left-value name="order_id" start-index="283" stop-index="298">-->
-                        <!--<owner name="order0_" start-index="283" stop-index="289" />-->
-                    <!--</column-left-value>-->
-                <!--</predicate>-->
-                <predicate start-index="352" stop-index="362" literal-start-index="353" literal-stop-index="363">
-                    <column-left-value name="rownum" start-index="352" stop-index="357" literal-start-index="353" literal-stop-index="358" />
-                    <operator type="&lt;=" />
-                    <compare-right-value>
-                        <parameter-marker-expression value="4" />
-                        <literal-expression value="3" />
-                    </compare-right-value>
-                </predicate>
-            </and-predicate>
-        </where>
-        <order-by>
-            <column-item name="item_id" order-direction="DESC">
-                <owner name="i" start-index="325" stop-index="325" literal-start-index="326" literal-stop-index="326" />
-            </column-item>
-        </order-by>
-        <row-count value="3" parameter-index="4" />
+        <table-reference>
+            <table-factor>
+                <subqueryTable>
+                    <subquery start-index="14" stop_index="363">
+                        <select>
+                            <projections start-index="22" stop-index="43">
+                                <shorthand-projection start-index="22" stop-index="27">
+                                    <owner start-index="22" stop-index="25" name="row_" />
+                                </shorthand-projection>
+                                <column-projection start-index="30" stop-index="35" name="rownum" alias="rownum_" />
+                            </projections>
+                            <table-reference>
+                                <table-factor>
+                                    <subqueryTable start-index="50" stop-index="339" alias="row_">
+                                        <subquery>
+                                            <select>
+                                                <projections start-index="58" stop-index="139" >
+                                                    <column-projection start-index="58" stop-index="73" name="order_id" alias="order_id">
+                                                        <owner start-index="58" stop-index="64" name="order0_" />
+                                                    </column-projection>
+                                                    <column-projection start-index="88" stop-index="101" name="status" alias="status">
+                                                        <owner start-index="88" stop-index="94" name="order0_" />
+                                                    </column-projection>
+                                                    <column-projection start-index="114" stop-index="128" name="user_id" alias="user_id">
+                                                        <owner start-index="114" stop-index="120" name="order0_" />
+                                                    </column-projection>
+                                                </projections>
+                                                <table-reference>
+                                                    <table-factor>
+                                                        <table start-index="146" stop-index="152" name="t_order" alias="order0_" />
+                                                    </table-factor>
+                                                    <join-table>
+                                                        <table-factor>
+                                                            <table start-index="167" stop-index="178" name="t_order_item" alias="i" />
+                                                        </table-factor>
+                                                        <joinSpecification>
+                                                            <and-predicate>
+                                                                <predicate start-index="185" stop-index="211">
+                                                                    <column-left-value start-index="185" stop-index="199" name="user_id">
+                                                                        <owner start-index="185" stop-index="191" name="order0_" />
+                                                                    </column-left-value>
+                                                                    <column-right-value start-index="203" stop-index="211" name="user_id">
+                                                                        <owner start-index="203" stop-index="203" name="i" />
+                                                                    </column-right-value>
+                                                                </predicate>
+                                                                <predicate start-index="217" stop-index="245">
+                                                                    <column-left-value start-index="217" stop-index="232" name="order_id">
+                                                                        <owner start-index="217" stop-index="223" name="order0_" />
+                                                                    </column-left-value>
+                                                                    <column-right-value start-index="236" stop-index="245" name="order_id">
+                                                                        <owner start-index="236" stop-index="236" name="i" />
+                                                                    </column-right-value>
+                                                                </predicate>
+                                                            </and-predicate>
+                                                        </joinSpecification>
+                                                    </join-table>
+                                                </table-reference>
+                                                <where start-index="247" stop-index="314">
+                                                    <and-predicate>
+                                                        <predicate start-index="253" stop-index="277">
+                                                            <column-left-value start-index="253" stop-index="267" name="user_id">
+                                                                <owner start-index="253" stop-index="259" name="order0_" />
+                                                            </column-left-value>
+                                                            <in-right-value>
+                                                                <literal-expression start-index="273" stop-index="273" value="1" />
+                                                                <literal-expression start-index="276" stop-index="276" value="2" />
+                                                                <parameter-marker-expression start-index="273" stop-index="273" value="0" />
+                                                                <parameter-marker-expression start-index="276" stop-index="276" value="1" />
+                                                            </in-right-value>
+                                                        </predicate>
+                                                        <predicate start-index="283" stop-index="314">
+                                                            <column-left-value start-index="283" stop-index="298" name="order_id">
+                                                                <owner start-index="283" stop-index="289" name="order0_" />
+                                                            </column-left-value>
+                                                            <between-right-value>
+                                                                <between-literal-expression start-index="308" stop-index="308" value="9" />
+                                                                <between-parameter-marker-expression start-index="308" stop-index="308" value="2" />
+                                                                <and-literal-expression start-index="314" stop-index="314" value="7" />
+                                                                <and-parameter-marker-expression start-index="314" stop-index="314" value="3" />
+                                                            </between-right-value>
+                                                        </predicate>
+                                                    </and-predicate>
+                                                </where>
+                                                <order-by>
+                                                    <column-item start-index="325" stop-index="333" name="item_id" order-direction="DESC">
+                                                        <owner start-index="325" stop-index="325" name="i" />
+                                                    </column-item>
+                                                </order-by>
+                                            </select>
+                                        </subquery>
+                                    </subqueryTable>
+                                </table-factor>
+
+                            </table-reference>
+                            <where start-index="346" stop-index="362">
+                                <and-predicate>
+                                    <predicate start-index="352" stop-index="362">
+                                        <column-left-value start-index="352" stop-index="357" name="rownum" />
+                                        <operator type="&lt;=" />
+                                        <compare-right-value>
+                                            <literal-expression start-index="362" stop-index="362" value="3" />
+                                            <parameter-marker-expression start-index="362" stop-index="362" value="4" />
+                                        </compare-right-value>
+                                    </predicate>
+                                </and-predicate>
+                            </where>
+
+
+                        </select>
+                    </subquery>
+                </subqueryTable>
+            </table-factor>
+        </table-reference>
     </select>
 
-    <select sql-case-id="select_pagination_with_row_number_for_greater_than" parameters="1, 2, 9, 10, 5, 3">
-        <tables>
-            <simple-table name="t_order" alias="order0_" start-index="146" stop-index="152" />
-            <simple-table name="t_order_item" alias="i" start-index="167" stop-index="178" />
-        </tables>
-        <projections start-index="58" stop-index="139">
-            <column-projection name="order_id" alias="order_id" start-index="58" stop-index="73">
-                <owner name="order0_" start-index="58" stop-index="64" />
-            </column-projection>
-            <column-projection name="status" alias="status" start-index="88" stop-index="101">
-                <owner name="order0_" start-index="88" stop-index="94" />
-            </column-projection>
-            <column-projection name="user_id" alias="user_id" start-index="114" stop-index="128">
-                <owner name="order0_" start-index="114" stop-index="120" />
-            </column-projection>
+    <select sql-case-id="select_pagination_with_row_number_for_greater_than" parameters="1, 2, 9, 7, 5, 3">
+        <projections start-index="7" stop-index="7" >
+            <shorthand-projection stop-index="7" start-index="7" />
         </projections>
-        <where start-index="367" stop-index="385" literal-start-index="368" literal-stop-index="386">
+        <table-reference>
+            <table-factor>
+                <subqueryTable>
+                    <subquery start-index="14" stop_index="363">
+                        <select>
+                            <projections start-index="22" stop-index="43">
+                                <shorthand-projection start-index="22" stop-index="27">
+                                    <owner start-index="22" stop-index="25" name="row_" />
+                                </shorthand-projection>
+                                <column-projection start-index="30" stop-index="35" name="rownum" alias="rownum_" />
+                            </projections>
+                            <table-reference>
+                                <table-factor>
+                                    <subqueryTable start-index="50" stop-index="339" alias="row_">
+                                        <subquery>
+                                            <select>
+                                                <projections start-index="58" stop-index="139" >
+                                                    <column-projection start-index="58" stop-index="73" name="order_id" alias="order_id">
+                                                        <owner start-index="58" stop-index="64" name="order0_" />
+                                                    </column-projection>
+                                                    <column-projection start-index="88" stop-index="101" name="status" alias="status">
+                                                        <owner start-index="88" stop-index="94" name="order0_" />
+                                                    </column-projection>
+                                                    <column-projection start-index="114" stop-index="128" name="user_id" alias="user_id">
+                                                        <owner start-index="114" stop-index="120" name="order0_" />
+                                                    </column-projection>
+                                                </projections>
+                                                <table-reference>
+                                                    <table-factor>
+                                                        <table start-index="146" stop-index="152" name="t_order" alias="order0_" />
+                                                    </table-factor>
+                                                    <join-table>
+                                                        <table-factor>
+                                                            <table start-index="167" stop-index="178" name="t_order_item" alias="i" />
+                                                        </table-factor>
+                                                        <joinSpecification>
+                                                            <and-predicate>
+                                                                <predicate start-index="185" stop-index="211">
+                                                                    <column-left-value start-index="185" stop-index="199" name="user_id">
+                                                                        <owner start-index="185" stop-index="191" name="order0_" />
+                                                                    </column-left-value>
+                                                                    <column-right-value start-index="203" stop-index="211" name="user_id">
+                                                                        <owner start-index="203" stop-index="203" name="i" />
+                                                                    </column-right-value>
+                                                                </predicate>
+                                                                <predicate start-index="217" stop-index="245">
+                                                                    <column-left-value start-index="217" stop-index="232" name="order_id">
+                                                                        <owner start-index="217" stop-index="223" name="order0_" />
+                                                                    </column-left-value>
+                                                                    <column-right-value start-index="236" stop-index="245" name="order_id">
+                                                                        <owner start-index="236" stop-index="236" name="i" />
+                                                                    </column-right-value>
+                                                                </predicate>
+                                                            </and-predicate>
+                                                        </joinSpecification>
+                                                    </join-table>
+                                                </table-reference>
+                                                <where start-index="247" stop-index="314">
+                                                    <and-predicate>
+                                                        <predicate start-index="253" stop-index="277">
+                                                            <column-left-value start-index="253" stop-index="267" name="user_id">
+                                                                <owner start-index="253" stop-index="259" name="order0_" />
+                                                            </column-left-value>
+                                                            <in-right-value>
+                                                                <literal-expression start-index="273" stop-index="273" value="1" />
+                                                                <literal-expression start-index="276" stop-index="276" value="2" />
+                                                                <parameter-marker-expression start-index="273" stop-index="273" value="0" />
+                                                                <parameter-marker-expression start-index="276" stop-index="276" value="1" />
+                                                            </in-right-value>
+                                                        </predicate>
+                                                        <predicate start-index="283" stop-index="314">
+                                                            <column-left-value start-index="283" stop-index="298" name="order_id">
+                                                                <owner start-index="283" stop-index="289" name="order0_" />
+                                                            </column-left-value>
+                                                            <between-right-value>
+                                                                <between-literal-expression start-index="308" stop-index="308" value="9" />
+                                                                <between-parameter-marker-expression start-index="308" stop-index="308" value="2" />
+                                                                <and-literal-expression start-index="314" stop-index="314" value="7" />
+                                                                <and-parameter-marker-expression start-index="314" stop-index="314" value="3" />
+                                                            </between-right-value>
+                                                        </predicate>
+                                                    </and-predicate>
+                                                </where>
+                                                <order-by>
+                                                    <column-item start-index="325" stop-index="333" name="item_id" order-direction="DESC">
+                                                        <owner start-index="325" stop-index="325" name="i" />
+                                                    </column-item>
+                                                </order-by>
+                                            </select>
+                                        </subquery>
+                                    </subqueryTable>
+                                </table-factor>
+
+                            </table-reference>
+                            <where start-index="346" stop-index="362">
+                                <and-predicate>
+                                    <predicate start-index="352" stop-index="362">
+                                        <column-left-value start-index="352" stop-index="357" name="rownum" />
+                                        <operator type="&lt;=" />
+                                        <compare-right-value>
+                                            <literal-expression start-index="362" stop-index="362" value="5" />
+                                            <parameter-marker-expression start-index="362" stop-index="362" value="4" />
+                                        </compare-right-value>
+                                    </predicate>
+                                </and-predicate>
+                            </where>
+                        </select>
+                    </subquery>
+                </subqueryTable>
+            </table-factor>
+        </table-reference>
+        <where start-index="367" stop-index="385">
             <and-predicate>
-                <!-- FIXME cannot parse subquery's predicate -->
-                <predicate start-index="373" stop-index="385" literal-start-index="374" literal-stop-index="386">
-                    <column-left-value name="rownum_" start-index="373" stop-index="381" literal-start-index="374" literal-stop-index="382">
-                        <owner name="t" start-index="373" stop-index="373" literal-start-index="374" literal-stop-index="374" />
+                <predicate start-index="373" stop-index="385">
+                    <column-left-value start-index="373" stop-index="381" name="rownum_">
+                        <owner start-index="373" stop-index="373" name="t" />
                     </column-left-value>
                     <operator type="&gt;" />
                     <compare-right-value>
-                        <parameter-marker-expression value="5" />
-                        <literal-expression value="3" />
+                        <literal-expression start-index="385" stop-index="385" value="3" />
+                        <parameter-marker-expression start-index="385" stop-index="385" value="5" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
-        <order-by>
-            <column-item name="item_id" order-direction="DESC">
-                <owner name="i" start-index="325" stop-index="325" literal-start-index="326" literal-stop-index="326" />
-            </column-item>
-        </order-by>
-        <offset value="3" parameter-index="5" />
-        <row-count value="5" parameter-index="4" />
     </select>
 
-    <select sql-case-id="select_pagination_with_row_number_for_greater_than_and_equal" parameters="1, 2, 9, 10, 5, 3">
-        <tables>
-            <simple-table name="t_order" alias="order0_" start-index="146" stop-index="152" />
-            <simple-table name="t_order_item" alias="i" start-index="167" stop-index="178" />
-        </tables>
-        <projections start-index="58" stop-index="139">
-            <column-projection name="order_id" alias="order_id" start-index="58" stop-index="73">
-                <owner name="order0_" start-index="58" stop-index="64" />
-            </column-projection>
-            <column-projection name="status" alias="status" start-index="88" stop-index="101">
-                <owner name="order0_" start-index="88" stop-index="94" />
-            </column-projection>
-            <column-projection name="user_id" alias="user_id" start-index="114" stop-index="128">
-                <owner name="order0_" start-index="114" stop-index="120" />
-            </column-projection>
+    <select sql-case-id="select_pagination_with_row_number_for_greater_than_and_equal" parameters="1, 2, 9, 7, 5, 3">
+        <projections start-index="7" stop-index="7" >
+            <shorthand-projection stop-index="7" start-index="7" />
         </projections>
-        <where start-index="367" stop-index="386" literal-start-index="368" literal-stop-index="387">
+        <table-reference>
+            <table-factor>
+                <subqueryTable>
+                    <subquery start-index="14" stop_index="363">
+                        <select>
+                            <projections start-index="22" stop-index="43">
+                                <shorthand-projection start-index="22" stop-index="27">
+                                    <owner start-index="22" stop-index="25" name="row_" />
+                                </shorthand-projection>
+                                <column-projection start-index="30" stop-index="35" name="rownum" alias="rownum_" />
+                            </projections>
+                            <table-reference>
+                                <table-factor>
+                                    <subqueryTable start-index="50" stop-index="339" alias="row_">
+                                        <subquery>
+                                            <select>
+                                                <projections start-index="58" stop-index="139" >
+                                                    <column-projection start-index="58" stop-index="73" name="order_id" alias="order_id">
+                                                        <owner start-index="58" stop-index="64" name="order0_" />
+                                                    </column-projection>
+                                                    <column-projection start-index="88" stop-index="101" name="status" alias="status">
+                                                        <owner start-index="88" stop-index="94" name="order0_" />
+                                                    </column-projection>
+                                                    <column-projection start-index="114" stop-index="128" name="user_id" alias="user_id">
+                                                        <owner start-index="114" stop-index="120" name="order0_" />
+                                                    </column-projection>
+                                                </projections>
+                                                <table-reference>
+                                                    <table-factor>
+                                                        <table start-index="146" stop-index="152" name="t_order" alias="order0_" />
+                                                    </table-factor>
+                                                    <join-table>
+                                                        <table-factor>
+                                                            <table start-index="167" stop-index="178" name="t_order_item" alias="i" />
+                                                        </table-factor>
+                                                        <joinSpecification>
+                                                            <and-predicate>
+                                                                <predicate start-index="185" stop-index="211">
+                                                                    <column-left-value start-index="185" stop-index="199" name="user_id">
+                                                                        <owner start-index="185" stop-index="191" name="order0_" />
+                                                                    </column-left-value>
+                                                                    <column-right-value start-index="203" stop-index="211" name="user_id">
+                                                                        <owner start-index="203" stop-index="203" name="i" />
+                                                                    </column-right-value>
+                                                                </predicate>
+                                                                <predicate start-index="217" stop-index="245">
+                                                                    <column-left-value start-index="217" stop-index="232" name="order_id">
+                                                                        <owner start-index="217" stop-index="223" name="order0_" />
+                                                                    </column-left-value>
+                                                                    <column-right-value start-index="236" stop-index="245" name="order_id">
+                                                                        <owner start-index="236" stop-index="236" name="i" />
+                                                                    </column-right-value>
+                                                                </predicate>
+                                                            </and-predicate>
+                                                        </joinSpecification>
+                                                    </join-table>
+                                                </table-reference>
+                                                <where start-index="247" stop-index="314">
+                                                    <and-predicate>
+                                                        <predicate start-index="253" stop-index="277">
+                                                            <column-left-value start-index="253" stop-index="267" name="user_id">
+                                                                <owner start-index="253" stop-index="259" name="order0_" />
+                                                            </column-left-value>
+                                                            <in-right-value>
+                                                                <literal-expression start-index="273" stop-index="273" value="1" />
+                                                                <literal-expression start-index="276" stop-index="276" value="2" />
+                                                                <parameter-marker-expression start-index="273" stop-index="273" value="0" />
+                                                                <parameter-marker-expression start-index="276" stop-index="276" value="1" />
+                                                            </in-right-value>
+                                                        </predicate>
+                                                        <predicate start-index="283" stop-index="314">
+                                                            <column-left-value start-index="283" stop-index="298" name="order_id">
+                                                                <owner start-index="283" stop-index="289" name="order0_" />
+                                                            </column-left-value>
+                                                            <between-right-value>
+                                                                <between-literal-expression start-index="308" stop-index="308" value="9" />
+                                                                <between-parameter-marker-expression start-index="308" stop-index="308" value="2" />
+                                                                <and-literal-expression start-index="314" stop-index="314" value="7" />
+                                                                <and-parameter-marker-expression start-index="314" stop-index="314" value="3" />
+                                                            </between-right-value>
+                                                        </predicate>
+                                                    </and-predicate>
+                                                </where>
+                                                <order-by>
+                                                    <column-item start-index="325" stop-index="333" name="item_id" order-direction="DESC">
+                                                        <owner start-index="325" stop-index="325" name="i" />
+                                                    </column-item>
+                                                </order-by>
+                                            </select>
+                                        </subquery>
+                                    </subqueryTable>
+                                </table-factor>
+
+                            </table-reference>
+                            <where start-index="346" stop-index="362">
+                                <and-predicate>
+                                    <predicate start-index="352" stop-index="362">
+                                        <column-left-value start-index="352" stop-index="357" name="rownum" />
+                                        <operator type="&lt;=" />
+                                        <compare-right-value>
+                                            <literal-expression start-index="362" stop-index="362" value="5" />
+                                            <parameter-marker-expression start-index="362" stop-index="362" value="4" />
+                                        </compare-right-value>
+                                    </predicate>
+                                </and-predicate>
+                            </where>
+                        </select>
+                    </subquery>
+                </subqueryTable>
+            </table-factor>
+        </table-reference>
+        <where start-index="367" stop-index="385">
             <and-predicate>
-                <!-- FIXME cannot parse subquery's predicate -->
-                <predicate start-index="373" stop-index="386" literal-start-index="374" literal-stop-index="387">
-                    <column-left-value name="rownum_" start-index="373" stop-index="381" literal-start-index="374" literal-stop-index="382">
-                        <owner name="t" start-index="373" stop-index="373" literal-start-index="374" literal-stop-index="374" />
+                <predicate start-index="373" stop-index="386">
+                    <column-left-value start-index="373" stop-index="381" name="rownum_">
+                        <owner start-index="373" stop-index="373" name="t" />
                     </column-left-value>
                     <operator type="&gt;=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="5" />
-                        <literal-expression value="3" />
+                        <literal-expression start-index="386" stop-index="386" value="3" />
+                        <parameter-marker-expression start-index="386" stop-index="386" value="5" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
-        <order-by>
-            <column-item name="item_id" order-direction="DESC">
-                <owner name="i" start-index="325" stop-index="325" literal-start-index="326" literal-stop-index="326" />
-            </column-item>
-        </order-by>
-        <offset value="3" parameter-index="5" />
-        <row-count value="5" parameter-index="4" />
     </select>
 
     <select sql-case-id="select_pagination_with_row_number_not_at_end" parameters="20">
