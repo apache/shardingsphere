@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "分布式主键"
 weight = 2
 +++

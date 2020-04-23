@@ -396,8 +396,21 @@ public final class MySQLPacketPayload implements PacketPayload {
     }
     
     /**
-     * Read rest of packet string from byte buffers.
+     * Read rest of packet string from byte buffers and return bytes.
      * 
+     * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::RestOfPacketString">RestOfPacketString</a>
+     *
+     * @return rest of packet string bytes
+     */
+    public byte[] readStringEOFByBytes() {
+        byte[] result = new byte[byteBuf.readableBytes()];
+        byteBuf.readBytes(result);
+        return result;
+    }
+    
+    /**
+     * Read rest of packet string from byte buffers.
+     *
      * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::RestOfPacketString">RestOfPacketString</a>
      *
      * @return rest of packet string

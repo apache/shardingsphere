@@ -25,6 +25,7 @@ import org.apache.shardingsphere.shardingscaling.core.config.ScalingContext;
 import org.apache.shardingsphere.shardingscaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.shardingscaling.core.exception.SyncTaskExecuteException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,6 +62,13 @@ public final class InventoryDataSyncTaskTest {
     @After
     public void tearDown() {
         dataSourceManager.close();
+    }
+    
+    @Test(expected = SyncTaskExecuteException.class)
+    public void assertStartWithGetEstimatedRowsFailure() {
+        syncConfiguration.getDumperConfiguration().setTableName("t_non_exist");
+        InventoryDataSyncTask inventoryDataSyncTask = new InventoryDataSyncTask(syncConfiguration, dataSourceManager);
+        inventoryDataSyncTask.start(event -> { });
     }
     
     @Test

@@ -19,4 +19,3 @@ driverClassName: com.mysql.jdbc.Driver
 jdbcUrl: jdbc:mysql://localhost:3307/databases_tables
 username: root
 password: root
-

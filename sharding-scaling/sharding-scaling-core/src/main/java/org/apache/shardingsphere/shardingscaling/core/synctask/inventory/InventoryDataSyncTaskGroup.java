@@ -20,31 +20,23 @@ package org.apache.shardingsphere.shardingscaling.core.synctask.inventory;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.controller.task.ReportCallback;
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
-import org.apache.shardingsphere.shardingscaling.core.exception.SyncTaskExecuteException;
-import org.apache.shardingsphere.shardingscaling.core.execute.Event;
-import org.apache.shardingsphere.shardingscaling.core.execute.EventType;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.AbstractShardingScalingExecutor;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTask;
 import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
 
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Inventory data sync task group.
  */
 @Slf4j
-public final class InventoryDataSyncTaskGroup implements SyncTask {
+public final class InventoryDataSyncTaskGroup extends AbstractShardingScalingExecutor implements SyncTask {
     
     private final Collection<SyncTask> syncTasks;
     
     private final String syncTaskId;
-    
-    private final Queue<SyncTask> submitFailureTasks = new LinkedList<>();
     
     public InventoryDataSyncTaskGroup(final SyncConfiguration syncConfiguration, final Collection<SyncTask> inventoryDataSyncTasks) {
         DataSourceMetaData dataSourceMetaData = syncConfiguration.getDumperConfiguration().getDataSourceConfiguration().getDataSourceMetaData();
@@ -53,35 +45,15 @@ public final class InventoryDataSyncTaskGroup implements SyncTask {
     }
     
     @Override
-    public void start(final ReportCallback callback) {
-        final AtomicInteger finishedTask = new AtomicInteger();
-        for (final SyncTask each : syncTasks) {
-            try {
-                each.start(new ReportCallback() {
-        
-                    @Override
-                    public void report(final Event event) {
-                        if (EventType.FINISHED == event.getEventType()) {
-                            finishedTask.incrementAndGet();
-                        } else {
-                            callback.report(new Event(syncTaskId, EventType.EXCEPTION_EXIT));
-                        }
-                        if (syncTasks.size() == finishedTask.get() && submitFailureTasks.isEmpty()) {
-                            callback.report(new Event(syncTaskId, EventType.FINISHED));
-                        } else if (!submitFailureTasks.isEmpty()) {
-                            submitFailureTasks.peek().start(this);
-                            submitFailureTasks.poll();
-                        }
-                    }
-                });
-            } catch (RejectedExecutionException ex) {
-                submitFailureTasks.offer(each);
-            } catch (SyncTaskExecuteException syncTaskEx) {
-                stop();
-                callback.report(new Event(syncTaskId, EventType.EXCEPTION_EXIT));
-                break;
-            }
+    public void start() {
+        super.start();
+        for (SyncTask each : syncTasks) {
+            each.start(null);
         }
+    }
+    
+    @Override
+    public void start(final ReportCallback callback) {
     }
     
     @Override

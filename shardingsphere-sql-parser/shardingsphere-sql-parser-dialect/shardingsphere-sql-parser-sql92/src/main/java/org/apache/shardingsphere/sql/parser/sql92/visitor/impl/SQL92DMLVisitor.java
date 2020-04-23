@@ -19,7 +19,8 @@ package org.apache.shardingsphere.sql.parser.sql92.visitor.impl;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.DMLVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.ColumnNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.SubqueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AssignmentValueContext;
@@ -413,8 +414,8 @@ public final class SQL92DMLVisitor extends SQL92Visitor implements DMLVisitor {
         }
         if (null != ctx.USING()) {
             Collection<ColumnSegment> columnSegmentList = new LinkedList<>();
-            for (SQL92StatementParser.ColumnNameContext cname :ctx.columnNames().columnName()) {
-                columnSegmentList.add((ColumnSegment) visit(cname));
+            for (ColumnNameContext each : ctx.columnNames().columnName()) {
+                columnSegmentList.add((ColumnSegment) visit(each));
             }
             result.getUsingColumns().addAll(columnSegmentList);
         }
@@ -442,5 +443,10 @@ public final class SQL92DMLVisitor extends SQL92Visitor implements DMLVisitor {
             items.add((OrderByItemSegment) visit(each));
         }
         return new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
+    }
+    
+    @Override
+    public ASTNode visitSubquery(final SubqueryContext ctx) {
+        return visit(ctx.unionClause());
     }
 }

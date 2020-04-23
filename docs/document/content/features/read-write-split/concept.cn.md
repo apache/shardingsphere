@@ -1,6 +1,5 @@
 +++
 pre = "<b>3.2.1. </b>"
-toc = true
 title = "核心概念"
 weight = 1
 +++

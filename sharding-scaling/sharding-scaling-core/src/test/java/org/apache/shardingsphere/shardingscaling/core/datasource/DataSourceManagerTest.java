@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shardingscaling.core.datasource;
 
 import com.google.gson.Gson;
 import com.zaxxer.hikari.HikariDataSource;
-
 import org.apache.shardingsphere.shardingscaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.utils.SyncConfigurationUtil;
@@ -27,11 +26,11 @@ import org.apache.shardingsphere.shardingscaling.core.util.ReflectionUtil;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.sql.DataSource;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
-import javax.sql.DataSource;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;

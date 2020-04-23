@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.underlying.merge.result.impl.transparent;
 
-import org.apache.shardingsphere.underlying.executor.sql.queryresult.QueryResult;
+import org.apache.shardingsphere.underlying.executor.sql.QueryResult;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;

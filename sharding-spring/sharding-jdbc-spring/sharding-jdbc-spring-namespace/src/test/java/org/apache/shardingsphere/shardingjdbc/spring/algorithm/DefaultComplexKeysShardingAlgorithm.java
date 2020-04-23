@@ -32,7 +32,7 @@ public final class DefaultComplexKeysShardingAlgorithm implements ComplexKeysSha
     
     @Override
     public String getType() {
-        return "complex";
+        return "COMPLEX_TEST";
     }
     
     @Override

@@ -39,6 +39,7 @@ The List in alphabet order.
 | Zonglei Dong    | dongzl                  |
 | Xiaofeng Jiang  | SteNicholas             |
 | Ling Yue        | yue530tom               |
+| Kimm King       | kimmking                |
 
 ## Mentors
 
@@ -52,8 +53,8 @@ The List in alphabet order.
 
 You can find all contributors of ShardingSphere from GitHub contribution list.
 
-- [incubator-shardingsphere](https://github.com/apache/incubator-shardingsphere/graphs/contributors)
-- [incubator-shardingsphere-benchmark](https://github.com/apache/incubator-shardingsphere-benchmark)
+- [shardingsphere](https://github.com/apache/shardingsphere/graphs/contributors)
+- [shardingsphere-benchmark](https://github.com/apache/shardingsphere-benchmark)
 
 ## Becoming a Committer
 

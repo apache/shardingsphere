@@ -1,6 +1,5 @@
 +++
 pre = "<b>3.6.5. </b>"
-toc = true
 title = "性能测试"
 weight = 5
 +++
@@ -351,13 +350,13 @@ DELETE FROM tbl1 WHERE id=?
 
 #### 压测类
 
-参考[shardingsphere-benchmark](https://github.com/apache/incubator-shardingsphere-benchmark/tree/master/shardingsphere-benchmark)实现，注意阅读其中的注释
+参考[shardingsphere-benchmark](https://github.com/apache/shardingsphere-benchmark/tree/master/shardingsphere-benchmark)实现，注意阅读其中的注释
 
 #### 编译
 
 ```shell
-git clone https://github.com/apache/incubator-shardingsphere-benchmark.git
-cd incubator-shardingsphere-benchmark/shardingsphere-benchmark
+git clone https://github.com/apache/shardingsphere-benchmark.git
+cd shardingsphere-benchmark/shardingsphere-benchmark
 mvn clean install
 ```
 
@@ -366,7 +365,7 @@ mvn clean install
 ```shell
 cp target/shardingsphere-benchmark-1.0-SNAPSHOT-jar-with-dependencies.jar apache-jmeter-4.0/lib/ext
 jmeter –n –t test_plan/test.jmx
-test.jmx参考https://github.com/apache/incubator-shardingsphere-benchmark/tree/master/report/script/test_plan/test.jmx
+test.jmx参考https://github.com/apache/shardingsphere-benchmark/tree/master/report/script/test_plan/test.jmx
 ```
 
 #### 压测结果处理

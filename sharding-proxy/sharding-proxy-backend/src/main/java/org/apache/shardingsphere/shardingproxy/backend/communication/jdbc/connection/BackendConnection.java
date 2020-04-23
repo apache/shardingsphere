@@ -31,9 +31,9 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.underlying.common.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.underlying.common.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
-import org.apache.shardingsphere.underlying.executor.sql.connection.ExecutionConnection;
-import org.apache.shardingsphere.underlying.executor.sql.connection.StatementOption;
-import org.apache.shardingsphere.underlying.executor.sql.connection.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.connection.JDBCExecutionConnection;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.group.StatementOption;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -51,7 +51,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 @Getter
 @Slf4j
-public final class BackendConnection implements ExecutionConnection, AutoCloseable {
+public final class BackendConnection implements JDBCExecutionConnection, AutoCloseable {
     
     private static final int MAXIMUM_RETRY_COUNT = 5;
     
@@ -193,7 +193,7 @@ public final class BackendConnection implements ExecutionConnection, AutoCloseab
     }
     
     @Override
-    public Statement createStatement(final Connection connection, final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
+    public Statement createStorageResource(final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
         Statement result = connection.createStatement();
         if (ConnectionMode.MEMORY_STRICTLY == connectionMode) {
             setFetchSize(result);
@@ -202,9 +202,9 @@ public final class BackendConnection implements ExecutionConnection, AutoCloseab
     }
     
     @Override
-    public PreparedStatement createPreparedStatement(final String sql, final List<Object> parameters,
-                                     final Connection connection, final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
-        PreparedStatement result = statementOption.isReturnGeneratedKeys()
+    public PreparedStatement createStorageResource(final String sql, final List<Object> parameters, 
+                                                   final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
+        PreparedStatement result = option.isReturnGeneratedKeys()
                 ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sql);
         for (int i = 0; i < parameters.size(); i++) {
             result.setObject(i + 1, parameters.get(i));

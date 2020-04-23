@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "Parser"
 weight = 3
 +++

@@ -20,10 +20,10 @@ shardingsphere-ui-backend模块是一个标准的spring boot项目。
 ## 如何构建
 
 ```bash
-git clone https://github.com/apache/incubator-shardingsphere.git
-cd incubator-shardingsphere/shardingsphere-ui/
+git clone https://github.com/apache/shardingsphere.git
+cd shardingsphere/shardingsphere-ui/
 mvn clean package -Prelease
 ```
 
-从 `shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-shardingsphere-ui-bin.tar.gz`中获取软件包。
+从 `shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-ui-bin.tar.gz`中获取软件包。
 

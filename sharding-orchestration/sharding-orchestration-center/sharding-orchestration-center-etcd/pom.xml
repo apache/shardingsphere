@@ -28,7 +28,6 @@
     
     <properties>
         <guava.version>20.0</guava.version>
-        <jetcd.version>0.3.0</jetcd.version>
     </properties>
     
     <dependencies>

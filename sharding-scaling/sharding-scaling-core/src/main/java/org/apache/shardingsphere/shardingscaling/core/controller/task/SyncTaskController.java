@@ -19,10 +19,12 @@ package org.apache.shardingsphere.shardingscaling.core.controller.task;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingscaling.core.config.DataSourceConfiguration;
+import org.apache.shardingsphere.shardingscaling.core.config.ScalingContext;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.shardingscaling.core.execute.EventType;
+import org.apache.shardingsphere.shardingscaling.core.execute.engine.ExecuteCallback;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.ShardingScalingExecutor;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTask;
 import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
 
@@ -88,14 +90,18 @@ public final class SyncTaskController implements Runnable {
     @Override
     public void run() {
         syncTaskControlStatus = SyncTaskControlStatus.MIGRATE_INVENTORY_DATA;
-        inventoryDataSyncTaskGroup.start(event -> {
-            log.info("inventory data migrate task {} finished, execute result: {}", event.getTaskId(), event.getEventType().name());
-            if (EventType.EXCEPTION_EXIT.equals(event.getEventType())) {
+        ScalingContext.getInstance().getTaskExecuteEngine().submit((ShardingScalingExecutor) inventoryDataSyncTaskGroup, new ExecuteCallback() {
+            
+            @Override
+            public void onSuccess() {
+                executeIncrementalDataSyncTask();
+            }
+    
+            @Override
+            public void onFailure(final Throwable throwable) {
                 stop();
                 dataSourceManager.close();
                 syncTaskControlStatus = SyncTaskControlStatus.MIGRATE_INVENTORY_DATA_FAILURE;
-            } else {
-                executeIncrementalDataSyncTask();
             }
         });
     }
@@ -106,10 +112,21 @@ public final class SyncTaskController implements Runnable {
             syncTaskControlStatus = SyncTaskControlStatus.STOPPED;
             return;
         }
-        incrementalDataSyncTask.start(event -> {
-            log.info("incremental data sync task {} finished, execute result: {}", syncTaskId, event.getEventType().name());
-            dataSourceManager.close();
-            syncTaskControlStatus = EventType.FINISHED.equals(event.getEventType()) ? SyncTaskControlStatus.STOPPED : SyncTaskControlStatus.SYNCHRONIZE_INCREMENTAL_DATA_FAILURE;
+        ScalingContext.getInstance().getTaskExecuteEngine().submit((ShardingScalingExecutor) incrementalDataSyncTask, new ExecuteCallback() {
+            
+            @Override
+            public void onSuccess() {
+                log.info("incremental data sync task {} finished", syncTaskId);
+                dataSourceManager.close();
+                syncTaskControlStatus = SyncTaskControlStatus.STOPPED;
+            }
+    
+            @Override
+            public void onFailure(final Throwable throwable) {
+                stop();
+                dataSourceManager.close();
+                syncTaskControlStatus = SyncTaskControlStatus.SYNCHRONIZE_INCREMENTAL_DATA_FAILURE;
+            }
         });
         syncTaskControlStatus = SyncTaskControlStatus.SYNCHRONIZE_INCREMENTAL_DATA;
     }

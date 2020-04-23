@@ -1,6 +1,5 @@
 +++
 pre = "<b>2.3. </b>"
-toc = true
 title = "Sharding-Scaling(Alpha)"
 weight = 3
 +++
@@ -12,12 +11,12 @@ weight = 3
 #### 1. Execute the following command to compile and generate the sharding-scaling binary package:
 
 ```
-git clone https://github.com/apache/incubator-shardingsphere.git；
-cd incubator-shardingsphere;
+git clone https://github.com/apache/shardingsphere.git；
+cd shardingsphere;
 mvn clean install -Prelease;
 ```
 
-The binary package's directory is:`/sharding-distribution/sharding-scaling-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-scaling-bin.tar.gz`。
+The binary package's directory is:`/sharding-distribution/sharding-scaling-distribution/target/apache-shardingsphere-${latest.release.version}-sharding-scaling-bin.tar.gz`。
 
 #### 2. Unzip the distribution package, modify the configuration file `conf/server.yaml`, we should ensure the port does not conflict with others, and other values can be left as default:
 

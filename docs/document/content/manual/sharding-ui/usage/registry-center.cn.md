@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "注册中心"
 weight = 3
 +++

@@ -1,3 +1,39 @@
+## 4.1.0
+
+### New Features
+
+1. Support scaling for ShardingSphere (alpha version)
+1. Move etcd registry center from experiment repo to apache repo
+1. Upgrade to Java 8
+
+### Enhancement
+
+1. Optimization for Sharing Parser with ANTLR Visitor improving the parsing performance of long SQL by 100%~1000%
+1. Use multiple threads to load metadata for different data sources
+1. Support `allow.range.query.with.inline.sharding` option
+1. The docker of Sharding-Proxy supports loading external lib packages
+1. Support integration with Spring using @ShardingTransactionType
+1. Enhance ShardingDataSource to compatiable with Seata in micro-sevice distribution transaction
+
+### Refactor
+
+1. Remove leaf key generator
+
+### Bug Fixes
+
+1. Fix an exception caused by using a CHAR/VARCHAR type column as a order by item
+1. Refine `DataTypeName` syntax rules of all database dialects
+1. Fix an exception caused by executing `BEGIN` using prepared statement of MySQL C API
+1. Fix the problem that `ALTER TABLE` fails to execute when the field type of the table contains Integer/Double/BigDecimal
+1. Fix the problem of the stop index dislocation of segment with alias
+1. Fix the problem that overwriting SQL `SELECT * FROM tbl WHERE encrypt_col = ? AND (sharding_key = ? OR sharding_key = ?)` when using sharding + encrypt would throw StringIndexOutOfBoundsException
+1. Fix the problem of incorrect decoding after AES encoding when using Sharding-Proxy in Spring Boot
+1. Fix a long-time problem of adding schema dynamically in Sharding-UI
+
+###  Change Logs
+
+1. [MILESTONE](https://github.com/apache/shardingsphere/milestone/12)
+
 ## 4.0.1
 
 ### Bug Fixes

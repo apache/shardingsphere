@@ -1,14 +1,13 @@
 +++
-toc = true
 title = "Build"
 weight = 1
 +++
 
 ## Binary Run
 
-1. `git clone https://github.com/apache/incubator-shardingsphere.git`;
+1. `git clone https://github.com/apache/shardingsphere.git`;
 1. Run `mvn clean install -Prelease`;
-1. Get the package in `/sharding-distribution/shardingsphere-ui-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-ui-bin.tar.gz`;
+1. Get the package in `/sharding-distribution/shardingsphere-ui-distribution/target/apache-shardingsphere-${latest.release.version}-sharding-ui-bin.tar.gz`;
 1. After the decompression, run `bin/start.sh`;
 1. visit `http://localhost:8088/`.
 

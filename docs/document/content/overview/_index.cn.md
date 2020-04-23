@@ -5,11 +5,11 @@ weight = 1
 chapter = true
 +++
 
-[![GitHub release](https://img.shields.io/github/release/apache/incubator-shardingsphere.svg?style=social&label=Release)](https://github.com/apache/incubator-shardingsphere/releases)&nbsp;
-[![GitHub stars](https://img.shields.io/github/stars/apache/incubator-shardingsphere.svg?style=social&label=Star)](https://github.com/apache/incubator-shardingsphere/stargazers)&nbsp;
-[![GitHub forks](https://img.shields.io/github/forks/apache/incubator-shardingsphere.svg?style=social&label=Fork)](https://github.com/apache/incubator-shardingsphere/fork)&nbsp;
+[![GitHub release](https://img.shields.io/github/release/apache/shardingsphere.svg?style=social&label=Release)](https://github.com/apache/shardingsphere/releases)&nbsp;
+[![GitHub stars](https://img.shields.io/github/stars/apache/shardingsphere.svg?style=social&label=Star)](https://github.com/apache/shardingsphere/stargazers)&nbsp;
+[![GitHub forks](https://img.shields.io/github/forks/apache/shardingsphere.svg?style=social&label=Fork)](https://github.com/apache/shardingsphere/fork)&nbsp;
 [![GitHub watchers](https://img.shields.io/github/watchers/sharding-sphere/sharding-sphere.svg?style=social&label=Watch)](https://github.com/sharding-sphere/sharding-sphere/watchers)
-[![Stargazers over time](https://starchart.cc/apache/incubator-shardingsphere.svg)](https://starchart.cc/apache/incubator-shardingsphere)
+[![Stargazers over time](https://starchart.cc/apache/shardingsphere.svg)](https://starchart.cc/apache/shardingsphere)
 
 ShardingSphere是一套开源的分布式数据库中间件解决方案组成的生态圈，它由Sharding-JDBC、Sharding-Proxy和Sharding-Sidecar（计划中）这3款相互独立的产品组成。
 他们均提供标准化的数据分片、分布式事务和数据库治理功能，可适用于如Java同构、异构语言、云原生等各种多样化的应用场景。
@@ -18,17 +18,17 @@ ShardingSphere定位为关系型数据库中间件，旨在充分合理地在分
 它与NoSQL和NewSQL是并存而非互斥的关系。NoSQL和NewSQL作为新技术探索的前沿，放眼未来，拥抱变化，是非常值得推荐的。反之，也可以用另一种思路看待问题，放眼未来，关注不变的东西，进而抓住事物本质。
 关系型数据库当今依然占有巨大市场，是各个公司核心业务的基石，未来也难于撼动，我们目前阶段更加关注在原有基础上的增量，而非颠覆。
 
-ShardingSphere目前已经进入[Apache孵化器](http://incubator.apache.org/projects/shardingsphere.html)，
-欢迎通过[shardingsphere的dev邮件列表](mailto:dev@shardingsphere.incubator.apache.org)与我们讨论。
+ShardingSphere已经在2020年4月16日从[Apache孵化器](http://incubator.apache.org/projects/shardingsphere.html)毕业，成为Apache顶级项目。
+欢迎通过[shardingsphere的dev邮件列表](mailto:dev@shardingsphere.apache.org)与我们讨论。
 
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![Gitter](https://badges.gitter.im/shardingsphere/shardingsphere.svg)](https://gitter.im/shardingsphere/Lobby)
 
-[![GitHub release](https://img.shields.io/github/release/apache/incubator-shardingsphere.svg)](https://github.com/apache/incubator-shardingsphere/releases)
+[![GitHub release](https://img.shields.io/github/release/apache/shardingsphere.svg)](https://github.com/apache/shardingsphere/releases)
 
-[![Total Lines](https://tokei.rs/b1/github/apache/incubator-shardingsphere?category=lines)](https://github.com/apache/incubator-shardingsphere)
+[![Total Lines](https://tokei.rs/b1/github/apache/shardingsphere?category=lines)](https://github.com/apache/shardingsphere)
 [![Build Status](https://builds.apache.org/job/shardingsphere-ci-dev/badge/icon)](https://builds.apache.org/job/shardingsphere-ci-dev/)
-[![Coverage Status](https://coveralls.io/repos/github/apache/incubator-shardingsphere/badge.svg?branch=dev)](https://coveralls.io/github/apache/incubator-shardingsphere?branch=dev)
+[![Coverage Status](https://coveralls.io/repos/github/apache/shardingsphere/badge.svg?branch=dev)](https://coveralls.io/github/apache/shardingsphere?branch=dev)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/278600ed40ad48e988ab485b439abbcd)](https://www.codacy.com/app/terrymanu/sharding-sphere?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sharding-sphere/sharding-sphere&amp;utm_campaign=Badge_Grade)
 [![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
 [![Skywalking Tracing](https://img.shields.io/badge/Skywalking%20Tracing-enable-brightgreen.svg)](https://github.com/apache/skywalking)

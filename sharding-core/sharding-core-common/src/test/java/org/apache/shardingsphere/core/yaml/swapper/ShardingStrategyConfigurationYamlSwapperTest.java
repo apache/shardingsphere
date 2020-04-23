@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.yaml.swapper;
 
 import org.apache.shardingsphere.api.config.sharding.strategy.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.HintShardingStrategyConfiguration;
-import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.sharding.complex.ComplexKeysShardingAlgorithm;
@@ -31,7 +30,6 @@ import org.apache.shardingsphere.core.shard.fixture.StandardShardingAlgorithmFix
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlHintShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlInlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlNoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlShardingAlgorithmConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlStandardShardingStrategyConfiguration;
@@ -117,22 +115,6 @@ public final class ShardingStrategyConfigurationYamlSwapperTest {
     }
     
     @Test
-    public void assertSwapToObjectWithInline() {
-        InlineShardingStrategyConfiguration actual = (InlineShardingStrategyConfiguration) shardingStrategyConfigurationYamlSwapper.swap(createInlineShardingStrategyConfiguration());
-        assertThat(actual.getShardingColumn(), is("id"));
-        assertThat(actual.getAlgorithmExpression(), is("xxx_$->{id % 10}"));
-    }
-    
-    private YamlShardingStrategyConfiguration createInlineShardingStrategyConfiguration() {
-        YamlInlineShardingStrategyConfiguration yamlInlineShardingStrategyConfiguration = new YamlInlineShardingStrategyConfiguration();
-        yamlInlineShardingStrategyConfiguration.setShardingColumn("id");
-        yamlInlineShardingStrategyConfiguration.setAlgorithmExpression("xxx_$->{id % 10}");
-        YamlShardingStrategyConfiguration result = new YamlShardingStrategyConfiguration();
-        result.setInline(yamlInlineShardingStrategyConfiguration);
-        return result;
-    }
-    
-    @Test
     public void assertSwapToObjectWithComplex() {
         ComplexShardingStrategyConfiguration actual = (ComplexShardingStrategyConfiguration) shardingStrategyConfigurationYamlSwapper.swap(createComplexShardingStrategyConfiguration());
         assertThat(actual.getShardingColumns(), is("id, creation_date"));
@@ -180,16 +162,5 @@ public final class ShardingStrategyConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToObjectWithNull() {
         assertNull(shardingStrategyConfigurationYamlSwapper.swap(new YamlShardingStrategyConfiguration()));
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void assertSwapToObjectWithMultipleSHardingStrategies() {
-        YamlShardingStrategyConfiguration actual = new YamlShardingStrategyConfiguration();
-        YamlInlineShardingStrategyConfiguration inlineShardingStrategyConfig = new YamlInlineShardingStrategyConfiguration();
-        inlineShardingStrategyConfig.setShardingColumn("order_id");
-        inlineShardingStrategyConfig.setAlgorithmExpression("t_order_${order_id % 2}");
-        actual.setInline(inlineShardingStrategyConfig);
-        actual.setNone(new YamlNoneShardingStrategyConfiguration());
-        shardingStrategyConfigurationYamlSwapper.swap(actual);
     }
 }

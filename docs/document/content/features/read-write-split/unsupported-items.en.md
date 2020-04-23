@@ -1,6 +1,5 @@
 +++
 pre = "<b>3.2.3. </b>"
-toc = true
 title = "Unsupported Items"
 weight = 3
 +++

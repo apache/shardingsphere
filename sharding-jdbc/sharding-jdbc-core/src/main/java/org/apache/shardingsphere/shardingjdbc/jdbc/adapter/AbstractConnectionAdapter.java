@@ -27,9 +27,9 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupport
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.underlying.common.hook.RootInvokeHook;
 import org.apache.shardingsphere.underlying.common.hook.SPIRootInvokeHook;
-import org.apache.shardingsphere.underlying.executor.sql.connection.ExecutionConnection;
-import org.apache.shardingsphere.underlying.executor.sql.connection.StatementOption;
-import org.apache.shardingsphere.underlying.executor.sql.connection.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.connection.JDBCExecutionConnection;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.group.StatementOption;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -48,7 +48,7 @@ import java.util.Map.Entry;
 /**
  * Adapter for {@code Connection}.
  */
-public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOperationConnection implements ExecutionConnection {
+public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOperationConnection implements JDBCExecutionConnection {
     
     @Getter
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
@@ -149,16 +149,16 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     @SuppressWarnings("MagicConstant")
     @Override
-    public final Statement createStatement(final Connection connection, final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
-        return connection.createStatement(statementOption.getResultSetType(), statementOption.getResultSetConcurrency(), statementOption.getResultSetHoldability());
+    public final Statement createStorageResource(final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
+        return connection.createStatement(option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
     }
     
     @SuppressWarnings("MagicConstant")
     @Override
-    public final PreparedStatement createPreparedStatement(final String sql, final List<Object> parameters,
-                                     final Connection connection, final ConnectionMode connectionMode, final StatementOption statementOption) throws SQLException {
-        return statementOption.isReturnGeneratedKeys() ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
-                : connection.prepareStatement(sql, statementOption.getResultSetType(), statementOption.getResultSetConcurrency(), statementOption.getResultSetHoldability());
+    public final PreparedStatement createStorageResource(final String sql, final List<Object> parameters, 
+                                                         final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
+        return option.isReturnGeneratedKeys() ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+                : connection.prepareStatement(sql, option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
     }
     
     @Override

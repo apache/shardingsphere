@@ -17,10 +17,14 @@
 
 package org.apache.shardingsphere.shardingscaling.core.fixture;
 
+import java.util.List;
+
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.Channel;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.importer.Importer;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.FinishedRecord;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
 
 public final class FixtureNopImporter implements Importer {
     
@@ -39,7 +43,11 @@ public final class FixtureNopImporter implements Importer {
     @Override
     public void write() {
         while (running) {
-            channel.fetchRecords(100, 3);
+            List<Record> records = channel.fetchRecords(100, 1);
+            if (FinishedRecord.class.equals(records.get(records.size() - 1).getClass())) {
+                channel.ack();
+                break;
+            }
             channel.ack();
         }
     }

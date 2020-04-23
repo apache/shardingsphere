@@ -20,7 +20,7 @@ grammar TCLStatement;
 import Symbol, Keyword, MySQLKeyword, Literals, BaseRule;
 
 setTransaction
-    : SET scope_? TRANSACTION
+    : SET scope_? TRANSACTION transactionCharacteristic (COMMA_ transactionCharacteristic)*
     ;
 
 setAutoCommit
@@ -51,3 +51,15 @@ rollback
 savepoint
     : SAVEPOINT
     ;
+
+transactionCharacteristic
+   : ISOLATION LEVEL level_ | accessMode_
+   ;
+
+level_
+   : REPEATABLE READ | READ COMMITTED | READ UNCOMMITTED | SERIALIZABLE
+   ;
+
+accessMode_
+   : READ (WRITE | ONLY)
+   ;

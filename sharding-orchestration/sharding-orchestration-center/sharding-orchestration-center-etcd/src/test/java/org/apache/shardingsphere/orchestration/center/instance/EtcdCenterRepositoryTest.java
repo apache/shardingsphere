@@ -135,7 +135,8 @@ public final class EtcdCenterRepositoryTest {
         io.etcd.jetcd.api.KeyValue keyValue2 = io.etcd.jetcd.api.KeyValue.newBuilder()
             .setKey(ByteString.copyFromUtf8("/key/key2"))
             .setValue(ByteString.copyFromUtf8("value3")).build();
-        List<KeyValue> keyValues = Arrays.asList(new KeyValue(keyValue1), new KeyValue(keyValue2), new KeyValue(keyValue1));
+        List<KeyValue> keyValues = Arrays.asList(new KeyValue(keyValue1, ByteSequence.EMPTY), new KeyValue(keyValue2, ByteSequence.EMPTY), 
+                new KeyValue(keyValue1, ByteSequence.EMPTY));
         when(getResponse.getKvs()).thenReturn(keyValues);
         List<String> actual = centerRepository.getChildrenKeys("/key");
         assertThat(actual.size(), is(2));

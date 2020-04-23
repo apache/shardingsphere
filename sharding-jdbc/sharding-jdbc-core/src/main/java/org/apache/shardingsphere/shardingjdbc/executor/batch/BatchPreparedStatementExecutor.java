@@ -19,16 +19,15 @@ package org.apache.shardingsphere.shardingjdbc.executor.batch;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.executor.sql.executor.SQLExecutor;
-import org.apache.shardingsphere.underlying.executor.sql.executor.SQLExecutorCallback;
-import org.apache.shardingsphere.underlying.executor.sql.executor.ExecutorExceptionHandler;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.executor.sql.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.executor.sql.connection.ConnectionMode;
-import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
-import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
+import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.ExecutorExceptionHandler;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutor;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutorCallback;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -53,7 +52,7 @@ public final class BatchPreparedStatementExecutor {
     private final Collection<InputGroup<StatementExecuteUnit>> inputGroups;
     
     @Getter
-    private final Collection<BatchRouteUnit> routeUnits;
+    private final Collection<BatchExecutionUnit> batchExecutionUnits;
     
     private int batchCount;
     
@@ -61,7 +60,7 @@ public final class BatchPreparedStatementExecutor {
         this.runtimeContext = runtimeContext;
         this.sqlExecutor = sqlExecutor;
         inputGroups = new LinkedList<>();
-        routeUnits = new LinkedList<>();
+        batchExecutionUnits = new LinkedList<>();
     }
     
     /**
@@ -74,45 +73,44 @@ public final class BatchPreparedStatementExecutor {
     }
     
     /**
-     * Add batch for route units.
+     * Add batch for execution units.
      *
-     * @param executionContext execution context
+     * @param executionUnits execution units
      */
-    public void addBatchForRouteUnits(final ExecutionContext executionContext) {
-        handleOldBatchRouteUnits(createBatchRouteUnits(executionContext.getExecutionUnits()));
-        handleNewBatchRouteUnits(createBatchRouteUnits(executionContext.getExecutionUnits()));
+    public void addBatchForExecutionUnits(final Collection<ExecutionUnit> executionUnits) {
+        Collection<BatchExecutionUnit> batchExecutionUnits = createBatchExecutionUnits(executionUnits);
+        handleOldBatchExecutionUnits(batchExecutionUnits);
+        handleNewBatchExecutionUnits(batchExecutionUnits);
         batchCount++;
     }
     
-    private Collection<BatchRouteUnit> createBatchRouteUnits(final Collection<ExecutionUnit> executionUnits) {
-        Collection<BatchRouteUnit> result = new LinkedList<>();
-        for (ExecutionUnit each : executionUnits) {
-            result.add(new BatchRouteUnit(each));
-        }
-        return result;
+    private Collection<BatchExecutionUnit> createBatchExecutionUnits(final Collection<ExecutionUnit> executionUnits) {
+        return executionUnits.stream().map(BatchExecutionUnit::new).collect(Collectors.toList());
     }
     
-    private void handleOldBatchRouteUnits(final Collection<BatchRouteUnit> newRouteUnits) {
-        for (BatchRouteUnit each : newRouteUnits) {
-            for (BatchRouteUnit unit : routeUnits) {
-                if (unit.equals(each)) {
-                    reviseBatchRouteUnit(unit, each);
-                }
+    private void handleOldBatchExecutionUnits(final Collection<BatchExecutionUnit> newExecutionUnits) {
+        newExecutionUnits.forEach(this::reviseBatchExecutionUnits);
+    }
+    
+    private void reviseBatchExecutionUnits(final BatchExecutionUnit batchExecutionUnit) {
+        for (BatchExecutionUnit each : batchExecutionUnits) {
+            if (each.equals(batchExecutionUnit)) {
+                reviseBatchExecutionUnit(each, batchExecutionUnit);
             }
         }
     }
     
-    private void reviseBatchRouteUnit(final BatchRouteUnit oldBatchRouteUnit, final BatchRouteUnit newBatchRouteUnit) {
-        oldBatchRouteUnit.getExecutionUnit().getSqlUnit().getParameters().addAll(newBatchRouteUnit.getExecutionUnit().getSqlUnit().getParameters());
-        oldBatchRouteUnit.mapAddBatchCount(batchCount);
+    private void reviseBatchExecutionUnit(final BatchExecutionUnit oldBatchExecutionUnit, final BatchExecutionUnit newBatchExecutionUnit) {
+        oldBatchExecutionUnit.getExecutionUnit().getSqlUnit().getParameters().addAll(newBatchExecutionUnit.getExecutionUnit().getSqlUnit().getParameters());
+        oldBatchExecutionUnit.mapAddBatchCount(batchCount);
     }
     
-    private void handleNewBatchRouteUnits(final Collection<BatchRouteUnit> newRouteUnits) {
-        newRouteUnits.removeAll(routeUnits);
-        for (BatchRouteUnit each : newRouteUnits) {
+    private void handleNewBatchExecutionUnits(final Collection<BatchExecutionUnit> newExecutionUnits) {
+        newExecutionUnits.removeAll(batchExecutionUnits);
+        for (BatchExecutionUnit each : newExecutionUnits) {
             each.mapAddBatchCount(batchCount);
         }
-        routeUnits.addAll(newRouteUnits);
+        batchExecutionUnits.addAll(newExecutionUnits);
     }
     
     /**
@@ -145,9 +143,9 @@ public final class BatchPreparedStatementExecutor {
         for (InputGroup<StatementExecuteUnit> each : inputGroups) {
             for (StatementExecuteUnit eachUnit : each.getInputs()) {
                 Map<Integer, Integer> jdbcAndActualAddBatchCallTimesMap = Collections.emptyMap();
-                for (BatchRouteUnit eachRouteUnit : routeUnits) {
-                    if (isSameDataSourceAndSQL(eachRouteUnit, eachUnit)) {
-                        jdbcAndActualAddBatchCallTimesMap = eachRouteUnit.getJdbcAndActualAddBatchCallTimesMap();
+                for (BatchExecutionUnit eachExecutionUnit : batchExecutionUnits) {
+                    if (isSameDataSourceAndSQL(eachExecutionUnit, eachUnit)) {
+                        jdbcAndActualAddBatchCallTimesMap = eachExecutionUnit.getJdbcAndActualAddBatchCallTimesMap();
                         break;
                     }
                 }
@@ -161,9 +159,9 @@ public final class BatchPreparedStatementExecutor {
         return result;
     }
     
-    private boolean isSameDataSourceAndSQL(final BatchRouteUnit batchRouteUnit, final StatementExecuteUnit statementExecuteUnit) {
-        return batchRouteUnit.getExecutionUnit().getDataSourceName().equals(statementExecuteUnit.getExecutionUnit().getDataSourceName())
-                && batchRouteUnit.getExecutionUnit().getSqlUnit().getSql().equals(statementExecuteUnit.getExecutionUnit().getSqlUnit().getSql());
+    private boolean isSameDataSourceAndSQL(final BatchExecutionUnit batchExecutionUnit, final StatementExecuteUnit statementExecuteUnit) {
+        return batchExecutionUnit.getExecutionUnit().getDataSourceName().equals(statementExecuteUnit.getExecutionUnit().getDataSourceName())
+                && batchExecutionUnit.getExecutionUnit().getSqlUnit().getSql().equals(statementExecuteUnit.getExecutionUnit().getSqlUnit().getSql());
     }
     
     /**
@@ -174,7 +172,7 @@ public final class BatchPreparedStatementExecutor {
     public List<Statement> getStatements() {
         List<Statement> result = new LinkedList<>();
         for (InputGroup<StatementExecuteUnit> each : inputGroups) {
-            result.addAll(each.getInputs().stream().map(StatementExecuteUnit::getStatement).collect(Collectors.toList()));
+            result.addAll(each.getInputs().stream().map(StatementExecuteUnit::getStorageResource).collect(Collectors.toList()));
         }
         return result;
     }
@@ -188,7 +186,7 @@ public final class BatchPreparedStatementExecutor {
     public List<List<Object>> getParameterSet(final Statement statement) {
         List<List<Object>> result = new LinkedList<>();
         for (InputGroup<StatementExecuteUnit> each : inputGroups) {
-            Optional<StatementExecuteUnit> target = getStatementExecuteUnit(statement, each);
+            Optional<StatementExecuteUnit> target = findStatementExecuteUnit(statement, each);
             if (target.isPresent()) {
                 result = getParameterSets(target.get());
                 break;
@@ -197,19 +195,14 @@ public final class BatchPreparedStatementExecutor {
         return result;
     }
     
-    private Optional<StatementExecuteUnit> getStatementExecuteUnit(final Statement statement, final InputGroup<StatementExecuteUnit> executeGroup) {
-        for (StatementExecuteUnit each : executeGroup.getInputs()) {
-            if (each.getStatement().equals(statement)) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.empty();
+    private Optional<StatementExecuteUnit> findStatementExecuteUnit(final Statement statement, final InputGroup<StatementExecuteUnit> executeGroup) {
+        return executeGroup.getInputs().stream().filter(each -> each.getStorageResource().equals(statement)).findFirst();
     }
     
     private List<List<Object>> getParameterSets(final StatementExecuteUnit executeUnit) {
-        Optional<BatchRouteUnit> batchRouteUnit = routeUnits.stream().filter(routeUnit -> isSameDataSourceAndSQL(routeUnit, executeUnit)).findFirst();
-        Preconditions.checkState(batchRouteUnit.isPresent());
-        return batchRouteUnit.get().getParameterSets();
+        Optional<BatchExecutionUnit> batchExecutionUnit = batchExecutionUnits.stream().filter(each -> isSameDataSourceAndSQL(each, executeUnit)).findFirst();
+        Preconditions.checkState(batchExecutionUnit.isPresent());
+        return batchExecutionUnit.get().getParameterSets();
     }
     
     /**
@@ -222,7 +215,7 @@ public final class BatchPreparedStatementExecutor {
         getStatements().clear();
         inputGroups.clear();
         batchCount = 0;
-        routeUnits.clear();
+        batchExecutionUnits.clear();
     }
     
     private void closeStatements() throws SQLException {

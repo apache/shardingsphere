@@ -1,6 +1,5 @@
 +++
 pre = "<b>4.5.1. </b>"
-toc = true
 title = "运行部署"
 weight = 1
 +++
@@ -11,12 +10,12 @@ weight = 1
 
 ```
 
-git clone https://github.com/apache/incubator-shardingsphere.git；
-cd incubator-shardingsphere;
+git clone https://github.com/apache/shardingsphere.git；
+cd shardingsphere;
 mvn clean install -Prelease;
 ```
 
-发布包所在目录为：`/sharding-distribution/sharding-scaling-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-scaling-bin.tar.gz`。
+发布包所在目录为：`/sharding-distribution/sharding-scaling-distribution/target/apache-shardingsphere-${latest.release.version}-sharding-scaling-bin.tar.gz`。
 
 2. 解压缩发布包，修改配置文件`conf/server.yaml`，这里主要修改启动端口，保证不与本机其他端口冲突，其他值保持默认即可：
 

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.underlying.merge.result.impl.transparent;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.executor.sql.queryresult.QueryResult;
+import org.apache.shardingsphere.underlying.executor.sql.QueryResult;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 
 import java.io.InputStream;

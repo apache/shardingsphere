@@ -22,7 +22,6 @@ import org.apache.shardingsphere.shardingscaling.core.config.JDBCDataSourceConfi
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
-import org.apache.shardingsphere.shardingscaling.core.controller.task.ReportCallback;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTask;
 import org.junit.After;
@@ -35,7 +34,6 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -71,8 +69,8 @@ public final class InventoryDataSyncTaskGroupTest {
     public void assertStart() {
         SyncTask syncTask = mock(SyncTask.class);
         InventoryDataSyncTaskGroup inventoryDataSyncTaskGroup = new InventoryDataSyncTaskGroup(syncConfiguration, Collections.singletonList(syncTask));
-        inventoryDataSyncTaskGroup.start(event -> { });
-        verify(syncTask).start(any(ReportCallback.class));
+        inventoryDataSyncTaskGroup.start();
+        verify(syncTask).start(null);
     }
     
     @Test

@@ -17,20 +17,13 @@
 
 package org.apache.shardingsphere.transaction.xa.fixture;
 
-import com.atomikos.beans.PropertyUtils;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinitionFactory;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 
 import javax.sql.DataSource;
-import javax.sql.XADataSource;
-import java.util.Properties;
 
 /**
  * Data source utility.
@@ -50,7 +43,7 @@ public final class DataSourceUtils {
         if (HikariDataSource.class == dataSourceClass) {
             return createHikariDataSource(databaseType, databaseName);
         } else if (AtomikosDataSourceBean.class == dataSourceClass) {
-            return createAtomikosDataSourceBean(databaseType, databaseName);
+            return createAtomikosDataSourceBean(databaseType, createHikariDataSource(databaseType, databaseName), databaseName);
         }
         
         throw new UnsupportedOperationException(dataSourceClass.getClass().getName());
@@ -68,25 +61,10 @@ public final class DataSourceUtils {
         return result;
     }
     
-    private static AtomikosDataSourceBean createAtomikosDataSourceBean(final DatabaseType databaseType, final String databaseName) {
+    private static AtomikosDataSourceBean createAtomikosDataSourceBean(final DatabaseType databaseType, final DataSource dataSource, final String databaseName) {
         AtomikosDataSourceBean result = new AtomikosDataSourceBean();
         result.setUniqueResourceName(databaseName);
-        result.setXaDataSource(createXADataSource(databaseType, databaseName));
-        return result;
-    }
-    
-    /**
-     * Get XA data source.
-     * @param databaseType database type
-     * @param databaseName database name
-     * @return XA data source
-     */
-    @SneakyThrows
-    private static XADataSource createXADataSource(final DatabaseType databaseType, final String databaseName) {
-        XADataSource result = XADataSourceFactory.build(databaseType);
-        XADataSourceDefinition xaDataSourceDefinition = XADataSourceDefinitionFactory.getXADataSourceDefinition(databaseType);
-        Properties xaProperties = xaDataSourceDefinition.getXAProperties(new DatabaseAccessConfiguration(getURL(databaseType, databaseName), "root", "root"));
-        PropertyUtils.setProperties(result, xaProperties);
+        result.setXaDataSource(XADataSourceFactory.build(databaseType, dataSource));
         return result;
     }
     

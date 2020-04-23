@@ -20,7 +20,7 @@ ShardingSphere的发布版包括源码包及其对应的二进制包。由于下
 
 ## 校验版本
 
-[PGP签名文件](https://downloads.apache.org/incubator/shardingsphere/KEYS)
+[PGP签名文件](https://downloads.apache.org/shardingsphere/KEYS)
 
 使用PGP或SHA签名验证下载文件的完整性至关重要。可以使用GPG或PGP验证PGP签名。请下载KEYS以及发布的asc签名文件。建议从主发布目录而不是镜像中获取这些文件。
 
@@ -43,25 +43,17 @@ pgp -ka KEYS
 要验证二进制文件或源代码，您可以从主发布目录下载相关的asc文件，并按照以下指南进行操作。
 
 ```shell
-gpg --verify apache-shardingsphere-incubating-********.asc apache-shardingsphere-incubating-*********
+gpg --verify apache-shardingsphere-********.asc apache-shardingsphere-*********
 ```
 
 or
 
 ```shell
-pgpv apache-shardingsphere-incubating-********.asc
+pgpv apache-shardingsphere-********.asc
 ```
 
 or
 
 ```shell
-pgp apache-shardingsphere-incubating-********.asc
+pgp apache-shardingsphere-********.asc
 ```
-
-## 免责声明
-
-Apache ShardingSphere (incubating) is an effort undergoing incubation at The Apache Software Foundation (ASF), sponsored by the Apache Incubator PMC.
-Incubation is required of all newly accepted projects until a further review indicates that the infrastructure, 
-communications, and decision making process have stabilized in a manner consistent with other successful ASF projects. 
-While incubation status is not necessarily a reflection of the completeness or stability of the code, 
-it does indicate that the project has yet to be fully endorsed by the ASF.

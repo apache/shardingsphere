@@ -18,13 +18,9 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect;
 
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
-import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
-import org.apache.shardingsphere.underlying.common.database.metadata.dialect.PostgreSQLDataSourceMetaData;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
-import java.util.Properties;
 
 /**
  * XA data source definition for PostgreSQL.
@@ -39,17 +35,5 @@ public final class PostgreSQLXADataSourceDefinition implements XADataSourceDefin
     @Override
     public Collection<String> getXADriverClassName() {
         return Collections.singletonList("org.postgresql.xa.PGXADataSource");
-    }
-    
-    @Override
-    public Properties getXAProperties(final DatabaseAccessConfiguration databaseAccessConfiguration) {
-        Properties result = new Properties();
-        PostgreSQLDataSourceMetaData dataSourceMetaData = new PostgreSQLDataSourceMetaData(databaseAccessConfiguration.getUrl());
-        result.setProperty("user", databaseAccessConfiguration.getUsername());
-        result.setProperty("password", Optional.ofNullable(databaseAccessConfiguration.getPassword()).orElse(""));
-        result.setProperty("serverName", dataSourceMetaData.getHostName());
-        result.setProperty("portNumber", String.valueOf(dataSourceMetaData.getPort()));
-        result.setProperty("databaseName", dataSourceMetaData.getCatalog());
-        return result;
     }
 }
