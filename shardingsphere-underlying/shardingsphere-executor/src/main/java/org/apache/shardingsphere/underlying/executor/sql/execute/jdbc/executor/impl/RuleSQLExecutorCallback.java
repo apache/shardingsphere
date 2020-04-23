@@ -15,15 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor;
+package org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.impl;
 
-import org.apache.shardingsphere.underlying.executor.kernel.ExecutorCallback;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.spi.order.OrderedSPI;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutorCallback;
 
 /**
- * SQL executor callback.
+ * SQL executor callback for rule.
  *
  * @param <T> class type of return value
  */
-public interface SQLExecutorCallback<T> extends ExecutorCallback<StatementExecuteUnit, T> {
+public interface RuleSQLExecutorCallback<T> extends SQLExecutorCallback<T>, OrderedSPI<BaseRule> {
 }

@@ -17,20 +17,25 @@
 
 package org.apache.shardingsphere.shardingjdbc.executor;
 
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutor;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutorCallback;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.queryresult.MemoryQueryResult;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.queryresult.StreamQueryResult;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.ExecutorExceptionHandler;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
+import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.sql.QueryResult;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
-import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.ExecutorExceptionHandler;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutor;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutorCallback;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.impl.DefaultSQLExecutorCallback;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.impl.RuleSQLExecutorCallback;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.queryresult.MemoryQueryResult;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.queryresult.StreamQueryResult;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -46,16 +51,28 @@ import java.util.Optional;
  */
 public final class StatementExecutor {
     
+    static {
+        ShardingSphereServiceLoader.register(RuleSQLExecutorCallback.class);
+    }
+    
     private final Map<String, DataSource> dataSourceMap;
     
     private final ShardingRuntimeContext runtimeContext;
     
     private final SQLExecutor sqlExecutor;
     
+    private final RuleSQLExecutorCallback ruleSQLExecutorCallback;
+    
     public StatementExecutor(final Map<String, DataSource> dataSourceMap, final ShardingRuntimeContext runtimeContext, final SQLExecutor sqlExecutor) {
         this.dataSourceMap = dataSourceMap;
         this.runtimeContext = runtimeContext;
         this.sqlExecutor = sqlExecutor;
+        ruleSQLExecutorCallback = findRuleSQLExecutorCallback().orElse(null);
+    }
+    
+    private Optional<RuleSQLExecutorCallback> findRuleSQLExecutorCallback() {
+        Map<BaseRule, RuleSQLExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(runtimeContext.getRule().toRules(), RuleSQLExecutorCallback.class);
+        return callbackMap.isEmpty() ? Optional.empty() : Optional.of(callbackMap.values().iterator().next());
     }
     
     /**
@@ -65,16 +82,17 @@ public final class StatementExecutor {
      * @return result set list
      * @throws SQLException SQL exception
      */
+    @SuppressWarnings("unchecked")
     public List<QueryResult> executeQuery(final Collection<InputGroup<StatementExecuteUnit>> inputGroups) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<QueryResult> executeCallback = new SQLExecutorCallback<QueryResult>(runtimeContext.getDatabaseType(), isExceptionThrown) {
+        SQLExecutorCallback<QueryResult> sqlExecutorCallback = getSQLExecutorCallback(new DefaultSQLExecutorCallback<QueryResult>(runtimeContext.getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected QueryResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 return createQueryResult(sql, statement, connectionMode);
             }
-        };
-        return sqlExecutor.execute(inputGroups, executeCallback);
+        });
+        return sqlExecutor.execute(inputGroups, sqlExecutorCallback);
     }
     
     private QueryResult createQueryResult(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -133,15 +151,17 @@ public final class StatementExecutor {
         return executeUpdate(inputGroups, (statement, sql) -> statement.executeUpdate(sql, columnNames), sqlStatementContext);
     }
     
+    @SuppressWarnings("unchecked")
     private int executeUpdate(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final Updater updater, final SQLStatementContext sqlStatementContext) throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        List<Integer> results = sqlExecutor.execute(inputGroups, new SQLExecutorCallback<Integer>(runtimeContext.getDatabaseType(), isExceptionThrown) {
+        SQLExecutorCallback sqlExecutorCallback = getSQLExecutorCallback(new DefaultSQLExecutorCallback<Integer>(runtimeContext.getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected Integer executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 return updater.executeUpdate(statement, sql);
             }
         });
+        List<Integer> results = sqlExecutor.execute(inputGroups, sqlExecutorCallback);
         refreshTableMetaData(runtimeContext, sqlStatementContext);
         if (!runtimeContext.getRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())) {
             return accumulate(results);
@@ -209,20 +229,26 @@ public final class StatementExecutor {
         return execute(inputGroups, (statement, sql) -> statement.execute(sql, columnNames), sqlStatementContext);
     }
     
+    @SuppressWarnings("unchecked")
     private boolean execute(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final Executor executor, final SQLStatementContext sqlStatementContext) throws SQLException {
-        final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        List<Boolean> result = sqlExecutor.execute(inputGroups, new SQLExecutorCallback<Boolean>(runtimeContext.getDatabaseType(), isExceptionThrown) {
+        boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
+        SQLExecutorCallback sqlExecutorCallback = getSQLExecutorCallback(new DefaultSQLExecutorCallback<Boolean>(runtimeContext.getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected Boolean executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 return executor.execute(statement, sql);
             }
         });
+        List<Boolean> result = sqlExecutor.execute(inputGroups, sqlExecutorCallback);
         refreshTableMetaData(runtimeContext, sqlStatementContext);
         if (null == result || result.isEmpty() || null == result.get(0)) {
             return false;
         }
         return result.get(0);
+    }
+    
+    private SQLExecutorCallback getSQLExecutorCallback(final DefaultSQLExecutorCallback callback) {
+        return null == ruleSQLExecutorCallback ? callback : ruleSQLExecutorCallback;
     }
     
     @SuppressWarnings("unchecked")
