@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.underlying.route;
 
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
@@ -31,7 +32,6 @@ import org.apache.shardingsphere.underlying.route.decorator.RouteDecorator;
 import org.apache.shardingsphere.underlying.route.hook.SPIRoutingHook;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -40,6 +40,10 @@ import java.util.Map.Entry;
  * Data node router.
  */
 public final class DataNodeRouter {
+    
+    static {
+        ShardingSphereServiceLoader.register(RouteDecorator.class);
+    }
     
     private final ShardingSphereMetaData metaData;
     
@@ -52,9 +56,8 @@ public final class DataNodeRouter {
     public DataNodeRouter(final ShardingSphereMetaData metaData, final ConfigurationProperties properties, final Collection<BaseRule> rules) {
         this.metaData = metaData;
         this.properties = properties;
-        decorators = new LinkedHashMap<>();
+        decorators = OrderedSPIRegistry.getRegisteredServices(rules, RouteDecorator.class);
         routingHook = new SPIRoutingHook();
-        OrderedSPIRegistry.getRegisteredServices(rules, RouteDecorator.class).forEach(decorators::put);
     }
     
     /**

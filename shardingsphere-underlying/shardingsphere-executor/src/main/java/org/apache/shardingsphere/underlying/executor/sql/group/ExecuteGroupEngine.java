@@ -18,14 +18,16 @@
 package org.apache.shardingsphere.underlying.executor.sql.group;
 
 import com.google.common.collect.Lists;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.underlying.executor.sql.context.SQLUnit;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.sql.ExecutionConnection;
 import org.apache.shardingsphere.underlying.executor.sql.StorageResourceExecuteUnit;
 import org.apache.shardingsphere.underlying.executor.sql.StorageResourceOption;
+import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionUnit;
+import org.apache.shardingsphere.underlying.executor.sql.context.SQLUnit;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -43,10 +45,20 @@ import java.util.Map.Entry;
  * @param <C> type of resource connection
  * @param <O> type of storage resource option
  */
-@RequiredArgsConstructor
 public abstract class ExecuteGroupEngine<U extends StorageResourceExecuteUnit, E extends ExecutionConnection<C, ?, O>, C, O extends StorageResourceOption> {
     
+    static {
+        ShardingSphereServiceLoader.register(ExecuteGroupDecorator.class);
+    }
+    
     private final int maxConnectionsSizePerQuery;
+    
+    private final Map<BaseRule, ExecuteGroupDecorator> decorators;
+    
+    public ExecuteGroupEngine(final int maxConnectionsSizePerQuery, final Collection<BaseRule> rules) {
+        this.maxConnectionsSizePerQuery = maxConnectionsSizePerQuery;
+        decorators = OrderedSPIRegistry.getRegisteredServices(rules, ExecuteGroupDecorator.class);
+    }
     
     /**
      * Generate storage resource execute unit groups.
@@ -58,9 +70,18 @@ public abstract class ExecuteGroupEngine<U extends StorageResourceExecuteUnit, E
      * @throws SQLException SQL exception
      */
     public Collection<InputGroup<U>> generate(final Collection<ExecutionUnit> executionUnits, final E executionConnection, final O option) throws SQLException {
-        Collection<InputGroup<U>> result = new LinkedList<>();
+        Collection<InputGroup<U>> inputGroups = new LinkedList<>();
         for (Entry<String, List<SQLUnit>> entry : generateSQLUnitGroups(executionUnits).entrySet()) {
-            result.addAll(generateSQLExecuteGroups(entry.getKey(), entry.getValue(), executionConnection, option));
+            inputGroups.addAll(generateSQLExecuteGroups(entry.getKey(), entry.getValue(), executionConnection, option));
+        }
+        return decorate(inputGroups);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Collection<InputGroup<U>> decorate(final Collection<InputGroup<U>> inputGroups) {
+        Collection<InputGroup<U>> result = inputGroups;
+        for (Entry<BaseRule, ExecuteGroupDecorator> each : decorators.entrySet()) {
+            result = each.getValue().decorate(result);
         }
         return result;
     }

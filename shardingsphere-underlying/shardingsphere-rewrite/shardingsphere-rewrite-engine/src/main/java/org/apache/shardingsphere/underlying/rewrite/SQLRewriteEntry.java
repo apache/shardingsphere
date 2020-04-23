@@ -31,7 +31,6 @@ import org.apache.shardingsphere.underlying.rewrite.engine.result.SQLRewriteResu
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,21 +39,20 @@ import java.util.Map;
  */
 public final class SQLRewriteEntry {
     
+    static {
+        ShardingSphereServiceLoader.register(SQLRewriteContextDecorator.class);
+    }
+    
     private final SchemaMetaData schemaMetaData;
     
     private final ConfigurationProperties properties;
     
     private final Map<BaseRule, SQLRewriteContextDecorator> decorators;
     
-    static {
-        ShardingSphereServiceLoader.register(SQLRewriteContextDecorator.class);
-    }
-    
     public SQLRewriteEntry(final SchemaMetaData schemaMetaData, final ConfigurationProperties properties, final Collection<BaseRule> rules) {
         this.schemaMetaData = schemaMetaData;
         this.properties = properties;
-        decorators = new LinkedHashMap<>();
-        OrderedSPIRegistry.getRegisteredServices(rules, SQLRewriteContextDecorator.class).forEach(decorators::put);
+        decorators = OrderedSPIRegistry.getRegisteredServices(rules, SQLRewriteContextDecorator.class);
     }
     
     /**
