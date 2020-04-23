@@ -17,20 +17,21 @@
 
 package org.apache.shardingsphere.shardingjdbc.executor;
 
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutor;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutorCallback;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.queryresult.MemoryQueryResult;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.queryresult.StreamQueryResult;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.ExecutorExceptionHandler;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
+import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
+import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.sql.QueryResult;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
-import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.impl.DefaultSQLExecutorCallback;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.ExecutorExceptionHandler;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutor;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutorCallback;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.queryresult.MemoryQueryResult;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.queryresult.StreamQueryResult;
 
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
@@ -67,8 +68,8 @@ public final class PreparedStatementExecutor {
      * @throws SQLException SQL exception
      */
     public List<QueryResult> executeQuery(final Collection<InputGroup<StatementExecuteUnit>> inputGroups) throws SQLException {
-        final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<QueryResult> executeCallback = new SQLExecutorCallback<QueryResult>(runtimeContext.getDatabaseType(), isExceptionThrown) {
+        boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
+        SQLExecutorCallback<QueryResult> executeCallback = new DefaultSQLExecutorCallback<QueryResult>(runtimeContext.getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected QueryResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -93,8 +94,8 @@ public final class PreparedStatementExecutor {
      * @throws SQLException SQL exception
      */
     public int executeUpdate(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLStatementContext sqlStatementContext) throws SQLException {
-        final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<Integer> executeCallback = new SQLExecutorCallback<Integer>(runtimeContext.getDatabaseType(), isExceptionThrown) {
+        boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
+        SQLExecutorCallback<Integer> executeCallback = new DefaultSQLExecutorCallback<Integer>(runtimeContext.getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected Integer executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -127,8 +128,8 @@ public final class PreparedStatementExecutor {
      * @throws SQLException SQL exception
      */
     public boolean execute(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLStatementContext sqlStatementContext) throws SQLException {
-        final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<Boolean> executeCallback = new SQLExecutorCallback<Boolean>(runtimeContext.getDatabaseType(), isExceptionThrown) {
+        boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
+        SQLExecutorCallback<Boolean> executeCallback = new DefaultSQLExecutorCallback<Boolean>(runtimeContext.getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected Boolean executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {

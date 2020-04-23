@@ -15,15 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.executor.sql.jdbc.executor;
+package org.apache.shardingsphere.underlying.executor.sql.jdbc.executor.impl;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
+import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.sql.context.SQLUnit;
-import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.impl.DefaultSQLExecutorCallback;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutorCallback;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +47,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SQLExecuteCallbackTest {
+public final class DefaultSQLExecutorCallbackTest {
     
     @Mock
     private PreparedStatement preparedStatement;
@@ -72,14 +73,14 @@ public final class SQLExecuteCallbackTest {
     @SneakyThrows
     @SuppressWarnings("unchecked")
     public void execute() {
-        SQLExecutorCallback sqlExecuteCallback = new SQLExecutorCallback<Integer>(DatabaseTypes.getActualDatabaseType("MySQL"), true) {
+        SQLExecutorCallback sqlExecuteCallback = new DefaultSQLExecutorCallback<Integer>(DatabaseTypes.getActualDatabaseType("MySQL"), true) {
             
             @Override
             protected Integer executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 return ((PreparedStatement) statement).executeUpdate();
             }
         };
-        Field field = SQLExecutorCallback.class.getDeclaredField("CACHED_DATASOURCE_METADATA");
+        Field field = DefaultSQLExecutorCallback.class.getDeclaredField("CACHED_DATASOURCE_METADATA");
         field.setAccessible(true);
         Map<String, DataSourceMetaData> cachedDataSourceMetaData = (Map<String, DataSourceMetaData>) field.get(sqlExecuteCallback);
         assertThat(cachedDataSourceMetaData.size(), is(0));

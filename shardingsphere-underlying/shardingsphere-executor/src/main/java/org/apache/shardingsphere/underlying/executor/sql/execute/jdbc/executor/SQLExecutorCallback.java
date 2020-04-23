@@ -17,79 +17,13 @@
 
 package org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
-import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.underlying.executor.sql.hook.SPISQLExecutionHook;
-import org.apache.shardingsphere.underlying.executor.sql.hook.SQLExecutionHook;
 import org.apache.shardingsphere.underlying.executor.kernel.ExecutorCallback;
-
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.StatementExecuteUnit;
 
 /**
  * SQL executor callback.
  *
  * @param <T> class type of return value
  */
-@RequiredArgsConstructor
-public abstract class SQLExecutorCallback<T> implements ExecutorCallback<StatementExecuteUnit, T> {
-    
-    private static final Map<String, DataSourceMetaData> CACHED_DATASOURCE_METADATA = new ConcurrentHashMap<>();
-    
-    private final DatabaseType databaseType;
-    
-    private final boolean isExceptionThrown;
-    
-    @Override
-    public final Collection<T> execute(final Collection<StatementExecuteUnit> statementExecuteUnits, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
-        Collection<T> result = new LinkedList<>();
-        for (StatementExecuteUnit each : statementExecuteUnits) {
-            result.add(execute0(each, isTrunkThread, dataMap));
-        }
-        return result;
-    }
-    
-    /*
-     * To make sure SkyWalking will be available at the next release of ShardingSphere,
-     * a new plugin should be provided to SkyWalking project if this API changed.
-     *
-     * @see <a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/Java-Plugin-Development-Guide.md#user-content-plugin-development-guide">Plugin Development Guide</a>
-     */
-    private T execute0(final StatementExecuteUnit statementExecuteUnit, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
-        ExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
-        DataSourceMetaData dataSourceMetaData = getDataSourceMetaData(statementExecuteUnit.getStorageResource().getConnection().getMetaData());
-        SQLExecutionHook sqlExecutionHook = new SPISQLExecutionHook();
-        try {
-            ExecutionUnit executionUnit = statementExecuteUnit.getExecutionUnit();
-            sqlExecutionHook.start(executionUnit.getDataSourceName(), executionUnit.getSqlUnit().getSql(), executionUnit.getSqlUnit().getParameters(), dataSourceMetaData, isTrunkThread, dataMap);
-            T result = executeSQL(executionUnit.getSqlUnit().getSql(), statementExecuteUnit.getStorageResource(), statementExecuteUnit.getConnectionMode());
-            sqlExecutionHook.finishSuccess();
-            return result;
-        } catch (final SQLException ex) {
-            sqlExecutionHook.finishFailure(ex);
-            ExecutorExceptionHandler.handleException(ex);
-            return null;
-        }
-    }
-    
-    private DataSourceMetaData getDataSourceMetaData(final DatabaseMetaData metaData) throws SQLException {
-        String url = metaData.getURL();
-        if (CACHED_DATASOURCE_METADATA.containsKey(url)) {
-            return CACHED_DATASOURCE_METADATA.get(url);
-        }
-        DataSourceMetaData result = databaseType.getDataSourceMetaData(url, metaData.getUserName());
-        CACHED_DATASOURCE_METADATA.put(url, result);
-        return result;
-    }
-    
-    protected abstract T executeSQL(String sql, Statement statement, ConnectionMode connectionMode) throws SQLException;
+public interface SQLExecutorCallback<T> extends ExecutorCallback<StatementExecuteUnit, T> {
 }

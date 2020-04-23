@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.callback;
 
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutorCallback;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.impl.DefaultSQLExecutorCallback;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.queryresult.MemoryQueryResult;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.queryresult.StreamQueryResult;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
@@ -43,7 +43,7 @@ import java.util.List;
 /**
  * SQL execute callback for Sharding-Proxy.
  */
-public final class ProxySQLExecuteCallback extends SQLExecutorCallback<ExecuteResponse> {
+public final class ProxySQLExecuteCallback extends DefaultSQLExecutorCallback<ExecuteResponse> {
     
     private final SQLStatementContext sqlStatementContext;
     
