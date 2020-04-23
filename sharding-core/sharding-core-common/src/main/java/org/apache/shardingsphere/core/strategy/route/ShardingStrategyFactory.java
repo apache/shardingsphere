@@ -21,12 +21,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.api.config.sharding.strategy.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.HintShardingStrategyConfiguration;
-import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.strategy.route.complex.ComplexShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.hint.HintShardingStrategy;
-import org.apache.shardingsphere.core.strategy.route.inline.InlineShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.none.NoneShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.standard.StandardShardingStrategy;
 
@@ -45,9 +43,6 @@ public final class ShardingStrategyFactory {
     public static ShardingStrategy newInstance(final ShardingStrategyConfiguration shardingStrategyConfig) {
         if (shardingStrategyConfig instanceof StandardShardingStrategyConfiguration) {
             return new StandardShardingStrategy((StandardShardingStrategyConfiguration) shardingStrategyConfig);
-        }
-        if (shardingStrategyConfig instanceof InlineShardingStrategyConfiguration) {
-            return new InlineShardingStrategy((InlineShardingStrategyConfiguration) shardingStrategyConfig);
         }
         if (shardingStrategyConfig instanceof ComplexShardingStrategyConfiguration) {
             return new ComplexShardingStrategy((ComplexShardingStrategyConfiguration) shardingStrategyConfig);
