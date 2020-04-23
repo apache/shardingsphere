@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.transaction.base.seata.at;
 
 import io.seata.core.context.RootContext;
-import org.apache.shardingsphere.underlying.executor.hook.SQLExecutionHook;
+import org.apache.shardingsphere.underlying.executor.sql.hook.SQLExecutionHook;
 import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.underlying.executor.kernel.ExecutorDataMap;
 

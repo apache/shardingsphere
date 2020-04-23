@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper;
 
-import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
-import org.apache.shardingsphere.underlying.executor.group.ExecuteGroupEngine;
+import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionContext;
+import org.apache.shardingsphere.underlying.executor.sql.group.ExecuteGroupEngine;
 
 import java.sql.SQLException;
 import java.sql.Statement;

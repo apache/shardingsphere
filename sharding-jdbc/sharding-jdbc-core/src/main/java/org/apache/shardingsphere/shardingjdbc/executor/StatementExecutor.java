@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.shardingjdbc.executor;
 
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.executor.SQLExecutor;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.executor.SQLExecutorCallback;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.queryresult.impl.MemoryQueryResult;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.queryresult.impl.StreamQueryResult;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.executor.ExecutorExceptionHandler;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutor;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutorCallback;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.queryresult.MemoryQueryResult;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.queryresult.StreamQueryResult;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.ExecutorExceptionHandler;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.queryresult.QueryResult;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.sql.QueryResult;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.StatementExecuteUnit;
 import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 

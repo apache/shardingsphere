@@ -28,8 +28,8 @@ import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.underlying.common.hook.RootInvokeHook;
 import org.apache.shardingsphere.underlying.common.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.connection.JDBCExecutionConnection;
-import org.apache.shardingsphere.underlying.executor.sql.jdbc.group.StatementOption;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.connection.JDBCExecutionConnection;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.group.StatementOption;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
