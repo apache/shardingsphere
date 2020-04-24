@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.connection;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.h2.jdbcx.JdbcXAConnection;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mariadb.jdbc.MariaXaConnection;
@@ -62,8 +64,16 @@ public final class XAConnectionFactoryTest {
         assertThat(XAConnectionFactory.createXAConnection(DatabaseTypes.getActualDatabaseType("H2"), xaDataSource, connection), instanceOf(JdbcXAConnection.class));
     }
     
+    @Test
+    @SneakyThrows
+    @Ignore("oracle jdbc driver is not import because of the limitations of license")
+    public void assertCreateOracleXAConnection() {
+        Class clazz = Class.forName("oracle.jdbc.xa.client.OracleXAConnection");
+        assertThat(XAConnectionFactory.createXAConnection(DatabaseTypes.getActualDatabaseType("Oracle"), xaDataSource, connection), instanceOf(clazz));
+    }
+    
     @Test(expected = UnsupportedOperationException.class)
     public void assertCreateUnknownXAConnectionThrowsUnsupportedOperationException() {
-        XAConnectionFactory.createXAConnection(DatabaseTypes.getActualDatabaseType("Oracle"), xaDataSource, connection);
+        XAConnectionFactory.createXAConnection(DatabaseTypes.getActualDatabaseType("SQL92"), xaDataSource, connection);
     }
 }
