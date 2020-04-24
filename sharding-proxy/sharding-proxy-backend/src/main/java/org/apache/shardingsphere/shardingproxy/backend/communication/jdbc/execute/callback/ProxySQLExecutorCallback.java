@@ -31,7 +31,6 @@ import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatement
 import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.sql.QueryResult;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.impl.DefaultSQLExecutorCallback;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.impl.RuleSQLExecutorCallback;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.queryresult.MemoryQueryResult;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.queryresult.StreamQueryResult;
 
@@ -43,12 +42,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * SQL executor callback for Sharding-Proxy.
+ * SQL executor callback for Proxy.
  */
 public final class ProxySQLExecutorCallback extends DefaultSQLExecutorCallback<ExecuteResponse> {
     
     static {
-        ShardingSphereServiceLoader.register(RuleSQLExecutorCallback.class);
+        ShardingSphereServiceLoader.register(RuleProxySQLExecutorCallback.class);
     }
     
     private final SQLStatementContext sqlStatementContext;

@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.shardingjdbc.executor;
 
+import org.apache.shardingsphere.shardingjdbc.executor.callback.RuleExecuteExecutorCallback;
+import org.apache.shardingsphere.shardingjdbc.executor.callback.RuleExecuteQueryExecutorCallback;
+import org.apache.shardingsphere.shardingjdbc.executor.callback.RuleExecuteUpdateExecutorCallback;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
@@ -33,7 +36,6 @@ import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.E
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutor;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutorCallback;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.impl.DefaultSQLExecutorCallback;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.impl.RuleSQLExecutorCallback;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.queryresult.MemoryQueryResult;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.queryresult.StreamQueryResult;
 
@@ -53,7 +55,9 @@ import java.util.Optional;
 public final class PreparedStatementExecutor {
     
     static {
-        ShardingSphereServiceLoader.register(RuleSQLExecutorCallback.class);
+        ShardingSphereServiceLoader.register(RuleExecuteQueryExecutorCallback.class);
+        ShardingSphereServiceLoader.register(RuleExecuteUpdateExecutorCallback.class);
+        ShardingSphereServiceLoader.register(RuleExecuteExecutorCallback.class);
     }
     
     private final Map<String, DataSource> dataSourceMap;
@@ -62,18 +66,10 @@ public final class PreparedStatementExecutor {
     
     private final SQLExecutor sqlExecutor;
     
-    private final RuleSQLExecutorCallback ruleSQLExecutorCallback;
-    
     public PreparedStatementExecutor(final Map<String, DataSource> dataSourceMap, final ShardingRuntimeContext runtimeContext, final SQLExecutor sqlExecutor) {
         this.dataSourceMap = dataSourceMap;
         this.runtimeContext = runtimeContext;
         this.sqlExecutor = sqlExecutor;
-        ruleSQLExecutorCallback = findRuleSQLExecutorCallback().orElse(null);
-    }
-    
-    private Optional<RuleSQLExecutorCallback> findRuleSQLExecutorCallback() {
-        Map<BaseRule, RuleSQLExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(runtimeContext.getRule().toRules(), RuleSQLExecutorCallback.class);
-        return callbackMap.isEmpty() ? Optional.empty() : Optional.of(callbackMap.values().iterator().next());
     }
     
     /**
@@ -83,10 +79,9 @@ public final class PreparedStatementExecutor {
      * @return result set list
      * @throws SQLException SQL exception
      */
-    @SuppressWarnings("unchecked")
     public List<QueryResult> executeQuery(final Collection<InputGroup<StatementExecuteUnit>> inputGroups) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<QueryResult> sqlExecutorCallback = getSQLExecutorCallback(new DefaultSQLExecutorCallback<QueryResult>(runtimeContext.getDatabaseType(), isExceptionThrown) {
+        SQLExecutorCallback<QueryResult> sqlExecutorCallback = getExecuteQueryExecutorCallback(new DefaultSQLExecutorCallback<QueryResult>(runtimeContext.getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected QueryResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -94,6 +89,11 @@ public final class PreparedStatementExecutor {
             }
         });
         return sqlExecutor.execute(inputGroups, sqlExecutorCallback);
+    }
+    
+    private SQLExecutorCallback<QueryResult> getExecuteQueryExecutorCallback(final DefaultSQLExecutorCallback callback) {
+        Map<BaseRule, RuleExecuteQueryExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(runtimeContext.getRule().toRules(), RuleExecuteQueryExecutorCallback.class);
+        return callbackMap.isEmpty() ? callback : callbackMap.values().iterator().next();
     }
     
     private QueryResult getQueryResult(final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -110,10 +110,9 @@ public final class PreparedStatementExecutor {
      * @return effected records count
      * @throws SQLException SQL exception
      */
-    @SuppressWarnings("unchecked")
     public int executeUpdate(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLStatementContext sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback sqlExecutorCallback = getSQLExecutorCallback(new DefaultSQLExecutorCallback<Integer>(runtimeContext.getDatabaseType(), isExceptionThrown) {
+        SQLExecutorCallback<Integer> sqlExecutorCallback = getExecuteUpdateExecutorCallback(new DefaultSQLExecutorCallback<Integer>(runtimeContext.getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected Integer executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -127,6 +126,11 @@ public final class PreparedStatementExecutor {
         } else {
             return results.get(0);
         }
+    }
+    
+    private SQLExecutorCallback<Integer> getExecuteUpdateExecutorCallback(final DefaultSQLExecutorCallback callback) {
+        Map<BaseRule, RuleExecuteUpdateExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(runtimeContext.getRule().toRules(), RuleExecuteUpdateExecutorCallback.class);
+        return callbackMap.isEmpty() ? callback : callbackMap.values().iterator().next();
     }
     
     private int accumulate(final List<Integer> results) {
@@ -145,10 +149,9 @@ public final class PreparedStatementExecutor {
      * @return return true if is DQL, false if is DML
      * @throws SQLException SQL exception
      */
-    @SuppressWarnings("unchecked")
     public boolean execute(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final SQLStatementContext sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<Boolean> sqlExecutorCallback = getSQLExecutorCallback(new DefaultSQLExecutorCallback<Boolean>(runtimeContext.getDatabaseType(), isExceptionThrown) {
+        SQLExecutorCallback<Boolean> sqlExecutorCallback = getExecuteExecutorCallback(new DefaultSQLExecutorCallback<Boolean>(runtimeContext.getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected Boolean executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -163,8 +166,9 @@ public final class PreparedStatementExecutor {
         return result.get(0);
     }
     
-    private SQLExecutorCallback getSQLExecutorCallback(final DefaultSQLExecutorCallback callback) {
-        return null == ruleSQLExecutorCallback ? callback : ruleSQLExecutorCallback;
+    private SQLExecutorCallback<Boolean> getExecuteExecutorCallback(final DefaultSQLExecutorCallback callback) {
+        Map<BaseRule, RuleExecuteExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(runtimeContext.getRule().toRules(), RuleExecuteExecutorCallback.class);
+        return callbackMap.isEmpty() ? callback : callbackMap.values().iterator().next();
     }
     
     @SuppressWarnings("unchecked")
