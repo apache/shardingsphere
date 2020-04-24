@@ -149,7 +149,7 @@ tableReference
     ;
 
 tableFactor
-    : tableName (AS? alias)? | subquery AS? alias columnNames? | LP_ tableReferences RP_
+    : tableName (AS? alias)? | subquery AS? alias? columnNames? | LP_ tableReferences RP_
     ;
 
 joinedTable
