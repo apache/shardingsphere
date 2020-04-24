@@ -47,6 +47,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -83,8 +84,8 @@ public abstract class AbstractBaseExecutorTest {
     }
     
     private ShardingRule getShardingRule() {
-        ShardingRule shardingRule = mock(ShardingRule.class);
-        when(shardingRule.getLogicTableNames(anyString())).thenReturn(Collections.emptyList());
+        ShardingRule result = mock(ShardingRule.class);
+        when(result.getLogicTableNames(anyString())).thenReturn(Collections.emptyList());
         Encryptor encryptor = mock(Encryptor.class);
         when(encryptor.decrypt(anyString())).thenReturn("decryptValue");
         EncryptRule encryptRule = mock(EncryptRule.class);
@@ -93,9 +94,11 @@ public abstract class AbstractBaseExecutorTest {
         when(encryptRule.getLogicColumnOfCipher(anyString(), anyString())).thenReturn("column");
         when(encryptRule.findEncryptTable("table_x")).thenReturn(Optional.of(encryptTable));
         when(encryptTable.getCipherColumns()).thenReturn(Collections.singleton("column"));
-        when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
-        when(shardingRule.findTableRuleByActualTable("table_x")).thenReturn(Optional.empty());
-        return shardingRule;
+        when(result.getEncryptRule()).thenReturn(encryptRule);
+        when(result.findTableRuleByActualTable("table_x")).thenReturn(Optional.empty());
+        when(result.toRules()).thenReturn(Collections.singletonList(result));
+        when(result.isNeedAccumulate(any())).thenReturn(true);
+        return result;
     }
 
     protected final SQLStatementContext getSQLStatementContext() {

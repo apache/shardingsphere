@@ -401,4 +401,9 @@ public class ShardingRule implements TablesAggregationRule {
         }
         return result;
     }
+    
+    @Override
+    public final boolean isNeedAccumulate(final Collection<String> tables) {
+        return !isAllBroadcastTables(tables);
+    }
 }

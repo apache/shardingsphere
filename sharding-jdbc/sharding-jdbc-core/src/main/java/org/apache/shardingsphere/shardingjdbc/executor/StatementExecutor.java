@@ -28,6 +28,7 @@ import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefr
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.TablesAggregationRule;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.sql.QueryResult;
@@ -47,6 +48,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Statement executor.
@@ -164,16 +166,19 @@ public final class StatementExecutor {
         });
         List<Integer> results = sqlExecutor.execute(inputGroups, sqlExecutorCallback);
         refreshTableMetaData(runtimeContext, sqlStatementContext);
-        if (!runtimeContext.getRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())) {
+        if (isNeedAccumulate(runtimeContext.getRule().toRules().stream().filter(rule -> rule instanceof TablesAggregationRule).collect(Collectors.toList()), sqlStatementContext)) {
             return accumulate(results);
-        } else {
-            return null == results.get(0) ? 0 : results.get(0);
         }
+        return null == results.get(0) ? 0 : results.get(0);
     }
     
     private SQLExecutorCallback<Integer> getExecuteUpdateExecutorCallback(final DefaultSQLExecutorCallback callback) {
         Map<BaseRule, RuleExecuteUpdateExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(runtimeContext.getRule().toRules(), RuleExecuteUpdateExecutorCallback.class);
         return callbackMap.isEmpty() ? callback : callbackMap.values().iterator().next();
+    }
+    
+    private boolean isNeedAccumulate(final Collection<BaseRule> rules, final SQLStatementContext sqlStatementContext) {
+        return rules.stream().anyMatch(each -> ((TablesAggregationRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames()));
     }
     
     private int accumulate(final List<Integer> results) {
