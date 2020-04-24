@@ -73,7 +73,7 @@ public final class DefaultSQLExecutorCallbackTest {
     @SneakyThrows
     @SuppressWarnings("unchecked")
     public void execute() {
-        SQLExecutorCallback sqlExecuteCallback = new DefaultSQLExecutorCallback<Integer>(DatabaseTypes.getActualDatabaseType("MySQL"), true) {
+        SQLExecutorCallback sqlExecutorCallback = new DefaultSQLExecutorCallback<Integer>(DatabaseTypes.getActualDatabaseType("MySQL"), true) {
             
             @Override
             protected Integer executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -82,11 +82,11 @@ public final class DefaultSQLExecutorCallbackTest {
         };
         Field field = DefaultSQLExecutorCallback.class.getDeclaredField("CACHED_DATASOURCE_METADATA");
         field.setAccessible(true);
-        Map<String, DataSourceMetaData> cachedDataSourceMetaData = (Map<String, DataSourceMetaData>) field.get(sqlExecuteCallback);
+        Map<String, DataSourceMetaData> cachedDataSourceMetaData = (Map<String, DataSourceMetaData>) field.get(sqlExecutorCallback);
         assertThat(cachedDataSourceMetaData.size(), is(0));
-        sqlExecuteCallback.execute(units, true, null);
+        sqlExecutorCallback.execute(units, true, null);
         assertThat(cachedDataSourceMetaData.size(), is(1));
-        sqlExecuteCallback.execute(units, true, null);
+        sqlExecutorCallback.execute(units, true, null);
         assertThat(cachedDataSourceMetaData.size(), is(1));
     }
 }
