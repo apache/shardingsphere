@@ -38,6 +38,42 @@
     </select>
 
     <select sql-case-id="select_sub_query_with_table" parameters="3, 4">
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner start-index="7" stop-index="7" name="t"/>
+            </shorthand-projection>
+        </projections>
+        <table-reference>
+            <table-factor>
+                <subqueryTable alias="t">
+                    <subquery>
+                        <select>
+                            <projections start-index="24" stop-index="24">
+                                <shorthand-projection start-index="24" stop-index="24" />
+                            </projections>
+                            <table-reference>
+                                <table-factor>
+                                    <table start-index="31" stop-index="37" name="t_order"/>
+                                </table-factor>
+                            </table-reference>
+                            <where start-index="39" stop-index="62">
+                                <and-predicate>
+                                    <predicate start-index="45" stop-index="62">
+                                        <column-left-value start-index="45" stop-index="52" name="order_id" />
+                                        <in-right-value>
+                                            <literal-expression start-index="58" stop-index="58" value="3" />
+                                            <parameter-marker-expression start-index="58" stop-index="58" value="0" />
+                                            <literal-expression start-index="61" stop-index="61" value="4" />
+                                            <parameter-marker-expression start-index="61" stop-index="61" value="1"/>
+                                        </in-right-value>
+                                    </predicate>
+                                </and-predicate>
+                            </where>
+                        </select>
+                    </subquery>
+                </subqueryTable>
+            </table-factor>
+        </table-reference>
         <tables>
             <subquery-table start-index="17" stop-index="62" alias="t">
                 <select>
@@ -63,16 +99,6 @@
                 </select>
             </subquery-table>
         </tables>
-        <table-reference>
-            <table-factor>
-                <subquery></subquery>
-            </table-factor>
-        </table-reference>
-        <projections start-index="7" stop-index="9">
-            <shorthand-projection start-index="7" stop-index="9" >
-                <owner name="t" start-index="7" stop-index="7" />
-            </shorthand-projection>
-        </projections>
     </select>
 
     <select sql-case-id="select_with_equal_subquery">

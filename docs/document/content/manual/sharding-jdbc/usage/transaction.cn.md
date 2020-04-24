@@ -205,4 +205,4 @@ client {
 
 ## 分布式事务example
 
-* [官方example](https://github.com/apache/incubator-shardingsphere/tree/master/examples/sharding-jdbc-example/sharding-example)
+* [官方example](https://github.com/apache/shardingsphere/tree/master/examples/sharding-jdbc-example/sharding-example)

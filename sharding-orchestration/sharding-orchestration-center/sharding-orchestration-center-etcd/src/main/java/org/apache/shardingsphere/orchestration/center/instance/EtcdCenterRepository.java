@@ -33,9 +33,9 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
-import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 
 import java.util.List;
 import java.util.Properties;
@@ -48,8 +48,6 @@ public final class EtcdCenterRepository implements ConfigCenterRepository, Regis
     
     private Client client;
     
-    private CenterConfiguration config;
-    
     @Getter
     @Setter
     private Properties properties;
@@ -57,8 +55,7 @@ public final class EtcdCenterRepository implements ConfigCenterRepository, Regis
     private EtcdProperties etcdProperties;
 
     @Override
-    public void init(final CenterConfiguration config) {
-        this.config = config;
+    public void init(final CenterConfiguration config) { 
         this.etcdProperties = new EtcdProperties(this.properties);
         client = Client.builder().endpoints(Util.toURIs(Splitter.on(",").trimResults().splitToList(config.getServerLists()))).build();
     }

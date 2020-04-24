@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.orchestration.core.metadatacenter;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.orchestration.center.CenterRepository;
 import org.apache.shardingsphere.orchestration.core.metadatacenter.yaml.RuleSchemaMetaDataYamlSwapper;
 import org.apache.shardingsphere.orchestration.core.metadatacenter.yaml.YamlRuleSchemaMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
+
+import java.util.Optional;
 
 /**
  * Read/Write meta data from center repository.
@@ -53,8 +56,12 @@ public final class MetaDataCenter {
      * @param schemaName schema name
      * @return rule schema meta data of the schema
      */
-    public RuleSchemaMetaData loadRuleSchemaMetaData(final String schemaName) {
-        return new RuleSchemaMetaDataYamlSwapper().swap(YamlEngine.unmarshal(repository.get(node.getMetaDataCenterNodeFullPath(schemaName)), YamlRuleSchemaMetaData.class));
+    public Optional<RuleSchemaMetaData> loadRuleSchemaMetaData(final String schemaName) {
+        String path = repository.get(node.getMetaDataCenterNodeFullPath(schemaName));
+        if (Strings.isNullOrEmpty(path)) {
+            return Optional.empty();
+        }
+        return Optional.of(new RuleSchemaMetaDataYamlSwapper().swap(YamlEngine.unmarshal(path, YamlRuleSchemaMetaData.class)));
     }
     
 }

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.transaction.xa.jta.connection.dialect;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,7 +54,7 @@ public final class MariaDBXAConnectionWrapperTest {
         Connection connection = (Connection) mock(Class.forName("org.mariadb.jdbc.MariaDbConnection"));
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, DatabaseTypes.getActualDatabaseType("MariaDB"), "ds1");
         xaDataSource = XADataSourceFactory.build(DatabaseTypes.getActualDatabaseType("MariaDB"), dataSource);
-        when(this.connection.unwrap((Class<Object>) any())).thenReturn(connection);
+        when(this.connection.unwrap(any())).thenReturn(connection);
     }
     
     @Test

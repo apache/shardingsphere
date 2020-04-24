@@ -19,6 +19,8 @@ package org.apache.shardingsphere.sql.parser.mysql.visitor.impl;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.TCLVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TransactionCharacteristicContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Scope_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AutoCommitValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BeginTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CommitContext;
@@ -42,6 +44,25 @@ public final class MySQLTCLVisitor extends MySQLVisitor implements TCLVisitor {
     
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
+        SetTransactionStatement result = new SetTransactionStatement();
+        if (null != ctx.scope_()) {
+            Scope_Context scopeContext = ctx.scope_();
+            if (null != scopeContext.GLOBAL()) {
+                result.setScope(scopeContext.GLOBAL().getText());
+            } else if (null != scopeContext.SESSION()) {
+                result.setScope(scopeContext.SESSION().getText());
+            }
+        }
+        if (null != ctx.transactionCharacteristic()) {
+            for (TransactionCharacteristicContext each : ctx.transactionCharacteristic()) {
+                if (null != each.level_()) {
+                    result.setIsolationLevel(each.level_().getText());
+                }
+                if (null != each.accessMode_()) {
+                    result.setAccessMode(each.accessMode_().getText());
+                }
+            }
+        }
         return new SetTransactionStatement();
     }
     

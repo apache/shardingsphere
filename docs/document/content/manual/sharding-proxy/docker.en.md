@@ -13,7 +13,7 @@ docker pull apache/sharding-proxy
 ## Build Docker Clone Manually (Optional)
 
 ```
-git clone https://github.com/apache/incubator-shardingsphere
+git clone https://github.com/apache/shardingsphere
 mvn clean install
 cd sharding-distribution/sharding-proxy-distribution
 mvn clean package docker:build
@@ -23,7 +23,7 @@ mvn clean package docker:build
 
 Create `server.yaml` and `config-xxx.yaml` to configure sharding rules and server rule in `/${your_work_dir}/conf/`. 
 Please refer to [Configuration Manual](/en/manual/sharding-proxy/configuration/).
-Please refer to [Example](https://github.com/apache/incubator-shardingsphere/tree/master/sharding-proxy/sharding-proxy-bootstrap/src/main/resources/conf).
+Please refer to [Example](https://github.com/apache/shardingsphere/tree/master/sharding-proxy/sharding-proxy-bootstrap/src/main/resources/conf).
 
 ## Run Docker
 

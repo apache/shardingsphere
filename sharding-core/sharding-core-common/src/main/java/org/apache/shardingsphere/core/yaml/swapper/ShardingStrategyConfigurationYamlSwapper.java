@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.yaml.swapper;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.api.config.sharding.strategy.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.HintShardingStrategyConfiguration;
-import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
@@ -30,7 +29,6 @@ import org.apache.shardingsphere.api.sharding.standard.StandardShardingAlgorithm
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlHintShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlInlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlNoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlShardingAlgorithmConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlStandardShardingStrategyConfiguration;
@@ -61,9 +59,6 @@ public final class ShardingStrategyConfigurationYamlSwapper implements YamlSwapp
         if (data instanceof HintShardingStrategyConfiguration) {
             result.setHint(createYamlHintShardingStrategyConfiguration((HintShardingStrategyConfiguration) data));
         }
-        if (data instanceof InlineShardingStrategyConfiguration) {
-            result.setInline(createYamlInlineShardingStrategyConfiguration((InlineShardingStrategyConfiguration) data));
-        }
         if (data instanceof NoneShardingStrategyConfiguration) {
             result.setNone(new YamlNoneShardingStrategyConfiguration());
         }
@@ -81,10 +76,6 @@ public final class ShardingStrategyConfigurationYamlSwapper implements YamlSwapp
         if (null != yamlConfiguration.getComplex()) {
             shardingStrategyConfigCount++;
             result = createComplexShardingStrategyConfiguration(yamlConfiguration.getComplex());
-        }
-        if (null != yamlConfiguration.getInline()) {
-            shardingStrategyConfigCount++;
-            result = new InlineShardingStrategyConfiguration(yamlConfiguration.getInline().getShardingColumn(), yamlConfiguration.getInline().getAlgorithmExpression());
         }
         if (null != yamlConfiguration.getHint()) {
             shardingStrategyConfigCount++;
@@ -115,13 +106,6 @@ public final class ShardingStrategyConfigurationYamlSwapper implements YamlSwapp
     private YamlHintShardingStrategyConfiguration createYamlHintShardingStrategyConfiguration(final HintShardingStrategyConfiguration data) {
         YamlHintShardingStrategyConfiguration result = new YamlHintShardingStrategyConfiguration();
         result.setShardingAlgorithm(createYamlShardingAlgorithmConfiguration(data.getShardingAlgorithm()));
-        return result;
-    }
-    
-    private YamlInlineShardingStrategyConfiguration createYamlInlineShardingStrategyConfiguration(final InlineShardingStrategyConfiguration data) {
-        YamlInlineShardingStrategyConfiguration result = new YamlInlineShardingStrategyConfiguration();
-        result.setShardingColumn(data.getShardingColumn());
-        result.setAlgorithmExpression(data.getAlgorithmExpression());
         return result;
     }
     

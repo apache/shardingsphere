@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.underlying.merge;
 
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
-import org.apache.shardingsphere.underlying.executor.sql.queryresult.QueryResult;
+import org.apache.shardingsphere.underlying.executor.sql.QueryResult;
 import org.apache.shardingsphere.underlying.merge.engine.ResultProcessEngine;
 import org.apache.shardingsphere.underlying.merge.engine.decorator.ResultDecorator;
 import org.apache.shardingsphere.underlying.merge.engine.decorator.ResultDecoratorEngine;
@@ -34,7 +35,6 @@ import org.apache.shardingsphere.underlying.merge.result.impl.transparent.Transp
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -45,19 +45,23 @@ import java.util.Optional;
  */
 public final class MergeEngine {
     
+    static {
+        ShardingSphereServiceLoader.register(ResultProcessEngine.class);
+    }
+    
     private final DatabaseType databaseType;
     
     private final SchemaMetaData schemaMetaData;
     
     private final ConfigurationProperties properties;
     
-    private final Map<BaseRule, ResultProcessEngine> engines = new LinkedHashMap<>();
+    private final Map<BaseRule, ResultProcessEngine> engines;
     
     public MergeEngine(final DatabaseType databaseType, final SchemaMetaData schemaMetaData, final ConfigurationProperties properties, final Collection<BaseRule> rules) {
         this.databaseType = databaseType;
         this.schemaMetaData = schemaMetaData;
         this.properties = properties;
-        OrderedSPIRegistry.getRegisteredServices(rules, ResultProcessEngine.class).forEach(engines::put);
+        engines = OrderedSPIRegistry.getRegisteredServices(rules, ResultProcessEngine.class);
     }
     
     /**

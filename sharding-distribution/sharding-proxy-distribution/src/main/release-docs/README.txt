@@ -25,7 +25,7 @@ We welcome contributions of all kinds, for details of how you can help
     https://shardingsphere.apache.org/community/en/contribute/
 
 Find the issue tracker from here
-    https://github.com/apache/incubator-shardingsphere/issues
+    https://github.com/apache/shardingsphere/issues
 
 Please help us make Apache ShardingSphere better - we appreciate any feedback you may have.
 

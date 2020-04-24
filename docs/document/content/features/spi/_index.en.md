@@ -11,7 +11,7 @@ In Apache ShardingSphere, many functionality implementation are uploaded through
 
 Apache ShardingSphere uses SPI to expand in order to optimize overall architecture design at most. It is to enable premier users, who have implemented interfaces provided by Apache ShardingSphere, to dynamically load self-defined implementation types. Therefore, it can satisfy their practical requirements for different scenarios, while keeping architecture integrity and functional stabilization.
 
-This chapter has provided all the Apache ShardingSphere functional modules that are loaded through SPI. Users with no special requirements can use them to implement corresponding functions after simple configurations. Premier users can develop self-defined implementations, referring to interfaces of existing functional modules. Welcome to feed your self-defined implementations to the [open-source community](https://github.com/apache/incubator-shardingsphere/pulls), benefiting more users.
+This chapter has provided all the Apache ShardingSphere functional modules that are loaded through SPI. Users with no special requirements can use them to implement corresponding functions after simple configurations. Premier users can develop self-defined implementations, referring to interfaces of existing functional modules. Welcome to feed your self-defined implementations to the [open-source community](https://github.com/apache/shardingsphere/pulls), benefiting more users.
 
 ### SQL Passing
 

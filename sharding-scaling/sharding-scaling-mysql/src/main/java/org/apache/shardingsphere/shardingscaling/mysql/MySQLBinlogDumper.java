@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingscaling.mysql;
 import org.apache.shardingsphere.shardingscaling.core.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceFactory;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.AbstractSyncExecutor;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.AbstractShardingScalingExecutor;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.Channel;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPosition;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.LogDumper;
@@ -50,7 +50,7 @@ import java.util.Random;
  * MySQL binlog dumper.
  */
 @Slf4j
-public final class MySQLBinlogDumper extends AbstractSyncExecutor implements LogDumper {
+public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor implements LogDumper {
     
     private final BinlogPosition binlogPosition;
     
@@ -71,8 +71,8 @@ public final class MySQLBinlogDumper extends AbstractSyncExecutor implements Log
     }
     
     @Override
-    public void run() {
-        start();
+    public void start() {
+        super.start();
         dump(channel);
     }
     

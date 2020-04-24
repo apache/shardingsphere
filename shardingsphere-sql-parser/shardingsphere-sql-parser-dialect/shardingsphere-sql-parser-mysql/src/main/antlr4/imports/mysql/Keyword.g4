@@ -567,3 +567,23 @@ FLOAT
 DATETIME
     : D A T E T I M E
     ;
+
+ISOLATION
+   : I S O L A T I O N
+   ;
+
+REPEATABLE
+   : R E P E A T A B L E
+   ;
+
+UNCOMMITTED
+   : U N C O M M I T T E D
+   ;
+
+SERIALIZABLE
+   : S E R I A L I Z A B L E
+   ;
+
+ONLY
+   : O N L Y
+   ;

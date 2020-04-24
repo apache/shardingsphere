@@ -30,8 +30,6 @@ public final class ShardingStrategyBeanDefinitionParserTag {
     
     public static final String COMPLEX_STRATEGY_ROOT_TAG = "complex-strategy";
     
-    public static final String INLINE_STRATEGY_ROOT_TAG = "inline-strategy";
-    
     public static final String HINT_STRATEGY_ROOT_TAG = "hint-strategy";
     
     public static final String NONE_STRATEGY_ROOT_TAG = "none-strategy";
@@ -41,10 +39,4 @@ public final class ShardingStrategyBeanDefinitionParserTag {
     public static final String SHARDING_COLUMNS_ATTRIBUTE = "sharding-columns";
     
     public static final String ALGORITHM_REF_ATTRIBUTE = "algorithm-ref";
-    
-    public static final String PRECISE_ALGORITHM_REF_ATTRIBUTE = "precise-algorithm-ref";
-    
-    public static final String RANGE_ALGORITHM_REF_ATTRIBUTE = "range-algorithm-ref";
-    
-    public static final String ALGORITHM_EXPRESSION_ATTRIBUTE = "algorithm-expression";
 }

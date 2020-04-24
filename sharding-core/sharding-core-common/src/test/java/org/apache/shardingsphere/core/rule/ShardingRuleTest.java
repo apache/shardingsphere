@@ -21,15 +21,15 @@ import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfigura
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.shard.fixture.StandardShardingAlgorithmFixture;
-import org.apache.shardingsphere.core.strategy.keygen.SnowflakeKeyGenerateAlgorithm;
-import org.apache.shardingsphere.core.strategy.keygen.fixture.IncrementKeyGenerateAlgorithm;
+import org.apache.shardingsphere.core.strategy.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
+import org.apache.shardingsphere.core.strategy.algorithm.keygen.fixture.IncrementKeyGenerateAlgorithm;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
-import org.apache.shardingsphere.core.strategy.route.inline.InlineShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.none.NoneShardingStrategy;
+import org.apache.shardingsphere.core.strategy.route.standard.StandardShardingStrategy;
+import org.apache.shardingsphere.core.strategy.algorithm.sharding.inline.InlineShardingAlgorithm;
 import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
@@ -63,8 +63,8 @@ public final class ShardingRuleTest {
         assertThat(actual.getBindingTableRules().size(), is(1));
         assertThat(actual.getBindingTableRules().iterator().next().getTableRules().size(), is(2));
         assertThat(actual.getBroadcastTables(), is(Collections.singletonList("BROADCAST_TABLE")));
-        assertThat(actual.getDefaultDatabaseShardingStrategy(), instanceOf(InlineShardingStrategy.class));
-        assertThat(actual.getDefaultTableShardingStrategy(), instanceOf(InlineShardingStrategy.class));
+        assertThat(actual.getDefaultDatabaseShardingStrategy(), instanceOf(StandardShardingStrategy.class));
+        assertThat(actual.getDefaultTableShardingStrategy(), instanceOf(StandardShardingStrategy.class));
         assertThat(actual.getDefaultKeyGenerateAlgorithm(), instanceOf(IncrementKeyGenerateAlgorithm.class));
     }
     
@@ -132,7 +132,7 @@ public final class ShardingRuleTest {
     @Test
     public void assertGetDatabaseShardingStrategyFromDefault() {
         ShardingStrategy actual = createMaximumShardingRule().getDatabaseShardingStrategy(mock(TableRule.class));
-        assertThat(actual, instanceOf(InlineShardingStrategy.class));
+        assertThat(actual, instanceOf(StandardShardingStrategy.class));
         assertThat(actual.getShardingColumns().iterator().next(), is("ds_id"));
     }
     
@@ -146,7 +146,7 @@ public final class ShardingRuleTest {
     @Test
     public void assertGetTableShardingStrategyFromDefault() {
         ShardingStrategy actual = createMaximumShardingRule().getTableShardingStrategy(mock(TableRule.class));
-        assertThat(actual, instanceOf(InlineShardingStrategy.class));
+        assertThat(actual, instanceOf(StandardShardingStrategy.class));
         assertThat(actual.getShardingColumns().iterator().next(), is("table_id"));
     }
     
@@ -339,8 +339,12 @@ public final class ShardingRuleTest {
         shardingRuleConfiguration.getTableRuleConfigs().add(subTableRuleConfiguration);
         shardingRuleConfiguration.getBindingTableGroups().add(tableRuleConfiguration.getLogicTable() + "," + subTableRuleConfiguration.getLogicTable());
         shardingRuleConfiguration.getBroadcastTables().add("BROADCAST_TABLE");
-        shardingRuleConfiguration.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("ds_id", "ds_%{ds_id % 2}"));
-        shardingRuleConfiguration.setDefaultTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("table_id", "table_%{table_id % 2}"));
+        InlineShardingAlgorithm shardingAlgorithmDB = new InlineShardingAlgorithm();
+        shardingAlgorithmDB.getProperties().setProperty("algorithm.expression", "ds_%{ds_id % 2}");
+        shardingRuleConfiguration.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("ds_id", shardingAlgorithmDB));
+        InlineShardingAlgorithm shardingAlgorithmTBL = new InlineShardingAlgorithm();
+        shardingAlgorithmTBL.getProperties().setProperty("algorithm.expression", "table_%{table_id % 2}");
+        shardingRuleConfiguration.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("table_id", shardingAlgorithmTBL));
         KeyGenerateAlgorithm defaultKeyGenerateAlgorithm = TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class, "INCREMENT", new Properties());
         shardingRuleConfiguration.setDefaultKeyGeneratorConfig(new KeyGeneratorConfiguration("id", defaultKeyGenerateAlgorithm));
         return new ShardingRule(shardingRuleConfiguration, createDataSourceNames());

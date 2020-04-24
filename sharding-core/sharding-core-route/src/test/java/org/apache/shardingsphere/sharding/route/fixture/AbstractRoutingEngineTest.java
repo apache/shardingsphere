@@ -20,13 +20,14 @@ package org.apache.shardingsphere.sharding.route.fixture;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.HintShardingStrategyConfiguration;
-import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
-import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
+import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
+import org.apache.shardingsphere.core.strategy.algorithm.sharding.inline.InlineShardingAlgorithm;
+import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
+import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,9 +68,9 @@ public abstract class AbstractRoutingEngineTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(createTableRuleConfig("t_hint_ds_test", "ds_${0..1}.t_hint_ds_test_${0..1}",
             new HintShardingStrategyConfiguration(new HintShardingAlgorithmFixture()),
-            createInlineShardingStrategyConfiguration("t_hint_ds_test_${order_id % 2}")));
+            createStandardShardingStrategyConfiguration("t_hint_ds_test_${order_id % 2}")));
         shardingRuleConfig.getTableRuleConfigs().add(createTableRuleConfig("t_hint_table_test", "ds_${0..1}.t_hint_table_test_${0..1}",
-            createInlineShardingStrategyConfiguration("ds_${user_id % 2}"),
+            createStandardShardingStrategyConfiguration("ds_${user_id % 2}"),
             new HintShardingStrategyConfiguration(new HintShardingAlgorithmFixture())));
         return new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
     }
@@ -77,7 +78,9 @@ public abstract class AbstractRoutingEngineTest {
     protected final ShardingRule createAllShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getBroadcastTables().add("t_product");
-        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "ds_${user_id % 2}"));
+        InlineShardingAlgorithm shardingAlgorithm = new InlineShardingAlgorithm();
+        shardingAlgorithm.getProperties().setProperty("algorithm.expression", "ds_${user_id % 2}");
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", shardingAlgorithm));
         shardingRuleConfig.getTableRuleConfigs().add(createInlineTableRuleConfig("t_order", "ds_${0..1}.t_order_${0..1}", "t_order_${user_id % 2}", "ds_${user_id % 2}"));
         shardingRuleConfig.getTableRuleConfigs().add(createInlineTableRuleConfig("t_order_item", "ds_${0..1}.t_order_item_${0..1}", "t_order_item_${user_id % 2}", "ds_${user_id % 2}"));
         shardingRuleConfig.getTableRuleConfigs().add(createInlineTableRuleConfig("t_user", "ds_${0..1}.t_user_${0..1}", "t_user_${user_id % 2}", "ds_${user_id % 2}"));
@@ -88,14 +91,16 @@ public abstract class AbstractRoutingEngineTest {
     
     private TableRuleConfiguration createInlineTableRuleConfig(final String tableName, final String actualDataNodes, final String algorithmExpression, final String dsAlgorithmExpression) {
         return createTableRuleConfig(tableName, actualDataNodes,
-            createInlineShardingStrategyConfiguration(dsAlgorithmExpression), createInlineShardingStrategyConfiguration(algorithmExpression));
+            createStandardShardingStrategyConfiguration(dsAlgorithmExpression), createStandardShardingStrategyConfiguration(algorithmExpression));
     }
     
-    private InlineShardingStrategyConfiguration createInlineShardingStrategyConfiguration(final String algorithmExpression) {
+    private StandardShardingStrategyConfiguration createStandardShardingStrategyConfiguration(final String algorithmExpression) {
         int startIndex = algorithmExpression.indexOf('{');
         int endIndex = algorithmExpression.indexOf('%');
         String shardingColumn = algorithmExpression.substring(startIndex + 1, endIndex).trim();
-        return new InlineShardingStrategyConfiguration(shardingColumn, algorithmExpression);
+        InlineShardingAlgorithm shardingAlgorithm = new InlineShardingAlgorithm();
+        shardingAlgorithm.getProperties().setProperty("algorithm.expression", algorithmExpression);
+        return new StandardShardingStrategyConfiguration(shardingColumn, shardingAlgorithm);
     }
     
     private TableRuleConfiguration createTableRuleWithHintConfig() {

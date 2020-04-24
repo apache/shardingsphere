@@ -9,7 +9,7 @@ chapter = true
 
 Welcome to register by company + homepage + use case(optional), your support is important to us.
 
-Please register [here](https://github.com/sharding-sphere/sharding-sphere/issues/234) with `company` + `homepage` + `use case(optional)`.
+Please register [here](https://github.com/apache/shardingsphere/issues/234) with `company` + `homepage` + `use case(optional)`.
 
 ## Who are using ShardingSphere?
 

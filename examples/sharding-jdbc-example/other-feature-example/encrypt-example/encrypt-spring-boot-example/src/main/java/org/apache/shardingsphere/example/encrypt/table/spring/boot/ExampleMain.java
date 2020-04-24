@@ -35,7 +35,7 @@ public class ExampleMain {
     
     /**
      * The example can't work well.
-     * Related issue #2884: https://github.com/apache/incubator-shardingsphere/issues/2884
+     * Related issue #2884: https://github.com/apache/shardingsphere/issues/2884
      *
      * @param args startup arguments.
      * @throws SQLException SQL exception

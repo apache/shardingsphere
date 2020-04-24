@@ -29,8 +29,9 @@ import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
+import org.apache.shardingsphere.underlying.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.underlying.rewrite.engine.result.GenericSQLRewriteResult;
 import org.apache.shardingsphere.underlying.rewrite.engine.result.SQLRewriteUnit;
@@ -42,9 +43,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Shadow prepared statement.
@@ -64,7 +67,7 @@ public final class ShadowPreparedStatement extends AbstractShardingPreparedState
     @Getter
     private final ParameterMetaData parameterMetaData;
     
-    private PreparedStatement preparedStatement;
+    private List<PreparedStatement> preparedStatements;
     
     private ResultSet resultSet;
 
@@ -109,10 +112,12 @@ public final class ShadowPreparedStatement extends AbstractShardingPreparedState
     public ResultSet executeQuery() throws SQLException {
         try {
             SQLUnit sqlUnit = getSQLUnit(sql);
-            preparedStatement = preparedStatementGenerator.createPreparedStatement(sqlUnit.getSql());
-            replayMethodsInvocation(preparedStatement);
-            replaySetParameter(preparedStatement, sqlUnit.getParameters());
-            resultSet = preparedStatement.executeQuery();
+            preparedStatements = preparedStatementGenerator.createPreparedStatements(sqlUnit.getSql());
+            for (PreparedStatement preparedStatement : preparedStatements) {
+                replayMethodsInvocation(preparedStatement);
+                replaySetParameter(preparedStatement, sqlUnit.getParameters());
+                resultSet = preparedStatement.executeQuery();
+            }
             return resultSet;
         } finally {
             clearParameters();
@@ -123,10 +128,14 @@ public final class ShadowPreparedStatement extends AbstractShardingPreparedState
     public int executeUpdate() throws SQLException {
         try {
             SQLUnit sqlUnit = getSQLUnit(sql);
-            preparedStatement = preparedStatementGenerator.createPreparedStatement(sqlUnit.getSql());
-            replayMethodsInvocation(preparedStatement);
-            replaySetParameter(preparedStatement, sqlUnit.getParameters());
-            return preparedStatement.executeUpdate();
+            preparedStatements = preparedStatementGenerator.createPreparedStatements(sqlUnit.getSql());
+            int result = 0;
+            for (PreparedStatement preparedStatement : preparedStatements) {
+                replayMethodsInvocation(preparedStatement);
+                replaySetParameter(preparedStatement, sqlUnit.getParameters());
+                result = preparedStatement.executeUpdate();
+            }
+            return result;
         } finally {
             clearParameters();
         }
@@ -136,11 +145,14 @@ public final class ShadowPreparedStatement extends AbstractShardingPreparedState
     public boolean execute() throws SQLException {
         try {
             SQLUnit sqlUnit = getSQLUnit(sql);
-            preparedStatement = preparedStatementGenerator.createPreparedStatement(sqlUnit.getSql());
-            replayMethodsInvocation(preparedStatement);
-            replaySetParameter(preparedStatement, sqlUnit.getParameters());
-            boolean result = preparedStatement.execute();
-            resultSet = preparedStatement.getResultSet();
+            preparedStatements = preparedStatementGenerator.createPreparedStatements(sqlUnit.getSql());
+            boolean result = false;
+            for (PreparedStatement preparedStatement : preparedStatements) {
+                replayMethodsInvocation(preparedStatement);
+                replaySetParameter(preparedStatement, sqlUnit.getParameters());
+                result = preparedStatement.execute();
+                resultSet = preparedStatement.getResultSet();
+            }
             return result;
         } finally {
             clearParameters();
@@ -159,10 +171,14 @@ public final class ShadowPreparedStatement extends AbstractShardingPreparedState
             return new int[0];
         }
         try {
-            preparedStatement = preparedStatementGenerator.createPreparedStatement(sqlUnits.iterator().next().getSql());
-            replayMethodsInvocation(preparedStatement);
-            replayBatchPreparedStatement();
-            return preparedStatement.executeBatch();
+            preparedStatements = preparedStatementGenerator.createPreparedStatements(sqlUnits.iterator().next().getSql());
+            int[] result = null;
+            for (PreparedStatement preparedStatement : preparedStatements) {
+                replayMethodsInvocation(preparedStatement);
+                replayBatchPreparedStatement();
+                result = preparedStatement.executeBatch();
+            }
+            return result;
         } finally {
             clearBatch();
         }
@@ -170,8 +186,10 @@ public final class ShadowPreparedStatement extends AbstractShardingPreparedState
     
     private void replayBatchPreparedStatement() throws SQLException {
         for (SQLUnit each : sqlUnits) {
-            replaySetParameter(preparedStatement, each.getParameters());
-            preparedStatement.addBatch();
+            for (PreparedStatement preparedStatement : preparedStatements) {
+                replaySetParameter(preparedStatement, each.getParameters());
+                preparedStatement.addBatch();
+            }
         }
     }
     
@@ -203,12 +221,7 @@ public final class ShadowPreparedStatement extends AbstractShardingPreparedState
     
     @Override
     protected Collection<? extends Statement> getRoutedStatements() {
-        Collection<Statement> result = new LinkedList<>();
-        if (null == preparedStatement) {
-            return result;
-        }
-        result.add(preparedStatement);
-        return result;
+        return preparedStatements;
     }
     
     @Override
@@ -228,7 +241,7 @@ public final class ShadowPreparedStatement extends AbstractShardingPreparedState
     
     @Override
     public ResultSet getGeneratedKeys() throws SQLException {
-        return preparedStatement.getGeneratedKeys();
+        return preparedStatements.get(0).getGeneratedKeys();
     }
     
     @Override
@@ -238,7 +251,7 @@ public final class ShadowPreparedStatement extends AbstractShardingPreparedState
     
     @Override
     public void clearBatch() throws SQLException {
-        if (null != preparedStatement) {
+        for (PreparedStatement preparedStatement : preparedStatements) {
             preparedStatement.clearBatch();
         }
         sqlUnits.clear();
@@ -260,7 +273,18 @@ public final class ShadowPreparedStatement extends AbstractShardingPreparedState
         
         private final String[] columnNames;
         
-        private PreparedStatement createPreparedStatement(final String sql) throws SQLException {
+        private List<PreparedStatement> createPreparedStatements(final String sql) throws SQLException {
+            List<PreparedStatement> result = new ArrayList<>();
+            if (sqlStatement instanceof DMLStatement) {
+                result.add(createPreparedStatement(sql, isShadowSQL));
+            } else {
+                result.add(createPreparedStatement(sql, false));
+                result.add(createPreparedStatement(sql, true));
+            }
+            return result;
+        }
+        
+        private PreparedStatement createPreparedStatement(final String sql, final boolean isShadowSQL) throws SQLException {
             if (-1 != resultSetType && -1 != resultSetConcurrency && -1 != resultSetHoldability) {
                 return isShadowSQL ? connection.getShadowConnection().prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability)
                         : connection.getActualConnection().prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability);

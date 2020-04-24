@@ -63,18 +63,29 @@ public abstract class LogicSchema {
         this.name = name;
         sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(LogicSchemas.getInstance().getDatabaseType()));
         backendDataSource = new JDBCBackendDataSource(dataSources);
-        metaData = createMetaData(name, rules);
+        metaData = loadOrCreateMetaData(name, rules);
         ShardingOrchestrationEventBus.getInstance().register(this);
     }
     
-    private ShardingSphereMetaData createMetaData(final String name, final Collection<BaseRule> rules) throws SQLException {
+    private ShardingSphereMetaData loadOrCreateMetaData(final String name, final Collection<BaseRule> rules) throws SQLException {
+        boolean isOverwrite = null != ShardingOrchestrationFacade.getInstance() && ShardingOrchestrationFacade.getInstance().isOverwrite();
         DatabaseType databaseType = LogicSchemas.getInstance().getDatabaseType();
         DataSourceMetas dataSourceMetas = new DataSourceMetas(databaseType, getDatabaseAccessConfigurationMap());
-        RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataLoader(rules).load(databaseType, getBackendDataSource().getDataSources(), ShardingProxyContext.getInstance().getProperties());
-        if (null != ShardingOrchestrationFacade.getInstance()) {
+        RuleSchemaMetaData ruleSchemaMetaData;
+        if (null == ShardingOrchestrationFacade.getInstance()) {
+            return new ShardingSphereMetaData(dataSourceMetas, loadRuleSchemaMetaData(databaseType, rules));
+        }
+        if (isOverwrite) {
+            ruleSchemaMetaData = loadRuleSchemaMetaData(databaseType, rules);
             ShardingOrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(name, ruleSchemaMetaData);
+        } else {
+            ruleSchemaMetaData = ShardingOrchestrationFacade.getInstance().getMetaDataCenter().loadRuleSchemaMetaData(name).orElse(loadRuleSchemaMetaData(databaseType, rules));
         }
         return new ShardingSphereMetaData(dataSourceMetas, ruleSchemaMetaData);
+    }
+    
+    private RuleSchemaMetaData loadRuleSchemaMetaData(final DatabaseType databaseType, final Collection<BaseRule> rules) throws SQLException {
+        return new RuleSchemaMetaDataLoader(rules).load(databaseType, getBackendDataSource().getDataSources(), ShardingProxyContext.getInstance().getProperties());
     }
     
     private Map<String, DatabaseAccessConfiguration> getDatabaseAccessConfigurationMap() {

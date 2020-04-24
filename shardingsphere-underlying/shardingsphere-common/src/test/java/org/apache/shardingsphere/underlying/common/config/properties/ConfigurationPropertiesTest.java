@@ -37,7 +37,6 @@ public final class ConfigurationPropertiesTest {
         props.setProperty(ConfigurationPropertyKey.EXECUTOR_SIZE.getKey(), "20");
         props.setProperty(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), "20");
         props.setProperty(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN.getKey(), Boolean.FALSE.toString());
-        props.setProperty(ConfigurationPropertyKey.ALLOW_RANGE_QUERY_WITH_INLINE_SHARDING.getKey(), Boolean.TRUE.toString());
         props.setProperty(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD.getKey(), "20");
         props.setProperty(ConfigurationPropertyKey.PROXY_TRANSACTION_TYPE.getKey(), "XA");
         props.setProperty(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED.getKey(), Boolean.TRUE.toString());
@@ -52,7 +51,6 @@ public final class ConfigurationPropertiesTest {
         assertThat(actual.getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), is(20));
         assertThat(actual.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), is(20));
         assertFalse(actual.getValue(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN));
-        assertTrue(actual.getValue(ConfigurationPropertyKey.ALLOW_RANGE_QUERY_WITH_INLINE_SHARDING));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD), is(20));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_TRANSACTION_TYPE), is("XA"));
         assertTrue(actual.getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED));
@@ -71,7 +69,6 @@ public final class ConfigurationPropertiesTest {
         assertThat(actual.getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), is(0));
         assertThat(actual.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), is(1));
         assertTrue(actual.getValue(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN));
-        assertFalse(actual.getValue(ConfigurationPropertyKey.ALLOW_RANGE_QUERY_WITH_INLINE_SHARDING));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD), is(128));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_TRANSACTION_TYPE), is("LOCAL"));
         assertFalse(actual.getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED));

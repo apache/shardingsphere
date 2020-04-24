@@ -65,6 +65,7 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
 
     private final ConfigCenterRepository centerRepository;
     
+    @Getter
     private final boolean isOverwrite;
     
     @Getter

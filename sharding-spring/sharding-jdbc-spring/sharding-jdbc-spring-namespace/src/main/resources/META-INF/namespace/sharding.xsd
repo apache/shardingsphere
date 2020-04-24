@@ -104,13 +104,6 @@
             <xsd:attribute name="algorithm-ref" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>
-    <xsd:element name="inline-strategy">
-        <xsd:complexType>
-            <xsd:attribute name="id" type="xsd:string" use="required" />
-            <xsd:attribute name="sharding-column" type="xsd:string" use="required" />
-            <xsd:attribute name="algorithm-expression" type="xsd:string" use="required" />
-        </xsd:complexType>
-    </xsd:element>
     <xsd:element name="hint-strategy">
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required" />

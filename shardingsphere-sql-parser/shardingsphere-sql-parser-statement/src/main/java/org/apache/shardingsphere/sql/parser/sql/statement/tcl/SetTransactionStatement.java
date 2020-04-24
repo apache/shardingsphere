@@ -17,8 +17,19 @@
 
 package org.apache.shardingsphere.sql.parser.sql.statement.tcl;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Set transaction statement.
  */
+@Getter
+@Setter
 public final class SetTransactionStatement extends TCLStatement {
+    
+    private String isolationLevel;
+    
+    private String scope;
+    
+    private String accessMode;
 }

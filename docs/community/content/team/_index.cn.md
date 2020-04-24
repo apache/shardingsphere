@@ -39,6 +39,7 @@ chapter = true
 | 董宗磊           | dongzl                 |
 | 蒋晓峰           | SteNicholas            |
 | 岳令             | yue530tom              |
+| 秦金卫           | kimmking               |
 
 ## 导师
 
@@ -52,8 +53,8 @@ chapter = true
 
 您可以在ShardingSphere的贡献列表中找到全部的贡献者名单。
 
-- [incubator-shardingsphere](https://github.com/apache/incubator-shardingsphere/graphs/contributors)
-- [incubator-shardingsphere-benchmark](https://github.com/apache/incubator-shardingsphere-benchmark)
+- [shardingsphere](https://github.com/apache/shardingsphere/graphs/contributors)
+- [shardingsphere-benchmark](https://github.com/apache/shardingsphere-benchmark)
 
 ## 成为提交者
 
