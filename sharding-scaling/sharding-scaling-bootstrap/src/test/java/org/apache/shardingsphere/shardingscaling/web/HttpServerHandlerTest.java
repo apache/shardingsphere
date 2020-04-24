@@ -29,6 +29,8 @@ import io.netty.handler.codec.http.HttpVersion;
 import io.netty.util.CharsetUtil;
 import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.ScalingConfiguration;
+import org.apache.shardingsphere.shardingscaling.core.config.ScalingContext;
+import org.apache.shardingsphere.shardingscaling.core.config.ServerConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,6 +64,7 @@ public class HttpServerHandlerTest {
     @Before
     public void setUp() {
         initConfig("/config.json");
+        ScalingContext.getInstance().init(new ServerConfiguration());
         httpServerHandler = new HttpServerHandler();
     }
     
