@@ -43,9 +43,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * SQL execute callback for Sharding-Proxy.
+ * SQL executor callback for Sharding-Proxy.
  */
-public final class ProxySQLExecuteCallback extends DefaultSQLExecutorCallback<ExecuteResponse> {
+public final class ProxySQLExecutorCallback extends DefaultSQLExecutorCallback<ExecuteResponse> {
     
     static {
         ShardingSphereServiceLoader.register(RuleSQLExecutorCallback.class);
@@ -63,8 +63,8 @@ public final class ProxySQLExecuteCallback extends DefaultSQLExecutorCallback<Ex
     
     private boolean hasMetaData;
 
-    public ProxySQLExecuteCallback(final SQLStatementContext sqlStatementContext, final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper,
-                                   final boolean isExceptionThrown, final boolean isReturnGeneratedKeys, final boolean fetchMetaData) {
+    public ProxySQLExecutorCallback(final SQLStatementContext sqlStatementContext, final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper,
+                                    final boolean isExceptionThrown, final boolean isReturnGeneratedKeys, final boolean fetchMetaData) {
         super(LogicSchemas.getInstance().getDatabaseType(), isExceptionThrown);
         this.sqlStatementContext = sqlStatementContext;
         this.backendConnection = backendConnection;
