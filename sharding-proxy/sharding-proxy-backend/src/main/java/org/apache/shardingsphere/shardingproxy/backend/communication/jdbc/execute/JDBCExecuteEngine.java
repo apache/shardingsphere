@@ -19,7 +19,8 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execu
 
 import lombok.Getter;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.callback.ProxySQLExecuteCallback;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.callback.ProxySQLExecutorCallback;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.callback.RuleProxySQLExecutorCallback;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteQueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteResponse;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
@@ -46,7 +47,6 @@ import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.StatementE
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.ExecutorExceptionHandler;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutor;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutorCallback;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.impl.RuleSQLExecutorCallback;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.group.StatementOption;
 import org.apache.shardingsphere.underlying.executor.sql.group.ExecuteGroupEngine;
 
@@ -55,7 +55,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * SQL Execute engine for JDBC.
@@ -63,7 +62,7 @@ import java.util.Optional;
 public final class JDBCExecuteEngine implements SQLExecuteEngine {
     
     static {
-        ShardingSphereServiceLoader.register(RuleSQLExecutorCallback.class);
+        ShardingSphereServiceLoader.register(RuleProxySQLExecutorCallback.class);
     }
     
     @Getter
@@ -76,19 +75,11 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     
     private final SQLExecutor sqlExecutor;
     
-    private final RuleSQLExecutorCallback ruleSQLExecutorCallback;
-    
     public JDBCExecuteEngine(final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper) {
         this.backendConnection = backendConnection;
         this.jdbcExecutorWrapper = jdbcExecutorWrapper;
         executeGroupEngine = jdbcExecutorWrapper.getExecuteGroupEngine();
         sqlExecutor = new SQLExecutor(BackendExecutorContext.getInstance().getExecutorKernel(), backendConnection.isSerialExecute());
-        ruleSQLExecutorCallback = findRuleSQLExecutorCallback().orElse(null);
-    }
-    
-    private Optional<RuleSQLExecutorCallback> findRuleSQLExecutorCallback() {
-        Map<BaseRule, RuleSQLExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(getRules(), RuleSQLExecutorCallback.class);
-        return callbackMap.isEmpty() ? Optional.empty() : Optional.of(callbackMap.values().iterator().next());
     }
     
     private Collection<BaseRule> getRules() {
@@ -116,8 +107,8 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         Collection<InputGroup<StatementExecuteUnit>> inputGroups = executeGroupEngine.generate(executionContext.getExecutionUnits(), backendConnection, new StatementOption(isReturnGeneratedKeys));
         Collection<ExecuteResponse> executeResponses = sqlExecutor.execute(inputGroups,
-                getSQLExecutorCallback(new ProxySQLExecuteCallback(sqlStatementContext, backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, true)),
-                getSQLExecutorCallback(new ProxySQLExecuteCallback(sqlStatementContext, backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, false)));
+                getSQLExecutorCallback(new ProxySQLExecutorCallback(sqlStatementContext, backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, true)),
+                getSQLExecutorCallback(new ProxySQLExecutorCallback(sqlStatementContext, backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, false)));
         ExecuteResponse executeResponse = executeResponses.iterator().next();
         if (executeResponse instanceof ExecuteQueryResponse) {
             return getExecuteQueryResponse(((ExecuteQueryResponse) executeResponse).getQueryHeaders(), executeResponses);
@@ -134,8 +125,9 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         }
     }
     
-    private SQLExecutorCallback getSQLExecutorCallback(final ProxySQLExecuteCallback callback) {
-        return null == ruleSQLExecutorCallback ? callback : ruleSQLExecutorCallback;
+    private SQLExecutorCallback<ExecuteResponse> getSQLExecutorCallback(final ProxySQLExecutorCallback callback) {
+        Map<BaseRule, RuleProxySQLExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(getRules(), RuleProxySQLExecutorCallback.class);
+        return callbackMap.isEmpty() ? callback : callbackMap.values().iterator().next();
     }
     
     private BackendResponse getExecuteQueryResponse(final List<QueryHeader> queryHeaders, final Collection<ExecuteResponse> executeResponses) {

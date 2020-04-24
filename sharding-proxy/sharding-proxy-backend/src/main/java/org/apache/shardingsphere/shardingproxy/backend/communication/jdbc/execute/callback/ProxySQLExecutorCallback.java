@@ -31,7 +31,6 @@ import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatement
 import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.sql.QueryResult;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.impl.DefaultSQLExecutorCallback;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.impl.RuleSQLExecutorCallback;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.queryresult.MemoryQueryResult;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.queryresult.StreamQueryResult;
 
@@ -43,12 +42,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * SQL execute callback for Sharding-Proxy.
+ * SQL executor callback for Proxy.
  */
-public final class ProxySQLExecuteCallback extends DefaultSQLExecutorCallback<ExecuteResponse> {
+public final class ProxySQLExecutorCallback extends DefaultSQLExecutorCallback<ExecuteResponse> {
     
     static {
-        ShardingSphereServiceLoader.register(RuleSQLExecutorCallback.class);
+        ShardingSphereServiceLoader.register(RuleProxySQLExecutorCallback.class);
     }
     
     private final SQLStatementContext sqlStatementContext;
@@ -63,8 +62,8 @@ public final class ProxySQLExecuteCallback extends DefaultSQLExecutorCallback<Ex
     
     private boolean hasMetaData;
 
-    public ProxySQLExecuteCallback(final SQLStatementContext sqlStatementContext, final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper,
-                                   final boolean isExceptionThrown, final boolean isReturnGeneratedKeys, final boolean fetchMetaData) {
+    public ProxySQLExecutorCallback(final SQLStatementContext sqlStatementContext, final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper,
+                                    final boolean isExceptionThrown, final boolean isReturnGeneratedKeys, final boolean fetchMetaData) {
         super(LogicSchemas.getInstance().getDatabaseType(), isExceptionThrown);
         this.sqlStatementContext = sqlStatementContext;
         this.backendConnection = backendConnection;
@@ -88,8 +87,7 @@ public final class ProxySQLExecuteCallback extends DefaultSQLExecutorCallback<Ex
         if (jdbcExecutorWrapper.executeSQL(statement, sql, isReturnGeneratedKeys)) {
             ResultSet resultSet = statement.getResultSet();
             backendConnection.add(resultSet);
-            return new ExecuteQueryResponse(withMetadata
-                    ? getQueryHeaders(sqlStatementContext, resultSet.getMetaData()) : null, createQueryResult(resultSet, connectionMode));
+            return new ExecuteQueryResponse(withMetadata ? getQueryHeaders(sqlStatementContext, resultSet.getMetaData()) : null, createQueryResult(resultSet, connectionMode));
         }
         return new ExecuteUpdateResponse(statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0L);
     }
