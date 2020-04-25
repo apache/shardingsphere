@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import lombok.EqualsAndHashCode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedDatabaseMetaDataResultSet;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
@@ -99,7 +100,7 @@ public final class DatabaseMetaDataResultSet<T extends BaseRule> extends Abstrac
         for (int i = 1; i <= columnLabelIndexMap.size(); i++) {
             if (tableNameColumnIndex == i) {
                 String tableName = resultSet.getString(i);
-                Optional<String> logicTableName = rule instanceof ShardingRule ? ((ShardingRule) rule).findLogicTableNameByActualTable(tableName) : Optional.empty();
+                Optional<String> logicTableName = rule instanceof ShardingRule ? ((ShardingRule) rule).findTableRuleByActualTable(tableName).map(TableRule::getLogicTable) : Optional.empty();
                 result.addObject(logicTableName.orElse(tableName));
             } else if (indexNameColumnIndex == i) {
                 String tableName = resultSet.getString(tableNameColumnIndex);

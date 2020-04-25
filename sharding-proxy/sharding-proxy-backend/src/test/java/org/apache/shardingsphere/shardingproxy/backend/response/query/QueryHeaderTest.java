@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.response.query;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
 import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
@@ -140,7 +141,7 @@ public final class QueryHeaderTest {
         when(metaData.getDataSources()).thenReturn(dataSourceMetas);
         when(result.getMetaData()).thenReturn(metaData);
         ShardingRule shardingRule = mock(ShardingRule.class);
-        when(shardingRule.findLogicTableNameByActualTable("t_order")).thenReturn(Optional.of("t_logic_order"));
+        when(shardingRule.findTableRuleByActualTable("t_order")).thenReturn(Optional.of(new TableRule(Collections.emptyList(), "t_logic_order")));
         when(result.getShardingRule()).thenReturn(shardingRule);
         when(result.getName()).thenReturn("sharding_schema");
         return result;

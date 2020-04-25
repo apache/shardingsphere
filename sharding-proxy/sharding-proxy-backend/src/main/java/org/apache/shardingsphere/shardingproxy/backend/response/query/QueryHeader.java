@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.response.query;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
@@ -78,7 +79,7 @@ public final class QueryHeader {
         autoIncrement = resultSetMetaData.isAutoIncrement(columnIndex);
         String actualTableName = resultSetMetaData.getTableName(columnIndex);
         if (null != actualTableName && logicSchema instanceof ShardingSchema) {
-            table = logicSchema.getShardingRule().findLogicTableNameByActualTable(actualTableName).orElse("");
+            table = logicSchema.getShardingRule().findTableRuleByActualTable(actualTableName).map(TableRule::getLogicTable).orElse("");
             TableMetaData tableMetaData = logicSchema.getMetaData().getSchema().getConfiguredSchemaMetaData().get(table);
             primaryKey = null != tableMetaData && tableMetaData.getColumns().get(resultSetMetaData.getColumnName(columnIndex).toLowerCase()).isPrimaryKey();
         } else {

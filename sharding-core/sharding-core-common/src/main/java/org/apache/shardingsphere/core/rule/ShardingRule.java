@@ -151,16 +151,6 @@ public class ShardingRule implements TablesAggregationRule {
     }
     
     /**
-     * Find logic table name via actual table name.
-     *
-     * @param actualTableName actual table name
-     * @return logic table name
-     */
-    public Optional<String> findLogicTableNameByActualTable(final String actualTableName) {
-        return findTableRuleByActualTable(actualTableName).map(TableRule::getLogicTable);
-    }
-    
-    /**
      * Get table rule.
      *
      * @param logicTableName logic table name
