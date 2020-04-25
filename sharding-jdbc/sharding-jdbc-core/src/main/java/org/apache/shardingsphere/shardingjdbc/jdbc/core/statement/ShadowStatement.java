@@ -224,7 +224,7 @@ public final class ShadowStatement extends AbstractStatementAdapter {
     
     private String rewriteSQL(final String sql) {
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(connection.getRuntimeContext().getMetaData().getSchema().getConfiguredSchemaMetaData(),
-                connection.getRuntimeContext().getProperties(), Collections.singletonList(connection.getRuntimeContext().getRule()));
+                connection.getRuntimeContext().getProperties(), connection.getRuntimeContext().getRules());
         SQLRewriteUnit sqlRewriteResult = ((GenericSQLRewriteResult) sqlRewriteEntry.rewrite(sql, Collections.emptyList(),
                 new RouteContext(sqlStatementContext, Collections.emptyList(), new RouteResult()))).getSqlRewriteUnit();
         String result = sqlRewriteResult.getSql();

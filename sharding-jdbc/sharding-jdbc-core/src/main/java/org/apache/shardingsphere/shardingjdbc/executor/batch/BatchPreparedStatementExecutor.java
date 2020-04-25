@@ -140,12 +140,12 @@ public final class BatchPreparedStatementExecutor {
             }
         });
         List<int[]> results = sqlExecutor.execute(inputGroups, callback);
-        return isNeedAccumulate(runtimeContext.getRule().toRules().stream().filter(rule -> rule instanceof TablesAggregationRule).collect(Collectors.toList()), sqlStatementContext)
+        return isNeedAccumulate(runtimeContext.getRules().stream().filter(rule -> rule instanceof TablesAggregationRule).collect(Collectors.toList()), sqlStatementContext)
                 ? accumulate(results) : results.get(0);
     }
     
     private SQLExecutorCallback<int[]> getExecuteBatchExecutorCallback(final DefaultSQLExecutorCallback callback) {
-        Map<BaseRule, RuleExecuteBatchExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(runtimeContext.getRule().toRules(), RuleExecuteBatchExecutorCallback.class);
+        Map<BaseRule, RuleExecuteBatchExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(runtimeContext.getRules(), RuleExecuteBatchExecutorCallback.class);
         return callbackMap.isEmpty() ? callback : callbackMap.values().iterator().next();
     }
     

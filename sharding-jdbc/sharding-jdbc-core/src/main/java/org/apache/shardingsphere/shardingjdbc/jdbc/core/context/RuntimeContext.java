@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.underlying.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.executor.kernel.ExecutorKernel;
+
+import java.util.Collection;
 
 /**
  * Runtime context.
@@ -36,6 +38,13 @@ public interface RuntimeContext<T extends BaseRule> extends AutoCloseable {
      * @return rule
      */
     T getRule();
+    
+    /**
+     * Get rules.
+     * 
+     * @return rules
+     */
+    Collection<BaseRule> getRules();
     
     /**
      * Get properties.

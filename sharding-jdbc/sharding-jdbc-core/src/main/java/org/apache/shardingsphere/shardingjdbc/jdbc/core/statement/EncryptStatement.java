@@ -93,7 +93,7 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     }
     
     private String getRewriteSQL(final String sql) {
-        Collection<BaseRule> rules = Collections.singletonList(runtimeContext.getRule());
+        Collection<BaseRule> rules = runtimeContext.getRules();
         RouteContext routeContext = new DataNodeRouter(runtimeContext.getMetaData(), runtimeContext.getProperties(),
                 rules).route(runtimeContext.getSqlParserEngine().parse(sql, false), sql, Collections.emptyList());
         sqlStatementContext = routeContext.getSqlStatementContext();

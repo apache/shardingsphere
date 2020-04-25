@@ -52,7 +52,7 @@ public final class MasterSlaveRuntimeContext extends AbstractRuntimeContext<Mast
     }
     
     @Override
-    protected Collection<BaseRule> getRules() {
+    public Collection<BaseRule> getRules() {
         return Collections.singletonList(getRule());
     }
 }

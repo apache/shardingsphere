@@ -38,7 +38,7 @@ public final class EncryptRuntimeContext extends AbstractRuntimeContext<EncryptR
     }
     
     @Override
-    protected Collection<BaseRule> getRules() {
+    public Collection<BaseRule> getRules() {
         return Collections.singletonList(getRule());
     }
 }
