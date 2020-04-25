@@ -151,6 +151,16 @@ public class ShardingRule implements TablesAggregationRule {
     }
     
     /**
+     * Find logic table name via actual table name.
+     *
+     * @param actualTableName actual table name
+     * @return logic table name
+     */
+    public Optional<String> findLogicTableNameByActualTable(final String actualTableName) {
+        return findTableRuleByActualTable(actualTableName).map(TableRule::getLogicTable);
+    }
+    
+    /**
      * Get table rule.
      *
      * @param logicTableName logic table name
@@ -304,16 +314,6 @@ public class ShardingRule implements TablesAggregationRule {
             throw new ShardingSphereConfigurationException("Cannot find strategy for generate keys.");
         }
         return Optional.ofNullable(tableRule.get().getKeyGenerateAlgorithm()).orElse(defaultKeyGenerateAlgorithm).generateKey();
-    }
-    
-    /**
-     * Find logic table name via actual table name.
-     *
-     * @param actualTableName actual table name
-     * @return logic table name
-     */
-    public Optional<String> findLogicTableName(final String actualTableName) {
-        return tableRules.stream().filter(each -> each.isExisted(actualTableName)).map(TableRule::getLogicTable).findFirst();
     }
     
     /**

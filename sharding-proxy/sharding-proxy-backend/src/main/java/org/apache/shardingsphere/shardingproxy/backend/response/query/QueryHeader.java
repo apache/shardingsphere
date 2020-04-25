@@ -78,7 +78,7 @@ public final class QueryHeader {
         autoIncrement = resultSetMetaData.isAutoIncrement(columnIndex);
         String actualTableName = resultSetMetaData.getTableName(columnIndex);
         if (null != actualTableName && logicSchema instanceof ShardingSchema) {
-            table = logicSchema.getShardingRule().findLogicTableName(actualTableName).orElse("");
+            table = logicSchema.getShardingRule().findLogicTableNameByActualTable(actualTableName).orElse("");
             TableMetaData tableMetaData = logicSchema.getMetaData().getSchema().getConfiguredSchemaMetaData().get(table);
             primaryKey = null != tableMetaData && tableMetaData.getColumns().get(resultSetMetaData.getColumnName(columnIndex).toLowerCase()).isPrimaryKey();
         } else {

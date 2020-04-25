@@ -121,7 +121,7 @@ public final class ShardingResultSetMetaData extends WrapperAdapter implements R
     @Override
     public String getTableName(final int column) throws SQLException {
         String actualTableName = resultSetMetaData.getTableName(column);
-        return shardingRule.findLogicTableName(actualTableName).orElse(actualTableName);
+        return shardingRule.findLogicTableNameByActualTable(actualTableName).orElse(actualTableName);
     }
     
     @Override

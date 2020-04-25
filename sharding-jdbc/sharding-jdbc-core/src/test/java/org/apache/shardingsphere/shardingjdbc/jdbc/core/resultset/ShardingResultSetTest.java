@@ -97,7 +97,7 @@ public final class ShardingResultSetTest {
         ShardingConnection shardingConnection = mock(ShardingConnection.class);
         ShardingRuntimeContext runtimeContext = mock(ShardingRuntimeContext.class);
         ShardingRule shardingRule = mock(ShardingRule.class);
-        when(shardingRule.findLogicTableName(anyString())).thenReturn(Optional.of("test"));
+        when(shardingRule.findLogicTableNameByActualTable(anyString())).thenReturn(Optional.of("test"));
         EncryptRule encryptRule = mock(EncryptRule.class);
         when(encryptRule.findEncryptor(anyString(), anyString())).thenReturn(Optional.empty());
         when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
