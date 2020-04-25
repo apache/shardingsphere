@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.binder.metadata.column;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -32,11 +31,11 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Iterator;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ColumnMetaDataLoaderTest {
@@ -73,8 +72,6 @@ public class ColumnMetaDataLoaderTest {
     public void setUp() throws SQLException {
         when(connection.getCatalog()).thenReturn(TEST_CATALOG);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
-        when(databaseMetaData.getTables(TEST_CATALOG, null, TEST_TABLE, null)).thenReturn(tableExistResultSet);
-        when(tableExistResultSet.next()).thenReturn(true);
         when(databaseMetaData.getPrimaryKeys(TEST_CATALOG, null, TEST_TABLE)).thenReturn(primaryResultSet);
         when(primaryResultSet.next()).thenReturn(true, false);
         when(primaryResultSet.getString("COLUMN_NAME")).thenReturn("pk_col");

@@ -25,7 +25,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -52,9 +51,6 @@ public final class ColumnMetaDataLoader {
      * @throws SQLException SQL exception
      */
     public static Collection<ColumnMetaData> load(final Connection connection, final String table, final String databaseType) throws SQLException {
-        if (!isTableExist(connection, connection.getCatalog(), table)) {
-            return Collections.emptyList();
-        }
         Collection<ColumnMetaData> result = new LinkedList<>();
         Collection<String> primaryKeys = loadPrimaryKeys(connection, table);
         List<String> columnNames = new ArrayList<>();
@@ -101,12 +97,6 @@ public final class ColumnMetaDataLoader {
             delimiterRight = "";
         }
         return "SELECT * FROM " + delimiterLeft + table + delimiterRight + " WHERE 1 != 1;";
-    }
-    
-    private static boolean isTableExist(final Connection connection, final String catalog, final String table) throws SQLException {
-        try (ResultSet resultSet = connection.getMetaData().getTables(catalog, null, table, null)) {
-            return resultSet.next();
-        }
     }
     
     private static Collection<String> loadPrimaryKeys(final Connection connection, final String table) throws SQLException {

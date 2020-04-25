@@ -47,7 +47,7 @@ public final class MetaDataManager {
     public TableMetaData getTableMetaData(final String tableName) {
         if (!tableMetaDataMap.containsKey(tableName)) {
             try {
-                tableMetaDataMap.put(tableName, TableMetaDataLoader.load(dataSource, tableName, ""));
+                TableMetaDataLoader.load(dataSource, tableName, "").ifPresent(tableMetaData -> tableMetaDataMap.put(tableName, tableMetaData));
             } catch (SQLException e) {
                 throw new RuntimeException(String.format("Load metaData for table %s failed", tableName), e);
             }
