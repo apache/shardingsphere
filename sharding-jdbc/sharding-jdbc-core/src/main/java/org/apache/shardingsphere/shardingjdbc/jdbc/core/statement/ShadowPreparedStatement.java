@@ -45,7 +45,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -199,7 +198,7 @@ public final class ShadowPreparedStatement extends AbstractShardingPreparedState
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, sql, getParameters(), sqlStatement);
         ShadowJudgementEngine shadowJudgementEngine = new PreparedJudgementEngine(connection.getRuntimeContext().getRule(), sqlStatementContext, getParameters());
         isShadowSQL = shadowJudgementEngine.isShadowSQL();
-        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(schemaMetaData, connection.getRuntimeContext().getProperties(), Collections.singletonList(connection.getRuntimeContext().getRule()));
+        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(schemaMetaData, connection.getRuntimeContext().getProperties(), connection.getRuntimeContext().getRules());
         SQLRewriteUnit sqlRewriteResult = ((GenericSQLRewriteResult) sqlRewriteEntry.rewrite(
                 sql, getParameters(), new RouteContext(sqlStatementContext, getParameters(), new RouteResult()))).getSqlRewriteUnit();
         showSQL(sqlRewriteResult.getSql());

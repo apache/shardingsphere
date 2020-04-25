@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import lombok.EqualsAndHashCode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedDatabaseMetaDataResultSet;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
@@ -29,13 +30,12 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -100,8 +100,8 @@ public final class DatabaseMetaDataResultSet<T extends BaseRule> extends Abstrac
         for (int i = 1; i <= columnLabelIndexMap.size(); i++) {
             if (tableNameColumnIndex == i) {
                 String tableName = resultSet.getString(i);
-                Collection<String> logicTableNames = rule instanceof ShardingRule ? ((ShardingRule) rule).getLogicTableNames(tableName) : Collections.emptyList();
-                result.addObject(logicTableNames.isEmpty() ? tableName : logicTableNames.iterator().next());
+                Optional<String> logicTableName = rule instanceof ShardingRule ? ((ShardingRule) rule).findTableRuleByActualTable(tableName).map(TableRule::getLogicTable) : Optional.empty();
+                result.addObject(logicTableName.orElse(tableName));
             } else if (indexNameColumnIndex == i) {
                 String tableName = resultSet.getString(tableNameColumnIndex);
                 String indexName = resultSet.getString(i);

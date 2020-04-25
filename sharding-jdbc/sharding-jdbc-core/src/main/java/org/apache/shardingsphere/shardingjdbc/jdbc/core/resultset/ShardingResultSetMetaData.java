@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.WrapperAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionConstant;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.Projection;
@@ -121,7 +122,7 @@ public final class ShardingResultSetMetaData extends WrapperAdapter implements R
     @Override
     public String getTableName(final int column) throws SQLException {
         String actualTableName = resultSetMetaData.getTableName(column);
-        return shardingRule.getLogicTableNames(actualTableName).isEmpty() ? actualTableName : shardingRule.getLogicTableNames(actualTableName).iterator().next();
+        return shardingRule.findTableRuleByActualTable(actualTableName).map(TableRule::getLogicTable).orElse(actualTableName);
     }
     
     @Override

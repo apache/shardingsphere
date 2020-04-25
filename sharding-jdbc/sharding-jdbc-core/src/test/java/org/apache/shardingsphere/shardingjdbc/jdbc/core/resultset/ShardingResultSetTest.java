@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
@@ -97,7 +98,7 @@ public final class ShardingResultSetTest {
         ShardingConnection shardingConnection = mock(ShardingConnection.class);
         ShardingRuntimeContext runtimeContext = mock(ShardingRuntimeContext.class);
         ShardingRule shardingRule = mock(ShardingRule.class);
-        when(shardingRule.getLogicTableNames(anyString())).thenReturn(Collections.singletonList("test"));
+        when(shardingRule.findTableRuleByActualTable(anyString())).thenReturn(Optional.of(new TableRule(Collections.emptyList(), "test")));
         EncryptRule encryptRule = mock(EncryptRule.class);
         when(encryptRule.findEncryptor(anyString(), anyString())).thenReturn(Optional.empty());
         when(shardingRule.getEncryptRule()).thenReturn(encryptRule);

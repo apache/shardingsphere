@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.rule.TableRule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,6 +31,8 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -78,7 +80,7 @@ public final class DatabaseMetaDataResultSetTest {
     @Before
     public void setUp() throws Exception {
         mockResultSetMetaData();
-        databaseMetaDataResultSet = new DatabaseMetaDataResultSet(mockResultSet(), mockShardingRule());
+        databaseMetaDataResultSet = new DatabaseMetaDataResultSet<>(mockResultSet(), mockShardingRule());
     }
     
     private void mockResultSetMetaData() throws SQLException {
@@ -108,7 +110,7 @@ public final class DatabaseMetaDataResultSetTest {
     
     private ShardingRule mockShardingRule() {
         ShardingRule result = mock(ShardingRule.class);
-        when(result.getLogicTableNames(ACTUAL_TABLE_NAME)).thenReturn(Lists.newArrayList(LOGIC_TABLE_NAME));
+        when(result.findTableRuleByActualTable(ACTUAL_TABLE_NAME)).thenReturn(Optional.of(new TableRule(Collections.emptyList(), LOGIC_TABLE_NAME)));
         return result;
     }
     

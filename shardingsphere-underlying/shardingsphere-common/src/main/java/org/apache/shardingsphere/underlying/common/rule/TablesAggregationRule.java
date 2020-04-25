@@ -30,4 +30,12 @@ public interface TablesAggregationRule extends BaseRule {
      * @return all actual tables
      */
     Collection<String> getAllActualTables();
+    
+    /**
+     * Is need accumulate.
+     * 
+     * @param tables table names
+     * @return need accumulate
+     */
+    boolean isNeedAccumulate(Collection<String> tables);
 }

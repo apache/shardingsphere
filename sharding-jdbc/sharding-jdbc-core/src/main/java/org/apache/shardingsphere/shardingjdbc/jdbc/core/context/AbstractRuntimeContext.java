@@ -40,7 +40,6 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -82,8 +81,6 @@ public abstract class AbstractRuntimeContext<T extends BaseRule> implements Runt
     public AbstractRuntimeContext(final DataSource dataSource, final T rule, final Properties props, final DatabaseType databaseType) throws SQLException {
         this(ImmutableMap.of("ds", dataSource), rule, props, databaseType);
     }
-    
-    protected abstract Collection<BaseRule> getRules();
     
     private ShardingSphereMetaData createMetaData(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) throws SQLException {
         long start = System.currentTimeMillis();

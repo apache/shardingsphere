@@ -59,7 +59,7 @@ public final class ShardingRuntimeContext extends AbstractRuntimeContext<Shardin
     }
     
     @Override
-    protected Collection<BaseRule> getRules() {
+    public Collection<BaseRule> getRules() {
         return getRule().toRules();
     }
     

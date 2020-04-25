@@ -28,6 +28,7 @@ import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefr
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.TablesAggregationRule;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.sql.QueryResult;
@@ -48,6 +49,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Prepared statement executor.
@@ -92,7 +94,7 @@ public final class PreparedStatementExecutor {
     }
     
     private SQLExecutorCallback<QueryResult> getExecuteQueryExecutorCallback(final DefaultSQLExecutorCallback callback) {
-        Map<BaseRule, RuleExecuteQueryExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(runtimeContext.getRule().toRules(), RuleExecuteQueryExecutorCallback.class);
+        Map<BaseRule, RuleExecuteQueryExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(runtimeContext.getRules(), RuleExecuteQueryExecutorCallback.class);
         return callbackMap.isEmpty() ? callback : callbackMap.values().iterator().next();
     }
     
@@ -121,16 +123,17 @@ public final class PreparedStatementExecutor {
         });
         List<Integer> results = sqlExecutor.execute(inputGroups, sqlExecutorCallback);
         refreshTableMetaData(runtimeContext, sqlStatementContext);
-        if (!runtimeContext.getRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())) {
-            return accumulate(results);
-        } else {
-            return results.get(0);
-        }
+        return isNeedAccumulate(runtimeContext.getRules().stream().filter(rule -> rule instanceof TablesAggregationRule).collect(Collectors.toList()), sqlStatementContext)
+                ? accumulate(results) : results.get(0);
     }
     
     private SQLExecutorCallback<Integer> getExecuteUpdateExecutorCallback(final DefaultSQLExecutorCallback callback) {
-        Map<BaseRule, RuleExecuteUpdateExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(runtimeContext.getRule().toRules(), RuleExecuteUpdateExecutorCallback.class);
+        Map<BaseRule, RuleExecuteUpdateExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(runtimeContext.getRules(), RuleExecuteUpdateExecutorCallback.class);
         return callbackMap.isEmpty() ? callback : callbackMap.values().iterator().next();
+    }
+    
+    private boolean isNeedAccumulate(final Collection<BaseRule> rules, final SQLStatementContext sqlStatementContext) {
+        return rules.stream().anyMatch(each -> ((TablesAggregationRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames()));
     }
     
     private int accumulate(final List<Integer> results) {
@@ -167,7 +170,7 @@ public final class PreparedStatementExecutor {
     }
     
     private SQLExecutorCallback<Boolean> getExecuteExecutorCallback(final DefaultSQLExecutorCallback callback) {
-        Map<BaseRule, RuleExecuteExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(runtimeContext.getRule().toRules(), RuleExecuteExecutorCallback.class);
+        Map<BaseRule, RuleExecuteExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(runtimeContext.getRules(), RuleExecuteExecutorCallback.class);
         return callbackMap.isEmpty() ? callback : callbackMap.values().iterator().next();
     }
     
@@ -178,7 +181,7 @@ public final class PreparedStatementExecutor {
         }
         Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
         if (refreshStrategy.isPresent()) {
-            RuleSchemaMetaDataLoader metaDataLoader = new RuleSchemaMetaDataLoader(runtimeContext.getRule().toRules());
+            RuleSchemaMetaDataLoader metaDataLoader = new RuleSchemaMetaDataLoader(runtimeContext.getRules());
             refreshStrategy.get().refreshMetaData(runtimeContext.getMetaData(), sqlStatementContext,
                 tableName -> metaDataLoader.load(runtimeContext.getDatabaseType(), dataSourceMap, tableName, runtimeContext.getProperties()));
         }

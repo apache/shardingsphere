@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutor;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.queryresult.StreamQueryResult;
 import org.apache.shardingsphere.shardingjdbc.executor.StatementExecutor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractStatementAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
@@ -36,13 +34,16 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
+import org.apache.shardingsphere.underlying.common.rule.TablesAggregationRule;
+import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 import org.apache.shardingsphere.underlying.executor.sql.QueryResult;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.group.StatementOption;
 import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionContextBuilder;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutor;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.group.StatementExecuteGroupEngine;
-import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.group.StatementOption;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.queryresult.StreamQueryResult;
 import org.apache.shardingsphere.underlying.executor.sql.log.SQLLogger;
 import org.apache.shardingsphere.underlying.merge.MergeEngine;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
@@ -239,9 +240,9 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         ShardingRuntimeContext runtimeContext = connection.getRuntimeContext();
         SQLStatement sqlStatement = runtimeContext.getSqlParserEngine().parse(sql, false);
         RouteContext routeContext = new DataNodeRouter(
-                runtimeContext.getMetaData(), runtimeContext.getProperties(), runtimeContext.getRule().toRules()).route(sqlStatement, sql, Collections.emptyList());
+                runtimeContext.getMetaData(), runtimeContext.getProperties(), runtimeContext.getRules()).route(sqlStatement, sql, Collections.emptyList());
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(runtimeContext.getMetaData().getSchema().getConfiguredSchemaMetaData(),
-                runtimeContext.getProperties(), runtimeContext.getRule().toRules()).rewrite(sql, Collections.emptyList(), routeContext);
+                runtimeContext.getProperties(), runtimeContext.getRules()).rewrite(sql, Collections.emptyList(), routeContext);
         ExecutionContext result = new ExecutionContext(routeContext.getSqlStatementContext(), ExecutionContextBuilder.build(runtimeContext.getMetaData(), sqlRewriteResult));
         logSQL(sql, runtimeContext.getProperties());
         return result;
@@ -261,8 +262,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     }
     
     private Collection<InputGroup<StatementExecuteUnit>> getInputGroups(final int maxConnectionsSizePerQuery) throws SQLException {
-        return new StatementExecuteGroupEngine(
-                maxConnectionsSizePerQuery, getConnection().getRuntimeContext().getRule().toRules()).generate(executionContext.getExecutionUnits(), connection, statementOption);
+        return new StatementExecuteGroupEngine(maxConnectionsSizePerQuery, getConnection().getRuntimeContext().getRules()).generate(executionContext.getExecutionUnits(), connection, statementOption);
     }
     
     private void cacheStatements(final Collection<InputGroup<StatementExecuteUnit>> inputGroups) {
@@ -314,7 +314,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {
         ShardingRuntimeContext runtimeContext = connection.getRuntimeContext();
         MergeEngine mergeEngine = new MergeEngine(runtimeContext.getDatabaseType(), 
-                runtimeContext.getMetaData().getSchema().getConfiguredSchemaMetaData(), runtimeContext.getProperties(), runtimeContext.getRule().toRules());
+                runtimeContext.getMetaData().getSchema().getConfiguredSchemaMetaData(), runtimeContext.getProperties(), runtimeContext.getRules());
         return mergeEngine.merge(queryResults, executionContext.getSqlStatementContext());
     }
     
@@ -337,7 +337,8 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     @Override
     public boolean isAccumulate() {
-        return !connection.getRuntimeContext().getRule().isAllBroadcastTables(executionContext.getSqlStatementContext().getTablesContext().getTableNames());
+        return connection.getRuntimeContext().getRules().stream().anyMatch(
+            each -> ((TablesAggregationRule) each).isNeedAccumulate(executionContext.getSqlStatementContext().getTablesContext().getTableNames()));
     }
     
     @Override

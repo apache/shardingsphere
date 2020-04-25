@@ -66,7 +66,7 @@ public final class ShadowRuntimeContext extends AbstractRuntimeContext<ShadowRul
     }
     
     @Override
-    protected Collection<BaseRule> getRules() {
+    public Collection<BaseRule> getRules() {
         return Collections.singletonList(getRule());
     }
     

@@ -47,7 +47,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -174,7 +173,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     
     @SuppressWarnings("unchecked")
     private SQLUnit getSQLUnit(final String sql) {
-        Collection<BaseRule> rules = Collections.singletonList(runtimeContext.getRule());
+        Collection<BaseRule> rules = runtimeContext.getRules();
         RouteContext routeContext = new DataNodeRouter(runtimeContext.getMetaData(), runtimeContext.getProperties(), rules).route(sqlStatement, sql, getParameters());
         sqlStatementContext = routeContext.getSqlStatementContext();
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(
