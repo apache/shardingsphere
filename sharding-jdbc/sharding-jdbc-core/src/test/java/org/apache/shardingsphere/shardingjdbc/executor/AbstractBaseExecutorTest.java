@@ -85,7 +85,7 @@ public abstract class AbstractBaseExecutorTest {
     
     private ShardingRule getShardingRule() {
         ShardingRule result = mock(ShardingRule.class);
-        when(result.getLogicTableNames(anyString())).thenReturn(Collections.emptyList());
+        when(result.findLogicTableName(anyString())).thenReturn(Optional.empty());
         Encryptor encryptor = mock(Encryptor.class);
         when(encryptor.decrypt(anyString())).thenReturn("decryptValue");
         EncryptRule encryptRule = mock(EncryptRule.class);

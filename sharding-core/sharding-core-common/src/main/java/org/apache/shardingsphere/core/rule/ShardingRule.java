@@ -307,13 +307,13 @@ public class ShardingRule implements TablesAggregationRule {
     }
     
     /**
-     * Get logic table names based on actual table name.
+     * Find logic table name via actual table name.
      *
      * @param actualTableName actual table name
      * @return logic table name
      */
-    public Collection<String> getLogicTableNames(final String actualTableName) {
-        return tableRules.stream().filter(each -> each.isExisted(actualTableName)).map(TableRule::getLogicTable).collect(Collectors.toCollection(LinkedList::new));
+    public Optional<String> findLogicTableName(final String actualTableName) {
+        return tableRules.stream().filter(each -> each.isExisted(actualTableName)).map(TableRule::getLogicTable).findFirst();
     }
     
     /**

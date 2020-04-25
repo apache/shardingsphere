@@ -37,6 +37,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -139,7 +140,7 @@ public final class QueryHeaderTest {
         when(metaData.getDataSources()).thenReturn(dataSourceMetas);
         when(result.getMetaData()).thenReturn(metaData);
         ShardingRule shardingRule = mock(ShardingRule.class);
-        when(shardingRule.getLogicTableNames("t_order")).thenReturn(Collections.singletonList("t_logic_order"));
+        when(shardingRule.findLogicTableName("t_order")).thenReturn(Optional.of("t_logic_order"));
         when(result.getShardingRule()).thenReturn(shardingRule);
         when(result.getName()).thenReturn("sharding_schema");
         return result;

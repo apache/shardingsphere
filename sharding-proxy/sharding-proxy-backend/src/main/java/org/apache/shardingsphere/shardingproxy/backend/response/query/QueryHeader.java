@@ -21,14 +21,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.ColumnProjection;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.Collection;
 
 /**
  * Query header.
@@ -79,8 +78,7 @@ public final class QueryHeader {
         autoIncrement = resultSetMetaData.isAutoIncrement(columnIndex);
         String actualTableName = resultSetMetaData.getTableName(columnIndex);
         if (null != actualTableName && logicSchema instanceof ShardingSchema) {
-            Collection<String> logicTableNames = logicSchema.getShardingRule().getLogicTableNames(actualTableName);
-            table = logicTableNames.isEmpty() ? "" : logicTableNames.iterator().next();
+            table = logicSchema.getShardingRule().findLogicTableName(actualTableName).orElse("");
             TableMetaData tableMetaData = logicSchema.getMetaData().getSchema().getConfiguredSchemaMetaData().get(table);
             primaryKey = null != tableMetaData && tableMetaData.getColumns().get(resultSetMetaData.getColumnName(columnIndex).toLowerCase()).isPrimaryKey();
         } else {
