@@ -33,6 +33,14 @@ public interface TablesAggregationRule extends BaseRule {
     Collection<String> getAllActualTables();
     
     /**
+     * Find first actual table name.
+     *
+     * @param logicTable logic table name
+     * @return the first actual table name
+     */
+    Optional<String> findFirstActualTable(String logicTable);
+    
+    /**
      * Is need accumulate.
      * 
      * @param tables table names

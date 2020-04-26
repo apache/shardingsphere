@@ -17,24 +17,26 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata;
 
-import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.DatabaseMetaDataResultSet;
-import org.apache.shardingsphere.underlying.common.rule.DataNode;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.TablesAggregationRule;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Sharding database meta data.
  */
 public final class ShardingDatabaseMetaData extends MultipleDatabaseMetaData<ShardingConnection> {
     
-    private ShardingRule shardingRule;
+    private final Collection<BaseRule> rules;
     
     public ShardingDatabaseMetaData(final ShardingConnection connection) {
         super(connection, connection.getDataSourceMap().keySet(), connection.getRuntimeContext().getCachedDatabaseMetaData(), connection.getRuntimeContext().getMetaData());
-        shardingRule = connection.getRuntimeContext().getRule();
+        rules = connection.getRuntimeContext().getRules();
     }
     
     @Override
@@ -42,7 +44,11 @@ public final class ShardingDatabaseMetaData extends MultipleDatabaseMetaData<Sha
         if (null == tableNamePattern) {
             return null;
         }
-        return shardingRule.findTableRule(tableNamePattern).isPresent() ? "%" + tableNamePattern + "%" : tableNamePattern;
+        Optional<TablesAggregationRule> tablesAggregationRule = findTablesAggregationRule();
+        if (tablesAggregationRule.isPresent()) {
+            return tablesAggregationRule.get().findFirstActualTable(tableNamePattern).isPresent() ? "%" + tableNamePattern + "%" : tableNamePattern;
+        }
+        return tableNamePattern;
     }
     
     @Override
@@ -50,16 +56,16 @@ public final class ShardingDatabaseMetaData extends MultipleDatabaseMetaData<Sha
         if (null == table) {
             return null;
         }
-        String result = table;
-        if (shardingRule.findTableRule(table).isPresent()) {
-            DataNode dataNode = shardingRule.getDataNode(table);
-            result = dataNode.getTableName();
-        }
-        return result;
+        Optional<TablesAggregationRule> tablesAggregationRule = findTablesAggregationRule();
+        return tablesAggregationRule.isPresent() ? tablesAggregationRule.get().findFirstActualTable(table).orElse(table) : table;
+    }
+    
+    private Optional<TablesAggregationRule> findTablesAggregationRule() {
+        return rules.stream().filter(each -> each instanceof TablesAggregationRule).findFirst().map(rule -> (TablesAggregationRule) rule);
     }
     
     @Override
     protected ResultSet createDatabaseMetaDataResultSet(final ResultSet resultSet) throws SQLException {
-        return new DatabaseMetaDataResultSet(resultSet, shardingRule.toRules());
+        return new DatabaseMetaDataResultSet(resultSet, rules);
     }
 }
