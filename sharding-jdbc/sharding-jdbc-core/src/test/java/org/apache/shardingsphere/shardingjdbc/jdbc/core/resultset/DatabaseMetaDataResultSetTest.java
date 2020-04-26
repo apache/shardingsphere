@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.rule.TableRule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,7 +30,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -110,7 +108,7 @@ public final class DatabaseMetaDataResultSetTest {
     
     private ShardingRule mockShardingRule() {
         ShardingRule result = mock(ShardingRule.class);
-        when(result.findTableRuleByActualTable(ACTUAL_TABLE_NAME)).thenReturn(Optional.of(new TableRule(Collections.emptyList(), LOGIC_TABLE_NAME)));
+        when(result.findLogicTableByActualTable(ACTUAL_TABLE_NAME)).thenReturn(Optional.of(LOGIC_TABLE_NAME));
         return result;
     }
     

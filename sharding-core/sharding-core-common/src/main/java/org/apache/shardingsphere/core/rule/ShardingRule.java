@@ -396,4 +396,9 @@ public class ShardingRule implements TablesAggregationRule {
     public final boolean isNeedAccumulate(final Collection<String> tables) {
         return !isAllBroadcastTables(tables);
     }
+    
+    @Override
+    public final Optional<String> findLogicTableByActualTable(final String actualTable) {
+        return findTableRuleByActualTable(actualTable).map(TableRule::getLogicTable);
+    }
 }

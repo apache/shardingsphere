@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.underlying.common.rule;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Tables aggregation rule.
@@ -38,4 +39,12 @@ public interface TablesAggregationRule extends BaseRule {
      * @return need accumulate
      */
     boolean isNeedAccumulate(Collection<String> tables);
+    
+    /**
+     * Find logic table name via actual table name.
+     *
+     * @param actualTable actual table name
+     * @return logic table name
+     */
+    Optional<String> findLogicTableByActualTable(String actualTable);
 }
