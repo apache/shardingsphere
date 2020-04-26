@@ -16,3 +16,4 @@
 #
  
 org.apache.shardingsphere.core.strategy.algorithm.sharding.inline.InlineShardingAlgorithm
+org.apache.shardingsphere.core.strategy.algorithm.sharding.inline.ModuloShardingAlgorithm
