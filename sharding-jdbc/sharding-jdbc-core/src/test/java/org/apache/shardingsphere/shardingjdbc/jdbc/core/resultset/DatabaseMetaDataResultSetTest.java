@@ -30,6 +30,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -78,7 +79,7 @@ public final class DatabaseMetaDataResultSetTest {
     @Before
     public void setUp() throws Exception {
         mockResultSetMetaData();
-        databaseMetaDataResultSet = new DatabaseMetaDataResultSet<>(mockResultSet(), mockShardingRule());
+        databaseMetaDataResultSet = new DatabaseMetaDataResultSet(mockResultSet(), Collections.singletonList(mockShardingRule()));
     }
     
     private void mockResultSetMetaData() throws SQLException {

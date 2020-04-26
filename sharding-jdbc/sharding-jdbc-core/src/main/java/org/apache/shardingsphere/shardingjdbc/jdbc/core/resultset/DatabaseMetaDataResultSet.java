@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import lombok.EqualsAndHashCode;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedDatabaseMetaDataResultSet;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.TablesAggregationRule;
 
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -29,6 +29,7 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -40,7 +41,7 @@ import java.util.Set;
 /**
  * Database meta data result set.
  */
-public final class DatabaseMetaDataResultSet<T extends BaseRule> extends AbstractUnsupportedDatabaseMetaDataResultSet {
+public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabaseMetaDataResultSet {
     
     private static final String TABLE_NAME = "TABLE_NAME";
     
@@ -50,7 +51,7 @@ public final class DatabaseMetaDataResultSet<T extends BaseRule> extends Abstrac
     
     private final int concurrency;
     
-    private final T rule;
+    private final Collection<BaseRule> rules;
     
     private final ResultSetMetaData resultSetMetaData;
     
@@ -62,10 +63,10 @@ public final class DatabaseMetaDataResultSet<T extends BaseRule> extends Abstrac
     
     private DatabaseMetaDataObject currentDatabaseMetaDataObject;
     
-    public DatabaseMetaDataResultSet(final ResultSet resultSet, final T rule) throws SQLException {
+    public DatabaseMetaDataResultSet(final ResultSet resultSet, final Collection<BaseRule> rules) throws SQLException {
         this.type = resultSet.getType();
         this.concurrency = resultSet.getConcurrency();
-        this.rule = rule;
+        this.rules = rules;
         this.resultSetMetaData = resultSet.getMetaData();
         this.columnLabelIndexMap = initIndexMap();
         this.databaseMetaDataObjectIterator = initIterator(resultSet);
@@ -96,10 +97,11 @@ public final class DatabaseMetaDataResultSet<T extends BaseRule> extends Abstrac
     
     private DatabaseMetaDataObject generateDatabaseMetaDataObject(final int tableNameColumnIndex, final int indexNameColumnIndex, final ResultSet resultSet) throws SQLException {
         DatabaseMetaDataObject result = new DatabaseMetaDataObject(resultSetMetaData.getColumnCount());
+        Optional<BaseRule> tablesAggregationRule = findTablesAggregationRule();
         for (int i = 1; i <= columnLabelIndexMap.size(); i++) {
             if (tableNameColumnIndex == i) {
                 String tableName = resultSet.getString(i);
-                Optional<String> logicTableName = rule instanceof ShardingRule ? ((ShardingRule) rule).findLogicTableByActualTable(tableName) : Optional.empty();
+                Optional<String> logicTableName = tablesAggregationRule.isPresent() ? ((TablesAggregationRule) tablesAggregationRule.get()).findLogicTableByActualTable(tableName) : Optional.empty();
                 result.addObject(logicTableName.orElse(tableName));
             } else if (indexNameColumnIndex == i) {
                 String tableName = resultSet.getString(tableNameColumnIndex);
@@ -110,6 +112,10 @@ public final class DatabaseMetaDataResultSet<T extends BaseRule> extends Abstrac
             }
         }
         return result;
+    }
+    
+    private Optional<BaseRule> findTablesAggregationRule() {
+        return rules.stream().filter(each -> each instanceof TablesAggregationRule).findFirst();
     }
     
     @Override

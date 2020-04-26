@@ -17,23 +17,24 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata;
 
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.DatabaseMetaDataResultSet;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 
 /**
  * Master slave database meta data.
  */
 public final class MasterSlaveDatabaseMetaData extends MultipleDatabaseMetaData<MasterSlaveConnection> {
     
-    private final MasterSlaveRule masterSlaveRule;
+    private final Collection<BaseRule> rules;
     
     public MasterSlaveDatabaseMetaData(final MasterSlaveConnection connection) {
         super(connection, connection.getDataSourceMap().keySet(), connection.getRuntimeContext().getCachedDatabaseMetaData(), connection.getRuntimeContext().getMetaData());
-        masterSlaveRule = connection.getRuntimeContext().getRule();
+        rules = connection.getRuntimeContext().getRules();
     }
     
     @Override
@@ -48,6 +49,6 @@ public final class MasterSlaveDatabaseMetaData extends MultipleDatabaseMetaData<
     
     @Override
     protected ResultSet createDatabaseMetaDataResultSet(final ResultSet resultSet) throws SQLException {
-        return new DatabaseMetaDataResultSet<>(resultSet, masterSlaveRule);
+        return new DatabaseMetaDataResultSet(resultSet, rules);
     }
 }

@@ -60,6 +60,6 @@ public final class ShardingDatabaseMetaData extends MultipleDatabaseMetaData<Sha
     
     @Override
     protected ResultSet createDatabaseMetaDataResultSet(final ResultSet resultSet) throws SQLException {
-        return new DatabaseMetaDataResultSet<>(resultSet, shardingRule);
+        return new DatabaseMetaDataResultSet(resultSet, shardingRule.toRules());
     }
 }
