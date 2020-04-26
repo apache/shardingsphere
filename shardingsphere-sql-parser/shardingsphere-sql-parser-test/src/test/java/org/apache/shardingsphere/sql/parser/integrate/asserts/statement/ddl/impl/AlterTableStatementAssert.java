@@ -25,10 +25,10 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.definition
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.definition.ColumnPositionAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.definition.ConstraintDefinitionAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.definition.ExpectedAddColumnDefinition;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.definition.ExpectedColumnDefinition;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.definition.ExpectedModifyColumnDefinition;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.ddl.AlterTableStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.segment.impl.definition.ExpectedAddColumnDefinition;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.segment.impl.definition.ExpectedColumnDefinition;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.segment.impl.definition.ExpectedModifyColumnDefinition;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.ddl.AlterTableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.DropColumnDefinitionSegment;

@@ -23,10 +23,10 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertConte
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.schema.SchemaAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dml.impl.SelectStatementAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedSimpleTable;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedSimpleTableOwner;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedSubqueryTable;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedTables;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTableOwner;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.segment.impl.table.ExpectedSubqueryTable;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.segment.impl.table.ExpectedTables;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;

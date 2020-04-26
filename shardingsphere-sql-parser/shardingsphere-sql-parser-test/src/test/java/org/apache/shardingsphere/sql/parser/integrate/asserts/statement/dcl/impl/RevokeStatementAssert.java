@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dcl.RevokeStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.dcl.RevokeStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.RevokeStatement;
 
 /**

@@ -21,9 +21,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLValue;
+import org.apache.shardingsphere.dbtest.cases.sql.SQLCaseType;
+import org.apache.shardingsphere.dbtest.cases.sql.loader.SQLCasesRegistry;
 import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
-import org.apache.shardingsphere.test.sql.SQLCaseType;
-import org.apache.shardingsphere.test.sql.loader.SQLCasesRegistry;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;

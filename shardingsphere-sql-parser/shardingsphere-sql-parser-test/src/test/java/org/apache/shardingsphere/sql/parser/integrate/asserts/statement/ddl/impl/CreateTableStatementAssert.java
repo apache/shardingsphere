@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.definition
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.definition.ConstraintDefinitionAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.index.IndexAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.ddl.CreateTableStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.ddl.CreateTableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.tcl.imp
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.tcl.SavepointStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.tcl.SavepointStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SavepointStatement;
 
 /**

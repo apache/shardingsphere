@@ -19,18 +19,18 @@ package org.apache.shardingsphere.dbtest.engine.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
+import org.apache.shardingsphere.dbtest.cases.sql.SQLCaseType;
+import org.apache.shardingsphere.dbtest.cases.sql.loader.SQLCasesLoader;
+import org.apache.shardingsphere.dbtest.cases.sql.loader.SQLCasesRegistry;
 import org.apache.shardingsphere.dbtest.engine.SQLType;
 import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import org.apache.shardingsphere.dbtest.env.IntegrateTestEnvironment;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
-import org.apache.shardingsphere.test.sql.SQLCaseType;
-import org.apache.shardingsphere.test.sql.loader.SQLCasesLoader;
-import org.apache.shardingsphere.test.sql.loader.SQLCasesRegistry;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 
 import java.util.Collection;
 import java.util.Collections;

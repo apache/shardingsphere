@@ -20,9 +20,9 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.segment;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.ExpectedSQLSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.segment.ExpectedSQLSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.sql.SQLCaseType;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
-import org.apache.shardingsphere.test.sql.SQLCaseType;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
