@@ -85,7 +85,12 @@ public final class InventoryDataTaskSplitter {
     }
     
     private boolean isSpiltByPrimaryKeyRange(final RdbmsConfiguration rdbmsConfiguration, final MetaDataManager metaDataManager) {
-        List<String> primaryKeys = metaDataManager.getTableMetaData(rdbmsConfiguration.getTableName()).getPrimaryKeyColumns();
+        TableMetaData tableMetaData = metaDataManager.getTableMetaData(rdbmsConfiguration.getTableName());
+        if (null == tableMetaData) {
+            log.warn("Can't split range for table {}, reason: can not get table metadata ", rdbmsConfiguration.getTableName());
+            return false;
+        }
+        List<String> primaryKeys = tableMetaData.getPrimaryKeyColumns();
         if (null == primaryKeys || 0 == primaryKeys.size()) {
             log.warn("Can't split range for table {}, reason: no primary key", rdbmsConfiguration.getTableName());
             return false;
@@ -94,7 +99,6 @@ public final class InventoryDataTaskSplitter {
             log.warn("Can't split range for table {}, reason: primary key is union primary", rdbmsConfiguration.getTableName());
             return false;
         }
-        TableMetaData tableMetaData = metaDataManager.getTableMetaData(rdbmsConfiguration.getTableName());
         int index = tableMetaData.findColumnIndex(primaryKeys.get(0));
         if (isNotIntegerPrimary(tableMetaData.getColumnMetaData(index).getDataType())) {
             log.warn("Can't split range for table {}, reason: primary key is not integer number", rdbmsConfiguration.getTableName());
