@@ -62,7 +62,7 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     @Override
     public final ResultSetMetaData getMetaData() throws SQLException {
-        return new ShardingResultSetMetaData(resultSets.get(0).getMetaData(), getShardingRule(), executionContext.getSqlStatementContext());
+        return new ShardingResultSetMetaData(resultSets.get(0).getMetaData(), getShardingRule().toRules(), executionContext.getSqlStatementContext());
     }
     
     private ShardingRule getShardingRule() {
