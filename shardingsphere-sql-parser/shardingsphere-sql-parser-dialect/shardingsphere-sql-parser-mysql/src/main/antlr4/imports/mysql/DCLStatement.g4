@@ -58,6 +58,7 @@ privilegeType_
     | CREATE VIEW
     | DELETE
     | DROP
+    | DROP ROLE
     | EVENT
     | EXECUTE
     | FILE
@@ -79,18 +80,32 @@ privilegeType_
     | TRIGGER
     | UPDATE
     | USAGE
+    | APPLICATION_PASSWORD_ADMIN
     | AUDIT_ADMIN
+    | BACKUP_ADMIN
     | BINLOG_ADMIN
+    | BINLOG_ENCRYPTION_ADMIN
+    | CLONE_ADMIN
     | CONNECTION_ADMIN
     | ENCRYPTION_KEY_ADMIN
     | FIREWALL_ADMIN
     | FIREWALL_USER
     | GROUP_REPLICATION_ADMIN
+    | INNODB_REDO_LOG_ARCHIVE
+    | NDB_STOPED_USER
+    | PERSIST_RO_VARIABLES_ADMIN
+    | REPLICATION_APPLIER
     | REPLICATION_SLAVE_ADMIN
+    | RESOURCE_GROUP_ADMIN
+    | RESOURCE_GROUP_USER
     | ROLE_ADMIN
     | SET_USER_ID
+    | SHOW_ROUTINE
+    | SYSTEM_USER
     | SYSTEM_VARIABLES_ADMIN
+    | TABLE_ENCRYPTION_ADMIN
     | VERSION_TOKEN_ADMIN
+    | XA_RECOVER_ADMIN
     ;
 
 onObjectClause
@@ -102,13 +117,13 @@ objectType_
     ;
 
 privilegeLevel
-    : ASTERISK_ | ASTERISK_ DOT_ASTERISK_ | identifier DOT_ASTERISK_ | tableName
+    : ASTERISK_ | ASTERISK_ DOT_ASTERISK_ | identifier DOT_ASTERISK_ | tableName  | schemaName DOT tableName | schemaName DOT routineName
     ;
 
 createUser
     : CREATE USER (IF NOT EXISTS)? userName userAuthOption_? (COMMA_ userName userAuthOption_?)*
     DEFAULT ROLE roleName (COMMA_ roleName)* (REQUIRE (NONE | tlsOption_ (AND? tlsOption_)*))?
-    (WITH resourceOption_ resourceOption_*)? (passwordOption_ | lockOption_)*
+    (WITH resourceOption_ resourceOption_*)? (passwordOption_ | lockOption_)* (COMMENT STRING_ | ATTRIBUTE STRING_)?
     ;
 
 alterUser
@@ -139,7 +154,7 @@ setDefaultRole
     ;
 
 setRole
-    : SET ROLE (DEFAULT | NONE | ALL | ALL EXCEPT roleName (COMMA_ roleName)* | roleName (COMMA_ roleName)*)
+    : SET ROLE (DEFAULT | NONE | ALL | ALL EXCEPT roles_ | roles_)
     ;
 
 setPassword
@@ -190,7 +205,9 @@ passwordOption_
     : PASSWORD EXPIRE (DEFAULT | NEVER | INTERVAL NUMBER_ DAY)?
     | PASSWORD HISTORY (DEFAULT | NUMBER_)
     | PASSWORD REUSE INTERVAL (DEFAULT | NUMBER_ DAY)
-    | PASSWORD REQUIRE CURRENT (DEFAULT | OPTIONAL)
+    | PASSWORD REQUIRE CURRENT (DEFAULT | OPTIONAL)?
+    | FAILED_LOGIN_ATTEMPTS NUMBER_
+    | PASSWORD_LOCK_TIME (NUMBER_ | UNBOUNDED)
     ;
 
 resourceOption_

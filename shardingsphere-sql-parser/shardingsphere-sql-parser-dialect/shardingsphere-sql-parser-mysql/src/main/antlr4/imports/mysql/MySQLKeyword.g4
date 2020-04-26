@@ -2111,3 +2111,71 @@ PLUGIN_DIR
 STOP
     : S T O P
     ;
+
+FAILED_LOGIN_ATTEMPTS
+    : F A I L E D UL_ L O G I N UL_ A T T E M P T S
+    ;
+
+PASSWORD_LOCK_TIME
+    : P A S S W O R D UL_ L O C K UL_ T I M E
+    ;
+
+ATTRIBUTE
+    : A T T R I B U T E
+    ;
+
+APPLICATION_PASSWORD_ADMIN
+    : A P P L I C A T I O N UL_ P A S S W O R D UL_ A D M I N
+    ;
+
+BACKUP_ADMIN
+    : B A C K U P UL_ A D M I N
+    ;
+
+BINLOG_ENCRYPTION_ADMIN
+    : B I N L O G UL_ E N C R Y P T I O N UL_ A D M I N
+    ;
+
+CLONE_ADMIN
+    : C L O N E UL_ A D M I N
+    ;
+
+INNODB_REDO_LOG_ARCHIVE
+    : I N N O D B UL_ R E D O UL_ L O G UL_ A R C H I V E
+    ;
+
+NDB_STOPED_USER
+    : N D B UL_ S T O P E D UL_ U S E R
+    ;
+
+PERSIST_RO_VARIABLES_ADMIN
+    : P E R S I S T UL_ R O UL_ V A R I A B L E S UL_ A D M I N
+    ;
+
+REPLICATION_APPLIER
+    : R E P L I C A T I O N UL_ A P P L I E R
+    ;
+
+RESOURCE_GROUP_ADMIN
+    : R E S O U R C E UL_ G R O U P UL_ A D M I N
+    ;
+
+RESOURCE_GROUP_USER
+    : R E S O U R C E UL_ G R O U P UL_ U S E R
+    ;
+
+SHOW_ROUTINE
+    : S H O W UL_ R O U T I N E
+    ;
+
+SYSTEM_USER
+    : S Y S T E M UL_ U S E R
+    ;
+
+TABLE_ENCRYPTION_ADMIN
+    : T A B L E UL_ E N C R Y P T I O N UL_ A D M I N
+    ;
+
+XA_RECOVER_ADMIN
+    : X A UL_ R E C O V E R UL_ A D M I N
+    ;
