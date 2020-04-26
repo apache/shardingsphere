@@ -37,7 +37,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Default implement for sync task execute engine.
+ *
+ * @deprecated replace by {@link ShardingScalingExecuteEngine}
  */
+@Deprecated
 public final class DefaultSyncTaskExecuteEngine implements SyncTaskExecuteEngine {
     
     private final ListeningExecutorService executorService;

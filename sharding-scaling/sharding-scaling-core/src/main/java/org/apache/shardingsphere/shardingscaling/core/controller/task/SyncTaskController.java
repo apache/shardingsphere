@@ -30,8 +30,11 @@ import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceM
 
 /**
  * Sync task controller, synchronize inventory data and incremental data.
+ *
+ * @deprecated replaced with {@link ScalingTaskScheduler}
  */
 @Slf4j
+@Deprecated
 public final class SyncTaskController implements Runnable {
     
     private final SyncTask inventoryDataSyncTaskGroup;

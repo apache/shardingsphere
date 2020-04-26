@@ -26,9 +26,12 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Sync task execute callback.
+ *
+ * @deprecated deprecated after {@link DefaultSyncTaskExecuteEngine} replaced with {@link ShardingScalingExecuteEngine}
  */
 @RequiredArgsConstructor
 @Slf4j
+@Deprecated
 public final class SyncTaskExecuteCallback implements ExecuteCallback {
     
     private final String syncTaskType;

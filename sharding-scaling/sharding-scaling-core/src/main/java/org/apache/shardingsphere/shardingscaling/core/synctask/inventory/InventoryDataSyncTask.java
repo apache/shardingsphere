@@ -97,7 +97,8 @@ public final class InventoryDataSyncTask implements SyncTask {
             }
         });
         dumper.start();
-        checkResult(future);
+        waitForResult(future);
+        dataSourceManager.close();
     }
     
     private void getEstimatedRows() {
@@ -133,7 +134,7 @@ public final class InventoryDataSyncTask implements SyncTask {
         importer.setChannel(channel);
     }
     
-    private void checkResult(final Future future) {
+    private void waitForResult(final Future future) {
         try {
             future.get();
         } catch (InterruptedException ignored) {

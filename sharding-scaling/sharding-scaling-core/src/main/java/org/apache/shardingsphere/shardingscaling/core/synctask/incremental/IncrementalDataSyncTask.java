@@ -86,7 +86,8 @@ public final class IncrementalDataSyncTask extends AbstractShardingScalingExecut
             }
         });
         dumper.start();
-        checkResult(future);
+        waitForResult(future);
+        dataSourceManager.close();
     }
     
     @Override
@@ -113,7 +114,7 @@ public final class IncrementalDataSyncTask extends AbstractShardingScalingExecut
         }
     }
     
-    private void checkResult(final Future future) {
+    private void waitForResult(final Future future) {
         try {
             future.get();
         } catch (InterruptedException ignored) {

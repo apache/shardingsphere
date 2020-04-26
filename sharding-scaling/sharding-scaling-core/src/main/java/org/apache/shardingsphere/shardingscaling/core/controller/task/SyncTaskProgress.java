@@ -29,10 +29,13 @@ import lombok.Setter;
 
 /**
  * Sync task progress.
+ *
+ * @deprecated deprecated after {@link SyncTaskController} replaced with {@link ScalingTaskScheduler}
  */
 @Getter
 @Setter
 @RequiredArgsConstructor
+@Deprecated
 public final class SyncTaskProgress implements SyncProgress {
     
     private final String id;
