@@ -28,7 +28,7 @@ import java.util.Collection;
 import java.util.Properties;
 
 /**
- * Modulo sharding algorithm.
+ * Hash sharding algorithm.
  * 
  * <p>Shard by `y = MOD(z)` algorithm with z = hash(x).
  * All available targets will be returned if sharding value is `RangeShardingValue`</p>
