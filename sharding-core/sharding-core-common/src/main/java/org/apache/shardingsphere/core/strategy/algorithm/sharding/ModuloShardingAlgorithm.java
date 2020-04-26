@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.strategy.algorithm.sharding.inline;
+package org.apache.shardingsphere.core.strategy.algorithm.sharding;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
