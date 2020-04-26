@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shardingscaling.core.controller;
 
 import org.apache.shardingsphere.shardingscaling.core.ShardingScalingJob;
+import org.apache.shardingsphere.shardingscaling.core.controller.task.ScalingTaskScheduler;
 import org.apache.shardingsphere.shardingscaling.core.controller.task.SyncTaskControlStatus;
-import org.apache.shardingsphere.shardingscaling.core.controller.task.SyncTaskController;
 import org.apache.shardingsphere.shardingscaling.core.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.shardingscaling.core.preparer.ShardingScalingJobPreparer;
 
@@ -35,7 +35,7 @@ public final class ScalingJobController {
     
     private final ConcurrentMap<Integer, ShardingScalingJob> scalingJobMap = new ConcurrentHashMap<>();
     
-    private final ConcurrentMap<Integer, List<SyncTaskController>> syncTaskControllerMaps = new ConcurrentHashMap<>();
+    private final ConcurrentMap<Integer, ScalingTaskScheduler> scalingTaskSchedulerMap = new ConcurrentHashMap<>();
     
     private final ShardingScalingJobPreparer shardingScalingJobPreparer = new ShardingScalingJobPreparer();
     
@@ -50,14 +50,9 @@ public final class ScalingJobController {
         if (SyncTaskControlStatus.PREPARING_FAILURE.name().equals(shardingScalingJob.getStatus())) {
             return;
         }
-        List<SyncTaskController> syncTaskControllers = new LinkedList<>();
-        for (int i = 0; i < shardingScalingJob.getSyncConfigurations().size(); i++) {
-            SyncTaskController syncTaskController = new SyncTaskController(
-                shardingScalingJob.getSyncConfigurations().get(i), shardingScalingJob.getInventoryDataTasks().get(i), shardingScalingJob.getIncrementalDataTasks().get(i));
-            syncTaskController.start();
-            syncTaskControllers.add(syncTaskController);
-        }
-        syncTaskControllerMaps.put(shardingScalingJob.getJobId(), syncTaskControllers);
+        ScalingTaskScheduler scalingTaskScheduler = new ScalingTaskScheduler(shardingScalingJob);
+        scalingTaskScheduler.start();
+        scalingTaskSchedulerMap.put(shardingScalingJob.getJobId(), scalingTaskScheduler);
     }
     
     /**
@@ -69,9 +64,7 @@ public final class ScalingJobController {
         if (!scalingJobMap.containsKey(shardingScalingJobId)) {
             return;
         }
-        for (SyncTaskController syncTaskController : syncTaskControllerMaps.get(shardingScalingJobId)) {
-            syncTaskController.stop();
-        }
+        scalingTaskSchedulerMap.get(shardingScalingJobId).stop();
         scalingJobMap.get(shardingScalingJobId).setStatus("STOPPED");
     }
     
@@ -87,11 +80,8 @@ public final class ScalingJobController {
         }
         ShardingScalingJob shardingScalingJob = scalingJobMap.get(shardingScalingJobId);
         ScalingJobProgress result = new ScalingJobProgress(shardingScalingJobId, shardingScalingJob.getJobName(), shardingScalingJob.getStatus());
-        if (syncTaskControllerMaps.containsKey(shardingScalingJobId)) {
-            for (SyncTaskController syncTaskController : syncTaskControllerMaps.get(shardingScalingJobId)) {
-                result.addSyncTaskProgress(syncTaskController.getProgress());
-            }
-        }
+        result.getInventoryDataTasks().addAll(scalingTaskSchedulerMap.get(shardingScalingJobId).getInventoryDataTaskProgress());
+        result.getIncrementalDataTasks().addAll(scalingTaskSchedulerMap.get(shardingScalingJobId).getIncrementalDataTaskProgress());
         return result;
     }
     

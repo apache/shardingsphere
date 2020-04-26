@@ -27,7 +27,10 @@ import java.util.List;
 
 /**
  * Sync task execute engine.
+ *
+ * @deprecated deprecated after {@link DefaultSyncTaskExecuteEngine} replaced with {@link ShardingScalingExecuteEngine}
  */
+@Deprecated
 public interface SyncTaskExecuteEngine {
     
     /**

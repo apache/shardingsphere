@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shardingscaling.core.controller;
 
+import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -36,14 +36,7 @@ public final class ScalingJobProgress implements SyncProgress {
     
     private final String status;
     
-    private final List<SyncProgress> syncTaskProgress = new LinkedList<>();
+    private final Collection<SyncProgress> inventoryDataTasks = new LinkedList<>();
     
-    /**
-     * Add sync task progress.
-     *
-     * @param syncTaskProgress sync task progress
-     */
-    public void addSyncTaskProgress(final SyncProgress syncTaskProgress) {
-        this.syncTaskProgress.add(syncTaskProgress);
-    }
+    private final Collection<SyncProgress> incrementalDataTasks = new LinkedList<>();
 }
