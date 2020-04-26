@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.cases;
 
-import org.apache.shardingsphere.test.sql.loader.SQLCasesRegistry;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.sql.SQLCaseType;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.sql.loader.SQLCasesRegistry;
 import org.junit.Test;
 
 import java.util.Arrays;

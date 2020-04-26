@@ -48,7 +48,6 @@
         <module>sharding-opentracing</module>
         
         <module>sharding-spring</module>
-        <module>sharding-sql-test</module>
         
         <module>sharding-distribution</module>
         <module>sharding-integration-test</module>
