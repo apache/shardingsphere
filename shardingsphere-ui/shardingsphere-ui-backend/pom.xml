@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-ui</artifactId>
-        <version>5.0.0-RC1-SNAPSHOT</version>
+        <version>4.1.0</version>
     </parent>
     <artifactId>shardingsphere-ui-backend</artifactId>
     <name>${project.artifactId}</name>
@@ -30,7 +30,7 @@
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>sharding-core-common</artifactId>
-            <version>${project.version}</version>
+            <version>4.1.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.shardingsphere</groupId>
@@ -49,7 +49,7 @@
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>sharding-orchestration-core-facade</artifactId>
-            <version>${project.version}</version>
+            <version>4.1.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.shardingsphere</groupId>
@@ -60,7 +60,7 @@
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>sharding-orchestration-center-zookeeper-curator</artifactId>
-            <version>${project.version}</version>
+            <version>4.1.0</version>
         </dependency>
         
         <dependency>
