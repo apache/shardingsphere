@@ -28,8 +28,8 @@ import java.util.Properties;
 
 /**
  * Modulo sharding algorithm.
- *
- * @author panjuan
+ * 
+ * <p>Shard with `y = MOD(x)` algorithm.</p>
  */
 public final class ModuloShardingAlgorithm implements StandardShardingAlgorithm<Long> {
     
