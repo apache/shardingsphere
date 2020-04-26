@@ -90,7 +90,7 @@ public final class ShardingDatabaseMetaDataTest {
         when(shardingConnection.getDataSourceMap()).thenReturn(dataSourceMap);
         when(shardingConnection.getRuntimeContext()).thenReturn(shardingRuntimeContext);
         when(shardingRuntimeContext.getCachedDatabaseMetaData()).thenReturn(cachedDatabaseMetaData);
-        when(shardingRuntimeContext.getRule()).thenReturn(mockShardingRule());
+        when(shardingRuntimeContext.getRules()).thenReturn(Collections.singletonList(mockShardingRule()));
         shardingDatabaseMetaData = new ShardingDatabaseMetaData(shardingConnection);
     }
     

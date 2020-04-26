@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.rewrite.judgement.ShadowJudgementEngine;
 import org.apache.shardingsphere.shadow.rewrite.judgement.impl.PreparedJudgementEngine;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractShardingPreparedStatementAdapter;
@@ -196,7 +197,7 @@ public final class ShadowPreparedStatement extends AbstractShardingPreparedState
     private SQLUnit getSQLUnit(final String sql) {
         SchemaMetaData schemaMetaData = connection.getRuntimeContext().getMetaData().getSchema().getConfiguredSchemaMetaData();
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, sql, getParameters(), sqlStatement);
-        ShadowJudgementEngine shadowJudgementEngine = new PreparedJudgementEngine(connection.getRuntimeContext().getRule(), sqlStatementContext, getParameters());
+        ShadowJudgementEngine shadowJudgementEngine = new PreparedJudgementEngine((ShadowRule) connection.getRuntimeContext().getRules().iterator().next(), sqlStatementContext, getParameters());
         isShadowSQL = shadowJudgementEngine.isShadowSQL();
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(schemaMetaData, connection.getRuntimeContext().getProperties(), connection.getRuntimeContext().getRules());
         SQLRewriteUnit sqlRewriteResult = ((GenericSQLRewriteResult) sqlRewriteEntry.rewrite(

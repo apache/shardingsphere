@@ -24,22 +24,22 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenter;
-import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
+import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.EncryptRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
+import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenter;
+import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
+import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
+import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
-import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
-import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 
 /**
  * Orchestration encrypt data source.
@@ -79,7 +79,7 @@ public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSou
     
     private Map<String, RuleConfiguration> getRuleConfigurationMap() {
         Map<String, RuleConfiguration> result = new HashMap<>(1);
-        result.put(DefaultSchema.LOGIC_NAME, dataSource.getRuntimeContext().getRule().getRuleConfiguration());
+        result.put(DefaultSchema.LOGIC_NAME, dataSource.getRuntimeContext().getRules().iterator().next().getRuleConfiguration());
         return result;
     }
     
@@ -94,8 +94,8 @@ public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSou
         Map<String, DataSourceConfiguration> dataSourceConfigurations = dataSourceChangedEvent.getDataSourceConfigurations();
         dataSource.close();
         checkDataSourceConfiguration(dataSourceConfigurations);
-        dataSource = new EncryptDataSource(DataSourceConverter.getDataSourceMap(
-                dataSourceConfigurations).values().iterator().next(), dataSource.getRuntimeContext().getRule(), dataSource.getRuntimeContext().getProperties().getProps());
+        dataSource = new EncryptDataSource(DataSourceConverter.getDataSourceMap(dataSourceConfigurations).values().iterator().next(), 
+                (EncryptRule) dataSource.getRuntimeContext().getRules().iterator().next(), dataSource.getRuntimeContext().getProperties().getProps());
         getDataSourceConfigurations().clear();
         getDataSourceConfigurations().putAll(dataSourceConfigurations);
     }
@@ -120,6 +120,6 @@ public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSou
     @SneakyThrows
     @Subscribe
     public final synchronized void renew(final PropertiesChangedEvent propertiesChangedEvent) {
-        dataSource = new EncryptDataSource(dataSource.getDataSource(), dataSource.getRuntimeContext().getRule(), propertiesChangedEvent.getProps());
+        dataSource = new EncryptDataSource(dataSource.getDataSource(), (EncryptRule) dataSource.getRuntimeContext().getRules().iterator().next(), propertiesChangedEvent.getProps());
     }
 }

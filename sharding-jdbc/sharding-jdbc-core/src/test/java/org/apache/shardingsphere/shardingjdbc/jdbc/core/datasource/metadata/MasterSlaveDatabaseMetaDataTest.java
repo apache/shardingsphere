@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata;
 
 import com.google.common.collect.LinkedHashMultimap;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.MasterSlaveRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.DatabaseMetaDataResultSet;
@@ -35,7 +34,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -88,12 +86,7 @@ public final class MasterSlaveDatabaseMetaDataTest {
         when(masterSlaveConnection.getDataSourceMap()).thenReturn(dataSourceMap);
         when(masterSlaveConnection.getRuntimeContext()).thenReturn(masterSlaveRuntimeContext);
         when(masterSlaveRuntimeContext.getCachedDatabaseMetaData()).thenReturn(cachedDatabaseMetaData);
-        when(masterSlaveRuntimeContext.getRule()).thenReturn(mockMasterSlaveRule());
         masterSlaveDatabaseMetaData = new MasterSlaveDatabaseMetaData(masterSlaveConnection);
-    }
-    
-    private MasterSlaveRule mockMasterSlaveRule() {
-        return new MasterSlaveRule("master", DATA_SOURCE_NAME, Collections.singletonList(DATA_SOURCE_NAME), null);
     }
     
     @Test

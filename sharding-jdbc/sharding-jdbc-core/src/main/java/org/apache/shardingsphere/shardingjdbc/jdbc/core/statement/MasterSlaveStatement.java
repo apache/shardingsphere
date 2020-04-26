@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.masterslave.route.engine.MasterSlaveRouteDecorator;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractStatementAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
@@ -75,8 +76,7 @@ public final class MasterSlaveStatement extends AbstractStatementAdapter {
     public MasterSlaveStatement(final MasterSlaveConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         super(Statement.class);
         this.connection = connection;
-        dataNodeRouter = new DataNodeRouter(
-                connection.getRuntimeContext().getMetaData(), connection.getRuntimeContext().getProperties(), Collections.singletonList(connection.getRuntimeContext().getRule()));
+        dataNodeRouter = new DataNodeRouter(connection.getRuntimeContext().getMetaData(), connection.getRuntimeContext().getProperties(), connection.getRuntimeContext().getRules());
         this.resultSetType = resultSetType;
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;
@@ -89,7 +89,7 @@ public final class MasterSlaveStatement extends AbstractStatementAdapter {
         }
         clearPrevious();
         MasterSlaveRuntimeContext runtimeContext = connection.getRuntimeContext();
-        Collection<BaseRule> rules = Collections.singletonList(runtimeContext.getRule());
+        Collection<BaseRule> rules = runtimeContext.getRules();
         RouteContext routeContext = new DataNodeRouter(runtimeContext.getMetaData(), runtimeContext.getProperties(),
                 rules).route(runtimeContext.getSqlParserEngine().parse(sql, false), sql, Collections.emptyList());
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(
@@ -111,7 +111,8 @@ public final class MasterSlaveStatement extends AbstractStatementAdapter {
         int result = 0;
         MasterSlaveRuntimeContext runtimeContext = connection.getRuntimeContext();
         RouteContext routeContext = dataNodeRouter.route(connection.getRuntimeContext().getSqlParserEngine().parse(sql, false), sql, Collections.emptyList());
-        routeContext = new MasterSlaveRouteDecorator().decorate(routeContext, runtimeContext.getMetaData(), runtimeContext.getRule(), runtimeContext.getProperties());
+        routeContext = new MasterSlaveRouteDecorator().decorate(routeContext, runtimeContext.getMetaData(), 
+                (MasterSlaveRule) runtimeContext.getRules().iterator().next(), runtimeContext.getProperties());
         for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
             Statement statement = connection.getConnection(each.getDataSourceMapper().getActualName()).createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
             routedStatements.add(statement);
@@ -126,7 +127,8 @@ public final class MasterSlaveStatement extends AbstractStatementAdapter {
         int result = 0;
         MasterSlaveRuntimeContext runtimeContext = connection.getRuntimeContext();
         RouteContext routeContext = dataNodeRouter.route(connection.getRuntimeContext().getSqlParserEngine().parse(sql, false), sql, Collections.emptyList());
-        routeContext = new MasterSlaveRouteDecorator().decorate(routeContext, runtimeContext.getMetaData(), runtimeContext.getRule(), runtimeContext.getProperties());
+        routeContext = new MasterSlaveRouteDecorator().decorate(routeContext, runtimeContext.getMetaData(), 
+                (MasterSlaveRule) runtimeContext.getRules().iterator().next(), runtimeContext.getProperties());
         for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
             Statement statement = connection.getConnection(each.getDataSourceMapper().getActualName()).createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
             routedStatements.add(statement);
@@ -141,7 +143,8 @@ public final class MasterSlaveStatement extends AbstractStatementAdapter {
         int result = 0;
         MasterSlaveRuntimeContext runtimeContext = connection.getRuntimeContext();
         RouteContext routeContext = dataNodeRouter.route(connection.getRuntimeContext().getSqlParserEngine().parse(sql, false), sql, Collections.emptyList());
-        routeContext = new MasterSlaveRouteDecorator().decorate(routeContext, runtimeContext.getMetaData(), runtimeContext.getRule(), runtimeContext.getProperties());
+        routeContext = new MasterSlaveRouteDecorator().decorate(routeContext, runtimeContext.getMetaData(), 
+                (MasterSlaveRule) runtimeContext.getRules().iterator().next(), runtimeContext.getProperties());
         for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
             Statement statement = connection.getConnection(each.getDataSourceMapper().getActualName()).createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
             routedStatements.add(statement);
@@ -156,7 +159,8 @@ public final class MasterSlaveStatement extends AbstractStatementAdapter {
         int result = 0;
         MasterSlaveRuntimeContext runtimeContext = connection.getRuntimeContext();
         RouteContext routeContext = dataNodeRouter.route(connection.getRuntimeContext().getSqlParserEngine().parse(sql, false), sql, Collections.emptyList());
-        routeContext = new MasterSlaveRouteDecorator().decorate(routeContext, runtimeContext.getMetaData(), runtimeContext.getRule(), runtimeContext.getProperties());
+        routeContext = new MasterSlaveRouteDecorator().decorate(routeContext, runtimeContext.getMetaData(), 
+                (MasterSlaveRule) runtimeContext.getRules().iterator().next(), runtimeContext.getProperties());
         for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
             Statement statement = connection.getConnection(each.getDataSourceMapper().getActualName()).createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
             routedStatements.add(statement);
@@ -171,7 +175,8 @@ public final class MasterSlaveStatement extends AbstractStatementAdapter {
         boolean result = false;
         MasterSlaveRuntimeContext runtimeContext = connection.getRuntimeContext();
         RouteContext routeContext = dataNodeRouter.route(connection.getRuntimeContext().getSqlParserEngine().parse(sql, false), sql, Collections.emptyList());
-        routeContext = new MasterSlaveRouteDecorator().decorate(routeContext, runtimeContext.getMetaData(), runtimeContext.getRule(), runtimeContext.getProperties());
+        routeContext = new MasterSlaveRouteDecorator().decorate(routeContext, runtimeContext.getMetaData(), 
+                (MasterSlaveRule) runtimeContext.getRules().iterator().next(), runtimeContext.getProperties());
         for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
             Statement statement = connection.getConnection(each.getDataSourceMapper().getActualName()).createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
             routedStatements.add(statement);
@@ -186,7 +191,8 @@ public final class MasterSlaveStatement extends AbstractStatementAdapter {
         boolean result = false;
         MasterSlaveRuntimeContext runtimeContext = connection.getRuntimeContext();
         RouteContext routeContext = dataNodeRouter.route(connection.getRuntimeContext().getSqlParserEngine().parse(sql, false), sql, Collections.emptyList());
-        routeContext = new MasterSlaveRouteDecorator().decorate(routeContext, runtimeContext.getMetaData(), runtimeContext.getRule(), runtimeContext.getProperties());
+        routeContext = new MasterSlaveRouteDecorator().decorate(routeContext, runtimeContext.getMetaData(), 
+                (MasterSlaveRule) runtimeContext.getRules().iterator().next(), runtimeContext.getProperties());
         for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
             Statement statement = connection.getConnection(each.getDataSourceMapper().getActualName()).createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
             routedStatements.add(statement);
@@ -201,7 +207,8 @@ public final class MasterSlaveStatement extends AbstractStatementAdapter {
         boolean result = false;
         MasterSlaveRuntimeContext runtimeContext = connection.getRuntimeContext();
         RouteContext routeContext = dataNodeRouter.route(connection.getRuntimeContext().getSqlParserEngine().parse(sql, false), sql, Collections.emptyList());
-        routeContext = new MasterSlaveRouteDecorator().decorate(routeContext, runtimeContext.getMetaData(), runtimeContext.getRule(), runtimeContext.getProperties());
+        routeContext = new MasterSlaveRouteDecorator().decorate(routeContext, runtimeContext.getMetaData(), 
+                (MasterSlaveRule) runtimeContext.getRules().iterator().next(), runtimeContext.getProperties());
         for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
             Statement statement = connection.getConnection(each.getDataSourceMapper().getActualName()).createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
             routedStatements.add(statement);
@@ -216,7 +223,8 @@ public final class MasterSlaveStatement extends AbstractStatementAdapter {
         boolean result = false;
         MasterSlaveRuntimeContext runtimeContext = connection.getRuntimeContext();
         RouteContext routeContext = dataNodeRouter.route(connection.getRuntimeContext().getSqlParserEngine().parse(sql, false), sql, Collections.emptyList());
-        routeContext = new MasterSlaveRouteDecorator().decorate(routeContext, runtimeContext.getMetaData(), runtimeContext.getRule(), runtimeContext.getProperties());
+        routeContext = new MasterSlaveRouteDecorator().decorate(routeContext, runtimeContext.getMetaData(), 
+                (MasterSlaveRule) runtimeContext.getRules().iterator().next(), runtimeContext.getProperties());
         for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
             Statement statement = connection.getConnection(each.getDataSourceMapper().getActualName()).createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
             routedStatements.add(statement);
