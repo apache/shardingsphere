@@ -35,10 +35,10 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Sharding result set meta data.
+ * ShardingSphere result set meta data.
  */
 @RequiredArgsConstructor
-public final class ShardingResultSetMetaData extends WrapperAdapter implements ResultSetMetaData {
+public final class ShardingSphereResultSetMetaData extends WrapperAdapter implements ResultSetMetaData {
     
     private final ResultSetMetaData resultSetMetaData;
     
