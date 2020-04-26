@@ -83,6 +83,6 @@ public final class ModuloShardingAlgorithm implements StandardShardingAlgorithm<
     
     @Override
     public String getType() {
-        return "MODULO";
+        return "MOD";
     }
 }
