@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.WrapperAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionConstant;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.Projection;
@@ -27,20 +25,24 @@ import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.imp
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.TablesAggregationRule;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
- * Sharding result set meta data.
+ * ShardingSphere result set meta data.
  */
 @RequiredArgsConstructor
-public final class ShardingResultSetMetaData extends WrapperAdapter implements ResultSetMetaData {
+public final class ShardingSphereResultSetMetaData extends WrapperAdapter implements ResultSetMetaData {
     
     private final ResultSetMetaData resultSetMetaData;
     
-    private final ShardingRule shardingRule;
+    private final Collection<BaseRule> rules;
     
     private final SQLStatementContext sqlStatementContext;
     
@@ -122,7 +124,8 @@ public final class ShardingResultSetMetaData extends WrapperAdapter implements R
     @Override
     public String getTableName(final int column) throws SQLException {
         String actualTableName = resultSetMetaData.getTableName(column);
-        return shardingRule.findTableRuleByActualTable(actualTableName).map(TableRule::getLogicTable).orElse(actualTableName);
+        Optional<BaseRule> rule = rules.stream().filter(each -> each instanceof TablesAggregationRule).findFirst();
+        return rule.isPresent() ? ((TablesAggregationRule) rule.get()).findLogicTableByActualTable(actualTableName).orElse(actualTableName) : actualTableName;
     }
     
     @Override

@@ -49,6 +49,8 @@ import java.util.TreeMap;
  */
 public final class EncryptResultSet extends AbstractUnsupportedOperationResultSet {
     
+    private final EncryptRuntimeContext runtimeContext;
+    
     private final SQLStatementContext sqlStatementContext;
     
     private final Statement encryptStatement;
@@ -61,6 +63,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     public EncryptResultSet(final EncryptRuntimeContext encryptRuntimeContext,
                             final SQLStatementContext sqlStatementContext, final Statement encryptStatement, final ResultSet resultSet) throws SQLException {
+        runtimeContext = encryptRuntimeContext;
         this.sqlStatementContext = sqlStatementContext;
         this.encryptStatement = encryptStatement;
         originalResultSet = resultSet;
@@ -444,7 +447,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public ResultSetMetaData getMetaData() throws SQLException {
-        return new EncryptResultSetMetaData(originalResultSet.getMetaData(), sqlStatementContext);
+        return new ShardingSphereResultSetMetaData(originalResultSet.getMetaData(), runtimeContext.getRules(), sqlStatementContext);
     }
     
     @Override
