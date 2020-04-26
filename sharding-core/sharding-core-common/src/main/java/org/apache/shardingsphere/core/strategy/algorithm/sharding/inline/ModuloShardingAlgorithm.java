@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.core.strategy.algorithm.sharding.inline;
 
 import com.google.common.base.Preconditions;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.api.sharding.standard.StandardShardingAlgorithm;
@@ -33,8 +35,10 @@ import java.util.Properties;
  */
 public final class ModuloShardingAlgorithm implements StandardShardingAlgorithm<Long> {
     
-    private static final String MODULO_VALUE = "modulo.value";
+    private static final String MODULO_VALUE = "mod.value";
     
+    @Getter
+    @Setter
     private Properties properties = new Properties();
     
     @Override
@@ -80,15 +84,5 @@ public final class ModuloShardingAlgorithm implements StandardShardingAlgorithm<
     @Override
     public String getType() {
         return "MODULO";
-    }
-    
-    @Override
-    public Properties getProperties() {
-        return properties;
-    }
-    
-    @Override
-    public void setProperties(final Properties properties) {
-        this.properties = properties;
     }
 }
