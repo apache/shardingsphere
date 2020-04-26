@@ -19,11 +19,11 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.SQLParserTestCasesRegistry;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.SQLParserTestCasesRegistryFactory;
-import org.apache.shardingsphere.test.sql.SQLCaseType;
-import org.apache.shardingsphere.test.sql.loader.SQLCasesLoader;
-import org.apache.shardingsphere.test.sql.loader.SQLCasesRegistry;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.SQLParserTestCasesRegistry;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.SQLParserTestCasesRegistryFactory;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.sql.SQLCaseType;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.sql.loader.SQLCasesLoader;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.sql.loader.SQLCasesRegistry;
 
 import java.util.Collections;
 

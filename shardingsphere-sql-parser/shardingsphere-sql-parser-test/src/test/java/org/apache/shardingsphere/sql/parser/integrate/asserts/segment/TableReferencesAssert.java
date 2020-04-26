@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.JoinTableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableFactorAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.ExpectedTableReference;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedJoinTable;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.segment.impl.ExpectedTableReference;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.segment.impl.table.ExpectedJoinTable;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.JoinedTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.TableReferenceSegment;
 

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dcl.DCLS
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.ddl.DDLStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dml.DMLStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.tcl.TCLStatementAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.SQLParserTestCase;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DCLStatement;

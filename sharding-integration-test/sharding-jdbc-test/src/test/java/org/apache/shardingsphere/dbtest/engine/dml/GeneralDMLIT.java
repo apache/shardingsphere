@@ -19,10 +19,10 @@ package org.apache.shardingsphere.dbtest.engine.dml;
 
 import org.apache.shardingsphere.dbtest.cases.assertion.dml.DMLIntegrateTestCaseAssertion;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLValue;
+import org.apache.shardingsphere.dbtest.cases.sql.SQLCaseType;
 import org.apache.shardingsphere.dbtest.engine.SQLType;
 import org.apache.shardingsphere.dbtest.engine.util.IntegrateTestParameters;
 import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
-import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
