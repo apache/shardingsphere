@@ -48,7 +48,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Orchestration sharding datasource.
+ * Orchestration sharding data source.
  */
 @Getter(AccessLevel.PROTECTED)
 public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSource {

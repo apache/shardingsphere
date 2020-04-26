@@ -47,7 +47,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Orchestration master-slave datasource.
+ * Orchestration master-slave data source.
  */
 @Getter(AccessLevel.PROTECTED)
 public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDataSource {
