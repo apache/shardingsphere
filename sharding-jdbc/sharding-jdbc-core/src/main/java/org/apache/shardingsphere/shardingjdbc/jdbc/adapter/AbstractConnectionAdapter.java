@@ -23,6 +23,7 @@ import com.google.common.collect.Multimap;
 import lombok.Getter;
 import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteTemplate;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.underlying.common.hook.RootInvokeHook;
@@ -51,6 +52,9 @@ import java.util.Map.Entry;
 public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOperationConnection implements JDBCExecutionConnection {
     
     @Getter
+    private final RuntimeContext runtimeContext;
+    
+    @Getter
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
     @Getter
@@ -68,7 +72,8 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     private int transactionIsolation = TRANSACTION_READ_UNCOMMITTED;
     
-    protected AbstractConnectionAdapter() {
+    protected AbstractConnectionAdapter(final RuntimeContext runtimeContext) {
+        this.runtimeContext = runtimeContext;
         rootInvokeHook.start();
     }
     
