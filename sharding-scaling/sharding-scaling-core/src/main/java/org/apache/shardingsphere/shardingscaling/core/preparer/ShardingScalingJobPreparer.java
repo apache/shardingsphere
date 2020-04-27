@@ -17,8 +17,12 @@
 
 package org.apache.shardingsphere.shardingscaling.core.preparer;
 
-import javax.sql.DataSource;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingscaling.core.ShardingScalingJob;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.controller.task.SyncTaskControlStatus;
@@ -30,9 +34,10 @@ import org.apache.shardingsphere.shardingscaling.core.preparer.checker.DataSourc
 import org.apache.shardingsphere.shardingscaling.core.preparer.checker.DataSourceCheckerCheckerFactory;
 import org.apache.shardingsphere.shardingscaling.core.preparer.splitter.InventoryDataTaskSplitter;
 import org.apache.shardingsphere.shardingscaling.core.synctask.DefaultSyncTaskFactory;
+import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTask;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTaskFactory;
 
-import lombok.extern.slf4j.Slf4j;
+import javax.sql.DataSource;
 
 /**
  * Sharding scaling job preparer.
@@ -68,9 +73,24 @@ public final class ShardingScalingJobPreparer {
     }
     
     private void splitInventoryDataTasks(final ShardingScalingJob shardingScalingJob, final DataSourceManager dataSourceManager) {
+        List<SyncTask> allInventoryDataTasks = new LinkedList<>();
         for (SyncConfiguration each : shardingScalingJob.getSyncConfigurations()) {
-            shardingScalingJob.getInventoryDataTasks().add(syncTaskFactory.createInventoryDataSyncTaskGroup(each, inventoryDataTaskSplitter.splitInventoryData(each, dataSourceManager)));
+            allInventoryDataTasks.addAll(inventoryDataTaskSplitter.splitInventoryData(each, dataSourceManager));
         }
+        for (Collection<SyncTask> each : groupInventoryDataTasks(shardingScalingJob.getSyncConfigurations().get(0).getConcurrency(), allInventoryDataTasks)) {
+            shardingScalingJob.getInventoryDataTasks().add(syncTaskFactory.createInventoryDataSyncTaskGroup(each));
+        }
+    }
+    
+    private List<Collection<SyncTask>> groupInventoryDataTasks(final int taskNumber, final List<SyncTask> allInventoryDataTasks) {
+        List<Collection<SyncTask>> result = new ArrayList<>(taskNumber);
+        for (int i = 0; i < taskNumber; i++) {
+            result.add(new LinkedList<>());
+        }
+        for (int i = 0; i < allInventoryDataTasks.size(); i++) {
+            result.get(i % taskNumber).add(allInventoryDataTasks.get(i));
+        }
+        return result;
     }
     
     private void initIncrementalDataTasks(final String databaseType, final ShardingScalingJob shardingScalingJob, final DataSourceManager dataSourceManager) {

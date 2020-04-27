@@ -28,15 +28,15 @@ import java.util.List;
  */
 public final class InventoryDataSyncTaskProgressGroup implements SyncProgressGroup {
     
-    private final List<SyncProgress> inventoryDataSyncTaskProgresses = new LinkedList<>();
+    private final List<SyncProgress> innerTaskProgresses = new LinkedList<>();
     
     @Override
     public List<SyncProgress> getSyncProgresses() {
-        return inventoryDataSyncTaskProgresses;
+        return innerTaskProgresses;
     }
     
     @Override
     public void addSyncProgress(final SyncProgress syncProgress) {
-        inventoryDataSyncTaskProgresses.add(syncProgress);
+        innerTaskProgresses.add(syncProgress);
     }
 }

@@ -24,7 +24,6 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.
 import org.apache.shardingsphere.shardingscaling.core.synctask.inventory.InventoryDataSyncTask;
 import org.apache.shardingsphere.shardingscaling.core.synctask.inventory.InventoryDataSyncTaskGroup;
 import org.apache.shardingsphere.shardingscaling.core.synctask.incremental.IncrementalDataSyncTask;
-import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 
 /**
  * Sync task factory.
@@ -34,20 +33,18 @@ public interface SyncTaskFactory {
     /**
      * Create inventory data sync task group.
      *
-     * @param syncConfiguration sync configuration
      * @param inventoryDataSyncTasks  inventory data sync tasks
      * @return inventory data sync task group
      */
-    InventoryDataSyncTaskGroup createInventoryDataSyncTaskGroup(SyncConfiguration syncConfiguration, Collection<SyncTask> inventoryDataSyncTasks);
+    InventoryDataSyncTaskGroup createInventoryDataSyncTaskGroup(Collection<SyncTask> inventoryDataSyncTasks);
     
     /**
      * Create inventory data sync task.
      *
      * @param syncConfiguration sync configuration
-     * @param dataSourceManager  data source factory
      * @return inventory data sync task
      */
-    InventoryDataSyncTask createInventoryDataSyncTask(SyncConfiguration syncConfiguration, DataSourceManager dataSourceManager);
+    InventoryDataSyncTask createInventoryDataSyncTask(SyncConfiguration syncConfiguration);
     
     /**
      * Create incremental data sync task.
