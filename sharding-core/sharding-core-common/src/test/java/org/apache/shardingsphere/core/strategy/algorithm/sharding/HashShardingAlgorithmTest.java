@@ -44,14 +44,14 @@ public final class HashShardingAlgorithmTest {
     public void setup() {
         HashShardingAlgorithm shardingAlgorithm = new HashShardingAlgorithm();
         shardingAlgorithm.getProperties().setProperty("mod.value", "4");
-        StandardShardingStrategyConfiguration shardingStrategyConfig = new StandardShardingStrategyConfiguration("order_code", shardingAlgorithm);
+        StandardShardingStrategyConfiguration shardingStrategyConfig = new StandardShardingStrategyConfiguration("order_type", shardingAlgorithm);
         shardingStrategy = new StandardShardingStrategy(shardingStrategyConfig);
     }
     
     @Test
     public void assertPreciseDoSharding() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        List<RouteValue> shardingValues = Lists.newArrayList(new ListRouteValue<>("order_code", "t_order", Lists.newArrayList("a", "b", "c")));
+        List<RouteValue> shardingValues = Lists.newArrayList(new ListRouteValue<>("order_type", "t_order", Lists.newArrayList("a", "b", "c")));
         Collection<String> actual = shardingStrategy.doSharding(availableTargetNames, shardingValues, new ConfigurationProperties(new Properties()));
         assertThat(actual.size(), is(3));
         assertTrue(actual.contains("t_order_1"));
@@ -63,7 +63,7 @@ public final class HashShardingAlgorithmTest {
     public void assertRangeDoSharding() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
         Range<String> rangeValue = Range.closed("a", "f");
-        List<RouteValue> shardingValues = Lists.newArrayList(new RangeRouteValue<>("order_code", "t_order", rangeValue));
+        List<RouteValue> shardingValues = Lists.newArrayList(new RangeRouteValue<>("order_type", "t_order", rangeValue));
         Collection<String> actual = shardingStrategy.doSharding(availableTargetNames, shardingValues, new ConfigurationProperties(new Properties()));
         assertThat(actual.size(), is(4));
     }
