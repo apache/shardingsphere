@@ -45,8 +45,8 @@ public final class GeneralDMLIT extends BaseDMLIT {
     private final DMLIntegrateTestCaseAssertion assertion;
     
     public GeneralDMLIT(final String sqlCaseId, final String path, final DMLIntegrateTestCaseAssertion assertion, final String ruleType,
-                        final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
-        super(sqlCaseId, path, assertion, ruleType, databaseTypeEnvironment, caseType);
+                        final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
+        super(sqlCaseId, path, assertion, ruleType, databaseTypeEnvironment, caseType, sql);
         this.assertion = assertion;
     }
     
@@ -74,7 +74,7 @@ public final class GeneralDMLIT extends BaseDMLIT {
     
     private int executeUpdateForStatement(final Connection connection) throws SQLException, ParseException {
         try (Statement statement = connection.createStatement()) {
-            return statement.executeUpdate(String.format(getSql(), assertion.getSQLValues().toArray()));
+            return statement.executeUpdate(getLiteralSQL());
         }
     }
     
@@ -106,7 +106,7 @@ public final class GeneralDMLIT extends BaseDMLIT {
     
     private int executeForStatement(final Connection connection) throws SQLException, ParseException {
         try (Statement statement = connection.createStatement()) {
-            assertFalse("Not a DML statement.", statement.execute(String.format(getSql(), assertion.getSQLValues().toArray())));
+            assertFalse("Not a DML statement.", statement.execute(getLiteralSQL()));
             return statement.getUpdateCount();
         }
     }

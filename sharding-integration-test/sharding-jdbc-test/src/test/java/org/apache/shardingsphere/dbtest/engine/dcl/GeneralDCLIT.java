@@ -35,8 +35,8 @@ import java.util.Collection;
 public final class GeneralDCLIT extends BaseDCLIT {
     
     public GeneralDCLIT(final String sqlCaseId, final String path, final DCLIntegrateTestCaseAssertion assertion, final String ruleType,
-                        final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
-        super(sqlCaseId, path, assertion, ruleType, databaseTypeEnvironment, caseType);
+                        final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
+        super(sqlCaseId, path, assertion, ruleType, databaseTypeEnvironment, caseType, sql);
     }
     
     @Parameters(name = "{0} -> Rule:{3} -> {4} -> {5}")

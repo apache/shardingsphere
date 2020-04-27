@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.dbtest.cases.assertion;
 
 import com.google.common.base.Preconditions;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbtest.cases.assertion.dcl.DCLIntegrateTestCase;
@@ -66,12 +67,16 @@ public final class IntegrateTestCasesLoader {
     
     private static final IntegrateTestCasesLoader INSTANCE = new IntegrateTestCasesLoader();
     
+    @Getter
     private final Map<String, IntegrateTestCase> dqlIntegrateTestCaseMap;
     
+    @Getter
     private final Map<String, IntegrateTestCase> dmlIntegrateTestCaseMap;
     
+    @Getter
     private final Map<String, IntegrateTestCase> ddlIntegrateTestCaseMap;
     
+    @Getter
     private final Map<String, IntegrateTestCase> dclIntegrateTestCaseMap;
     
     @SneakyThrows

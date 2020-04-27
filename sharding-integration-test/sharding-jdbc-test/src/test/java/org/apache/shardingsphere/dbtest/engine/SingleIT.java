@@ -22,41 +22,44 @@ import lombok.Getter;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLValue;
 import org.apache.shardingsphere.dbtest.cases.sql.SQLCaseType;
-import org.apache.shardingsphere.dbtest.cases.sql.loader.SQLCasesRegistry;
 import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter(AccessLevel.PROTECTED)
 public abstract class SingleIT extends BaseIT {
+    
+    private final String sqlCaseId;
     
     private final IntegrateTestCaseAssertion assertion;
     
     private final SQLCaseType caseType;
     
-    private final String sql;
-    
     private final String expectedDataFile;
     
-    public SingleIT(final String sqlCaseId, final String path, final IntegrateTestCaseAssertion assertion, 
-                    final String ruleType, final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
+    private final String sql;
+    
+    public SingleIT(final String sqlCaseId, final String path, final IntegrateTestCaseAssertion assertion, final String ruleType,
+                    final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException {
         super(ruleType, databaseTypeEnvironment);
+        this.sqlCaseId = sqlCaseId;
         this.assertion = assertion;
         this.caseType = caseType;
-        sql = getSQL(sqlCaseId);
+        this.sql = sql;
         expectedDataFile = getExpectedDataFile(path, ruleType, databaseTypeEnvironment.getDatabaseType(), assertion.getExpectedDataFile());
     }
-
-    private String getSQL(final String sqlCaseId) throws ParseException {
-        List<String> parameters = new LinkedList<>();
-        for (SQLValue each : assertion.getSQLValues()) {
-            parameters.add(each.toString());
+    
+    protected final String getLiteralSQL() throws ParseException {
+        final List<Object> parameters = assertion.getSQLValues().stream().map(SQLValue::getValue).collect(Collectors.toList());
+        if (null == parameters || parameters.isEmpty()) {
+            return sql;
         }
-        return SQLCasesRegistry.getInstance().getSqlCasesLoader().getSQL(sqlCaseId, caseType, parameters);
+        return String.format(sql.replace("%", "$").replace("?", "%s"), parameters.toArray()).replace("$", "%")
+            .replace("%%", "%").replace("'%'", "'%%'");
     }
 }
