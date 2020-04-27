@@ -237,8 +237,6 @@ cp -f ~/shardingsphere/sharding-distribution/sharding-proxy-distribution/target/
 cp -f ~/shardingsphere/sharding-distribution/sharding-proxy-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 cp -f ~/shardingsphere/sharding-distribution/sharding-scaling-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 cp -f ~/shardingsphere/sharding-distribution/sharding-scaling-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/sharding-distribution/sharding-ui-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/sharding-distribution/sharding-ui-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 ```
 
 ### 生成文件签名
@@ -248,8 +246,6 @@ shasum -a 512 apache-shardingsphere-${RELEASE.VERSION}-src.zip >> apache-shardin
 shasum -b -a 512 apache-shardingsphere-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz >> apache-shardingsphere-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz.sha512
 shasum -b -a 512 apache-shardingsphere-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz >> apache-shardingsphere-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz.sha512
 shasum -b -a 512 apache-shardingsphere-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz >> apache-shardingsphere-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz.sha512
-shasum -b -a 512 apache-shardingsphere-${RELEASE.VERSION}-sharding-ui-bin.tar.gz >> apache-shardingsphere-${RELEASE.VERSION}-sharding-ui-bin.tar.gz.sha512
-
 ```
 
 ### 提交Apache SVN
@@ -267,7 +263,6 @@ shasum -c apache-shardingsphere-${RELEASE.VERSION}-src.zip.sha512
 shasum -c apache-shardingsphere-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz.sha512
 shasum -c apache-shardingsphere-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz.sha512
 shasum -c apache-shardingsphere-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz.sha512
-shasum -c apache-shardingsphere-${RELEASE.VERSION}-sharding-ui-bin.tar.gz.sha512
 ```
 
 ### 检查gpg签名
@@ -302,7 +297,6 @@ gpg --verify apache-shardingsphere-${RELEASE.VERSION}-src.zip.asc apache-shardin
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz
-gpg --verify apache-shardingsphere-${RELEASE.VERSION}-sharding-ui-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-sharding-ui-bin.tar.gz
 ```
 
 ### 检查发布文件内容
@@ -327,8 +321,8 @@ diff -r apache-shardingsphere-${RELEASE.VERSION}-src tag-${RELEASE.VERSION}
 
 #### 检查二进制包的文件内容
 
-解压缩`apache-shardingsphere-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz`，`apache-shardingsphere-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz`，
-`apache-shardingsphere-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz` 和 `apache-shardingsphere-${RELEASE.VERSION}-sharding-ui-bin.tar.gz`
+解压缩`apache-shardingsphere-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz`，`apache-shardingsphere-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz`和
+`apache-shardingsphere-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz`
 进行如下检查:
 
 - 存在`LICENSE`和`NOTICE`文件
@@ -387,6 +381,9 @@ https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS
 Look at here for how to verify this release candidate:
 https://shardingsphere.apache.org/community/en/contribute/release/
 
+GPG user ID:
+${YOUR.GPG.USER.ID}
+
 The vote will be open for at least 72 hours or until necessary number of votes are reached.
 
 Please vote accordingly:
@@ -404,8 +401,6 @@ Checklist for reference:
 [ ] Download links are valid.
 
 [ ] Checksums and PGP signatures are valid.
-
-[ ] DISCLAIMER is included.
 
 [ ] Source code distributions have correct names matching the current release.
 
