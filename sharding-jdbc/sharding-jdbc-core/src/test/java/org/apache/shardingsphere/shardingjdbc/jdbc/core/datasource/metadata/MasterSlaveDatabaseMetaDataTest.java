@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata;
 
 import com.google.common.collect.LinkedHashMultimap;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.MasterSlaveRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.DatabaseMetaDataResultSet;
 import org.junit.Before;
 import org.junit.Test;
@@ -68,7 +68,7 @@ public final class MasterSlaveDatabaseMetaDataTest {
     private MasterSlaveConnection masterSlaveConnection;
     
     @Mock
-    private MasterSlaveRuntimeContext masterSlaveRuntimeContext;
+    private ShardingRuntimeContext runtimeContext;
     
     private Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
     
@@ -84,8 +84,8 @@ public final class MasterSlaveDatabaseMetaDataTest {
         when(masterSlaveConnection.getCachedConnections()).thenReturn(LinkedHashMultimap.create());
         when(masterSlaveConnection.getConnection(anyString())).thenReturn(connection);
         when(masterSlaveConnection.getDataSourceMap()).thenReturn(dataSourceMap);
-        when(masterSlaveConnection.getRuntimeContext()).thenReturn(masterSlaveRuntimeContext);
-        when(masterSlaveRuntimeContext.getCachedDatabaseMetaData()).thenReturn(cachedDatabaseMetaData);
+        when(masterSlaveConnection.getRuntimeContext()).thenReturn(runtimeContext);
+        when(runtimeContext.getCachedDatabaseMetaData()).thenReturn(cachedDatabaseMetaData);
         masterSlaveDatabaseMetaData = new MasterSlaveDatabaseMetaData(masterSlaveConnection);
     }
     

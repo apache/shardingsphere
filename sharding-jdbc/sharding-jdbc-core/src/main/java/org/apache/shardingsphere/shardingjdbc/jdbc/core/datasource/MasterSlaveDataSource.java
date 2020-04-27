@@ -21,10 +21,11 @@ import lombok.Getter;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.MasterSlaveRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
@@ -34,11 +35,11 @@ import java.util.Properties;
 @Getter
 public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
-    private final MasterSlaveRuntimeContext runtimeContext;
+    private final ShardingRuntimeContext runtimeContext;
     
     public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRule masterSlaveRule, final Properties props) throws SQLException {
         super(dataSourceMap);
-        runtimeContext = new MasterSlaveRuntimeContext(dataSourceMap, masterSlaveRule, props, getDatabaseType());
+        runtimeContext = new ShardingRuntimeContext(dataSourceMap, Collections.singletonList(masterSlaveRule), props, getDatabaseType());
     }
     
     @Override

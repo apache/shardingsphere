@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractShardingPreparedStatementAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionConstant;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.EncryptRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.EncryptResultSet;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.metadata.ShardingSphereParameterMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
@@ -64,7 +64,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     @Getter
     private final ParameterMetaData parameterMetaData;
     
-    private final EncryptRuntimeContext runtimeContext;
+    private final ShardingRuntimeContext runtimeContext;
     
     private final EncryptPreparedStatementGenerator preparedStatementGenerator;
     

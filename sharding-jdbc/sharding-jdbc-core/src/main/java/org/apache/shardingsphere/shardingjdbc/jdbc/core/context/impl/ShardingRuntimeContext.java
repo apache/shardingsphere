@@ -17,16 +17,18 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl;
 
+import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.AbstractRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
 
@@ -42,12 +44,16 @@ public final class ShardingRuntimeContext extends AbstractRuntimeContext {
     
     private final Map<String, DataSource> dataSourceMap;
     
-    public ShardingRuntimeContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final Properties props, final DatabaseType databaseType) throws SQLException {
-        super(dataSourceMap, shardingRule.toRules(), props, databaseType);
+    public ShardingRuntimeContext(final Map<String, DataSource> dataSourceMap, final Collection<BaseRule> rules, final Properties props, final DatabaseType databaseType) throws SQLException {
+        super(dataSourceMap, rules, props, databaseType);
         this.dataSourceMap = dataSourceMap;
         cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
         shardingTransactionManagerEngine = new ShardingTransactionManagerEngine();
         shardingTransactionManagerEngine.init(databaseType, dataSourceMap);
+    }
+    
+    public ShardingRuntimeContext(final DataSource dataSource, final Collection<BaseRule> rules, final Properties props, final DatabaseType databaseType) throws SQLException {
+        this(ImmutableMap.of("ds", dataSource), rules, props, databaseType);
     }
     
     private CachedDatabaseMetaData createCachedDatabaseMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {
