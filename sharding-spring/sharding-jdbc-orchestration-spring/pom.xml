@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>sharding-spring</artifactId>
-        <version>5.0.0-RC1-SNAPSHOT</version>
+        <version>4.1.0</version>
     </parent>
     <artifactId>sharding-jdbc-orchestration-spring</artifactId>
     <name>${project.artifactId}</name>
