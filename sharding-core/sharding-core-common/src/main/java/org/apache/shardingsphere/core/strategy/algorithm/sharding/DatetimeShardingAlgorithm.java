@@ -56,7 +56,7 @@ public final class DatetimeShardingAlgorithm implements StandardShardingAlgorith
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         checkProperties();
         for (String each : availableTargetNames) {
-            if (each.endsWith(doSharding(parseDate(shardingValue.getValue())))) {
+            if (each.endsWith(doSharding(parseDate(shardingValue.getValue())) + "")) {
                 return each;
             }
         }
@@ -67,22 +67,24 @@ public final class DatetimeShardingAlgorithm implements StandardShardingAlgorith
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
         checkProperties();
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
-        for (long i = parseDate(shardingValue.getValueRange().lowerEndpoint()); i <= parseDate(shardingValue.getValueRange().upperEndpoint()); i++) {
+        int firstPartition = doSharding(parseDate(shardingValue.getValueRange().lowerEndpoint()));
+        int lastPartition = doSharding(parseDate(shardingValue.getValueRange().upperEndpoint()));
+        for (int i = firstPartition; i <= lastPartition; i++) {
             for (String each : availableTargetNames) {
-                if (each.endsWith(doSharding(i))) {
+                if (each.endsWith(i + "")) {
                     result.add(each);
                 }
-            }
-            if (result.size() == availableTargetNames.size()) {
-                return result;
+                if (result.size() == availableTargetNames.size()) {
+                    return result;
+                }
             }
         }
         return result;
     }
     
-    private String doSharding(final long shardingValue) {
-        long position = (long) (Math.floor(shardingValue / getPartitionValue()));
-        return 0 > position ? "0" : position + "";
+    private int doSharding(final long shardingValue) {
+        int position = (int) (Math.floor(shardingValue / getPartitionValue()));
+        return Math.max(0, position);
     }
     
     private void checkProperties() {
