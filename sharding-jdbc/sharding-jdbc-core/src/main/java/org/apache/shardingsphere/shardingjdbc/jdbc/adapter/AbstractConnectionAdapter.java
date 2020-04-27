@@ -52,6 +52,9 @@ import java.util.Map.Entry;
 public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOperationConnection implements JDBCExecutionConnection {
     
     @Getter
+    private final Map<String, DataSource> dataSourceMap;
+    
+    @Getter
     private final RuntimeContext runtimeContext;
     
     @Getter
@@ -72,7 +75,8 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     private int transactionIsolation = TRANSACTION_READ_UNCOMMITTED;
     
-    protected AbstractConnectionAdapter(final RuntimeContext runtimeContext) {
+    protected AbstractConnectionAdapter(final Map<String, DataSource> dataSourceMap, final RuntimeContext runtimeContext) {
+        this.dataSourceMap = dataSourceMap;
         this.runtimeContext = runtimeContext;
         rootInvokeHook.start();
     }
@@ -149,8 +153,6 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     }
     
     protected abstract Connection createConnection(String dataSourceName, DataSource dataSource) throws SQLException;
-    
-    protected abstract Map<String, DataSource> getDataSourceMap();
     
     @SuppressWarnings("MagicConstant")
     @Override

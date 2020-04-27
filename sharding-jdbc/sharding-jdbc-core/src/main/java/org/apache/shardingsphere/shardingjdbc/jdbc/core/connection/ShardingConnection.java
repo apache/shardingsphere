@@ -40,15 +40,12 @@ import java.util.Map;
 @Getter
 public final class ShardingConnection extends AbstractConnectionAdapter {
     
-    private final Map<String, DataSource> dataSourceMap;
-    
     private final TransactionType transactionType;
     
     private final ShardingTransactionManager shardingTransactionManager;
     
     public ShardingConnection(final Map<String, DataSource> dataSourceMap, final RuntimeContext runtimeContext, final TransactionType transactionType) {
-        super(runtimeContext);
-        this.dataSourceMap = dataSourceMap;
+        super(dataSourceMap, runtimeContext);
         this.transactionType = transactionType;
         shardingTransactionManager = runtimeContext.getShardingTransactionManagerEngine().getTransactionManager(transactionType);
     }

@@ -33,13 +33,11 @@ import java.util.Random;
 
 /**
  * Multiple database meta data.
- * 
- * @param <T> type of connection
  */
 @Getter
-public abstract class MultipleDatabaseMetaData<T extends AbstractConnectionAdapter> extends AdaptedDatabaseMetaData {
+public abstract class MultipleDatabaseMetaData extends AdaptedDatabaseMetaData {
     
-    private final T connection;
+    private final AbstractConnectionAdapter connection;
     
     private final Collection<String> datasourceNames;
     
@@ -49,7 +47,7 @@ public abstract class MultipleDatabaseMetaData<T extends AbstractConnectionAdapt
     
     private DatabaseMetaData currentDatabaseMetaData;
     
-    public MultipleDatabaseMetaData(final T connection, final Collection<String> datasourceNames,
+    public MultipleDatabaseMetaData(final AbstractConnectionAdapter connection, final Collection<String> datasourceNames,
                                     final CachedDatabaseMetaData cachedDatabaseMetaData, final ShardingSphereMetaData shardingSphereMetaData) {
         super(cachedDatabaseMetaData);
         this.connection = connection;

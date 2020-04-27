@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata;
 
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractConnectionAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.DatabaseMetaDataResultSet;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.common.rule.TablesAggregationRule;
@@ -30,11 +30,11 @@ import java.util.Optional;
 /**
  * Sharding database meta data.
  */
-public final class ShardingDatabaseMetaData extends MultipleDatabaseMetaData<ShardingConnection> {
+public final class ShardingDatabaseMetaData extends MultipleDatabaseMetaData {
     
     private final Collection<BaseRule> rules;
     
-    public ShardingDatabaseMetaData(final ShardingConnection connection) {
+    public ShardingDatabaseMetaData(final AbstractConnectionAdapter connection) {
         super(connection, connection.getDataSourceMap().keySet(), connection.getRuntimeContext().getCachedDatabaseMetaData(), connection.getRuntimeContext().getMetaData());
         rules = connection.getRuntimeContext().getRules();
     }
