@@ -17,51 +17,113 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
+import com.google.common.collect.ImmutableMap;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.core.log.ConfigurationLogger;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
+import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
+import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
+import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
+import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.kernel.ExecutorKernel;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
 
 /**
  * Runtime context.
  */
-public interface RuntimeContext extends AutoCloseable {
+@Getter
+@Slf4j(topic = "ShardingSphere-metadata")
+public final class RuntimeContext implements AutoCloseable {
     
-    /**
-     * Get rules.
-     * 
-     * @return rules
-     */
-    Collection<BaseRule> getRules();
+    private final Collection<BaseRule> rules;
     
-    /**
-     * Get properties.
-     *
-     * @return properties
-     */
-    ConfigurationProperties getProperties();
+    private final ConfigurationProperties properties;
     
-    /**
-     * Get database type.
-     * 
-     * @return database type
-     */
-    DatabaseType getDatabaseType();
+    private final DatabaseType databaseType;
     
-    /**
-     * Get executor kernel.
-     * 
-     * @return executor kernel
-     */
-    ExecutorKernel getExecutorKernel();
+    private final ExecutorKernel executorKernel;
     
-    /**
-     * Get SQL parser engine.
-     * 
-     * @return SQL parser engine
-     */
-    SQLParserEngine getSqlParserEngine();
+    private final SQLParserEngine sqlParserEngine;
+    
+    private final CachedDatabaseMetaData cachedDatabaseMetaData;
+    
+    private final ShardingTransactionManagerEngine shardingTransactionManagerEngine;
+    
+    private final Map<String, DataSource> dataSourceMap;
+    
+    @Setter
+    private ShardingSphereMetaData metaData;
+    
+    public RuntimeContext(final Map<String, DataSource> dataSourceMap, final Collection<BaseRule> rules, final Properties props, final DatabaseType databaseType) throws SQLException {
+        this.rules = rules;
+        properties = new ConfigurationProperties(null == props ? new Properties() : props);
+        this.databaseType = databaseType;
+        executorKernel = new ExecutorKernel(properties.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
+        sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(databaseType));
+        this.dataSourceMap = dataSourceMap;
+        cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
+        shardingTransactionManagerEngine = new ShardingTransactionManagerEngine();
+        shardingTransactionManagerEngine.init(databaseType, dataSourceMap);
+        metaData = createMetaData(dataSourceMap, databaseType);
+        // TODO log multiple rules
+        ConfigurationLogger.log(rules.iterator().next().getRuleConfiguration());
+        ConfigurationLogger.log(props);
+    }
+    
+    public RuntimeContext(final DataSource dataSource, final Collection<BaseRule> rules, final Properties props, final DatabaseType databaseType) throws SQLException {
+        this(ImmutableMap.of("ds", dataSource), rules, props, databaseType);
+    }
+    
+    private CachedDatabaseMetaData createCachedDatabaseMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {
+        try (Connection connection = dataSourceMap.values().iterator().next().getConnection()) {
+            return new CachedDatabaseMetaData(connection.getMetaData());
+        }
+    }
+    
+    private ShardingSphereMetaData createMetaData(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) throws SQLException {
+        long start = System.currentTimeMillis();
+        DataSourceMetas dataSourceMetas = new DataSourceMetas(databaseType, getDatabaseAccessConfigurationMap(dataSourceMap));
+        RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataLoader(rules).load(getDatabaseType(), dataSourceMap, getProperties());
+        ShardingSphereMetaData result = new ShardingSphereMetaData(dataSourceMetas, ruleSchemaMetaData);
+        log.info("Meta data load finished, cost {} milliseconds.", System.currentTimeMillis() - start);
+        return result;
+    }
+    
+    private Map<String, DatabaseAccessConfiguration> getDatabaseAccessConfigurationMap(final Map<String, DataSource> dataSourceMap) throws SQLException {
+        Map<String, DatabaseAccessConfiguration> result = new LinkedHashMap<>(dataSourceMap.size(), 1);
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            DataSource dataSource = entry.getValue();
+            try (Connection connection = dataSource.getConnection()) {
+                DatabaseMetaData metaData = connection.getMetaData();
+                result.put(entry.getKey(), new DatabaseAccessConfiguration(metaData.getURL(), metaData.getUserName(), null));
+            }
+        }
+        return result;
+    }
+    
+    @Override
+    public void close() throws Exception {
+        shardingTransactionManagerEngine.close();
+        executorKernel.close();
+    }
 }

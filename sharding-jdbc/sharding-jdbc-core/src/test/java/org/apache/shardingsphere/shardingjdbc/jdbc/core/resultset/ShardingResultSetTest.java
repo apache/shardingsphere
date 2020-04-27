@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
@@ -64,8 +64,8 @@ public final class ShardingResultSetTest {
     @Before
     public void setUp() throws SQLException {
         mergeResultSet = mock(MergedResult.class);
-        ShardingRuntimeContext shardingRuntimeContext = mock(ShardingRuntimeContext.class);
-        when(shardingRuntimeContext.getProperties()).thenReturn(new ConfigurationProperties(new Properties()));
+        RuntimeContext runtimeContext = mock(RuntimeContext.class);
+        when(runtimeContext.getProperties()).thenReturn(new ConfigurationProperties(new Properties()));
         shardingResultSet = new ShardingResultSet(getResultSets(), mergeResultSet, getShardingStatement(), createExecutionContext());
     }
     
@@ -90,7 +90,7 @@ public final class ShardingResultSetTest {
     
     private ShardingStatement getShardingStatement() {
         ShardingConnection shardingConnection = mock(ShardingConnection.class);
-        ShardingRuntimeContext runtimeContext = mock(ShardingRuntimeContext.class);
+        RuntimeContext runtimeContext = mock(RuntimeContext.class);
         when(runtimeContext.getProperties()).thenReturn(new ConfigurationProperties(new Properties()));
         when(shardingConnection.getRuntimeContext()).thenReturn(runtimeContext);
         ShardingStatement result = mock(ShardingStatement.class);

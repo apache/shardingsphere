@@ -24,7 +24,7 @@ import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.shardingjdbc.fixture.TestDataSource;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.fixture.BASEShardingTransactionManagerFixture;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.fixture.XAShardingTransactionManagerFixture;
@@ -58,7 +58,7 @@ public final class ShardingConnectionTest {
     
     private ShardingConnection connection;
     
-    private ShardingRuntimeContext runtimeContext;
+    private RuntimeContext runtimeContext;
     
     private Map<String, DataSource> dataSourceMap;
     
@@ -77,7 +77,7 @@ public final class ShardingConnectionTest {
     
     @Before
     public void setUp() {
-        runtimeContext = mock(ShardingRuntimeContext.class);
+        runtimeContext = mock(RuntimeContext.class);
         when(runtimeContext.getDatabaseType()).thenReturn(DatabaseTypes.getActualDatabaseType("H2"));
         when(runtimeContext.getShardingTransactionManagerEngine()).thenReturn(new ShardingTransactionManagerEngine());
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();

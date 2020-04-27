@@ -22,7 +22,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 import javax.sql.DataSource;
@@ -36,12 +36,12 @@ import java.util.Properties;
 @Getter
 public class ShardingDataSource extends AbstractDataSourceAdapter {
     
-    private final ShardingRuntimeContext runtimeContext;
+    private final RuntimeContext runtimeContext;
     
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final Properties props) throws SQLException {
         super(dataSourceMap);
         checkDataSourceType(dataSourceMap);
-        runtimeContext = new ShardingRuntimeContext(dataSourceMap, shardingRule.toRules(), props, getDatabaseType());
+        runtimeContext = new RuntimeContext(dataSourceMap, shardingRule.toRules(), props, getDatabaseType());
     }
     
     private void checkDataSourceType(final Map<String, DataSource> dataSourceMap) {

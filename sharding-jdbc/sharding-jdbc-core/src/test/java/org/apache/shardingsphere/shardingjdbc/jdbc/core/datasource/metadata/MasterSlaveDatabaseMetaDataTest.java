@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata;
 
 import com.google.common.collect.LinkedHashMultimap;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.DatabaseMetaDataResultSet;
 import org.junit.Before;
 import org.junit.Test;
@@ -68,7 +68,7 @@ public final class MasterSlaveDatabaseMetaDataTest {
     private MasterSlaveConnection masterSlaveConnection;
     
     @Mock
-    private ShardingRuntimeContext runtimeContext;
+    private RuntimeContext runtimeContext;
     
     private Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
     

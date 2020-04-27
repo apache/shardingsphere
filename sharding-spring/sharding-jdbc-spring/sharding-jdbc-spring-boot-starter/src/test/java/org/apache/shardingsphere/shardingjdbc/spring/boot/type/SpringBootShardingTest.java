@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.core.strategy.route.standard.StandardShardingStrategy;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.fixture.TestEncryptor;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
@@ -59,7 +59,7 @@ public class SpringBootShardingTest {
     @Test
     public void assertWithShardingDataSource() {
         assertThat(dataSource, instanceOf(ShardingDataSource.class));
-        ShardingRuntimeContext runtimeContext = getFieldValue("runtimeContext", ShardingDataSource.class, dataSource);
+        RuntimeContext runtimeContext = getFieldValue("runtimeContext", ShardingDataSource.class, dataSource);
         for (DataSource each : ((ShardingDataSource) dataSource).getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(100));
         }
@@ -71,7 +71,7 @@ public class SpringBootShardingTest {
     
     @Test
     public void assertEncryptRule() {
-        ShardingRuntimeContext runtimeContext = getFieldValue("runtimeContext", ShardingDataSource.class, dataSource);
+        RuntimeContext runtimeContext = getFieldValue("runtimeContext", ShardingDataSource.class, dataSource);
         EncryptRule encryptRule = ((ShardingRule) runtimeContext.getRules().iterator().next()).getEncryptRule();
         assertThat(encryptRule.getEncryptTableNames().iterator().next(), is("t_order"));
         assertTrue(encryptRule.findEncryptTable("t_order").isPresent());
@@ -84,7 +84,7 @@ public class SpringBootShardingTest {
     
     @Test
     public void assertWithShardingDataSourceNames() {
-        ShardingRuntimeContext runtimeContext = getFieldValue("runtimeContext", ShardingDataSource.class, dataSource);
+        RuntimeContext runtimeContext = getFieldValue("runtimeContext", ShardingDataSource.class, dataSource);
         ShardingRule shardingRule = (ShardingRule) runtimeContext.getRules().iterator().next();
         assertThat(shardingRule.getShardingDataSourceNames().getDataSourceNames().size(), is(3));
         assertTrue(shardingRule.getShardingDataSourceNames().getDataSourceNames().contains("ds"));
@@ -94,7 +94,7 @@ public class SpringBootShardingTest {
     
     @Test
     public void assertWithTableRules() {
-        ShardingRuntimeContext runtimeContext = getFieldValue("runtimeContext", ShardingDataSource.class, dataSource);
+        RuntimeContext runtimeContext = getFieldValue("runtimeContext", ShardingDataSource.class, dataSource);
         ShardingRule shardingRule = (ShardingRule) runtimeContext.getRules().iterator().next();
         assertThat(shardingRule.getTableRules().size(), is(2));
         TableRule tableRule1 = shardingRule.getTableRule("t_order");
@@ -121,7 +121,7 @@ public class SpringBootShardingTest {
     
     @Test
     public void assertWithBindingTableRules() {
-        ShardingRuntimeContext runtimeContext = getFieldValue("runtimeContext", ShardingDataSource.class, dataSource);
+        RuntimeContext runtimeContext = getFieldValue("runtimeContext", ShardingDataSource.class, dataSource);
         ShardingRule shardingRule = (ShardingRule) runtimeContext.getRules().iterator().next();
         assertThat(shardingRule.getBindingTableRules().size(), is(2));
         TableRule tableRule1 = shardingRule.getTableRule("t_order");
@@ -150,7 +150,7 @@ public class SpringBootShardingTest {
     
     @Test
     public void assertWithBroadcastTables() {
-        ShardingRuntimeContext runtimeContext = getFieldValue("runtimeContext", ShardingDataSource.class, dataSource);
+        RuntimeContext runtimeContext = getFieldValue("runtimeContext", ShardingDataSource.class, dataSource);
         ShardingRule shardingRule = (ShardingRule) runtimeContext.getRules().iterator().next();
         assertThat(shardingRule.getBroadcastTables().size(), is(1));
         assertThat(shardingRule.getBroadcastTables().iterator().next(), is("t_config"));

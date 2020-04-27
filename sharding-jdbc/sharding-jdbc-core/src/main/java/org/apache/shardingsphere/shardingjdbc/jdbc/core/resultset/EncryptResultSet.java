@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.queryresult.StreamQueryResult;
@@ -49,7 +49,7 @@ import java.util.TreeMap;
  */
 public final class EncryptResultSet extends AbstractUnsupportedOperationResultSet {
     
-    private final ShardingRuntimeContext runtimeContext;
+    private final RuntimeContext runtimeContext;
     
     private final SQLStatementContext sqlStatementContext;
     
@@ -61,7 +61,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     private final Map<String, Integer> columnLabelAndIndexMap;
     
-    public EncryptResultSet(final ShardingRuntimeContext runtimeContext,
+    public EncryptResultSet(final RuntimeContext runtimeContext,
                             final SQLStatementContext sqlStatementContext, final Statement encryptStatement, final ResultSet resultSet) throws SQLException {
         this.runtimeContext = runtimeContext;
         this.sqlStatementContext = sqlStatementContext;
@@ -71,7 +71,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
         columnLabelAndIndexMap = createColumnLabelAndIndexMap(originalResultSet.getMetaData());
     }
     
-    private MergedResult createMergedResult(final ShardingRuntimeContext runtimeContext, final ResultSet resultSet) throws SQLException {
+    private MergedResult createMergedResult(final RuntimeContext runtimeContext, final ResultSet resultSet) throws SQLException {
         MergeEngine mergeEngine = new MergeEngine(runtimeContext.getDatabaseType(), 
                 runtimeContext.getMetaData().getSchema().getConfiguredSchemaMetaData(), runtimeContext.getProperties(), runtimeContext.getRules());
         return mergeEngine.merge(Collections.singletonList(new StreamQueryResult(resultSet)), sqlStatementContext);

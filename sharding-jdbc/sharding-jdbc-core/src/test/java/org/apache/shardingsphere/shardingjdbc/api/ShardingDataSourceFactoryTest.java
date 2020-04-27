@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.api;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -85,7 +85,7 @@ public final class ShardingDataSourceFactoryTest {
     private Properties getProperties(final DataSource dataSource) {
         Field field = dataSource.getClass().getDeclaredField("runtimeContext");
         field.setAccessible(true);
-        ShardingRuntimeContext runtimeContext = (ShardingRuntimeContext) field.get(dataSource);
+        RuntimeContext runtimeContext = (RuntimeContext) field.get(dataSource);
         return runtimeContext.getProperties().getProps();
     }
 }
