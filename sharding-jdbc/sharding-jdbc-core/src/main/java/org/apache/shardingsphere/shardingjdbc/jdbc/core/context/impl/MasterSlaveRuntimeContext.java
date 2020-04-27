@@ -22,12 +22,10 @@ import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.AbstractRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
@@ -49,10 +47,5 @@ public final class MasterSlaveRuntimeContext extends AbstractRuntimeContext<Mast
         try (Connection connection = dataSourceMap.values().iterator().next().getConnection()) {
             return new CachedDatabaseMetaData(connection.getMetaData());
         }
-    }
-    
-    @Override
-    public Collection<BaseRule> getRules() {
-        return Collections.singletonList(getRule());
     }
 }

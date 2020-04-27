@@ -20,11 +20,9 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.AbstractRuntimeContext;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
 
@@ -35,10 +33,5 @@ public final class EncryptRuntimeContext extends AbstractRuntimeContext<EncryptR
     
     public EncryptRuntimeContext(final DataSource dataSource, final EncryptRule encryptRule, final Properties props, final DatabaseType databaseType) throws SQLException {
         super(dataSource, Collections.singletonList(encryptRule), encryptRule, props, databaseType);
-    }
-    
-    @Override
-    public Collection<BaseRule> getRules() {
-        return Collections.singletonList(getRule());
     }
 }

@@ -24,11 +24,9 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSo
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
 
@@ -63,11 +61,6 @@ public final class ShadowRuntimeContext extends AbstractRuntimeContext<ShadowRul
             return ShadowType.ENCRYPT;
         }
         return ShadowType.RAW;
-    }
-    
-    @Override
-    public Collection<BaseRule> getRules() {
-        return Collections.singletonList(getRule());
     }
     
     public enum ShadowType {
