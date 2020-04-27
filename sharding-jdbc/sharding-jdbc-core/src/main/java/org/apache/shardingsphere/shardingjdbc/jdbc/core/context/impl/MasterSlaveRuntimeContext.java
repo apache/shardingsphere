@@ -34,12 +34,12 @@ import java.util.Properties;
  * Runtime context for master-slave.
  */
 @Getter
-public final class MasterSlaveRuntimeContext extends AbstractRuntimeContext<MasterSlaveRule> {
+public final class MasterSlaveRuntimeContext extends AbstractRuntimeContext {
     
     private final CachedDatabaseMetaData cachedDatabaseMetaData;
     
     public MasterSlaveRuntimeContext(final Map<String, DataSource> dataSourceMap, final MasterSlaveRule masterSlaveRule, final Properties props, final DatabaseType databaseType) throws SQLException {
-        super(dataSourceMap, Collections.singletonList(masterSlaveRule), masterSlaveRule, props, databaseType);
+        super(dataSourceMap, Collections.singletonList(masterSlaveRule), props, databaseType);
         cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
     }
     

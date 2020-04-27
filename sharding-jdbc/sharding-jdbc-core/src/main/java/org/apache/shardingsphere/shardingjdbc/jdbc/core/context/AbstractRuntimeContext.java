@@ -48,16 +48,12 @@ import java.util.Properties;
 
 /**
  * Abstract runtime context.
- *
- * @param <T> type of rule
  */
 @Getter
 @Slf4j(topic = "ShardingSphere-metadata")
-public abstract class AbstractRuntimeContext<T extends BaseRule> implements RuntimeContext<T> {
+public abstract class AbstractRuntimeContext implements RuntimeContext {
     
     private final Collection<BaseRule> rules;
-    
-    private final T rule;
     
     private final ConfigurationProperties properties;
     
@@ -70,21 +66,20 @@ public abstract class AbstractRuntimeContext<T extends BaseRule> implements Runt
     @Setter
     private ShardingSphereMetaData metaData;
     
-    public AbstractRuntimeContext(final Map<String, DataSource> dataSourceMap, 
-                                  final Collection<BaseRule> rules, final T rule, final Properties props, final DatabaseType databaseType) throws SQLException {
+    public AbstractRuntimeContext(final Map<String, DataSource> dataSourceMap, final Collection<BaseRule> rules, final Properties props, final DatabaseType databaseType) throws SQLException {
         this.rules = rules;
-        this.rule = rule;
         properties = new ConfigurationProperties(null == props ? new Properties() : props);
         this.databaseType = databaseType;
         executorKernel = new ExecutorKernel(properties.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
         sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(databaseType));
         metaData = createMetaData(dataSourceMap, databaseType);
-        ConfigurationLogger.log(rule.getRuleConfiguration());
+        // TODO log multiple rules
+        ConfigurationLogger.log(rules.iterator().next().getRuleConfiguration());
         ConfigurationLogger.log(props);
     }
     
-    public AbstractRuntimeContext(final DataSource dataSource, final Collection<BaseRule> rules, final T rule, final Properties props, final DatabaseType databaseType) throws SQLException {
-        this(ImmutableMap.of("ds", dataSource), rules, rule, props, databaseType);
+    public AbstractRuntimeContext(final DataSource dataSource, final Collection<BaseRule> rules, final Properties props, final DatabaseType databaseType) throws SQLException {
+        this(ImmutableMap.of("ds", dataSource), rules, props, databaseType);
     }
     
     private ShardingSphereMetaData createMetaData(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) throws SQLException {

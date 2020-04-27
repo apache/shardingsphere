@@ -34,7 +34,7 @@ import java.util.Properties;
  * Runtime context for shadow.
  */
 @Getter
-public final class ShadowRuntimeContext extends AbstractRuntimeContext<ShadowRule> {
+public final class ShadowRuntimeContext extends AbstractRuntimeContext {
     
     private final DataSource actualDataSource;
     
@@ -44,7 +44,7 @@ public final class ShadowRuntimeContext extends AbstractRuntimeContext<ShadowRul
     
     public ShadowRuntimeContext(final DataSource actualDataSource, final DataSource shadowDataSource, 
                                 final ShadowRule shadowRule, final Properties props, final DatabaseType databaseType) throws SQLException {
-        super(actualDataSource, Collections.singletonList(shadowRule), shadowRule, props, databaseType);
+        super(actualDataSource, Collections.singletonList(shadowRule), props, databaseType);
         this.actualDataSource = actualDataSource;
         this.shadowDataSource = shadowDataSource;
         shadowType = getShadowType(actualDataSource);

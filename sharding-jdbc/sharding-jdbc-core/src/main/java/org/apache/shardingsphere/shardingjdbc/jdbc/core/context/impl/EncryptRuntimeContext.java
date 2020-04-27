@@ -29,9 +29,9 @@ import java.util.Properties;
 /**
  * Runtime context for encrypt.
  */
-public final class EncryptRuntimeContext extends AbstractRuntimeContext<EncryptRule> {
+public final class EncryptRuntimeContext extends AbstractRuntimeContext {
     
     public EncryptRuntimeContext(final DataSource dataSource, final EncryptRule encryptRule, final Properties props, final DatabaseType databaseType) throws SQLException {
-        super(dataSource, Collections.singletonList(encryptRule), encryptRule, props, databaseType);
+        super(dataSource, Collections.singletonList(encryptRule), props, databaseType);
     }
 }
