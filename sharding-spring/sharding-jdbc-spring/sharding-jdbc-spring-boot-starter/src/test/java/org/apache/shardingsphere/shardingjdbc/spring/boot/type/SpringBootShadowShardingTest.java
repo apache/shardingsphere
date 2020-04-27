@@ -62,7 +62,7 @@ public class SpringBootShadowShardingTest {
     }
     
     private void assertActualDatasource() {
-        DataSource dataSource = ((ShadowDataSource) this.dataSource).getRuntimeContext().getActualDataSource();
+        DataSource dataSource = ((ShadowDataSource) this.dataSource).getActualDataSource();
         ShardingRuntimeContext runtimeContext = getFieldValue("runtimeContext", ShardingDataSource.class, dataSource);
         for (DataSource each : ((ShardingDataSource) dataSource).getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(100));
@@ -74,7 +74,7 @@ public class SpringBootShadowShardingTest {
     }
     
     private void assertShadowDatasource() {
-        DataSource dataSource = ((ShadowDataSource) this.dataSource).getRuntimeContext().getShadowDataSource();
+        DataSource dataSource = ((ShadowDataSource) this.dataSource).getShadowDataSource();
         ShardingRuntimeContext runtimeContext = getFieldValue("runtimeContext", ShardingDataSource.class, dataSource);
         for (DataSource each : ((ShardingDataSource) dataSource).getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(10));

@@ -60,11 +60,11 @@ public abstract class AbstractShadowJDBCDatabaseAndTableTest extends AbstractSQL
     }
     
     protected Connection getShadowConnection() throws SQLException {
-        return shadowDataSource.getRuntimeContext().getShadowDataSource().getConnection();
+        return shadowDataSource.getShadowDataSource().getConnection();
     }
     
     protected Connection getActualConnection() throws SQLException {
-        return shadowDataSource.getRuntimeContext().getActualDataSource().getConnection();
+        return shadowDataSource.getActualDataSource().getConnection();
     }
     
     protected Connection getConnection() throws SQLException {
@@ -73,7 +73,7 @@ public abstract class AbstractShadowJDBCDatabaseAndTableTest extends AbstractSQL
     
     @AfterClass
     public static void close() throws Exception {
-        if (shadowDataSource == null) {
+        if (null == shadowDataSource) {
             return;
         }
         shadowDataSource.close();

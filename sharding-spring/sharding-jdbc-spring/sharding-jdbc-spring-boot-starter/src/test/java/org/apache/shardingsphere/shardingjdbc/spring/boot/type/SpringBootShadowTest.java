@@ -57,13 +57,13 @@ public class SpringBootShadowTest {
     }
     
     private void assertActualDatasource() {
-        DataSource dataSource = ((ShadowDataSource) this.dataSource).getRuntimeContext().getActualDataSource();
+        DataSource dataSource = ((ShadowDataSource) this.dataSource).getActualDataSource();
         assertTrue(dataSource instanceof BasicDataSource);
         assertThat(((BasicDataSource) dataSource).getMaxTotal(), is(100));
     }
     
     private void assertShadowDatasource() {
-        DataSource dataSource = ((ShadowDataSource) this.dataSource).getRuntimeContext().getShadowDataSource();
+        DataSource dataSource = ((ShadowDataSource) this.dataSource).getShadowDataSource();
         assertTrue(dataSource instanceof BasicDataSource);
         assertThat(((BasicDataSource) dataSource).getMaxTotal(), is(99));
     }

@@ -17,12 +17,8 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl;
 
-import lombok.Getter;
 import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.AbstractRuntimeContext;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 
 import javax.sql.DataSource;
@@ -33,37 +29,10 @@ import java.util.Properties;
 /**
  * Runtime context for shadow.
  */
-@Getter
 public final class ShadowRuntimeContext extends AbstractRuntimeContext {
-    
-    private final DataSource actualDataSource;
-    
-    private final DataSource shadowDataSource;
-    
-    private final ShadowType shadowType;
     
     public ShadowRuntimeContext(final DataSource actualDataSource, final DataSource shadowDataSource, 
                                 final ShadowRule shadowRule, final Properties props, final DatabaseType databaseType) throws SQLException {
         super(actualDataSource, Collections.singletonList(shadowRule), props, databaseType);
-        this.actualDataSource = actualDataSource;
-        this.shadowDataSource = shadowDataSource;
-        shadowType = getShadowType(actualDataSource);
-    }
-    
-    private ShadowType getShadowType(final DataSource actualDataSource) {
-        if (actualDataSource instanceof MasterSlaveDataSource) {
-            return ShadowType.MASTER_SLAVE;
-        }
-        if (actualDataSource instanceof ShardingDataSource) {
-            return ShadowType.SHARDING;
-        }
-        if (actualDataSource instanceof EncryptDataSource) {
-            return ShadowType.ENCRYPT;
-        }
-        return ShadowType.RAW;
-    }
-    
-    public enum ShadowType {
-        MASTER_SLAVE, ENCRYPT, SHARDING, RAW
     }
 }
