@@ -30,7 +30,7 @@ public final class SQLCasesRegistry {
     private SQLCasesLoader sqlCasesLoader;
     
     private SQLCasesRegistry() {
-        sqlCasesLoader = new SQLCasesLoader("sql/supported");
+        sqlCasesLoader = new SQLCasesLoader("integrate/sql/supported");
     }
     
     /**
