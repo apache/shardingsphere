@@ -306,7 +306,7 @@ gpg --verify apache-shardingsphere-${RELEASE.VERSION}-sharding-scaling-bin.tar.g
 ```
 curl -Lo tag-${RELEASE.VERSION}.zip https://github.com/apache/shardingsphere/archive/${RELEASE.VERSION}.zip | unzip
 unzip apache-shardingsphere-${RELEASE.VERSION}-src.zip
-diff -r apache-shardingsphere-${RELEASE.VERSION}-src tag-${RELEASE.VERSION}
+diff -r apache-shardingsphere-${RELEASE.VERSION}-src-release shardingsphere-${RELEASE.VERSION}
 ```
 
 #### 检查源码包的文件内容
