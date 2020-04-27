@@ -22,6 +22,8 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Range;
 import com.google.common.primitives.Longs;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.api.sharding.standard.RangeShardingValue;
@@ -53,6 +55,8 @@ public final class RangeShardingAlgorithm implements StandardShardingAlgorithm<L
 
     private static final String RANGE_PARTITION_SPLIT_VALUE = "range.partition.split.value";
 
+    @Getter
+    @Setter
     private Properties properties = new Properties();
 
     @Override
@@ -60,7 +64,7 @@ public final class RangeShardingAlgorithm implements StandardShardingAlgorithm<L
         Preconditions.checkNotNull(properties.get(RANGE_PARTITION_SPLIT_VALUE), "Range sharding algorithm range partition split value cannot be null.");
         Map<Integer, Range<Long>> partitionRangeMap = getPartitionRangeMap();
         for (String each : availableTargetNames) {
-            if (each.endsWith(getPartition(partitionRangeMap, shardingValue.getValue()))) {
+            if (each.endsWith(getPartition(partitionRangeMap, shardingValue.getValue()) + "")) {
                 return each;
             }
         }
@@ -72,9 +76,11 @@ public final class RangeShardingAlgorithm implements StandardShardingAlgorithm<L
         Preconditions.checkNotNull(properties.get(RANGE_PARTITION_SPLIT_VALUE), "Range sharding algorithm range partition split value cannot be null.");
         Map<Integer, Range<Long>> partitionRangeMap = getPartitionRangeMap();
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
-        for (long value = shardingValue.getValueRange().lowerEndpoint(); value <= shardingValue.getValueRange().upperEndpoint(); value++) {
+        int lowerEndpointPartition = getPartition(partitionRangeMap, shardingValue.getValueRange().lowerEndpoint());
+        int upperEndpointPartition = getPartition(partitionRangeMap, shardingValue.getValueRange().upperEndpoint());
+        for (int partition = lowerEndpointPartition; partition <= upperEndpointPartition; partition++) {
             for (String each : availableTargetNames) {
-                if (each.endsWith(getPartition(partitionRangeMap, value))) {
+                if (each.endsWith(partition + "")) {
                     result.add(each);
                 }
             }
@@ -102,27 +108,17 @@ public final class RangeShardingAlgorithm implements StandardShardingAlgorithm<L
         return partitionRangeMap;
     }
 
-    private String getPartition(final Map<Integer, Range<Long>> partitionRangeMap, final Long value) {
+    private Integer getPartition(final Map<Integer, Range<Long>> partitionRangeMap, final Long value) {
         for (Map.Entry<Integer, Range<Long>> entry : partitionRangeMap.entrySet()) {
             if (entry.getValue().contains(value)) {
-                return entry.getKey().toString();
+                return entry.getKey();
             }
         }
-        return partitionRangeMap.keySet().stream().mapToInt(Integer::valueOf).max().toString();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public String getType() {
         return "RANGE";
-    }
-
-    @Override
-    public Properties getProperties() {
-        return properties;
-    }
-
-    @Override
-    public void setProperties(final Properties properties) {
-        this.properties = properties;
     }
 }
