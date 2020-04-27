@@ -151,13 +151,6 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         List<Object> row = new ArrayList<>(queryHeaders.size());
         for (int columnIndex = 1; columnIndex <= queryHeaders.size(); columnIndex++) {
             Object value = mergedResult.getValue(columnIndex, Object.class);
-            if (isQueryWithCipherColumn && encryptRule.isPresent()) {
-                QueryHeader queryHeader = ((QueryResponse) response).getQueryHeaders().get(columnIndex - 1);
-                Optional<Encryptor> encryptor = encryptRule.get().findEncryptor(queryHeader.getTable(), queryHeader.getColumnName());
-                if (encryptor.isPresent()) {
-                    value = encryptor.get().decrypt(getCiphertext(value));
-                }
-            }
             row.add(value);
         }
         return new QueryData(getColumnTypes(queryHeaders), row);
