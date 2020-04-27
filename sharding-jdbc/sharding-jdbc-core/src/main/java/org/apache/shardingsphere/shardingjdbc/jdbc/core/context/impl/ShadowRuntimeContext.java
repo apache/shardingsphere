@@ -46,7 +46,7 @@ public final class ShadowRuntimeContext extends AbstractRuntimeContext<ShadowRul
     
     public ShadowRuntimeContext(final DataSource actualDataSource, final DataSource shadowDataSource, 
                                 final ShadowRule shadowRule, final Properties props, final DatabaseType databaseType) throws SQLException {
-        super(actualDataSource, shadowRule, props, databaseType);
+        super(actualDataSource, Collections.singletonList(shadowRule), shadowRule, props, databaseType);
         this.actualDataSource = actualDataSource;
         this.shadowDataSource = shadowDataSource;
         shadowType = getShadowType(actualDataSource);

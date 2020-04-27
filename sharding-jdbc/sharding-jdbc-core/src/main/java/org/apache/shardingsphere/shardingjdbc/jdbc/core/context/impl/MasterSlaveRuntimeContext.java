@@ -41,7 +41,7 @@ public final class MasterSlaveRuntimeContext extends AbstractRuntimeContext<Mast
     private final CachedDatabaseMetaData cachedDatabaseMetaData;
     
     public MasterSlaveRuntimeContext(final Map<String, DataSource> dataSourceMap, final MasterSlaveRule masterSlaveRule, final Properties props, final DatabaseType databaseType) throws SQLException {
-        super(dataSourceMap, masterSlaveRule, props, databaseType);
+        super(dataSourceMap, Collections.singletonList(masterSlaveRule), masterSlaveRule, props, databaseType);
         cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
     }
     

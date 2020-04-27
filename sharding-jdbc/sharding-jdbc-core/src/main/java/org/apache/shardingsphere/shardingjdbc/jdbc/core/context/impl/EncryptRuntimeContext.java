@@ -34,7 +34,7 @@ import java.util.Properties;
 public final class EncryptRuntimeContext extends AbstractRuntimeContext<EncryptRule> {
     
     public EncryptRuntimeContext(final DataSource dataSource, final EncryptRule encryptRule, final Properties props, final DatabaseType databaseType) throws SQLException {
-        super(dataSource, encryptRule, props, databaseType);
+        super(dataSource, Collections.singletonList(encryptRule), encryptRule, props, databaseType);
     }
     
     @Override
