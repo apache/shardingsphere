@@ -40,27 +40,26 @@ The demand for data encryption is generally divided into two situations in real 
 Encrypt-JDBC provided by ShardingSphere are deployed with business code. Business parties need to perform JDBC programming for Encrypt-JDBC. Since Encrypt-JDBC implements all JDBC standard interfaces, business codes can be used without additional modification. At this time, Encrypt-JDBC is responsible for all interactions between the business code and the database. Business only needs to provide encryption rules. ** As a bridge between the business code and the underlying database, Encrypt-JDBC can intercept user behavior and interact with the database after transforming the user behavior. **
 ![1](https://shardingsphere.apache.org/document/current/img/encrypt/1.png)
 
-Encrypt-JDBC将用户发起的SQL进行拦截，并通过SQL语法解析器进行解析、理解SQL行为，再依据用户传入的脱敏规则，找出需要脱敏的字段和所使用的加解密器对目标字段进行加解密处理后，再与底层数据库进行交互。ShardingSphere会将用户请求的明文进行加密后存储到底层数据库；并在用户查询时，将密文从数据库中取出进行解密后返回给终端用户。ShardingSphere通过屏蔽对数据的脱敏处理，使用户无需感知解析SQL、数据加密、数据解密的处理过程，就像在使用普通数据一样使用脱敏数据。
+Encrypt-JDBC intercepts SQL initiated by user, analyzes and understands SQL behavior through the SQL syntax parser.According to the desensitization rules passed by the user, find out the fields that need to be encrypted/decrypt and the encryptor/decryptor  used to encrypt/decrypt the target fields, and then interact with the underlying database.ShardingSphere will encrypt the plaintext requested by the user and store it in the underlying database; and when the user queries, the ciphertext will be taken out of the database for decryption and returned to the end user.ShardingSphere shields the encryption of data, so that users do not need to perceive the process of parsing SQL, data encryption, and data decryption, just like using ordinary data.
 
-### 脱敏规则
+### Encryption Rule
 
-在详解整套流程之前，我们需要先了解下脱敏规则与配置，这是认识整套流程的基础。脱敏配置主要分为四部分：数据源配置，加密器配置，脱敏表配置以及查询属性配置，其详情如下图所示：
-
+Before explaining the whole process in detail, we need to understand the encryption rules and configuration, which is the basis of understanding the whole process. The encryption configuration is mainly divided into four parts: data source configuration, encryptor configuration, encryption table configuration, and query attribute configuration. The details are shown in the following figure:
 ![2](https://shardingsphere.apache.org/document/current/img/encrypt/2.png)
 
-**数据源配置**：是指DataSource的配置。
+**Datasource Configuration**：The configuration of DataSource.
 
-**加密器配置**：是指使用什么加密策略进行加解密。目前ShardingSphere内置了两种加解密策略：AES/MD5。用户还可以通过实现ShardingSphere提供的接口，自行实现一套加解密算法。
+**Encryptor Configuration**：What kind of encryption strategy to use for encryption and decryption. Currently ShardingSphere has two built-in encryption/decryption strategies: AES / MD5. Users can also implement a set of encryption/decryption algorithms by implementing the interface provided by ShardingSphere.
 
-**脱敏表配置**：用于告诉ShardingSphere数据表里哪个列用于存储密文数据（cipherColumn）、哪个列用于存储明文数据（plainColumn）以及用户想使用哪个列进行SQL编写（logicColumn）。
+**Encryption Table Configuration**：Show the ShardingSphere data table which column is used to store cipher column data (cipherColumn), which column is used to store plain text data (plainColumn), and which column users want to use for SQL writing (logicColumn)
 
->  如何理解`用户想使用哪个列进行SQL编写（logicColumn）`？
+>  How to understand `Which column do users want to use to write SQL (logicColumn)`?
 >
-> 我们可以从Encrypt-JDBC存在的意义来理解。Encrypt-JDBC最终目的是希望屏蔽底层对数据的脱敏处理，也就是说我们不希望用户知道数据是如何被加解密的、如何将明文数据存储到plainColumn，将密文数据存储到cipherColumn。换句话说，我们不希望用户知道plainColumn和cipherColumn的存在和使用。所以，我们需要给用户提供一个概念意义上的列，这个列可以脱离底层数据库的真实列，它可以是数据库表里的一个真实列，也可以不是，从而使得用户可以随意改变底层数据库的plainColumn和cipherColumn的列名。或者删除plainColumn，选择永远不再存储明文，只存储密文。只要用户的SQL面向这个逻辑列进行编写，并在脱敏规则里给出logicColumn和plainColumn、cipherColumn之间正确的映射关系即可。
+> We can understand according to the meaning of Encrypt-JDBC. The ultimate goal of Encrypt-JDBC is to shield the encryption of the underlying data, that is, we do not want users to know how the data is encrypted/decrypted, how to store plaintext data in plainColumn, and ciphertext data in cipherColumn. In other words, we do not even want users to know the existence and use of plainColumn and cipherColumn. Therefore, we need to provide users with a column in conceptual. This column can be separated from the real column of the underlying database. It can be a real column in the database table or not, so that the user can freely change the plainColumn and The column name of cipherColumn. Or delete plainColumn and choose to never store plain text and only store cipher text. As long as the user's SQL is written according to this logical column, and the correct mapping relationship between logicColumn and plainColumn, cipherColumn is given in the encryption rule.
 >
-> 为什么要这么做呢？答案在文章后面，即为了让已上线的业务能无缝、透明、安全地进行数据脱敏迁移。
+> Why do you do this? The answer is at the end of the article, that is, to enable the online services to seamlessly, transparently, and safely carry out data encryption migration.
 
-**查询属性的配置**：当底层数据库表里同时存储了明文数据、密文数据后，该属性开关用于决定是直接查询数据库表里的明文数据进行返回，还是查询密文数据通过Encrypt-JDBC解密后返回。
+**Query Attribute configuration**：When the plaintext data and ciphertext data are stored in the underlying database table at the same time, this attribute switch is used to decide whether to directly query the plaintext data in the database table to return, or to query the ciphertext data and decrypt it through Encrypt-JDBC to return.
 
 ### 脱敏处理过程
 
