@@ -41,7 +41,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final Properties props) throws SQLException {
         super(dataSourceMap);
         checkDataSourceType(dataSourceMap);
-        runtimeContext = new RuntimeContext(dataSourceMap, shardingRule.toRules(), props, getDatabaseType());
+        runtimeContext = new RuntimeContext(dataSourceMap, getDatabaseType(), shardingRule.toRules(), props);
     }
     
     private void checkDataSourceType(final Map<String, DataSource> dataSourceMap) {

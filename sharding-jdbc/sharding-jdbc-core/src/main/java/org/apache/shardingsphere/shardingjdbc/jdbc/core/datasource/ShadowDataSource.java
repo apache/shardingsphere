@@ -55,7 +55,7 @@ public final class ShadowDataSource extends AbstractDataSourceAdapter {
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put(ACTUAL_DATABASE, actualDataSource);
         dataSourceMap.put(SHADOW_DATABASE, shadowDataSource);
-        runtimeContext = new RuntimeContext(dataSourceMap, Collections.singletonList(shadowRule), props, getDatabaseType());
+        runtimeContext = new RuntimeContext(dataSourceMap, getDatabaseType(), Collections.singletonList(shadowRule), props);
     }
     
     @Override

@@ -39,7 +39,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRule masterSlaveRule, final Properties props) throws SQLException {
         super(dataSourceMap);
-        runtimeContext = new RuntimeContext(dataSourceMap, Collections.singletonList(masterSlaveRule), props, getDatabaseType());
+        runtimeContext = new RuntimeContext(dataSourceMap, getDatabaseType(), Collections.singletonList(masterSlaveRule), props);
     }
     
     @Override

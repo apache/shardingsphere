@@ -55,11 +55,13 @@ import java.util.Properties;
 @Slf4j(topic = "ShardingSphere-metadata")
 public final class RuntimeContext implements AutoCloseable {
     
+    private final Map<String, DataSource> dataSourceMap;
+    
+    private final DatabaseType databaseType;
+    
     private final Collection<BaseRule> rules;
     
     private final ConfigurationProperties properties;
-    
-    private final DatabaseType databaseType;
     
     private final ExecutorKernel executorKernel;
     
@@ -69,18 +71,16 @@ public final class RuntimeContext implements AutoCloseable {
     
     private final ShardingTransactionManagerEngine shardingTransactionManagerEngine;
     
-    private final Map<String, DataSource> dataSourceMap;
-    
     @Setter
     private ShardingSphereMetaData metaData;
     
-    public RuntimeContext(final Map<String, DataSource> dataSourceMap, final Collection<BaseRule> rules, final Properties props, final DatabaseType databaseType) throws SQLException {
+    public RuntimeContext(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final Collection<BaseRule> rules, final Properties props) throws SQLException {
+        this.dataSourceMap = dataSourceMap;
+        this.databaseType = databaseType;
         this.rules = rules;
         properties = new ConfigurationProperties(null == props ? new Properties() : props);
-        this.databaseType = databaseType;
         executorKernel = new ExecutorKernel(properties.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
         sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(databaseType));
-        this.dataSourceMap = dataSourceMap;
         cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
         shardingTransactionManagerEngine = new ShardingTransactionManagerEngine();
         shardingTransactionManagerEngine.init(databaseType, dataSourceMap);
@@ -90,8 +90,8 @@ public final class RuntimeContext implements AutoCloseable {
         ConfigurationLogger.log(props);
     }
     
-    public RuntimeContext(final DataSource dataSource, final Collection<BaseRule> rules, final Properties props, final DatabaseType databaseType) throws SQLException {
-        this(ImmutableMap.of("ds", dataSource), rules, props, databaseType);
+    public RuntimeContext(final DataSource dataSource, final DatabaseType databaseType, final Collection<BaseRule> rules, final Properties props) throws SQLException {
+        this(ImmutableMap.of("ds", dataSource), databaseType, rules, props);
     }
     
     private CachedDatabaseMetaData createCachedDatabaseMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {

@@ -38,7 +38,7 @@ public class EncryptDataSource extends AbstractDataSourceAdapter {
     
     public EncryptDataSource(final DataSource dataSource, final EncryptRule encryptRule, final Properties props) throws SQLException {
         super(dataSource);
-        runtimeContext = new RuntimeContext(dataSource, Collections.singletonList(encryptRule), props, getDatabaseType());
+        runtimeContext = new RuntimeContext(dataSource, getDatabaseType(), Collections.singletonList(encryptRule), props);
     }
     
     @Override
