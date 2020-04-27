@@ -61,16 +61,15 @@ Before explaining the whole process in detail, we need to understand the encrypt
 
 **Query Attribute configuration**：When the plaintext data and ciphertext data are stored in the underlying database table at the same time, this attribute switch is used to decide whether to directly query the plaintext data in the database table to return, or to query the ciphertext data and decrypt it through Encrypt-JDBC to return.
 
-### 脱敏处理过程
+### Encryption Process
 
-举个栗子，假如数据库里有一张表叫做t_user，这张表里实际有两个字段pwd_plain，用于存放明文数据、pwd_cipher，用于存放密文数据，同时定义logicColumn为pwd。那么，用户在编写SQL时应该面向logicColumn进行编写，即INSERT INTO t_user SET pwd = '123'。ShardingSphere接收到该SQL，通过用户提供的脱敏配置，发现pwd是logicColumn，于是便对逻辑列及其对应的明文数据进行脱敏处理。可以看出**ShardingSphere将面向用户的逻辑列与面向底层数据库的明文列和密文列进行了列名以及数据的脱敏映射转换。**如下图所示：
+For example, if there is a table in the database called t_user, there are actually two fields pwd_plain in this table, used to store plain text data, pwd_cipher, used to store cipher text data, and define logicColumn as pwd. Then, when writing SQL, users should write to logicColumn, that is, INSERT INTO t_user SET pwd = '123'. ShardingSphere receives the SQL, and through the encryption configuration provided by the user, finds that pwd is a logicColumn, so it decrypt the logical column and its corresponding plaintext data. As can be seen that ** ShardingSphere has carried out the column-sensitive and data-sensitive mapping conversion of the logical column facing the user and the plaintext and ciphertext columns facing the underlying database. **As shown below:
 
 ![3](https://shardingsphere.apache.org/document/current/img/encrypt/3.png)
 
-**这也正是Encrypt-JDBC核心意义所在，即依据用户提供的脱敏规则，将用户SQL与底层数据表结构割裂开来，使得用户的SQL编写不再依赖于真实的数据库表结构。而用户与底层数据库之间的衔接、映射、转换交由ShardingSphere进行处理。**为什么我们要这么做？还是那句话：为了让已上线的业务能无缝、透明、安全地进行数据脱敏迁移。
+** This is also the core meaning of Encrypt-JDBC, which is to separate user SQL from the underlying data table structure according to the encryption rules provided by the user, so that the SQL writter by user no longer depends on the actual database table structure. The connection, mapping, and conversion between the user and the underlying database are handled by ShardingSphere. ** Why should we do this? It is still the same : in order to enable the online business to seamlessly, transparently and safely perform data encryption migration.
 
-为了让读者更清晰了解到Encrypt-JDBC的核心处理流程，下方图片展示了使用Encrypt-JDBC进行增删改查时，其中的处理流程和转换逻辑，如下图所示。
-
+In order to make the reader more clearly understand the core processing flow of Encrypt-JDBC, the following picture shows the processing flow and conversion logic when using Encrypt-JDBC to add, delete, modify and check, as shown in the following figure.
 ![4](https://shardingsphere.apache.org/document/current/img/encrypt/4.png)
 
 ## 解决方案详解
