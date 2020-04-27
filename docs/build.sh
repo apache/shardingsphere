@@ -28,4 +28,18 @@ sed -i -e 's/cn/en/g' index.html
 cd ../..
 
 cd ..
-mv community/public/* target/community/
+mv blog/public/* target/blog/
+
+mkdir target/blog
+
+cd blog
+hugo
+
+find ./ -name '*.html' -exec sed -i -e 's|[[:space:]]*<option id="\([a-zA-Z]\+\)" value="|<option id="\1" value="/blog|g' {} \;
+
+cd public/en
+sed -i -e 's/cn/en/g' index.html
+cd ../..
+
+cd ..
+mv blog/public/* target/blog/
