@@ -35,6 +35,12 @@ public abstract class IntegrateTestCase {
     @XmlAttribute(name = "sql-case-id")
     private String sqlCaseId;
     
+    @XmlAttribute(name = "sql")
+    private String sql;
+    
+    @XmlAttribute(name = "db-types")
+    private String dbTypes;
+    
     @Setter
     private String path;
     

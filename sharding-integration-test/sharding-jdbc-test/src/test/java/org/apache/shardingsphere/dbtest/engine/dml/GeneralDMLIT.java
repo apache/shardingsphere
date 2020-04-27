@@ -24,6 +24,8 @@ import org.apache.shardingsphere.dbtest.engine.SQLType;
 import org.apache.shardingsphere.dbtest.engine.util.IntegrateTestParameters;
 import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import javax.xml.bind.JAXBException;
@@ -37,6 +39,7 @@ import java.util.Collection;
 
 import static org.junit.Assert.assertFalse;
 
+@RunWith(Parameterized.class)
 public final class GeneralDMLIT extends BaseDMLIT {
     
     private final DMLIntegrateTestCaseAssertion assertion;

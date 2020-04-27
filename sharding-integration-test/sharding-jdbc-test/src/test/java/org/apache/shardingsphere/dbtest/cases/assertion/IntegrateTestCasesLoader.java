@@ -44,6 +44,7 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +55,7 @@ import java.util.Map;
 @Slf4j
 public final class IntegrateTestCasesLoader {
     
+    // TODO it better to add file prefix filed to SQLType enum
     private static final String DQL_INTEGRATE_TEST_CASES_FILE_PREFIX = "dql-integrate-test-cases";
     
     private static final String DML_INTEGRATE_TEST_CASES_FILE_PREFIX = "dml-integrate-test-cases";
@@ -74,10 +76,14 @@ public final class IntegrateTestCasesLoader {
     
     @SneakyThrows
     private IntegrateTestCasesLoader() {
-        dqlIntegrateTestCaseMap = loadIntegrateTestCases(DQL_INTEGRATE_TEST_CASES_FILE_PREFIX);
+        // TODO at redesign dml case first
+//        dqlIntegrateTestCaseMap = loadIntegrateTestCases(DQL_INTEGRATE_TEST_CASES_FILE_PREFIX);
+        dqlIntegrateTestCaseMap = new LinkedHashMap<>();
         dmlIntegrateTestCaseMap = loadIntegrateTestCases(DML_INTEGRATE_TEST_CASES_FILE_PREFIX);
-        ddlIntegrateTestCaseMap = loadIntegrateTestCases(DDL_INTEGRATE_TEST_CASES_FILE_PREFIX);
-        dclIntegrateTestCaseMap = loadIntegrateTestCases(DCL_INTEGRATE_TEST_CASES_FILE_PREFIX);
+//        ddlIntegrateTestCaseMap = loadIntegrateTestCases(DDL_INTEGRATE_TEST_CASES_FILE_PREFIX);
+        ddlIntegrateTestCaseMap = new LinkedHashMap<>();
+//        dclIntegrateTestCaseMap = loadIntegrateTestCases(DCL_INTEGRATE_TEST_CASES_FILE_PREFIX);
+        dclIntegrateTestCaseMap = new LinkedHashMap<>();
     }
     
     /**
@@ -129,8 +135,8 @@ public final class IntegrateTestCasesLoader {
         return result;
     }
     
-    private static IntegrateTestCases unmarshal(final String assertFilePath, final String filePrefix) throws IOException, JAXBException {
-        try (FileReader reader = new FileReader(assertFilePath)) {
+    private static IntegrateTestCases unmarshal(final String integrateCasesFile, final String filePrefix) throws IOException, JAXBException {
+        try (FileReader reader = new FileReader(integrateCasesFile)) {
             if (DQL_INTEGRATE_TEST_CASES_FILE_PREFIX.equals(filePrefix)) {
                 return (DQLIntegrateTestCases) JAXBContext.newInstance(DQLIntegrateTestCases.class).createUnmarshaller().unmarshal(reader);
             }
