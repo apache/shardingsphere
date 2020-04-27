@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.shardingscaling.core.synctask.inventory;
 
-import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.controller.task.ReportCallback;
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.AbstractShardingScalingExecutor;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTask;
-import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,11 +34,7 @@ public final class InventoryDataSyncTaskGroup extends AbstractShardingScalingExe
     
     private final Collection<SyncTask> syncTasks;
     
-    private final String syncTaskId;
-    
-    public InventoryDataSyncTaskGroup(final SyncConfiguration syncConfiguration, final Collection<SyncTask> inventoryDataSyncTasks) {
-        DataSourceMetaData dataSourceMetaData = syncConfiguration.getDumperConfiguration().getDataSourceConfiguration().getDataSourceMetaData();
-        syncTaskId = String.format("InventoryGroup-%s", null != dataSourceMetaData.getCatalog() ? dataSourceMetaData.getCatalog() : dataSourceMetaData.getSchema());
+    public InventoryDataSyncTaskGroup(final Collection<SyncTask> inventoryDataSyncTasks) {
         syncTasks = inventoryDataSyncTasks;
     }
     
