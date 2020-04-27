@@ -18,19 +18,20 @@ Apache ShardingSphere is an ecosystem of open source distributed database middle
 
 The data decryption module belongs to the sub-function module under the core function of ShardingSphere distributed governance. It parses the SQL input by the user and rewrites the SQL according to the decryption configuration provided by the user, thereby encrypting the original data and storing the original data and store the original data (optional) and cipher data to database at the same time. When the user queries the data, it takes the cipher data from the database and decrypts it, and finally returns the decrypted original data to the user. Apache ShardingSphere distributed database middleware automates and transparentizes the process of data desensitization, so that users do not need to pay attention to the details of data decryption and use decrypted data like ordinary data.  In addition, ShardingSphere can provide a relatively complete set of solutions for the encryption of online services or the encryption function of new services.
 
-## 需求场景分析
+## Demand Analysis
 
-对于数据脱敏的需求，在现实的业务场景中一般分为两种情况：
+The demand for data encryption is generally divided into two situations in real business scenarios:
 
-1. 新业务上线，安全部门规定需将涉及用户敏感信息，例如银行、手机号码等进行加密后存储到数据库，在使用的时候再进行解密处理。因为是全新系统，因而没有存量数据清洗问题，所以实现相对简单。
+1. When the new business start to launch, and the security department stipulates that the sensitive information related to users, such as banks and mobile phone numbers, should be encrypted and stored in the database, and then decrypted when used. Because it is a brand new system, there is no inventory data cleaning problem, so the implementation is relatively simple.
 
-2. 已上线业务，之前一直将明文存储在数据库中。相关部门突然需要对已上线业务进行脱敏整改。这种场景一般需要处理三个问题：
+2. For the service has been launched, and plaintext has been stored in the database before. The relevant department suddenly needs to encrypt the data from the on-line business. This scenario generally needs to deal with three issues as followings:
 
-   a) 历史数据需要如何进行脱敏处理，即洗数。
 
-   b) 如何能在不改动业务SQL和逻辑情况下，将新增数据进行脱敏处理，并存储到数据库；在使用时，再进行解密取出。
+   a) How to encrypt the historical data, a.k.a.s wash number.
 
-   c) 如何较为安全、无缝、透明化地实现业务系统在明文与密文数据间的迁移。
+   b) How to encrypt the newly added data and store it in the database without changing the business SQL and logic; then decrypt the taken out data when use it.
+
+   c) How to securely, seamlessly and transparently migrate business systems between plaintext and ciphertext data
 
 ## 处理流程详解
 
