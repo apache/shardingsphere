@@ -44,7 +44,7 @@ public final class HashShardingAlgorithmTest {
     public void setup() {
         HashShardingAlgorithm shardingAlgorithm = new HashShardingAlgorithm();
         shardingAlgorithm.getProperties().setProperty("mod.value", "4");
-        StandardShardingStrategyConfiguration shardingStrategyConfig = new StandardShardingStrategyConfiguration("order_id", shardingAlgorithm);
+        StandardShardingStrategyConfiguration shardingStrategyConfig = new StandardShardingStrategyConfiguration("order_code", shardingAlgorithm);
         shardingStrategy = new StandardShardingStrategy(shardingStrategyConfig);
     }
     

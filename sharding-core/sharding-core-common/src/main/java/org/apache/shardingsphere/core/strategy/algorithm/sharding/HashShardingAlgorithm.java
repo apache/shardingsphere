@@ -30,7 +30,8 @@ import java.util.Properties;
 /**
  * Hash sharding algorithm.
  * 
- * <p>Shard by `y = MOD(z)` algorithm with z = hash(x).
+ * <p>Shard by `y = z mod v` algorithm with z = hash(x). 
+ * v is `MODULO_VALUE`.
  * All available targets will be returned if sharding value is `RangeShardingValue`</p>
  */
 public final class HashShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>> {
