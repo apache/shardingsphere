@@ -23,7 +23,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractMasterSlavePreparedStatementAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionConstant;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.MasterSlaveRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.metadata.ShardingSphereParameterMetaData;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
@@ -76,7 +76,7 @@ public final class MasterSlavePreparedStatement extends AbstractMasterSlavePrepa
         this.connection = connection;
         sqlStatement = connection.getRuntimeContext().getSqlParserEngine().parse(sql, true);
         parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
-        MasterSlaveRuntimeContext runtimeContext = connection.getRuntimeContext();
+        RuntimeContext runtimeContext = connection.getRuntimeContext();
         Collection<BaseRule> rules = runtimeContext.getRules();
         RouteContext routeContext = new DataNodeRouter(runtimeContext.getMetaData(), runtimeContext.getProperties(), rules).route(sqlStatement, sql, Collections.emptyList());
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(
@@ -99,7 +99,7 @@ public final class MasterSlavePreparedStatement extends AbstractMasterSlavePrepa
         this.connection = connection;
         sqlStatement = connection.getRuntimeContext().getSqlParserEngine().parse(sql, true);
         parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
-        MasterSlaveRuntimeContext runtimeContext = connection.getRuntimeContext();
+        RuntimeContext runtimeContext = connection.getRuntimeContext();
         Collection<BaseRule> rules = runtimeContext.getRules();
         RouteContext routeContext = new DataNodeRouter(runtimeContext.getMetaData(), runtimeContext.getProperties(), rules).route(sqlStatement, sql, Collections.emptyList());
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(
@@ -121,7 +121,7 @@ public final class MasterSlavePreparedStatement extends AbstractMasterSlavePrepa
         this.connection = connection;
         sqlStatement = connection.getRuntimeContext().getSqlParserEngine().parse(sql, true);
         parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
-        MasterSlaveRuntimeContext runtimeContext = connection.getRuntimeContext();
+        RuntimeContext runtimeContext = connection.getRuntimeContext();
         Collection<BaseRule> rules = runtimeContext.getRules();
         RouteContext routeContext = new DataNodeRouter(runtimeContext.getMetaData(), runtimeContext.getProperties(), rules).route(sqlStatement, sql, Collections.emptyList());
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(
@@ -143,7 +143,7 @@ public final class MasterSlavePreparedStatement extends AbstractMasterSlavePrepa
         this.connection = connection;
         sqlStatement = connection.getRuntimeContext().getSqlParserEngine().parse(sql, true);
         parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
-        MasterSlaveRuntimeContext runtimeContext = connection.getRuntimeContext();
+        RuntimeContext runtimeContext = connection.getRuntimeContext();
         Collection<BaseRule> rules = runtimeContext.getRules();
         RouteContext routeContext = new DataNodeRouter(runtimeContext.getMetaData(), runtimeContext.getProperties(), rules).route(sqlStatement, sql, Collections.emptyList());
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(

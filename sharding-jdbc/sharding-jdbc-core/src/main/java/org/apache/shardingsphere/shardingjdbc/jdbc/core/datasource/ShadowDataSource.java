@@ -22,11 +22,14 @@ import lombok.Getter;
 import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShadowConnection;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShadowRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -39,11 +42,20 @@ public final class ShadowDataSource extends AbstractDataSourceAdapter {
     
     private static final String SHADOW_DATABASE = "shadow";
     
-    private final ShadowRuntimeContext runtimeContext;
+    private final DataSource actualDataSource;
+    
+    private final DataSource shadowDataSource;
+    
+    private final RuntimeContext runtimeContext;
     
     public ShadowDataSource(final DataSource actualDataSource, final DataSource shadowDataSource, final ShadowRule shadowRule, final Properties props) throws SQLException {
         super(ImmutableMap.of(ACTUAL_DATABASE, actualDataSource, SHADOW_DATABASE, shadowDataSource));
-        runtimeContext = new ShadowRuntimeContext(actualDataSource, shadowDataSource, shadowRule, props, getDatabaseType());
+        this.actualDataSource = actualDataSource;
+        this.shadowDataSource = shadowDataSource;
+        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
+        dataSourceMap.put(ACTUAL_DATABASE, actualDataSource);
+        dataSourceMap.put(SHADOW_DATABASE, shadowDataSource);
+        runtimeContext = new RuntimeContext(dataSourceMap, getDatabaseType(), Collections.singletonList(shadowRule), props);
     }
     
     @Override

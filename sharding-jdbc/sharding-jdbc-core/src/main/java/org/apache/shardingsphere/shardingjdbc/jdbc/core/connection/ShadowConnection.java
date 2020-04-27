@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.connection;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShadowRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShadowPreparedStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShadowStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationConnection;
@@ -42,7 +42,7 @@ public final class ShadowConnection extends AbstractUnsupportedOperationConnecti
     
     private final Connection shadowConnection;
     
-    private final ShadowRuntimeContext runtimeContext;
+    private final RuntimeContext runtimeContext;
 
     private boolean autoCommit = true;
 

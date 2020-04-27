@@ -23,7 +23,7 @@ import org.apache.shardingsphere.shardingjdbc.executor.StatementExecutor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractStatementAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionConstant;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.GeneratedKeysResultSet;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.ShardingResultSet;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen.GeneratedKeyContext;
@@ -237,7 +237,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     private ExecutionContext createExecutionContext(final String sql) throws SQLException {
         clearStatements();
-        ShardingRuntimeContext runtimeContext = connection.getRuntimeContext();
+        RuntimeContext runtimeContext = connection.getRuntimeContext();
         SQLStatement sqlStatement = runtimeContext.getSqlParserEngine().parse(sql, false);
         RouteContext routeContext = new DataNodeRouter(
                 runtimeContext.getMetaData(), runtimeContext.getProperties(), runtimeContext.getRules()).route(sqlStatement, sql, Collections.emptyList());
@@ -312,7 +312,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     }
     
     private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {
-        ShardingRuntimeContext runtimeContext = connection.getRuntimeContext();
+        RuntimeContext runtimeContext = connection.getRuntimeContext();
         MergeEngine mergeEngine = new MergeEngine(runtimeContext.getDatabaseType(), 
                 runtimeContext.getMetaData().getSchema().getConfiguredSchemaMetaData(), runtimeContext.getProperties(), runtimeContext.getRules());
         return mergeEngine.merge(queryResults, executionContext.getSqlStatementContext());

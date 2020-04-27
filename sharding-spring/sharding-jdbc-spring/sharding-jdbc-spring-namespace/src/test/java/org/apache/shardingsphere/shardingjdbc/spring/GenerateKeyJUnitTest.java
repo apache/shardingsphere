@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.spring;
 
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.fixture.DecrementKeyGenerateAlgorithm;
 import org.apache.shardingsphere.shardingjdbc.spring.fixture.IncrementKeyGenerateAlgorithm;
@@ -65,7 +65,7 @@ public class GenerateKeyJUnitTest extends AbstractSpringJUnitTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateKeyColumn() {
-        ShardingRuntimeContext runtimeContext = shardingDataSource.getRuntimeContext();
+        RuntimeContext runtimeContext = shardingDataSource.getRuntimeContext();
         assertNotNull(runtimeContext);
         ShardingRule shardingRule = (ShardingRule) runtimeContext.getRules().iterator().next();
         assertNotNull(shardingRule);

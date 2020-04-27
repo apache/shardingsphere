@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.executor;
 import org.apache.shardingsphere.shardingjdbc.executor.callback.RuleExecuteExecutorCallback;
 import org.apache.shardingsphere.shardingjdbc.executor.callback.RuleExecuteQueryExecutorCallback;
 import org.apache.shardingsphere.shardingjdbc.executor.callback.RuleExecuteUpdateExecutorCallback;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
@@ -63,11 +63,11 @@ public final class StatementExecutor {
     
     private final Map<String, DataSource> dataSourceMap;
     
-    private final ShardingRuntimeContext runtimeContext;
+    private final RuntimeContext runtimeContext;
     
     private final SQLExecutor sqlExecutor;
     
-    public StatementExecutor(final Map<String, DataSource> dataSourceMap, final ShardingRuntimeContext runtimeContext, final SQLExecutor sqlExecutor) {
+    public StatementExecutor(final Map<String, DataSource> dataSourceMap, final RuntimeContext runtimeContext, final SQLExecutor sqlExecutor) {
         this.dataSourceMap = dataSourceMap;
         this.runtimeContext = runtimeContext;
         this.sqlExecutor = sqlExecutor;
@@ -264,7 +264,7 @@ public final class StatementExecutor {
     }
     
     @SuppressWarnings("unchecked")
-    private void refreshTableMetaData(final ShardingRuntimeContext runtimeContext, final SQLStatementContext sqlStatementContext) throws SQLException {
+    private void refreshTableMetaData(final RuntimeContext runtimeContext, final SQLStatementContext sqlStatementContext) throws SQLException {
         if (null == sqlStatementContext) {
             return;
         }
