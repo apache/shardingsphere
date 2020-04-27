@@ -10,12 +10,11 @@
 }
 
 #TableOfContents {
-    font-size: 13px !important;
-    max-height: 85vh;
-    overflow: auto;
-    padding: 15px !important;
+    font-size: 1.1rem !important;
+    /* max-height: 85vh; */
+    overflow: visible;
+    padding: 5px !important;
 }
-
 
 #TableOfContents > ul > li > ul > li > ul li {
   margin-right: 8px;
