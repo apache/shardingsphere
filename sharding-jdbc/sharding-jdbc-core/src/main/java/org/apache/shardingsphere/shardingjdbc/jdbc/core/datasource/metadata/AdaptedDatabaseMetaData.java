@@ -666,6 +666,7 @@ public abstract class AdaptedDatabaseMetaData extends WrapperAdapter implements 
         return cachedDatabaseMetaData.getResultSetHoldability();
     }
     
+    @SuppressWarnings("MagicConstant")
     @Override
     public final int getSQLStateType() {
         return cachedDatabaseMetaData.getSqlStateType();
