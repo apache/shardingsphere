@@ -31,7 +31,8 @@ import java.util.Properties;
 /**
  * Modulo sharding algorithm.
  * 
- * <p>Shard with `y = MOD(x)` algorithm.</p>
+ * <p>Shard by `y = x mod v` algorithm. 
+ * v is `MODULO_VALUE`. </p>
  */
 public final class ModuloShardingAlgorithm implements StandardShardingAlgorithm<Long> {
     
