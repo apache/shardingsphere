@@ -17,18 +17,6 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Collection;
-import java.util.Iterator;
-import javax.annotation.Resource;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
@@ -39,6 +27,19 @@ import org.apache.shardingsphere.shardingjdbc.spring.util.FieldValueUtil;
 import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
+
+import javax.annotation.Resource;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Collection;
+import java.util.Iterator;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = "classpath:META-INF/rdb/withNamespaceGenerateKeyColumns.xml")
 public class GenerateKeyJUnitTest extends AbstractSpringJUnitTest {
@@ -66,7 +67,7 @@ public class GenerateKeyJUnitTest extends AbstractSpringJUnitTest {
     public void assertGenerateKeyColumn() {
         ShardingRuntimeContext runtimeContext = shardingDataSource.getRuntimeContext();
         assertNotNull(runtimeContext);
-        ShardingRule shardingRule = runtimeContext.getRule();
+        ShardingRule shardingRule = (ShardingRule) runtimeContext.getRules().iterator().next();
         assertNotNull(shardingRule);
         KeyGenerateAlgorithm defaultKeyGenerateAlgorithm = shardingRule.getDefaultKeyGenerateAlgorithm();
         assertNotNull(defaultKeyGenerateAlgorithm);

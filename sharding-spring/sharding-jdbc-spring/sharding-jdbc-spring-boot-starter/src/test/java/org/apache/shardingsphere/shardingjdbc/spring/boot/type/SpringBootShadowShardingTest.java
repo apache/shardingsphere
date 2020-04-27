@@ -87,7 +87,7 @@ public class SpringBootShadowShardingTest {
     
     @Test
     public void assertWithShadowRule() {
-        ShadowRule shadowRule = ((ShadowDataSource) dataSource).getRuntimeContext().getRule();
+        ShadowRule shadowRule = (ShadowRule) ((ShadowDataSource) dataSource).getRuntimeContext().getRules().iterator().next();
         assertThat(shadowRule.getColumn(), is("shadow"));
     }
     

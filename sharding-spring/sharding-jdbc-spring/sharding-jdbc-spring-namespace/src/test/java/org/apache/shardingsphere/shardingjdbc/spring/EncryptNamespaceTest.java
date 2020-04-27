@@ -48,7 +48,7 @@ public class EncryptNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     private EncryptRule getEncryptRuleRule() {
         EncryptDataSource encryptDataSource = applicationContext.getBean("encryptDataSource", EncryptDataSource.class);
-        return encryptDataSource.getRuntimeContext().getRule();
+        return (EncryptRule) encryptDataSource.getRuntimeContext().getRules().iterator().next();
     }
     
     private ConfigurationProperties getProperties() {
