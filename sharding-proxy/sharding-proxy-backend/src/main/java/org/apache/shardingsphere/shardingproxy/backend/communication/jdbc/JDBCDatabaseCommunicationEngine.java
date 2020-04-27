@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.ConnectionStatus;
@@ -33,7 +31,6 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryRespo
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
-import org.apache.shardingsphere.shardingproxy.backend.schema.impl.EncryptSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
@@ -51,7 +48,6 @@ import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Database access engine for JDBC.
@@ -145,29 +141,12 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     @Override
     public QueryData getQueryData() throws SQLException {
-        Optional<EncryptRule> encryptRule = findEncryptRule();
-        boolean isQueryWithCipherColumn = ShardingProxyContext.getInstance().getProperties().getValue(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN);
         List<QueryHeader> queryHeaders = ((QueryResponse) response).getQueryHeaders();
         List<Object> row = new ArrayList<>(queryHeaders.size());
         for (int columnIndex = 1; columnIndex <= queryHeaders.size(); columnIndex++) {
-            Object value = mergedResult.getValue(columnIndex, Object.class);
-            row.add(value);
+            row.add(mergedResult.getValue(columnIndex, Object.class));
         }
         return new QueryData(getColumnTypes(queryHeaders), row);
-    }
-    
-    private Optional<EncryptRule> findEncryptRule() {
-        if (logicSchema instanceof ShardingSchema) {
-            return Optional.of(logicSchema.getShardingRule().getEncryptRule());
-        }
-        if (logicSchema instanceof EncryptSchema) {
-            return Optional.of(((EncryptSchema) logicSchema).getEncryptRule());
-        }
-        return Optional.empty();
-    }
-    
-    private String getCiphertext(final Object value) {
-        return null == value ? null : value.toString();
     }
     
     private List<Integer> getColumnTypes(final List<QueryHeader> queryHeaders) {
