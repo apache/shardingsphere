@@ -35,14 +35,14 @@ import java.util.Properties;
  * Datetime sharding algorithm.
  * 
  * <p>Shard by `y = floor(x/v)` algorithm, which means y begins from 0.
- * v is `PARTITION_VOLUME`, and the minimum time unit is 1 sec.
+ * v is `PARTITION_SECONDS`, and the minimum time unit is 1 sec.
  * `SINCE_DATETIME` decides the beginning datetime to shard. </p>
  */
 public final class DatetimeShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>> {
     
-    private static final String PARTITION_VOLUME = "partition.volume";
+    private static final String PARTITION_SECONDS = "partition.seconds";
     
-    private static final String SINCE_DATETIME = "since.datetime";
+    private static final String EPOCH = "epoch";
     
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     
@@ -86,8 +86,8 @@ public final class DatetimeShardingAlgorithm implements StandardShardingAlgorith
     }
     
     private void checkProperties() {
-        Preconditions.checkNotNull(properties.get(PARTITION_VOLUME), "Sharding partition volume cannot be null.");
-        Preconditions.checkState(null != properties.get(SINCE_DATETIME) && checkDatetimePattern(properties.get(SINCE_DATETIME).toString()), 
+        Preconditions.checkNotNull(properties.get(PARTITION_SECONDS), "Sharding partition volume cannot be null.");
+        Preconditions.checkState(null != properties.get(EPOCH) && checkDatetimePattern(properties.get(EPOCH).toString()), 
                 "%s pattern is required.", DATE_FORMAT.toPattern());
     }
     
@@ -103,7 +103,7 @@ public final class DatetimeShardingAlgorithm implements StandardShardingAlgorith
     private long parseDate(final Comparable<?> shardingValue) {
         try {
             Date dateValue = DATE_FORMAT.parse(shardingValue.toString());
-            if (null != properties.get(SINCE_DATETIME)) {
+            if (null != properties.get(EPOCH)) {
                 return parseDate(dateValue);
             }
             return dateValue.getTime() / SECOND_UNIT;
@@ -113,12 +113,12 @@ public final class DatetimeShardingAlgorithm implements StandardShardingAlgorith
     }
     
     private Long parseDate(final Date dateValue) throws ParseException {
-        Date sinceDate = DATE_FORMAT.parse(properties.get(SINCE_DATETIME).toString());
+        Date sinceDate = DATE_FORMAT.parse(properties.get(EPOCH).toString());
         return (dateValue.getTime() - sinceDate.getTime()) / SECOND_UNIT;
     }
     
     private long getPartitionValue() {
-        return Long.parseLong(properties.get(PARTITION_VOLUME).toString());
+        return Long.parseLong(properties.get(PARTITION_SECONDS).toString());
     }
     
     @Override

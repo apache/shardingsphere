@@ -43,8 +43,8 @@ public final class DatetimeShardingAlgorithmTest {
     @Before
     public void setup() {
         DatetimeShardingAlgorithm shardingAlgorithm = new DatetimeShardingAlgorithm();
-        shardingAlgorithm.getProperties().setProperty("partition.volume", "4");
-        shardingAlgorithm.getProperties().setProperty("since.datetime", "2020-01-01 00:00:00");
+        shardingAlgorithm.getProperties().setProperty("partition.seconds", "4");
+        shardingAlgorithm.getProperties().setProperty("epoch", "2020-01-01 00:00:00");
         StandardShardingStrategyConfiguration shardingStrategyConfig = new StandardShardingStrategyConfiguration("create_time", shardingAlgorithm);
         shardingStrategy = new StandardShardingStrategy(shardingStrategyConfig);
     }
