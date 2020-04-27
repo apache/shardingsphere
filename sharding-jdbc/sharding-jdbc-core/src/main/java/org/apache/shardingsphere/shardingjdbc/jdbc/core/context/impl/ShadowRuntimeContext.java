@@ -24,11 +24,9 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSo
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
 
@@ -36,7 +34,7 @@ import java.util.Properties;
  * Runtime context for shadow.
  */
 @Getter
-public final class ShadowRuntimeContext extends AbstractRuntimeContext<ShadowRule> {
+public final class ShadowRuntimeContext extends AbstractRuntimeContext {
     
     private final DataSource actualDataSource;
     
@@ -46,7 +44,7 @@ public final class ShadowRuntimeContext extends AbstractRuntimeContext<ShadowRul
     
     public ShadowRuntimeContext(final DataSource actualDataSource, final DataSource shadowDataSource, 
                                 final ShadowRule shadowRule, final Properties props, final DatabaseType databaseType) throws SQLException {
-        super(actualDataSource, shadowRule, props, databaseType);
+        super(actualDataSource, Collections.singletonList(shadowRule), props, databaseType);
         this.actualDataSource = actualDataSource;
         this.shadowDataSource = shadowDataSource;
         shadowType = getShadowType(actualDataSource);
@@ -63,11 +61,6 @@ public final class ShadowRuntimeContext extends AbstractRuntimeContext<ShadowRul
             return ShadowType.ENCRYPT;
         }
         return ShadowType.RAW;
-    }
-    
-    @Override
-    public Collection<BaseRule> getRules() {
-        return Collections.singletonList(getRule());
     }
     
     public enum ShadowType {

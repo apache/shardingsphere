@@ -56,7 +56,7 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
     private EncryptRule getEncryptRule() {
         OrchestrationSpringEncryptDataSource encryptDataSource = (OrchestrationSpringEncryptDataSource) applicationContext.getBean("encryptDataSourceOrchestration");
         EncryptDataSource dataSource = (EncryptDataSource) FieldValueUtil.getFieldValue(encryptDataSource, "dataSource", true);
-        return dataSource.getRuntimeContext().getRule();
+        return (EncryptRule) dataSource.getRuntimeContext().getRules().iterator().next();
     }
     
     private void assertEncryptRule(final EncryptRule encryptRule) {

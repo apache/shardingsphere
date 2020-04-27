@@ -254,7 +254,7 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     public void assertDefaultActualDataNodes() {
         ShardingDataSource multiTableRulesDataSource = applicationContext.getBean("multiTableRulesDataSource", ShardingDataSource.class);
         ShardingRuntimeContext runtimeContext = (ShardingRuntimeContext) FieldValueUtil.getFieldValue(multiTableRulesDataSource, "runtimeContext", true);
-        ShardingRule shardingRule = runtimeContext.getRule();
+        ShardingRule shardingRule = (ShardingRule) runtimeContext.getRules().iterator().next();
         assertThat(shardingRule.getTableRules().size(), is(2));
         Iterator<TableRule> tableRules = shardingRule.getTableRules().iterator();
         TableRule orderRule = tableRules.next();
@@ -281,6 +281,6 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     private ShardingRule getShardingRule(final String shardingDataSourceName) {
         ShardingDataSource shardingDataSource = applicationContext.getBean(shardingDataSourceName, ShardingDataSource.class);
         ShardingRuntimeContext runtimeContext = (ShardingRuntimeContext) FieldValueUtil.getFieldValue(shardingDataSource, "runtimeContext", true);
-        return runtimeContext.getRule();
+        return (ShardingRule) runtimeContext.getRules().iterator().next();
     }
 }

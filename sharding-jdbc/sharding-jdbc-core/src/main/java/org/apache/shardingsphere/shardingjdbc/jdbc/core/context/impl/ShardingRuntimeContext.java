@@ -23,12 +23,10 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.AbstractRuntimeC
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
 
@@ -36,7 +34,7 @@ import java.util.Properties;
  * Runtime context for sharding.
  */
 @Getter
-public final class ShardingRuntimeContext extends AbstractRuntimeContext<ShardingRule> {
+public final class ShardingRuntimeContext extends AbstractRuntimeContext {
     
     private final CachedDatabaseMetaData cachedDatabaseMetaData;
     
@@ -45,7 +43,7 @@ public final class ShardingRuntimeContext extends AbstractRuntimeContext<Shardin
     private final Map<String, DataSource> dataSourceMap;
     
     public ShardingRuntimeContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final Properties props, final DatabaseType databaseType) throws SQLException {
-        super(dataSourceMap, shardingRule, props, databaseType);
+        super(dataSourceMap, shardingRule.toRules(), props, databaseType);
         this.dataSourceMap = dataSourceMap;
         cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
         shardingTransactionManagerEngine = new ShardingTransactionManagerEngine();
@@ -56,11 +54,6 @@ public final class ShardingRuntimeContext extends AbstractRuntimeContext<Shardin
         try (Connection connection = dataSourceMap.values().iterator().next().getConnection()) {
             return new CachedDatabaseMetaData(connection.getMetaData());
         }
-    }
-    
-    @Override
-    public Collection<BaseRule> getRules() {
-        return getRule().toRules();
     }
     
     @Override

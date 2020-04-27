@@ -80,7 +80,7 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
     private MasterSlaveRule getMasterSlaveRule(final String masterSlaveDataSourceName) {
         OrchestrationMasterSlaveDataSource masterSlaveDataSource = applicationContext.getBean(masterSlaveDataSourceName, OrchestrationMasterSlaveDataSource.class);
         MasterSlaveDataSource dataSource = (MasterSlaveDataSource) FieldValueUtil.getFieldValue(masterSlaveDataSource, "dataSource", true);
-        return dataSource.getRuntimeContext().getRule();
+        return (MasterSlaveRule) dataSource.getRuntimeContext().getRules().iterator().next();
     }
     
     @Test

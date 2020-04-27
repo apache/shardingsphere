@@ -27,17 +27,8 @@ import java.util.Collection;
 
 /**
  * Runtime context.
- *
- * @param <T> type of rule
  */
-public interface RuntimeContext<T extends BaseRule> extends AutoCloseable {
-    
-    /**
-     * Get rule.
-     * 
-     * @return rule
-     */
-    T getRule();
+public interface RuntimeContext extends AutoCloseable {
     
     /**
      * Get rules.
