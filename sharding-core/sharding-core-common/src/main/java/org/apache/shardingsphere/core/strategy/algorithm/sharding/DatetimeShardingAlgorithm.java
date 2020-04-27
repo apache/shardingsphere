@@ -36,7 +36,7 @@ import java.util.Properties;
  * 
  * <p>Shard by `y = floor(x/v)` algorithm, which means y begins from 0.
  * v is `PARTITION_SECONDS`, and the minimum time unit is 1 sec.
- * `SINCE_DATETIME` decides the beginning datetime to shard. </p>
+ * `EPOCH` decides the beginning datetime to shard. </p>
  */
 public final class DatetimeShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>> {
     
