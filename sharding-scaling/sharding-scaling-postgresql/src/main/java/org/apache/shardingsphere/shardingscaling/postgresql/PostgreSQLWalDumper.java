@@ -24,7 +24,7 @@ import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.AbstractShardingScalingExecutor;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.Channel;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPosition;
+import org.apache.shardingsphere.shardingscaling.core.job.position.LogPosition;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.LogDumper;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.shardingscaling.postgresql.wal.LogicalReplication;

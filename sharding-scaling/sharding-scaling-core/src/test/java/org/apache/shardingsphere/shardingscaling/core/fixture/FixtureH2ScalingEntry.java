@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shardingscaling.core.fixture;
 
-import org.apache.shardingsphere.shardingscaling.core.preparer.checker.DataSourceChecker;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
+import org.apache.shardingsphere.shardingscaling.core.job.preparer.checker.DataSourceChecker;
+import org.apache.shardingsphere.shardingscaling.core.job.position.LogPositionManager;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.JDBCDumper;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.LogDumper;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.importer.Importer;

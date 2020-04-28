@@ -41,7 +41,7 @@ public final class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public ResponseResult<?> handleException(final Exception ex) {
-        log.error("controller error", ex);
+        log.error("schedule error", ex);
         if (ex instanceof IllegalArgumentException) {
             return ResponseResultUtil.handleIllegalArgumentException(ex.getMessage());
         } else if (ex instanceof ShardingSphereUIException) {
