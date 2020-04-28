@@ -47,6 +47,7 @@ import java.util.Set;
  * <p>table.suffix.format: suffix for sharded tables, used by {@link LocalDateTime#format(DateTimeFormatter)},
  * examples:
  * suffix=yyyyQQ means shard by {@link IsoFields#QUARTER_OF_YEAR};
+ * suffix=yyyyMM means shard by {@link ChronoUnit#MONTHS};
  * suffix=yyyyMMdd means shard by {@link ChronoField#DAY_OF_YEAR}.
  *
  * <p>detail explain for each char in datetime.format and table.suffix.format can refer {@link TemporalField}.
@@ -150,7 +151,7 @@ public class CustomDateTimeShardingAlgorithm implements StandardShardingAlgorith
         Preconditions.checkNotNull(properties.getProperty(TABLE_SUFFIX_FORMAT));
         Preconditions.checkNotNull(properties.getProperty(DEFAULT_LOWER));
         stepUnit = properties.getProperty(STEP_UNIT) == null
-                ? stepUnit = ChronoUnit.DAYS
+                ? ChronoUnit.DAYS
                 : generateStepUnit();
         stepAmount = Integer.parseInt(properties.getProperty(STEP_AMOUNT, "1"));
         datetimeFormatter = DateTimeFormatter.ofPattern(properties.getProperty(DATE_TIME_FORMAT));
