@@ -43,7 +43,7 @@ public final class RangeShardingAlgorithmTest {
     @Before
     public void setUp() {
         RangeShardingAlgorithm shardingAlgorithm = new RangeShardingAlgorithm();
-        shardingAlgorithm.getProperties().setProperty("range.partition.split.value", "1,5,10");
+        shardingAlgorithm.getProperties().setProperty("partition.ranges", "1,5,10");
         StandardShardingStrategyConfiguration shardingStrategyConfig = new StandardShardingStrategyConfiguration("order_id", shardingAlgorithm);
         shardingStrategy = new StandardShardingStrategy(shardingStrategyConfig);
     }
