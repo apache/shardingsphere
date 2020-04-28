@@ -37,23 +37,48 @@ autoCommitValue
     ;
 
 beginTransaction
-    : BEGIN | START TRANSACTION
+    : BEGIN | START TRANSACTION (transactionCharacteristic (COMMA_ transactionCharacteristic)*)?
     ;
 
 commit
-    : COMMIT
+    : COMMIT optionWork? optionChain? optionRelease?
     ;
 
 rollback
-    : ROLLBACK
+    : ROLLBACK (optionWork? TO SAVEPOINT? identifier | optionWork? optionChain? optionRelease?)
     ;
 
 savepoint
-    : SAVEPOINT
+    : SAVEPOINT identifier
+    ;
+
+begin
+    : BEGIN optionWork?
+    ;
+
+lock
+    : LOCK (INSTANCE FOR BACKUP | (TABLE | TABLES) tableLock (COMMA_ tableLock)* )
+    ;
+
+unlock
+    : UNLOCK (INSTANCE | TABLE | TABLES)
+    ;
+
+releaseSavepoint
+    : RELEASE SAVEPOINT identifier
+    ;
+
+xa
+    : (START | BEGIN) xid (JOIN | RESUME)
+    | END xid (SUSPEND (FOR MIGRATE)?)?
+    | PREPARE xid
+    | COMMIT xid (ONE PHASE)?
+    | ROLLBACK xid
+    | RECOVER (CONVERT xid)?
     ;
 
 transactionCharacteristic
-   : ISOLATION LEVEL level_ | accessMode_
+   : ISOLATION LEVEL level_ | accessMode_ | WITH CONSISTENT SNAPSHOT
    ;
 
 level_
@@ -63,3 +88,27 @@ level_
 accessMode_
    : READ (WRITE | ONLY)
    ;
+
+optionWork
+    : WORK
+    ;
+
+optionChain
+    : AND NO? CHAIN
+    ;
+
+optionRelease
+    : NO? RELEASE
+    ;
+
+tableLock
+    : tableName (AS? alias)? lockOption
+    ;
+
+lockOption
+    : READ LOCAL? | LOW_PRIORITY? WRITE
+    ;
+
+xid
+    : STRING_ (COMMA_ STRING_)* numberLiterals?
+    ;

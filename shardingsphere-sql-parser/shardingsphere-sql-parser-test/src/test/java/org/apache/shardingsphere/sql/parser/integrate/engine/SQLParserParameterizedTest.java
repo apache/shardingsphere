@@ -127,7 +127,7 @@ public final class SQLParserParameterizedTest {
     
     @Test
     public void assertSupportedSQL() {
-        if ("select_pagination_with_row_number_for_greater_than_and_equal".equals(sqlCaseId)) {
+        if ("alter_table_composite_operate_columns".equals(sqlCaseId)) {
             System.out.println("fhsdfa");
         }
         SQLParserTestCase expected = SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId);
