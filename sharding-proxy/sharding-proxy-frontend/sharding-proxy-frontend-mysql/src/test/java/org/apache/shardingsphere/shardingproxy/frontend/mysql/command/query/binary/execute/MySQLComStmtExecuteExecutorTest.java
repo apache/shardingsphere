@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.bi
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
+import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -31,6 +32,7 @@ import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
+import java.util.Collections;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -47,11 +49,15 @@ public class MySQLComStmtExecuteExecutorTest {
     @Test
     @SneakyThrows
     public void assertIsErrorResponse() {
-        MySQLComStmtExecuteExecutor mySQLComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(mock(MySQLComStmtExecutePacket.class), mock(BackendConnection.class));
-        FieldSetter.setField(mySQLComStmtExecuteExecutor, MySQLComStmtExecuteExecutor.class.getDeclaredField("databaseCommunicationEngine"), databaseCommunicationEngine);
+        BackendConnection backendConnection = mock(BackendConnection.class);
+        LogicSchema logicSchema = mock(LogicSchema.class);
+        when(logicSchema.getRules()).thenReturn(Collections.emptyList());
+        when(backendConnection.getLogicSchema()).thenReturn(logicSchema);
+        MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(mock(MySQLComStmtExecutePacket.class), backendConnection);
+        FieldSetter.setField(mysqlComStmtExecuteExecutor, MySQLComStmtExecuteExecutor.class.getDeclaredField("databaseCommunicationEngine"), databaseCommunicationEngine);
         when(sqlException.getCause()).thenReturn(new Exception());
         when(databaseCommunicationEngine.execute()).thenReturn(new ErrorResponse(sqlException));
-        mySQLComStmtExecuteExecutor.execute();
-        Assert.assertThat(mySQLComStmtExecuteExecutor.isErrorResponse(), Matchers.is(true));
+        mysqlComStmtExecuteExecutor.execute();
+        Assert.assertThat(mysqlComStmtExecuteExecutor.isErrorResponse(), Matchers.is(true));
     }
 }

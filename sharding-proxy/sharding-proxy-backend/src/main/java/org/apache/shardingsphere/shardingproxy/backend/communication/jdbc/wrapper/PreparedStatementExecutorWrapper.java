@@ -86,7 +86,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     }
     
     private ExecutionContext doShardingRoute(final String sql) {
-        Collection<BaseRule> rules = logicSchema.getShardingRule().toRules();
+        Collection<BaseRule> rules = logicSchema.getRules();
         SQLStatement sqlStatement = logicSchema.getSqlParserEngine().parse(sql, true);
         RouteContext routeContext = new DataNodeRouter(logicSchema.getMetaData(), SHARDING_PROXY_CONTEXT.getProperties(), rules).route(sqlStatement, sql, parameters);
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(logicSchema.getMetaData().getSchema().getConfiguredSchemaMetaData(),
@@ -147,23 +147,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     @Override
     public ExecuteGroupEngine getExecuteGroupEngine() {
         int maxConnectionsSizePerQuery = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery, getRules());
-    }
-    
-    private Collection<BaseRule> getRules() {
-        if (logicSchema instanceof ShardingSchema) {
-            return logicSchema.getShardingRule().toRules();
-        }
-        if (logicSchema instanceof MasterSlaveSchema) {
-            return Collections.singletonList(((MasterSlaveSchema) logicSchema).getMasterSlaveRule());
-        }
-        if (logicSchema instanceof EncryptSchema) {
-            return Collections.singletonList(((EncryptSchema) logicSchema).getEncryptRule());
-        }
-        if (logicSchema instanceof ShadowSchema) {
-            return Collections.singletonList(((ShadowSchema) logicSchema).getShadowRule());
-        }
-        return Collections.emptyList();
+        return new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery, logicSchema.getRules());
     }
     
     @Override
