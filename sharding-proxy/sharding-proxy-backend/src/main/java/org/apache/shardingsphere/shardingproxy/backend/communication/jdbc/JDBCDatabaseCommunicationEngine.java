@@ -39,6 +39,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.common.rule.TablesAggregationRule;
 import org.apache.shardingsphere.underlying.executor.sql.QueryResult;
 import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.sql.log.SQLLogger;
@@ -48,6 +49,7 @@ import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Database access engine for JDBC.
@@ -119,18 +121,20 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private void mergeUpdateCount(final SQLStatementContext sqlStatementContext) {
-        if (!isAllBroadcastTables(sqlStatementContext)) {
+        if (isNeedAccumulate(sqlStatementContext)) {
             ((UpdateResponse) response).mergeUpdateCount();
         }
     }
     
-    private boolean isAllBroadcastTables(final SQLStatementContext sqlStatementContext) {
-        return logicSchema instanceof ShardingSchema && logicSchema.getShardingRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames());
+    private boolean isNeedAccumulate(final SQLStatementContext sqlStatementContext) {
+        Optional<TablesAggregationRule> tablesAggregationRule = logicSchema.getRules().stream().filter(
+            each -> each instanceof TablesAggregationRule).findFirst().map(rule -> (TablesAggregationRule) rule);
+        return tablesAggregationRule.isPresent() && tablesAggregationRule.get().isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames());
     }
     
     private MergedResult mergeQuery(final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         MergeEngine mergeEngine = new MergeEngine(LogicSchemas.getInstance().getDatabaseType(), 
-                logicSchema.getMetaData().getSchema().getConfiguredSchemaMetaData(), ShardingProxyContext.getInstance().getProperties(), logicSchema.getShardingRule().toRules());
+                logicSchema.getMetaData().getSchema().getConfiguredSchemaMetaData(), ShardingProxyContext.getInstance().getProperties(), logicSchema.getRules());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     

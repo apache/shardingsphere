@@ -53,6 +53,8 @@ public abstract class LogicSchema {
     
     private final String name;
     
+    private final Collection<BaseRule> rules;
+    
     private final SQLParserEngine sqlParserEngine;
     
     private JDBCBackendDataSource backendDataSource;
@@ -61,6 +63,7 @@ public abstract class LogicSchema {
     
     public LogicSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final Collection<BaseRule> rules) throws SQLException {
         this.name = name;
+        this.rules = rules;
         sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(LogicSchemas.getInstance().getDatabaseType()));
         backendDataSource = new JDBCBackendDataSource(dataSources);
         metaData = loadOrCreateMetaData(name, rules);
