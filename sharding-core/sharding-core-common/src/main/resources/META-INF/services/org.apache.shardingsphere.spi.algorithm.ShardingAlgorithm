@@ -19,3 +19,4 @@ org.apache.shardingsphere.core.strategy.algorithm.sharding.inline.InlineSharding
 org.apache.shardingsphere.core.strategy.algorithm.sharding.ModuloShardingAlgorithm
 org.apache.shardingsphere.core.strategy.algorithm.sharding.HashShardingAlgorithm
 org.apache.shardingsphere.core.strategy.algorithm.sharding.DatetimeShardingAlgorithm
+org.apache.shardingsphere.core.strategy.algorithm.sharding.RangeShardingAlgorithm
