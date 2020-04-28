@@ -15,25 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbtest.env;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
+package org.apache.shardingsphere.dbtest.cases.assertion.root;
 
 /**
- * Database type environment.
+ * SQL case type.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DatabaseTypeEnvironment {
+public enum SQLCaseType {
     
-    private final DatabaseType databaseType;
-    
-    private final boolean isEnabled;
-    
-    @Override
-    public String toString() {
-        return databaseType.getName() + (isEnabled ? ":Enabled" : ":Disabled");
-    }
+    Literal, Placeholder
 }

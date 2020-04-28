@@ -20,7 +20,7 @@ package org.apache.shardingsphere.dbtest.engine;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
-import org.apache.shardingsphere.dbtest.cases.sql.SQLCaseType;
+import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLCaseType;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 
 import javax.xml.bind.JAXBException;
