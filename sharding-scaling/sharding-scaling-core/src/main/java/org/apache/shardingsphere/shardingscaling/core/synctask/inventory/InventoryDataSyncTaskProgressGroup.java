@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling.core.synctask.inventory;
 
-import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgressGroup;
+import lombok.Getter;
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 
 import java.util.LinkedList;
@@ -26,16 +26,16 @@ import java.util.List;
 /**
  * Inventory data sync task group progress.
  */
-public final class InventoryDataSyncTaskProgressGroup implements SyncProgressGroup {
+@Getter
+public final class InventoryDataSyncTaskProgressGroup implements SyncProgress {
     
     private final List<SyncProgress> innerTaskProgresses = new LinkedList<>();
     
-    @Override
-    public List<SyncProgress> getSyncProgresses() {
-        return innerTaskProgresses;
-    }
-    
-    @Override
+    /**
+     * Add sync progress to group.
+     *
+     * @param syncProgress sync progress
+     */
     public void addSyncProgress(final SyncProgress syncProgress) {
         innerTaskProgresses.add(syncProgress);
     }
