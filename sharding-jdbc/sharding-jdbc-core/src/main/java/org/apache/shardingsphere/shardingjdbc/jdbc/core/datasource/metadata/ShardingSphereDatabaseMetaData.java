@@ -35,10 +35,10 @@ import java.util.Optional;
 import java.util.Random;
 
 /**
- * Multiple database meta data.
+ * ShardingSphere database meta data.
  */
 @Getter
-public final class MultipleDatabaseMetaData extends AdaptedDatabaseMetaData {
+public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaData {
     
     private final AbstractConnectionAdapter connection;
     
@@ -52,7 +52,7 @@ public final class MultipleDatabaseMetaData extends AdaptedDatabaseMetaData {
     
     private DatabaseMetaData currentDatabaseMetaData;
     
-    public MultipleDatabaseMetaData(final AbstractConnectionAdapter connection) {
+    public ShardingSphereDatabaseMetaData(final AbstractConnectionAdapter connection) {
         super(connection.getRuntimeContext().getCachedDatabaseMetaData());
         this.connection = connection;
         rules = connection.getRuntimeContext().getRules();
