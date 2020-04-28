@@ -26,8 +26,6 @@ import org.apache.shardingsphere.dbtest.cases.dataset.DataSet;
 import org.apache.shardingsphere.dbtest.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.dbtest.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.dbtest.cases.sql.SQLCaseType;
-import org.apache.shardingsphere.dbtest.cases.sql.loader.SQLCasesRegistry;
 import org.apache.shardingsphere.dbtest.engine.util.IntegrateTestParameters;
 import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import org.apache.shardingsphere.dbtest.env.EnvironmentPath;
@@ -52,7 +50,6 @@ import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -74,10 +71,10 @@ public abstract class BatchIT extends BaseIT {
     private final Collection<String> expectedDataFiles;
     
     public BatchIT(final String sqlCaseId, final IntegrateTestCase integrateTestCase,
-                   final String ruleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, JAXBException, SQLException {
+                   final String ruleType, final DatabaseTypeEnvironment databaseTypeEnvironment, final String sql) throws IOException, JAXBException, SQLException {
         super(ruleType, databaseTypeEnvironment);
         this.integrateTestCase = integrateTestCase;
-        sql = SQLCasesRegistry.getInstance().getSqlCasesLoader().getSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList());
+        this.sql = sql;
         expectedDataFiles = new LinkedList<>();
         for (IntegrateTestCaseAssertion each : integrateTestCase.getIntegrateTestCaseAssertions()) {
             expectedDataFiles.add(getExpectedDataFile(integrateTestCase.getPath(), ruleType, databaseTypeEnvironment.getDatabaseType(), each.getExpectedDataFile()));
