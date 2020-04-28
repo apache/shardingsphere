@@ -126,7 +126,6 @@ public final class IntegrateTestParameters {
             .filter(databaseType -> IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType)).collect(Collectors.toList());
     }
     
-    
     private static String getSQL(final String sql, final IntegrateTestCaseAssertion assertion, final SQLCaseType sqlCaseType) throws ParseException {
         return sqlCaseType == SQLCaseType.Literal ? getLiteralSQL(sql, assertion) : sql;
     }
