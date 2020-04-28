@@ -51,7 +51,7 @@ public abstract class SingleIT extends BaseIT {
         this.assertion = assertion;
         this.caseType = caseType;
         this.sql = sql;
-        expectedDataFile = getExpectedDataFile(path, ruleType, databaseTypeEnvironment.getDatabaseType(), assertion.getExpectedDataFile());
+        expectedDataFile = getExpectedDataFile(path, ruleType, databaseTypeEnvironment.getDatabaseType(), null != assertion ? assertion.getExpectedDataFile() : null);
     }
     
     protected final String getLiteralSQL() throws ParseException {

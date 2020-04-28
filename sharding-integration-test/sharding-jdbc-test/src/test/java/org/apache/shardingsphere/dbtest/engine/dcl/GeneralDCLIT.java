@@ -45,13 +45,13 @@ public final class GeneralDCLIT extends BaseDCLIT {
     }
     
     @Test
-    public void assertExecuteUpdate() throws SQLException {
+    public void assertExecuteUpdate() throws SQLException, ParseException {
         if (!getDatabaseTypeEnvironment().isEnabled()) {
             return;
         }
         try (Connection connection = getDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
-                connection.createStatement().executeUpdate(getSql());
+                connection.createStatement().executeUpdate(getLiteralSQL());
             } else {
                 connection.prepareStatement(getSql()).executeUpdate();
             }

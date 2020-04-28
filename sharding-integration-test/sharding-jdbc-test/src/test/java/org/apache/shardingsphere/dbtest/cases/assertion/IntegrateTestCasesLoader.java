@@ -86,8 +86,7 @@ public final class IntegrateTestCasesLoader {
         dmlIntegrateTestCaseMap = loadIntegrateTestCases(DML_INTEGRATE_TEST_CASES_FILE_PREFIX);
 //        ddlIntegrateTestCaseMap = loadIntegrateTestCases(DDL_INTEGRATE_TEST_CASES_FILE_PREFIX);
         ddlIntegrateTestCaseMap = new LinkedHashMap<>();
-//        dclIntegrateTestCaseMap = loadIntegrateTestCases(DCL_INTEGRATE_TEST_CASES_FILE_PREFIX);
-        dclIntegrateTestCaseMap = new LinkedHashMap<>();
+        dclIntegrateTestCaseMap = loadIntegrateTestCases(DCL_INTEGRATE_TEST_CASES_FILE_PREFIX);
     }
     
     /**
