@@ -38,13 +38,13 @@ public final class GeneralDDLIT extends BaseDDLIT {
     
     private final DDLIntegrateTestCaseAssertion assertion;
     
-    public GeneralDDLIT(final String sqlCaseId, final String path, final DDLIntegrateTestCaseAssertion assertion, final String ruleType,
+    public GeneralDDLIT(final String path, final DDLIntegrateTestCaseAssertion assertion, final String ruleType,
                         final String databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(sqlCaseId, path, assertion, ruleType, DatabaseTypes.getActualDatabaseType(databaseType), caseType, sql);
+        super(path, assertion, ruleType, DatabaseTypes.getActualDatabaseType(databaseType), caseType, sql);
         this.assertion = assertion;
     }
     
-    @Parameters(name = "Rule:{3} -> {4} -> {5} -> {6}")
+    @Parameters(name = "Rule:{2} -> {3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
         return IntegrateTestParameters.getParametersWithAssertion(SQLType.DDL);
     }

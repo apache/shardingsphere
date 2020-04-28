@@ -43,13 +43,13 @@ public final class AdditionalDMLIT extends BaseDMLIT {
     
     private final DMLIntegrateTestCaseAssertion assertion;
     
-    public AdditionalDMLIT(final String sqlCaseId, final String path, final DMLIntegrateTestCaseAssertion assertion, final String ruleType,
+    public AdditionalDMLIT(final String path, final DMLIntegrateTestCaseAssertion assertion, final String ruleType,
                            final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(sqlCaseId, path, assertion, ruleType, databaseType, caseType, sql);
+        super(path, assertion, ruleType, databaseType, caseType, sql);
         this.assertion = assertion;
     }
     
-    @Parameters(name = "{0} -> Rule:{3} -> {4} -> {5}")
+    @Parameters(name = "Rule:{2} -> {3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
         return IntegrateTestEnvironment.getInstance().isRunAdditionalTestCases() ? IntegrateTestParameters.getParametersWithAssertion(SQLType.DML) : Collections.emptyList();
     }

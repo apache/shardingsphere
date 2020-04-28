@@ -42,13 +42,13 @@ public final class GeneralDQLIT extends BaseDQLIT {
     
     private final DQLIntegrateTestCaseAssertion assertion;
     
-    public GeneralDQLIT(final String sqlCaseId, final String path, final DQLIntegrateTestCaseAssertion assertion, final String ruleType,
+    public GeneralDQLIT(final String path, final DQLIntegrateTestCaseAssertion assertion, final String ruleType,
                         final String databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(sqlCaseId, path, assertion, ruleType, DatabaseTypes.getActualDatabaseType(databaseType), caseType, sql);
+        super(path, assertion, ruleType, DatabaseTypes.getActualDatabaseType(databaseType), caseType, sql);
         this.assertion = assertion;
     }
     
-    @Parameters(name = "Rule:{3} -> {4} -> {5} -> {6}")
+    @Parameters(name = "Rule:{2} -> {3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
         return IntegrateTestParameters.getParametersWithAssertion(SQLType.DQL);
     }

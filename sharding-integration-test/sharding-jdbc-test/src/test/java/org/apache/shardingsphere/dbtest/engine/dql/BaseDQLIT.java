@@ -56,9 +56,9 @@ import static org.junit.Assert.assertTrue;
 
 public abstract class BaseDQLIT extends SingleIT {
     
-    public BaseDQLIT(final String sqlCaseId, final String path, final DQLIntegrateTestCaseAssertion assertion, final String ruleType,
+    public BaseDQLIT(final String path, final DQLIntegrateTestCaseAssertion assertion, final String ruleType,
                      final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(sqlCaseId, path, assertion, ruleType, databaseType, caseType, sql);
+        super(path, assertion, ruleType, databaseType, caseType, sql);
     }
     
     @BeforeClass

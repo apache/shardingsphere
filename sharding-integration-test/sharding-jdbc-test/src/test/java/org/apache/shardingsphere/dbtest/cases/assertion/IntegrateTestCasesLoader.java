@@ -21,13 +21,9 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.dbtest.cases.assertion.dcl.DCLIntegrateTestCase;
 import org.apache.shardingsphere.dbtest.cases.assertion.dcl.DCLIntegrateTestCases;
-import org.apache.shardingsphere.dbtest.cases.assertion.ddl.DDLIntegrateTestCase;
 import org.apache.shardingsphere.dbtest.cases.assertion.ddl.DDLIntegrateTestCases;
-import org.apache.shardingsphere.dbtest.cases.assertion.dml.DMLIntegrateTestCase;
 import org.apache.shardingsphere.dbtest.cases.assertion.dml.DMLIntegrateTestCases;
-import org.apache.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCase;
 import org.apache.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCases;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCases;
@@ -44,10 +40,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Integrate test cases loader.
@@ -67,24 +61,23 @@ public final class IntegrateTestCasesLoader {
     private static final IntegrateTestCasesLoader INSTANCE = new IntegrateTestCasesLoader();
     
     @Getter
-    private final Map<String, IntegrateTestCase> dqlIntegrateTestCaseMap;
+    private final List<? extends IntegrateTestCase> dqlIntegrateTestCases;
     
     @Getter
-    private final Map<String, IntegrateTestCase> dmlIntegrateTestCaseMap;
+    private final List<? extends IntegrateTestCase> dmlIntegrateTestCases;
     
     @Getter
-    private final Map<String, IntegrateTestCase> ddlIntegrateTestCaseMap;
+    private final List<? extends IntegrateTestCase> ddlIntegrateTestCases;
     
     @Getter
-    private final Map<String, IntegrateTestCase> dclIntegrateTestCaseMap;
+    private final List<? extends IntegrateTestCase> dclIntegrateTestCases;
     
     @SneakyThrows
     private IntegrateTestCasesLoader() {
-        // TODO at redesign dml case first
-        dqlIntegrateTestCaseMap = loadIntegrateTestCases(DQL_INTEGRATE_TEST_CASES_FILE_PREFIX);
-        dmlIntegrateTestCaseMap = loadIntegrateTestCases(DML_INTEGRATE_TEST_CASES_FILE_PREFIX);
-        ddlIntegrateTestCaseMap = loadIntegrateTestCases(DDL_INTEGRATE_TEST_CASES_FILE_PREFIX);
-        dclIntegrateTestCaseMap = loadIntegrateTestCases(DCL_INTEGRATE_TEST_CASES_FILE_PREFIX);
+        dqlIntegrateTestCases = loadIntegrateTestCases(DQL_INTEGRATE_TEST_CASES_FILE_PREFIX);
+        dmlIntegrateTestCases = loadIntegrateTestCases(DML_INTEGRATE_TEST_CASES_FILE_PREFIX);
+        ddlIntegrateTestCases = loadIntegrateTestCases(DDL_INTEGRATE_TEST_CASES_FILE_PREFIX);
+        dclIntegrateTestCases = loadIntegrateTestCases(DCL_INTEGRATE_TEST_CASES_FILE_PREFIX);
     }
     
     /**
@@ -96,27 +89,19 @@ public final class IntegrateTestCasesLoader {
         return INSTANCE;
     }
     
-    private Map<String, IntegrateTestCase> loadIntegrateTestCases(final String filePrefix) throws IOException, URISyntaxException, JAXBException {
+    private List<? extends IntegrateTestCase> loadIntegrateTestCases(final String filePrefix) throws IOException, URISyntaxException, JAXBException {
         URL url = IntegrateTestCasesLoader.class.getClassLoader().getResource("integrate/cases/");
         Preconditions.checkNotNull(url, "Cannot found integrate test cases.");
-        return new HashMap<>(loadIntegrateTestCases(url, filePrefix));
+        return loadIntegrateTestCases(url, filePrefix);
     }
     
-    private Map<String, IntegrateTestCase> loadIntegrateTestCases(final URL url, final String filePrefix) throws IOException, URISyntaxException, JAXBException {
+    private List<? extends IntegrateTestCase> loadIntegrateTestCases(final URL url, final String filePrefix) throws IOException, URISyntaxException, JAXBException {
         List<String> files = getFiles(url, filePrefix);
         Preconditions.checkNotNull(files, "Cannot found integrate test cases.");
-        Map<String, IntegrateTestCase> result = new HashMap<>(Short.MAX_VALUE, 1);
+        List<? extends IntegrateTestCase> result = new LinkedList<>();
         for (String each : files) {
-            result.putAll(new HashMap<>(loadIntegrateTestCases(each, unmarshal(each, filePrefix).getIntegrateTestCases())));
-        }
-        return result;
-    }
-    
-    private Map<String, IntegrateTestCase> loadIntegrateTestCases(final String file, final List<? extends IntegrateTestCase> integrateTestCases) {
-        Map<String, IntegrateTestCase> result = new HashMap<>(integrateTestCases.size(), 1);
-        for (IntegrateTestCase each : integrateTestCases) {
-            result.put(each.getSqlCaseId(), each);
-            each.setPath(file);
+            result = unmarshal(each, filePrefix).getIntegrateTestCases();
+            result.forEach(testCase -> testCase.setPath(each));
         }
         return result;
     }
@@ -155,75 +140,11 @@ public final class IntegrateTestCasesLoader {
     }
     
     /**
-     * Get DQL integrate test case.
-     * 
-     * @param sqlCaseId SQL case ID
-     * @return DQL integrate test case
-     */
-    public DQLIntegrateTestCase getDQLIntegrateTestCase(final String sqlCaseId) {
-        // TODO resume when transfer finished
-//        Preconditions.checkState(dqlIntegrateTestCaseMap.containsKey(sqlCaseId), "Can't find SQL of id: %s", sqlCaseId);
-        // TODO remove when transfer finished
-        if (!dqlIntegrateTestCaseMap.containsKey(sqlCaseId)) {
-            log.warn("Have not finishSuccess case `{}`", sqlCaseId);
-        }
-        return (DQLIntegrateTestCase) dqlIntegrateTestCaseMap.get(sqlCaseId);
-    }
-    
-    /**
-     * Get DML integrate test case.
-     *
-     * @param sqlCaseId SQL case ID
-     * @return DQL integrate test case
-     */
-    public DMLIntegrateTestCase getDMLIntegrateTestCase(final String sqlCaseId) {
-        // TODO resume when transfer finished
-        //        Preconditions.checkState(dqlIntegrateTestCaseMap.containsKey(sqlCaseId), "Can't find SQL of id: %s", sqlCaseId);
-        // TODO remove when transfer finished
-        if (!dmlIntegrateTestCaseMap.containsKey(sqlCaseId)) {
-            log.warn("Have not finishSuccess case `{}`", sqlCaseId);
-        }
-        return (DMLIntegrateTestCase) dmlIntegrateTestCaseMap.get(sqlCaseId);
-    }
-    
-    /**
-     * Get DDL integrate test case.
-     *
-     * @param sqlCaseId SQL case ID
-     * @return DDL integrate test case
-     */
-    public DDLIntegrateTestCase getDDLIntegrateTestCase(final String sqlCaseId) {
-        // TODO resume when transfer finished
-        //        Preconditions.checkState(dqlIntegrateTestCaseMap.containsKey(sqlCaseId), "Can't find SQL of id: %s", sqlCaseId);
-        // TODO remove when transfer finished
-        if (!ddlIntegrateTestCaseMap.containsKey(sqlCaseId)) {
-            log.warn("Have not finishSuccess case `{}`", sqlCaseId);
-        }
-        return (DDLIntegrateTestCase) ddlIntegrateTestCaseMap.get(sqlCaseId);
-    }
-    
-    /**
-     * Get DCL integrate test case.
-     *
-     * @param sqlCaseId SQL case ID
-     * @return DCL integrate test case
-     */
-    public DCLIntegrateTestCase getDCLIntegrateTestCase(final String sqlCaseId) {
-        // TODO resume when transfer finished
-        //        Preconditions.checkState(dqlIntegrateTestCaseMap.containsKey(sqlCaseId), "Can't find SQL of id: %s", sqlCaseId);
-        // TODO remove when transfer finished
-        if (!dclIntegrateTestCaseMap.containsKey(sqlCaseId)) {
-            log.warn("Have not finishSuccess case `{}`", sqlCaseId);
-        }
-        return (DCLIntegrateTestCase) dclIntegrateTestCaseMap.get(sqlCaseId);
-    }
-    
-    /**
      * Count all data set test cases.
      * 
      * @return count of all data set test cases
      */
     public int countAllDataSetTestCases() {
-        return dqlIntegrateTestCaseMap.size() + dmlIntegrateTestCaseMap.size() + ddlIntegrateTestCaseMap.size() + dclIntegrateTestCaseMap.size();
+        return dqlIntegrateTestCases.size() + dmlIntegrateTestCases.size() + ddlIntegrateTestCases.size() + dclIntegrateTestCases.size();
     }
 }

@@ -36,7 +36,6 @@ import java.text.ParseException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -57,7 +56,7 @@ public final class IntegrateTestParameters {
      */
     public static Collection<Object[]> getParametersWithAssertion(final SQLType sqlType) {
         Collection<Object[]> result = new LinkedList<>();
-        getIntegrateTestCase(sqlType).forEach((sqlCaseId, integrateTestCase) -> {
+        getIntegrateTestCase(sqlType).forEach(integrateTestCase -> {
             getAvailableDatabaseTypes(integrateTestCase.getDbTypes()).forEach(databaseType -> {
                 result.addAll(getParametersWithAssertion(databaseType, SQLCaseType.Literal, integrateTestCase));
                 result.addAll(getParametersWithAssertion(databaseType, SQLCaseType.Placeholder, integrateTestCase));
@@ -83,14 +82,13 @@ public final class IntegrateTestParameters {
             final IntegrateTestCase integrateTestCase, final IntegrateTestCaseAssertion assertion, final DatabaseType databaseType, final SQLCaseType caseType) throws ParseException {
         Collection<Object[]> result = new LinkedList<>();
         for (String each : integrateTestEnvironment.getRuleTypes()) {
-            Object[] data = new Object[7];
-            data[0] = integrateTestCase.getSqlCaseId();
-            data[1] = integrateTestCase.getPath();
-            data[2] = assertion;
-            data[3] = each;
-            data[4] = databaseType.getName();
-            data[5] = caseType;
-            data[6] = getSQL(integrateTestCase.getSql(), assertion, caseType);
+            Object[] data = new Object[6];
+            data[0] = integrateTestCase.getPath();
+            data[1] = assertion;
+            data[2] = each;
+            data[3] = databaseType.getName();
+            data[4] = caseType;
+            data[5] = getSQL(integrateTestCase.getSql(), assertion, caseType);
             result.add(data);
         }
         return result;
@@ -104,7 +102,7 @@ public final class IntegrateTestParameters {
      */
     public static Collection<Object[]> getParametersWithCase(final SQLType sqlType) {
         Collection<Object[]> result = new LinkedList<>();
-        getIntegrateTestCase(sqlType).forEach((sqlCaseId, integrateTestCase) ->
+        getIntegrateTestCase(sqlType).forEach(integrateTestCase ->
             getAvailableDatabaseTypes(integrateTestCase.getDbTypes()).forEach(databaseType -> result.addAll(getParametersWithCase(databaseType, integrateTestCase))));
         return result;
     }
@@ -112,12 +110,11 @@ public final class IntegrateTestParameters {
     private static Collection<Object[]> getParametersWithCase(final DatabaseType databaseType, final IntegrateTestCase integrateTestCase) {
         Collection<Object[]> result = new LinkedList<>();
         for (String each : integrateTestEnvironment.getRuleTypes()) {
-            Object[] data = new Object[5];
-            data[0] = integrateTestCase.getSqlCaseId();
-            data[1] = integrateTestCase;
-            data[2] = each;
-            data[3] = databaseType.getName();
-            data[4] = integrateTestCase.getSql();
+            Object[] data = new Object[4];
+            data[0] = integrateTestCase;
+            data[1] = each;
+            data[2] = databaseType.getName();
+            data[3] = integrateTestCase.getSql();
             result.add(data);
         }
         return result;
@@ -143,16 +140,16 @@ public final class IntegrateTestParameters {
             .replace("%%", "%").replace("'%'", "'%%'");
     }
     
-    private static Map<String, IntegrateTestCase> getIntegrateTestCase(final SQLType sqlType) {
+    private static List<? extends IntegrateTestCase> getIntegrateTestCase(final SQLType sqlType) {
         switch (sqlType) {
             case DQL:
-                return integrateTestCasesLoader.getDqlIntegrateTestCaseMap();
+                return integrateTestCasesLoader.getDqlIntegrateTestCases();
             case DML:
-                return integrateTestCasesLoader.getDmlIntegrateTestCaseMap();
+                return integrateTestCasesLoader.getDmlIntegrateTestCases();
             case DDL:
-                return integrateTestCasesLoader.getDdlIntegrateTestCaseMap();
+                return integrateTestCasesLoader.getDdlIntegrateTestCases();
             case DCL:
-                return integrateTestCasesLoader.getDclIntegrateTestCaseMap();
+                return integrateTestCasesLoader.getDclIntegrateTestCases();
             default:
                 throw new UnsupportedOperationException(sqlType.name());
         }

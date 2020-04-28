@@ -70,7 +70,7 @@ public abstract class BatchIT extends BaseIT {
     
     private final Collection<String> expectedDataFiles;
     
-    public BatchIT(final String sqlCaseId, final IntegrateTestCase integrateTestCase,
+    public BatchIT(final IntegrateTestCase integrateTestCase,
                    final String ruleType, final DatabaseType databaseType, final String sql) throws IOException, JAXBException, SQLException {
         super(ruleType, databaseType);
         this.integrateTestCase = integrateTestCase;

@@ -32,9 +32,6 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 public abstract class IntegrateTestCase {
     
-    @XmlAttribute(name = "sql-case-id")
-    private String sqlCaseId;
-    
     @XmlAttribute(name = "sql")
     private String sql;
     

@@ -31,8 +31,6 @@ import java.text.ParseException;
 @Getter(AccessLevel.PROTECTED)
 public abstract class SingleIT extends BaseIT {
     
-    private final String sqlCaseId;
-    
     private final IntegrateTestCaseAssertion assertion;
     
     private final SQLCaseType caseType;
@@ -41,22 +39,13 @@ public abstract class SingleIT extends BaseIT {
     
     private final String sql;
     
-    public SingleIT(final String sqlCaseId, final String path, final IntegrateTestCaseAssertion assertion, final String ruleType,
+    public SingleIT(final String path, final IntegrateTestCaseAssertion assertion, final String ruleType,
                     final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
         super(ruleType, databaseType);
-        this.sqlCaseId = sqlCaseId;
         this.assertion = assertion;
         this.caseType = caseType;
         this.sql = sql;
         expectedDataFile = getExpectedDataFile(path, ruleType, databaseType, null != assertion ? assertion.getExpectedDataFile() : null);
     }
-    
-//    private final String getLiteralSQL(final String sql) throws ParseException {
-//        final List<Object> parameters = assertion.getSQLValues().stream().map(SQLValue::toString).collect(Collectors.toList());
-//        if (null == parameters || parameters.isEmpty()) {
-//            return sql;
-//        }
-//        return String.format(sql.replace("%", "$").replace("?", "%s"), parameters.toArray()).replace("$", "%")
-//            .replace("%%", "%").replace("'%'", "'%%'");
-//    }
 }
+
