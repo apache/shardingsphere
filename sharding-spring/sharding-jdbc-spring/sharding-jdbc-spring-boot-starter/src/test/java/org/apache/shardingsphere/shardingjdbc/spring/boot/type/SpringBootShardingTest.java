@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring.boot.type;
 
-import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
@@ -39,7 +38,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
-import java.lang.reflect.Field;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -59,7 +57,7 @@ public class SpringBootShardingTest {
     @Test
     public void assertWithShardingDataSource() {
         assertThat(dataSource, instanceOf(ShardingDataSource.class));
-        RuntimeContext runtimeContext = getFieldValue("runtimeContext", ShardingDataSource.class, dataSource);
+        RuntimeContext runtimeContext = ((ShardingDataSource) dataSource).getRuntimeContext();
         for (DataSource each : ((ShardingDataSource) dataSource).getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(100));
         }
@@ -71,7 +69,7 @@ public class SpringBootShardingTest {
     
     @Test
     public void assertEncryptRule() {
-        RuntimeContext runtimeContext = getFieldValue("runtimeContext", ShardingDataSource.class, dataSource);
+        RuntimeContext runtimeContext = ((ShardingDataSource) dataSource).getRuntimeContext();
         EncryptRule encryptRule = ((ShardingRule) runtimeContext.getRules().iterator().next()).getEncryptRule();
         assertThat(encryptRule.getEncryptTableNames().iterator().next(), is("t_order"));
         assertTrue(encryptRule.findEncryptTable("t_order").isPresent());
@@ -84,7 +82,7 @@ public class SpringBootShardingTest {
     
     @Test
     public void assertWithShardingDataSourceNames() {
-        RuntimeContext runtimeContext = getFieldValue("runtimeContext", ShardingDataSource.class, dataSource);
+        RuntimeContext runtimeContext = ((ShardingDataSource) dataSource).getRuntimeContext();
         ShardingRule shardingRule = (ShardingRule) runtimeContext.getRules().iterator().next();
         assertThat(shardingRule.getShardingDataSourceNames().getDataSourceNames().size(), is(3));
         assertTrue(shardingRule.getShardingDataSourceNames().getDataSourceNames().contains("ds"));
@@ -94,7 +92,7 @@ public class SpringBootShardingTest {
     
     @Test
     public void assertWithTableRules() {
-        RuntimeContext runtimeContext = getFieldValue("runtimeContext", ShardingDataSource.class, dataSource);
+        RuntimeContext runtimeContext = ((ShardingDataSource) dataSource).getRuntimeContext();
         ShardingRule shardingRule = (ShardingRule) runtimeContext.getRules().iterator().next();
         assertThat(shardingRule.getTableRules().size(), is(2));
         TableRule tableRule1 = shardingRule.getTableRule("t_order");
@@ -121,7 +119,7 @@ public class SpringBootShardingTest {
     
     @Test
     public void assertWithBindingTableRules() {
-        RuntimeContext runtimeContext = getFieldValue("runtimeContext", ShardingDataSource.class, dataSource);
+        RuntimeContext runtimeContext = ((ShardingDataSource) dataSource).getRuntimeContext();
         ShardingRule shardingRule = (ShardingRule) runtimeContext.getRules().iterator().next();
         assertThat(shardingRule.getBindingTableRules().size(), is(2));
         TableRule tableRule1 = shardingRule.getTableRule("t_order");
@@ -150,17 +148,9 @@ public class SpringBootShardingTest {
     
     @Test
     public void assertWithBroadcastTables() {
-        RuntimeContext runtimeContext = getFieldValue("runtimeContext", ShardingDataSource.class, dataSource);
+        RuntimeContext runtimeContext = ((ShardingDataSource) dataSource).getRuntimeContext();
         ShardingRule shardingRule = (ShardingRule) runtimeContext.getRules().iterator().next();
         assertThat(shardingRule.getBroadcastTables().size(), is(1));
         assertThat(shardingRule.getBroadcastTables().iterator().next(), is("t_config"));
-    }
-    
-    @SuppressWarnings("unchecked")
-    @SneakyThrows
-    private <T> T getFieldValue(final String fieldName, final Class<?> fieldClass, final Object target) {
-        Field field = fieldClass.getDeclaredField(fieldName);
-        field.setAccessible(true);
-        return (T) field.get(target);
     }
 }

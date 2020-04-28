@@ -35,7 +35,6 @@ import org.apache.shardingsphere.shardingjdbc.spring.algorithm.StandardModuloDat
 import org.apache.shardingsphere.shardingjdbc.spring.algorithm.StandardModuloTableShardingAlgorithm;
 import org.apache.shardingsphere.shardingjdbc.spring.datasource.SpringShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.fixture.IncrementKeyGenerateAlgorithm;
-import org.apache.shardingsphere.shardingjdbc.spring.util.FieldValueUtil;
 import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.transaction.spring.ShardingTransactionTypeScanner;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
@@ -236,7 +235,7 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void assertPropsDataSource() {
         ShardingDataSource shardingDataSource = applicationContext.getBean("propsDataSource", ShardingDataSource.class);
-        RuntimeContext runtimeContext = (RuntimeContext) FieldValueUtil.getFieldValue(shardingDataSource, "runtimeContext", true);
+        RuntimeContext runtimeContext = shardingDataSource.getRuntimeContext();
         assertTrue(runtimeContext.getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
         ConfigurationProperties properties = runtimeContext.getProperties();
         boolean showSql = properties.getValue(ConfigurationPropertyKey.SQL_SHOW);
@@ -252,8 +251,8 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @Test
     public void assertDefaultActualDataNodes() {
-        ShardingDataSource multiTableRulesDataSource = applicationContext.getBean("multiTableRulesDataSource", ShardingDataSource.class);
-        RuntimeContext runtimeContext = (RuntimeContext) FieldValueUtil.getFieldValue(multiTableRulesDataSource, "runtimeContext", true);
+        ShardingDataSource shardingDataSource = applicationContext.getBean("multiTableRulesDataSource", ShardingDataSource.class);
+        RuntimeContext runtimeContext = shardingDataSource.getRuntimeContext();
         ShardingRule shardingRule = (ShardingRule) runtimeContext.getRules().iterator().next();
         assertThat(shardingRule.getTableRules().size(), is(2));
         Iterator<TableRule> tableRules = shardingRule.getTableRules().iterator();
@@ -272,7 +271,6 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
         assertNotNull(applicationContext.getBean(ShardingTransactionTypeScanner.class));
     }
     
-    @SuppressWarnings("unchecked")
     private Map<String, DataSource> getDataSourceMap(final String shardingDataSourceName) {
         ShardingDataSource shardingDataSource = applicationContext.getBean(shardingDataSourceName, ShardingDataSource.class);
         return shardingDataSource.getDataSourceMap();
@@ -280,7 +278,6 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     private ShardingRule getShardingRule(final String shardingDataSourceName) {
         ShardingDataSource shardingDataSource = applicationContext.getBean(shardingDataSourceName, ShardingDataSource.class);
-        RuntimeContext runtimeContext = (RuntimeContext) FieldValueUtil.getFieldValue(shardingDataSource, "runtimeContext", true);
-        return (ShardingRule) runtimeContext.getRules().iterator().next();
+        return (ShardingRule) shardingDataSource.getRuntimeContext().getRules().iterator().next();
     }
 }
