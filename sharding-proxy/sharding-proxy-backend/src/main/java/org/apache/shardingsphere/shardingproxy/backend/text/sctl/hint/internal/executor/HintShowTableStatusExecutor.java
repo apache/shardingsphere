@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.
 import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
-import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
@@ -33,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -57,14 +55,14 @@ public final class HintShowTableStatusExecutor extends AbstractHintQueryExecutor
     @Override
     protected MergedResult createMergedResult() {
         Map<String, HintShowTableStatusResult> results = new HashMap<>();
-        for (String each : getLogicTableNames()) {
+        for (String each : backendConnection.getLogicSchema().getMetaData().getSchema().getConfiguredSchemaMetaData().getAllTableNames()) {
             if (HintManager.isDatabaseShardingOnly()) {
                 fillShardingValues(results, each, HintManager.getDatabaseShardingValues(), Collections.emptyList());
             } else {
                 fillShardingValues(results, each, HintManager.getDatabaseShardingValues(each), HintManager.getTableShardingValues(each));
             }
         }
-        return convert2MergedResult(results.values());
+        return convertToMergedResult(results.values());
     }
     
     private void fillShardingValues(final Map<String, HintShowTableStatusResult> results, final String logicTable,
@@ -80,16 +78,7 @@ public final class HintShowTableStatusExecutor extends AbstractHintQueryExecutor
         }
     }
     
-    private Collection<String> getLogicTableNames() {
-        Collection<String> result = new LinkedList<>();
-        Collection<TableRule> tableRules = backendConnection.getLogicSchema().getShardingRule().getTableRules();
-        for (TableRule each : tableRules) {
-            result.add(each.getLogicTable());
-        }
-        return result;
-    }
-    
-    private MergedResult convert2MergedResult(final Collection<HintShowTableStatusResult> hintShowTableStatusResults) {
+    private MergedResult convertToMergedResult(final Collection<HintShowTableStatusResult> hintShowTableStatusResults) {
         Collection<List<Object>> values = new ArrayList<>(hintShowTableStatusResults.size());
         for (HintShowTableStatusResult each : hintShowTableStatusResults) {
             values.add(createRow(each));
