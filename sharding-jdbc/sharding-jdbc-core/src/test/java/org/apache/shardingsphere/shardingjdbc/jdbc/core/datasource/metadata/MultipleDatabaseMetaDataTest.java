@@ -50,7 +50,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ShardingDatabaseMetaDataTest {
+public final class MultipleDatabaseMetaDataTest {
     
     private static final String DATA_SOURCE_NAME = "ds";
     
@@ -76,7 +76,7 @@ public final class ShardingDatabaseMetaDataTest {
     
     private Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
     
-    private ShardingDatabaseMetaData shardingDatabaseMetaData;
+    private MultipleDatabaseMetaData multipleDatabaseMetaData;
     
     @Before
     public void setUp() throws SQLException {
@@ -91,7 +91,7 @@ public final class ShardingDatabaseMetaDataTest {
         when(shardingConnection.getRuntimeContext()).thenReturn(runtimeContext);
         when(runtimeContext.getCachedDatabaseMetaData()).thenReturn(cachedDatabaseMetaData);
         when(runtimeContext.getRules()).thenReturn(Collections.singletonList(mockShardingRule()));
-        shardingDatabaseMetaData = new ShardingDatabaseMetaData(shardingConnection);
+        multipleDatabaseMetaData = new MultipleDatabaseMetaData(shardingConnection);
     }
     
     private ShardingRule mockShardingRule() {
@@ -103,893 +103,893 @@ public final class ShardingDatabaseMetaDataTest {
     
     @Test
     public void assertGetURL() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getURL(), is(databaseMetaData.getURL()));
+        assertThat(multipleDatabaseMetaData.getURL(), is(databaseMetaData.getURL()));
     }
     
     @Test
     public void assertGetUserName() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getUserName(), is(databaseMetaData.getUserName()));
+        assertThat(multipleDatabaseMetaData.getUserName(), is(databaseMetaData.getUserName()));
     }
     
     @Test
     public void assertGetDatabaseProductName() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getDatabaseProductName(), is(databaseMetaData.getDatabaseProductName()));
+        assertThat(multipleDatabaseMetaData.getDatabaseProductName(), is(databaseMetaData.getDatabaseProductName()));
     }
     
     @Test
     public void assertGetDatabaseProductVersion() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getDatabaseProductVersion(), is(databaseMetaData.getDatabaseProductVersion()));
+        assertThat(multipleDatabaseMetaData.getDatabaseProductVersion(), is(databaseMetaData.getDatabaseProductVersion()));
     }
     
     @Test
     public void assertGetDriverName() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getDriverName(), is(databaseMetaData.getDriverName()));
+        assertThat(multipleDatabaseMetaData.getDriverName(), is(databaseMetaData.getDriverName()));
     }
     
     @Test
     public void assertGetDriverVersion() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getDriverVersion(), is(databaseMetaData.getDriverVersion()));
+        assertThat(multipleDatabaseMetaData.getDriverVersion(), is(databaseMetaData.getDriverVersion()));
     }
     
     @Test
     public void assertGetDriverMajorVersion() {
-        assertThat(shardingDatabaseMetaData.getDriverMajorVersion(), is(databaseMetaData.getDriverMajorVersion()));
+        assertThat(multipleDatabaseMetaData.getDriverMajorVersion(), is(databaseMetaData.getDriverMajorVersion()));
     }
     
     @Test
     public void assertGetDriverMinorVersion() {
-        assertThat(shardingDatabaseMetaData.getDriverMinorVersion(), is(databaseMetaData.getDriverMinorVersion()));
+        assertThat(multipleDatabaseMetaData.getDriverMinorVersion(), is(databaseMetaData.getDriverMinorVersion()));
     }
     
     @Test
     public void assertGetDatabaseMajorVersion() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getDatabaseMajorVersion(), is(databaseMetaData.getDatabaseMajorVersion()));
+        assertThat(multipleDatabaseMetaData.getDatabaseMajorVersion(), is(databaseMetaData.getDatabaseMajorVersion()));
     }
     
     @Test
     public void assertGetDatabaseMinorVersion() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getDatabaseMinorVersion(), is(databaseMetaData.getDatabaseMinorVersion()));
+        assertThat(multipleDatabaseMetaData.getDatabaseMinorVersion(), is(databaseMetaData.getDatabaseMinorVersion()));
     }
     
     @Test
     public void assertGetJDBCMajorVersion() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getJDBCMajorVersion(), is(databaseMetaData.getJDBCMajorVersion()));
+        assertThat(multipleDatabaseMetaData.getJDBCMajorVersion(), is(databaseMetaData.getJDBCMajorVersion()));
     }
     
     @Test
     public void assertGetJDBCMinorVersion() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getJDBCMinorVersion(), is(databaseMetaData.getJDBCMinorVersion()));
+        assertThat(multipleDatabaseMetaData.getJDBCMinorVersion(), is(databaseMetaData.getJDBCMinorVersion()));
     }
     
     @Test
     public void assertAssertIsReadOnly() throws SQLException {
-        assertThat(shardingDatabaseMetaData.isReadOnly(), is(databaseMetaData.isReadOnly()));
+        assertThat(multipleDatabaseMetaData.isReadOnly(), is(databaseMetaData.isReadOnly()));
     }
     
     @Test
     public void assertAllProceduresAreCallable() throws SQLException {
-        assertThat(shardingDatabaseMetaData.allProceduresAreCallable(), is(databaseMetaData.allProceduresAreCallable()));
+        assertThat(multipleDatabaseMetaData.allProceduresAreCallable(), is(databaseMetaData.allProceduresAreCallable()));
     }
     
     @Test
     public void assertAllTablesAreSelectable() throws SQLException {
-        assertThat(shardingDatabaseMetaData.allTablesAreSelectable(), is(databaseMetaData.allTablesAreSelectable()));
+        assertThat(multipleDatabaseMetaData.allTablesAreSelectable(), is(databaseMetaData.allTablesAreSelectable()));
     }
     
     @Test
     public void assertNullsAreSortedHigh() throws SQLException {
-        assertThat(shardingDatabaseMetaData.nullsAreSortedHigh(), is(databaseMetaData.nullsAreSortedHigh()));
+        assertThat(multipleDatabaseMetaData.nullsAreSortedHigh(), is(databaseMetaData.nullsAreSortedHigh()));
     }
     
     @Test
     public void assertNullsAreSortedLow() throws SQLException {
-        assertThat(shardingDatabaseMetaData.nullsAreSortedLow(), is(databaseMetaData.nullsAreSortedLow()));
+        assertThat(multipleDatabaseMetaData.nullsAreSortedLow(), is(databaseMetaData.nullsAreSortedLow()));
     }
     
     @Test
     public void assertNullsAreSortedAtStart() throws SQLException {
-        assertThat(shardingDatabaseMetaData.nullsAreSortedAtStart(), is(databaseMetaData.nullsAreSortedAtStart()));
+        assertThat(multipleDatabaseMetaData.nullsAreSortedAtStart(), is(databaseMetaData.nullsAreSortedAtStart()));
     }
     
     @Test
     public void assertNullsAreSortedAtEnd() throws SQLException {
-        assertThat(shardingDatabaseMetaData.nullsAreSortedAtEnd(), is(databaseMetaData.nullsAreSortedAtEnd()));
+        assertThat(multipleDatabaseMetaData.nullsAreSortedAtEnd(), is(databaseMetaData.nullsAreSortedAtEnd()));
     }
     
     @Test
     public void assertUsesLocalFiles() throws SQLException {
-        assertThat(shardingDatabaseMetaData.usesLocalFiles(), is(databaseMetaData.usesLocalFiles()));
+        assertThat(multipleDatabaseMetaData.usesLocalFiles(), is(databaseMetaData.usesLocalFiles()));
     }
     
     @Test
     public void assertUsesLocalFilePerTable() throws SQLException {
-        assertThat(shardingDatabaseMetaData.usesLocalFilePerTable(), is(databaseMetaData.usesLocalFilePerTable()));
+        assertThat(multipleDatabaseMetaData.usesLocalFilePerTable(), is(databaseMetaData.usesLocalFilePerTable()));
     }
     
     @Test
     public void assertSupportsMixedCaseIdentifiers() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsMixedCaseIdentifiers(), is(databaseMetaData.supportsMixedCaseIdentifiers()));
+        assertThat(multipleDatabaseMetaData.supportsMixedCaseIdentifiers(), is(databaseMetaData.supportsMixedCaseIdentifiers()));
     }
     
     @Test
     public void assertStoresUpperCaseIdentifiers() throws SQLException {
-        assertThat(shardingDatabaseMetaData.storesUpperCaseIdentifiers(), is(databaseMetaData.storesUpperCaseIdentifiers()));
+        assertThat(multipleDatabaseMetaData.storesUpperCaseIdentifiers(), is(databaseMetaData.storesUpperCaseIdentifiers()));
     }
     
     @Test
     public void assertStoresLowerCaseIdentifiers() throws SQLException {
-        assertThat(shardingDatabaseMetaData.storesLowerCaseIdentifiers(), is(databaseMetaData.storesLowerCaseIdentifiers()));
+        assertThat(multipleDatabaseMetaData.storesLowerCaseIdentifiers(), is(databaseMetaData.storesLowerCaseIdentifiers()));
     }
     
     @Test
     public void assertStoresMixedCaseIdentifiers() throws SQLException {
-        assertThat(shardingDatabaseMetaData.storesMixedCaseIdentifiers(), is(databaseMetaData.storesMixedCaseIdentifiers()));
+        assertThat(multipleDatabaseMetaData.storesMixedCaseIdentifiers(), is(databaseMetaData.storesMixedCaseIdentifiers()));
     }
     
     @Test
     public void assertSupportsMixedCaseQuotedIdentifiers() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsMixedCaseQuotedIdentifiers(), is(databaseMetaData.supportsMixedCaseQuotedIdentifiers()));
+        assertThat(multipleDatabaseMetaData.supportsMixedCaseQuotedIdentifiers(), is(databaseMetaData.supportsMixedCaseQuotedIdentifiers()));
     }
     
     @Test
     public void assertStoresUpperCaseQuotedIdentifiers() throws SQLException {
-        assertThat(shardingDatabaseMetaData.storesUpperCaseQuotedIdentifiers(), is(databaseMetaData.storesUpperCaseQuotedIdentifiers()));
+        assertThat(multipleDatabaseMetaData.storesUpperCaseQuotedIdentifiers(), is(databaseMetaData.storesUpperCaseQuotedIdentifiers()));
     }
     
     @Test
     public void assertStoresLowerCaseQuotedIdentifiers() throws SQLException {
-        assertThat(shardingDatabaseMetaData.storesLowerCaseQuotedIdentifiers(), is(databaseMetaData.storesLowerCaseQuotedIdentifiers()));
+        assertThat(multipleDatabaseMetaData.storesLowerCaseQuotedIdentifiers(), is(databaseMetaData.storesLowerCaseQuotedIdentifiers()));
     }
     
     @Test
     public void assertStoresMixedCaseQuotedIdentifiers() throws SQLException {
-        assertThat(shardingDatabaseMetaData.storesMixedCaseQuotedIdentifiers(), is(databaseMetaData.storesMixedCaseQuotedIdentifiers()));
+        assertThat(multipleDatabaseMetaData.storesMixedCaseQuotedIdentifiers(), is(databaseMetaData.storesMixedCaseQuotedIdentifiers()));
     }
     
     @Test
     public void assertGetIdentifierQuoteString() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getIdentifierQuoteString(), is(databaseMetaData.getIdentifierQuoteString()));
+        assertThat(multipleDatabaseMetaData.getIdentifierQuoteString(), is(databaseMetaData.getIdentifierQuoteString()));
     }
     
     @Test
     public void assertGetSQLKeywords() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getSQLKeywords(), is(databaseMetaData.getSQLKeywords()));
+        assertThat(multipleDatabaseMetaData.getSQLKeywords(), is(databaseMetaData.getSQLKeywords()));
     }
     
     @Test
     public void assertGetNumericFunctions() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getNumericFunctions(), is(databaseMetaData.getNumericFunctions()));
+        assertThat(multipleDatabaseMetaData.getNumericFunctions(), is(databaseMetaData.getNumericFunctions()));
     }
     
     @Test
     public void assertGetStringFunctions() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getNumericFunctions(), is(databaseMetaData.getNumericFunctions()));
+        assertThat(multipleDatabaseMetaData.getNumericFunctions(), is(databaseMetaData.getNumericFunctions()));
     }
     
     @Test
     public void assertGetSystemFunctions() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getSystemFunctions(), is(databaseMetaData.getSystemFunctions()));
+        assertThat(multipleDatabaseMetaData.getSystemFunctions(), is(databaseMetaData.getSystemFunctions()));
     }
     
     @Test
     public void assertGetTimeDateFunctions() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getTimeDateFunctions(), is(databaseMetaData.getTimeDateFunctions()));
+        assertThat(multipleDatabaseMetaData.getTimeDateFunctions(), is(databaseMetaData.getTimeDateFunctions()));
     }
     
     @Test
     public void assertGetSearchStringEscape() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getSearchStringEscape(), is(databaseMetaData.getSearchStringEscape()));
+        assertThat(multipleDatabaseMetaData.getSearchStringEscape(), is(databaseMetaData.getSearchStringEscape()));
     }
     
     @Test
     public void assertGetExtraNameCharacters() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getExtraNameCharacters(), is(databaseMetaData.getExtraNameCharacters()));
+        assertThat(multipleDatabaseMetaData.getExtraNameCharacters(), is(databaseMetaData.getExtraNameCharacters()));
     }
     
     @Test
     public void assertSupportsAlterTableWithAddColumn() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsAlterTableWithAddColumn(), is(databaseMetaData.supportsAlterTableWithAddColumn()));
+        assertThat(multipleDatabaseMetaData.supportsAlterTableWithAddColumn(), is(databaseMetaData.supportsAlterTableWithAddColumn()));
     }
     
     @Test
     public void assertSupportsAlterTableWithDropColumn() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsAlterTableWithDropColumn(), is(databaseMetaData.supportsAlterTableWithDropColumn()));
+        assertThat(multipleDatabaseMetaData.supportsAlterTableWithDropColumn(), is(databaseMetaData.supportsAlterTableWithDropColumn()));
     }
     
     @Test
     public void assertSupportsColumnAliasing() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsColumnAliasing(), is(databaseMetaData.supportsColumnAliasing()));
+        assertThat(multipleDatabaseMetaData.supportsColumnAliasing(), is(databaseMetaData.supportsColumnAliasing()));
     }
     
     @Test
     public void assertNullPlusNonNullIsNull() throws SQLException {
-        assertThat(shardingDatabaseMetaData.nullPlusNonNullIsNull(), is(databaseMetaData.nullPlusNonNullIsNull()));
+        assertThat(multipleDatabaseMetaData.nullPlusNonNullIsNull(), is(databaseMetaData.nullPlusNonNullIsNull()));
     }
     
     @Test
     public void assertSupportsConvert() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsConvert(), is(databaseMetaData.supportsConvert()));
-        assertThat(shardingDatabaseMetaData.supportsConvert(Types.INTEGER, Types.FLOAT), is(databaseMetaData.supportsConvert()));
+        assertThat(multipleDatabaseMetaData.supportsConvert(), is(databaseMetaData.supportsConvert()));
+        assertThat(multipleDatabaseMetaData.supportsConvert(Types.INTEGER, Types.FLOAT), is(databaseMetaData.supportsConvert()));
     }
     
     @Test
     public void assertSupportsTableCorrelationNames() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsTableCorrelationNames(), is(databaseMetaData.supportsTableCorrelationNames()));
+        assertThat(multipleDatabaseMetaData.supportsTableCorrelationNames(), is(databaseMetaData.supportsTableCorrelationNames()));
     }
     
     @Test
     public void assertSupportsDifferentTableCorrelationNames() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsDifferentTableCorrelationNames(), is(databaseMetaData.supportsDifferentTableCorrelationNames()));
+        assertThat(multipleDatabaseMetaData.supportsDifferentTableCorrelationNames(), is(databaseMetaData.supportsDifferentTableCorrelationNames()));
     }
     
     @Test
     public void assertSupportsExpressionsInOrderBy() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsExpressionsInOrderBy(), is(databaseMetaData.supportsExpressionsInOrderBy()));
+        assertThat(multipleDatabaseMetaData.supportsExpressionsInOrderBy(), is(databaseMetaData.supportsExpressionsInOrderBy()));
     }
     
     @Test
     public void assertSupportsOrderByUnrelated() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsOrderByUnrelated(), is(databaseMetaData.supportsOrderByUnrelated()));
+        assertThat(multipleDatabaseMetaData.supportsOrderByUnrelated(), is(databaseMetaData.supportsOrderByUnrelated()));
     }
     
     @Test
     public void assertSupportsGroupBy() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsGroupBy(), is(databaseMetaData.supportsGroupBy()));
+        assertThat(multipleDatabaseMetaData.supportsGroupBy(), is(databaseMetaData.supportsGroupBy()));
     }
     
     @Test
     public void assertSupportsGroupByUnrelated() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsGroupByUnrelated(), is(databaseMetaData.supportsGroupByUnrelated()));
+        assertThat(multipleDatabaseMetaData.supportsGroupByUnrelated(), is(databaseMetaData.supportsGroupByUnrelated()));
     }
     
     @Test
     public void assertSupportsGroupByBeyondSelect() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsGroupByBeyondSelect(), is(databaseMetaData.supportsGroupByBeyondSelect()));
+        assertThat(multipleDatabaseMetaData.supportsGroupByBeyondSelect(), is(databaseMetaData.supportsGroupByBeyondSelect()));
     }
     
     @Test
     public void assertSupportsLikeEscapeClause() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsLikeEscapeClause(), is(databaseMetaData.supportsLikeEscapeClause()));
+        assertThat(multipleDatabaseMetaData.supportsLikeEscapeClause(), is(databaseMetaData.supportsLikeEscapeClause()));
     }
     
     @Test
     public void assertSupportsMultipleResultSets() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsMultipleResultSets(), is(databaseMetaData.supportsMultipleResultSets()));
+        assertThat(multipleDatabaseMetaData.supportsMultipleResultSets(), is(databaseMetaData.supportsMultipleResultSets()));
     }
     
     @Test
     public void assertSupportsMultipleTransactions() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsMultipleTransactions(), is(databaseMetaData.supportsMultipleTransactions()));
+        assertThat(multipleDatabaseMetaData.supportsMultipleTransactions(), is(databaseMetaData.supportsMultipleTransactions()));
     }
     
     @Test
     public void assertSupportsNonNullableColumns() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsNonNullableColumns(), is(databaseMetaData.supportsNonNullableColumns()));
+        assertThat(multipleDatabaseMetaData.supportsNonNullableColumns(), is(databaseMetaData.supportsNonNullableColumns()));
     }
     
     @Test
     public void assertSupportsMinimumSQLGrammar() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsMinimumSQLGrammar(), is(databaseMetaData.supportsMinimumSQLGrammar()));
+        assertThat(multipleDatabaseMetaData.supportsMinimumSQLGrammar(), is(databaseMetaData.supportsMinimumSQLGrammar()));
     }
     
     @Test
     public void assertSupportsCoreSQLGrammar() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsCoreSQLGrammar(), is(databaseMetaData.supportsCoreSQLGrammar()));
+        assertThat(multipleDatabaseMetaData.supportsCoreSQLGrammar(), is(databaseMetaData.supportsCoreSQLGrammar()));
     }
     
     @Test
     public void assertSupportsExtendedSQLGrammar() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsExtendedSQLGrammar(), is(databaseMetaData.supportsExtendedSQLGrammar()));
+        assertThat(multipleDatabaseMetaData.supportsExtendedSQLGrammar(), is(databaseMetaData.supportsExtendedSQLGrammar()));
     }
     
     @Test
     public void assertSupportsANSI92EntryLevelSQL() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsANSI92EntryLevelSQL(), is(databaseMetaData.supportsANSI92EntryLevelSQL()));
+        assertThat(multipleDatabaseMetaData.supportsANSI92EntryLevelSQL(), is(databaseMetaData.supportsANSI92EntryLevelSQL()));
     }
     
     @Test
     public void assertSupportsANSI92IntermediateSQL() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsANSI92IntermediateSQL(), is(databaseMetaData.supportsANSI92IntermediateSQL()));
+        assertThat(multipleDatabaseMetaData.supportsANSI92IntermediateSQL(), is(databaseMetaData.supportsANSI92IntermediateSQL()));
     }
     
     @Test
     public void assertSupportsANSI92FullSQL() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsANSI92FullSQL(), is(databaseMetaData.supportsANSI92FullSQL()));
+        assertThat(multipleDatabaseMetaData.supportsANSI92FullSQL(), is(databaseMetaData.supportsANSI92FullSQL()));
     }
     
     @Test
     public void assertSupportsIntegrityEnhancementFacility() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsIntegrityEnhancementFacility(), is(databaseMetaData.supportsIntegrityEnhancementFacility()));
+        assertThat(multipleDatabaseMetaData.supportsIntegrityEnhancementFacility(), is(databaseMetaData.supportsIntegrityEnhancementFacility()));
     }
     
     @Test
     public void assertSupportsOuterJoins() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsOuterJoins(), is(databaseMetaData.supportsOuterJoins()));
+        assertThat(multipleDatabaseMetaData.supportsOuterJoins(), is(databaseMetaData.supportsOuterJoins()));
     }
     
     @Test
     public void assertSupportsFullOuterJoins() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsFullOuterJoins(), is(databaseMetaData.supportsFullOuterJoins()));
+        assertThat(multipleDatabaseMetaData.supportsFullOuterJoins(), is(databaseMetaData.supportsFullOuterJoins()));
     }
     
     @Test
     public void assertSupportsLimitedOuterJoins() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsLimitedOuterJoins(), is(databaseMetaData.supportsLimitedOuterJoins()));
+        assertThat(multipleDatabaseMetaData.supportsLimitedOuterJoins(), is(databaseMetaData.supportsLimitedOuterJoins()));
     }
     
     @Test
     public void assertGetSchemaTerm() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getSchemaTerm(), is(databaseMetaData.getSchemaTerm()));
+        assertThat(multipleDatabaseMetaData.getSchemaTerm(), is(databaseMetaData.getSchemaTerm()));
     }
     
     @Test
     public void assertGetProcedureTerm() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getProcedureTerm(), is(databaseMetaData.getProcedureTerm()));
+        assertThat(multipleDatabaseMetaData.getProcedureTerm(), is(databaseMetaData.getProcedureTerm()));
     }
     
     @Test
     public void assertGetCatalogTerm() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getCatalogTerm(), is(databaseMetaData.getCatalogTerm()));
+        assertThat(multipleDatabaseMetaData.getCatalogTerm(), is(databaseMetaData.getCatalogTerm()));
     }
     
     @Test
     public void assertAssertIsCatalogAtStart() throws SQLException {
-        assertThat(shardingDatabaseMetaData.isCatalogAtStart(), is(databaseMetaData.isCatalogAtStart()));
+        assertThat(multipleDatabaseMetaData.isCatalogAtStart(), is(databaseMetaData.isCatalogAtStart()));
     }
     
     @Test
     public void assertGetCatalogSeparator() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getCatalogSeparator(), is(databaseMetaData.getCatalogSeparator()));
+        assertThat(multipleDatabaseMetaData.getCatalogSeparator(), is(databaseMetaData.getCatalogSeparator()));
     }
     
     @Test
     public void assertSupportsSchemasInDataManipulation() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsSchemasInDataManipulation(), is(databaseMetaData.supportsSchemasInDataManipulation()));
+        assertThat(multipleDatabaseMetaData.supportsSchemasInDataManipulation(), is(databaseMetaData.supportsSchemasInDataManipulation()));
     }
     
     @Test
     public void assertSupportsSchemasInProcedureCalls() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsSchemasInProcedureCalls(), is(databaseMetaData.supportsSchemasInProcedureCalls()));
+        assertThat(multipleDatabaseMetaData.supportsSchemasInProcedureCalls(), is(databaseMetaData.supportsSchemasInProcedureCalls()));
     }
     
     @Test
     public void assertSupportsSchemasInTableDefinitions() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsSchemasInTableDefinitions(), is(databaseMetaData.supportsSchemasInTableDefinitions()));
+        assertThat(multipleDatabaseMetaData.supportsSchemasInTableDefinitions(), is(databaseMetaData.supportsSchemasInTableDefinitions()));
     }
     
     @Test
     public void assertSupportsSchemasInIndexDefinitions() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsSchemasInIndexDefinitions(), is(databaseMetaData.supportsSchemasInIndexDefinitions()));
+        assertThat(multipleDatabaseMetaData.supportsSchemasInIndexDefinitions(), is(databaseMetaData.supportsSchemasInIndexDefinitions()));
     }
     
     @Test
     public void assertSupportsSchemasInPrivilegeDefinitions() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsSchemasInPrivilegeDefinitions(), is(databaseMetaData.supportsSchemasInPrivilegeDefinitions()));
+        assertThat(multipleDatabaseMetaData.supportsSchemasInPrivilegeDefinitions(), is(databaseMetaData.supportsSchemasInPrivilegeDefinitions()));
     }
     
     @Test
     public void assertSupportsCatalogsInDataManipulation() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsCatalogsInDataManipulation(), is(databaseMetaData.supportsCatalogsInDataManipulation()));
+        assertThat(multipleDatabaseMetaData.supportsCatalogsInDataManipulation(), is(databaseMetaData.supportsCatalogsInDataManipulation()));
     }
     
     @Test
     public void assertSupportsCatalogsInProcedureCalls() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsCatalogsInProcedureCalls(), is(databaseMetaData.supportsCatalogsInProcedureCalls()));
+        assertThat(multipleDatabaseMetaData.supportsCatalogsInProcedureCalls(), is(databaseMetaData.supportsCatalogsInProcedureCalls()));
     }
     
     @Test
     public void assertSupportsCatalogsInTableDefinitions() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsCatalogsInTableDefinitions(), is(databaseMetaData.supportsCatalogsInTableDefinitions()));
+        assertThat(multipleDatabaseMetaData.supportsCatalogsInTableDefinitions(), is(databaseMetaData.supportsCatalogsInTableDefinitions()));
     }
     
     @Test
     public void assertSupportsCatalogsInIndexDefinitions() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsCatalogsInIndexDefinitions(), is(databaseMetaData.supportsCatalogsInIndexDefinitions()));
+        assertThat(multipleDatabaseMetaData.supportsCatalogsInIndexDefinitions(), is(databaseMetaData.supportsCatalogsInIndexDefinitions()));
     }
     
     @Test
     public void assertSupportsCatalogsInPrivilegeDefinitions() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsCatalogsInPrivilegeDefinitions(), is(databaseMetaData.supportsCatalogsInPrivilegeDefinitions()));
+        assertThat(multipleDatabaseMetaData.supportsCatalogsInPrivilegeDefinitions(), is(databaseMetaData.supportsCatalogsInPrivilegeDefinitions()));
     }
     
     @Test
     public void assertSupportsPositionedDelete() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsPositionedDelete(), is(databaseMetaData.supportsPositionedDelete()));
+        assertThat(multipleDatabaseMetaData.supportsPositionedDelete(), is(databaseMetaData.supportsPositionedDelete()));
     }
     
     @Test
     public void assertSupportsPositionedUpdate() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsPositionedUpdate(), is(databaseMetaData.supportsPositionedUpdate()));
+        assertThat(multipleDatabaseMetaData.supportsPositionedUpdate(), is(databaseMetaData.supportsPositionedUpdate()));
     }
     
     @Test
     public void assertSupportsSelectForUpdate() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsSelectForUpdate(), is(databaseMetaData.supportsSelectForUpdate()));
+        assertThat(multipleDatabaseMetaData.supportsSelectForUpdate(), is(databaseMetaData.supportsSelectForUpdate()));
     }
     
     @Test
     public void assertSupportsStoredProcedures() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsStoredProcedures(), is(databaseMetaData.supportsStoredProcedures()));
+        assertThat(multipleDatabaseMetaData.supportsStoredProcedures(), is(databaseMetaData.supportsStoredProcedures()));
     }
     
     @Test
     public void assertSupportsSubqueriesInComparisons() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsSubqueriesInComparisons(), is(databaseMetaData.supportsSubqueriesInComparisons()));
+        assertThat(multipleDatabaseMetaData.supportsSubqueriesInComparisons(), is(databaseMetaData.supportsSubqueriesInComparisons()));
     }
     
     @Test
     public void assertSupportsSubqueriesInExists() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsSubqueriesInExists(), is(databaseMetaData.supportsSubqueriesInExists()));
+        assertThat(multipleDatabaseMetaData.supportsSubqueriesInExists(), is(databaseMetaData.supportsSubqueriesInExists()));
     }
     
     @Test
     public void assertSupportsSubqueriesInIns() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsSubqueriesInIns(), is(databaseMetaData.supportsSubqueriesInIns()));
+        assertThat(multipleDatabaseMetaData.supportsSubqueriesInIns(), is(databaseMetaData.supportsSubqueriesInIns()));
     }
     
     @Test
     public void assertSupportsSubqueriesInQuantifieds() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsSubqueriesInQuantifieds(), is(databaseMetaData.supportsSubqueriesInQuantifieds()));
+        assertThat(multipleDatabaseMetaData.supportsSubqueriesInQuantifieds(), is(databaseMetaData.supportsSubqueriesInQuantifieds()));
     }
     
     @Test
     public void assertSupportsCorrelatedSubqueries() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsCorrelatedSubqueries(), is(databaseMetaData.supportsCorrelatedSubqueries()));
+        assertThat(multipleDatabaseMetaData.supportsCorrelatedSubqueries(), is(databaseMetaData.supportsCorrelatedSubqueries()));
     }
     
     @Test
     public void assertSupportsUnion() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsUnion(), is(databaseMetaData.supportsUnion()));
+        assertThat(multipleDatabaseMetaData.supportsUnion(), is(databaseMetaData.supportsUnion()));
     }
     
     @Test
     public void assertSupportsUnionAll() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsUnionAll(), is(databaseMetaData.supportsUnionAll()));
+        assertThat(multipleDatabaseMetaData.supportsUnionAll(), is(databaseMetaData.supportsUnionAll()));
     }
     
     @Test
     public void assertSupportsOpenCursorsAcrossCommit() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsOpenCursorsAcrossCommit(), is(databaseMetaData.supportsOpenCursorsAcrossCommit()));
+        assertThat(multipleDatabaseMetaData.supportsOpenCursorsAcrossCommit(), is(databaseMetaData.supportsOpenCursorsAcrossCommit()));
     }
     
     @Test
     public void assertSupportsOpenCursorsAcrossRollback() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsOpenCursorsAcrossRollback(), is(databaseMetaData.supportsOpenCursorsAcrossRollback()));
+        assertThat(multipleDatabaseMetaData.supportsOpenCursorsAcrossRollback(), is(databaseMetaData.supportsOpenCursorsAcrossRollback()));
     }
     
     @Test
     public void assertSupportsOpenStatementsAcrossCommit() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsOpenStatementsAcrossCommit(), is(databaseMetaData.supportsOpenStatementsAcrossCommit()));
+        assertThat(multipleDatabaseMetaData.supportsOpenStatementsAcrossCommit(), is(databaseMetaData.supportsOpenStatementsAcrossCommit()));
     }
     
     @Test
     public void assertSupportsOpenStatementsAcrossRollback() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsOpenStatementsAcrossRollback(), is(databaseMetaData.supportsOpenStatementsAcrossRollback()));
+        assertThat(multipleDatabaseMetaData.supportsOpenStatementsAcrossRollback(), is(databaseMetaData.supportsOpenStatementsAcrossRollback()));
     }
     
     @Test
     public void assertGetMaxBinaryLiteralLength() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getMaxBinaryLiteralLength(), is(databaseMetaData.getMaxBinaryLiteralLength()));
+        assertThat(multipleDatabaseMetaData.getMaxBinaryLiteralLength(), is(databaseMetaData.getMaxBinaryLiteralLength()));
     }
     
     @Test
     public void assertGetMaxCharLiteralLength() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getMaxCharLiteralLength(), is(databaseMetaData.getMaxCharLiteralLength()));
+        assertThat(multipleDatabaseMetaData.getMaxCharLiteralLength(), is(databaseMetaData.getMaxCharLiteralLength()));
     }
     
     @Test
     public void assertGetMaxColumnNameLength() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getMaxColumnNameLength(), is(databaseMetaData.getMaxColumnNameLength()));
+        assertThat(multipleDatabaseMetaData.getMaxColumnNameLength(), is(databaseMetaData.getMaxColumnNameLength()));
     }
     
     @Test
     public void assertGetMaxColumnsInGroupBy() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getMaxColumnsInGroupBy(), is(databaseMetaData.getMaxColumnsInGroupBy()));
+        assertThat(multipleDatabaseMetaData.getMaxColumnsInGroupBy(), is(databaseMetaData.getMaxColumnsInGroupBy()));
     }
     
     @Test
     public void assertGetMaxColumnsInIndex() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getMaxColumnsInIndex(), is(databaseMetaData.getMaxColumnsInIndex()));
+        assertThat(multipleDatabaseMetaData.getMaxColumnsInIndex(), is(databaseMetaData.getMaxColumnsInIndex()));
     }
     
     @Test
     public void assertGetMaxColumnsInOrderBy() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getMaxColumnsInOrderBy(), is(databaseMetaData.getMaxColumnsInOrderBy()));
+        assertThat(multipleDatabaseMetaData.getMaxColumnsInOrderBy(), is(databaseMetaData.getMaxColumnsInOrderBy()));
     }
     
     @Test
     public void assertGetMaxColumnsInSelect() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getMaxColumnsInSelect(), is(databaseMetaData.getMaxColumnsInSelect()));
+        assertThat(multipleDatabaseMetaData.getMaxColumnsInSelect(), is(databaseMetaData.getMaxColumnsInSelect()));
     }
     
     @Test
     public void assertGetMaxColumnsInTable() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getMaxColumnsInTable(), is(databaseMetaData.getMaxColumnsInTable()));
+        assertThat(multipleDatabaseMetaData.getMaxColumnsInTable(), is(databaseMetaData.getMaxColumnsInTable()));
     }
     
     @Test
     public void assertGetMaxConnections() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getMaxConnections(), is(databaseMetaData.getMaxConnections()));
+        assertThat(multipleDatabaseMetaData.getMaxConnections(), is(databaseMetaData.getMaxConnections()));
     }
     
     @Test
     public void assertGetMaxCursorNameLength() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getMaxCursorNameLength(), is(databaseMetaData.getMaxCursorNameLength()));
+        assertThat(multipleDatabaseMetaData.getMaxCursorNameLength(), is(databaseMetaData.getMaxCursorNameLength()));
     }
     
     @Test
     public void assertGetMaxIndexLength() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getMaxIndexLength(), is(databaseMetaData.getMaxIndexLength()));
+        assertThat(multipleDatabaseMetaData.getMaxIndexLength(), is(databaseMetaData.getMaxIndexLength()));
     }
     
     @Test
     public void assertGetMaxSchemaNameLength() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getMaxSchemaNameLength(), is(databaseMetaData.getMaxSchemaNameLength()));
+        assertThat(multipleDatabaseMetaData.getMaxSchemaNameLength(), is(databaseMetaData.getMaxSchemaNameLength()));
     }
     
     @Test
     public void assertGetMaxProcedureNameLength() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getMaxProcedureNameLength(), is(databaseMetaData.getMaxProcedureNameLength()));
+        assertThat(multipleDatabaseMetaData.getMaxProcedureNameLength(), is(databaseMetaData.getMaxProcedureNameLength()));
     }
     
     @Test
     public void assertGetMaxCatalogNameLength() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getMaxCatalogNameLength(), is(databaseMetaData.getMaxCatalogNameLength()));
+        assertThat(multipleDatabaseMetaData.getMaxCatalogNameLength(), is(databaseMetaData.getMaxCatalogNameLength()));
     }
     
     @Test
     public void assertGetMaxRowSize() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getMaxRowSize(), is(databaseMetaData.getMaxRowSize()));
+        assertThat(multipleDatabaseMetaData.getMaxRowSize(), is(databaseMetaData.getMaxRowSize()));
     }
     
     @Test
     public void assertDoesMaxRowSizeIncludeBlobs() throws SQLException {
-        assertThat(shardingDatabaseMetaData.doesMaxRowSizeIncludeBlobs(), is(databaseMetaData.doesMaxRowSizeIncludeBlobs()));
+        assertThat(multipleDatabaseMetaData.doesMaxRowSizeIncludeBlobs(), is(databaseMetaData.doesMaxRowSizeIncludeBlobs()));
     }
     
     @Test
     public void assertGetMaxStatementLength() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getMaxStatementLength(), is(databaseMetaData.getMaxStatementLength()));
+        assertThat(multipleDatabaseMetaData.getMaxStatementLength(), is(databaseMetaData.getMaxStatementLength()));
     }
     
     @Test
     public void assertGetMaxStatements() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getMaxStatements(), is(databaseMetaData.getMaxStatements()));
+        assertThat(multipleDatabaseMetaData.getMaxStatements(), is(databaseMetaData.getMaxStatements()));
     }
     
     @Test
     public void assertGetMaxTableNameLength() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getMaxTableNameLength(), is(databaseMetaData.getMaxTableNameLength()));
+        assertThat(multipleDatabaseMetaData.getMaxTableNameLength(), is(databaseMetaData.getMaxTableNameLength()));
     }
     
     @Test
     public void assertGetMaxTablesInSelect() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getMaxTablesInSelect(), is(databaseMetaData.getMaxTablesInSelect()));
+        assertThat(multipleDatabaseMetaData.getMaxTablesInSelect(), is(databaseMetaData.getMaxTablesInSelect()));
     }
     
     @Test
     public void assertGetMaxUserNameLength() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getMaxUserNameLength(), is(databaseMetaData.getMaxUserNameLength()));
+        assertThat(multipleDatabaseMetaData.getMaxUserNameLength(), is(databaseMetaData.getMaxUserNameLength()));
     }
     
     @Test
     public void assertGetDefaultTransactionIsolation() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getDefaultTransactionIsolation(), is(databaseMetaData.getDefaultTransactionIsolation()));
+        assertThat(multipleDatabaseMetaData.getDefaultTransactionIsolation(), is(databaseMetaData.getDefaultTransactionIsolation()));
     }
     
     @Test
     public void assertSupportsTransactions() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsTransactions(), is(databaseMetaData.supportsTransactions()));
+        assertThat(multipleDatabaseMetaData.supportsTransactions(), is(databaseMetaData.supportsTransactions()));
     }
     
     @Test
     public void assertSupportsDataDefinitionAndDataManipulationTransactions() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsDataDefinitionAndDataManipulationTransactions(), is(databaseMetaData.supportsDataDefinitionAndDataManipulationTransactions()));
+        assertThat(multipleDatabaseMetaData.supportsDataDefinitionAndDataManipulationTransactions(), is(databaseMetaData.supportsDataDefinitionAndDataManipulationTransactions()));
     }
     
     @Test
     public void assertSupportsDataManipulationTransactionsOnly() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsDataManipulationTransactionsOnly(), is(databaseMetaData.supportsDataManipulationTransactionsOnly()));
+        assertThat(multipleDatabaseMetaData.supportsDataManipulationTransactionsOnly(), is(databaseMetaData.supportsDataManipulationTransactionsOnly()));
     }
     
     @Test
     public void assertDataDefinitionCausesTransactionCommit() throws SQLException {
-        assertThat(shardingDatabaseMetaData.dataDefinitionCausesTransactionCommit(), is(databaseMetaData.dataDefinitionCausesTransactionCommit()));
+        assertThat(multipleDatabaseMetaData.dataDefinitionCausesTransactionCommit(), is(databaseMetaData.dataDefinitionCausesTransactionCommit()));
     }
     
     @Test
     public void assertDataDefinitionIgnoredInTransactions() throws SQLException {
-        assertThat(shardingDatabaseMetaData.dataDefinitionIgnoredInTransactions(), is(databaseMetaData.dataDefinitionIgnoredInTransactions()));
+        assertThat(multipleDatabaseMetaData.dataDefinitionIgnoredInTransactions(), is(databaseMetaData.dataDefinitionIgnoredInTransactions()));
     }
     
     @Test
     public void assertSupportsBatchUpdates() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsBatchUpdates(), is(databaseMetaData.supportsBatchUpdates()));
+        assertThat(multipleDatabaseMetaData.supportsBatchUpdates(), is(databaseMetaData.supportsBatchUpdates()));
     }
     
     @Test
     public void assertSupportsSavepoints() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsSavepoints(), is(databaseMetaData.supportsSavepoints()));
+        assertThat(multipleDatabaseMetaData.supportsSavepoints(), is(databaseMetaData.supportsSavepoints()));
     }
     
     @Test
     public void assertSupportsNamedParameters() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsNamedParameters(), is(databaseMetaData.supportsNamedParameters()));
+        assertThat(multipleDatabaseMetaData.supportsNamedParameters(), is(databaseMetaData.supportsNamedParameters()));
     }
     
     @Test
     public void assertSupportsMultipleOpenResults() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsMultipleOpenResults(), is(databaseMetaData.supportsMultipleOpenResults()));
+        assertThat(multipleDatabaseMetaData.supportsMultipleOpenResults(), is(databaseMetaData.supportsMultipleOpenResults()));
     }
     
     @Test
     public void assertSupportsGetGeneratedKeys() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsGetGeneratedKeys(), is(databaseMetaData.supportsGetGeneratedKeys()));
+        assertThat(multipleDatabaseMetaData.supportsGetGeneratedKeys(), is(databaseMetaData.supportsGetGeneratedKeys()));
     }
     
     @Test
     public void assertGetResultSetHoldability() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getResultSetHoldability(), is(databaseMetaData.getResultSetHoldability()));
+        assertThat(multipleDatabaseMetaData.getResultSetHoldability(), is(databaseMetaData.getResultSetHoldability()));
     }
     
     @Test
     public void assertGetSQLStateType() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getSQLStateType(), is(databaseMetaData.getSQLStateType()));
+        assertThat(multipleDatabaseMetaData.getSQLStateType(), is(databaseMetaData.getSQLStateType()));
     }
     
     @Test
     public void assertLocatorsUpdateCopy() throws SQLException {
-        assertThat(shardingDatabaseMetaData.locatorsUpdateCopy(), is(databaseMetaData.locatorsUpdateCopy()));
+        assertThat(multipleDatabaseMetaData.locatorsUpdateCopy(), is(databaseMetaData.locatorsUpdateCopy()));
     }
     
     @Test
     public void assertSupportsStatementPooling() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsStatementPooling(), is(databaseMetaData.supportsStatementPooling()));
+        assertThat(multipleDatabaseMetaData.supportsStatementPooling(), is(databaseMetaData.supportsStatementPooling()));
     }
     
     @Test
     public void assertSupportsStoredFunctionsUsingCallSyntax() throws SQLException {
-        assertThat(shardingDatabaseMetaData.supportsStoredFunctionsUsingCallSyntax(), is(databaseMetaData.supportsStoredFunctionsUsingCallSyntax()));
+        assertThat(multipleDatabaseMetaData.supportsStoredFunctionsUsingCallSyntax(), is(databaseMetaData.supportsStoredFunctionsUsingCallSyntax()));
     }
     
     @Test
     public void assertAutoCommitFailureClosesAllResultSets() throws SQLException {
-        assertThat(shardingDatabaseMetaData.autoCommitFailureClosesAllResultSets(), is(databaseMetaData.autoCommitFailureClosesAllResultSets()));
+        assertThat(multipleDatabaseMetaData.autoCommitFailureClosesAllResultSets(), is(databaseMetaData.autoCommitFailureClosesAllResultSets()));
     }
     
     @Test
     public void assertGetRowIdLifetime() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getRowIdLifetime(), is(databaseMetaData.getRowIdLifetime()));
+        assertThat(multipleDatabaseMetaData.getRowIdLifetime(), is(databaseMetaData.getRowIdLifetime()));
     }
     
     @Test
     public void assertGeneratedKeyAlwaysReturned() throws SQLException {
-        assertThat(shardingDatabaseMetaData.generatedKeyAlwaysReturned(), is(databaseMetaData.generatedKeyAlwaysReturned()));
+        assertThat(multipleDatabaseMetaData.generatedKeyAlwaysReturned(), is(databaseMetaData.generatedKeyAlwaysReturned()));
     }
     
     @Test
     public void assertOwnInsertsAreVisible() {
-        assertTrue(shardingDatabaseMetaData.ownInsertsAreVisible(ResultSet.TYPE_FORWARD_ONLY));
+        assertTrue(multipleDatabaseMetaData.ownInsertsAreVisible(ResultSet.TYPE_FORWARD_ONLY));
     }
     
     @Test
     public void assertOwnUpdatesAreVisible() {
-        assertTrue(shardingDatabaseMetaData.ownUpdatesAreVisible(ResultSet.TYPE_FORWARD_ONLY));
+        assertTrue(multipleDatabaseMetaData.ownUpdatesAreVisible(ResultSet.TYPE_FORWARD_ONLY));
     }
     
     @Test
     public void assertOwnDeletesAreVisible() {
-        assertTrue(shardingDatabaseMetaData.ownDeletesAreVisible(ResultSet.TYPE_FORWARD_ONLY));
+        assertTrue(multipleDatabaseMetaData.ownDeletesAreVisible(ResultSet.TYPE_FORWARD_ONLY));
     }
     
     @Test
     public void assertOthersInsertsAreVisible() {
-        assertTrue(shardingDatabaseMetaData.othersInsertsAreVisible(ResultSet.TYPE_FORWARD_ONLY));
+        assertTrue(multipleDatabaseMetaData.othersInsertsAreVisible(ResultSet.TYPE_FORWARD_ONLY));
     }
     
     @Test
     public void assertOthersUpdatesAreVisible() {
-        assertTrue(shardingDatabaseMetaData.othersUpdatesAreVisible(ResultSet.TYPE_FORWARD_ONLY));
+        assertTrue(multipleDatabaseMetaData.othersUpdatesAreVisible(ResultSet.TYPE_FORWARD_ONLY));
     }
     
     @Test
     public void assertOthersDeletesAreVisible() {
-        assertTrue(shardingDatabaseMetaData.othersDeletesAreVisible(ResultSet.TYPE_FORWARD_ONLY));
+        assertTrue(multipleDatabaseMetaData.othersDeletesAreVisible(ResultSet.TYPE_FORWARD_ONLY));
     }
     
     @Test
     public void assertInsertsAreDetected() {
-        assertTrue(shardingDatabaseMetaData.insertsAreDetected(ResultSet.TYPE_FORWARD_ONLY));
+        assertTrue(multipleDatabaseMetaData.insertsAreDetected(ResultSet.TYPE_FORWARD_ONLY));
     }
     
     @Test
     public void assertUpdatesAreDetected() {
-        assertTrue(shardingDatabaseMetaData.updatesAreDetected(ResultSet.TYPE_FORWARD_ONLY));
+        assertTrue(multipleDatabaseMetaData.updatesAreDetected(ResultSet.TYPE_FORWARD_ONLY));
     }
     
     @Test
     public void assertDeletesAreDetected() {
-        assertTrue(shardingDatabaseMetaData.deletesAreDetected(ResultSet.TYPE_FORWARD_ONLY));
+        assertTrue(multipleDatabaseMetaData.deletesAreDetected(ResultSet.TYPE_FORWARD_ONLY));
     }
     
     @Test
     public void assertSupportsResultSetType() {
-        assertTrue(shardingDatabaseMetaData.supportsResultSetType(ResultSet.TYPE_FORWARD_ONLY));
+        assertTrue(multipleDatabaseMetaData.supportsResultSetType(ResultSet.TYPE_FORWARD_ONLY));
     }
     
     @Test
     public void assertSupportsResultSetConcurrency() {
-        assertTrue(shardingDatabaseMetaData.supportsResultSetConcurrency(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY));
+        assertTrue(multipleDatabaseMetaData.supportsResultSetConcurrency(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY));
     }
     
     @Test
     public void assertSupportsResultSetHoldability() {
-        assertTrue(shardingDatabaseMetaData.supportsResultSetHoldability(ResultSet.HOLD_CURSORS_OVER_COMMIT));
+        assertTrue(multipleDatabaseMetaData.supportsResultSetHoldability(ResultSet.HOLD_CURSORS_OVER_COMMIT));
     }
     
     @Test
     public void assertSupportsTransactionIsolationLevel() {
-        assertTrue(shardingDatabaseMetaData.supportsTransactionIsolationLevel(Connection.TRANSACTION_NONE));
+        assertTrue(multipleDatabaseMetaData.supportsTransactionIsolationLevel(Connection.TRANSACTION_NONE));
     }
     
     @Test
     public void assertGetConnection() throws SQLException {
-        assertThat(shardingDatabaseMetaData.getConnection(), is(dataSource.getConnection()));
+        assertThat(multipleDatabaseMetaData.getConnection(), is(dataSource.getConnection()));
     }
     
     @Test
     public void assertGetSuperTypes() throws SQLException {
         when(databaseMetaData.getSuperTypes("test", null, null)).thenReturn(resultSet);
-        assertThat(shardingDatabaseMetaData.getSuperTypes("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(multipleDatabaseMetaData.getSuperTypes("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     public void assertGetSuperTables() throws SQLException {
         when(databaseMetaData.getSuperTables("test", null, null)).thenReturn(resultSet);
-        assertThat(shardingDatabaseMetaData.getSuperTables("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(multipleDatabaseMetaData.getSuperTables("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     public void assertGetAttributes() throws SQLException {
         when(databaseMetaData.getAttributes("test", null, null, null)).thenReturn(resultSet);
-        assertThat(shardingDatabaseMetaData.getAttributes("test", null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(multipleDatabaseMetaData.getAttributes("test", null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     public void assertGetProcedures() throws SQLException {
         when(databaseMetaData.getProcedures("test", null, null)).thenReturn(resultSet);
-        assertThat(shardingDatabaseMetaData.getProcedures("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(multipleDatabaseMetaData.getProcedures("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     public void assertGetProcedureColumns() throws SQLException {
         when(databaseMetaData.getProcedureColumns("test", null, null, null)).thenReturn(resultSet);
-        assertThat(shardingDatabaseMetaData.getProcedureColumns("test", null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(multipleDatabaseMetaData.getProcedureColumns("test", null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     public void assertGetTables() throws SQLException {
         when(databaseMetaData.getTables("test", null, "%" + TABLE_NAME + "%", null)).thenReturn(resultSet);
-        assertThat(shardingDatabaseMetaData.getTables("test", null, TABLE_NAME, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(multipleDatabaseMetaData.getTables("test", null, TABLE_NAME, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     public void assertGetSchemas() throws SQLException {
         when(databaseMetaData.getSchemas()).thenReturn(resultSet);
-        assertThat(shardingDatabaseMetaData.getSchemas(), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(multipleDatabaseMetaData.getSchemas(), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     public void assertGetSchemasForCatalogAndSchemaPattern() throws SQLException {
         when(databaseMetaData.getSchemas("test", null)).thenReturn(resultSet);
-        assertThat(shardingDatabaseMetaData.getSchemas("test", null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(multipleDatabaseMetaData.getSchemas("test", null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     public void assertGetCatalogs() throws SQLException {
         when(databaseMetaData.getCatalogs()).thenReturn(resultSet);
-        assertThat(shardingDatabaseMetaData.getCatalogs(), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(multipleDatabaseMetaData.getCatalogs(), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     public void assertGetTableTypes() throws SQLException {
         when(databaseMetaData.getTableTypes()).thenReturn(resultSet);
-        assertThat(shardingDatabaseMetaData.getTableTypes(), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(multipleDatabaseMetaData.getTableTypes(), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     public void assertGetColumns() throws SQLException {
         when(databaseMetaData.getColumns("test", null, null, null)).thenReturn(resultSet);
-        assertThat(shardingDatabaseMetaData.getColumns("test", null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(multipleDatabaseMetaData.getColumns("test", null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     public void assertGetColumnPrivileges() throws SQLException {
         when(databaseMetaData.getColumnPrivileges("test", null, null, null)).thenReturn(resultSet);
-        assertThat(shardingDatabaseMetaData.getColumnPrivileges("test", null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(multipleDatabaseMetaData.getColumnPrivileges("test", null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     public void assertGetTablePrivileges() throws SQLException {
         when(databaseMetaData.getTablePrivileges("test", null, null)).thenReturn(resultSet);
-        assertThat(shardingDatabaseMetaData.getTablePrivileges("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(multipleDatabaseMetaData.getTablePrivileges("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     public void assertGetBestRowIdentifier() throws SQLException {
         when(databaseMetaData.getBestRowIdentifier("test", null, null, 1, true)).thenReturn(resultSet);
-        assertThat(shardingDatabaseMetaData.getBestRowIdentifier("test", null, null, 1, true), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(multipleDatabaseMetaData.getBestRowIdentifier("test", null, null, 1, true), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     public void assertGetVersionColumns() throws SQLException {
         when(databaseMetaData.getVersionColumns("test", null, null)).thenReturn(resultSet);
-        assertThat(shardingDatabaseMetaData.getVersionColumns("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(multipleDatabaseMetaData.getVersionColumns("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     public void assertGetPrimaryKeys() throws SQLException {
         when(databaseMetaData.getPrimaryKeys("test", null, null)).thenReturn(resultSet);
-        assertThat(shardingDatabaseMetaData.getPrimaryKeys("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(multipleDatabaseMetaData.getPrimaryKeys("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     public void assertGetImportedKeys() throws SQLException {
         when(databaseMetaData.getImportedKeys("test", null, null)).thenReturn(resultSet);
-        assertThat(shardingDatabaseMetaData.getImportedKeys("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(multipleDatabaseMetaData.getImportedKeys("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     public void assertGetExportedKeys() throws SQLException {
         when(databaseMetaData.getExportedKeys("test", null, null)).thenReturn(resultSet);
-        assertThat(shardingDatabaseMetaData.getExportedKeys("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(multipleDatabaseMetaData.getExportedKeys("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     public void assertGetCrossReference() throws SQLException {
         when(databaseMetaData.getCrossReference("test", null, null, null, null, null)).thenReturn(resultSet);
-        assertThat(shardingDatabaseMetaData.getCrossReference("test", null, null, null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(multipleDatabaseMetaData.getCrossReference("test", null, null, null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     public void assertGetTypeInfo() throws SQLException {
         when(databaseMetaData.getTypeInfo()).thenReturn(resultSet);
-        assertThat(shardingDatabaseMetaData.getTypeInfo(), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(multipleDatabaseMetaData.getTypeInfo(), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     public void assertGetIndexInfo() throws SQLException {
         when(databaseMetaData.getIndexInfo("test", null, TABLE_NAME, true, true)).thenReturn(resultSet);
-        assertThat(shardingDatabaseMetaData.getIndexInfo("test", null, TABLE_NAME, true, true), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(multipleDatabaseMetaData.getIndexInfo("test", null, TABLE_NAME, true, true), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     public void assertGetUDTs() throws SQLException {
         when(databaseMetaData.getUDTs("test", null, null, null)).thenReturn(resultSet);
-        assertThat(shardingDatabaseMetaData.getUDTs("test", null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(multipleDatabaseMetaData.getUDTs("test", null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     public void assertGetClientInfoProperties() throws SQLException {
         when(databaseMetaData.getClientInfoProperties()).thenReturn(resultSet);
-        assertThat(shardingDatabaseMetaData.getClientInfoProperties(), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(multipleDatabaseMetaData.getClientInfoProperties(), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     public void assertGetFunctions() throws SQLException {
         when(databaseMetaData.getFunctions("test", null, null)).thenReturn(resultSet);
-        assertThat(shardingDatabaseMetaData.getFunctions("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(multipleDatabaseMetaData.getFunctions("test", null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     public void assertGetFunctionColumns() throws SQLException {
         when(databaseMetaData.getFunctionColumns("test", null, null, null)).thenReturn(resultSet);
-        assertThat(shardingDatabaseMetaData.getFunctionColumns("test", null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(multipleDatabaseMetaData.getFunctionColumns("test", null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
     
     @Test
     public void assertGetPseudoColumns() throws SQLException {
         when(databaseMetaData.getPseudoColumns("test", null, null, null)).thenReturn(resultSet);
-        assertThat(shardingDatabaseMetaData.getPseudoColumns("test", null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
+        assertThat(multipleDatabaseMetaData.getPseudoColumns("test", null, null, null), instanceOf(DatabaseMetaDataResultSet.class));
     }
 }
