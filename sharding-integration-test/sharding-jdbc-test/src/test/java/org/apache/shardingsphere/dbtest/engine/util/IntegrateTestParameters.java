@@ -55,7 +55,7 @@ public final class IntegrateTestParameters {
     public static Collection<Object[]> getParametersWithAssertion(final SQLType sqlType) {
         Collection<Object[]> result = new LinkedList<>();
         getIntegrateTestCase(sqlType).forEach((sqlCaseId, integrateTestCase) -> {
-            getDatabaseTypes(integrateTestCase.getDbTypes()).forEach(databaseType -> {
+            getAvailableDatabaseTypes(integrateTestCase.getDbTypes()).forEach(databaseType -> {
                 result.addAll(getParametersWithAssertion(databaseType, SQLCaseType.Literal, integrateTestCase));
                 result.addAll(getParametersWithAssertion(databaseType, SQLCaseType.Placeholder, integrateTestCase));
             });
@@ -100,8 +100,8 @@ public final class IntegrateTestParameters {
      */
     public static Collection<Object[]> getParametersWithCase(final SQLType sqlType) {
         Collection<Object[]> result = new LinkedList<>();
-        getIntegrateTestCase(sqlType).forEach((sqlCaseId, integrateTestCase) -> getDatabaseTypes(integrateTestCase.getDbTypes())
-            .forEach(databaseType -> result.addAll(getParametersWithCase(databaseType, integrateTestCase))));
+        getIntegrateTestCase(sqlType).forEach((sqlCaseId, integrateTestCase) ->
+            getAvailableDatabaseTypes(integrateTestCase.getDbTypes()).forEach(databaseType -> result.addAll(getParametersWithCase(databaseType, integrateTestCase))));
         return result;
     }
     
@@ -119,9 +119,10 @@ public final class IntegrateTestParameters {
         return result;
     }
     
-    private static Collection<DatabaseType> getDatabaseTypes(final String databaseTypes) {
+    private static Collection<DatabaseType> getAvailableDatabaseTypes(final String databaseTypes) {
         return Strings.isNullOrEmpty(databaseTypes) ? IntegrateTestEnvironment.getInstance().getDatabaseTypes()
-            : Splitter.on(',').trimResults().splitToList(databaseTypes).stream().map(DatabaseTypes::getActualDatabaseType).collect(Collectors.toList());
+            : Splitter.on(',').trimResults().splitToList(databaseTypes).stream().map(DatabaseTypes::getActualDatabaseType)
+            .filter(databaseType -> IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType)).collect(Collectors.toList());
     }
     
     private static Map<String, IntegrateTestCase> getIntegrateTestCase(final SQLType sqlType) {
