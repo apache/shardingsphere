@@ -207,8 +207,8 @@ gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.
 
 ```
 curl -Lo tag-shardingsphere-ui-${RELEASE.VERSION}.zip https://github.com/apache/shardingsphere/archive/shardingsphere-ui-${RELEASE.VERSION}.zip | unzip
-unzip apache-shardingsphere-shardingsphere-ui-${RELEASE.VERSION}-src.zip
-diff -r apache-shardingsphere-shardingsphere-ui-${RELEASE.VERSION}-src-release shardingsphere-shardingsphere-ui-${RELEASE.VERSION}/shardingsphere-ui
+unzip apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src.zip
+diff -r apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src/ shardingsphere-shardingsphere-ui-${RELEASE.VERSION}/shardingsphere-ui/
 ```
 
 #### Check source package
