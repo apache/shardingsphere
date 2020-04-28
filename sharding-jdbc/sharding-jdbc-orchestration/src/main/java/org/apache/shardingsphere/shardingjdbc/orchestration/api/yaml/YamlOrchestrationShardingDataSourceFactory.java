@@ -106,7 +106,7 @@ public final class YamlOrchestrationShardingDataSourceFactory {
             return new OrchestrationShardingDataSource(new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
         } else {
             ShardingDataSource shardingDataSource = new ShardingDataSource(
-                    dataSourceMap, new OrchestrationShardingRule(SHARDING_RULE_SWAPPER.swap(yamlShardingRuleConfiguration), dataSourceMap.keySet()), props);
+                    dataSourceMap, new OrchestrationShardingRule(SHARDING_RULE_SWAPPER.swap(yamlShardingRuleConfiguration), dataSourceMap.keySet()).toRules(), props);
             return new OrchestrationShardingDataSource(shardingDataSource, new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
         }
     }
