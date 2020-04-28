@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.schema;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import lombok.Setter;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
@@ -43,6 +43,7 @@ import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
@@ -55,12 +56,16 @@ public abstract class LogicSchema {
     
     private final SQLParserEngine sqlParserEngine;
     
+    @Setter
+    private Collection<BaseRule> rules;
+    
     private JDBCBackendDataSource backendDataSource;
     
     private ShardingSphereMetaData metaData;
     
     public LogicSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final Collection<BaseRule> rules) throws SQLException {
         this.name = name;
+        this.rules = rules;
         sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(LogicSchemas.getInstance().getDatabaseType()));
         backendDataSource = new JDBCBackendDataSource(dataSources);
         metaData = loadOrCreateMetaData(name, rules);
@@ -90,16 +95,8 @@ public abstract class LogicSchema {
     
     private Map<String, DatabaseAccessConfiguration> getDatabaseAccessConfigurationMap() {
         return backendDataSource.getDataSourceParameters().entrySet().stream()
-                .collect(Collectors.toMap(entry -> entry.getKey(), entry -> new DatabaseAccessConfiguration(entry.getValue().getUrl(), null, null)));
+                .collect(Collectors.toMap(Entry::getKey, entry -> new DatabaseAccessConfiguration(entry.getValue().getUrl(), null, null)));
     }
-    
-    /**
-     * Get Sharding rule.
-     * 
-     * @return sharding rule
-     */
-    // TODO : It is used in many places, but we can consider how to optimize it because of being irrational for logic schema.
-    public abstract ShardingRule getShardingRule();
     
     /**
      * Get data source parameters.

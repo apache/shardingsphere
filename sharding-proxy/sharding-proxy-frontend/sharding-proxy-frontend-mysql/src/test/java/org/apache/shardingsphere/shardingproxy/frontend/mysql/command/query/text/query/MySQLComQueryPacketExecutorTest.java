@@ -22,7 +22,6 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.te
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -31,6 +30,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
 
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -46,11 +46,11 @@ public class MySQLComQueryPacketExecutorTest {
     @Test
     @SneakyThrows
     public void assertIsErrorResponse() {
-        MySQLComQueryPacketExecutor mySQLComQueryPacketExecutor = new MySQLComQueryPacketExecutor(mock(MySQLComQueryPacket.class), null);
-        FieldSetter.setField(mySQLComQueryPacketExecutor, MySQLComQueryPacketExecutor.class.getDeclaredField("textProtocolBackendHandler"), textProtocolBackendHandler);
+        MySQLComQueryPacketExecutor mysqlComQueryPacketExecutor = new MySQLComQueryPacketExecutor(mock(MySQLComQueryPacket.class), null);
+        FieldSetter.setField(mysqlComQueryPacketExecutor, MySQLComQueryPacketExecutor.class.getDeclaredField("textProtocolBackendHandler"), textProtocolBackendHandler);
         when(sqlException.getCause()).thenReturn(new Exception());
         when(textProtocolBackendHandler.execute()).thenReturn(new ErrorResponse(sqlException));
-        mySQLComQueryPacketExecutor.execute();
-        Assert.assertThat(mySQLComQueryPacketExecutor.isErrorResponse(), Matchers.is(true));
+        mysqlComQueryPacketExecutor.execute();
+        assertThat(mysqlComQueryPacketExecutor.isErrorResponse(), Matchers.is(true));
     }
 }

@@ -20,14 +20,15 @@ package org.apache.shardingsphere.shardingproxy.backend.response.query;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
-import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.underlying.common.rule.TablesAggregationRule;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Optional;
 
 /**
  * Query header.
@@ -77,8 +78,10 @@ public final class QueryHeader {
         notNull = resultSetMetaData.isNullable(columnIndex) == ResultSetMetaData.columnNoNulls;
         autoIncrement = resultSetMetaData.isAutoIncrement(columnIndex);
         String actualTableName = resultSetMetaData.getTableName(columnIndex);
-        if (null != actualTableName && logicSchema instanceof ShardingSchema) {
-            table = logicSchema.getShardingRule().findLogicTableByActualTable(actualTableName).orElse("");
+        Optional<TablesAggregationRule> tablesAggregationRule = logicSchema.getRules().stream().filter(
+            each -> each instanceof TablesAggregationRule).findFirst().map(rule -> (TablesAggregationRule) rule);
+        if (null != actualTableName && tablesAggregationRule.isPresent()) {
+            table = tablesAggregationRule.get().findLogicTableByActualTable(actualTableName).orElse("");
             TableMetaData tableMetaData = logicSchema.getMetaData().getSchema().getConfiguredSchemaMetaData().get(table);
             primaryKey = null != tableMetaData && tableMetaData.getColumns().get(resultSetMetaData.getColumnName(columnIndex).toLowerCase()).isPrimaryKey();
         } else {

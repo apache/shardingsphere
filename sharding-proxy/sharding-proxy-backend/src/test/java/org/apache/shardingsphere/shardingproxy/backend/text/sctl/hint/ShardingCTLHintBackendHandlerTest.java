@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint;
 
+import com.google.common.collect.ImmutableMap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.hint.HintManager;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
@@ -31,6 +30,11 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintManagerHolder;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -158,12 +162,9 @@ public final class ShardingCTLHintBackendHandlerTest {
     @SneakyThrows
     public void assertShowTableStatus() {
         clearThreadLocal();
-        TableRule tableRule = mock(TableRule.class);
-        ShardingRule shardingRule = mock(ShardingRule.class);
         LogicSchema logicSchema = mock(LogicSchema.class);
-        when(tableRule.getLogicTable()).thenReturn("user");
-        when(shardingRule.getTableRules()).thenReturn(Collections.singletonList(tableRule));
-        when(logicSchema.getShardingRule()).thenReturn(shardingRule);
+        when(logicSchema.getMetaData()).thenReturn(
+                new ShardingSphereMetaData(mock(DataSourceMetas.class), new RuleSchemaMetaData(new SchemaMetaData(ImmutableMap.of("user", mock(TableMetaData.class))), Collections.emptyMap())));
         when(backendConnection.getLogicSchema()).thenReturn(logicSchema);
         String sql = "sctl:hint show table status";
         ShardingCTLHintBackendHandler defaultShardingCTLHintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
