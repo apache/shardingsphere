@@ -1,6 +1,6 @@
 +++
 title = "发布指南"
-weight = 6
+weight = 7
 chapter = true
 +++
 
