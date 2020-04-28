@@ -45,7 +45,6 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -84,8 +83,7 @@ public final class IntegrateTestCasesLoader {
         // TODO at redesign dml case first
         dqlIntegrateTestCaseMap = loadIntegrateTestCases(DQL_INTEGRATE_TEST_CASES_FILE_PREFIX);
         dmlIntegrateTestCaseMap = loadIntegrateTestCases(DML_INTEGRATE_TEST_CASES_FILE_PREFIX);
-//        ddlIntegrateTestCaseMap = loadIntegrateTestCases(DDL_INTEGRATE_TEST_CASES_FILE_PREFIX);
-        ddlIntegrateTestCaseMap = new LinkedHashMap<>();
+        ddlIntegrateTestCaseMap = loadIntegrateTestCases(DDL_INTEGRATE_TEST_CASES_FILE_PREFIX);
         dclIntegrateTestCaseMap = loadIntegrateTestCases(DCL_INTEGRATE_TEST_CASES_FILE_PREFIX);
     }
     
