@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shardingscaling.fixture;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.NopLogPosition;
+import org.apache.shardingsphere.shardingscaling.core.job.position.LogPositionManager;
+import org.apache.shardingsphere.shardingscaling.core.job.position.NopLogPosition;
 
 import javax.sql.DataSource;
 
