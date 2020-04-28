@@ -24,7 +24,6 @@ import org.apache.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.dbtest.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.dbtest.cases.sql.SQLCaseType;
 import org.apache.shardingsphere.dbtest.engine.SingleIT;
-import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import org.apache.shardingsphere.dbtest.env.EnvironmentPath;
 import org.apache.shardingsphere.dbtest.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
@@ -58,8 +57,8 @@ import static org.junit.Assert.assertTrue;
 public abstract class BaseDQLIT extends SingleIT {
     
     public BaseDQLIT(final String sqlCaseId, final String path, final DQLIntegrateTestCaseAssertion assertion, final String ruleType,
-                     final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(sqlCaseId, path, assertion, ruleType, databaseTypeEnvironment, caseType, sql);
+                     final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
+        super(sqlCaseId, path, assertion, ruleType, databaseType, caseType, sql);
     }
     
     @BeforeClass

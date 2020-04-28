@@ -20,16 +20,13 @@ package org.apache.shardingsphere.dbtest.engine;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
-import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLValue;
 import org.apache.shardingsphere.dbtest.cases.sql.SQLCaseType;
-import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter(AccessLevel.PROTECTED)
 public abstract class SingleIT extends BaseIT {
@@ -45,21 +42,21 @@ public abstract class SingleIT extends BaseIT {
     private final String sql;
     
     public SingleIT(final String sqlCaseId, final String path, final IntegrateTestCaseAssertion assertion, final String ruleType,
-                    final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException {
-        super(ruleType, databaseTypeEnvironment);
+                    final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
+        super(ruleType, databaseType);
         this.sqlCaseId = sqlCaseId;
         this.assertion = assertion;
         this.caseType = caseType;
         this.sql = sql;
-        expectedDataFile = getExpectedDataFile(path, ruleType, databaseTypeEnvironment.getDatabaseType(), null != assertion ? assertion.getExpectedDataFile() : null);
+        expectedDataFile = getExpectedDataFile(path, ruleType, databaseType, null != assertion ? assertion.getExpectedDataFile() : null);
     }
     
-    protected final String getLiteralSQL() throws ParseException {
-        final List<Object> parameters = assertion.getSQLValues().stream().map(SQLValue::toString).collect(Collectors.toList());
-        if (null == parameters || parameters.isEmpty()) {
-            return sql;
-        }
-        return String.format(sql.replace("%", "$").replace("?", "%s"), parameters.toArray()).replace("$", "%")
-            .replace("%%", "%").replace("'%'", "'%%'");
-    }
+//    private final String getLiteralSQL(final String sql) throws ParseException {
+//        final List<Object> parameters = assertion.getSQLValues().stream().map(SQLValue::toString).collect(Collectors.toList());
+//        if (null == parameters || parameters.isEmpty()) {
+//            return sql;
+//        }
+//        return String.format(sql.replace("%", "$").replace("?", "%s"), parameters.toArray()).replace("$", "%")
+//            .replace("%%", "%").replace("'%'", "'%%'");
+//    }
 }

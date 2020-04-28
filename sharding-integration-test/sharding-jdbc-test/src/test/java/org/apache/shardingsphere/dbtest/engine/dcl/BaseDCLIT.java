@@ -20,12 +20,12 @@ package org.apache.shardingsphere.dbtest.engine.dcl;
 import org.apache.shardingsphere.dbtest.cases.assertion.dcl.DCLIntegrateTestCaseAssertion;
 import org.apache.shardingsphere.dbtest.cases.sql.SQLCaseType;
 import org.apache.shardingsphere.dbtest.engine.SingleIT;
-import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import org.apache.shardingsphere.dbtest.env.EnvironmentPath;
 import org.apache.shardingsphere.dbtest.env.authority.AuthorityEnvironmentManager;
 import org.apache.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.underlying.common.database.metadata.MemorizedDataSourceMetaData;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -49,10 +49,10 @@ public abstract class BaseDCLIT extends SingleIT {
     private final AuthorityEnvironmentManager authorityEnvironmentManager;
     
     public BaseDCLIT(final String sqlCaseId, final String path, final DCLIntegrateTestCaseAssertion assertion, final String ruleType,
-                     final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(sqlCaseId, path, assertion, ruleType, databaseTypeEnvironment, caseType, sql);
+                     final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
+        super(sqlCaseId, path, assertion, ruleType, databaseType, caseType, sql);
         authorityEnvironmentManager = new AuthorityEnvironmentManager(
-                EnvironmentPath.getAuthorityResourcesPath(ruleType), null == getDataSourceMap() ? null : createInstanceDataSourceMap(), getDatabaseTypeEnvironment().getDatabaseType());
+                EnvironmentPath.getAuthorityResourcesPath(ruleType), null == getDataSourceMap() ? null : createInstanceDataSourceMap(), getDatabaseType());
     }
     
     private Map<String, DataSource> createInstanceDataSourceMap() throws SQLException {
@@ -75,7 +75,7 @@ public abstract class BaseDCLIT extends SingleIT {
         for (Entry<String, DataSource> entry : getDataSourceMap().entrySet()) {
             try (Connection connection = entry.getValue().getConnection()) {
                 DatabaseMetaData metaData = connection.getMetaData();
-                result.put(entry.getKey(), getDatabaseTypeEnvironment().getDatabaseType().getDataSourceMetaData(metaData.getURL(), metaData.getUserName()));
+                result.put(entry.getKey(), getDatabaseType().getDataSourceMetaData(metaData.getURL(), metaData.getUserName()));
             }
         }
         return result;
@@ -108,16 +108,12 @@ public abstract class BaseDCLIT extends SingleIT {
 
     @Before
     public void insertData() throws SQLException, ParseException, IOException, JAXBException {
-        if (getDatabaseTypeEnvironment().isEnabled()) {
-            new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(getRuleType()), getDataSourceMap()).initialize();
-            authorityEnvironmentManager.initialize();
-        }
+        new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(getRuleType()), getDataSourceMap()).initialize();
+        authorityEnvironmentManager.initialize();
     }
     
     @After
     public void cleanData() throws SQLException {
-        if (getDatabaseTypeEnvironment().isEnabled()) {
-            authorityEnvironmentManager.clean();
-        }
+        authorityEnvironmentManager.clean();
     }
 }

@@ -21,18 +21,21 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
+import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLValue;
 import org.apache.shardingsphere.dbtest.cases.sql.SQLCaseType;
 import org.apache.shardingsphere.dbtest.engine.SQLType;
-import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import org.apache.shardingsphere.dbtest.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 
+import java.text.ParseException;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -63,6 +66,7 @@ public final class IntegrateTestParameters {
         return result;
     }
     
+    @SneakyThrows
     private static Collection<Object[]> getParametersWithAssertion(final DatabaseType databaseType, final SQLCaseType caseType, final IntegrateTestCase integrateTestCase) {
         Collection<Object[]> result = new LinkedList<>();
         if (integrateTestCase.getIntegrateTestCaseAssertions().isEmpty()) {
@@ -76,7 +80,7 @@ public final class IntegrateTestParameters {
     }
     
     private static Collection<Object[]> getParametersWithAssertion(
-            final IntegrateTestCase integrateTestCase, final IntegrateTestCaseAssertion assertion, final DatabaseType databaseType, final SQLCaseType caseType) {
+            final IntegrateTestCase integrateTestCase, final IntegrateTestCaseAssertion assertion, final DatabaseType databaseType, final SQLCaseType caseType) throws ParseException {
         Collection<Object[]> result = new LinkedList<>();
         for (String each : integrateTestEnvironment.getRuleTypes()) {
             Object[] data = new Object[7];
@@ -84,9 +88,9 @@ public final class IntegrateTestParameters {
             data[1] = integrateTestCase.getPath();
             data[2] = assertion;
             data[3] = each;
-            data[4] = new DatabaseTypeEnvironment(databaseType, IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType));
+            data[4] = databaseType.getName();
             data[5] = caseType;
-            data[6] = integrateTestCase.getSql();
+            data[6] = getSQL(integrateTestCase.getSql(), assertion, caseType);
             result.add(data);
         }
         return result;
@@ -112,7 +116,7 @@ public final class IntegrateTestParameters {
             data[0] = integrateTestCase.getSqlCaseId();
             data[1] = integrateTestCase;
             data[2] = each;
-            data[3] = new DatabaseTypeEnvironment(databaseType, IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType));
+            data[3] = databaseType.getName();
             data[4] = integrateTestCase.getSql();
             result.add(data);
         }
@@ -123,6 +127,20 @@ public final class IntegrateTestParameters {
         return Strings.isNullOrEmpty(databaseTypes) ? IntegrateTestEnvironment.getInstance().getDatabaseTypes()
             : Splitter.on(',').trimResults().splitToList(databaseTypes).stream().map(DatabaseTypes::getActualDatabaseType)
             .filter(databaseType -> IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType)).collect(Collectors.toList());
+    }
+    
+    
+    private static String getSQL(final String sql, final IntegrateTestCaseAssertion assertion, final SQLCaseType sqlCaseType) throws ParseException {
+        return sqlCaseType == SQLCaseType.Literal ? getLiteralSQL(sql, assertion) : sql;
+    }
+    
+    private static String getLiteralSQL(final String sql, final IntegrateTestCaseAssertion assertion) throws ParseException {
+        final List<Object> parameters = assertion.getSQLValues().stream().map(SQLValue::toString).collect(Collectors.toList());
+        if (null == parameters || parameters.isEmpty()) {
+            return sql;
+        }
+        return String.format(sql.replace("%", "$").replace("?", "%s"), parameters.toArray()).replace("$", "%")
+            .replace("%%", "%").replace("'%'", "'%%'");
     }
     
     private static Map<String, IntegrateTestCase> getIntegrateTestCase(final SQLType sqlType) {

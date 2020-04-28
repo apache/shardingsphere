@@ -22,8 +22,8 @@ import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLValue;
 import org.apache.shardingsphere.dbtest.cases.sql.SQLCaseType;
 import org.apache.shardingsphere.dbtest.engine.SQLType;
 import org.apache.shardingsphere.dbtest.engine.util.IntegrateTestParameters;
-import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import org.apache.shardingsphere.dbtest.env.IntegrateTestEnvironment;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -45,8 +45,8 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     private final DQLIntegrateTestCaseAssertion assertion;
     
     public AdditionalDQLIT(final String sqlCaseId, final String path, final DQLIntegrateTestCaseAssertion assertion, final String ruleType,
-                           final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(sqlCaseId, path, assertion, ruleType, databaseTypeEnvironment, caseType, sql);
+                           final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
+        super(sqlCaseId, path, assertion, ruleType, databaseType, caseType, sql);
         this.assertion = assertion;
     }
     
@@ -57,9 +57,6 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     
     @Test
     public void assertExecuteQueryWithResultSetTypeAndResultSetConcurrency() throws JAXBException, IOException, SQLException, ParseException {
-        if (!getDatabaseTypeEnvironment().isEnabled()) {
-            return;
-        }
         try (Connection connection = getDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
                 assertExecuteQueryForStatementWithResultSetTypeAndResultSetConcurrency(connection);
@@ -90,9 +87,6 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     
     @Test
     public void assertExecuteQueryWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability() throws JAXBException, IOException, SQLException, ParseException {
-        if (!getDatabaseTypeEnvironment().isEnabled()) {
-            return;
-        }
         try (Connection connection = getDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
                 assertExecuteQueryForStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(connection);
@@ -125,9 +119,6 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     
     @Test
     public void assertExecuteWithResultSetTypeAndResultSetConcurrency() throws JAXBException, IOException, SQLException, ParseException {
-        if (!getDatabaseTypeEnvironment().isEnabled()) {
-            return;
-        }
         try (Connection connection = getDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
                 assertExecuteForStatementWithResultSetTypeAndResultSetConcurrency(connection);
@@ -160,9 +151,6 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     
     @Test
     public void assertExecuteWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability() throws JAXBException, IOException, SQLException, ParseException {
-        if (!getDatabaseTypeEnvironment().isEnabled()) {
-            return;
-        }
         try (Connection connection = getDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
                 assertExecuteForStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(connection);

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.dbtest.cases.assertion.ddl.DDLIntegrateTestCase
 import org.apache.shardingsphere.dbtest.cases.sql.SQLCaseType;
 import org.apache.shardingsphere.dbtest.engine.SQLType;
 import org.apache.shardingsphere.dbtest.engine.util.IntegrateTestParameters;
-import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -39,12 +39,12 @@ public final class GeneralDDLIT extends BaseDDLIT {
     private final DDLIntegrateTestCaseAssertion assertion;
     
     public GeneralDDLIT(final String sqlCaseId, final String path, final DDLIntegrateTestCaseAssertion assertion, final String ruleType,
-                        final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(sqlCaseId, path, assertion, ruleType, databaseTypeEnvironment, caseType, sql);
+                        final String databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
+        super(sqlCaseId, path, assertion, ruleType, DatabaseTypes.getActualDatabaseType(databaseType), caseType, sql);
         this.assertion = assertion;
     }
     
-    @Parameters(name = "{0} -> Rule:{3} -> {4} -> {5}")
+    @Parameters(name = "Rule:{3} -> {4} -> {5} -> {6}")
     public static Collection<Object[]> getParameters() {
         return IntegrateTestParameters.getParametersWithAssertion(SQLType.DDL);
     }
@@ -60,9 +60,6 @@ public final class GeneralDDLIT extends BaseDDLIT {
     }
     
     private void assertExecuteByType(final boolean isExecuteUpdate) throws JAXBException, IOException, SQLException {
-        if (!getDatabaseTypeEnvironment().isEnabled()) {
-            return;
-        }
         try (Connection connection = getDataSource().getConnection()) {
             dropTableIfExisted(connection);
             if (!Strings.isNullOrEmpty(assertion.getInitSql())) {
