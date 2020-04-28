@@ -24,6 +24,7 @@ import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -33,6 +34,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 /**
@@ -45,18 +47,22 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     
     private final DatabaseType databaseType;
     
+    private final RuntimeContext runtimeContext;
+    
     @Setter
     private PrintWriter logWriter = new PrintWriter(System.out);
     
-    public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap) throws SQLException {
+    public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap, final Collection<BaseRule> rules, final Properties props) throws SQLException {
         this.dataSourceMap = dataSourceMap;
         databaseType = createDatabaseType();
+        runtimeContext = new RuntimeContext(dataSourceMap, databaseType, rules, props);
     }
     
-    public AbstractDataSourceAdapter(final DataSource dataSource) throws SQLException {
+    public AbstractDataSourceAdapter(final DataSource dataSource, final Collection<BaseRule> rules, final Properties props) throws SQLException {
         dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put("unique", dataSource);
         databaseType = createDatabaseType();
+        runtimeContext = new RuntimeContext(dataSourceMap, databaseType, rules, props);
     }
     
     private DatabaseType createDatabaseType() throws SQLException {
@@ -114,6 +120,4 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
         } catch (final ReflectiveOperationException ignored) {
         }
     }
-    
-    protected abstract RuntimeContext getRuntimeContext();
 }

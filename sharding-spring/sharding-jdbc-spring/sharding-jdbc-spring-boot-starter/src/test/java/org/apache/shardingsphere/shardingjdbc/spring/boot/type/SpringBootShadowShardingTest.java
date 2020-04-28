@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring.boot.type;
 
-import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShadowDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -34,7 +33,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
-import java.lang.reflect.Field;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -63,7 +61,7 @@ public class SpringBootShadowShardingTest {
     
     private void assertActualDatasource() {
         DataSource dataSource = ((ShadowDataSource) this.dataSource).getActualDataSource();
-        RuntimeContext runtimeContext = getFieldValue("runtimeContext", ShardingDataSource.class, dataSource);
+        RuntimeContext runtimeContext = ((ShardingDataSource) dataSource).getRuntimeContext();
         for (DataSource each : ((ShardingDataSource) dataSource).getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(100));
         }
@@ -75,7 +73,7 @@ public class SpringBootShadowShardingTest {
     
     private void assertShadowDatasource() {
         DataSource dataSource = ((ShadowDataSource) this.dataSource).getShadowDataSource();
-        RuntimeContext runtimeContext = getFieldValue("runtimeContext", ShardingDataSource.class, dataSource);
+        RuntimeContext runtimeContext = ((ShardingDataSource) dataSource).getRuntimeContext();
         for (DataSource each : ((ShardingDataSource) dataSource).getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(10));
         }
@@ -89,13 +87,5 @@ public class SpringBootShadowShardingTest {
     public void assertWithShadowRule() {
         ShadowRule shadowRule = (ShadowRule) ((ShadowDataSource) dataSource).getRuntimeContext().getRules().iterator().next();
         assertThat(shadowRule.getColumn(), is("shadow"));
-    }
-    
-    @SuppressWarnings("unchecked")
-    @SneakyThrows
-    private <T> T getFieldValue(final String fieldName, final Class<?> fieldClass, final Object target) {
-        Field field = fieldClass.getDeclaredField(fieldName);
-        field.setAccessible(true);
-        return (T) field.get(target);
     }
 }

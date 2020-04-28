@@ -18,11 +18,9 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import com.google.common.base.Preconditions;
-import lombok.Getter;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 import javax.sql.DataSource;
@@ -33,18 +31,14 @@ import java.util.Properties;
 /**
  * Sharding data source.
  */
-@Getter
 public class ShardingDataSource extends AbstractDataSourceAdapter {
     
-    private final RuntimeContext runtimeContext;
-    
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final Properties props) throws SQLException {
-        super(dataSourceMap);
-        checkDataSourceType(dataSourceMap);
-        runtimeContext = new RuntimeContext(dataSourceMap, getDatabaseType(), shardingRule.toRules(), props);
+        super(dataSourceMap, shardingRule.toRules(), props);
+        checkDataSource(dataSourceMap);
     }
     
-    private void checkDataSourceType(final Map<String, DataSource> dataSourceMap) {
+    private void checkDataSource(final Map<String, DataSource> dataSourceMap) {
         for (DataSource each : dataSourceMap.values()) {
             Preconditions.checkArgument(!(each instanceof MasterSlaveDataSource), "Initialized data sources can not be master-slave data sources.");
         }
@@ -52,6 +46,6 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     
     @Override
     public final ShardingConnection getConnection() {
-        return new ShardingConnection(getDataSourceMap(), runtimeContext, TransactionTypeHolder.get());
+        return new ShardingConnection(getDataSourceMap(), getRuntimeContext(), TransactionTypeHolder.get());
     }
 }
