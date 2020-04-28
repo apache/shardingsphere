@@ -76,11 +76,11 @@ In order to make the reader more clearly understand the core processing flow of 
 
 After understanding the ShardingSphere encryption process, you can combine the encryption configuration and encryption process with the actual scenario. All design and development are to solve the problems encountered in business scenarios. So for the business scenario requirements mentioned earlier, how should ShardingSphere be used to achieve business requirements?
 
-### 新上线业务
+### New Business
 
-业务场景分析：新上线业务由于一切从零开始，不存在历史数据清洗问题，所以相对简单。
+Business scenario analysis: The newly launched business is relatively simple because everything starts from scratch and there is no historical data cleaning problem.
 
-解决方案说明：选择合适的加密器，如AES后，只需配置逻辑列（面向用户编写SQL）和密文列（数据表存密文数据）即可，**逻辑列和密文列可以相同也可以不同**。建议配置如下（Yaml格式展示）：
+Solution description: After selecting the appropriate encryptor, such as AES, you only need to configure the logical column (write SQL for users) and the ciphertext column (the data table stores the ciphertext data). It can also be different **. The recommended configuration is as follows (shown in Yaml format):
 
 ```yaml
 encryptRule:
@@ -97,7 +97,7 @@ encryptRule:
           encryptor: aes_encryptor
 ```
 
-使用这套配置，Encrypt-JDBC只需将logicColumn和cipherColumn进行转换，底层数据表不存储明文，只存储了密文，这也是安全审计部分的要求所在。如果用户希望将明文、密文一同存储到数据库，只需添加plainColumn配置即可。整体处理流程如下图所示：
+With this configuration, Encrypt-JDBC only needs to convert logicColumn and cipherColumn. The underlying data table does not store plain text, only cipher text. This is also a requirement of the security audit part. If users want to store plain text and cipher text together in the database, they just need to add plainColumn configuration. The overall processing flow is shown below:
 
 ![5](https://shardingsphere.apache.org/document/current/img/encrypt/5.png)
 
