@@ -22,9 +22,9 @@ import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.shardingscaling.core.exception.PrepareFailedException;
-import org.apache.shardingsphere.shardingscaling.core.job.synctask.ScalingTask;
+import org.apache.shardingsphere.shardingscaling.core.job.task.ScalingTask;
 import org.apache.shardingsphere.shardingscaling.core.metadata.MetaDataManager;
-import org.apache.shardingsphere.shardingscaling.core.job.synctask.inventory.InventoryDataScalingTask;
+import org.apache.shardingsphere.shardingscaling.core.job.task.inventory.InventoryDataScalingTask;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 
 import java.sql.Connection;

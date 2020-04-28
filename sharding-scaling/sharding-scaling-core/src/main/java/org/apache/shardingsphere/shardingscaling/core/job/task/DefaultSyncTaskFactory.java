@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.job.synctask;
+package org.apache.shardingsphere.shardingscaling.core.job.task;
 
 import java.util.Collection;
 
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.job.position.LogPosition;
-import org.apache.shardingsphere.shardingscaling.core.job.synctask.incremental.IncrementalDataScalingTask;
-import org.apache.shardingsphere.shardingscaling.core.job.synctask.inventory.InventoryDataScalingTask;
-import org.apache.shardingsphere.shardingscaling.core.job.synctask.inventory.InventoryDataScalingTaskGroup;
+import org.apache.shardingsphere.shardingscaling.core.job.task.incremental.IncrementalDataScalingTask;
+import org.apache.shardingsphere.shardingscaling.core.job.task.inventory.InventoryDataScalingTask;
+import org.apache.shardingsphere.shardingscaling.core.job.task.inventory.InventoryDataScalingTaskGroup;
 
 /**
  * Default sync task factory.

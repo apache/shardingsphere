@@ -15,28 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.job.synctask.inventory;
+package org.apache.shardingsphere.shardingscaling.core.job.task.inventory;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingscaling.core.job.SyncProgress;
 
-import java.util.LinkedList;
-import java.util.List;
-
 /**
- * Inventory data sync task group progress.
+ * Inventory data sync task progress.
  */
+@RequiredArgsConstructor
 @Getter
-public final class InventoryDataSyncTaskProgressGroup implements SyncProgress {
+public final class InventoryDataSyncTaskProgress implements SyncProgress {
     
-    private final List<SyncProgress> innerTaskProgresses = new LinkedList<>();
+    private final String id;
     
-    /**
-     * Add sync progress to group.
-     *
-     * @param syncProgress sync progress
-     */
-    public void addSyncProgress(final SyncProgress syncProgress) {
-        innerTaskProgresses.add(syncProgress);
-    }
+    private final long estimatedRows;
+    
+    private final long syncedRows;
 }

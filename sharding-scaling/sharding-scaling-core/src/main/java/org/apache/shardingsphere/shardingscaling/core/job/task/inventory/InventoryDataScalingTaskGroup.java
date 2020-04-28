@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.job.synctask.inventory;
+package org.apache.shardingsphere.shardingscaling.core.job.task.inventory;
 
 import org.apache.shardingsphere.shardingscaling.core.job.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.AbstractShardingScalingExecutor;
-import org.apache.shardingsphere.shardingscaling.core.job.synctask.ScalingTask;
+import org.apache.shardingsphere.shardingscaling.core.job.task.ScalingTask;
 
 import lombok.extern.slf4j.Slf4j;
 

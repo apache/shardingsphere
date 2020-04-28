@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.job.synctask.inventory;
+package org.apache.shardingsphere.shardingscaling.core.job.task.inventory;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingscaling.core.config.DataSourceConfiguration;

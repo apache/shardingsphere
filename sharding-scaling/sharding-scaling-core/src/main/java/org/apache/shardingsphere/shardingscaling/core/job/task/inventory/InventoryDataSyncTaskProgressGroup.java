@@ -15,20 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.job.synctask;
+package org.apache.shardingsphere.shardingscaling.core.job.task.inventory;
 
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.ShardingScalingExecutor;
+import lombok.Getter;
 import org.apache.shardingsphere.shardingscaling.core.job.SyncProgress;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
- * Sync task interface.
+ * Inventory data sync task group progress.
  */
-public interface ScalingTask extends ShardingScalingExecutor {
+@Getter
+public final class InventoryDataSyncTaskProgressGroup implements SyncProgress {
+    
+    private final List<SyncProgress> innerTaskProgresses = new LinkedList<>();
     
     /**
-     * Get synchronize progress.
+     * Add sync progress to group.
      *
-     * @return migrate progress
+     * @param syncProgress sync progress
      */
-    SyncProgress getProgress();
+    public void addSyncProgress(final SyncProgress syncProgress) {
+        innerTaskProgresses.add(syncProgress);
+    }
 }

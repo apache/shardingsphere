@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.job.synctask.inventory;
+package org.apache.shardingsphere.shardingscaling.core.job.task.inventory;
 
 import org.apache.shardingsphere.shardingscaling.core.job.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.shardingscaling.core.job.synctask.ScalingTask;
+import org.apache.shardingsphere.shardingscaling.core.job.task.ScalingTask;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

@@ -25,7 +25,7 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingscaling.core.job.ShardingScalingJob;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.job.synctask.ScalingTask;
+import org.apache.shardingsphere.shardingscaling.core.job.task.ScalingTask;
 import org.apache.shardingsphere.shardingscaling.core.schedule.SyncTaskControlStatus;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.shardingscaling.core.exception.PrepareFailedException;
@@ -34,8 +34,8 @@ import org.apache.shardingsphere.shardingscaling.core.job.position.LogPositionMa
 import org.apache.shardingsphere.shardingscaling.core.job.preparer.checker.DataSourceChecker;
 import org.apache.shardingsphere.shardingscaling.core.job.preparer.checker.DataSourceCheckerCheckerFactory;
 import org.apache.shardingsphere.shardingscaling.core.job.preparer.splitter.InventoryDataTaskSplitter;
-import org.apache.shardingsphere.shardingscaling.core.job.synctask.DefaultSyncTaskFactory;
-import org.apache.shardingsphere.shardingscaling.core.job.synctask.SyncTaskFactory;
+import org.apache.shardingsphere.shardingscaling.core.job.task.DefaultSyncTaskFactory;
+import org.apache.shardingsphere.shardingscaling.core.job.task.SyncTaskFactory;
 
 import javax.sql.DataSource;
 

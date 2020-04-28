@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.job.synctask.inventory;
+package org.apache.shardingsphere.shardingscaling.core.job.task.inventory;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
@@ -32,7 +32,7 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Da
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.importer.Importer;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.importer.ImporterFactory;
-import org.apache.shardingsphere.shardingscaling.core.job.synctask.ScalingTask;
+import org.apache.shardingsphere.shardingscaling.core.job.task.ScalingTask;
 import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
 
 import javax.sql.DataSource;

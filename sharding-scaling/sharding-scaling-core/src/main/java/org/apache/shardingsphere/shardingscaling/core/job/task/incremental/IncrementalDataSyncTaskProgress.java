@@ -15,22 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.job.synctask.inventory;
+package org.apache.shardingsphere.shardingscaling.core.job.task.incremental;
+
+import org.apache.shardingsphere.shardingscaling.core.job.SyncProgress;
+import org.apache.shardingsphere.shardingscaling.core.job.position.LogPosition;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingscaling.core.job.SyncProgress;
 
 /**
- * Inventory data sync task progress.
+ * Real-time data sync task progress.
  */
-@RequiredArgsConstructor
 @Getter
-public final class InventoryDataSyncTaskProgress implements SyncProgress {
+@RequiredArgsConstructor
+public final class IncrementalDataSyncTaskProgress implements SyncProgress {
     
     private final String id;
     
-    private final long estimatedRows;
+    private final long delayMillisecond;
     
-    private final long syncedRows;
+    private final LogPosition logPosition;
 }

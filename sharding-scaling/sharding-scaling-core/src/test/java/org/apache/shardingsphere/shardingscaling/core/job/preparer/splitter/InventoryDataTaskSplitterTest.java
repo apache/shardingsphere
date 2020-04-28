@@ -23,7 +23,7 @@ import org.apache.shardingsphere.shardingscaling.core.config.JDBCDataSourceConfi
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.shardingscaling.core.job.synctask.ScalingTask;
+import org.apache.shardingsphere.shardingscaling.core.job.task.ScalingTask;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

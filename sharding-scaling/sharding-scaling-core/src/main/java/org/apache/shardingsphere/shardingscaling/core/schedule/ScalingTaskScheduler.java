@@ -23,7 +23,7 @@ import org.apache.shardingsphere.shardingscaling.core.config.ScalingContext;
 import org.apache.shardingsphere.shardingscaling.core.job.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.execute.engine.ExecuteCallback;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.ShardingScalingExecutor;
-import org.apache.shardingsphere.shardingscaling.core.job.synctask.ScalingTask;
+import org.apache.shardingsphere.shardingscaling.core.job.task.ScalingTask;
 
 import java.util.Collection;
 import java.util.LinkedList;

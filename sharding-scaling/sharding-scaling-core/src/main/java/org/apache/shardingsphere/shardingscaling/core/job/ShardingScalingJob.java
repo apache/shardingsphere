@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.job.synctask.ScalingTask;
+import org.apache.shardingsphere.shardingscaling.core.job.task.ScalingTask;
 
 import java.util.LinkedList;
 import java.util.List;
