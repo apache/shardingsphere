@@ -63,11 +63,6 @@ public final class IntegrateTestParameters {
         return result;
     }
     
-    private static Collection<DatabaseType> getDatabaseTypes(final String databaseTypes) {
-        return Strings.isNullOrEmpty(databaseTypes) ? IntegrateTestEnvironment.getInstance().getDatabaseTypes()
-            : Splitter.on(',').trimResults().splitToList(databaseTypes).stream().map(DatabaseTypes::getActualDatabaseType).collect(Collectors.toList());
-    }
-    
     private static Collection<Object[]> getParametersWithAssertion(final DatabaseType databaseType, final SQLCaseType caseType, final IntegrateTestCase integrateTestCase) {
         Collection<Object[]> result = new LinkedList<>();
         for (IntegrateTestCaseAssertion each : integrateTestCase.getIntegrateTestCaseAssertions()) {
@@ -120,10 +115,15 @@ public final class IntegrateTestParameters {
         return result;
     }
     
+    private static Collection<DatabaseType> getDatabaseTypes(final String databaseTypes) {
+        return Strings.isNullOrEmpty(databaseTypes) ? IntegrateTestEnvironment.getInstance().getDatabaseTypes()
+            : Splitter.on(',').trimResults().splitToList(databaseTypes).stream().map(DatabaseTypes::getActualDatabaseType).collect(Collectors.toList());
+    }
+    
     private static Map<String, IntegrateTestCase> getIntegrateTestCase(final SQLType sqlType) {
         switch (sqlType) {
             case DQL:
-                return integrateTestCasesLoader.getDclIntegrateTestCaseMap();
+                return integrateTestCasesLoader.getDqlIntegrateTestCaseMap();
             case DML:
                 return integrateTestCasesLoader.getDmlIntegrateTestCaseMap();
             case DDL:

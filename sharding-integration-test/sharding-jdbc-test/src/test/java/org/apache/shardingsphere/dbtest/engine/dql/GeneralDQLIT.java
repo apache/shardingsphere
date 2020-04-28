@@ -70,7 +70,7 @@ public final class GeneralDQLIT extends BaseDQLIT {
     private void assertExecuteQueryForStatement(final Connection connection) throws SQLException, JAXBException, IOException, ParseException {
         try (
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(String.format(getSql(), assertion.getSQLValues().toArray()))) {
+                ResultSet resultSet = statement.executeQuery(getLiteralSQL())) {
             assertResultSet(resultSet);
         }
     }
@@ -102,7 +102,7 @@ public final class GeneralDQLIT extends BaseDQLIT {
     
     private void assertExecuteForStatement(final Connection connection) throws SQLException, ParseException, JAXBException, IOException {
         try (Statement statement = connection.createStatement()) {
-            assertTrue("Not a DQL statement.", statement.execute(String.format(getSql(), assertion.getSQLValues().toArray())));
+            assertTrue("Not a DQL statement.", statement.execute(getLiteralSQL()));
             try (ResultSet resultSet = statement.getResultSet()) {
                 assertResultSet(resultSet);
             }

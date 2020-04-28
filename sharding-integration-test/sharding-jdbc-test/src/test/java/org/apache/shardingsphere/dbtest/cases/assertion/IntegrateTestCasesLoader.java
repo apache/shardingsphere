@@ -82,8 +82,7 @@ public final class IntegrateTestCasesLoader {
     @SneakyThrows
     private IntegrateTestCasesLoader() {
         // TODO at redesign dml case first
-//        dqlIntegrateTestCaseMap = loadIntegrateTestCases(DQL_INTEGRATE_TEST_CASES_FILE_PREFIX);
-        dqlIntegrateTestCaseMap = new LinkedHashMap<>();
+        dqlIntegrateTestCaseMap = loadIntegrateTestCases(DQL_INTEGRATE_TEST_CASES_FILE_PREFIX);
         dmlIntegrateTestCaseMap = loadIntegrateTestCases(DML_INTEGRATE_TEST_CASES_FILE_PREFIX);
 //        ddlIntegrateTestCaseMap = loadIntegrateTestCases(DDL_INTEGRATE_TEST_CASES_FILE_PREFIX);
         ddlIntegrateTestCaseMap = new LinkedHashMap<>();
