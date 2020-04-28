@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.shardingscaling.core.job.synctask.inventory;
 
-import org.apache.shardingsphere.shardingscaling.core.job.synctask.ReportCallback;
 import org.apache.shardingsphere.shardingscaling.core.job.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.AbstractShardingScalingExecutor;
-import org.apache.shardingsphere.shardingscaling.core.job.synctask.SyncTask;
+import org.apache.shardingsphere.shardingscaling.core.job.synctask.ScalingTask;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,29 +29,25 @@ import java.util.Collection;
  * Inventory data sync task group.
  */
 @Slf4j
-public final class InventoryDataSyncTaskGroup extends AbstractShardingScalingExecutor implements SyncTask {
+public final class InventoryDataScalingTaskGroup extends AbstractShardingScalingExecutor implements ScalingTask {
     
-    private final Collection<SyncTask> syncTasks;
+    private final Collection<ScalingTask> scalingTasks;
     
-    public InventoryDataSyncTaskGroup(final Collection<SyncTask> inventoryDataSyncTasks) {
-        syncTasks = inventoryDataSyncTasks;
+    public InventoryDataScalingTaskGroup(final Collection<ScalingTask> inventoryDataScalingTasks) {
+        scalingTasks = inventoryDataScalingTasks;
     }
     
     @Override
     public void start() {
         super.start();
-        for (SyncTask each : syncTasks) {
-            each.start(null);
+        for (ScalingTask each : scalingTasks) {
+            each.start();
         }
     }
     
     @Override
-    public void start(final ReportCallback callback) {
-    }
-    
-    @Override
     public void stop() {
-        for (SyncTask each : syncTasks) {
+        for (ScalingTask each : scalingTasks) {
             each.stop();
         }
     }
@@ -60,7 +55,7 @@ public final class InventoryDataSyncTaskGroup extends AbstractShardingScalingExe
     @Override
     public SyncProgress getProgress() {
         InventoryDataSyncTaskProgressGroup result = new InventoryDataSyncTaskProgressGroup();
-        for (SyncTask each : syncTasks) {
+        for (ScalingTask each : scalingTasks) {
             result.addSyncProgress(each.getProgress());
         }
         return result;

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingscaling.core.job.synctask.inventory;
 
 import org.apache.shardingsphere.shardingscaling.core.job.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.shardingscaling.core.job.synctask.SyncTask;
+import org.apache.shardingsphere.shardingscaling.core.job.synctask.ScalingTask;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +31,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public final class InventoryDataSyncTaskGroupTest {
+public final class InventoryDataScalingTaskGroupTest {
     
     private DataSourceManager dataSourceManager;
     
@@ -47,23 +47,23 @@ public final class InventoryDataSyncTaskGroupTest {
     
     @Test
     public void assertStart() {
-        SyncTask syncTask = mock(SyncTask.class);
-        InventoryDataSyncTaskGroup inventoryDataSyncTaskGroup = new InventoryDataSyncTaskGroup(Collections.singletonList(syncTask));
+        ScalingTask scalingTask = mock(ScalingTask.class);
+        InventoryDataScalingTaskGroup inventoryDataSyncTaskGroup = new InventoryDataScalingTaskGroup(Collections.singletonList(scalingTask));
         inventoryDataSyncTaskGroup.start();
-        verify(syncTask).start(null);
+        verify(scalingTask).start();
     }
     
     @Test
     public void assertStop() {
-        SyncTask syncTask = mock(SyncTask.class);
-        InventoryDataSyncTaskGroup inventoryDataSyncTaskGroup = new InventoryDataSyncTaskGroup(Collections.singletonList(syncTask));
+        ScalingTask scalingTask = mock(ScalingTask.class);
+        InventoryDataScalingTaskGroup inventoryDataSyncTaskGroup = new InventoryDataScalingTaskGroup(Collections.singletonList(scalingTask));
         inventoryDataSyncTaskGroup.stop();
-        verify(syncTask).stop();
+        verify(scalingTask).stop();
     }
     
     @Test
     public void assertGetProgress() {
-        InventoryDataSyncTaskGroup inventoryDataSyncTaskGroup = new InventoryDataSyncTaskGroup(Collections.emptyList());
+        InventoryDataScalingTaskGroup inventoryDataSyncTaskGroup = new InventoryDataScalingTaskGroup(Collections.emptyList());
         assertThat(inventoryDataSyncTaskGroup.getProgress(), instanceOf(SyncProgress.class));
     }
 }

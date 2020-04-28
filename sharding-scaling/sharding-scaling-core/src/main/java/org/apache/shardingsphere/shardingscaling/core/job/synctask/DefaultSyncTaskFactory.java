@@ -21,9 +21,9 @@ import java.util.Collection;
 
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.job.position.LogPosition;
-import org.apache.shardingsphere.shardingscaling.core.job.synctask.inventory.InventoryDataSyncTask;
-import org.apache.shardingsphere.shardingscaling.core.job.synctask.inventory.InventoryDataSyncTaskGroup;
-import org.apache.shardingsphere.shardingscaling.core.job.synctask.incremental.IncrementalDataSyncTask;
+import org.apache.shardingsphere.shardingscaling.core.job.synctask.incremental.IncrementalDataScalingTask;
+import org.apache.shardingsphere.shardingscaling.core.job.synctask.inventory.InventoryDataScalingTask;
+import org.apache.shardingsphere.shardingscaling.core.job.synctask.inventory.InventoryDataScalingTaskGroup;
 
 /**
  * Default sync task factory.
@@ -31,17 +31,17 @@ import org.apache.shardingsphere.shardingscaling.core.job.synctask.incremental.I
 public final class DefaultSyncTaskFactory implements SyncTaskFactory {
     
     @Override
-    public InventoryDataSyncTaskGroup createInventoryDataSyncTaskGroup(final Collection<SyncTask> inventoryDataSyncTasks) {
-        return new InventoryDataSyncTaskGroup(inventoryDataSyncTasks);
+    public InventoryDataScalingTaskGroup createInventoryDataSyncTaskGroup(final Collection<ScalingTask> inventoryDataScalingTasks) {
+        return new InventoryDataScalingTaskGroup(inventoryDataScalingTasks);
     }
     
     @Override
-    public InventoryDataSyncTask createInventoryDataSyncTask(final SyncConfiguration syncConfiguration) {
-        return new InventoryDataSyncTask(syncConfiguration);
+    public InventoryDataScalingTask createInventoryDataSyncTask(final SyncConfiguration syncConfiguration) {
+        return new InventoryDataScalingTask(syncConfiguration);
     }
     
     @Override
-    public IncrementalDataSyncTask createIncrementalDataSyncTask(final SyncConfiguration syncConfiguration, final LogPosition logPosition) {
-        return new IncrementalDataSyncTask(syncConfiguration, logPosition);
+    public IncrementalDataScalingTask createIncrementalDataSyncTask(final SyncConfiguration syncConfiguration, final LogPosition logPosition) {
+        return new IncrementalDataScalingTask(syncConfiguration, logPosition);
     }
 }

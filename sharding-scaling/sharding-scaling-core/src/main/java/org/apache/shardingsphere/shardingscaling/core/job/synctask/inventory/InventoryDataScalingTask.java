@@ -22,7 +22,6 @@ import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.ScalingContext;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.job.SyncProgress;
-import org.apache.shardingsphere.shardingscaling.core.job.synctask.ReportCallback;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.shardingscaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.shardingscaling.core.execute.engine.ExecuteCallback;
@@ -33,7 +32,7 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Da
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.importer.Importer;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.importer.ImporterFactory;
-import org.apache.shardingsphere.shardingscaling.core.job.synctask.SyncTask;
+import org.apache.shardingsphere.shardingscaling.core.job.synctask.ScalingTask;
 import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
 
 import javax.sql.DataSource;
@@ -49,7 +48,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Table slice execute task.
  */
 @Slf4j
-public final class InventoryDataSyncTask implements SyncTask {
+public final class InventoryDataScalingTask implements ScalingTask {
     
     private final SyncConfiguration syncConfiguration;
     
@@ -63,11 +62,11 @@ public final class InventoryDataSyncTask implements SyncTask {
     
     private Dumper dumper;
     
-    public InventoryDataSyncTask(final SyncConfiguration syncConfiguration) {
+    public InventoryDataScalingTask(final SyncConfiguration syncConfiguration) {
         this(syncConfiguration, new DataSourceManager());
     }
     
-    public InventoryDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
+    public InventoryDataScalingTask(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
         this.syncConfiguration = syncConfiguration;
         this.dataSourceManager = dataSourceManager;
         syncTaskId = generateSyncTaskId(syncConfiguration.getDumperConfiguration());
@@ -80,7 +79,7 @@ public final class InventoryDataSyncTask implements SyncTask {
     }
     
     @Override
-    public void start(final ReportCallback callback) {
+    public void start() {
         getEstimatedRows();
         instanceDumper();
         Importer importer = ImporterFactory.newInstance(syncConfiguration.getImporterConfiguration(), dataSourceManager);
@@ -154,5 +153,9 @@ public final class InventoryDataSyncTask implements SyncTask {
     @Override
     public SyncProgress getProgress() {
         return new InventoryDataSyncTaskProgress(syncTaskId, estimatedRows, syncedRows.get());
+    }
+    
+    @Override
+    public void run() {
     }
 }

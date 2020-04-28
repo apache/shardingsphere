@@ -213,7 +213,7 @@
         >
           <el-card shadow="hover">
             <el-form :inline="true">
-              <el-form-item label="syncTask">
+              <el-form-item label="scalingTask">
                 {{ item.id }}
               </el-form-item>
               <el-form-item label="syncStatus">

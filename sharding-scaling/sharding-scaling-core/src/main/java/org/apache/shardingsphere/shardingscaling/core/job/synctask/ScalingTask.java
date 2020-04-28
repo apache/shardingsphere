@@ -17,17 +17,18 @@
 
 package org.apache.shardingsphere.shardingscaling.core.job.synctask;
 
-import org.apache.shardingsphere.shardingscaling.core.execute.Event;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.ShardingScalingExecutor;
+import org.apache.shardingsphere.shardingscaling.core.job.SyncProgress;
 
 /**
- * Report callback.
+ * Sync task interface.
  */
-public interface ReportCallback {
-
+public interface ScalingTask extends ShardingScalingExecutor {
+    
     /**
-     * process result report.
+     * Get synchronize progress.
      *
-     * @param event report event
+     * @return migrate progress
      */
-    void report(Event event);
+    SyncProgress getProgress();
 }

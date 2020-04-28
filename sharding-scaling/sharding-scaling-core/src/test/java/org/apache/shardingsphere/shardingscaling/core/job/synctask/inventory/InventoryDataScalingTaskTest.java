@@ -38,7 +38,7 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class InventoryDataSyncTaskTest {
+public final class InventoryDataScalingTaskTest {
     
     private static String dataSourceUrl = "jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
     
@@ -67,15 +67,15 @@ public final class InventoryDataSyncTaskTest {
     @Test(expected = SyncTaskExecuteException.class)
     public void assertStartWithGetEstimatedRowsFailure() {
         syncConfiguration.getDumperConfiguration().setTableName("t_non_exist");
-        InventoryDataSyncTask inventoryDataSyncTask = new InventoryDataSyncTask(syncConfiguration, dataSourceManager);
-        inventoryDataSyncTask.start(event -> { });
+        InventoryDataScalingTask inventoryDataSyncTask = new InventoryDataScalingTask(syncConfiguration, dataSourceManager);
+        inventoryDataSyncTask.start();
     }
     
     @Test
     public void assertGetProgress() {
         initTableData(syncConfiguration.getDumperConfiguration());
-        InventoryDataSyncTask inventoryDataSyncTask = new InventoryDataSyncTask(syncConfiguration, dataSourceManager);
-        inventoryDataSyncTask.start(event -> { });
+        InventoryDataScalingTask inventoryDataSyncTask = new InventoryDataScalingTask(syncConfiguration, dataSourceManager);
+        inventoryDataSyncTask.start();
         assertThat(((InventoryDataSyncTaskProgress) inventoryDataSyncTask.getProgress()).getEstimatedRows(), is(2L));
     }
     

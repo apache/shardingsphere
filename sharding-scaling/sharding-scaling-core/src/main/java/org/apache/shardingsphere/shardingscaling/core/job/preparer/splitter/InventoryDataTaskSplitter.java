@@ -22,9 +22,9 @@ import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.shardingscaling.core.exception.PrepareFailedException;
+import org.apache.shardingsphere.shardingscaling.core.job.synctask.ScalingTask;
 import org.apache.shardingsphere.shardingscaling.core.metadata.MetaDataManager;
-import org.apache.shardingsphere.shardingscaling.core.job.synctask.SyncTask;
-import org.apache.shardingsphere.shardingscaling.core.job.synctask.inventory.InventoryDataSyncTask;
+import org.apache.shardingsphere.shardingscaling.core.job.synctask.inventory.InventoryDataScalingTask;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 
 import java.sql.Connection;
@@ -51,10 +51,10 @@ public final class InventoryDataTaskSplitter {
      * @param dataSourceManager data source manager
      * @return split inventory data task
      */
-    public Collection<SyncTask> splitInventoryData(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
-        Collection<SyncTask> result = new LinkedList<>();
+    public Collection<ScalingTask> splitInventoryData(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
+        Collection<ScalingTask> result = new LinkedList<>();
         for (SyncConfiguration each : splitConfiguration(syncConfiguration, dataSourceManager)) {
-            result.add(new InventoryDataSyncTask(each));
+            result.add(new InventoryDataScalingTask(each));
         }
         return result;
     }

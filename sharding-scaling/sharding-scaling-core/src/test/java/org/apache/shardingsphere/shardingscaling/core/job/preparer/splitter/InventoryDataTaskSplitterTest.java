@@ -23,7 +23,7 @@ import org.apache.shardingsphere.shardingscaling.core.config.JDBCDataSourceConfi
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.shardingscaling.core.job.synctask.SyncTask;
+import org.apache.shardingsphere.shardingscaling.core.job.synctask.ScalingTask;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,7 +73,7 @@ public class InventoryDataTaskSplitterTest {
     @Test
     public void assertSplitInventoryDataWithIntPrimary() {
         initIntPrimaryEnvironment(syncConfiguration.getDumperConfiguration());
-        Collection<SyncTask> actual = inventoryDataTaskSplitter.splitInventoryData(syncConfiguration, dataSourceManager);
+        Collection<ScalingTask> actual = inventoryDataTaskSplitter.splitInventoryData(syncConfiguration, dataSourceManager);
         assertNotNull(actual);
         assertThat(actual.size(), is(3));
     }
@@ -81,7 +81,7 @@ public class InventoryDataTaskSplitterTest {
     @Test
     public void assertSplitInventoryDataWithCharPrimary() {
         initCharPrimaryEnvironment(syncConfiguration.getDumperConfiguration());
-        Collection<SyncTask> actual = inventoryDataTaskSplitter.splitInventoryData(syncConfiguration, dataSourceManager);
+        Collection<ScalingTask> actual = inventoryDataTaskSplitter.splitInventoryData(syncConfiguration, dataSourceManager);
         assertNotNull(actual);
         assertThat(actual.size(), is(1));
     }
@@ -89,7 +89,7 @@ public class InventoryDataTaskSplitterTest {
     @Test
     public void assertSplitInventoryDataWithUnionPrimary() {
         initUnionPrimaryEnvironment(syncConfiguration.getDumperConfiguration());
-        Collection<SyncTask> actual = inventoryDataTaskSplitter.splitInventoryData(syncConfiguration, dataSourceManager);
+        Collection<ScalingTask> actual = inventoryDataTaskSplitter.splitInventoryData(syncConfiguration, dataSourceManager);
         assertNotNull(actual);
         assertThat(actual.size(), is(1));
     }
@@ -97,7 +97,7 @@ public class InventoryDataTaskSplitterTest {
     @Test
     public void assertSplitInventoryDataWithoutPrimary() {
         initNoPrimaryEnvironment(syncConfiguration.getDumperConfiguration());
-        Collection<SyncTask> actual = inventoryDataTaskSplitter.splitInventoryData(syncConfiguration, dataSourceManager);
+        Collection<ScalingTask> actual = inventoryDataTaskSplitter.splitInventoryData(syncConfiguration, dataSourceManager);
         assertNotNull(actual);
         assertThat(actual.size(), is(1));
     }

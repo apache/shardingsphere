@@ -21,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingscaling.core.config.ScalingContext;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.job.SyncProgress;
-import org.apache.shardingsphere.shardingscaling.core.job.synctask.ReportCallback;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.shardingscaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.shardingscaling.core.execute.engine.ExecuteCallback;
@@ -33,7 +32,7 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.Du
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.importer.Importer;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.importer.ImporterFactory;
-import org.apache.shardingsphere.shardingscaling.core.job.synctask.SyncTask;
+import org.apache.shardingsphere.shardingscaling.core.job.synctask.ScalingTask;
 import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
 
 import java.util.ArrayList;
@@ -46,7 +45,7 @@ import java.util.concurrent.Future;
  * Incremental data execute task.
  */
 @Slf4j
-public final class IncrementalDataSyncTask extends AbstractShardingScalingExecutor implements SyncTask {
+public final class IncrementalDataScalingTask extends AbstractShardingScalingExecutor implements ScalingTask {
     
     private final SyncConfiguration syncConfiguration;
     
@@ -60,7 +59,7 @@ public final class IncrementalDataSyncTask extends AbstractShardingScalingExecut
     
     private long delayMillisecond;
     
-    public IncrementalDataSyncTask(final SyncConfiguration syncConfiguration, final LogPosition logPosition) {
+    public IncrementalDataScalingTask(final SyncConfiguration syncConfiguration, final LogPosition logPosition) {
         this.syncConfiguration = syncConfiguration;
         this.dataSourceManager = new DataSourceManager();
         this.logPosition = logPosition;
@@ -88,10 +87,6 @@ public final class IncrementalDataSyncTask extends AbstractShardingScalingExecut
         dumper.start();
         waitForResult(future);
         dataSourceManager.close();
-    }
-    
-    @Override
-    public void start(final ReportCallback callback) {
     }
     
     private List<Importer> instanceImporters() {
