@@ -54,13 +54,14 @@ public class CustomDateTimeShardingAlgorithmTest {
         CustomDateTimeShardingAlgorithm shardingAlgorithm = new CustomDateTimeShardingAlgorithm();
         shardingAlgorithm.getProperties().setProperty("datetime.format", "yyyy-MM-dd HH:mm:ss");
         shardingAlgorithm.getProperties().setProperty("table.suffix.format", "yyyyQQ");
-        shardingAlgorithm.getProperties().setProperty("datetime.lower", "2010-01-01 00:00:00.000");
+        shardingAlgorithm.getProperties().setProperty("datetime.lower", "2016-01-01 00:00:00.000");
+        shardingAlgorithm.getProperties().setProperty("datetime.upper", "2021-12-31 00:00:00.000");
         shardingAlgorithm.getProperties().setProperty("datetime.step.unit", "Months");
         shardingAlgorithm.getProperties().setProperty("datetime.step.amount", "3");
         StandardShardingStrategyConfiguration shardingStrategyConfig = new StandardShardingStrategyConfiguration("create_time", shardingAlgorithm);
         this.shardingStrategy = new StandardShardingStrategy(shardingStrategyConfig);
 
-        for (int i = 2016; i < 2021; i++) {
+        for (int i = 2016; i <= 2020; i++) {
             for (int j = 1; j <= 4; j++) {
                 availableTables.add(String.format("t_order_%04d%02d", i, j));
             }
@@ -83,6 +84,22 @@ public class CustomDateTimeShardingAlgorithmTest {
         List<RouteValue> shardingValues = Lists.newArrayList(new RangeRouteValue<>("create_time", "t_order", rangeValue));
         Collection<String> actual = shardingStrategy.doSharding(availableTables, shardingValues, new ConfigurationProperties(new Properties()));
         assertThat(actual.size(), is(3));
+    }
+
+    @Test
+    public void assertLowerHalfRangeDoSharding() {
+        Range<String> rangeValue = Range.atLeast("2018-10-15 10:59:08");
+        List<RouteValue> shardingValues = Lists.newArrayList(new RangeRouteValue<>("create_time", "t_order", rangeValue));
+        Collection<String> actual = shardingStrategy.doSharding(availableTables, shardingValues, new ConfigurationProperties(new Properties()));
+        assertThat(actual.size(), is(9));
+    }
+
+    @Test
+    public void assertUpperHalfRangeDoSharding() {
+        Range<String> rangeValue = Range.atMost("2019-09-01 00:00:00");
+        List<RouteValue> shardingValues = Lists.newArrayList(new RangeRouteValue<>("create_time", "t_order", rangeValue));
+        Collection<String> actual = shardingStrategy.doSharding(availableTables, shardingValues, new ConfigurationProperties(new Properties()));
+        assertThat(actual.size(), is(15));
     }
 
     @Test
