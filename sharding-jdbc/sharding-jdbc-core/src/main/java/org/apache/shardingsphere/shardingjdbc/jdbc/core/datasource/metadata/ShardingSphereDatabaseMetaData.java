@@ -19,8 +19,11 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata;
 
 import lombok.Getter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractConnectionAdapter;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.DatabaseMetaDataResultSet;
 import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.TablesAggregationRule;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -32,12 +35,14 @@ import java.util.Optional;
 import java.util.Random;
 
 /**
- * Multiple database meta data.
+ * ShardingSphere database meta data.
  */
 @Getter
-public abstract class MultipleDatabaseMetaData<C extends AbstractConnectionAdapter> extends AdaptedDatabaseMetaData {
+public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaData {
     
-    private final C connection;
+    private final AbstractConnectionAdapter connection;
+    
+    private final Collection<BaseRule> rules;
     
     private final Collection<String> datasourceNames;
     
@@ -47,159 +52,180 @@ public abstract class MultipleDatabaseMetaData<C extends AbstractConnectionAdapt
     
     private DatabaseMetaData currentDatabaseMetaData;
     
-    public MultipleDatabaseMetaData(final C connection, final Collection<String> datasourceNames,
-                                    final CachedDatabaseMetaData cachedDatabaseMetaData, final ShardingSphereMetaData shardingSphereMetaData) {
-        super(cachedDatabaseMetaData);
+    public ShardingSphereDatabaseMetaData(final AbstractConnectionAdapter connection) {
+        super(connection.getRuntimeContext().getCachedDatabaseMetaData());
         this.connection = connection;
-        this.datasourceNames = datasourceNames;
-        this.shardingSphereMetaData = shardingSphereMetaData;
+        rules = connection.getRuntimeContext().getRules();
+        datasourceNames = connection.getDataSourceMap().keySet();
+        shardingSphereMetaData = connection.getRuntimeContext().getMetaData();
     }
     
     @Override
-    public final Connection getConnection() throws SQLException {
+    public Connection getConnection() throws SQLException {
         return connection.getConnection(getDataSourceName());
     }
     
     @Override
-    public final ResultSet getSuperTypes(final String catalog, final String schemaPattern, final String typeNamePattern) throws SQLException {
+    public ResultSet getSuperTypes(final String catalog, final String schemaPattern, final String typeNamePattern) throws SQLException {
         return createDatabaseMetaDataResultSet(getDatabaseMetaData().getSuperTypes(getActualCatalog(catalog), getActualSchema(schemaPattern), typeNamePattern));
     }
     
     @Override
-    public final ResultSet getSuperTables(final String catalog, final String schemaPattern, final String tableNamePattern) throws SQLException {
+    public ResultSet getSuperTables(final String catalog, final String schemaPattern, final String tableNamePattern) throws SQLException {
         return createDatabaseMetaDataResultSet(getDatabaseMetaData().getSuperTables(getActualCatalog(catalog), getActualSchema(schemaPattern), getActualTableNamePattern(tableNamePattern)));
     }
     
     @Override
-    public final ResultSet getAttributes(final String catalog, final String schemaPattern, final String typeNamePattern, final String attributeNamePattern) throws SQLException {
+    public ResultSet getAttributes(final String catalog, final String schemaPattern, final String typeNamePattern, final String attributeNamePattern) throws SQLException {
         return createDatabaseMetaDataResultSet(getDatabaseMetaData().getAttributes(getActualCatalog(catalog), getActualSchema(schemaPattern), typeNamePattern, attributeNamePattern));
     }
     
     @Override
-    public final ResultSet getProcedures(final String catalog, final String schemaPattern, final String procedureNamePattern) throws SQLException {
+    public ResultSet getProcedures(final String catalog, final String schemaPattern, final String procedureNamePattern) throws SQLException {
         return createDatabaseMetaDataResultSet(getDatabaseMetaData().getProcedures(getActualCatalog(catalog), getActualSchema(schemaPattern), procedureNamePattern));
     }
     
     @Override
-    public final ResultSet getProcedureColumns(final String catalog, final String schemaPattern, final String procedureNamePattern, final String columnNamePattern) throws SQLException {
+    public ResultSet getProcedureColumns(final String catalog, final String schemaPattern, final String procedureNamePattern, final String columnNamePattern) throws SQLException {
         return createDatabaseMetaDataResultSet(getDatabaseMetaData().getProcedureColumns(getActualCatalog(catalog), getActualSchema(schemaPattern), procedureNamePattern, columnNamePattern));
     }
     
     @Override
-    public final ResultSet getTables(final String catalog, final String schemaPattern, final String tableNamePattern, final String[] types) throws SQLException {
+    public ResultSet getTables(final String catalog, final String schemaPattern, final String tableNamePattern, final String[] types) throws SQLException {
         return createDatabaseMetaDataResultSet(getDatabaseMetaData().getTables(getActualCatalog(catalog), getActualSchema(schemaPattern), getActualTableNamePattern(tableNamePattern), types));
     }
     
     @Override
-    public final ResultSet getSchemas() throws SQLException {
+    public ResultSet getSchemas() throws SQLException {
         return createDatabaseMetaDataResultSet(getDatabaseMetaData().getSchemas());
     }
     
     @Override
-    public final ResultSet getSchemas(final String catalog, final String schemaPattern) throws SQLException {
+    public ResultSet getSchemas(final String catalog, final String schemaPattern) throws SQLException {
         return createDatabaseMetaDataResultSet(getDatabaseMetaData().getSchemas(getActualCatalog(catalog), getActualSchema(schemaPattern)));
     }
     
     @Override
-    public final ResultSet getCatalogs() throws SQLException {
+    public ResultSet getCatalogs() throws SQLException {
         return createDatabaseMetaDataResultSet(getDatabaseMetaData().getCatalogs());
     }
     
     @Override
-    public final ResultSet getTableTypes() throws SQLException {
+    public ResultSet getTableTypes() throws SQLException {
         return createDatabaseMetaDataResultSet(getDatabaseMetaData().getTableTypes());
     }
     
     @Override
-    public final ResultSet getColumns(final String catalog, final String schemaPattern, final String tableNamePattern, final String columnNamePattern) throws SQLException {
+    public ResultSet getColumns(final String catalog, final String schemaPattern, final String tableNamePattern, final String columnNamePattern) throws SQLException {
         return createDatabaseMetaDataResultSet(
             getDatabaseMetaData().getColumns(getActualCatalog(catalog), getActualSchema(schemaPattern), getActualTableNamePattern(tableNamePattern), columnNamePattern));
     }
     
     @Override
-    public final ResultSet getColumnPrivileges(final String catalog, final String schema, final String table, final String columnNamePattern) throws SQLException {
+    public ResultSet getColumnPrivileges(final String catalog, final String schema, final String table, final String columnNamePattern) throws SQLException {
         return createDatabaseMetaDataResultSet(
             getDatabaseMetaData().getColumnPrivileges(getActualCatalog(catalog), getActualSchema(schema), getActualTable(table), columnNamePattern));
     }
     
     @Override
-    public final ResultSet getTablePrivileges(final String catalog, final String schemaPattern, final String tableNamePattern) throws SQLException {
+    public ResultSet getTablePrivileges(final String catalog, final String schemaPattern, final String tableNamePattern) throws SQLException {
         return createDatabaseMetaDataResultSet(getDatabaseMetaData().getTablePrivileges(getActualCatalog(catalog), getActualSchema(schemaPattern), getActualTableNamePattern(tableNamePattern)));
     }
     
     @Override
-    public final ResultSet getBestRowIdentifier(final String catalog, final String schema, final String table, final int scope, final boolean nullable) throws SQLException {
+    public ResultSet getBestRowIdentifier(final String catalog, final String schema, final String table, final int scope, final boolean nullable) throws SQLException {
         return createDatabaseMetaDataResultSet(getDatabaseMetaData().getBestRowIdentifier(getActualCatalog(catalog), getActualSchema(schema), getActualTable(table), scope, nullable));
     }
     
     @Override
-    public final ResultSet getVersionColumns(final String catalog, final String schema, final String table) throws SQLException {
+    public ResultSet getVersionColumns(final String catalog, final String schema, final String table) throws SQLException {
         return createDatabaseMetaDataResultSet(getDatabaseMetaData().getVersionColumns(getActualCatalog(catalog), getActualSchema(schema), getActualTable(table)));
     }
     
     @Override
-    public final ResultSet getPrimaryKeys(final String catalog, final String schema, final String table) throws SQLException {
+    public ResultSet getPrimaryKeys(final String catalog, final String schema, final String table) throws SQLException {
         return createDatabaseMetaDataResultSet(getDatabaseMetaData().getPrimaryKeys(getActualCatalog(catalog), getActualSchema(schema), getActualTable(table)));
     }
     
     @Override
-    public final ResultSet getImportedKeys(final String catalog, final String schema, final String table) throws SQLException {
+    public ResultSet getImportedKeys(final String catalog, final String schema, final String table) throws SQLException {
         return createDatabaseMetaDataResultSet(getDatabaseMetaData().getImportedKeys(getActualCatalog(catalog), getActualSchema(schema), getActualTable(table)));
     }
     
     @Override
-    public final ResultSet getExportedKeys(final String catalog, final String schema, final String table) throws SQLException {
+    public ResultSet getExportedKeys(final String catalog, final String schema, final String table) throws SQLException {
         return createDatabaseMetaDataResultSet(getDatabaseMetaData().getExportedKeys(getActualCatalog(catalog), getActualSchema(schema), getActualTable(table)));
     }
     
     @Override
-    public final ResultSet getCrossReference(final String parentCatalog,
+    public ResultSet getCrossReference(final String parentCatalog,
                                        final String parentSchema, final String parentTable, final String foreignCatalog, final String foreignSchema, final String foreignTable) throws SQLException {
         return createDatabaseMetaDataResultSet(
             getDatabaseMetaData().getCrossReference(getActualCatalog(parentCatalog), getActualSchema(parentSchema), parentTable, foreignCatalog, foreignSchema, foreignTable));
     }
     
     @Override
-    public final ResultSet getTypeInfo() throws SQLException {
+    public ResultSet getTypeInfo() throws SQLException {
         return createDatabaseMetaDataResultSet(getDatabaseMetaData().getTypeInfo());
     }
     
     @Override
-    public final ResultSet getIndexInfo(final String catalog, final String schema, final String table, final boolean unique, final boolean approximate) throws SQLException {
+    public ResultSet getIndexInfo(final String catalog, final String schema, final String table, final boolean unique, final boolean approximate) throws SQLException {
         return createDatabaseMetaDataResultSet(getDatabaseMetaData().getIndexInfo(getActualCatalog(catalog), getActualSchema(schema), getActualTable(table), unique, approximate));
     }
     
     @Override
-    public final ResultSet getUDTs(final String catalog, final String schemaPattern, final String typeNamePattern, final int[] types) throws SQLException {
+    public ResultSet getUDTs(final String catalog, final String schemaPattern, final String typeNamePattern, final int[] types) throws SQLException {
         return createDatabaseMetaDataResultSet(getDatabaseMetaData().getUDTs(getActualCatalog(catalog), getActualSchema(schemaPattern), typeNamePattern, types));
     }
     
     @Override
-    public final ResultSet getClientInfoProperties() throws SQLException {
+    public ResultSet getClientInfoProperties() throws SQLException {
         return createDatabaseMetaDataResultSet(getDatabaseMetaData().getClientInfoProperties());
     }
     
     @Override
-    public final ResultSet getFunctions(final String catalog, final String schemaPattern, final String functionNamePattern) throws SQLException {
+    public ResultSet getFunctions(final String catalog, final String schemaPattern, final String functionNamePattern) throws SQLException {
         return createDatabaseMetaDataResultSet(getDatabaseMetaData().getFunctions(getActualCatalog(catalog), getActualSchema(schemaPattern), functionNamePattern));
     }
     
     @Override
-    public final ResultSet getFunctionColumns(final String catalog, final String schemaPattern, final String functionNamePattern, final String columnNamePattern) throws SQLException {
+    public ResultSet getFunctionColumns(final String catalog, final String schemaPattern, final String functionNamePattern, final String columnNamePattern) throws SQLException {
         return createDatabaseMetaDataResultSet(getDatabaseMetaData().getFunctionColumns(getActualCatalog(catalog), getActualSchema(schemaPattern), functionNamePattern, columnNamePattern));
     }
     
     @Override
-    public final ResultSet getPseudoColumns(final String catalog, final String schemaPattern, final String tableNamePattern, final String columnNamePattern) throws SQLException {
+    public ResultSet getPseudoColumns(final String catalog, final String schemaPattern, final String tableNamePattern, final String columnNamePattern) throws SQLException {
         return createDatabaseMetaDataResultSet(
             getDatabaseMetaData().getPseudoColumns(getActualCatalog(catalog), getActualSchema(schemaPattern), getActualTableNamePattern(tableNamePattern), columnNamePattern));
     }
     
-    protected abstract String getActualTableNamePattern(String tableNamePattern);
+    private String getActualTableNamePattern(final String tableNamePattern) {
+        if (null == tableNamePattern) {
+            return null;
+        }
+        Optional<TablesAggregationRule> tablesAggregationRule = findTablesAggregationRule();
+        if (tablesAggregationRule.isPresent()) {
+            return tablesAggregationRule.get().findFirstActualTable(tableNamePattern).isPresent() ? "%" + tableNamePattern + "%" : tableNamePattern;
+        }
+        return tableNamePattern;
+    }
     
-    protected abstract String getActualTable(String table);
+    private String getActualTable(final String table) {
+        if (null == table) {
+            return null;
+        }
+        Optional<TablesAggregationRule> tablesAggregationRule = findTablesAggregationRule();
+        return tablesAggregationRule.isPresent() ? tablesAggregationRule.get().findFirstActualTable(table).orElse(table) : table;
+    }
     
-    protected abstract ResultSet createDatabaseMetaDataResultSet(ResultSet resultSet) throws SQLException;
+    private Optional<TablesAggregationRule> findTablesAggregationRule() {
+        return rules.stream().filter(each -> each instanceof TablesAggregationRule).findFirst().map(rule -> (TablesAggregationRule) rule);
+    }
+    
+    private ResultSet createDatabaseMetaDataResultSet(final ResultSet resultSet) throws SQLException {
+        return new DatabaseMetaDataResultSet(resultSet, rules);
+    }
     
     private String getActualCatalog(final String catalog) {
         return null != catalog && catalog.contains(DefaultSchema.LOGIC_NAME) ? shardingSphereMetaData.getDataSources().getDataSourceMetaData(getDataSourceName()).getCatalog() : catalog;
