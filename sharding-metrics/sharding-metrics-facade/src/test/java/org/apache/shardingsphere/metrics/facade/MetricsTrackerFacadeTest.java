@@ -32,3 +32,4 @@ public final class MetricsTrackerFacadeTest {
         assertThat(metricsTrackerFacade.findMetricsTrackerManager("fixture").isPresent(), is(true));
     }
 }
+
