@@ -127,7 +127,7 @@ public class ShardingRule implements TablesAggregationRule {
     }
     
     private EncryptRule createEncryptRule(final EncryptRuleConfiguration encryptRuleConfig) {
-        return Optional.ofNullable(encryptRuleConfig).map(e -> new EncryptRule(ruleConfiguration.getEncryptRuleConfig())).orElse(new EncryptRule());
+        return Optional.ofNullable(encryptRuleConfig).map(EncryptRule::new).orElse(new EncryptRule());
     }
     
     /**
