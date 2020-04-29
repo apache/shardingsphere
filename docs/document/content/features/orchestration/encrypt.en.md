@@ -189,12 +189,12 @@ So far, the online business encryption and rectification solutions have all been
 4. Support switching different encryption strategies.
 5. For online services, it is possible to store plaintext data and ciphertext data synchronously, and decide whether to use plaintext or ciphertext columns for query through configuration. Without changing the business query SQL, the on-line system can safely and transparently migrate data before and after encryption.
 
-## 适用场景说明
+## Description of applicable scenarios
 
-1. 用户项目使用Java语言进行编程。
-2. 后端数据库为MySQL、Oracle、PostgreSQL、SQLServer。
-3. 用户需要对数据库表中某个或多个列进行脱敏(数据加密&解密)。
-4. 兼容所有常用SQL。
+1. User projects are developed in Java.
+2. The back-end databases are MySQL, Oracle, PostgreSQL, and SQLServer.
+3. The user needs to encrypt one or more columns in the database table (data encryption & decryption).
+4. Compatible with all commonly used SQL.
 
 ## 限制条件
 
