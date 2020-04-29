@@ -101,19 +101,19 @@ With this configuration, Encrypt-JDBC only needs to convert logicColumn and ciph
 
 ![5](https://shardingsphere.apache.org/document/current/img/encrypt/5.png)
 
-### 已上线业务改造
+### Online Business Transformation
 
-业务场景分析：由于业务已经在线上运行，数据库里必然存有大量明文历史数据。现在的问题是如何让历史数据得以加密清洗、如何让增量数据得以加密处理、如何让业务在新旧两套数据系统之间进行无缝、透明化迁移。
+Business scenario analysis: As the business is already running online, there must be a large amount of plain text historical data stored in the database. The current challenges are how to enable historical data to be encrypted and cleaned, how to enable incremental data to be encrypted, and how to allow businesses to seamlessly and transparently migrate between the old and new data systems.
 
-解决方案说明：在提供解决方案之前，我们先来头脑风暴一下：首先，既然是旧业务需要进行脱敏改造，那一定存储了非常重要且敏感的信息。这些信息含金量高且业务相对基础重要。如果搞错了，整个团队KPI就再见了。所以不可能一上来就停业务，禁止新数据写入，再找个加密器把历史数据全部加密清洗，再把之前重构的代码部署上线，使其能把存量和增量数据进行在线加密解密。如此简单粗暴的方式，按照历史经验来谈，一定凉凉。
+Solution description: Before providing a solution, let ’s brainstorm: First, if the old business needs to be desensitized, it must have stored very important and sensitive information. This information has a high gold content and the business is relatively important. If it is broken, the whole team KPI is over. Therefore, it is impossible to suspend business immediately, prohibit writing of new data, encrypt and clean all historical data with an encrypter, and then deploy the previously reconstructed code online, so that it can encrypt and decrypt online and incremental data. Such a simple and rough way, based on historical experience, will definitely not work.
 
-那么另一种相对安全的做法是：重新搭建一套和生产环境一模一样的预发环境，然后通过相关迁移洗数工具把生产环境的**存量原文数据**加密后存储到预发环境，而**新增数据**则通过例如MySQL主从复制及业务方自行开发的工具加密后存储到预发环境的数据库里，再把重构后可以进行加解密的代码部署到预发环境。这样生产环境是一套**以明文为核心的查询修改**的环境；预发环境是一套**以密文为核心加解密查询修改**的环境。在对比一段时间无误后，可以夜间操作将生产流量切到预发环境中。此方案相对安全可靠，只是时间、人力、资金、成本较高，主要包括：预发环境搭建、生产代码整改、相关辅助工具开发等。除非无路可走，否则业务开发人员一般是从入门到放弃。
+Then another relatively safe approach is to rebuild a pre-release environment exactly like the production environment, and then encrypt the ** Inventory plaintext data ** of the production environment through the relevant migration and washing tools and store it in the pre-release environment. The ** Increment data ** is encrypted by tools such as MySQL master-slave replication and the business party ’s own development, encrypted and stored in the database of the pre-release environment, and then the refactored code can be deployed to the pre-release environment. In this way, the production environment is a set of environment for ** modified/queries with plain text as the core **; the pre-release environment is a set of ** encrypt/decrypt queries modified with ciphertext as the core **. After comparing for a period of time, the production flow can be cut into the pre-release environment at night. This solution is relatively safe and reliable, but it takes more time, manpower, capital, and costs. It mainly includes: pre-release environment construction, production code rectification, and related auxiliary tool development. Unless there is no way to go, business developers generally go from getting started to giving up.
 
-业务开发人员最希望的做法是：减少资金费用的承担、最好不要修改业务代码、能够安全平滑迁移系统。于是，ShardingSphere的脱敏功能模块便应用而生。可分为三步进行：
+Business developers must hope: reduce the burden of capital costs, do not modify the business code, and be able to safely and smoothly migrate the system. So, the encryption function module of ShardingSphere was born. It can be divided into three steps:
 
-1. 系统迁移前
+1. Before system migration
 
-   假设系统需要对t_user的pwd字段进行脱敏处理，业务方使用Encrypt-JDBC来代替标准化的JDBC接口，此举基本不需要额外改造（我们还提供了SpringBoot，SpringNameSpace，Yaml等接入方式，满足不同业务方需求）。另外，提供一套脱敏配置规则，如下所示：
+   Assuming that the system needs to encrypt the pwd field of t_user, the business side uses Encrypt-JDBC to replace the standardized JDBC interface, which basically requires no additional modification (we also provide SpringBoot, SpringNameSpace, Yaml and other access methods to achieve different services demand). In addition, demonstrate a set of encryption configuration rules, as follows:
 
    ```yaml
    encryptRule:
@@ -133,29 +133,30 @@ With this configuration, Encrypt-JDBC only needs to convert logicColumn and ciph
        query.with.cipher.column: false
    ```
 
-   依据上述脱敏规则可知，首先需要在数据库表t_user里新增一个字段叫做pwd_cipher，即cipherColumn，用于存放密文数据，同时我们把plainColumn设置为pwd，用于存放明文数据，而把logicColumn也设置为pwd。由于之前的代码SQL就是使用pwd进行编写，即面向逻辑列进行SQL编写，所以业务代码无需改动。通过Encrypt-JDBC，针对新增的数据，会把明文写到pwd列，并同时把明文进行加密存储到pwd_cipher列。此时，由于query.with.cipher.column设置为false，对业务应用来说，依旧使用pwd这一明文列进行查询存储，却在底层数据库表pwd_cipher上额外存储了新增数据的密文数据，其处理流程如下图所示：
+   According to the above encryption rules, we need to add a column called pwd_cipher in the t_user table, that is, cipherColumn, which is used to store ciphertext data. At the same time, we set plainColumn to pwd, which is used to store plaintext data, and logicColumn is also set to pwd . Because the previous SQL was written using pwd, that is, the SQL was written for logical columns, so the business code did not need to be changed. Through Encrypt-JDBC, for the incremental data, the plain text will be written to the pwd column, and the plain text will be encrypted and stored in the pwd_cipher column. At this time, because query.with.cipher.column is set to false, for business applications, the plain text column of pwd is still used for query storage, but the cipher text data of the new data is additionally stored on the underlying database table pwd_cipher. The processing flow is shown below:
+
 
    ![6](https://shardingsphere.apache.org/document/current/img/encrypt/6.png)
 
-   新增数据在插入时，就通过Encrypt-JDBC加密为密文数据，并被存储到了cipherColumn。而现在就需要处理历史明文存量数据。**由于Apache ShardingSphere目前并未提供相关迁移洗数工具，此时需要业务方自行将pwd中的明文数据进行加密处理存储到pwd_cipher。**
+   When the newly added data is inserted, it is encrypted as ciphertext data through Encrypt-JDBC and stored in the cipherColumn. Now it is necessary to process historical plaintext inventory data. ** As Apache ShardingSphere currently does not provide the corresponding migration and washing tools, the business party needs to encrypt and store the plain text data in pwd to pwd_cipher. **
 
-2. 系统迁移中
+2. During system migration
 
-   新增的数据已被Encrypt-JDBC将密文存储到密文列，明文存储到明文列；历史数据被业务方自行加密清洗后，将密文也存储到密文列。也就是说现在的数据库里即存放着明文也存放着密文，只是由于配置项中的query.with.cipher.column=false，所以密文一直没有被使用过。现在我们为了让系统能切到密文数据进行查询，需要将脱敏配置中的query.with.cipher.column设置为true。在重启系统后，我们发现系统业务一切正常，但是Encrypt-JDBC已经开始从数据库里取出密文列的数据，解密后返回给用户；而对于用户的增删改需求，则依旧会把原文数据存储到明文列，加密后密文数据存储到密文列。
+   The incremental data has been stored by Encrypt-JDBC in the ciphertext column and the plaintext is stored in the plaintext column; after the historical data is encrypted and cleaned by the business party itself, the ciphertext is also stored in the ciphertext column. That is to say, the plaintext and the ciphertext are stored in the current database. Since the query.with.cipher.column = false in the configuration item, the ciphertext has never been used. Now we need to set the query.with.cipher.column in the encryption configuration to true in order for the system to cut the ciphertext data for query. After restarting the system, we found that the system business is normal, but Encrypt-JDBC has started to extract the ciphertext data from the database, decrypt it and return it to the user; and for the user's insert, delete and update requirements, the original data will still be stored The plaintext column, the encrypted ciphertext data is stored in the ciphertext column.
 
-   虽然现在业务系统通过将密文列的数据取出，解密后返回；但是，在存储的时候仍旧会存一份原文数据到明文列，这是为什么呢？答案是：为了能够进行系统回滚。**因为只要密文和明文永远同时存在，我们就可以通过开关项配置自由将业务查询切换到cipherColumn或plainColumn。**也就是说，如果将系统切到密文列进行查询时，发现系统报错，需要回滚。那么只需将query.with.cipher.column=false，Encrypt-JDBC将会还原，即又重新开始使用plainColumn进行查询。处理流程如下图所示：
+   Although the business system extracts the data in the ciphertext column and returns it after decryption; however, it will still save a copy of the original data to the plaintext column during storage. Why? The answer is: in order to be able to roll back the system. ** Because as long as the ciphertext and plaintext always exist at the same time, we can freely switch the business query to cipherColumn or plainColumn through the configuration of the switch item. ** In other words, if the system is switched to the ciphertext column for query, the system reports an error and needs to be rolled back. Then just set query.with.cipher.column = false, Encrypt-JDBC will restore, that is, start using plainColumn to query again. The processing flow is shown in the following figure:
 
    ![7](https://shardingsphere.apache.org/document/current/img/encrypt/7.png)
 
    
 
-3. 系统迁移后
+3. After system migration
 
-   由于安全审计部门要求，业务系统一般不可能让数据库的明文列和密文列永久同步保留，我们需要在系统稳定后将明文列数据删除。即我们需要在系统迁移后将plainColumn，即pwd进行删除。那问题来了，现在业务代码都是面向pwd进行编写SQL的，把底层数据表中的存放明文的pwd删除了，换用pwd_cipher进行解密得到原文数据，那岂不是意味着业务方需要整改所有SQL，从而不使用即将要被删除的pwd列？还记得我们Encrypt-JDBC的核心意义所在吗？
+   Due to the requirements of the security audit department, it is generally impossible for the business system to keep the plaintext and ciphertext columns of the database permanently synchronized. We need to delete the plaintext data after the system is stable. That is, we need to delete plainColumn (ie pwd) after system migration. The problem is that now the business code is written for pwd SQL, delete the pwd in the underlying data table stored in plain text, and use pwd_cipher to decrypt to get the original data, does that mean that the business side needs to rectify all SQL, thus Do not use the pwd column that is about to be deleted? Remember the core meaning of our Encrypt-JDBC?
 
-   > 这也正是Encrypt-JDBC核心意义所在，即依据用户提供的脱敏规则，将用户SQL与底层数据库表结构割裂开来，使得用户的SQL编写不再依赖于真实的数据库表结构。而用户与底层数据库之间的衔接、映射、转换交由ShardingSphere进行处理。
-
-   是的，因为有logicColumn存在，用户的编写SQL都面向这个虚拟列，Encrypt-JDBC就可以把这个逻辑列和底层数据表中的密文列进行映射转换。于是迁移后的脱敏配置即为：
+   > This is also the core meaning of Encrypt-JDBC. According to the encryption rules provided by the user, the user SQL is separated from the underlying database table structure, so that the user's SQL writing no longer depends on the actual database table structure. The connection, mapping, and conversion between the user and the underlying database are handled by ShardingSphere.
+ 
+   Yes, because of the existence of logicColumn, users write SQL for this virtual column. Encrypt-JDBC can map this logical column and the ciphertext column in the underlying data table. So the encryption configuration after migration is:
 
    ```yaml
    encryptRule:
@@ -174,11 +175,11 @@ With this configuration, Encrypt-JDBC only needs to convert logicColumn and ciph
        query.with.cipher.column: true
    ```
 
-其处理流程如下：
+The processing flow is as follows:
 
 ![8](https://shardingsphere.apache.org/document/current/img/encrypt/8.png)
 
-至此，已在线业务脱敏整改解决方案全部叙述完毕。我们提供了Java、Yaml、SpringBoot、SpringNameSpace多种方式供用户选择接入，力求满足业务不同的接入需求。该解决方案目前已在京东数科不断落地上线，提供对内基础服务支撑。
+So far, the online business encryption and rectification solutions have all been demonstrated. We provide Java, Yaml, SpringBoot, SpringNameSpace multiple ways for users to choose to use, and strive to fulfil business requirements. The solution has been continuously launched on jddglobal.com, providing internal basic service support.
 
 ## 中间件脱敏服务优势
 
