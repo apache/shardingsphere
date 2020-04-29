@@ -196,13 +196,12 @@ So far, the online business encryption and rectification solutions have all been
 3. The user needs to encrypt one or more columns in the database table (data encryption & decryption).
 4. Compatible with all commonly used SQL.
 
-## 限制条件
+## Limitation
 
-1. 用户需要自行处理数据库中原始的存量数据、洗数。
-2. 使用脱敏功能+分库分表功能，部分特殊SQL不支持，请参考[SQL使用规范]( https://shardingsphere.apache.org/document/current/cn/features/sharding/use-norms/sql/)。
-3. 脱敏字段无法支持比较操作，如：大于小于、ORDER BY、BETWEEN、LIKE等。
-4. 脱敏字段无法支持计算操作，如：AVG、SUM以及计算表达式               。
-
+1. Users need to deal with the original inventory data and wash numbers in the database.
+2. Use encryption function + sub-library sub-table function, some special SQL is not supported, please refer to [SQL specification]( https://shardingsphere.apache.org/document/current/en/features/sharding/use-norms/sql/)。
+3. Encryption fields cannot support comparison operations, such as: greater than less than, ORDER BY, BETWEEN, LIKE, etc.
+4. Encryption fields cannot support calculation operations, such as AVG, SUM, and calculation expressions.
 
 ## Solution
 
