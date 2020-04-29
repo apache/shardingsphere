@@ -37,14 +37,14 @@ __
 ### Overall Architecture
 
 Encrypt-JDBC provided by ShardingSphere are deployed with business code. Business parties need to perform JDBC programming for Encrypt-JDBC. Since Encrypt-JDBC implements all JDBC standard interfaces, business codes can be used without additional modification. At this time, Encrypt-JDBC is responsible for all interactions between the business code and the database. Business only needs to provide encryption rules. ** As a bridge between the business code and the underlying database, Encrypt-JDBC can intercept user behavior and interact with the database after transforming the user behavior. **
-![1](https://shardingsphere.apache.org/document/current/img/encrypt/1.png)
+![1](https://shardingsphere.apache.org/document/current/img/encrypt/1_en.png)
 
 Encrypt-JDBC intercepts SQL initiated by user, analyzes and understands SQL behavior through the SQL syntax parser.According to the encryption rules passed by the user, find out the fields that need to be encrypted/decrypt and the encryptor/decryptor  used to encrypt/decrypt the target fields, and then interact with the underlying database.ShardingSphere will encrypt the plaintext requested by the user and store it in the underlying database; and when the user queries, the ciphertext will be taken out of the database for decryption and returned to the end user.ShardingSphere shields the encryption of data, so that users do not need to perceive the process of parsing SQL, data encryption, and data decryption, just like using ordinary data.
 
 ### Encryption Rule
 
 Before explaining the whole process in detail, we need to understand the encryption rules and configuration, which is the basis of understanding the whole process. The encryption configuration is mainly divided into four parts: data source configuration, encryptor configuration, encryption table configuration, and query attribute configuration. The details are shown in the following figure:
-![2](https://shardingsphere.apache.org/document/current/img/encrypt/2.png)
+![2](https://shardingsphere.apache.org/document/current/img/encrypt/2_en.png)
 
 **Datasource Configuration**：The configuration of DataSource.
 
@@ -64,12 +64,12 @@ Before explaining the whole process in detail, we need to understand the encrypt
 
 For example, if there is a table in the database called t_user, there are actually two fields pwd_plain in this table, used to store plain text data, pwd_cipher, used to store cipher text data, and define logicColumn as pwd. Then, when writing SQL, users should write to logicColumn, that is, INSERT INTO t_user SET pwd = '123'. ShardingSphere receives the SQL, and through the encryption configuration provided by the user, finds that pwd is a logicColumn, so it decrypt the logical column and its corresponding plaintext data. As can be seen that ** ShardingSphere has carried out the column-sensitive and data-sensitive mapping conversion of the logical column facing the user and the plaintext and ciphertext columns facing the underlying database. **As shown below:
 
-![3](https://shardingsphere.apache.org/document/current/img/encrypt/3.png)
+![3](https://shardingsphere.apache.org/document/current/img/encrypt/3_en.png)
 
 ** This is also the core meaning of Encrypt-JDBC, which is to separate user SQL from the underlying data table structure according to the encryption rules provided by the user, so that the SQL writter by user no longer depends on the actual database table structure. The connection, mapping, and conversion between the user and the underlying database are handled by ShardingSphere. ** Why should we do this? It is still the same : in order to enable the online business to seamlessly, transparently and safely perform data encryption migration.
 
 In order to make the reader more clearly understand the core processing flow of Encrypt-JDBC, the following picture shows the processing flow and conversion logic when using Encrypt-JDBC to add, delete, modify and check, as shown in the following figure.
-![4](https://shardingsphere.apache.org/document/current/img/encrypt/4.png)
+![4](https://shardingsphere.apache.org/document/current/img/encrypt/4_en.png)
 
 ## Detailed Solution
 
@@ -98,7 +98,7 @@ encryptRule:
 
 With this configuration, Encrypt-JDBC only needs to convert logicColumn and cipherColumn. The underlying data table does not store plain text, only cipher text. This is also a requirement of the security audit part. If users want to store plain text and cipher text together in the database, they just need to add plainColumn configuration. The overall processing flow is shown below:
 
-![5](https://shardingsphere.apache.org/document/current/img/encrypt/5.png)
+![5](https://shardingsphere.apache.org/document/current/img/encrypt/5_en.png)
 
 ### Online Business Transformation
 
@@ -135,7 +135,7 @@ Business developers must hope: reduce the burden of capital costs, do not modify
    According to the above encryption rules, we need to add a column called pwd_cipher in the t_user table, that is, cipherColumn, which is used to store ciphertext data. At the same time, we set plainColumn to pwd, which is used to store plaintext data, and logicColumn is also set to pwd . Because the previous SQL was written using pwd, that is, the SQL was written for logical columns, so the business code did not need to be changed. Through Encrypt-JDBC, for the incremental data, the plain text will be written to the pwd column, and the plain text will be encrypted and stored in the pwd_cipher column. At this time, because query.with.cipher.column is set to false, for business applications, the plain text column of pwd is still used for query storage, but the cipher text data of the new data is additionally stored on the underlying database table pwd_cipher. The processing flow is shown below:
 
 
-   ![6](https://shardingsphere.apache.org/document/current/img/encrypt/6.png)
+   ![6](https://shardingsphere.apache.org/document/current/img/encrypt/6_en.png)
 
    When the newly added data is inserted, it is encrypted as ciphertext data through Encrypt-JDBC and stored in the cipherColumn. Now it is necessary to process historical plaintext inventory data. ** As Apache ShardingSphere currently does not provide the corresponding migration and washing tools, the business party needs to encrypt and store the plain text data in pwd to pwd_cipher. **
 
@@ -145,7 +145,7 @@ Business developers must hope: reduce the burden of capital costs, do not modify
 
    Although the business system extracts the data in the ciphertext column and returns it after decryption; however, it will still save a copy of the original data to the plaintext column during storage. Why? The answer is: in order to be able to roll back the system. ** Because as long as the ciphertext and plaintext always exist at the same time, we can freely switch the business query to cipherColumn or plainColumn through the configuration of the switch item. ** In other words, if the system is switched to the ciphertext column for query, the system reports an error and needs to be rolled back. Then just set query.with.cipher.column = false, Encrypt-JDBC will restore, that is, start using plainColumn to query again. The processing flow is shown in the following figure:
 
-   ![7](https://shardingsphere.apache.org/document/current/img/encrypt/7.png)
+   ![7](https://shardingsphere.apache.org/document/current/img/encrypt/7_en.png)
 
    
 
@@ -176,9 +176,9 @@ Business developers must hope: reduce the burden of capital costs, do not modify
 
 The processing flow is as follows:
 
-![8](https://shardingsphere.apache.org/document/current/img/encrypt/8.png)
+![8](https://shardingsphere.apache.org/document/current/img/encrypt/8_en.png)
 
-So far, the online business encryption and rectification solutions have all been demonstrated. We provide Java, Yaml, SpringBoot, SpringNameSpace multiple ways for users to choose to use, and strive to fulfil business requirements. The solution has been continuously launched on jddglobal.com, providing internal basic service support.
+So far, the online service encryption and rectification solutions have all been demonstrated. We provide Java, Yaml, SpringBoot, SpringNameSpace multiple ways for users to choose to use, and strive to fulfil business requirements. The solution has been continuously launched on JD Digits, providing internal basic service support.
 
 ## The advantages of Middleware encryption service
 
