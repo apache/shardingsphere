@@ -2179,3 +2179,43 @@ TABLE_ENCRYPTION_ADMIN
 XA_RECOVER_ADMIN
     : X A UL_ R E C O V E R UL_ A D M I N
     ;
+
+WORK
+    : W O R K
+    ;
+
+BACKUP
+    : B A C K U P
+    ;
+
+RESUME
+    : R E S U M E
+    ;
+
+SUSPEND
+    : S U S P E N D
+    ;
+
+MIGRATE
+    : M I G R A T E
+    ;
+
+PREPARE
+    : P R E P A R E
+    ;
+
+ONE
+    : O N E
+    ;
+
+PHASE
+    : P H A S E
+    ;
+
+RECOVER
+    : R E C O V E R
+    ;
+
+SNAPSHOT
+    : S N A P S H O T
+    ;

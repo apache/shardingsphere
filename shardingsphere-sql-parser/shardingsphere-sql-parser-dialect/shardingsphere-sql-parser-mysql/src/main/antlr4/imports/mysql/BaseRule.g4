@@ -168,6 +168,10 @@ owner
     : identifier
     ;
 
+alias
+    : identifier | STRING_
+    ;
+
 name
     : identifier
     ;

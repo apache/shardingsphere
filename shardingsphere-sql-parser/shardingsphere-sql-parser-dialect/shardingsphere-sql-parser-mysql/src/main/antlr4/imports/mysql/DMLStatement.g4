@@ -161,6 +161,22 @@ loadXmlStatement
       (setAssignmentsClause)?
     ;
 
+tableStatement
+    : TABLE tableName (ORDER BY columnName)? (LIMIT NUMBER_ (OFFSET NUMBER_)?)?
+    ;
+
+valuesStatement
+    : VALUES rowConstructorList (ORDER BY columnDesignator)? (LIMIT BY NUMBER_)?
+    ;
+
+columnDesignator
+    : STRING_
+    ;
+
+rowConstructorList
+    : ROW assignmentValues (COMMA_ ROW assignmentValues)*
+    ;
+
 withClause_
     : WITH RECURSIVE? cteClause_ (COMMA_ cteClause_)*
     ;
@@ -191,10 +207,6 @@ projections
 
 projection
     : (columnName | expr) (AS? alias)? | qualifiedShorthand
-    ;
-
-alias
-    : identifier | STRING_
     ;
 
 unqualifiedShorthand
