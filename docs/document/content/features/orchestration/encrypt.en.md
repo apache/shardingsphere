@@ -16,7 +16,7 @@ ShardingSphere has made the encryption and decryption processes totally transpar
 
 Apache ShardingSphere is an ecosystem of open source distributed database middleware solutions. It consists of Sharding-JDBC, Sharding-Proxy, and Sharding-Sidecar (in planning) which are independent of each other, but can be used in mixed deployment. All of these can provide standardized data sharding, distributed transactions, and distributed governance functions, and can be applied to various situation such as Java homogeneous, heterogeneous languages, containers, cloud native, and so on.
 
-The data decryption module belongs to the sub-function module under the core function of ShardingSphere distributed governance. It parses the SQL input by the user and rewrites the SQL according to the decryption configuration provided by the user, thereby encrypting the original data and storing the original data and store the original data (optional) and cipher data to database at the same time. When the user queries the data, it takes the cipher data from the database and decrypts it, and finally returns the decrypted original data to the user. Apache ShardingSphere distributed database middleware automates and transparentizes the process of data desensitization, so that users do not need to pay attention to the details of data decryption and use decrypted data like ordinary data.  In addition, ShardingSphere can provide a relatively complete set of solutions for the encryption of online services or the encryption function of new services.
+The data decryption module belongs to the sub-function module under the core function of ShardingSphere distributed governance. It parses the SQL input by the user and rewrites the SQL according to the decryption configuration provided by the user, thereby encrypting the original data and storing the original data and store the original data (optional) and cipher data to database at the same time. When the user queries the data, it takes the cipher data from the database and decrypts it, and finally returns the decrypted original data to the user. Apache ShardingSphere distributed database middleware automates and transparentizes the process of data encryption, so that users do not need to pay attention to the details of data decryption and use decrypted data like ordinary data.  In addition, ShardingSphere can provide a relatively complete set of solutions for the encryption of online services or the encryption function of new services.
 
 ## Demand Analysis
 
@@ -40,7 +40,7 @@ The demand for data encryption is generally divided into two situations in real 
 Encrypt-JDBC provided by ShardingSphere are deployed with business code. Business parties need to perform JDBC programming for Encrypt-JDBC. Since Encrypt-JDBC implements all JDBC standard interfaces, business codes can be used without additional modification. At this time, Encrypt-JDBC is responsible for all interactions between the business code and the database. Business only needs to provide encryption rules. ** As a bridge between the business code and the underlying database, Encrypt-JDBC can intercept user behavior and interact with the database after transforming the user behavior. **
 ![1](https://shardingsphere.apache.org/document/current/img/encrypt/1.png)
 
-Encrypt-JDBC intercepts SQL initiated by user, analyzes and understands SQL behavior through the SQL syntax parser.According to the desensitization rules passed by the user, find out the fields that need to be encrypted/decrypt and the encryptor/decryptor  used to encrypt/decrypt the target fields, and then interact with the underlying database.ShardingSphere will encrypt the plaintext requested by the user and store it in the underlying database; and when the user queries, the ciphertext will be taken out of the database for decryption and returned to the end user.ShardingSphere shields the encryption of data, so that users do not need to perceive the process of parsing SQL, data encryption, and data decryption, just like using ordinary data.
+Encrypt-JDBC intercepts SQL initiated by user, analyzes and understands SQL behavior through the SQL syntax parser.According to the encryption rules passed by the user, find out the fields that need to be encrypted/decrypt and the encryptor/decryptor  used to encrypt/decrypt the target fields, and then interact with the underlying database.ShardingSphere will encrypt the plaintext requested by the user and store it in the underlying database; and when the user queries, the ciphertext will be taken out of the database for decryption and returned to the end user.ShardingSphere shields the encryption of data, so that users do not need to perceive the process of parsing SQL, data encryption, and data decryption, just like using ordinary data.
 
 ### Encryption Rule
 
@@ -181,13 +181,13 @@ The processing flow is as follows:
 
 So far, the online business encryption and rectification solutions have all been demonstrated. We provide Java, Yaml, SpringBoot, SpringNameSpace multiple ways for users to choose to use, and strive to fulfil business requirements. The solution has been continuously launched on jddglobal.com, providing internal basic service support.
 
-## 中间件脱敏服务优势
+## The advantages of Middleware encryption service
 
-1. 自动化&透明化数据脱敏过程，用户无需关注脱敏中间实现细节。
-2. 提供多种内置、第三方(AKS)的脱敏策略，用户仅需简单配置即可使用。
-3. 提供脱敏策略API接口，用户可实现接口，从而使用自定义脱敏策略进行数据脱敏。
-4. 支持切换不同的脱敏策略。
-5. 针对已上线业务，可实现明文数据与密文数据同步存储，并通过配置决定使用明文列还是密文列进行查询。可实现在不改变业务查询SQL前提下，已上线系统对加密前后数据进行安全、透明化迁移。
+1. Automated & transparent data encryption process, users do not need to pay attention to the implementation details of encryption.
+2. Provide a variety of built-in, third-party (AKS) encryption strategies, users only need to modify the configuration to use.
+3. Provides a encryption strategy API interface, users can implement the interface to use a custom encryption strategy for data encryption.
+4. Support switching different encryption strategies.
+5. For online services, it is possible to store plaintext data and ciphertext data synchronously, and decide whether to use plaintext or ciphertext columns for query through configuration. Without changing the business query SQL, the on-line system can safely and transparently migrate data before and after encryption.
 
 ## 适用场景说明
 
