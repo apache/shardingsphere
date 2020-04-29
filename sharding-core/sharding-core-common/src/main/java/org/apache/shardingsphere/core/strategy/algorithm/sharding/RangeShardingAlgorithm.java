@@ -41,11 +41,11 @@ import java.util.stream.Collectors;
  * Range sharding algorithm.
  * <p>
  * Range sharding algorithm is similar to the rule of partition table.
- * User can specify the range by setting the `range.partition.split.value` parameter.
- * The `range.partition.split.value` parameter is an ordered list of numbers, separated by commas.
+ * User can specify the range by setting the `partition.ranges` parameter.
+ * The `partition.ranges` parameter is an ordered list of numbers, separated by commas.
  * </p>
  * <p>
- * For example: If the `range.partition.split.value` parameter is set to `1,5,10`,
+ * For example: If the `partition.ranges` parameter is set to `1,5,10`,
  * the parameter will split all values into four intervals——(-∞, 1), [1,5), [5,10), [10, +∞),
  * which corresponding to partition_0, partition_1, partition_2, partition_3.
  * The sharding values will be divided into different partition by its value.
@@ -53,7 +53,7 @@ import java.util.stream.Collectors;
  */
 public final class RangeShardingAlgorithm implements StandardShardingAlgorithm<Long> {
 
-    private static final String RANGE_PARTITION_SPLIT_VALUE = "range.partition.split.value";
+    private static final String PARTITION_RANGES = "partition.ranges";
 
     @Getter
     @Setter
@@ -61,7 +61,7 @@ public final class RangeShardingAlgorithm implements StandardShardingAlgorithm<L
 
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Long> shardingValue) {
-        Preconditions.checkNotNull(properties.get(RANGE_PARTITION_SPLIT_VALUE), "Range sharding algorithm range partition split value cannot be null.");
+        Preconditions.checkNotNull(properties.get(PARTITION_RANGES), "Range sharding algorithm range partition split value cannot be null.");
         Map<Integer, Range<Long>> partitionRangeMap = getPartitionRangeMap();
         for (String each : availableTargetNames) {
             if (each.endsWith(getPartition(partitionRangeMap, shardingValue.getValue()) + "")) {
@@ -73,7 +73,7 @@ public final class RangeShardingAlgorithm implements StandardShardingAlgorithm<L
 
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Long> shardingValue) {
-        Preconditions.checkNotNull(properties.get(RANGE_PARTITION_SPLIT_VALUE), "Range sharding algorithm range partition split value cannot be null.");
+        Preconditions.checkNotNull(properties.get(PARTITION_RANGES), "Range sharding algorithm range partition split value cannot be null.");
         Map<Integer, Range<Long>> partitionRangeMap = getPartitionRangeMap();
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
         int lowerEndpointPartition = getPartition(partitionRangeMap, shardingValue.getValueRange().lowerEndpoint());
@@ -89,7 +89,7 @@ public final class RangeShardingAlgorithm implements StandardShardingAlgorithm<L
     }
 
     private Map<Integer, Range<Long>> getPartitionRangeMap() {
-        List<Long> splitValues = Splitter.on(",").trimResults().splitToList(properties.get(RANGE_PARTITION_SPLIT_VALUE).toString())
+        List<Long> splitValues = Splitter.on(",").trimResults().splitToList(properties.get(PARTITION_RANGES).toString())
                 .stream().map(Longs::tryParse).filter(Objects::nonNull).sorted().collect(Collectors.toList());
         Preconditions.checkArgument(CollectionUtils.isNotEmpty(splitValues), "Range sharding algorithm range partition split value is not valid.");
         Map<Integer, Range<Long>> partitionRangeMap = Maps.newHashMapWithExpectedSize(splitValues.size() + 1);
