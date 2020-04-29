@@ -28,8 +28,9 @@ public final class IncrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     
     @Getter
     private final String type = "INCREMENT";
-    
-    private final AtomicInteger count = new AtomicInteger();
+
+    @Getter
+    private final static AtomicInteger count = new AtomicInteger();
     
     @Getter
     @Setter
