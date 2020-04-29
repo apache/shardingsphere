@@ -16,7 +16,7 @@ ShardingSphere has made the encryption and decryption processes totally transpar
 
 Apache ShardingSphere is an ecosystem of open source distributed database middleware solutions. It consists of Sharding-JDBC, Sharding-Proxy, and Sharding-Sidecar (in planning) which are independent of each other, but can be used in mixed deployment. All of these can provide standardized data sharding, distributed transactions, and distributed governance functions, and can be applied to various situation such as Java homogeneous, heterogeneous languages, containers, cloud native, and so on.
 
-The data decryption module belongs to the sub-function module under the core function of ShardingSphere distributed governance. It parses the SQL input by the user and rewrites the SQL according to the decryption configuration provided by the user, thereby encrypting the original data and storing the original data and store the original data (optional) and cipher data to database at the same time. When the user queries the data, it takes the cipher data from the database and decrypts it, and finally returns the decrypted original data to the user. Apache ShardingSphere distributed database middleware automates and transparentizes the process of data encryption, so that users do not need to pay attention to the details of data decryption and use decrypted data like ordinary data.  In addition, ShardingSphere can provide a relatively complete set of solutions for the encryption of online services or the encryption function of new services.
+The data encryption module belongs to the sub-function module under the core function of ShardingSphere distributed governance. It parses the SQL input by the user and rewrites the SQL according to the encryption configuration provided by the user, thereby encrypting the original data and storing the original data and store the original data (optional) and cipher data to database at the same time. When the user queries the data, it takes the cipher data from the database and decrypts it, and finally returns the decrypted original data to the user. Apache ShardingSphere distributed database middleware automates and transparentizes the process of data encryption, so that users do not need to pay attention to the details of data decryption and use decrypted data like ordinary data.  In addition, ShardingSphere can provide a relatively complete set of solutions for the encryption of online services or the encryption function of new services.
 
 ## Demand Analysis
 
@@ -25,7 +25,6 @@ The demand for data encryption is generally divided into two situations in real 
 1. When the new business start to launch, and the security department stipulates that the sensitive information related to users, such as banks and mobile phone numbers, should be encrypted and stored in the database, and then decrypted when used. Because it is a brand new system, there is no inventory data cleaning problem, so the implementation is relatively simple.
 
 2. For the service has been launched, and plaintext has been stored in the database before. The relevant department suddenly needs to encrypt the data from the on-line business. This scenario generally needs to deal with three issues as followings:
-
 
    a) How to encrypt the historical data, a.k.a.s wash number.
 
@@ -211,7 +210,7 @@ On the one hand, ShardingSphere has provided internal encryption and decryption 
 
 ### ShardingEncryptor
 
-The solution has provided two methods, `encrypt()` and `decrypt()`, to encrypt and decrypt data to be  desensitized.
+The solution has provided two methods `encrypt()` and `decrypt()` to encrypt/decrypt data for encryption.
 
 When users `INSERT`,  `DELETE` and `UPDATE`, ShardingSphere will parse, rewrite and route SQL according to the configuration. It will also use `encrypt()` to encrypt data and store them in the database. When using `SELECT`, they will decrypt sensitive data from the database with `decrypt()` reversely and return them to users at last.
 
@@ -231,6 +230,6 @@ For now, ShardingSphere has abstracted the concept to be an interface for users 
 
 ## Continuance
 
-This article describes how to use Encrypt-JDBC, one of the ShardingSphere products, SpringBoot, SpringNameSpace are also could be the access form , etc. This form of access  mainly focus to Java homogeneous, and is deployed together with business code In a production environment. For heterogeneous languages, ShardingSphere also provides Encrypt-Proxy client. Encrypt-Proxy is a server-side product that implements the binary protocol of MySQL and PostgreSQL. Users can independently deploy the Encrypt-Proxy service, User can access this `virtual database server` with decryption through third-party database management tools(e.g. Navicat), JAVA connection pool or the command line, just like access ordinary MySQL and PostgreSQL databases.
+This article describes how to use Encrypt-JDBC, one of the ShardingSphere products, SpringBoot, SpringNameSpace are also could be the access form , etc. This form of access  mainly focus to Java homogeneous, and is deployed together with business code In a production environment. For heterogeneous languages, ShardingSphere also provides Encrypt-Proxy client. Encrypt-Proxy is a server-side product that implements the binary protocol of MySQL and PostgreSQL. Users can independently deploy the Encrypt-Proxy service, User can access this `virtual database server` with encryption through third-party database management tools(e.g. Navicat), JAVA connection pool or the command line, just like access ordinary MySQL and PostgreSQL databases.
 
-The decryption function belongs to distributed governance of Apache ShardingSphere. In fact, the Apache ShardingSphere ecosystem also has other more powerful capabilities, such as data sharding, read-write separation, distributed transactions, and monitoring governance. You can even choose any combination of these functions, such as decryption + data sharding, or data sharding + read-write separation, or monitoring governance + data sharding. In addition to the combination of these functions, ShardingSphere also provides various access forms, such as Sharding-JDBC and Sharding-Proxy for different situations.
+The encryption function belongs to distributed governance of Apache ShardingSphere. In fact, the Apache ShardingSphere ecosystem also has other more powerful capabilities, such as data sharding, read-write separation, distributed transactions, and monitoring governance. You can even choose any combination of these functions, such as encryption + data sharding, or data sharding + read-write separation, or monitoring governance + data sharding. In addition to the combination of these functions, ShardingSphere also provides various access forms, such as Sharding-JDBC and Sharding-Proxy for different situations.
