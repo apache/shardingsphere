@@ -21,7 +21,7 @@ import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLValue;
 import org.apache.shardingsphere.dbtest.engine.BatchIT;
-import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.junit.Test;
 
 import javax.xml.bind.JAXBException;
@@ -38,16 +38,16 @@ public final class BatchDMLIT extends BatchIT {
     
     private final IntegrateTestCase integrateTestCase;
     
-    public BatchDMLIT(final String sqlCaseId, final IntegrateTestCase integrateTestCase,
-                      final String ruleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, JAXBException, SQLException {
-        super(sqlCaseId, integrateTestCase, ruleType, databaseTypeEnvironment);
+    public BatchDMLIT(final IntegrateTestCase integrateTestCase,
+                      final String ruleType, final String databaseType, final String sql) throws IOException, JAXBException, SQLException {
+        super(integrateTestCase, ruleType, DatabaseTypes.getActualDatabaseType(databaseType), sql);
         this.integrateTestCase = integrateTestCase;
     }
     
     @Test
     public void assertExecuteBatch() throws JAXBException, IOException, SQLException, ParseException {
         // TODO fix masterslave
-        if (!getDatabaseTypeEnvironment().isEnabled() || "masterslave".equals(getRuleType())) {
+        if ("masterslave".equals(getRuleType())) {
             return;
         }
         // TODO fix shadow
@@ -80,7 +80,7 @@ public final class BatchDMLIT extends BatchIT {
     @Test
     public void assertClearBatch() throws SQLException, ParseException {
         // TODO fix masterslave
-        if (!getDatabaseTypeEnvironment().isEnabled() || "masterslave".equals(getRuleType())) {
+        if ("masterslave".equals(getRuleType())) {
             return;
         }
         // TODO fix shadow

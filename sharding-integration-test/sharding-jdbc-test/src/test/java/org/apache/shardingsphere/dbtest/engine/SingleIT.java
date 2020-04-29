@@ -20,17 +20,13 @@ package org.apache.shardingsphere.dbtest.engine;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
-import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLValue;
-import org.apache.shardingsphere.dbtest.cases.sql.SQLCaseType;
-import org.apache.shardingsphere.dbtest.cases.sql.loader.SQLCasesRegistry;
-import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
+import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLCaseType;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.LinkedList;
-import java.util.List;
 
 @Getter(AccessLevel.PROTECTED)
 public abstract class SingleIT extends BaseIT {
@@ -39,24 +35,17 @@ public abstract class SingleIT extends BaseIT {
     
     private final SQLCaseType caseType;
     
-    private final String sql;
-    
     private final String expectedDataFile;
     
-    public SingleIT(final String sqlCaseId, final String path, final IntegrateTestCaseAssertion assertion, 
-                    final String ruleType, final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
-        super(ruleType, databaseTypeEnvironment);
+    private final String sql;
+    
+    public SingleIT(final String path, final IntegrateTestCaseAssertion assertion, final String ruleType,
+                    final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
+        super(ruleType, databaseType);
         this.assertion = assertion;
         this.caseType = caseType;
-        sql = getSQL(sqlCaseId);
-        expectedDataFile = getExpectedDataFile(path, ruleType, databaseTypeEnvironment.getDatabaseType(), assertion.getExpectedDataFile());
-    }
-
-    private String getSQL(final String sqlCaseId) throws ParseException {
-        List<String> parameters = new LinkedList<>();
-        for (SQLValue each : assertion.getSQLValues()) {
-            parameters.add(each.toString());
-        }
-        return SQLCasesRegistry.getInstance().getSqlCasesLoader().getSQL(sqlCaseId, caseType, parameters);
+        this.sql = sql;
+        expectedDataFile = getExpectedDataFile(path, ruleType, databaseType, null != assertion ? assertion.getExpectedDataFile() : null);
     }
 }
+

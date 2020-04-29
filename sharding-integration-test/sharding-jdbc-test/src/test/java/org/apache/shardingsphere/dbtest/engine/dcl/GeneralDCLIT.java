@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.dbtest.engine.dcl;
 
 import org.apache.shardingsphere.dbtest.cases.assertion.dcl.DCLIntegrateTestCaseAssertion;
-import org.apache.shardingsphere.dbtest.cases.sql.SQLCaseType;
+import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLCaseType;
 import org.apache.shardingsphere.dbtest.engine.SQLType;
 import org.apache.shardingsphere.dbtest.engine.util.IntegrateTestParameters;
-import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -34,9 +34,9 @@ import java.util.Collection;
 
 public final class GeneralDCLIT extends BaseDCLIT {
     
-    public GeneralDCLIT(final String sqlCaseId, final String path, final DCLIntegrateTestCaseAssertion assertion, final String ruleType,
-                        final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
-        super(sqlCaseId, path, assertion, ruleType, databaseTypeEnvironment, caseType);
+    public GeneralDCLIT(final String path, final DCLIntegrateTestCaseAssertion assertion, final String ruleType,
+                        final String databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
+        super(path, assertion, ruleType, DatabaseTypes.getActualDatabaseType(databaseType), caseType, sql);
     }
     
     @Parameters(name = "{0} -> Rule:{3} -> {4} -> {5}")
@@ -46,9 +46,6 @@ public final class GeneralDCLIT extends BaseDCLIT {
     
     @Test
     public void assertExecuteUpdate() throws SQLException {
-        if (!getDatabaseTypeEnvironment().isEnabled()) {
-            return;
-        }
         try (Connection connection = getDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
                 connection.createStatement().executeUpdate(getSql());
@@ -60,9 +57,6 @@ public final class GeneralDCLIT extends BaseDCLIT {
     
     @Test
     public void assertExecute() throws SQLException {
-        if (!getDatabaseTypeEnvironment().isEnabled()) {
-            return;
-        }
         try (Connection connection = getDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
                 connection.createStatement().execute(getSql());

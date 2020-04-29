@@ -23,9 +23,8 @@ import org.apache.shardingsphere.dbtest.cases.dataset.DataSet;
 import org.apache.shardingsphere.dbtest.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.dbtest.cases.dataset.metadata.DataSetIndex;
 import org.apache.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
-import org.apache.shardingsphere.dbtest.cases.sql.SQLCaseType;
+import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLCaseType;
 import org.apache.shardingsphere.dbtest.engine.SingleIT;
-import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import org.apache.shardingsphere.dbtest.env.EnvironmentPath;
 import org.apache.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
@@ -59,11 +58,11 @@ public abstract class BaseDDLIT extends SingleIT {
     
     private final DatabaseType databaseType;
     
-    public BaseDDLIT(final String sqlCaseId, final String path, final DDLIntegrateTestCaseAssertion assertion, final String ruleType,
-                     final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
-        super(sqlCaseId, path, assertion, ruleType, databaseTypeEnvironment, caseType);
+    public BaseDDLIT(final String path, final DDLIntegrateTestCaseAssertion assertion, final String ruleType,
+                     final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
+        super(path, assertion, ruleType, databaseType, caseType, sql);
         this.assertion = assertion;
-        databaseType = databaseTypeEnvironment.getDatabaseType();
+        this.databaseType = databaseType;
     }
     
     @BeforeClass
@@ -78,20 +77,16 @@ public abstract class BaseDDLIT extends SingleIT {
     
     @Before
     public void initTables() throws SQLException, ParseException, IOException, JAXBException {
-        if (getDatabaseTypeEnvironment().isEnabled()) {
-            if ("H2".equals(getDatabaseTypeEnvironment().getDatabaseType().getName())) {
-                dropTables();
-            }
-            createTables();
-            new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(getRuleType()), getDataSourceMap()).initialize();
+        if ("H2".equals(getDatabaseType().getName())) {
+            dropTables();
         }
+        createTables();
+        new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(getRuleType()), getDataSourceMap()).initialize();
     }
     
     @After
     public void destroyTables() {
-        if (getDatabaseTypeEnvironment().isEnabled()) {
-            dropTables();
-        }
+        dropTables();
     }
     
     protected final void assertMetadata(final Connection connection) throws IOException, JAXBException, SQLException {

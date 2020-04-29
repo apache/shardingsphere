@@ -20,7 +20,6 @@ package org.apache.shardingsphere.dbtest.engine;
 import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import org.apache.shardingsphere.dbtest.env.EnvironmentPath;
 import org.apache.shardingsphere.dbtest.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.dbtest.env.datasource.DataSourceUtil;
@@ -52,7 +51,7 @@ public abstract class BaseIT {
     
     private final String ruleType;
     
-    private final DatabaseTypeEnvironment databaseTypeEnvironment;
+    private final DatabaseType databaseType;
     
     private final Map<String, DataSource> dataSourceMap;
     
@@ -62,23 +61,18 @@ public abstract class BaseIT {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
     
-    public BaseIT(final String ruleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, JAXBException, SQLException {
+    public BaseIT(final String ruleType, final DatabaseType databaseType) throws IOException, JAXBException, SQLException {
         this.ruleType = ruleType;
-        this.databaseTypeEnvironment = databaseTypeEnvironment;
-        if (databaseTypeEnvironment.isEnabled()) {
-            dataSourceMap = createDataSourceMap();
-            dataSource = createDataSource();
-        } else {
-            dataSourceMap = null;
-            dataSource = null;
-        }
+        this.databaseType = databaseType;
+        dataSourceMap = createDataSourceMap();
+        dataSource = createDataSource();
     }
     
     private Map<String, DataSource> createDataSourceMap() throws IOException, JAXBException {
         Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(ruleType);
         Map<String, DataSource> result = new HashMap<>(dataSourceNames.size(), 1);
         for (String each : dataSourceNames) {
-            result.put(each, DataSourceUtil.createDataSource(databaseTypeEnvironment.getDatabaseType(), each));
+            result.put(each, DataSourceUtil.createDataSource(databaseType, each));
         }
         return result;
     }

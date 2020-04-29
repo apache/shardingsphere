@@ -19,10 +19,10 @@ package org.apache.shardingsphere.dbtest.engine.dql;
 
 import org.apache.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCaseAssertion;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLValue;
-import org.apache.shardingsphere.dbtest.cases.sql.SQLCaseType;
+import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLCaseType;
 import org.apache.shardingsphere.dbtest.engine.SQLType;
 import org.apache.shardingsphere.dbtest.engine.util.IntegrateTestParameters;
-import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -42,22 +42,19 @@ public final class GeneralDQLIT extends BaseDQLIT {
     
     private final DQLIntegrateTestCaseAssertion assertion;
     
-    public GeneralDQLIT(final String sqlCaseId, final String path, final DQLIntegrateTestCaseAssertion assertion, final String ruleType,
-                        final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
-        super(sqlCaseId, path, assertion, ruleType, databaseTypeEnvironment, caseType);
+    public GeneralDQLIT(final String path, final DQLIntegrateTestCaseAssertion assertion, final String ruleType,
+                        final String databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
+        super(path, assertion, ruleType, DatabaseTypes.getActualDatabaseType(databaseType), caseType, sql);
         this.assertion = assertion;
     }
     
-    @Parameters(name = "{0} -> Rule:{3} -> {4} -> {5}")
+    @Parameters(name = "Rule:{2} -> {3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
         return IntegrateTestParameters.getParametersWithAssertion(SQLType.DQL);
     }
     
     @Test
     public void assertExecuteQuery() throws JAXBException, IOException, SQLException, ParseException {
-        if (!getDatabaseTypeEnvironment().isEnabled()) {
-            return;
-        }
         try (Connection connection = getDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
                 assertExecuteQueryForStatement(connection);
@@ -67,10 +64,10 @@ public final class GeneralDQLIT extends BaseDQLIT {
         }
     }
     
-    private void assertExecuteQueryForStatement(final Connection connection) throws SQLException, JAXBException, IOException, ParseException {
+    private void assertExecuteQueryForStatement(final Connection connection) throws SQLException, JAXBException, IOException {
         try (
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(String.format(getSql(), assertion.getSQLValues().toArray()))) {
+                ResultSet resultSet = statement.executeQuery(getSql())) {
             assertResultSet(resultSet);
         }
     }
@@ -88,9 +85,6 @@ public final class GeneralDQLIT extends BaseDQLIT {
     
     @Test
     public void assertExecute() throws JAXBException, IOException, SQLException, ParseException {
-        if (!getDatabaseTypeEnvironment().isEnabled()) {
-            return;
-        }
         try (Connection connection = getDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
                 assertExecuteForStatement(connection);
@@ -100,9 +94,9 @@ public final class GeneralDQLIT extends BaseDQLIT {
         }
     }
     
-    private void assertExecuteForStatement(final Connection connection) throws SQLException, ParseException, JAXBException, IOException {
+    private void assertExecuteForStatement(final Connection connection) throws SQLException, JAXBException, IOException {
         try (Statement statement = connection.createStatement()) {
-            assertTrue("Not a DQL statement.", statement.execute(String.format(getSql(), assertion.getSQLValues().toArray())));
+            assertTrue("Not a DQL statement.", statement.execute(getSql()));
             try (ResultSet resultSet = statement.getResultSet()) {
                 assertResultSet(resultSet);
             }
