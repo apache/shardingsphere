@@ -20,19 +20,13 @@ package org.apache.shardingsphere.shardingjdbc.api;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.core.rule.RuleBuilder;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 /**
  * Sharding data source factory.
@@ -50,16 +44,6 @@ public final class ShardingDataSourceFactory {
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Properties props) throws SQLException {
-        return new ShardingDataSource(dataSourceMap, getRules(dataSourceMap, shardingRuleConfig), props);
-    }
-    
-    private static Collection<BaseRule> getRules(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig) {
-        Collection<BaseRule> result = new LinkedList<>();
-        result.add(new ShardingRule(shardingRuleConfig, dataSourceMap.keySet()));
-        result.addAll(shardingRuleConfig.getMasterSlaveRuleConfigs().stream().map(MasterSlaveRule::new).collect(Collectors.toList()));
-        if (null != shardingRuleConfig.getEncryptRuleConfig()) {
-            result.add(new EncryptRule(shardingRuleConfig.getEncryptRuleConfig()));
-        }
-        return result;
+        return new ShardingDataSource(dataSourceMap, RuleBuilder.build(dataSourceMap.keySet(), shardingRuleConfig), props);
     }
 }
