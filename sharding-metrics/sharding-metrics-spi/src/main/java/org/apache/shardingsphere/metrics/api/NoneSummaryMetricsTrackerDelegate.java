@@ -22,3 +22,4 @@ package org.apache.shardingsphere.metrics.api;
  */
 public class NoneSummaryMetricsTrackerDelegate implements SummaryMetricsTrackerDelegate {
 }
+

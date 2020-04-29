@@ -48,6 +48,6 @@ public enum MetricsLabelEnum {
     REQUEST_LATENCY("request_latency");
     
     private final String name;
-    
 }
+
 

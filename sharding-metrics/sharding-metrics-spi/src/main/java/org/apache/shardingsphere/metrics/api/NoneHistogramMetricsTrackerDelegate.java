@@ -19,3 +19,4 @@ package org.apache.shardingsphere.metrics.api;
 
 public class NoneHistogramMetricsTrackerDelegate implements HistogramMetricsTrackerDelegate {
 }
+

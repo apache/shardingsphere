@@ -43,3 +43,4 @@ public class ChannelCountGaugeMetricsTracker implements GaugeMetricsTracker {
         return MetricsLabelEnum.CHANNEL_COUNT.getName();
     }
 }
+

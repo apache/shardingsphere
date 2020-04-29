@@ -39,3 +39,4 @@ public interface MetricsTrackerManager extends TypedSPI {
      */
     MetricsTrackerFactory getMetricsTrackerFactory();
 }
+

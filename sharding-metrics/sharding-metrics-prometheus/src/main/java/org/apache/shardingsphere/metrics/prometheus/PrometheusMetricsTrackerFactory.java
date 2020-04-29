@@ -49,3 +49,4 @@ public class PrometheusMetricsTrackerFactory implements MetricsTrackerFactory {
         return REGISTER.stream().filter(each -> each.metricsLabel().equals(metricsLabel) && each.metricsType().equals(metricsType)).findFirst();
     }
 }
+

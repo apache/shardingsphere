@@ -49,3 +49,4 @@ public interface GaugeMetricsTracker extends MetricsTracker {
         return MetricsTypeEnum.GAUGE.name();
     }
 }
+

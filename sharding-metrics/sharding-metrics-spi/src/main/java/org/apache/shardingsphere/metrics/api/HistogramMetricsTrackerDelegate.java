@@ -26,6 +26,6 @@ public interface HistogramMetricsTrackerDelegate {
      * Observe amount of time since start time.
      */
     default void observeDuration() {
-    
     }
 }
+

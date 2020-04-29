@@ -50,5 +50,3 @@ public class PrometheusMetricsTrackerManager implements MetricsTrackerManager {
         new HTTPServer(new InetSocketAddress(port), CollectorRegistry.defaultRegistry, true);
     }
 }
-
-

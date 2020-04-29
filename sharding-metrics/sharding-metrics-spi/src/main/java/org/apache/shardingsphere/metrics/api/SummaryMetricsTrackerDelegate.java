@@ -27,5 +27,5 @@ public interface SummaryMetricsTrackerDelegate {
      */
     default void observeDuration() {
     }
-    
 }
+

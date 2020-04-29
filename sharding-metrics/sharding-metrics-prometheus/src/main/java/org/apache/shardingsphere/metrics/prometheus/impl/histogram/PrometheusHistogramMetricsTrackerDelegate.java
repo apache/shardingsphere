@@ -34,3 +34,4 @@ public class PrometheusHistogramMetricsTrackerDelegate implements HistogramMetri
         timer.observeDuration();
     }
 }
+
