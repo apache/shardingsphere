@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import org.apache.shardingsphere.shardingjdbc.common.base.AbstractShardingJDBCDatabaseAndTableTest;
-import org.apache.shardingsphere.shardingjdbc.fixture.IncrementKeyGenerateAlgorithm;
+import org.apache.shardingsphere.shardingjdbc.fixture.ResetIncrementKeyGenerateAlgorithm;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -91,7 +91,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
                 Connection connection = getShardingDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL, Statement.RETURN_GENERATED_KEYS);
                 Statement queryStatement = connection.createStatement()) {
-            IncrementKeyGenerateAlgorithm.getCOUNT().set(0);
+            ResetIncrementKeyGenerateAlgorithm.getCOUNT().set(0);
             preparedStatement.setString(1, "BATCH1");
             preparedStatement.setString(2, "BATCH2");
             preparedStatement.setString(3, "BATCH3");
@@ -134,7 +134,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
                 Connection connection = getShardingDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL, Statement.RETURN_GENERATED_KEYS);
                 Statement queryStatement = connection.createStatement()) {
-            IncrementKeyGenerateAlgorithm.getCOUNT().set(10);
+            ResetIncrementKeyGenerateAlgorithm.getCOUNT().set(10);
             preparedStatement.setString(1, "BATCH1");
             preparedStatement.setString(2, "BATCH2");
             preparedStatement.setString(3, "BATCH3");
@@ -208,7 +208,6 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
             Connection connection = getShardingDataSource().getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(INSERT_WITHOUT_GENERATE_KEY_SQL, Statement.RETURN_GENERATED_KEYS);
             Statement queryStatement = connection.createStatement()) {
-            IncrementKeyGenerateAlgorithm.getCOUNT().set(0);
             preparedStatement.setInt(1, 11);
             preparedStatement.setInt(2, 11);
             preparedStatement.setString(3, "BATCH");
@@ -264,7 +263,6 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
                 Connection connection = getShardingDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(INSERT_WITH_GENERATE_KEY_SQL, Statement.RETURN_GENERATED_KEYS);
                 Statement queryStatement = connection.createStatement()) {
-            IncrementKeyGenerateAlgorithm.getCOUNT().set(0);
             preparedStatement.setInt(1, 1);
             preparedStatement.setInt(2, 11);
             preparedStatement.setInt(3, 11);

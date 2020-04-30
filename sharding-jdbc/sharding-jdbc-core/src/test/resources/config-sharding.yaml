@@ -36,7 +36,7 @@ shardingRule:
             props:
               algorithm.expression: t_user_${id % 2}
       keyGenerator:
-        type: INCREMENT
+        type: RESETINCREMENT
         column: id
   bindingTables:
     - t_order,t_order_item

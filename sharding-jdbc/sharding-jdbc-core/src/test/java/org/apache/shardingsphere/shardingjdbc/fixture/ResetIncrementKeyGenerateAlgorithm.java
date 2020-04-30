@@ -24,19 +24,20 @@ import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public final class IncrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
+public final class ResetIncrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
 
     @Getter
-    private final String type = "INCREMENT";
-
-    private final AtomicInteger count = new AtomicInteger();
+    private static final AtomicInteger COUNT = new AtomicInteger();
     
+    @Getter
+    private final String type = "RESETINCREMENT";
+
     @Getter
     @Setter
     private Properties properties = new Properties();
     
     @Override
     public Comparable<?> generateKey() {
-        return count.incrementAndGet();
+        return COUNT.incrementAndGet();
     }
 }
