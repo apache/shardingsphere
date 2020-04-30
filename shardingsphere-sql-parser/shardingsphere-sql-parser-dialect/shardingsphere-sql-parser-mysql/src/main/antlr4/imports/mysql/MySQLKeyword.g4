@@ -2219,3 +2219,151 @@ RECOVER
 SNAPSHOT
     : S N A P S H O T
     ;
+
+PURGE
+    : P U R G E
+    ;
+
+MASTER_COMPRESSION_ALGORITHMS
+    : M A S T E R UL_ C O M P R E S S I O N UL_ A L G O R I T H M S
+    ;
+
+MASTER_ZSTD_COMPRESSION_LEVEL
+    : M A S T E R UL_ Z S T D UL_ C O M P R E S S I O N UL_ L E V E L
+    ;
+
+MASTER_SSL
+    : M A S T E R UL_ S S L
+    ;
+
+MASTER_SSL_CA
+    : M A S T E R UL_ S S L UL_ C A
+    ;
+
+MASTER_SSL_CAPATH
+    : M A S T E R UL_ S S L UL_ C A P A T H
+    ;
+
+MASTER_SSL_CERT
+    : M A S T E R UL_ S S L UL_ C E R T
+    ;
+
+MASTER_SSL_CRL
+    : M A S T E R UL_ S S L UL_ C R L
+    ;
+
+MASTER_SSL_CRLPATH
+    : M A S T E R UL_ S S L UL_ C R L P A T H
+    ;
+
+MASTER_SSL_KEY
+    : M A S T E R UL_ S S L UL_ K E Y
+    ;
+
+MASTER_SSL_CIPHER
+    : M A S T E R UL_ S S L UL_ C I P H E R
+    ;
+
+MASTER_SSL_VERIFY_SERVER_CERT
+    : M A S T E R UL_ S S L UL_ V E R I F Y UL_ S E R V E R UL_ C E R T
+    ;
+
+MASTER_TLS_VERSION
+    : M A S T E R UL_ T L S UL_ V E R S I O N
+    ;
+
+MASTER_TLS_CIPHERSUITES
+    : M A S T E R UL_ T L S UL_ C I P H E R S U I T E S
+    ;
+
+MASTER_PUBLIC_KEY_PATH
+    : M A S T E R UL_ P U B L I C UL_ K E Y UL_ P A T H
+    ;
+
+GET_MASTER_PUBLIC_KEY
+    : G E T UL_ M A S T E R UL_ P U B L I C UL_ K E Y
+    ;
+
+IGNORE_SERVER_IDS
+    : I G N O R E UL_ S E R V E R UL_ I D S
+    ;
+
+MASTER_BIND
+    : M A S T E R UL_ B I N D
+    ;
+
+MASTER_HOST
+    : M A S T E R UL_ H O S T
+    ;
+
+MASTER_USER
+    : M A S T E R UL_ U S E R
+    ;
+
+MASTER_PASSWORD
+    : M A S T E R UL_ P A S S W O R D
+    ;
+
+MASTER_PORT
+    : M A S T E R UL_ P O R T
+    ;
+
+PRIVILEGE_CHECKS_USER
+    : P R I V I L E G E UL_ C H E C K S UL_ U S E R
+    ;
+
+REQUIRE_ROW_FORMAT
+    : R E Q U I R E UL_ R O W UL_ F O R M A T
+    ;
+
+MASTER_CONNECT_RETRY
+    : M A S T E R UL_ C O N N E C T UL_ R E T R Y
+    ;
+
+MASTER_RETRY_COUNT
+    : M A S T E R UL_ R E T R Y UL_ C O U N T
+    ;
+
+MASTER_DELAY
+    : M A S T E R UL_ D E L A Y
+    ;
+
+MASTER_HEARTBEAT_PERIOD
+    : M A S T E R UL_ H E A R T B E A T UL_ P E R I O D
+    ;
+
+MASTER_AUTO_POSITION
+    : M A S T E R UL_ A U T O UL_ P O S I T I O N
+    ;
+
+REPLICATE_DO_DB
+    : R E P L I C A T E UL_ D O UL_ D B
+    ;
+
+REPLICATE_IGNORE_DB
+    : R E P L I C A T E UL_ I G N O R E UL_ D B
+    ;
+
+REPLICATE_DO_TABLE
+    : R E P L I C A T E UL_ D O UL_ T A B L E
+    ;
+
+REPLICATE_IGNORE_TABLE
+    : R E P L I C A T E UL_ I G N O R E UL_ T A B L E
+    ;
+
+REPLICATE_WILD_DO_TABLE
+    : R E P L I C A T E UL_ W I L D UL_ D O UL_ T A B L E
+    ;
+
+REPLICATE_WILD_IGNORE_TABLE
+    : R E P L I C A T E UL_ W I L D UL_ I G N O R E UL_ T A B L E
+    ;
+
+REPLICATE_REWRITE_DB
+    : R E P L I C A T E UL_ R E W R I T E UL_ D B
+    ;
+
+GROUP_REPLICATION
+    : G R O U P UL_ R E P L I C A T I O N
+    ;
