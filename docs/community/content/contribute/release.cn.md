@@ -480,7 +480,7 @@ git push --delete origin ${RELEASE.VERSION}-release
 
 ### 修改README文件
 
-将`README.md`和`README_ZH.md`里的`${RELEASE.VERSION}`修改为`${NEXT.RELEASE.VERSION}`
+将`README.md`和`README_ZH.md`里的`${PREVIOUS.RELEASE.VERSION}`修改为`${RELEASE.VERSION}`
 
 将`Dockerfile`文件中的`CURRENT_VERSION`从`${RELEASE.VERSION}`修改为`${NEXT.RELEASE.VERSION}`
 
