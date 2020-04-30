@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import org.apache.shardingsphere.shardingjdbc.common.base.AbstractShardingJDBCDatabaseAndTableTest;
+import org.apache.shardingsphere.shardingjdbc.fixture.ResetIncrementKeyGenerateAlgorithm;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -33,6 +35,10 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDatabaseAndTableTest {
+
+    private static final String INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL = "INSERT INTO t_user (name) VALUES (?),(?),(?),(?)";
+
+    private static final String SELECT_FOR_INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL = "SELECT name FROM t_user WHERE id=%d";
     
     private static final String INSERT_WITH_GENERATE_KEY_SQL = "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (?, ?, ?, ?)";
     
@@ -74,6 +80,124 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
             int[] result = preparedStatement.executeBatch();
             for (int each : result) {
                 assertThat(each, is(1));
+            }
+        }
+    }
+
+    @Ignore
+    @Test
+    public void assertMultiValuesWithGenerateShardingKeyColumn() throws SQLException {
+        try (
+                Connection connection = getShardingDataSource().getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL, Statement.RETURN_GENERATED_KEYS);
+                Statement queryStatement = connection.createStatement()) {
+            ResetIncrementKeyGenerateAlgorithm.getCOUNT().set(0);
+            preparedStatement.setString(1, "BATCH1");
+            preparedStatement.setString(2, "BATCH2");
+            preparedStatement.setString(3, "BATCH3");
+            preparedStatement.setString(4, "BATCH4");
+            int result = preparedStatement.executeUpdate();
+            assertThat(result, is(4));
+            ResultSet generateKeyResultSet = preparedStatement.getGeneratedKeys();
+            assertTrue(generateKeyResultSet.next());
+            assertThat(generateKeyResultSet.getLong(1), is(1L));
+            assertTrue(generateKeyResultSet.next());
+            assertThat(generateKeyResultSet.getLong(1), is(2L));
+            assertTrue(generateKeyResultSet.next());
+            assertThat(generateKeyResultSet.getLong(1), is(3L));
+            assertTrue(generateKeyResultSet.next());
+            assertThat(generateKeyResultSet.getLong(1), is(4L));
+            assertFalse(generateKeyResultSet.next());
+            try (ResultSet resultSet = queryStatement.executeQuery(String.format(SELECT_FOR_INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL, 1L))) {
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getString(1), is("BATCH1"));
+            }
+            try (ResultSet resultSet = queryStatement.executeQuery(String.format(SELECT_FOR_INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL, 2L))) {
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getString(1), is("BATCH2"));
+            }
+            try (ResultSet resultSet = queryStatement.executeQuery(String.format(SELECT_FOR_INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL, 3L))) {
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getString(1), is("BATCH3"));
+            }
+            try (ResultSet resultSet = queryStatement.executeQuery(String.format(SELECT_FOR_INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL, 4L))) {
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getString(1), is("BATCH4"));
+            }
+        }
+    }
+
+    @Ignore
+    @Test
+    public void assertAddBatchMultiValuesWithGenerateShardingKeyColumn() throws SQLException {
+        try (
+                Connection connection = getShardingDataSource().getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL, Statement.RETURN_GENERATED_KEYS);
+                Statement queryStatement = connection.createStatement()) {
+            ResetIncrementKeyGenerateAlgorithm.getCOUNT().set(10);
+            preparedStatement.setString(1, "BATCH1");
+            preparedStatement.setString(2, "BATCH2");
+            preparedStatement.setString(3, "BATCH3");
+            preparedStatement.setString(4, "BATCH4");
+            preparedStatement.addBatch();
+            preparedStatement.setString(1, "BATCH5");
+            preparedStatement.setString(2, "BATCH6");
+            preparedStatement.setString(3, "BATCH7");
+            preparedStatement.setString(4, "BATCH8");
+            preparedStatement.addBatch();
+            int[] result = preparedStatement.executeBatch();
+            for (int each : result) {
+                assertThat(each, is(4));
+            }
+            ResultSet generateKeyResultSet = preparedStatement.getGeneratedKeys();
+            assertTrue(generateKeyResultSet.next());
+            assertThat(generateKeyResultSet.getLong(1), is(11L));
+            assertTrue(generateKeyResultSet.next());
+            assertThat(generateKeyResultSet.getLong(1), is(12L));
+            assertTrue(generateKeyResultSet.next());
+            assertThat(generateKeyResultSet.getLong(1), is(13L));
+            assertTrue(generateKeyResultSet.next());
+            assertThat(generateKeyResultSet.getLong(1), is(14L));
+            assertTrue(generateKeyResultSet.next());
+            assertThat(generateKeyResultSet.getLong(1), is(15L));
+            assertTrue(generateKeyResultSet.next());
+            assertThat(generateKeyResultSet.getLong(1), is(16L));
+            assertTrue(generateKeyResultSet.next());
+            assertThat(generateKeyResultSet.getLong(1), is(17L));
+            assertTrue(generateKeyResultSet.next());
+            assertThat(generateKeyResultSet.getLong(1), is(18L));
+            assertFalse(generateKeyResultSet.next());
+            try (ResultSet resultSet = queryStatement.executeQuery(String.format(SELECT_FOR_INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL, 11L))) {
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getString(1), is("BATCH1"));
+            }
+            try (ResultSet resultSet = queryStatement.executeQuery(String.format(SELECT_FOR_INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL, 12L))) {
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getString(1), is("BATCH2"));
+            }
+            try (ResultSet resultSet = queryStatement.executeQuery(String.format(SELECT_FOR_INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL, 13L))) {
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getString(1), is("BATCH3"));
+            }
+            try (ResultSet resultSet = queryStatement.executeQuery(String.format(SELECT_FOR_INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL, 14L))) {
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getString(1), is("BATCH4"));
+            }
+            try (ResultSet resultSet = queryStatement.executeQuery(String.format(SELECT_FOR_INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL, 15L))) {
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getString(1), is("BATCH5"));
+            }
+            try (ResultSet resultSet = queryStatement.executeQuery(String.format(SELECT_FOR_INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL, 16L))) {
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getString(1), is("BATCH6"));
+            }
+            try (ResultSet resultSet = queryStatement.executeQuery(String.format(SELECT_FOR_INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL, 17L))) {
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getString(1), is("BATCH7"));
+            }
+            try (ResultSet resultSet = queryStatement.executeQuery(String.format(SELECT_FOR_INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL, 18L))) {
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getString(1), is("BATCH8"));
             }
         }
     }

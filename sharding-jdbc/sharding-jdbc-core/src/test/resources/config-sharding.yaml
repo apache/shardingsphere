@@ -26,6 +26,18 @@ shardingRule:
         column: item_id
     t_config:
       actualDataNodes: jdbc_${0..1}.t_config
+    t_user:
+      actualDataNodes: jdbc_0.t_user_${0..1}
+      tableStrategy:
+        standard:
+          shardingColumn: id
+          shardingAlgorithm:
+            type: INLINE
+            props:
+              algorithm.expression: t_user_${id % 2}
+      keyGenerator:
+        type: RESETINCREMENT
+        column: id
   bindingTables:
     - t_order,t_order_item
   broadcastTables:
