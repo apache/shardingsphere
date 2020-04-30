@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public final class IncrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
 
     @Getter
-    private final static AtomicInteger COUNT = new AtomicInteger();
+    private static final AtomicInteger COUNT = new AtomicInteger();
     
     @Getter
     private final String type = "INCREMENT";
