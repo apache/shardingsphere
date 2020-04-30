@@ -243,6 +243,8 @@ The text of each license is the standard Apache 2.0 license.
     opentracing-util 0.30.0: https://opentracing.io, Apache 2.0
     SnakeYAML 1.16: http://www.snakeyaml.org , Apache 2.0
     zookeeper 3.4.6: https://github.com/apache/zookeeper, Apache 2.0
+    simpleclient 0.6.0: https://github.com/prometheus/client_java, Apache 2.0
+    simpleclient_httpserver 0.6.0: https://github.com/prometheus/client_java, Apache 2.0
 
 ========================================================================
 BSD licenses

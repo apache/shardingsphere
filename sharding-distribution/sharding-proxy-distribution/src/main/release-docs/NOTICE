@@ -328,3 +328,21 @@ developed for Airlift (https://github.com/airlift/airlift),
 licensed under the Apache 2.0 license. The licensing terms
 for Airlift code can be found at:
 https://github.com/airlift/airlift/blob/master/LICENSE
+
+========================================================================
+
+Prometheus NOTICE
+
+========================================================================
+
+Prometheus instrumentation library for JVM applications
+Copyright 2012-2015 The Prometheus Authors
+
+This product includes software developed at
+Boxever Ltd. (http://www.boxever.com/).
+
+This product includes software developed at
+SoundCloud Ltd. (http://soundcloud.com/).
+
+This product includes software developed as part of the
+Ocelli project by Netflix Inc. (https://github.com/Netflix/ocelli/).
