@@ -22,6 +22,7 @@ import org.apache.shardingsphere.encrypt.api.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.orchestration.core.common.CenterType;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.EncryptRuleChangedEvent;
@@ -106,11 +107,12 @@ public final class OrchestrationEncryptDataSourceTest {
     @Test
     public void assertRenewRule() {
         encryptDataSource.renew(getEncryptRuleChangedEvent());
-        assertThat(encryptDataSource.getDataSource().getRuntimeContext().getRule().getEncryptTableNames().size(), is(1));
-        assertThat(encryptDataSource.getDataSource().getRuntimeContext().getRule().getEncryptTableNames().iterator().next(), is("t_order_item"));
-        assertThat(encryptDataSource.getDataSource().getRuntimeContext().getRule().getCipherColumn("t_order_item", "item_id"), is("cipher_item_id"));
-        assertThat(encryptDataSource.getDataSource().getRuntimeContext().getRule().findPlainColumn("t_order_item", "item_id"), is(Optional.of("plain_item_id")));
-        Map<String, EncryptorRuleConfiguration> encryptorRuleConfigurations = encryptDataSource.getDataSource().getRuntimeContext().getRule().getRuleConfiguration().getEncryptors();
+        EncryptRule encryptRule = (EncryptRule) encryptDataSource.getDataSource().getRuntimeContext().getRules().iterator().next();
+        assertThat(encryptRule.getEncryptTableNames().size(), is(1));
+        assertThat(encryptRule.getEncryptTableNames().iterator().next(), is("t_order_item"));
+        assertThat(encryptRule.getCipherColumn("t_order_item", "item_id"), is("cipher_item_id"));
+        assertThat(encryptRule.findPlainColumn("t_order_item", "item_id"), is(Optional.of("plain_item_id")));
+        Map<String, EncryptorRuleConfiguration> encryptorRuleConfigurations = encryptRule.getRuleConfiguration().getEncryptors();
         assertThat(encryptorRuleConfigurations.size(), is(1));
         assertTrue(encryptorRuleConfigurations.containsKey("order_encryptor"));
         EncryptorRuleConfiguration encryptorRuleConfig = encryptorRuleConfigurations.get("order_encryptor");

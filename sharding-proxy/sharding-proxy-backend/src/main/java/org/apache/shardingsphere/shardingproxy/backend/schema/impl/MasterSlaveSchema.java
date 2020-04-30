@@ -18,12 +18,9 @@
 package org.apache.shardingsphere.shardingproxy.backend.schema.impl;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.Getter;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.log.ConfigurationLogger;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.orchestration.core.common.event.MasterSlaveRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.rule.OrchestrationMasterSlaveRule;
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
@@ -38,19 +35,11 @@ import java.util.Map;
 /**
  * Master-slave schema.
  */
-@Getter
 public final class MasterSlaveSchema extends LogicSchema {
-    
-    private final ShardingRule shardingRule;
-    
-    private MasterSlaveRule masterSlaveRule;
     
     public MasterSlaveSchema(final String name,
                              final Map<String, YamlDataSourceParameter> dataSources, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isUsingRegistry) throws SQLException {
         super(name, dataSources, Collections.singletonList(createMasterSlaveRule(masterSlaveRuleConfig, isUsingRegistry)));
-        masterSlaveRule = createMasterSlaveRule(masterSlaveRuleConfig, isUsingRegistry);
-        // TODO we should remove it after none-sharding parsingEngine completed.
-        shardingRule = new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet());
     }
     
     private static MasterSlaveRule createMasterSlaveRule(final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isUsingRegistry) {
@@ -66,7 +55,7 @@ public final class MasterSlaveSchema extends LogicSchema {
     public synchronized void renew(final MasterSlaveRuleChangedEvent masterSlaveRuleChangedEvent) {
         if (getName().equals(masterSlaveRuleChangedEvent.getShardingSchemaName())) {
             ConfigurationLogger.log(masterSlaveRuleChangedEvent.getMasterSlaveRuleConfiguration());
-            masterSlaveRule = new OrchestrationMasterSlaveRule(masterSlaveRuleChangedEvent.getMasterSlaveRuleConfiguration());
+            setRules(Collections.singletonList(new OrchestrationMasterSlaveRule(masterSlaveRuleChangedEvent.getMasterSlaveRuleConfiguration())));
         }
     }
     
@@ -79,7 +68,7 @@ public final class MasterSlaveSchema extends LogicSchema {
     public synchronized void renew(final DisabledStateChangedEvent disabledStateChangedEvent) {
         OrchestrationShardingSchema shardingSchema = disabledStateChangedEvent.getShardingSchema();
         if (getName().equals(shardingSchema.getSchemaName())) {
-            ((OrchestrationMasterSlaveRule) masterSlaveRule).updateDisabledDataSourceNames(shardingSchema.getDataSourceName(), disabledStateChangedEvent.isDisabled());
+            ((OrchestrationMasterSlaveRule) getRules().iterator().next()).updateDisabledDataSourceNames(shardingSchema.getDataSourceName(), disabledStateChangedEvent.isDisabled());
         }
     }
 }

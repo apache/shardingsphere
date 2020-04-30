@@ -18,13 +18,10 @@
 package org.apache.shardingsphere.shardingproxy.backend.schema.impl;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
-import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.log.ConfigurationLogger;
 import org.apache.shardingsphere.core.rule.ShadowRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.orchestration.core.common.event.ShadowRuleChangedEvent;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
@@ -36,17 +33,10 @@ import java.util.Map;
 /**
  * Shadow schema.
  */
-@Getter
 public final class ShadowSchema extends LogicSchema {
-    
-    private final ShardingRule shardingRule;
-    
-    private ShadowRule shadowRule;
     
     public ShadowSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final ShadowRuleConfiguration shadowRuleConfiguration) throws SQLException {
         super(name, dataSources, Collections.singletonList(new ShadowRule(shadowRuleConfiguration)));
-        shadowRule = new ShadowRule(shadowRuleConfiguration);
-        shardingRule = new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet());
     }
     
     /**
@@ -58,6 +48,6 @@ public final class ShadowSchema extends LogicSchema {
     @SneakyThrows
     public synchronized void renew(final ShadowRuleChangedEvent shadowRuleChangedEvent) {
         ConfigurationLogger.log(shadowRuleChangedEvent.getShadowRuleConfiguration());
-        shadowRule = new ShadowRule(shadowRuleChangedEvent.getShadowRuleConfiguration());
+        setRules(Collections.singletonList(new ShadowRule(shadowRuleChangedEvent.getShadowRuleConfiguration())));
     }
 }

@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling.core.config;
 
-import org.apache.shardingsphere.shardingscaling.core.execute.engine.DefaultSyncTaskExecuteEngine;
 import org.apache.shardingsphere.shardingscaling.core.execute.engine.ShardingScalingExecuteEngine;
-import org.apache.shardingsphere.shardingscaling.core.execute.engine.SyncTaskExecuteEngine;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -35,8 +33,6 @@ public final class ScalingContext {
     private static final ScalingContext INSTANCE = new ScalingContext();
 
     private ServerConfiguration serverConfiguration;
-    
-    private SyncTaskExecuteEngine syncTaskExecuteEngine;
     
     private ShardingScalingExecuteEngine taskExecuteEngine;
     
@@ -58,7 +54,6 @@ public final class ScalingContext {
      */
     public void init(final ServerConfiguration serverConfiguration) {
         this.serverConfiguration = serverConfiguration;
-        this.syncTaskExecuteEngine = new DefaultSyncTaskExecuteEngine(serverConfiguration.getWorkerThread());
         this.taskExecuteEngine = new ShardingScalingExecuteEngine(serverConfiguration.getWorkerThread());
         this.importerExecuteEngine = new ShardingScalingExecuteEngine(serverConfiguration.getWorkerThread());
     }

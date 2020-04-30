@@ -52,11 +52,11 @@ public final class MySQLClientTest {
     
     private InetSocketAddress inetSocketAddress;
     
-    private MySQLClient mySQLClient;
+    private MySQLClient mysqlClient;
     
     @Before
     public void setUp() {
-        mySQLClient = new MySQLClient(1, "host", 3306, "username", "password");
+        mysqlClient = new MySQLClient(1, "host", 3306, "username", "password");
         when(channel.pipeline()).thenReturn(pipeline);
         inetSocketAddress = new InetSocketAddress("host", 3306);
         when(channel.localAddress()).thenReturn(inetSocketAddress);
@@ -66,16 +66,16 @@ public final class MySQLClientTest {
     public void assertConnect() throws NoSuchFieldException, IllegalAccessException {
         final ServerInfo expected = new ServerInfo();
         mockChannelResponse(expected);
-        mySQLClient.connect();
-        ServerInfo actual = ReflectionUtil.getFieldValueFromClass(mySQLClient, "serverInfo", ServerInfo.class);
+        mysqlClient.connect();
+        ServerInfo actual = ReflectionUtil.getFieldValueFromClass(mysqlClient, "serverInfo", ServerInfo.class);
         assertThat(actual, is(expected));
     }
     
     @Test
     public void assertExecute() throws NoSuchFieldException, IllegalAccessException {
         mockChannelResponse(new MySQLOKPacket(0));
-        ReflectionUtil.setFieldValueToClass(mySQLClient, "channel", channel);
-        assertTrue(mySQLClient.execute(""));
+        ReflectionUtil.setFieldValueToClass(mysqlClient, "channel", channel);
+        assertTrue(mysqlClient.execute(""));
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLComQueryPacket.class));
     }
     
@@ -84,8 +84,8 @@ public final class MySQLClientTest {
         MySQLOKPacket expected = new MySQLOKPacket(0, 10, 0);
         ReflectionUtil.setFieldValueToClass(expected, "affectedRows", 10);
         mockChannelResponse(expected);
-        ReflectionUtil.setFieldValueToClass(mySQLClient, "channel", channel);
-        assertThat(mySQLClient.executeUpdate(""), is(10));
+        ReflectionUtil.setFieldValueToClass(mysqlClient, "channel", channel);
+        assertThat(mysqlClient.executeUpdate(""), is(10));
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLComQueryPacket.class));
     }
     
@@ -93,8 +93,8 @@ public final class MySQLClientTest {
     public void assertExecuteQuery() throws NoSuchFieldException, IllegalAccessException {
         InternalResultSet expected = new InternalResultSet(null);
         mockChannelResponse(expected);
-        ReflectionUtil.setFieldValueToClass(mySQLClient, "channel", channel);
-        assertThat(mySQLClient.executeQuery(""), is(expected));
+        ReflectionUtil.setFieldValueToClass(mysqlClient, "channel", channel);
+        assertThat(mysqlClient.executeQuery(""), is(expected));
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLComQueryPacket.class));
     }
     
@@ -102,20 +102,21 @@ public final class MySQLClientTest {
     public void assertSubscribeBelow56Version() throws NoSuchFieldException, IllegalAccessException {
         ServerInfo serverInfo = new ServerInfo();
         serverInfo.setServerVersion(new ServerVersion("5.5.0-log"));
-        ReflectionUtil.setFieldValueToClass(mySQLClient, "serverInfo", serverInfo);
-        ReflectionUtil.setFieldValueToClass(mySQLClient, "channel", channel);
+        ReflectionUtil.setFieldValueToClass(mysqlClient, "serverInfo", serverInfo);
+        ReflectionUtil.setFieldValueToClass(mysqlClient, "channel", channel);
         mockChannelResponse(new MySQLOKPacket(0));
-        mySQLClient.subscribe("", 4L);
+        mysqlClient.subscribe("", 4L);
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLComRegisterSlaveCommandPacket.class));
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLComBinlogDumpCommandPacket.class));
     }
     
+    @SuppressWarnings("unchecked")
     private void mockChannelResponse(final Object response) {
         new Thread(() -> {
             while (true) {
                 Promise responseCallback = null;
                 try {
-                    responseCallback = ReflectionUtil.getFieldValueFromClass(mySQLClient, "responseCallback", Promise.class);
+                    responseCallback = ReflectionUtil.getFieldValueFromClass(mysqlClient, "responseCallback", Promise.class);
                 } catch (final NoSuchFieldException ex) {
                     throw new RuntimeException(ex);
                 } catch (IllegalAccessException ex) {

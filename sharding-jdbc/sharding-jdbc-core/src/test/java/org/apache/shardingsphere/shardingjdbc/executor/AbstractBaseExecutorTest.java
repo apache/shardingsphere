@@ -25,7 +25,7 @@ import org.apache.shardingsphere.encrypt.strategy.EncryptTable;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.ExecutorExceptionHandler;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
@@ -68,7 +68,7 @@ public abstract class AbstractBaseExecutorTest {
     }
     
     private void setConnection() throws SQLException {
-        ShardingRuntimeContext runtimeContext = mock(ShardingRuntimeContext.class);
+        RuntimeContext runtimeContext = mock(RuntimeContext.class);
         when(runtimeContext.getExecutorKernel()).thenReturn(executorKernel);
         when(runtimeContext.getProperties()).thenReturn(getProperties());
         when(runtimeContext.getDatabaseType()).thenReturn(DatabaseTypes.getActualDatabaseType("H2"));

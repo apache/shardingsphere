@@ -51,7 +51,7 @@ public final class OrchestrationShardingDataSourceFactory {
         if (null == shardingRuleConfig || shardingRuleConfig.getTableRuleConfigs().isEmpty()) {
             return createDataSource(orchestrationConfig);
         }
-        ShardingDataSource shardingDataSource = new ShardingDataSource(dataSourceMap, new OrchestrationShardingRule(shardingRuleConfig, dataSourceMap.keySet()), props);
+        ShardingDataSource shardingDataSource = new ShardingDataSource(dataSourceMap, new OrchestrationShardingRule(shardingRuleConfig, dataSourceMap.keySet()).toRules(), props);
         return new OrchestrationShardingDataSource(shardingDataSource, orchestrationConfig);
     }
     

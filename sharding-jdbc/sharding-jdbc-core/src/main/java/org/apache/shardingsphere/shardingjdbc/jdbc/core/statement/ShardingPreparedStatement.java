@@ -25,7 +25,7 @@ import org.apache.shardingsphere.shardingjdbc.executor.batch.BatchPreparedStatem
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractShardingPreparedStatementAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionConstant;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.GeneratedKeysResultSet;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.ShardingResultSet;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.metadata.ShardingSphereParameterMetaData;
@@ -123,7 +123,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         this.sql = sql;
         statements = new ArrayList<>();
         parameterSets = new ArrayList<>();
-        ShardingRuntimeContext runtimeContext = connection.getRuntimeContext();
+        RuntimeContext runtimeContext = connection.getRuntimeContext();
         sqlStatement = runtimeContext.getSqlParserEngine().parse(sql, true);
         parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
         statementOption = returnGeneratedKeys ? new StatementOption(true) : new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
@@ -224,7 +224,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     }
     
     private ExecutionContext createExecutionContext() {
-        ShardingRuntimeContext runtimeContext = connection.getRuntimeContext();
+        RuntimeContext runtimeContext = connection.getRuntimeContext();
         RouteContext routeContext = new DataNodeRouter(runtimeContext.getMetaData(), runtimeContext.getProperties(), runtimeContext.getRules()).route(sqlStatement, sql, getParameters());
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(runtimeContext.getMetaData().getSchema().getConfiguredSchemaMetaData(), 
                 runtimeContext.getProperties(), runtimeContext.getRules()).rewrite(sql, new ArrayList<>(getParameters()), routeContext);
@@ -235,7 +235,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     }
     
     private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {
-        ShardingRuntimeContext runtimeContext = connection.getRuntimeContext();
+        RuntimeContext runtimeContext = connection.getRuntimeContext();
         MergeEngine mergeEngine = new MergeEngine(runtimeContext.getDatabaseType(), 
                 runtimeContext.getMetaData().getSchema().getConfiguredSchemaMetaData(), runtimeContext.getProperties(), runtimeContext.getRules());
         return mergeEngine.merge(queryResults, executionContext.getSqlStatementContext());
@@ -273,7 +273,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
                 ? ((InsertStatementContext) executionContext.getSqlStatementContext()).getGeneratedKeyContext() : Optional.empty();
     }
     
-    private void logSQL(final ShardingRuntimeContext runtimeContext) {
+    private void logSQL(final RuntimeContext runtimeContext) {
         if (runtimeContext.getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
             SQLLogger.logSQL(sql, runtimeContext.getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
         }

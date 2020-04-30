@@ -26,12 +26,10 @@ import org.apache.shardingsphere.dbtest.cases.dataset.DataSet;
 import org.apache.shardingsphere.dbtest.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.dbtest.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.dbtest.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.dbtest.cases.sql.SQLCaseType;
-import org.apache.shardingsphere.dbtest.cases.sql.loader.SQLCasesRegistry;
 import org.apache.shardingsphere.dbtest.engine.util.IntegrateTestParameters;
-import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import org.apache.shardingsphere.dbtest.env.EnvironmentPath;
 import org.apache.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -52,7 +50,6 @@ import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -73,19 +70,19 @@ public abstract class BatchIT extends BaseIT {
     
     private final Collection<String> expectedDataFiles;
     
-    public BatchIT(final String sqlCaseId, final IntegrateTestCase integrateTestCase,
-                   final String ruleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, JAXBException, SQLException {
-        super(ruleType, databaseTypeEnvironment);
+    public BatchIT(final IntegrateTestCase integrateTestCase,
+                   final String ruleType, final DatabaseType databaseType, final String sql) throws IOException, JAXBException, SQLException {
+        super(ruleType, databaseType);
         this.integrateTestCase = integrateTestCase;
-        sql = SQLCasesRegistry.getInstance().getSqlCasesLoader().getSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList());
+        this.sql = sql;
         expectedDataFiles = new LinkedList<>();
         for (IntegrateTestCaseAssertion each : integrateTestCase.getIntegrateTestCaseAssertions()) {
-            expectedDataFiles.add(getExpectedDataFile(integrateTestCase.getPath(), ruleType, databaseTypeEnvironment.getDatabaseType(), each.getExpectedDataFile()));
+            expectedDataFiles.add(getExpectedDataFile(integrateTestCase.getPath(), ruleType, databaseType, each.getExpectedDataFile()));
         }
-        dataSetEnvironmentManager = databaseTypeEnvironment.isEnabled() ? new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(ruleType), getDataSourceMap()) : null;
+        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(ruleType), getDataSourceMap());
     }
     
-    @Parameters(name = "{0} -> Rule:{2} -> {3}")
+    @Parameters(name = "Rule:{2} -> {3} -> {4}")
     public static Collection<Object[]> getParameters() {
         return IntegrateTestParameters.getParametersWithCase(SQLType.DML);
     }
@@ -102,16 +99,12 @@ public abstract class BatchIT extends BaseIT {
     
     @Before
     public void insertData() throws SQLException, ParseException {
-        if (getDatabaseTypeEnvironment().isEnabled()) {
-            dataSetEnvironmentManager.initialize();
-        }
+        dataSetEnvironmentManager.initialize();
     }
     
     @After
     public void clearData() throws SQLException {
-        if (getDatabaseTypeEnvironment().isEnabled()) {
-            dataSetEnvironmentManager.clear();
-        }
+        dataSetEnvironmentManager.clear();
     }
     
     protected final void assertDataSet(final int[] actualUpdateCounts) throws SQLException, IOException, JAXBException {

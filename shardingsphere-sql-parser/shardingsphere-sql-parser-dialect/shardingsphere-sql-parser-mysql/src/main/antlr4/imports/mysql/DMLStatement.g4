@@ -77,7 +77,7 @@ blobValue
     ;
 
 delete
-    : DELETE deleteSpecification_ (singleTableClause | multipleTablesClause) whereClause?
+    : DELETE deleteSpecification_ (singleTableClause | multipleTablesClause) whereClause? orderByClause? limitClause?
     ;
 
 deleteSpecification_
@@ -101,11 +101,11 @@ select
     ;
 
 call
-    : CALL identifier (LP_ expr (COMMA_ expr)* RP_)?
+    : CALL identifier (LP_ (expr (COMMA_ expr)*)? RP_)?
     ;
 
 doStatement
-    : DO expr (COMMA_ expr)?
+    : DO expr (COMMA_ expr)*
     ;
 
 handlerStatement
@@ -117,13 +117,13 @@ handlerOpenStatement
     ;
 
 handlerReadIndexStatement
-    : HANDLER tableName READ identifier ( comparisonOperator LP_ identifier RP_ | (FIRST | NEXT | PREV | LAST) ) 
-    (WHERE expr)? (LIMIT numberLiterals)?
+    : HANDLER tableName READ indexName ( comparisonOperator LP_ identifier RP_ | (FIRST | NEXT | PREV | LAST) )
+    whereClause? limitClause?
     ;
 
 handlerReadStatement
     : HANDLER tableName READ (FIRST | NEXT)
-    (WHERE expr)? (LIMIT numberLiterals)?
+    whereClause? limitClause?
     ;
 
 handlerCloseStatement
@@ -139,10 +139,9 @@ loadDataStatement
       (LOW_PRIORITY | CONCURRENT)? LOCAL? 
       INFILE STRING_
       (REPLACE | IGNORE)?
-      INTO TABLE tableName
-      (PARTITION LP_ identifier (COMMA_ identifier)* RP_ )?
+      INTO TABLE tableName partitionNames_?
       (CHARACTER SET identifier)?
-      ( (FIELDS | COLUMNS) selectFieldsInto_+ )?
+      ((FIELDS | COLUMNS) selectFieldsInto_+ )?
       ( LINES selectLinesInto_+ )?
       ( IGNORE numberLiterals (LINES | ROWS) )?
       ( LP_ identifier (COMMA_ identifier)* RP_ )?
@@ -160,6 +159,22 @@ loadXmlStatement
       ( IGNORE numberLiterals (LINES | ROWS) )?
       ( LP_ identifier (COMMA_ identifier)* RP_ )?
       (setAssignmentsClause)?
+    ;
+
+tableStatement
+    : TABLE tableName (ORDER BY columnName)? (LIMIT NUMBER_ (OFFSET NUMBER_)?)?
+    ;
+
+valuesStatement
+    : VALUES rowConstructorList (ORDER BY columnDesignator)? (LIMIT BY NUMBER_)?
+    ;
+
+columnDesignator
+    : STRING_
+    ;
+
+rowConstructorList
+    : ROW assignmentValues (COMMA_ ROW assignmentValues)*
     ;
 
 withClause_
@@ -192,10 +207,6 @@ projections
 
 projection
     : (columnName | expr) (AS? alias)? | qualifiedShorthand
-    ;
-
-alias
-    : identifier | STRING_
     ;
 
 unqualifiedShorthand

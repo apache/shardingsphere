@@ -17,18 +17,12 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.core.rule.MasterSlaveRule;
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.CenterType;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.MasterSlaveRuleChangedEvent;
@@ -40,12 +34,20 @@ import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSource
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.circuit.connection.CircuitBreakerConnection;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
-import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
-import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -106,7 +108,7 @@ public final class OrchestrationMasterSlaveDataSourceTest {
     @Test
     public void assertRenewRule() {
         masterSlaveDataSource.renew(getMasterSlaveRuleChangedEvent());
-        assertThat(masterSlaveDataSource.getDataSource().getRuntimeContext().getRule().getName(), is("new_ms"));
+        assertThat(((MasterSlaveRule) masterSlaveDataSource.getDataSource().getRuntimeContext().getRules().iterator().next()).getName(), is("new_ms"));
     }
     
     private MasterSlaveRuleChangedEvent getMasterSlaveRuleChangedEvent() {
@@ -146,7 +148,7 @@ public final class OrchestrationMasterSlaveDataSourceTest {
     @Test
     public void assertRenewDisabledState() {
         masterSlaveDataSource.renew(getDisabledStateChangedEvent());
-        assertThat(masterSlaveDataSource.getDataSource().getRuntimeContext().getRule().getSlaveDataSourceNames().size(), is(0));
+        assertThat(((MasterSlaveRule) masterSlaveDataSource.getDataSource().getRuntimeContext().getRules().iterator().next()).getSlaveDataSourceNames().size(), is(0));
     }
     
     private DisabledStateChangedEvent getDisabledStateChangedEvent() {

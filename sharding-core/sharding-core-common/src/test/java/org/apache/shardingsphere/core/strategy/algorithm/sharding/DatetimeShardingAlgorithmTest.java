@@ -60,11 +60,22 @@ public final class DatetimeShardingAlgorithmTest {
     }
     
     @Test
-    public void assertRangeDoSharding() {
+    public void assertDoShardingWithAllRange() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
         Range<String> rangeValue = Range.closed("2020-01-01 00:00:00", "2020-01-01 00:00:15");
         List<RouteValue> shardingValues = Lists.newArrayList(new RangeRouteValue<>("create_time", "t_order", rangeValue));
         Collection<String> actual = shardingStrategy.doSharding(availableTargetNames, shardingValues, new ConfigurationProperties(new Properties()));
         assertThat(actual.size(), is(4));
+    }
+    
+    @Test
+    public void assertDoShardingWithPartRange() {
+        List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
+        Range<String> rangeValue = Range.closed("2020-01-01 00:00:04", "2020-01-01 00:00:10");
+        List<RouteValue> shardingValues = Lists.newArrayList(new RangeRouteValue<>("create_time", "t_order", rangeValue));
+        Collection<String> actual = shardingStrategy.doSharding(availableTargetNames, shardingValues, new ConfigurationProperties(new Properties()));
+        assertThat(actual.size(), is(2));
+        assertTrue(actual.contains("t_order_1"));
+        assertTrue(actual.contains("t_order_2"));
     }
 }

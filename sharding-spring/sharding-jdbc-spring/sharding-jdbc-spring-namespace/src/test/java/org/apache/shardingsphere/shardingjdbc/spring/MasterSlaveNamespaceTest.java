@@ -17,11 +17,6 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
 import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.strategy.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
@@ -31,6 +26,11 @@ import org.apache.shardingsphere.spi.masterslave.MasterSlaveLoadBalanceAlgorithm
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = "classpath:META-INF/rdb/masterSlaveNamespace.xml")
 public class MasterSlaveNamespaceTest extends AbstractJUnit4SpringContextTests {
@@ -60,6 +60,6 @@ public class MasterSlaveNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     private MasterSlaveRule getMasterSlaveRule(final String masterSlaveDataSourceName) {
         MasterSlaveDataSource masterSlaveDataSource = applicationContext.getBean(masterSlaveDataSourceName, MasterSlaveDataSource.class);
-        return masterSlaveDataSource.getRuntimeContext().getRule();
+        return (MasterSlaveRule) masterSlaveDataSource.getRuntimeContext().getRules().iterator().next();
     }
 }

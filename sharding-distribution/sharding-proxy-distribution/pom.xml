@@ -24,6 +24,7 @@
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-proxy-distribution</artifactId>
+    <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <dependencies>

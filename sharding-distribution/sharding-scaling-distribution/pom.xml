@@ -24,6 +24,7 @@
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-scaling-distribution</artifactId>
+    <packaging>pom</packaging>
     <name>${project.artifactId}</name>
 
     <dependencies>

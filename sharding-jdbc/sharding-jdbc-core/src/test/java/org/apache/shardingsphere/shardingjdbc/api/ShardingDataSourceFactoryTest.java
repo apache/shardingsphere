@@ -17,17 +17,14 @@
 
 package org.apache.shardingsphere.shardingjdbc.api;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -38,7 +35,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -49,9 +45,8 @@ public final class ShardingDataSourceFactoryTest {
     public void assertCreateDataSourceWithShardingRuleAndProperties() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = createShardingRuleConfig();
         Properties props = new Properties();
-        DataSource dataSource = ShardingDataSourceFactory.createDataSource(getDataSourceMap(), shardingRuleConfig, props);
-        assertNotNull(getShardingRule(dataSource));
-        assertThat(getProperties(dataSource), is(props));
+        ShardingDataSource dataSource = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(getDataSourceMap(), shardingRuleConfig, props);
+        assertThat(dataSource.getRuntimeContext().getProperties().getProps(), is(props));
     }
     
     private Map<String, DataSource> getDataSourceMap() throws SQLException {
@@ -82,20 +77,5 @@ public final class ShardingDataSourceFactoryTest {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getTableRuleConfigs().add(new TableRuleConfiguration("logicTable", "ds.table_${0..2}"));
         return result;
-    }
-    
-    @SneakyThrows
-    private ShardingRule getShardingRule(final DataSource dataSource) {
-        Field field = dataSource.getClass().getDeclaredField("runtimeContext");
-        field.setAccessible(true);
-        return ((ShardingRuntimeContext) field.get(dataSource)).getRule();
-    }
-    
-    @SneakyThrows
-    private Properties getProperties(final DataSource dataSource) {
-        Field field = dataSource.getClass().getDeclaredField("runtimeContext");
-        field.setAccessible(true);
-        ShardingRuntimeContext runtimeContext = (ShardingRuntimeContext) field.get(dataSource);
-        return runtimeContext.getProperties().getProps();
     }
 }

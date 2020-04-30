@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingscaling.mysql;
 
 import org.apache.shardingsphere.shardingscaling.core.exception.PrepareFailedException;
-import org.apache.shardingsphere.shardingscaling.core.preparer.checker.AbstractDataSourceChecker;
+import org.apache.shardingsphere.shardingscaling.core.job.preparer.checker.AbstractDataSourceChecker;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

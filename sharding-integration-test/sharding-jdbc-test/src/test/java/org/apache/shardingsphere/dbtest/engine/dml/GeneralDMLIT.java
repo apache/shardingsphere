@@ -19,11 +19,13 @@ package org.apache.shardingsphere.dbtest.engine.dml;
 
 import org.apache.shardingsphere.dbtest.cases.assertion.dml.DMLIntegrateTestCaseAssertion;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLValue;
-import org.apache.shardingsphere.dbtest.cases.sql.SQLCaseType;
+import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLCaseType;
 import org.apache.shardingsphere.dbtest.engine.SQLType;
 import org.apache.shardingsphere.dbtest.engine.util.IntegrateTestParameters;
-import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import javax.xml.bind.JAXBException;
@@ -37,17 +39,18 @@ import java.util.Collection;
 
 import static org.junit.Assert.assertFalse;
 
+@RunWith(Parameterized.class)
 public final class GeneralDMLIT extends BaseDMLIT {
     
     private final DMLIntegrateTestCaseAssertion assertion;
     
-    public GeneralDMLIT(final String sqlCaseId, final String path, final DMLIntegrateTestCaseAssertion assertion, final String ruleType,
-                        final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
-        super(sqlCaseId, path, assertion, ruleType, databaseTypeEnvironment, caseType);
+    public GeneralDMLIT(final String path, final DMLIntegrateTestCaseAssertion assertion, final String ruleType,
+                        final String databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
+        super(path, assertion, ruleType, DatabaseTypes.getActualDatabaseType(databaseType), caseType, sql);
         this.assertion = assertion;
     }
     
-    @Parameters(name = "{0} -> Rule:{3} -> {4} -> {5}")
+    @Parameters(name = "Rule:{2} -> {3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
         return IntegrateTestParameters.getParametersWithAssertion(SQLType.DML);
     }
@@ -55,7 +58,7 @@ public final class GeneralDMLIT extends BaseDMLIT {
     @Test
     public void assertExecuteUpdate() throws JAXBException, IOException, SQLException, ParseException {
         // TODO fix masterslave
-        if (!getDatabaseTypeEnvironment().isEnabled() || "masterslave".equals(getRuleType())) {
+        if ("masterslave".equals(getRuleType())) {
             return;
         }
         // TODO fix shadow
@@ -69,9 +72,9 @@ public final class GeneralDMLIT extends BaseDMLIT {
         assertDataSet(actualUpdateCount);
     }
     
-    private int executeUpdateForStatement(final Connection connection) throws SQLException, ParseException {
+    private int executeUpdateForStatement(final Connection connection) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            return statement.executeUpdate(String.format(getSql(), assertion.getSQLValues().toArray()));
+            return statement.executeUpdate(getSql());
         }
     }
     
@@ -87,7 +90,7 @@ public final class GeneralDMLIT extends BaseDMLIT {
     @Test
     public void assertExecute() throws JAXBException, IOException, SQLException, ParseException {
         // TODO fix masterslave
-        if (!getDatabaseTypeEnvironment().isEnabled() || "masterslave".equals(getRuleType())) {
+        if ("masterslave".equals(getRuleType())) {
             return;
         }
         // TODO fix shadow
@@ -101,9 +104,9 @@ public final class GeneralDMLIT extends BaseDMLIT {
         assertDataSet(actualUpdateCount);
     }
     
-    private int executeForStatement(final Connection connection) throws SQLException, ParseException {
+    private int executeForStatement(final Connection connection) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            assertFalse("Not a DML statement.", statement.execute(String.format(getSql(), assertion.getSQLValues().toArray())));
+            assertFalse("Not a DML statement.", statement.execute(getSql()));
             return statement.getUpdateCount();
         }
     }

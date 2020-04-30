@@ -18,11 +18,8 @@
 package org.apache.shardingsphere.shardingproxy.backend.schema.impl;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.log.ConfigurationLogger;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.orchestration.core.common.event.EncryptRuleChangedEvent;
@@ -36,17 +33,10 @@ import java.util.Map;
 /**
  * Encrypt schema.
  */
-@Getter
 public final class EncryptSchema extends LogicSchema {
-    
-    private final ShardingRule shardingRule;
-    
-    private EncryptRule encryptRule;
     
     public EncryptSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final EncryptRuleConfiguration encryptRuleConfiguration) throws SQLException {
         super(name, dataSources, Collections.singletonList(new EncryptRule(encryptRuleConfiguration)));
-        encryptRule = new EncryptRule(encryptRuleConfiguration);
-        shardingRule = new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet());
     }
     
     /**
@@ -58,6 +48,6 @@ public final class EncryptSchema extends LogicSchema {
     @SneakyThrows
     public synchronized void renew(final EncryptRuleChangedEvent encryptRuleChangedEvent) {
         ConfigurationLogger.log(encryptRuleChangedEvent.getEncryptRuleConfiguration());
-        encryptRule = new EncryptRule(encryptRuleChangedEvent.getEncryptRuleConfiguration());
+        setRules(Collections.singletonList(new EncryptRule(encryptRuleChangedEvent.getEncryptRuleConfiguration())));
     }
 }

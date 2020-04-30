@@ -29,11 +29,6 @@ import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
-import org.apache.shardingsphere.shardingproxy.backend.schema.impl.EncryptSchema;
-import org.apache.shardingsphere.shardingproxy.backend.schema.impl.MasterSlaveSchema;
-import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShadowSchema;
-import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
@@ -52,7 +47,6 @@ import org.apache.shardingsphere.underlying.executor.sql.group.ExecuteGroupEngin
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -82,23 +76,6 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         sqlExecutor = new SQLExecutor(BackendExecutorContext.getInstance().getExecutorKernel(), backendConnection.isSerialExecute());
     }
     
-    private Collection<BaseRule> getRules() {
-        LogicSchema logicSchema = backendConnection.getLogicSchema();
-        if (logicSchema instanceof ShardingSchema) {
-            return logicSchema.getShardingRule().toRules();
-        }
-        if (logicSchema instanceof MasterSlaveSchema) {
-            return Collections.singletonList(((MasterSlaveSchema) logicSchema).getMasterSlaveRule());
-        }
-        if (logicSchema instanceof EncryptSchema) {
-            return Collections.singletonList(((EncryptSchema) logicSchema).getEncryptRule());
-        }
-        if (logicSchema instanceof ShadowSchema) {
-            return Collections.singletonList(((ShadowSchema) logicSchema).getShadowRule());
-        }
-        return Collections.emptyList();
-    }
-    
     @SuppressWarnings("unchecked")
     @Override
     public BackendResponse execute(final ExecutionContext executionContext) throws SQLException {
@@ -126,7 +103,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     }
     
     private SQLExecutorCallback<ExecuteResponse> getSQLExecutorCallback(final ProxySQLExecutorCallback callback) {
-        Map<BaseRule, RuleProxySQLExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(getRules(), RuleProxySQLExecutorCallback.class);
+        Map<BaseRule, RuleProxySQLExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(backendConnection.getLogicSchema().getRules(), RuleProxySQLExecutorCallback.class);
         return callbackMap.isEmpty() ? callback : callbackMap.values().iterator().next();
     }
     

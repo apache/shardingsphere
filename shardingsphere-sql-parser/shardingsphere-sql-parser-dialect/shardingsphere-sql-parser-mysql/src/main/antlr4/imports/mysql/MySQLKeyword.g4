@@ -2111,3 +2111,259 @@ PLUGIN_DIR
 STOP
     : S T O P
     ;
+
+FAILED_LOGIN_ATTEMPTS
+    : F A I L E D UL_ L O G I N UL_ A T T E M P T S
+    ;
+
+PASSWORD_LOCK_TIME
+    : P A S S W O R D UL_ L O C K UL_ T I M E
+    ;
+
+ATTRIBUTE
+    : A T T R I B U T E
+    ;
+
+APPLICATION_PASSWORD_ADMIN
+    : A P P L I C A T I O N UL_ P A S S W O R D UL_ A D M I N
+    ;
+
+BACKUP_ADMIN
+    : B A C K U P UL_ A D M I N
+    ;
+
+BINLOG_ENCRYPTION_ADMIN
+    : B I N L O G UL_ E N C R Y P T I O N UL_ A D M I N
+    ;
+
+CLONE_ADMIN
+    : C L O N E UL_ A D M I N
+    ;
+
+INNODB_REDO_LOG_ARCHIVE
+    : I N N O D B UL_ R E D O UL_ L O G UL_ A R C H I V E
+    ;
+
+NDB_STOPED_USER
+    : N D B UL_ S T O P E D UL_ U S E R
+    ;
+
+PERSIST_RO_VARIABLES_ADMIN
+    : P E R S I S T UL_ R O UL_ V A R I A B L E S UL_ A D M I N
+    ;
+
+REPLICATION_APPLIER
+    : R E P L I C A T I O N UL_ A P P L I E R
+    ;
+
+RESOURCE_GROUP_ADMIN
+    : R E S O U R C E UL_ G R O U P UL_ A D M I N
+    ;
+
+RESOURCE_GROUP_USER
+    : R E S O U R C E UL_ G R O U P UL_ U S E R
+    ;
+
+SHOW_ROUTINE
+    : S H O W UL_ R O U T I N E
+    ;
+
+SYSTEM_USER
+    : S Y S T E M UL_ U S E R
+    ;
+
+TABLE_ENCRYPTION_ADMIN
+    : T A B L E UL_ E N C R Y P T I O N UL_ A D M I N
+    ;
+
+XA_RECOVER_ADMIN
+    : X A UL_ R E C O V E R UL_ A D M I N
+    ;
+
+WORK
+    : W O R K
+    ;
+
+BACKUP
+    : B A C K U P
+    ;
+
+RESUME
+    : R E S U M E
+    ;
+
+SUSPEND
+    : S U S P E N D
+    ;
+
+MIGRATE
+    : M I G R A T E
+    ;
+
+PREPARE
+    : P R E P A R E
+    ;
+
+ONE
+    : O N E
+    ;
+
+PHASE
+    : P H A S E
+    ;
+
+RECOVER
+    : R E C O V E R
+    ;
+
+SNAPSHOT
+    : S N A P S H O T
+    ;
+
+PURGE
+    : P U R G E
+    ;
+
+MASTER_COMPRESSION_ALGORITHMS
+    : M A S T E R UL_ C O M P R E S S I O N UL_ A L G O R I T H M S
+    ;
+
+MASTER_ZSTD_COMPRESSION_LEVEL
+    : M A S T E R UL_ Z S T D UL_ C O M P R E S S I O N UL_ L E V E L
+    ;
+
+MASTER_SSL
+    : M A S T E R UL_ S S L
+    ;
+
+MASTER_SSL_CA
+    : M A S T E R UL_ S S L UL_ C A
+    ;
+
+MASTER_SSL_CAPATH
+    : M A S T E R UL_ S S L UL_ C A P A T H
+    ;
+
+MASTER_SSL_CERT
+    : M A S T E R UL_ S S L UL_ C E R T
+    ;
+
+MASTER_SSL_CRL
+    : M A S T E R UL_ S S L UL_ C R L
+    ;
+
+MASTER_SSL_CRLPATH
+    : M A S T E R UL_ S S L UL_ C R L P A T H
+    ;
+
+MASTER_SSL_KEY
+    : M A S T E R UL_ S S L UL_ K E Y
+    ;
+
+MASTER_SSL_CIPHER
+    : M A S T E R UL_ S S L UL_ C I P H E R
+    ;
+
+MASTER_SSL_VERIFY_SERVER_CERT
+    : M A S T E R UL_ S S L UL_ V E R I F Y UL_ S E R V E R UL_ C E R T
+    ;
+
+MASTER_TLS_VERSION
+    : M A S T E R UL_ T L S UL_ V E R S I O N
+    ;
+
+MASTER_TLS_CIPHERSUITES
+    : M A S T E R UL_ T L S UL_ C I P H E R S U I T E S
+    ;
+
+MASTER_PUBLIC_KEY_PATH
+    : M A S T E R UL_ P U B L I C UL_ K E Y UL_ P A T H
+    ;
+
+GET_MASTER_PUBLIC_KEY
+    : G E T UL_ M A S T E R UL_ P U B L I C UL_ K E Y
+    ;
+
+IGNORE_SERVER_IDS
+    : I G N O R E UL_ S E R V E R UL_ I D S
+    ;
+
+MASTER_BIND
+    : M A S T E R UL_ B I N D
+    ;
+
+MASTER_HOST
+    : M A S T E R UL_ H O S T
+    ;
+
+MASTER_USER
+    : M A S T E R UL_ U S E R
+    ;
+
+MASTER_PASSWORD
+    : M A S T E R UL_ P A S S W O R D
+    ;
+
+MASTER_PORT
+    : M A S T E R UL_ P O R T
+    ;
+
+PRIVILEGE_CHECKS_USER
+    : P R I V I L E G E UL_ C H E C K S UL_ U S E R
+    ;
+
+REQUIRE_ROW_FORMAT
+    : R E Q U I R E UL_ R O W UL_ F O R M A T
+    ;
+
+MASTER_CONNECT_RETRY
+    : M A S T E R UL_ C O N N E C T UL_ R E T R Y
+    ;
+
+MASTER_RETRY_COUNT
+    : M A S T E R UL_ R E T R Y UL_ C O U N T
+    ;
+
+MASTER_DELAY
+    : M A S T E R UL_ D E L A Y
+    ;
+
+MASTER_HEARTBEAT_PERIOD
+    : M A S T E R UL_ H E A R T B E A T UL_ P E R I O D
+    ;
+
+MASTER_AUTO_POSITION
+    : M A S T E R UL_ A U T O UL_ P O S I T I O N
+    ;
+
+REPLICATE_DO_DB
+    : R E P L I C A T E UL_ D O UL_ D B
+    ;
+
+REPLICATE_IGNORE_DB
+    : R E P L I C A T E UL_ I G N O R E UL_ D B
+    ;
+
+REPLICATE_DO_TABLE
+    : R E P L I C A T E UL_ D O UL_ T A B L E
+    ;
+
+REPLICATE_IGNORE_TABLE
+    : R E P L I C A T E UL_ I G N O R E UL_ T A B L E
+    ;
+
+REPLICATE_WILD_DO_TABLE
+    : R E P L I C A T E UL_ W I L D UL_ D O UL_ T A B L E
+    ;
+
+REPLICATE_WILD_IGNORE_TABLE
+    : R E P L I C A T E UL_ W I L D UL_ I G N O R E UL_ T A B L E
+    ;
+
+REPLICATE_REWRITE_DB
+    : R E P L I C A T E UL_ R E W R I T E UL_ D B
+    ;
+
+GROUP_REPLICATION
+    : G R O U P UL_ R E P L I C A T I O N
+    ;

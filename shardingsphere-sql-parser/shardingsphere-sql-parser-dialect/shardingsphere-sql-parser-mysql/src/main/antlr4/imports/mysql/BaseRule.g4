@@ -108,7 +108,14 @@ unreservedWord
     | SUBJECT | ISSUER | OLD | RANDOM | RETAIN | MAX_USER_CONNECTIONS | MAX_CONNECTIONS_PER_HOUR | MAX_UPDATES_PER_HOUR
     | MAX_QUERIES_PER_HOUR | REUSE | OPTIONAL | HISTORY | NEVER | EXPIRE | TYPE | CONTEXT | CODE | CHANNEL | SOURCE
     | IO_THREAD | SQL_THREAD | SQL_BEFORE_GTIDS | SQL_AFTER_GTIDS | MASTER_LOG_FILE | MASTER_LOG_POS | RELAY_LOG_FILE
-    | RELAY_LOG_POS | SQL_AFTER_MTS_GAPS | UNTIL | DEFAULT_AUTH | PLUGIN_DIR | STOP | SIGNED
+    | RELAY_LOG_POS | SQL_AFTER_MTS_GAPS | UNTIL | DEFAULT_AUTH | PLUGIN_DIR | STOP | SIGNED | FAILED_LOGIN_ATTEMPTS
+    | PASSWORD_LOCK_TIME | MASTER_COMPRESSION_ALGORITHMS | MASTER_ZSTD_COMPRESSION_LEVEL | MASTER_SSL | MASTER_SSL_CA
+    | MASTER_SSL_CAPATH | MASTER_SSL_CERT | MASTER_SSL_CRL | MASTER_SSL_CRLPATH | MASTER_SSL_KEY | MASTER_SSL_CIPHER
+    | MASTER_TLS_VERSION | MASTER_TLS_CIPHERSUITES | MASTER_PUBLIC_KEY_PATH | GET_MASTER_PUBLIC_KEY | IGNORE_SERVER_IDS
+    | MASTER_HOST | MASTER_USER | MASTER_PASSWORD | MASTER_PORT | PRIVILEGE_CHECKS_USER | REQUIRE_ROW_FORMAT | MASTER_CONNECT_RETRY
+    | MASTER_RETRY_COUNT | MASTER_DELAY | MASTER_HEARTBEAT_PERIOD | MASTER_AUTO_POSITION | REPLICATE_DO_DB | REPLICATE_IGNORE_DB
+    | REPLICATE_DO_TABLE | REPLICATE_IGNORE_TABLE | REPLICATE_WILD_DO_TABLE | REPLICATE_WILD_IGNORE_TABLE | REPLICATE_REWRITE_DB
+    | GROUP_REPLICATION
     ;
 
 variable
@@ -117,6 +124,18 @@ variable
 
 schemaName
     : identifier
+    ;
+
+schemaNames
+    : schemaName (COMMA_ schemaName)*
+    ;
+
+schemaPairs
+    : schemaPair (COMMA_ schemaPair)*
+    ;
+
+schemaPair
+    : LP_ schemaName COMMA_ schemaName RP_
     ;
 
 tableName
@@ -167,6 +186,10 @@ owner
     : identifier
     ;
 
+alias
+    : identifier | STRING_
+    ;
+
 name
     : identifier
     ;
@@ -181,6 +204,10 @@ columnNames
 
 groupName
     : IDENTIFIER_
+    ;
+
+routineName
+    : identifier
     ;
 
 shardLibraryName
@@ -285,7 +312,7 @@ predicate
     | bitExpr NOT? BETWEEN bitExpr AND predicate
     | bitExpr SOUNDS LIKE bitExpr
     | bitExpr NOT? LIKE simpleExpr (ESCAPE simpleExpr)?
-    | bitExpr NOT? (REGEXP | RLIKE) bitExpr
+    | bitExpr NOT? REGEXP bitExpr
     | bitExpr
     ;
 
@@ -470,6 +497,14 @@ matchSearchModifier_
 
 caseExpression
     : CASE simpleExpr? caseWhen_+ caseElse_? END
+    ;
+
+datetimeExpr
+    : expr
+    ;
+
+binaryLogFileIndexNumber
+    : NUMBER_
     ;
 
 caseWhen_

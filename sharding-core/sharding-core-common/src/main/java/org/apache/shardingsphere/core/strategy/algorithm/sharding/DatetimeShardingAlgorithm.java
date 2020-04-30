@@ -24,10 +24,10 @@ import org.apache.shardingsphere.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.api.sharding.standard.StandardShardingAlgorithm;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Collection;
-import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Properties;
 
@@ -44,9 +44,9 @@ public final class DatetimeShardingAlgorithm implements StandardShardingAlgorith
     
     private static final String EPOCH = "epoch";
     
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static final String DATETIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
     
-    private static final int SECOND_UNIT = 1000;
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern(DATETIME_PATTERN);
     
     @Getter
     @Setter
@@ -56,7 +56,7 @@ public final class DatetimeShardingAlgorithm implements StandardShardingAlgorith
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         checkProperties();
         for (String each : availableTargetNames) {
-            if (each.endsWith(doSharding(parseDate(shardingValue.getValue())))) {
+            if (each.endsWith(doSharding(parseDate(shardingValue.getValue())) + "")) {
                 return each;
             }
         }
@@ -67,54 +67,52 @@ public final class DatetimeShardingAlgorithm implements StandardShardingAlgorith
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
         checkProperties();
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
-        for (long i = parseDate(shardingValue.getValueRange().lowerEndpoint()); i <= parseDate(shardingValue.getValueRange().upperEndpoint()); i++) {
+        int firstPartition = doSharding(parseDate(shardingValue.getValueRange().lowerEndpoint()));
+        int lastPartition = doSharding(parseDate(shardingValue.getValueRange().upperEndpoint()));
+        for (int i = firstPartition; i <= lastPartition; i++) {
             for (String each : availableTargetNames) {
-                if (each.endsWith(doSharding(i))) {
+                if (each.endsWith(i + "")) {
                     result.add(each);
                 }
-            }
-            if (result.size() == availableTargetNames.size()) {
-                return result;
+                if (result.size() == availableTargetNames.size()) {
+                    return result;
+                }
             }
         }
         return result;
     }
     
-    private String doSharding(final long shardingValue) {
-        long position = (long) (Math.floor(shardingValue / getPartitionValue()));
-        return 0 > position ? "0" : position + "";
+    private int doSharding(final long shardingValue) {
+        int position = (int) (Math.floor(shardingValue / getPartitionValue()));
+        return Math.max(0, position);
     }
     
     private void checkProperties() {
         Preconditions.checkNotNull(properties.get(PARTITION_SECONDS), "Sharding partition volume cannot be null.");
         Preconditions.checkState(null != properties.get(EPOCH) && checkDatetimePattern(properties.get(EPOCH).toString()), 
-                "%s pattern is required.", DATE_FORMAT.toPattern());
+                "%s pattern is required.", DATETIME_PATTERN);
     }
     
     private boolean checkDatetimePattern(final String datetime) {
         try {
             DATE_FORMAT.parse(datetime);
             return true;
-        } catch (final ParseException ex) {
+        } catch (final DateTimeParseException ex) {
             return false;
         }
     }
     
     private long parseDate(final Comparable<?> shardingValue) {
-        try {
-            Date dateValue = DATE_FORMAT.parse(shardingValue.toString());
-            if (null != properties.get(EPOCH)) {
-                return parseDate(dateValue);
-            }
-            return dateValue.getTime() / SECOND_UNIT;
-        } catch (final ParseException ex) {
-            throw new UnsupportedOperationException(ex);
+        LocalTime dateValue = LocalTime.parse(shardingValue.toString(), DATE_FORMAT);
+        if (null != properties.get(EPOCH)) {
+            return parseDate(dateValue);
         }
+        return dateValue.getSecond();
     }
     
-    private Long parseDate(final Date dateValue) throws ParseException {
-        Date sinceDate = DATE_FORMAT.parse(properties.get(EPOCH).toString());
-        return (dateValue.getTime() - sinceDate.getTime()) / SECOND_UNIT;
+    private Long parseDate(final LocalTime dateValue) {
+        LocalTime sinceDate = LocalTime.parse(properties.get(EPOCH).toString(), DATE_FORMAT);
+        return (long) (dateValue.getSecond() - sinceDate.getSecond());
     }
     
     private long getPartitionValue() {

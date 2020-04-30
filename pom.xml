@@ -46,6 +46,7 @@
         <module>sharding-transaction</module>
         <module>sharding-orchestration</module> 
         <module>sharding-opentracing</module>
+        <module>sharding-metrics</module>
         
         <module>sharding-spring</module>
         

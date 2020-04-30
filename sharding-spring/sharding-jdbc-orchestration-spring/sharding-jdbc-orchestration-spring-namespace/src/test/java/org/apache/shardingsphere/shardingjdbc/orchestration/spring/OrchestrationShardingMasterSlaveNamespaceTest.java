@@ -17,13 +17,6 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-
-import java.util.Map;
-import javax.sql.DataSource;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
@@ -35,6 +28,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+
+import javax.sql.DataSource;
+import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 @ContextConfiguration(locations = "classpath:META-INF/rdb/shardingMasterSlaveOrchestration.xml")
 public class OrchestrationShardingMasterSlaveNamespaceTest extends AbstractJUnit4SpringContextTests {
@@ -82,6 +83,6 @@ public class OrchestrationShardingMasterSlaveNamespaceTest extends AbstractJUnit
     private ShardingRule getShardingRule(final String shardingDataSourceName) {
         OrchestrationSpringShardingDataSource shardingDataSource = applicationContext.getBean(shardingDataSourceName, OrchestrationSpringShardingDataSource.class);
         ShardingDataSource dataSource = (ShardingDataSource) FieldValueUtil.getFieldValue(shardingDataSource, "dataSource", true);
-        return dataSource.getRuntimeContext().getRule();
+        return (ShardingRule) dataSource.getRuntimeContext().getRules().iterator().next();
     }
 }

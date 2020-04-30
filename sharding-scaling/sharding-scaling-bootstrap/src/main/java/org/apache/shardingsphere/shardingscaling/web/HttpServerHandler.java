@@ -33,11 +33,11 @@ import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.shardingscaling.core.ShardingScalingJob;
+import org.apache.shardingsphere.shardingscaling.core.job.ShardingScalingJob;
 import org.apache.shardingsphere.shardingscaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.utils.SyncConfigurationUtil;
-import org.apache.shardingsphere.shardingscaling.core.controller.ScalingJobController;
-import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
+import org.apache.shardingsphere.shardingscaling.core.ScalingJobController;
+import org.apache.shardingsphere.shardingscaling.core.job.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.shardingscaling.utils.ResponseContentUtil;
 

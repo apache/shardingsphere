@@ -27,7 +27,7 @@ import java.util.LinkedHashSet;
 import java.util.Properties;
 
 public final class StandardModuloAlgorithm implements StandardShardingAlgorithm<Integer> {
-
+    
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
         for (String each : availableTargetNames) {

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling.core.execute.executor.channel;
 
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPosition;
+import org.apache.shardingsphere.shardingscaling.core.job.position.LogPosition;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.PlaceholderRecord;

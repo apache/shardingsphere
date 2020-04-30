@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingscaling.postgresql;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPosition;
+import org.apache.shardingsphere.shardingscaling.core.job.position.LogPosition;
 import org.postgresql.replication.LogSequenceNumber;
 
 /**

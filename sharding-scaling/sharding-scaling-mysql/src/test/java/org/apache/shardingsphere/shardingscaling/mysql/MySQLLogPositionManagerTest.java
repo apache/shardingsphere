@@ -60,8 +60,8 @@ public final class MySQLLogPositionManagerTest {
     
     @Test
     public void assertGetCurrentPosition() {
-        MySQLLogPositionManager mySQLLogManager = new MySQLLogPositionManager(dataSource);
-        BinlogPosition actual = mySQLLogManager.getCurrentPosition();
+        MySQLLogPositionManager mysqlLogManager = new MySQLLogPositionManager(dataSource);
+        BinlogPosition actual = mysqlLogManager.getCurrentPosition();
         assertThat(actual.getServerId(), is(SERVER_ID));
         assertThat(actual.getFilename(), is(LOG_FILE_NAME));
         assertThat(actual.getPosition(), is(LOG_POSITION));
@@ -69,10 +69,10 @@ public final class MySQLLogPositionManagerTest {
     
     @Test
     public void assertUpdateCurrentPosition() {
-        MySQLLogPositionManager mySQLLogManager = new MySQLLogPositionManager(dataSource);
+        MySQLLogPositionManager mysqlLogManager = new MySQLLogPositionManager(dataSource);
         BinlogPosition expected = new BinlogPosition(LOG_FILE_NAME, LOG_POSITION, SERVER_ID);
-        mySQLLogManager.updateCurrentPosition(expected);
-        assertThat(mySQLLogManager.getCurrentPosition(), is(expected));
+        mysqlLogManager.updateCurrentPosition(expected);
+        assertThat(mysqlLogManager.getCurrentPosition(), is(expected));
     }
     
     @SneakyThrows
