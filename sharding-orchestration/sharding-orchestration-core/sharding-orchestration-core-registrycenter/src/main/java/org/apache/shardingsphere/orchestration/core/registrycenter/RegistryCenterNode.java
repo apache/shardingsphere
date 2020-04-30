@@ -22,12 +22,12 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationShardingSchema;
 
 /**
- * State node.
+ * RegistryCenter node.
  */
 @RequiredArgsConstructor
 public final class RegistryCenterNode {
     
-    private static final String ROOT = "state";
+    private static final String ROOT = "registry";
     
     private static final String INSTANCES_NODE_PATH = "instances";
     

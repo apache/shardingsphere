@@ -33,11 +33,11 @@ import java.util.Collections;
  */
 public final class DataSourceStateChangedListener extends PostShardingCenterRepositoryEventListener {
     
-    private final RegistryCenterNode stateNode;
+    private final RegistryCenterNode registryCenterNode;
     
     public DataSourceStateChangedListener(final String name, final RegistryCenterRepository registryCenterRepository) {
         super(registryCenterRepository, Collections.singleton(new RegistryCenterNode(name).getDataSourcesNodeFullRootPath()));
-        stateNode = new RegistryCenterNode(name);
+        registryCenterNode = new RegistryCenterNode(name);
     }
     
     @Override
@@ -46,7 +46,7 @@ public final class DataSourceStateChangedListener extends PostShardingCenterRepo
     }
     
     private OrchestrationShardingSchema getShardingSchema(final String dataSourceNodeFullPath) {
-        return stateNode.getOrchestrationShardingSchema(dataSourceNodeFullPath);
+        return registryCenterNode.getOrchestrationShardingSchema(dataSourceNodeFullPath);
     }
     
     private boolean isDataSourceDisabled(final DataChangedEvent event) {
