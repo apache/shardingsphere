@@ -20,6 +20,6 @@ package org.apache.shardingsphere.metrics.api;
 /**
  * None summary metrics tracker delegate.
  */
-public class NoneSummaryMetricsTrackerDelegate implements SummaryMetricsTrackerDelegate {
+public final class NoneSummaryMetricsTrackerDelegate implements SummaryMetricsTrackerDelegate {
 }
 

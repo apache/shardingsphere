@@ -24,7 +24,7 @@ import org.apache.shardingsphere.metrics.enums.MetricsLabelEnum;
 /**
  *  Channel count gauge metrics tracker.
  */
-public class ChannelCountGaugeMetricsTracker implements GaugeMetricsTracker {
+public final class ChannelCountGaugeMetricsTracker implements GaugeMetricsTracker {
     
     private static final Gauge CHANNEL_COUNT = Gauge.build().name("channel_count").help("proxy channel count").register();
     

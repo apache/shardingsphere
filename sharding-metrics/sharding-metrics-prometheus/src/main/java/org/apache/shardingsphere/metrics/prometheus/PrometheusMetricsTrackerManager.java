@@ -33,7 +33,7 @@ import java.util.Properties;
  */
 @Getter
 @Setter
-public class PrometheusMetricsTrackerManager implements MetricsTrackerManager {
+public final class PrometheusMetricsTrackerManager implements MetricsTrackerManager {
     
     private Properties properties = new Properties();
     

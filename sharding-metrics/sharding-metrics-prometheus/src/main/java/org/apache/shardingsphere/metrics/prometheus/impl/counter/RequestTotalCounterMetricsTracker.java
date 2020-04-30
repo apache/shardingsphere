@@ -24,7 +24,7 @@ import org.apache.shardingsphere.metrics.enums.MetricsLabelEnum;
 /**
  * Request total counter metrics tracker.
  */
-public class RequestTotalCounterMetricsTracker implements CounterMetricsTracker {
+public final class RequestTotalCounterMetricsTracker implements CounterMetricsTracker {
     
     private static final Counter REQUEST_TOTAL = Counter.build()
             .name("request_total")

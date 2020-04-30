@@ -32,7 +32,7 @@ import java.util.Optional;
 /**
  * Prometheus metrics tracker factory.
  */
-public class PrometheusMetricsTrackerFactory implements MetricsTrackerFactory {
+public final class PrometheusMetricsTrackerFactory implements MetricsTrackerFactory {
     
     private static final Collection<MetricsTracker> REGISTER = new ArrayList<>();
     

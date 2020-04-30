@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Request latency summary metrics tracker.
  */
-public class RequestLatencySummaryMetricsTracker implements SummaryMetricsTracker {
+public final class RequestLatencySummaryMetricsTracker implements SummaryMetricsTracker {
     
     private static final Summary REQUEST_LATENCY = Summary.build()
             .name("requests_latency_summary_millis").help("Requests Latency Summary Millis (ms)")

@@ -49,5 +49,3 @@ public enum MetricsLabelEnum {
     
     private final String name;
 }
-
-

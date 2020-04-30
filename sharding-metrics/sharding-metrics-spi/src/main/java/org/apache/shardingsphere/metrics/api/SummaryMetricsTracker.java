@@ -51,5 +51,3 @@ public interface SummaryMetricsTracker extends MetricsTracker {
         return MetricsTypeEnum.SUMMARY.name();
     }
 }
-
-

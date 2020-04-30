@@ -24,7 +24,7 @@ import org.apache.shardingsphere.metrics.enums.MetricsLabelEnum;
 /**
  * SQL statement counter metrics tracker.
  */
-public class SQLStatementCounterMetricsTracker implements CounterMetricsTracker {
+public final class SQLStatementCounterMetricsTracker implements CounterMetricsTracker {
     
     private static final Counter SQL_STATEMENT_COUNT = Counter.build()
             .name("sql_statement_count")

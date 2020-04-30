@@ -25,7 +25,7 @@ import org.apache.shardingsphere.metrics.api.HistogramMetricsTrackerDelegate;
  * Prometheus histogram metrics tracker delegate.
  */
 @RequiredArgsConstructor
-public class PrometheusHistogramMetricsTrackerDelegate implements HistogramMetricsTrackerDelegate {
+public final class PrometheusHistogramMetricsTrackerDelegate implements HistogramMetricsTrackerDelegate {
     
     private final Histogram.Timer timer;
     

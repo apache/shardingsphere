@@ -22,7 +22,7 @@ import org.apache.shardingsphere.metrics.spi.MetricsTrackerManager;
 
 import java.util.Properties;
 
-public class MetricsTrackerManagerFixture implements MetricsTrackerManager {
+public final class MetricsTrackerManagerFixture implements MetricsTrackerManager {
     
     @Override
     public void init(final int port) {

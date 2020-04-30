@@ -25,7 +25,7 @@ import org.apache.shardingsphere.metrics.api.SummaryMetricsTrackerDelegate;
  * Prometheus summary metrics tracker delegate.
  */
 @RequiredArgsConstructor
-public class PrometheusSummaryMetricsTrackerDelegate implements SummaryMetricsTrackerDelegate {
+public final class PrometheusSummaryMetricsTrackerDelegate implements SummaryMetricsTrackerDelegate {
     
     private final Summary.Timer timer;
     

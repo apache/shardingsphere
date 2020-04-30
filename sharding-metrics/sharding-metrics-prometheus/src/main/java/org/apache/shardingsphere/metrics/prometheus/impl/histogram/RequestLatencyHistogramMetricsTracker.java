@@ -25,7 +25,7 @@ import org.apache.shardingsphere.metrics.enums.MetricsLabelEnum;
 /**
  * Request latency histogram metrics tracker.
  */
-public class RequestLatencyHistogramMetricsTracker implements HistogramMetricsTracker {
+public final class RequestLatencyHistogramMetricsTracker implements HistogramMetricsTracker {
     
     private static final Histogram REQUEST_LATENCY = Histogram.build()
             .name("requests_latency_Histogram_millis").help("Requests Latency Histogram Millis (ms)")
