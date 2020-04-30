@@ -49,8 +49,21 @@
         <property name="password" value=""/>
     </bean>
     
-    <sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="demo_ds_${user_id % 2}" />
-    <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order_${order_id % 2}" />
+    <bean:properties id="databaseInlineProps">
+        <prop key="algorithm.expression">demo_ds_${user_id % 2}</prop>
+    </bean:properties>
+
+    <spi:sharding-algorithm id="databaseIineStrategyShardingAlgorithm" type="INLINE" props-ref="databaseInlineProps"/>
+
+    <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="databaseIineStrategyShardingAlgorithm"/>
+
+    <bean:properties id="orderInlineProps">
+        <prop key="algorithm.expression">t_order_${order_id % 2}</prop>
+    </bean:properties>
+
+    <spi:sharding-algorithm id="orderInlineStrategyShardingAlgorithm" type="INLINE" props-ref="orderInlineProps"/>
+
+    <sharding:standard-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-ref="orderInlineStrategyShardingAlgorithm"/>
     
     <bean:properties id="properties">
         <prop key="worker.id">123</prop>
