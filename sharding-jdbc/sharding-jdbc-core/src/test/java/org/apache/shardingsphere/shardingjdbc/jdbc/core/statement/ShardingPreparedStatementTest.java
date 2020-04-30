@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import org.apache.shardingsphere.shardingjdbc.common.base.AbstractShardingJDBCDatabaseAndTableTest;
 import org.apache.shardingsphere.shardingjdbc.fixture.IncrementKeyGenerateAlgorithm;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -37,7 +38,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
 
     private static final String INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL = "INSERT INTO t_user (name) VALUES (?),(?),(?),(?)";
 
-    private static final String SELECT_FOR_INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL = "select name from t_user where id=%d";
+    private static final String SELECT_FOR_INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL = "SELECT name FROM t_user WHERE id=%d";
     
     private static final String INSERT_WITH_GENERATE_KEY_SQL = "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (?, ?, ?, ?)";
     
@@ -83,7 +84,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
         }
     }
 
-    // FIXME Batch Insert @Test
+    @Ignore
     public void assertMultiValuesWithGenerateShardingKeyColumn() throws SQLException {
         try (
                 Connection connection = getShardingDataSource().getConnection();
@@ -125,7 +126,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
         }
     }
 
-    // FIXME Batch Insert @Test
+    @Ignore
     public void assertAddBatchMultiValuesWithGenerateShardingKeyColumn() throws SQLException {
         try (
                 Connection connection = getShardingDataSource().getConnection();
