@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.encrypt.api.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
@@ -121,10 +122,9 @@ public final class OrchestrationEncryptDataSourceTest {
     }
     
     private EncryptRuleChangedEvent getEncryptRuleChangedEvent() {
-        EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfiguration();
-        encryptRuleConfig.getEncryptors().put("order_encryptor", new EncryptorRuleConfiguration("md5", new Properties()));
-        encryptRuleConfig.getTables().put("t_order_item", 
-                new EncryptTableRuleConfiguration(Collections.singletonMap("item_id", new EncryptColumnRuleConfiguration("plain_item_id", "cipher_item_id", "", "order_encryptor"))));
+        EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfiguration(ImmutableMap.of("order_encryptor", new EncryptorRuleConfiguration("md5", new Properties())), 
+                ImmutableMap.of("t_order_item", 
+                        new EncryptTableRuleConfiguration(Collections.singletonMap("item_id", new EncryptColumnRuleConfiguration("plain_item_id", "cipher_item_id", "", "order_encryptor")))));
         return new EncryptRuleChangedEvent(DefaultSchema.LOGIC_NAME, encryptRuleConfig);
     }
     
