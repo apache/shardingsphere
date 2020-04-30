@@ -34,36 +34,48 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class InlineShardingAlgorithmTest {
-    
+
     private StandardShardingStrategy shardingStrategy;
-    
+
+    private StandardShardingStrategy shardingStrategyWithSimplified;
+
     @Before
     public void setUp() {
         InlineShardingAlgorithm shardingAlgorithm = new InlineShardingAlgorithm();
-        shardingAlgorithm.getProperties().setProperty("algorithm.expression", "t_order_${order_id % 4}");
+        shardingAlgorithm.getProperties().setProperty("algorithm.expression", "t_order_$->{order_id % 4}");
         StandardShardingStrategyConfiguration shardingStrategyConfig = new StandardShardingStrategyConfiguration("order_id", shardingAlgorithm);
         shardingStrategy = new StandardShardingStrategy(shardingStrategyConfig);
+        InlineShardingAlgorithm shardingAlgorithmWithSimplified = new InlineShardingAlgorithm();
+        shardingAlgorithmWithSimplified.getProperties().setProperty("algorithm.expression", "t_order_${order_id % 4}");
+        StandardShardingStrategyConfiguration shardingStrategyConfigWithSimplified = new StandardShardingStrategyConfiguration("order_id", shardingAlgorithmWithSimplified);
+        shardingStrategyWithSimplified = new StandardShardingStrategy(shardingStrategyConfigWithSimplified);
     }
-    
+
     @Test
     public void assertDoSharding() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
         List<RouteValue> shardingValues = Lists.newArrayList(new ListRouteValue<>("order_id", "t_order", Lists.newArrayList(0, 1, 2, 3)));
         Collection<String> actual = shardingStrategy.doSharding(availableTargetNames, shardingValues, new ConfigurationProperties(new Properties()));
         assertThat(actual.size(), is(4));
+        Collection<String> actualWithSimplified = shardingStrategyWithSimplified.doSharding(availableTargetNames, shardingValues, new ConfigurationProperties(new Properties()));
+        assertThat(actualWithSimplified.size(), is(4));
     }
-    
+
     @Test
     public void assertDoShardingWithNonExistNodes() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1");
         List<RouteValue> shardingValues = Lists.newArrayList(new ListRouteValue<>("order_id", "t_order", Lists.newArrayList(0, 1, 2, 3)));
         Collection<String> actual = shardingStrategy.doSharding(availableTargetNames, shardingValues, new ConfigurationProperties(new Properties()));
         assertThat(actual.size(), is(2));
+        Collection<String> actualWithSimplified = shardingStrategyWithSimplified.doSharding(availableTargetNames, shardingValues, new ConfigurationProperties(new Properties()));
+        assertThat(actualWithSimplified.size(), is(2));
     }
-    
+
     @Test
     public void assertGetShardingColumns() {
         assertThat(shardingStrategy.getShardingColumns().size(), is(1));
         assertThat(shardingStrategy.getShardingColumns().iterator().next(), is("order_id"));
+        assertThat(shardingStrategyWithSimplified.getShardingColumns().size(), is(1));
+        assertThat(shardingStrategyWithSimplified.getShardingColumns().iterator().next(), is("order_id"));
     }
 }

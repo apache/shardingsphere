@@ -41,7 +41,8 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         Preconditions.checkNotNull(properties.get(ALGORITHM_EXPRESSION), "Inline sharding algorithm expression cannot be null.");
-        Closure<?> closure = new InlineExpressionParser(properties.get(ALGORITHM_EXPRESSION).toString()).evaluateClosure();
+        String algorithmExpression = InlineExpressionParser.handlePlaceHolder(properties.get(ALGORITHM_EXPRESSION).toString().trim());
+        Closure<?> closure = new InlineExpressionParser(algorithmExpression).evaluateClosure();
         Closure<?> result = closure.rehydrate(new Expando(), null, null);
         result.setResolveStrategy(Closure.DELEGATE_ONLY);
         result.setProperty(shardingValue.getColumnName(), shardingValue.getValue());
