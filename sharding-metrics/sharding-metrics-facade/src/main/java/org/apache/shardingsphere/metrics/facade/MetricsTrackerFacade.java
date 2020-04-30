@@ -88,7 +88,7 @@ public final class MetricsTrackerFacade {
     }
     
     /**
-     * Inc of counter metrics tracker.
+     * Increment of counter metrics tracker.
      *
      * @param metricsLabel metrics label
      * @param labelValues  label values
@@ -99,7 +99,7 @@ public final class MetricsTrackerFacade {
     }
     
     /**
-     * Inc of gauge metrics tracker.
+     * Increment of gauge metrics tracker.
      *
      * @param metricsLabel metrics label
      * @param labelValues label values
@@ -110,7 +110,7 @@ public final class MetricsTrackerFacade {
     }
     
     /**
-     * Dec of gauge metrics tracker.
+     * Decrement of gauge metrics tracker.
      *
      * @param metricsLabel metrics label
      * @param labelValues  label values

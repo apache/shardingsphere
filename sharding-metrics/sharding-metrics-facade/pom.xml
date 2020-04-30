@@ -29,13 +29,10 @@
     <artifactId>sharding-metrics-facade</artifactId>
 
     <dependencies>
-
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>sharding-metrics-spi</artifactId>
             <version>${project.version}</version>
         </dependency>
-
     </dependencies>
-
 </project>
