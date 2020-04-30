@@ -24,7 +24,6 @@ import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingSt
 import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
-import org.apache.shardingsphere.encrypt.strategy.impl.MD5Encryptor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.algorithm.DefaultComplexKeysShardingAlgorithm;
@@ -112,10 +111,6 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
         ShardingRule shardingRule = getShardingRule("simpleShardingDataSource");
         assertThat(shardingRule.getTableRules().size(), is(1));
         assertThat(shardingRule.getTableRules().iterator().next().getLogicTable(), is("t_order"));
-        assertTrue(shardingRule.getEncryptRule().findEncryptTable("t_order").isPresent());
-        assertThat(shardingRule.getEncryptRule().findEncryptTable("t_order").get().getCipherColumn("user_id"), is("user_encrypt"));
-        assertTrue(shardingRule.getEncryptRule().findEncryptor("t_order", "order_id").isPresent());
-        assertThat(shardingRule.getEncryptRule().findEncryptor("t_order", "order_id").get(), instanceOf(MD5Encryptor.class));
         shardingRule.getTableRule("t_order");
     }
     

@@ -21,11 +21,8 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.core.strategy.route.standard.StandardShardingStrategy;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
-import org.apache.shardingsphere.shardingjdbc.spring.boot.fixture.TestEncryptor;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.rule.DataNode;
@@ -38,7 +35,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -65,19 +61,6 @@ public class SpringBootShardingTest {
         ConfigurationProperties properties = runtimeContext.getProperties();
         assertTrue(properties.getValue(ConfigurationPropertyKey.SQL_SHOW));
         assertThat(properties.getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), is(100));
-    }
-    
-    @Test
-    public void assertEncryptRule() {
-        RuntimeContext runtimeContext = ((ShardingDataSource) dataSource).getRuntimeContext();
-        EncryptRule encryptRule = ((ShardingRule) runtimeContext.getRules().iterator().next()).getEncryptRule();
-        assertThat(encryptRule.getEncryptTableNames().iterator().next(), is("t_order"));
-        assertTrue(encryptRule.findEncryptTable("t_order").isPresent());
-        assertThat(encryptRule.findEncryptTable("t_order").get().getCipherColumns().size(), is(2));
-        assertThat(encryptRule.getAssistedQueryAndPlainColumns("t_order").size(), is(1));
-        Optional<Encryptor> encryptor = encryptRule.findEncryptor("t_order", "pwd");
-        assertTrue(encryptor.isPresent());
-        assertThat(encryptor.get(), instanceOf(TestEncryptor.class));
     }
     
     @Test
