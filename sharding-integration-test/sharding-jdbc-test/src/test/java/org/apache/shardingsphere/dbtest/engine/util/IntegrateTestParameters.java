@@ -29,7 +29,6 @@ import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAs
 import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLCaseType;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLValue;
 import org.apache.shardingsphere.dbtest.engine.SQLType;
-import org.apache.shardingsphere.dbtest.engine.dml.BatchDMLIT;
 import org.apache.shardingsphere.dbtest.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
@@ -201,7 +200,6 @@ public final class IntegrateTestParameters {
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
         for (int i = 3; i < stackTraceElements.length; i++) {
             Class<?> callerClazz = Class.forName(stackTraceElements[i].getClassName());
-            callerClazz = callerClazz.isAssignableFrom(BatchDMLIT.class) ? BatchDMLIT.class : callerClazz;
             result += Arrays.stream(callerClazz.getMethods()).filter(method -> method.isAnnotationPresent(Test.class)).count();
         }
         return result;

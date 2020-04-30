@@ -21,8 +21,11 @@ import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLValue;
 import org.apache.shardingsphere.dbtest.engine.BatchIT;
+import org.apache.shardingsphere.dbtest.engine.SQLType;
+import org.apache.shardingsphere.dbtest.engine.util.IntegrateTestParameters;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.junit.Test;
+import org.junit.runners.Parameterized.Parameters;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -30,6 +33,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -44,7 +48,11 @@ public final class BatchDMLIT extends BatchIT {
         this.integrateTestCase = integrateTestCase;
     }
     
-    @Test
+    @Parameters(name = "Rule:{1} -> {2} -> {3}")
+    public static Collection<Object[]> getParameters() {
+        return IntegrateTestParameters.getParametersWithCase(SQLType.DML);
+    }
+    
     public void assertExecuteBatch() throws JAXBException, IOException, SQLException, ParseException {
         // TODO fix masterslave
         if ("masterslave".equals(getRuleType())) {
