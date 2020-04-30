@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.spring.datasource;
 
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.rule.RuleBuilder;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 
 import javax.sql.DataSource;
@@ -27,11 +27,11 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Sharding datasource for spring namespace.
+ * Sharding data source for spring namespace.
  */
 public final class SpringShardingDataSource extends ShardingDataSource {
     
-    public SpringShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfiguration, final Properties props) throws SQLException {
-        super(dataSourceMap, new ShardingRule(shardingRuleConfiguration, dataSourceMap.keySet()).toRules(), props);
+    public SpringShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Properties props) throws SQLException {
+        super(dataSourceMap, RuleBuilder.build(dataSourceMap.keySet(), shardingRuleConfig), props);
     }
 }

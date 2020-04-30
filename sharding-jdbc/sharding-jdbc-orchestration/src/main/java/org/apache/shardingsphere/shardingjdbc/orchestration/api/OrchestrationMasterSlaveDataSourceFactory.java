@@ -20,8 +20,8 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.api;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.core.common.rule.OrchestrationMasterSlaveRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
 
@@ -51,7 +51,7 @@ public final class OrchestrationMasterSlaveDataSourceFactory {
         if (null == masterSlaveRuleConfig || null == masterSlaveRuleConfig.getMasterDataSourceName()) {
             return createDataSource(orchestrationConfig);
         }
-        MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource(dataSourceMap, new OrchestrationMasterSlaveRule(masterSlaveRuleConfig), props);
+        MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource(dataSourceMap, new MasterSlaveRule(masterSlaveRuleConfig), props);
         return new OrchestrationMasterSlaveDataSource(masterSlaveDataSource, orchestrationConfig);
     }
     

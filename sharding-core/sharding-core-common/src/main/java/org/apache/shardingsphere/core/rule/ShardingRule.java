@@ -33,7 +33,6 @@ import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.apache.shardingsphere.underlying.common.rule.TablesAggregationRule;
 
@@ -51,7 +50,7 @@ import java.util.stream.Collectors;
  * Databases and tables sharding rule.
  */
 @Getter
-public class ShardingRule implements TablesAggregationRule {
+public final class ShardingRule implements TablesAggregationRule {
     
     static {
         ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
@@ -127,7 +126,7 @@ public class ShardingRule implements TablesAggregationRule {
     }
     
     private EncryptRule createEncryptRule(final EncryptRuleConfiguration encryptRuleConfig) {
-        return Optional.ofNullable(encryptRuleConfig).map(e -> new EncryptRule(ruleConfiguration.getEncryptRuleConfig())).orElse(new EncryptRule());
+        return Optional.ofNullable(encryptRuleConfig).map(EncryptRule::new).orElse(new EncryptRule());
     }
     
     /**
@@ -368,23 +367,8 @@ public class ShardingRule implements TablesAggregationRule {
         return result;
     }
     
-    /**
-     * To rules.
-     * 
-     * @return rules
-     */
-    public Collection<BaseRule> toRules() {
-        Collection<BaseRule> result = new LinkedList<>();
-        result.add(this);
-        if (!encryptRule.getEncryptTableNames().isEmpty()) {
-            result.add(encryptRule);
-        }
-        result.addAll(masterSlaveRules);
-        return result;
-    }
-    
     @Override
-    public final Collection<String> getAllActualTables() {
+    public Collection<String> getAllActualTables() {
         Collection<String> result = new HashSet<>();
         for (TableRule each : tableRules) {
             result.addAll(each.getActualDataNodes().stream().map(DataNode::getTableName).collect(Collectors.toSet()));
@@ -393,17 +377,17 @@ public class ShardingRule implements TablesAggregationRule {
     }
     
     @Override
-    public final Optional<String> findFirstActualTable(final String logicTable) {
+    public Optional<String> findFirstActualTable(final String logicTable) {
         return findTableRule(logicTable).map(tableRule -> tableRule.getActualDataNodes().get(0).getTableName());
     }
     
     @Override
-    public final boolean isNeedAccumulate(final Collection<String> tables) {
+    public boolean isNeedAccumulate(final Collection<String> tables) {
         return !isAllBroadcastTables(tables);
     }
     
     @Override
-    public final Optional<String> findLogicTableByActualTable(final String actualTable) {
+    public Optional<String> findLogicTableByActualTable(final String actualTable) {
         return findTableRuleByActualTable(actualTable).map(TableRule::getLogicTable);
     }
 }

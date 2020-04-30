@@ -53,7 +53,7 @@ public final class LogicSchemaFactory {
     public static LogicSchema newInstance(final String schemaName, final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources,
                                           final RuleConfiguration ruleConfiguration, final boolean isUsingRegistry) throws SQLException {
         if (ruleConfiguration instanceof ShardingRuleConfiguration) {
-            return new ShardingSchema(schemaName, schemaDataSources.get(schemaName), (ShardingRuleConfiguration) ruleConfiguration, isUsingRegistry);
+            return new ShardingSchema(schemaName, schemaDataSources.get(schemaName), (ShardingRuleConfiguration) ruleConfiguration);
         }
         if (ruleConfiguration instanceof MasterSlaveRuleConfiguration) {
             return new MasterSlaveSchema(schemaName, schemaDataSources.get(schemaName), (MasterSlaveRuleConfiguration) ruleConfiguration, isUsingRegistry);

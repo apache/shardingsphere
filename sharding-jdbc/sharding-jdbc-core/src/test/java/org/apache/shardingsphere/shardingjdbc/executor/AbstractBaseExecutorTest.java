@@ -95,7 +95,6 @@ public abstract class AbstractBaseExecutorTest {
         when(encryptTable.getCipherColumns()).thenReturn(Collections.singleton("column"));
         when(result.getEncryptRule()).thenReturn(encryptRule);
         when(result.findTableRuleByActualTable("table_x")).thenReturn(Optional.empty());
-        when(result.toRules()).thenReturn(Collections.singletonList(result));
         when(result.isNeedAccumulate(any())).thenReturn(true);
         return result;
     }
