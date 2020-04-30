@@ -37,7 +37,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeSet;
@@ -96,8 +95,7 @@ public final class ShardingRule implements TablesAggregationRule {
     }
     
     private BindingTableRule createBindingTableRule(final String bindingTableGroup) {
-        List<TableRule> tableRules = Splitter.on(",").trimResults().splitToList(bindingTableGroup).stream().map(this::getTableRule).collect(Collectors.toCollection(LinkedList::new));
-        return new BindingTableRule(tableRules);
+        return new BindingTableRule(Splitter.on(",").trimResults().splitToList(bindingTableGroup).stream().map(this::getTableRule).collect(Collectors.toList()));
     }
     
     private ShardingStrategy createDefaultShardingStrategy(final ShardingStrategyConfiguration shardingStrategyConfiguration) {
