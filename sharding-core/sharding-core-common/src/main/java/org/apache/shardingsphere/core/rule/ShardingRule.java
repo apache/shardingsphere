@@ -20,15 +20,12 @@ package org.apache.shardingsphere.core.rule;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import lombok.Getter;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategyFactory;
 import org.apache.shardingsphere.core.strategy.route.none.NoneShardingStrategy;
-import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.spi.type.TypedSPIRegistry;
@@ -72,10 +69,6 @@ public final class ShardingRule implements TablesAggregationRule {
     
     private final KeyGenerateAlgorithm defaultKeyGenerateAlgorithm;
     
-    private final Collection<MasterSlaveRule> masterSlaveRules;
-    
-    private final EncryptRule encryptRule;
-    
     public ShardingRule(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames) {
         Preconditions.checkArgument(null != shardingRuleConfig, "ShardingRuleConfig cannot be null.");
         Preconditions.checkArgument(null != dataSourceNames && !dataSourceNames.isEmpty(), "Data sources cannot be empty.");
@@ -87,8 +80,6 @@ public final class ShardingRule implements TablesAggregationRule {
         defaultDatabaseShardingStrategy = createDefaultShardingStrategy(shardingRuleConfig.getDefaultDatabaseShardingStrategyConfig());
         defaultTableShardingStrategy = createDefaultShardingStrategy(shardingRuleConfig.getDefaultTableShardingStrategyConfig());
         defaultKeyGenerateAlgorithm = createDefaultKeyGenerateAlgorithm(shardingRuleConfig.getDefaultKeyGeneratorConfig());
-        masterSlaveRules = createMasterSlaveRules(shardingRuleConfig.getMasterSlaveRuleConfigs());
-        encryptRule = createEncryptRule(shardingRuleConfig.getEncryptRuleConfig());
     }
     
     private Collection<TableRule> createTableRules(final ShardingRuleConfiguration shardingRuleConfig) {
@@ -119,14 +110,6 @@ public final class ShardingRule implements TablesAggregationRule {
     
     private boolean containsKeyGenerateAlgorithm(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
         return null != keyGeneratorConfiguration && null != keyGeneratorConfiguration.getKeyGenerateAlgorithm();
-    }
-    
-    private Collection<MasterSlaveRule> createMasterSlaveRules(final Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigurations) {
-        return masterSlaveRuleConfigurations.stream().map(MasterSlaveRule::new).collect(Collectors.toList());
-    }
-    
-    private EncryptRule createEncryptRule(final EncryptRuleConfiguration encryptRuleConfig) {
-        return Optional.ofNullable(encryptRuleConfig).map(EncryptRule::new).orElse(new EncryptRule());
     }
     
     /**
@@ -328,16 +311,6 @@ public final class ShardingRule implements TablesAggregationRule {
         return tableRule.getActualDataNodes().stream().filter(each -> shardingDataSourceNames.getDataSourceNames().contains(each.getDataSourceName())
                 && each.getDataSourceName().equals(dataSourceName)).findFirst()
                 .orElseThrow(() -> new ShardingSphereConfigurationException("Cannot find actual data node for data source name: '%s' and logic table name: '%s'", dataSourceName, logicTableName));
-    }
-    
-    /**
-     * Find master slave rule.
-     *
-     * @param dataSourceName data source name
-     * @return master slave rule
-     */
-    public Optional<MasterSlaveRule> findMasterSlaveRule(final String dataSourceName) {
-        return masterSlaveRules.stream().filter(each -> each.containDataSourceName(dataSourceName)).findFirst();
     }
     
     /**

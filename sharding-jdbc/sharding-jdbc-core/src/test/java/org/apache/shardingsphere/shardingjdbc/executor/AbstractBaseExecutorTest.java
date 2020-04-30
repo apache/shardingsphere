@@ -20,20 +20,17 @@ package org.apache.shardingsphere.shardingjdbc.executor;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.strategy.EncryptTable;
-import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.ExecutorExceptionHandler;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.underlying.executor.kernel.ExecutorKernel;
+import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.ExecutorExceptionHandler;
 import org.junit.After;
 import org.junit.Before;
 import org.mockito.MockitoAnnotations;
@@ -48,7 +45,6 @@ import java.util.Optional;
 import java.util.Properties;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -85,15 +81,6 @@ public abstract class AbstractBaseExecutorTest {
     
     private ShardingRule getShardingRule() {
         ShardingRule result = mock(ShardingRule.class);
-        Encryptor encryptor = mock(Encryptor.class);
-        when(encryptor.decrypt(anyString())).thenReturn("decryptValue");
-        EncryptRule encryptRule = mock(EncryptRule.class);
-        EncryptTable encryptTable = mock(EncryptTable.class);
-        when(encryptRule.findEncryptor(anyString(), anyString())).thenReturn(Optional.of(encryptor));
-        when(encryptRule.getLogicColumnOfCipher(anyString(), anyString())).thenReturn("column");
-        when(encryptRule.findEncryptTable("table_x")).thenReturn(Optional.of(encryptTable));
-        when(encryptTable.getCipherColumns()).thenReturn(Collections.singleton("column"));
-        when(result.getEncryptRule()).thenReturn(encryptRule);
         when(result.findTableRuleByActualTable("table_x")).thenReturn(Optional.empty());
         when(result.isNeedAccumulate(any())).thenReturn(true);
         return result;
