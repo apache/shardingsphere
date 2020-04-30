@@ -85,6 +85,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
     }
 
     @Ignore
+    @Test
     public void assertMultiValuesWithGenerateShardingKeyColumn() throws SQLException {
         try (
                 Connection connection = getShardingDataSource().getConnection();
@@ -127,6 +128,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
     }
 
     @Ignore
+    @Test
     public void assertAddBatchMultiValuesWithGenerateShardingKeyColumn() throws SQLException {
         try (
                 Connection connection = getShardingDataSource().getConnection();
