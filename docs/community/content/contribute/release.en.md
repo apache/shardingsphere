@@ -489,7 +489,7 @@ git push --delete origin ${RELEASE.VERSION}-release
 
 ### Update README files
 
-Update `${RELEASE.VERSION}` to `${NEXT.RELEASE.VERSION}` in README.md and README_ZH.md
+Update `${PREVIOUS.RELEASE.VERSION}` to `${RELEASE.VERSION}` in README.md and README_ZH.md
 
 Update `${RELEASE.VERSION}` to `${NEXT.RELEASE.VERSION}` for `CURRENT_VERSION` in `Dockerfile`
 
