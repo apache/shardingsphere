@@ -80,7 +80,7 @@ public class OrchestrationSpringBootRegistryMasterSlaveTest {
             + "  - ds_slave_0\n"
             + "  - ds_slave_1\n");
         testCenter.persist("/demo_spring_boot_ds_center/config/props", "{}\n");
-        testCenter.persist("/demo_spring_boot_ds_center/state/datasources", "");
+        testCenter.persist("/demo_spring_boot_ds_center/registry/datasources", "");
     }
     
     @Test

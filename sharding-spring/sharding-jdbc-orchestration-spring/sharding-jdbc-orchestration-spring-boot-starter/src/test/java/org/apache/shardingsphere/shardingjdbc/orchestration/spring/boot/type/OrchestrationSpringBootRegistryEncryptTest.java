@@ -74,7 +74,7 @@ public class OrchestrationSpringBootRegistryEncryptTest {
             + "         cipherColumn: user_id\n"
             + "         encryptor: order_encrypt\n");
         testCenter.persist("/demo_spring_boot_ds_center/config/props", "sql.show: 'true'\n");
-        testCenter.persist("/demo_spring_boot_ds_center/state/datasources", "");
+        testCenter.persist("/demo_spring_boot_ds_center/registry/datasources", "");
     }
     
     @Test
