@@ -22,7 +22,6 @@ import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfigura
 import org.apache.shardingsphere.core.log.ConfigurationLogger;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.orchestration.core.common.event.MasterSlaveRuleChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.rule.OrchestrationMasterSlaveRule;
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationShardingSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
@@ -43,7 +42,7 @@ public final class MasterSlaveSchema extends LogicSchema {
     }
     
     private static MasterSlaveRule createMasterSlaveRule(final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isUsingRegistry) {
-        return isUsingRegistry ? new OrchestrationMasterSlaveRule(masterSlaveRuleConfig) : new MasterSlaveRule(masterSlaveRuleConfig);
+        return new MasterSlaveRule(masterSlaveRuleConfig);
     }
     
     /**
@@ -55,7 +54,7 @@ public final class MasterSlaveSchema extends LogicSchema {
     public synchronized void renew(final MasterSlaveRuleChangedEvent masterSlaveRuleChangedEvent) {
         if (getName().equals(masterSlaveRuleChangedEvent.getShardingSchemaName())) {
             ConfigurationLogger.log(masterSlaveRuleChangedEvent.getMasterSlaveRuleConfiguration());
-            setRules(Collections.singletonList(new OrchestrationMasterSlaveRule(masterSlaveRuleChangedEvent.getMasterSlaveRuleConfiguration())));
+            setRules(Collections.singletonList(new MasterSlaveRule(masterSlaveRuleChangedEvent.getMasterSlaveRuleConfiguration())));
         }
     }
     
@@ -68,7 +67,7 @@ public final class MasterSlaveSchema extends LogicSchema {
     public synchronized void renew(final DisabledStateChangedEvent disabledStateChangedEvent) {
         OrchestrationShardingSchema shardingSchema = disabledStateChangedEvent.getShardingSchema();
         if (getName().equals(shardingSchema.getSchemaName())) {
-            ((OrchestrationMasterSlaveRule) getRules().iterator().next()).updateDisabledDataSourceNames(shardingSchema.getDataSourceName(), disabledStateChangedEvent.isDisabled());
+            ((MasterSlaveRule) getRules().iterator().next()).updateDisabledDataSourceNames(shardingSchema.getDataSourceName(), disabledStateChangedEvent.isDisabled());
         }
     }
 }

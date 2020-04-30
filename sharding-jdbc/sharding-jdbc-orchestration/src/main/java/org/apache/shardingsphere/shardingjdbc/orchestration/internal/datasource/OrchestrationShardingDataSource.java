@@ -29,7 +29,6 @@ import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfig
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.ShardingRuleChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.rule.OrchestrationMasterSlaveRule;
 import org.apache.shardingsphere.orchestration.core.common.rule.OrchestrationShardingRule;
 import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenter;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
@@ -146,7 +145,7 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
         OrchestrationShardingSchema shardingSchema = disabledStateChangedEvent.getShardingSchema();
         if (DefaultSchema.LOGIC_NAME.equals(shardingSchema.getSchemaName())) {
             for (MasterSlaveRule each : ((ShardingRule) dataSource.getRuntimeContext().getRules().iterator().next()).getMasterSlaveRules()) {
-                ((OrchestrationMasterSlaveRule) each).updateDisabledDataSourceNames(shardingSchema.getDataSourceName(), disabledStateChangedEvent.isDisabled());
+                each.updateDisabledDataSourceNames(shardingSchema.getDataSourceName(), disabledStateChangedEvent.isDisabled());
             }
         }
     }

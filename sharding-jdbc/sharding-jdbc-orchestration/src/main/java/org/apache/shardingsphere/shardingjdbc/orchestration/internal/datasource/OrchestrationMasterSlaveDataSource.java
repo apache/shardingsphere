@@ -23,23 +23,22 @@ import com.google.common.eventbus.Subscribe;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.core.rule.MasterSlaveRule;
+import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.MasterSlaveRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenter;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
-import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
-import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
-import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationShardingSchema;
-import org.apache.shardingsphere.orchestration.core.common.rule.OrchestrationMasterSlaveRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
+import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
+import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -60,7 +59,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = configService.loadMasterSlaveRuleConfiguration(DefaultSchema.LOGIC_NAME);
         Preconditions.checkState(!Strings.isNullOrEmpty(masterSlaveRuleConfig.getMasterDataSourceName()), "No available master slave rule configuration to load.");
         dataSource = new MasterSlaveDataSource(DataSourceConverter.getDataSourceMap(configService.loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME)),
-                new OrchestrationMasterSlaveRule(masterSlaveRuleConfig), configService.loadProperties());
+                new MasterSlaveRule(masterSlaveRuleConfig), configService.loadProperties());
         initShardingOrchestrationFacade();
         persistMetaData(dataSource.getRuntimeContext().getMetaData().getSchema());
     }
@@ -91,7 +90,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     @SneakyThrows
     public final synchronized void renew(final MasterSlaveRuleChangedEvent masterSlaveRuleChangedEvent) {
         dataSource = new MasterSlaveDataSource(dataSource.getDataSourceMap(), 
-                new OrchestrationMasterSlaveRule(masterSlaveRuleChangedEvent.getMasterSlaveRuleConfiguration()), dataSource.getRuntimeContext().getProperties().getProps());
+                new MasterSlaveRule(masterSlaveRuleChangedEvent.getMasterSlaveRuleConfiguration()), dataSource.getRuntimeContext().getProperties().getProps());
     }
     
     /**
@@ -131,8 +130,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     public synchronized void renew(final DisabledStateChangedEvent disabledStateChangedEvent) {
         OrchestrationShardingSchema shardingSchema = disabledStateChangedEvent.getShardingSchema();
         if (DefaultSchema.LOGIC_NAME.equals(shardingSchema.getSchemaName())) {
-            ((OrchestrationMasterSlaveRule) dataSource.getRuntimeContext().getRules().iterator().next()).updateDisabledDataSourceNames(
-                    shardingSchema.getDataSourceName(), disabledStateChangedEvent.isDisabled());
+            ((MasterSlaveRule) dataSource.getRuntimeContext().getRules().iterator().next()).updateDisabledDataSourceNames(shardingSchema.getDataSourceName(), disabledStateChangedEvent.isDisabled());
         }
     }
 }

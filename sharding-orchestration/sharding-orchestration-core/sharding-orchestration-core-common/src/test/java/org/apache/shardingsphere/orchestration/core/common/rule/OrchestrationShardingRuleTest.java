@@ -23,6 +23,7 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.strategy.algorithm.sharding.inline.InlineShardingAlgorithm;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,6 +57,6 @@ public final class OrchestrationShardingRuleTest {
     @Test
     public void assertGetMasterSlaveRules() {
         assertThat(orchestrationShardingRule.getMasterSlaveRules().size(), is(1));
-        assertThat(orchestrationShardingRule.getMasterSlaveRules().iterator().next(), instanceOf(OrchestrationMasterSlaveRule.class));
+        assertThat(orchestrationShardingRule.getMasterSlaveRules().iterator().next(), instanceOf(MasterSlaveRule.class));
     }
 }

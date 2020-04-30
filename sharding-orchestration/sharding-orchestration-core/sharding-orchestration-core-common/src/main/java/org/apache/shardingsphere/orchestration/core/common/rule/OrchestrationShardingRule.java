@@ -35,6 +35,6 @@ public final class OrchestrationShardingRule extends ShardingRule {
     
     public OrchestrationShardingRule(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames) {
         super(shardingRuleConfig, dataSourceNames);
-        shardingRuleConfig.getMasterSlaveRuleConfigs().forEach(each -> masterSlaveRules.add(new OrchestrationMasterSlaveRule(each)));
+        shardingRuleConfig.getMasterSlaveRuleConfigs().forEach(each -> masterSlaveRules.add(new MasterSlaveRule(each)));
     }
 }
