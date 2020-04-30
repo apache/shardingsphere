@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
  * Databases and tables sharding rule.
  */
 @Getter
-public class ShardingRule implements TablesAggregationRule {
+public final class ShardingRule implements TablesAggregationRule {
     
     static {
         ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
@@ -384,7 +384,7 @@ public class ShardingRule implements TablesAggregationRule {
     }
     
     @Override
-    public final Collection<String> getAllActualTables() {
+    public Collection<String> getAllActualTables() {
         Collection<String> result = new HashSet<>();
         for (TableRule each : tableRules) {
             result.addAll(each.getActualDataNodes().stream().map(DataNode::getTableName).collect(Collectors.toSet()));
@@ -393,17 +393,17 @@ public class ShardingRule implements TablesAggregationRule {
     }
     
     @Override
-    public final Optional<String> findFirstActualTable(final String logicTable) {
+    public Optional<String> findFirstActualTable(final String logicTable) {
         return findTableRule(logicTable).map(tableRule -> tableRule.getActualDataNodes().get(0).getTableName());
     }
     
     @Override
-    public final boolean isNeedAccumulate(final Collection<String> tables) {
+    public boolean isNeedAccumulate(final Collection<String> tables) {
         return !isAllBroadcastTables(tables);
     }
     
     @Override
-    public final Optional<String> findLogicTableByActualTable(final String actualTable) {
+    public Optional<String> findLogicTableByActualTable(final String actualTable) {
         return findTableRuleByActualTable(actualTable).map(TableRule::getLogicTable);
     }
 }

@@ -23,7 +23,6 @@ import org.apache.shardingsphere.core.log.ConfigurationLogger;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.orchestration.core.common.event.ShardingRuleChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.rule.OrchestrationShardingRule;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationShardingSchema;
@@ -54,7 +53,7 @@ public final class ShardingSchema extends LogicSchema {
     }
     
     private static ShardingRule createShardingRule(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames, final boolean isUsingRegistry) {
-        return isUsingRegistry ? new OrchestrationShardingRule(shardingRuleConfig, dataSourceNames) : new ShardingRule(shardingRuleConfig, dataSourceNames);
+        return isUsingRegistry ? new ShardingRule(shardingRuleConfig, dataSourceNames) : new ShardingRule(shardingRuleConfig, dataSourceNames);
     }
     
     /**
@@ -66,7 +65,7 @@ public final class ShardingSchema extends LogicSchema {
     public synchronized void renew(final ShardingRuleChangedEvent shardingRuleChangedEvent) {
         if (getName().equals(shardingRuleChangedEvent.getShardingSchemaName())) {
             ConfigurationLogger.log(shardingRuleChangedEvent.getShardingRuleConfiguration());
-            setRules(new OrchestrationShardingRule(shardingRuleChangedEvent.getShardingRuleConfiguration(), getDataSources().keySet()).toRules());
+            setRules(new ShardingRule(shardingRuleChangedEvent.getShardingRuleConfiguration(), getDataSources().keySet()).toRules());
         }
     }
     

@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  * Databases and tables master-slave rule.
  */
 @Getter
-public class MasterSlaveRule implements BaseRule {
+public final class MasterSlaveRule implements BaseRule {
     
     static {
         ShardingSphereServiceLoader.register(MasterSlaveLoadBalanceAlgorithm.class);
