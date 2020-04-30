@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingDataSourceNames;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
@@ -29,14 +28,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Optional;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ShardingMasterInstanceBroadcastRoutingEngineTest {
+public final class ShardingInstanceBroadcastRoutingEngineTest {
     
     private static final String DATASOURCE_NAME = "ds";
     
@@ -47,26 +44,21 @@ public final class ShardingMasterInstanceBroadcastRoutingEngineTest {
     private ShardingDataSourceNames shardingDataSourceNames;
     
     @Mock
-    private MasterSlaveRule masterSlaveRule;
-    
-    @Mock
     private DataSourceMetas dataSourceMetas;
     
-    private ShardingMasterInstanceBroadcastRoutingEngine masterInstanceBroadcastRoutingEngine;
+    private ShardingInstanceBroadcastRoutingEngine shardingInstanceBroadcastRoutingEngine;
     
     @Before
     public void setUp() {
         when(shardingRule.getShardingDataSourceNames()).thenReturn(shardingDataSourceNames);
-        when(shardingRule.findMasterSlaveRule(DATASOURCE_NAME)).thenReturn(Optional.of(masterSlaveRule));
-        when(masterSlaveRule.getMasterDataSourceName()).thenReturn(DATASOURCE_NAME);
         when(dataSourceMetas.getAllInstanceDataSourceNames()).thenReturn(Lists.newArrayList(DATASOURCE_NAME));
         when(shardingDataSourceNames.getDataSourceNames()).thenReturn(Lists.newArrayList(DATASOURCE_NAME));
-        masterInstanceBroadcastRoutingEngine = new ShardingMasterInstanceBroadcastRoutingEngine(dataSourceMetas);
+        shardingInstanceBroadcastRoutingEngine = new ShardingInstanceBroadcastRoutingEngine(dataSourceMetas);
     }
     
     @Test
     public void assertRoute() {
-        RouteResult actual = masterInstanceBroadcastRoutingEngine.route(shardingRule);
+        RouteResult actual = shardingInstanceBroadcastRoutingEngine.route(shardingRule);
         assertThat(actual.getRouteUnits().size(), is(1));
         assertThat(actual.getRouteUnits().iterator().next().getDataSourceMapper().getActualName(), is(DATASOURCE_NAME));
     }

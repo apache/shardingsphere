@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
@@ -27,13 +26,12 @@ import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 
 import java.util.Collections;
-import java.util.Optional;
 
 /**
- * Sharding broadcast routing engine for master instance of databases.
+ * Sharding broadcast routing engine for database instance.
  */
 @RequiredArgsConstructor
-public final class ShardingMasterInstanceBroadcastRoutingEngine implements ShardingRouteEngine {
+public final class ShardingInstanceBroadcastRoutingEngine implements ShardingRouteEngine {
     
     private final DataSourceMetas dataSourceMetas;
     
@@ -42,10 +40,7 @@ public final class ShardingMasterInstanceBroadcastRoutingEngine implements Shard
         RouteResult result = new RouteResult();
         for (String each : shardingRule.getShardingDataSourceNames().getDataSourceNames()) {
             if (dataSourceMetas.getAllInstanceDataSourceNames().contains(each)) {
-                Optional<MasterSlaveRule> masterSlaveRule = shardingRule.findMasterSlaveRule(each);
-                if (!masterSlaveRule.isPresent() || masterSlaveRule.get().getMasterDataSourceName().equals(each)) {
-                    result.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
-                }
+                result.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
             }
         }
         return result;
