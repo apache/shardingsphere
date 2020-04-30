@@ -33,7 +33,6 @@ import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.apache.shardingsphere.underlying.common.rule.TablesAggregationRule;
 
@@ -365,21 +364,6 @@ public final class ShardingRule implements TablesAggregationRule {
         Map<String, String> result = new LinkedHashMap<>();
         findBindingTableRule(logicTable).ifPresent(
             bindingTableRule -> result.putAll(bindingTableRule.getLogicAndActualTables(dataSourceName, logicTable, actualTable, availableLogicBindingTables)));
-        return result;
-    }
-    
-    /**
-     * To rules.
-     * 
-     * @return rules
-     */
-    public Collection<BaseRule> toRules() {
-        Collection<BaseRule> result = new LinkedList<>();
-        result.add(this);
-        if (!encryptRule.getEncryptTableNames().isEmpty()) {
-            result.add(encryptRule);
-        }
-        result.addAll(masterSlaveRules);
         return result;
     }
     
