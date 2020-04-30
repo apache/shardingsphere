@@ -85,8 +85,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(metaData.getSchema().getConfiguredSchemaMetaData(), 
                 properties, rules).rewrite(getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), routeContext);
         return sqlRewriteResult instanceof GenericSQLRewriteResult
-                ? Collections.singletonList(((GenericSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnit())
-                : (((RouteSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnits()).values();
+                ? Collections.singletonList(((GenericSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnit()) : (((RouteSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnits()).values();
     }
     
     private YamlRootShardingConfiguration createRuleConfiguration() throws IOException {
