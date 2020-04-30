@@ -21,7 +21,7 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.log.ConfigurationLogger;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.rule.RuleBuilder;
 import org.apache.shardingsphere.orchestration.core.common.event.ShardingRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
@@ -38,7 +38,6 @@ import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMet
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
@@ -47,13 +46,8 @@ import java.util.Optional;
  */
 public final class ShardingSchema extends LogicSchema {
     
-    public ShardingSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources,
-                          final ShardingRuleConfiguration shardingRuleConfig, final boolean isUsingRegistry) throws SQLException {
-        super(name, dataSources, createShardingRule(shardingRuleConfig, dataSources.keySet(), isUsingRegistry).toRules());
-    }
-    
-    private static ShardingRule createShardingRule(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames, final boolean isUsingRegistry) {
-        return isUsingRegistry ? new ShardingRule(shardingRuleConfig, dataSourceNames) : new ShardingRule(shardingRuleConfig, dataSourceNames);
+    public ShardingSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final ShardingRuleConfiguration shardingRuleConfig) throws SQLException {
+        super(name, dataSources, RuleBuilder.build(dataSources.keySet(), shardingRuleConfig));
     }
     
     /**
@@ -65,7 +59,7 @@ public final class ShardingSchema extends LogicSchema {
     public synchronized void renew(final ShardingRuleChangedEvent shardingRuleChangedEvent) {
         if (getName().equals(shardingRuleChangedEvent.getShardingSchemaName())) {
             ConfigurationLogger.log(shardingRuleChangedEvent.getShardingRuleConfiguration());
-            setRules(new ShardingRule(shardingRuleChangedEvent.getShardingRuleConfiguration(), getDataSources().keySet()).toRules());
+            setRules(RuleBuilder.build(getDataSources().keySet(), shardingRuleChangedEvent.getShardingRuleConfiguration()));
         }
     }
     
