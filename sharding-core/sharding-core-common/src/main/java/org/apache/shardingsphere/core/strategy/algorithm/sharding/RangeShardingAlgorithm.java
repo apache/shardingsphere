@@ -55,14 +55,17 @@ public final class RangeShardingAlgorithm implements StandardShardingAlgorithm<L
 
     private static final String PARTITION_RANGES = "partition.ranges";
 
+    private Map<Integer, Range<Long>> partitionRangeMap;
+
+    private volatile boolean init;
+
     @Getter
     @Setter
     private Properties properties = new Properties();
 
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Long> shardingValue) {
-        Preconditions.checkNotNull(properties.get(PARTITION_RANGES), "Range sharding algorithm range partition split value cannot be null.");
-        Map<Integer, Range<Long>> partitionRangeMap = getPartitionRangeMap();
+        checkInit();
         for (String each : availableTargetNames) {
             if (each.endsWith(getPartition(partitionRangeMap, shardingValue.getValue()) + "")) {
                 return each;
@@ -73,8 +76,7 @@ public final class RangeShardingAlgorithm implements StandardShardingAlgorithm<L
 
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Long> shardingValue) {
-        Preconditions.checkNotNull(properties.get(PARTITION_RANGES), "Range sharding algorithm range partition split value cannot be null.");
-        Map<Integer, Range<Long>> partitionRangeMap = getPartitionRangeMap();
+        checkInit();
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
         int lowerEndpointPartition = getPartition(partitionRangeMap, shardingValue.getValueRange().lowerEndpoint());
         int upperEndpointPartition = getPartition(partitionRangeMap, shardingValue.getValueRange().upperEndpoint());
@@ -88,24 +90,35 @@ public final class RangeShardingAlgorithm implements StandardShardingAlgorithm<L
         return result;
     }
 
-    private Map<Integer, Range<Long>> getPartitionRangeMap() {
-        List<Long> splitValues = Splitter.on(",").trimResults().splitToList(properties.get(PARTITION_RANGES).toString())
-                .stream().map(Longs::tryParse).filter(Objects::nonNull).sorted().collect(Collectors.toList());
-        Preconditions.checkArgument(CollectionUtils.isNotEmpty(splitValues), "Range sharding algorithm range partition split value is not valid.");
-        Map<Integer, Range<Long>> partitionRangeMap = Maps.newHashMapWithExpectedSize(splitValues.size() + 1);
-        for (int i = 0; i < splitValues.size(); i++) {
-            Long splitValue = splitValues.get(i);
-            if (i == 0) {
-                partitionRangeMap.put(i, Range.lessThan(splitValue));
-            } else {
-                Long previousSplitValue = splitValues.get(i - 1);
-                partitionRangeMap.put(i, Range.closedOpen(previousSplitValue, splitValue));
-            }
-            if (i == splitValues.size() - 1) {
-                partitionRangeMap.put(i + 1, Range.atLeast(splitValue));
+    private void checkInit() {
+        if (!init) {
+            synchronized (this) {
+                if (!init) {
+                    initProperties();
+                    init = true;
+                }
             }
         }
-        return partitionRangeMap;
+    }
+
+    private void initProperties() {
+        Preconditions.checkNotNull(properties.get(PARTITION_RANGES), "Range sharding algorithm partition ranges cannot be null.");
+        List<Long> partitionRanges = Splitter.on(",").trimResults().splitToList(properties.get(PARTITION_RANGES).toString())
+                .stream().map(Longs::tryParse).filter(Objects::nonNull).sorted().collect(Collectors.toList());
+        Preconditions.checkArgument(CollectionUtils.isNotEmpty(partitionRanges), "Range sharding algorithm partition ranges is not valid.");
+        partitionRangeMap = Maps.newHashMapWithExpectedSize(partitionRanges.size() + 1);
+        for (int i = 0; i < partitionRanges.size(); i++) {
+            Long rangeValue = partitionRanges.get(i);
+            if (i == 0) {
+                partitionRangeMap.put(i, Range.lessThan(rangeValue));
+            } else {
+                Long previousRangeValue = partitionRanges.get(i - 1);
+                partitionRangeMap.put(i, Range.closedOpen(previousRangeValue, rangeValue));
+            }
+            if (i == partitionRanges.size() - 1) {
+                partitionRangeMap.put(i + 1, Range.atLeast(rangeValue));
+            }
+        }
     }
 
     private Integer getPartition(final Map<Integer, Range<Long>> partitionRangeMap, final Long value) {
