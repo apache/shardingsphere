@@ -66,4 +66,9 @@ public abstract class IntegrateTestCaseAssertion {
         }
         return result;
     }
+    
+    @Override
+    public final String toString() {
+        return expectedDataFile;
+    }
 }
