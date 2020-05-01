@@ -62,7 +62,7 @@ public final class IntegrateTestParameters {
     public static Collection<Object[]> getParametersWithAssertion(final SQLType sqlType) {
         Map<DatabaseType, Collection<Object[]>> availableCases = new LinkedHashMap<>();
         Map<DatabaseType, Collection<Object[]>> disabledCases = new LinkedHashMap<>();
-        getIntegrateTestCase(sqlType).forEach(integrateTestCase -> getDatabaseTypes(integrateTestCase.getDbTypes()).forEach(databaseType -> {
+        integrateTestCasesLoader.getTestCases(sqlType).forEach(integrateTestCase -> getDatabaseTypes(integrateTestCase.getDbTypes()).forEach(databaseType -> {
             if (IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType)) {
                 availableCases.putIfAbsent(databaseType, new LinkedList<>());
                 Arrays.stream(SQLCaseType.values()).forEach(sqlCaseType -> availableCases.get(databaseType).addAll(getParametersWithAssertion(databaseType, sqlCaseType, integrateTestCase)));
@@ -113,7 +113,7 @@ public final class IntegrateTestParameters {
     public static Collection<Object[]> getParametersWithCase(final SQLType sqlType) {
         Map<DatabaseType, Collection<Object[]>> availableCases = new LinkedHashMap<>();
         Map<DatabaseType, Collection<Object[]>> disabledCases = new LinkedHashMap<>();
-        getIntegrateTestCase(sqlType).forEach(integrateTestCase ->
+        integrateTestCasesLoader.getTestCases(sqlType).forEach(integrateTestCase ->
             getDatabaseTypes(integrateTestCase.getDbTypes()).forEach(databaseType -> {
                 if (IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType)) {
                     availableCases.putIfAbsent(databaseType, new LinkedList<>());
@@ -156,21 +156,6 @@ public final class IntegrateTestParameters {
         }
         return String.format(sql.replace("%", "$").replace("?", "%s"), parameters.toArray()).replace("$", "%")
             .replace("%%", "%").replace("'%'", "'%%'");
-    }
-    
-    private static List<? extends IntegrateTestCase> getIntegrateTestCase(final SQLType sqlType) {
-        switch (sqlType) {
-            case DQL:
-                return integrateTestCasesLoader.getDqlIntegrateTestCases();
-            case DML:
-                return integrateTestCasesLoader.getDmlIntegrateTestCases();
-            case DDL:
-                return integrateTestCasesLoader.getDdlIntegrateTestCases();
-            case DCL:
-                return integrateTestCasesLoader.getDclIntegrateTestCases();
-            default:
-                throw new UnsupportedOperationException(sqlType.name());
-        }
     }
     
     private static void printTestPlan(final Map<DatabaseType, Collection<Object[]>> availableCases, final Map<DatabaseType, Collection<Object[]>> disabledCases, final long factor) {

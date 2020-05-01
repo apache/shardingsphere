@@ -39,38 +39,40 @@ public enum SQLType {
      * 
      * <p>Such as {@code SELECT}.</p>
      */
-    DQL(SelectStatement.class),
+    DQL(SelectStatement.class, "dql-integrate-test-cases"),
     
     /**
      * Data Manipulation Language.
      *
      * <p>Such as {@code INSERT}, {@code UPDATE}, {@code DELETE}.</p>
      */
-    DML(DMLStatement.class),
+    DML(DMLStatement.class, "dml-integrate-test-cases"),
     
     /**
      * Data Definition Language.
      *
      * <p>Such as {@code CREATE}, {@code ALTER}, {@code DROP}, {@code TRUNCATE}.</p>
      */
-    DDL(DDLStatement.class),
+    DDL(DDLStatement.class, "ddl-integrate-test-cases"),
     
     /**
      * Transaction Control Language.
      *
      * <p>Such as {@code SET}, {@code COMMIT}, {@code ROLLBACK}, {@code SAVEPOIINT}, {@code BEGIN}.</p>
      */
-    TCL(TCLStatement.class),
+    TCL(TCLStatement.class, "tcl-integrate-test-cases"),
     
     /**
      * Database administrator Language.
      */
-    DAL(DALStatement.class),
+    DAL(DALStatement.class, "dal-integrate-test-cases"),
     
     /**
      * Database control Language.
      */
-    DCL(DCLStatement.class);
+    DCL(DCLStatement.class, "dcl-integrate-test-cases");
     
     private final Class<? extends SQLStatement> sqlStatementClass;
+    
+    private final String filePrefix;
 }
