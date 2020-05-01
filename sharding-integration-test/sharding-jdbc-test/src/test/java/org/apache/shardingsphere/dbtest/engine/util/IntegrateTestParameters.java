@@ -62,19 +62,15 @@ public final class IntegrateTestParameters {
     public static Collection<Object[]> getParametersWithAssertion(final SQLType sqlType) {
         Map<DatabaseType, Collection<Object[]>> availableCases = new LinkedHashMap<>();
         Map<DatabaseType, Collection<Object[]>> disabledCases = new LinkedHashMap<>();
-        getIntegrateTestCase(sqlType).forEach(integrateTestCase -> {
-            getDatabaseTypes(integrateTestCase.getDbTypes()).forEach(databaseType -> {
-                if (IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType)) {
-                    availableCases.putIfAbsent(databaseType, new LinkedList<>());
-                    availableCases.get(databaseType).addAll(getParametersWithAssertion(databaseType, SQLCaseType.Literal, integrateTestCase));
-                    availableCases.get(databaseType).addAll(getParametersWithAssertion(databaseType, SQLCaseType.Placeholder, integrateTestCase));
-                } else {
-                    disabledCases.putIfAbsent(databaseType, new LinkedList<>());
-                    disabledCases.get(databaseType).addAll(getParametersWithAssertion(databaseType, SQLCaseType.Literal, integrateTestCase));
-                    disabledCases.get(databaseType).addAll(getParametersWithAssertion(databaseType, SQLCaseType.Placeholder, integrateTestCase));
-                }
-            });
-        });
+        getIntegrateTestCase(sqlType).forEach(integrateTestCase -> getDatabaseTypes(integrateTestCase.getDbTypes()).forEach(databaseType -> {
+            if (IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType)) {
+                availableCases.putIfAbsent(databaseType, new LinkedList<>());
+                Arrays.stream(SQLCaseType.values()).forEach(sqlCaseType -> availableCases.get(databaseType).addAll(getParametersWithAssertion(databaseType, sqlCaseType, integrateTestCase)));
+            } else {
+                disabledCases.putIfAbsent(databaseType, new LinkedList<>());
+                Arrays.stream(SQLCaseType.values()).forEach(sqlCaseType -> disabledCases.get(databaseType).addAll(getParametersWithAssertion(databaseType, sqlCaseType, integrateTestCase)));
+            }
+        }));
         printTestPlan(availableCases, disabledCases, calculateRunnableTestAnnotation());
         return availableCases.values().stream().flatMap(Collection::stream).collect(Collectors.toList());
     }
