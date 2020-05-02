@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.rule;
 
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
-import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
@@ -136,6 +135,6 @@ public final class TableRuleTest {
     }
     
     private ShardingDataSourceNames createShardingDataSourceNames() {
-        return new ShardingDataSourceNames(new ShardingRuleConfiguration(), Arrays.asList("ds0", "ds1"));
+        return new ShardingDataSourceNames(Arrays.asList("ds0", "ds1"));
     }
 }

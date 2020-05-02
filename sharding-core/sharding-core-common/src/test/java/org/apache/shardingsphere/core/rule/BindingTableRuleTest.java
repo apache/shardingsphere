@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.rule;
 
-import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
 import org.junit.Test;
@@ -83,6 +82,6 @@ public final class BindingTableRuleTest {
     }
     
     private ShardingDataSourceNames createShardingDataSourceNames() {
-        return new ShardingDataSourceNames(new ShardingRuleConfiguration(), Arrays.asList("ds0", "ds1"));
+        return new ShardingDataSourceNames(Arrays.asList("ds0", "ds1"));
     }
 }

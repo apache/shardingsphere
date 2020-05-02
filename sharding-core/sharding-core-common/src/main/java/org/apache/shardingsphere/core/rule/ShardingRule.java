@@ -78,7 +78,7 @@ public final class ShardingRule implements TablesAggregationRule {
         Preconditions.checkArgument(null != shardingRuleConfig, "ShardingRuleConfig cannot be null.");
         Preconditions.checkArgument(null != dataSourceNames && !dataSourceNames.isEmpty(), "Data sources cannot be empty.");
         this.ruleConfiguration = shardingRuleConfig;
-        shardingDataSourceNames = new ShardingDataSourceNames(shardingRuleConfig, getDataSourceNames(shardingRuleConfig.getTableRuleConfigs(), dataSourceNames));
+        shardingDataSourceNames = new ShardingDataSourceNames(getDataSourceNames(shardingRuleConfig.getTableRuleConfigs(), dataSourceNames));
         tableRules = createTableRules(shardingRuleConfig);
         broadcastTables = shardingRuleConfig.getBroadcastTables();
         bindingTableRules = createBindingTableRules(shardingRuleConfig.getBindingTableGroups());

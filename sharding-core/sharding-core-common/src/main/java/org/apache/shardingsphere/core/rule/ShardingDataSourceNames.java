@@ -17,31 +17,21 @@
 
 package org.apache.shardingsphere.core.rule;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import lombok.Getter;
-import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Sharding data source names.
- * 
- * <p>Will convert actual data source names to master-slave data source name.</p>
  */
+@RequiredArgsConstructor
 public final class ShardingDataSourceNames {
-    
-    private final ShardingRuleConfiguration shardingRuleConfig;
     
     @Getter
     private final Collection<String> dataSourceNames;
-    
-    public ShardingDataSourceNames(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames) {
-        Preconditions.checkArgument(null != shardingRuleConfig, "can not construct ShardingDataSourceNames with null ShardingRuleConfig");
-        this.shardingRuleConfig = shardingRuleConfig;
-        this.dataSourceNames = dataSourceNames;
-    }
     
     /**
      * Get random data source name.
