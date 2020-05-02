@@ -39,7 +39,7 @@ public final class GeneralDCLIT extends BaseDCLIT {
         super(path, assertion, ruleType, DatabaseTypes.getActualDatabaseType(databaseType), caseType, sql);
     }
     
-    @Parameters(name = "{0} -> Rule:{3} -> {4} -> {5}")
+    @Parameters(name = "{2} -> {3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
         return IntegrateTestParameters.getParametersWithAssertion(SQLType.DCL);
     }

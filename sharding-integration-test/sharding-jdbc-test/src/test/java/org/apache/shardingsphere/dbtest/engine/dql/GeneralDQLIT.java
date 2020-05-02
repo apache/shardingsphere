@@ -48,7 +48,7 @@ public final class GeneralDQLIT extends BaseDQLIT {
         this.assertion = assertion;
     }
     
-    @Parameters(name = "Rule:{2} -> {3} -> {4} -> {5}")
+    @Parameters(name = "{2} -> {3} -> {4} -> {1} -> {5}")
     public static Collection<Object[]> getParameters() {
         return IntegrateTestParameters.getParametersWithAssertion(SQLType.DQL);
     }
