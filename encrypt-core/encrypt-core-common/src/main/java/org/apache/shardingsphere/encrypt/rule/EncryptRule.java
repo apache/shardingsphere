@@ -273,4 +273,9 @@ public final class EncryptRule implements BaseRule {
     public Collection<String> getEncryptTableNames() {
         return tables.keySet();
     }
+    
+    @Override
+    public Map<String, Collection<String>> getDataSourceMapper() {
+        return Collections.emptyMap();
+    }
 }

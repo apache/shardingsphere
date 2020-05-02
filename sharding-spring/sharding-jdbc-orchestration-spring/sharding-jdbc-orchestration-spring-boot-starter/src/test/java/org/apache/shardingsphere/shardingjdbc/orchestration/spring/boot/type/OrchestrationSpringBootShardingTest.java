@@ -79,9 +79,9 @@ public class OrchestrationSpringBootShardingTest {
         ShardingDataSource shardingDataSource = getFieldValue("dataSource", OrchestrationShardingDataSource.class, dataSource);
         RuntimeContext runtimeContext = shardingDataSource.getRuntimeContext();
         ShardingRule shardingRule = (ShardingRule) runtimeContext.getRules().iterator().next();
-        assertThat(shardingRule.getShardingDataSourceNames().getDataSourceNames().size(), is(2));
-        assertTrue(shardingRule.getShardingDataSourceNames().getDataSourceNames().contains("ds_0"));
-        assertTrue(shardingRule.getShardingDataSourceNames().getDataSourceNames().contains("ds_1"));
+        assertThat(shardingRule.getDataSourceNames().size(), is(2));
+        assertTrue(shardingRule.getDataSourceNames().contains("ds_0"));
+        assertTrue(shardingRule.getDataSourceNames().contains("ds_1"));
     }
     
     @Test

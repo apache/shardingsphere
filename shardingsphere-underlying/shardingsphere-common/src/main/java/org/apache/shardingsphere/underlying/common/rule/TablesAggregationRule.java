@@ -18,12 +18,20 @@
 package org.apache.shardingsphere.underlying.common.rule;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 
 /**
  * Tables aggregation rule.
  */
 public interface TablesAggregationRule extends BaseRule {
+    
+    /**
+     * Get all data nodes.
+     *
+     * @return all data nodes map, key is logic table name, values are data node collection belong to the key
+     */
+    Map<String, Collection<DataNode>> getAllDataNodes();
     
     /**
      * Get all actual tables.

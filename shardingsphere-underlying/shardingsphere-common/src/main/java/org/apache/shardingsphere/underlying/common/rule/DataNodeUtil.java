@@ -17,27 +17,36 @@
 
 package org.apache.shardingsphere.underlying.common.rule;
 
-import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
- * Base rule.
+ * Data node utility.
  */
-public interface BaseRule {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DataNodeUtil {
     
     /**
-     * Get data source mapper.
-     * 
-     * @return data source mapper
+     * Get data node groups.
+     *
+     * @param dataNodes data nodes
+     * @return data node groups, key is data source name, values are data nodes belong to this data source
      */
-    Map<String, Collection<String>> getDataSourceMapper();
-    
-    /**
-     * Get rule configuration.
-     * 
-     * @return rule configuration
-     */
-    RuleConfiguration getRuleConfiguration();
+    public static Map<String, List<DataNode>> getDataNodeGroups(final Collection<DataNode> dataNodes) {
+        Map<String, List<DataNode>> result = new LinkedHashMap<>(dataNodes.size(), 1);
+        for (DataNode each : dataNodes) {
+            String dataSourceName = each.getDataSourceName();
+            if (!result.containsKey(dataSourceName)) {
+                result.put(dataSourceName, new LinkedList<>());
+            }
+            result.get(dataSourceName).add(each);
+        }
+        return result;
+    }
 }

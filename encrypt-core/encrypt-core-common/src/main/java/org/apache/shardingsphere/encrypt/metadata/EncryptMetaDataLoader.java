@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaDataL
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleMetaDataLoader;
+import org.apache.shardingsphere.underlying.common.rule.DataNodes;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -38,7 +39,7 @@ import java.util.Optional;
 public final class EncryptMetaDataLoader implements RuleMetaDataLoader<EncryptRule> {
     
     @Override
-    public SchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+    public SchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes, 
                                final EncryptRule encryptRule, final ConfigurationProperties properties, final Collection<String> excludedTableNames) throws SQLException {
         DataSource dataSource = dataSourceMap.values().iterator().next();
         Collection<String> encryptTableNames = encryptRule.getEncryptTableNames();
@@ -52,15 +53,15 @@ public final class EncryptMetaDataLoader implements RuleMetaDataLoader<EncryptRu
     }
     
     @Override
-    public Optional<TableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
-                              final String tableName, final EncryptRule encryptRule, final ConfigurationProperties properties) throws SQLException {
+    public Optional<TableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes, 
+                                        final String tableName, final EncryptRule encryptRule, final ConfigurationProperties properties) throws SQLException {
         return encryptRule.findEncryptTable(tableName).isPresent()
                 ? TableMetaDataLoader.load(dataSourceMap.values().iterator().next(), tableName, databaseType.getName()) : Optional.empty();
     }
     
     @Override
     public int getOrder() {
-        return 5;
+        return 10;
     }
     
     @Override
