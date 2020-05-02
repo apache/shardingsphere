@@ -21,12 +21,15 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLCaseType;
+import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLValue;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter(AccessLevel.PROTECTED)
 public abstract class SingleIT extends BaseIT {
@@ -44,8 +47,21 @@ public abstract class SingleIT extends BaseIT {
         super(ruleType, databaseType);
         this.assertion = assertion;
         this.caseType = caseType;
-        this.sql = sql;
+        this.sql = getSQL(sql, assertion, caseType);
         expectedDataFile = getExpectedDataFile(path, ruleType, databaseType, null != assertion ? assertion.getExpectedDataFile() : null);
+    }
+    
+    private String getSQL(final String sql, final IntegrateTestCaseAssertion assertion, final SQLCaseType sqlCaseType) throws ParseException {
+        return sqlCaseType == SQLCaseType.Literal ? getLiteralSQL(sql, assertion) : sql;
+    }
+    
+    private String getLiteralSQL(final String sql, final IntegrateTestCaseAssertion assertion) throws ParseException {
+        final List<Object> parameters = null != assertion ? assertion.getSQLValues().stream().map(SQLValue::toString).collect(Collectors.toList()) : null;
+        if (null == parameters || parameters.isEmpty()) {
+            return sql;
+        }
+        return String.format(sql.replace("%", "$").replace("?", "%s"), parameters.toArray()).replace("$", "%")
+            .replace("%%", "%").replace("'%'", "'%%'");
     }
 }
 

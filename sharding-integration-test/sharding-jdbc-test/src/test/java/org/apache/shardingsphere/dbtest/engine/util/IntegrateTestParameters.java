@@ -27,19 +27,16 @@ import org.apache.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCase;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLCaseType;
-import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLValue;
 import org.apache.shardingsphere.dbtest.engine.SQLType;
 import org.apache.shardingsphere.dbtest.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.junit.Test;
 
-import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -89,7 +86,7 @@ public final class IntegrateTestParameters {
     }
     
     private static Collection<Object[]> getParametersWithAssertion(
-            final IntegrateTestCase integrateTestCase, final IntegrateTestCaseAssertion assertion, final DatabaseType databaseType, final SQLCaseType caseType) throws ParseException {
+            final IntegrateTestCase integrateTestCase, final IntegrateTestCaseAssertion assertion, final DatabaseType databaseType, final SQLCaseType caseType) {
         Collection<Object[]> result = new LinkedList<>();
         for (String each : integrateTestEnvironment.getRuleTypes()) {
             Object[] data = new Object[6];
@@ -98,7 +95,7 @@ public final class IntegrateTestParameters {
             data[2] = each;
             data[3] = databaseType.getName();
             data[4] = caseType;
-            data[5] = getSQL(integrateTestCase.getSql(), assertion, caseType);
+            data[5] = integrateTestCase.getSql();
             result.add(data);
         }
         return result;
@@ -143,19 +140,6 @@ public final class IntegrateTestParameters {
     private static Collection<DatabaseType> getDatabaseTypes(final String databaseTypes) {
         String candidates = Strings.isNullOrEmpty(databaseTypes) ? "H2,MySQL,Oracle,SQLServer,PostgreSQL" : databaseTypes;
         return Splitter.on(',').trimResults().splitToList(candidates).stream().map(DatabaseTypes::getActualDatabaseType).collect(Collectors.toList());
-    }
-    
-    private static String getSQL(final String sql, final IntegrateTestCaseAssertion assertion, final SQLCaseType sqlCaseType) throws ParseException {
-        return sqlCaseType == SQLCaseType.Literal ? getLiteralSQL(sql, assertion) : sql;
-    }
-    
-    private static String getLiteralSQL(final String sql, final IntegrateTestCaseAssertion assertion) throws ParseException {
-        final List<Object> parameters = null != assertion ? assertion.getSQLValues().stream().map(SQLValue::toString).collect(Collectors.toList()) : null;
-        if (null == parameters || parameters.isEmpty()) {
-            return sql;
-        }
-        return String.format(sql.replace("%", "$").replace("?", "%s"), parameters.toArray()).replace("$", "%")
-            .replace("%%", "%").replace("'%'", "'%%'");
     }
     
     private static void printTestPlan(final Map<DatabaseType, Collection<Object[]>> availableCases, final Map<DatabaseType, Collection<Object[]>> disabledCases, final long factor) {
