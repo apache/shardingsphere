@@ -23,19 +23,19 @@ import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
+import org.apache.shardingsphere.core.strategy.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategyFactory;
 import org.apache.shardingsphere.core.strategy.route.none.NoneShardingStrategy;
 import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.core.strategy.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.common.rule.DataNode;
+import org.apache.shardingsphere.underlying.common.rule.DataNodeUtil;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -153,15 +153,7 @@ public final class TableRule {
      * @return data node groups, key is data source name, values are data nodes belong to this data source
      */
     public Map<String, List<DataNode>> getDataNodeGroups() {
-        Map<String, List<DataNode>> result = new LinkedHashMap<>(actualDataNodes.size(), 1);
-        for (DataNode each : actualDataNodes) {
-            String dataSourceName = each.getDataSourceName();
-            if (!result.containsKey(dataSourceName)) {
-                result.put(dataSourceName, new LinkedList<>());
-            }
-            result.get(dataSourceName).add(each);
-        }
-        return result;
+        return DataNodeUtil.getDataNodeGroups(actualDataNodes);
     }
     
     /**

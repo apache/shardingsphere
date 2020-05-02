@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -90,15 +89,6 @@ public final class DataNodes {
      * @return data node groups, key is data source name, values are data nodes belong to this data source
      */
     public Map<String, List<DataNode>> getDataNodeGroups(final String tableName) {
-        Collection<DataNode> dataNodes = getDataNodes(tableName);
-        Map<String, List<DataNode>> result = new LinkedHashMap<>(dataNodes.size(), 1);
-        for (DataNode each : dataNodes) {
-            String dataSourceName = each.getDataSourceName();
-            if (!result.containsKey(dataSourceName)) {
-                result.put(dataSourceName, new LinkedList<>());
-            }
-            result.get(dataSourceName).add(each);
-        }
-        return result;
+        return DataNodeUtil.getDataNodeGroups(getDataNodes(tableName));
     }
 }
