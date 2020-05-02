@@ -36,6 +36,7 @@ import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.apache.shardingsphere.underlying.common.rule.TablesAggregationRule;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -54,6 +55,8 @@ public final class ShardingRule implements TablesAggregationRule {
     static {
         ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
     }
+    
+    private static final String SHARDING_LOGIC_DATA_SOURCE = "shardingsphere_sharding_logic_ds";
     
     private final ShardingRuleConfiguration ruleConfiguration;
     
@@ -360,6 +363,22 @@ public final class ShardingRule implements TablesAggregationRule {
         Map<String, String> result = new LinkedHashMap<>();
         findBindingTableRule(logicTable).ifPresent(
             bindingTableRule -> result.putAll(bindingTableRule.getLogicAndActualTables(dataSourceName, logicTable, actualTable, availableLogicBindingTables)));
+        return result;
+    }
+    
+    @Override
+    public Map<String, Collection<String>> getDataSourceMapper() {
+        Map<String, Collection<String>> result = new HashMap<>();
+        result.put(SHARDING_LOGIC_DATA_SOURCE, getAllActualTables());
+        return result;
+    }
+    
+    @Override
+    public Collection<DataNode> getAllDataNodes() {
+        Collection<DataNode> result = new LinkedHashSet<>();
+        for (TableRule each : tableRules) {
+            result.addAll(each.getActualDataNodes());
+        }
         return result;
     }
     

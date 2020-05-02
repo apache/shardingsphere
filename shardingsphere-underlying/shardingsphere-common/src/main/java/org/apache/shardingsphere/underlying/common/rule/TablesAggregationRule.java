@@ -26,6 +26,13 @@ import java.util.Optional;
 public interface TablesAggregationRule extends BaseRule {
     
     /**
+     * Get all data nodes.
+     *
+     * @return all data nodes
+     */
+    Collection<DataNode> getAllDataNodes();
+    
+    /**
      * Get all actual tables.
      * 
      * @return all actual tables
