@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.rule;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import lombok.Getter;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 
 import java.util.Collection;
@@ -42,21 +41,6 @@ public final class ShardingDataSourceNames {
         Preconditions.checkArgument(null != shardingRuleConfig, "can not construct ShardingDataSourceNames with null ShardingRuleConfig");
         this.shardingRuleConfig = shardingRuleConfig;
         this.dataSourceNames = dataSourceNames;
-    }
-    
-    /**
-     * Get raw master data source name.
-     *
-     * @param dataSourceName data source name
-     * @return raw master data source name
-     */
-    public String getRawMasterDataSourceName(final String dataSourceName) {
-        for (MasterSlaveRuleConfiguration each : shardingRuleConfig.getMasterSlaveRuleConfigs()) {
-            if (each.getName().equals(dataSourceName)) {
-                return each.getMasterDataSourceName();
-            }
-        }
-        return dataSourceName;
     }
     
     /**

@@ -57,7 +57,7 @@ public final class ShardingMetaDataLoader implements RuleMetaDataLoader<Sharding
     
     private static final int CPU_CORES = Runtime.getRuntime().availableProcessors();
     
-    private static final int FUTURE_GET_TIME_OUT_SEC = 5;
+    private static final int FUTURE_GET_TIME_OUT_SECOND = 5;
     
     @Override
     public SchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes, 
@@ -84,42 +84,42 @@ public final class ShardingMetaDataLoader implements RuleMetaDataLoader<Sharding
             DataNode dataNode = dataNodes.getDataNodes(tableName).iterator().next();
             return TableMetaDataLoader.load(dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName(), databaseType.getName());
         }
-        Map<String, TableMetaData> actualTableMetaDataMap = parallelLoadTables(databaseType, dataSourceMap, shardingRule, tableRule, maxConnectionsSizePerQuery);
+        Map<String, TableMetaData> actualTableMetaDataMap = parallelLoadTables(databaseType, dataSourceMap, dataNodes, tableName, maxConnectionsSizePerQuery);
         checkUniformed(tableRule.getLogicTable(), actualTableMetaDataMap, shardingRule);
         return Optional.of(actualTableMetaDataMap.values().iterator().next());
     }
     
-    private Map<String, TableMetaData> parallelLoadTables(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
-                                                          final ShardingRule shardingRule, final TableRule tableRule, final int maxConnectionsSizePerQuery) {
-        Map<String, List<DataNode>> dataNodeGroups = tableRule.getDataNodeGroups();
-        Map<String, TableMetaData> actualTableMetaDataMap = new HashMap<>(dataNodeGroups.size(), 1);
+    private Map<String, TableMetaData> parallelLoadTables(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final DataNodes dataNodes, 
+                                                          final String tableName, final int maxConnectionsSizePerQuery) {
+        Map<String, List<DataNode>> dataNodeGroups = dataNodes.getDataNodeGroups(tableName);
+        Map<String, TableMetaData> result = new HashMap<>(dataNodeGroups.size(), 1);
         Map<String, Future<Optional<TableMetaData>>> tableFutureMap = new HashMap<>(dataNodeGroups.size(), 1);
         ExecutorService executorService = Executors.newFixedThreadPool(Math.min(CPU_CORES * 2, dataNodeGroups.size() * maxConnectionsSizePerQuery));
         for (Entry<String, List<DataNode>> entry : dataNodeGroups.entrySet()) {
             for (DataNode each : entry.getValue()) {
-                Future<Optional<TableMetaData>> futures = executorService.submit(() -> loadTableByDataNode(shardingRule, each, databaseType, dataSourceMap));
+                Future<Optional<TableMetaData>> futures = executorService.submit(() -> loadTableByDataNode(each, databaseType, dataSourceMap));
                 tableFutureMap.put(each.getTableName(), futures);
             }
         }
         tableFutureMap.forEach((key, value) -> {
             try {
-                getTableMetaData(value).ifPresent(tableMetaData -> actualTableMetaDataMap.put(key, tableMetaData));
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                throw new IllegalStateException(String.format("Error while fetching tableMetaData with key= %s and Value=%s", key, value), e);
+                getTableMetaData(value).ifPresent(tableMetaData -> result.put(key, tableMetaData));
+            } catch (final InterruptedException | ExecutionException | TimeoutException ex) {
+                throw new IllegalStateException(String.format("Error while fetching tableMetaData with key= %s and Value=%s", key, value), ex);
             }
         });
         executorService.shutdownNow();
-        return actualTableMetaDataMap;
+        return result;
     }
     
     private Optional<TableMetaData> getTableMetaData(final Future<Optional<TableMetaData>> value) throws InterruptedException, ExecutionException, TimeoutException {
-        return value.get(FUTURE_GET_TIME_OUT_SEC, TimeUnit.SECONDS);
+        return value.get(FUTURE_GET_TIME_OUT_SECOND, TimeUnit.SECONDS);
     }
     
-    private Optional<TableMetaData> loadTableByDataNode(final ShardingRule shardingRule, final DataNode dataNode, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+    private Optional<TableMetaData> loadTableByDataNode(final DataNode dataNode, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
         try {
             return TableMetaDataLoader.load(
-                    dataSourceMap.get(shardingRule.getShardingDataSourceNames().getRawMasterDataSourceName(dataNode.getDataSourceName())), dataNode.getTableName(), databaseType.getName());
+                    dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName(), databaseType.getName());
         } catch (SQLException e) {
             throw new IllegalStateException(String.format("SQLException for DataNode=%s and databaseType=%s", dataNode, databaseType.getName()), e);
         }
