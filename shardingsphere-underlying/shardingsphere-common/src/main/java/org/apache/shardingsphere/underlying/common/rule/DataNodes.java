@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.underlying.common.rule;
 
-import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,21 +30,23 @@ import java.util.stream.Collectors;
 /**
  * Data nodes.
  */
-@Getter
+@RequiredArgsConstructor
 public final class DataNodes {
     
-    private final Collection<DataNode> dataNodes;
+    private final Collection<BaseRule> rules;
     
-    public DataNodes(final Collection<BaseRule> rules) {
-        dataNodes = getDataNodes(rules);
-    }
-    
-    private Collection<DataNode> getDataNodes(final Collection<BaseRule> rules) {
+    /**
+     * Get data nodes.
+     * 
+     * @param tableName table name
+     * @return data nodes
+     */
+    public Collection<DataNode> getDataNodes(final String tableName) {
         Optional<TablesAggregationRule> tablesAggregationRule = rules.stream().filter(each -> each instanceof TablesAggregationRule).findFirst().map(rule -> (TablesAggregationRule) rule);
         if (!tablesAggregationRule.isPresent()) {
             return Collections.emptyList();
         }
-        Collection<DataNode> result = tablesAggregationRule.get().getAllDataNodes();
+        Collection<DataNode> result = new LinkedList<>(tablesAggregationRule.get().getAllDataNodes().get(tableName));
         for (BaseRule each : rules) {
             if (each instanceof TablesAggregationRule) {
                 continue;

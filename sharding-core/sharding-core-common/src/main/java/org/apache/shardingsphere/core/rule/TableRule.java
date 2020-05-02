@@ -105,7 +105,7 @@ public final class TableRule {
     }
     
     private void addActualTable(final String datasourceName, final String tableName) {
-        datasourceToTablesMap.computeIfAbsent(datasourceName, k -> new LinkedHashSet<>()).add(tableName);
+        datasourceToTablesMap.computeIfAbsent(datasourceName, key -> new LinkedHashSet<>()).add(tableName);
     }
     
     private boolean containsKeyGenerateAlgorithm(final TableRuleConfiguration tableRuleConfiguration) {

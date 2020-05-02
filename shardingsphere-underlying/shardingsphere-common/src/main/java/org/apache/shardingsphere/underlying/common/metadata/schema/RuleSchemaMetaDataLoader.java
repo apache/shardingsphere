@@ -29,6 +29,7 @@ import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleMetaDataDecorator;
 import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.DataNodes;
 import org.apache.shardingsphere.underlying.common.rule.TablesAggregationRule;
 
 import javax.sql.DataSource;
@@ -67,7 +68,7 @@ public final class RuleSchemaMetaDataLoader {
         Collection<String> excludedTableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         SchemaMetaData configuredSchemaMetaData = new SchemaMetaData(new HashMap<>());
         for (Entry<BaseRule, RuleMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataLoader.class).entrySet()) {
-            SchemaMetaData schemaMetaData = entry.getValue().load(databaseType, dataSourceMap, entry.getKey(), properties, excludedTableNames);
+            SchemaMetaData schemaMetaData = entry.getValue().load(databaseType, dataSourceMap, new DataNodes(rules), entry.getKey(), properties, excludedTableNames);
             excludedTableNames.addAll(schemaMetaData.getAllTableNames());
             if (entry.getKey() instanceof TablesAggregationRule) {
                 excludedTableNames.addAll(((TablesAggregationRule) entry.getKey()).getAllActualTables());
@@ -116,7 +117,7 @@ public final class RuleSchemaMetaDataLoader {
     public Optional<TableMetaData> load(final DatabaseType databaseType, 
                                         final Map<String, DataSource> dataSourceMap, final String tableName, final ConfigurationProperties properties) throws SQLException {
         for (Entry<BaseRule, RuleMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataLoader.class).entrySet()) {
-            Optional<TableMetaData> result = entry.getValue().load(databaseType, dataSourceMap, tableName, entry.getKey(), properties);
+            Optional<TableMetaData> result = entry.getValue().load(databaseType, dataSourceMap, new DataNodes(rules), tableName, entry.getKey(), properties);
             if (result.isPresent()) {
                 return Optional.of(decorate(tableName, result.get()));
             }

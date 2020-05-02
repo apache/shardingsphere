@@ -361,8 +361,7 @@ public final class ShardingRule implements TablesAggregationRule {
     public Map<String, String> getLogicAndActualTablesFromBindingTable(final String dataSourceName, 
                                                                        final String logicTable, final String actualTable, final Collection<String> availableLogicBindingTables) {
         Map<String, String> result = new LinkedHashMap<>();
-        findBindingTableRule(logicTable).ifPresent(
-            bindingTableRule -> result.putAll(bindingTableRule.getLogicAndActualTables(dataSourceName, logicTable, actualTable, availableLogicBindingTables)));
+        findBindingTableRule(logicTable).ifPresent(bindingTableRule -> result.putAll(bindingTableRule.getLogicAndActualTables(dataSourceName, logicTable, actualTable, availableLogicBindingTables)));
         return result;
     }
     
@@ -374,10 +373,10 @@ public final class ShardingRule implements TablesAggregationRule {
     }
     
     @Override
-    public Collection<DataNode> getAllDataNodes() {
-        Collection<DataNode> result = new LinkedHashSet<>();
+    public Map<String, Collection<DataNode>> getAllDataNodes() {
+        Map<String, Collection<DataNode>> result = new HashMap<>(tableRules.size(), 1);
         for (TableRule each : tableRules) {
-            result.addAll(each.getActualDataNodes());
+            result.put(each.getLogicTable(), each.getActualDataNodes());
         }
         return result;
     }
