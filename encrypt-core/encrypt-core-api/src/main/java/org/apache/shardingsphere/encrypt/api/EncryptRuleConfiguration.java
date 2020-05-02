@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -34,8 +33,4 @@ public final class EncryptRuleConfiguration implements RuleConfiguration {
     private final Map<String, EncryptorRuleConfiguration> encryptors;
     
     private final Map<String, EncryptTableRuleConfiguration> tables;
-    
-    public EncryptRuleConfiguration() {
-        this(new LinkedHashMap<>(), new LinkedHashMap<>());
-    }
 }

@@ -19,8 +19,11 @@ package org.apache.shardingsphere.core.rule;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import java.util.Collection;
@@ -46,6 +49,27 @@ public final class RuleBuilder {
         result.addAll(shardingRuleConfig.getMasterSlaveRuleConfigs().stream().map(MasterSlaveRule::new).collect(Collectors.toList()));
         if (null != shardingRuleConfig.getEncryptRuleConfig()) {
             result.add(new EncryptRule(shardingRuleConfig.getEncryptRuleConfig()));
+        }
+        return result;
+    }
+    
+    /**
+     * Build rules.
+     *
+     * @param dataSourceNames data source names
+     * @param ruleConfigurations rule configurations
+     * @return rules
+     */
+    public static Collection<BaseRule> build(final Collection<String> dataSourceNames, final Collection<RuleConfiguration> ruleConfigurations) {
+        Collection<BaseRule> result = new LinkedList<>();
+        for (RuleConfiguration each : ruleConfigurations) {
+            if (each instanceof ShardingRuleConfiguration) {
+                result.add(new ShardingRule((ShardingRuleConfiguration) each, dataSourceNames));
+            } else if (each instanceof MasterSlaveRuleConfiguration) {
+                result.add(new MasterSlaveRule((MasterSlaveRuleConfiguration) each));
+            } else if (each instanceof EncryptRuleConfiguration) {
+                result.add(new EncryptRule((EncryptRuleConfiguration) each));
+            }
         }
         return result;
     }

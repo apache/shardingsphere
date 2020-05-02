@@ -24,7 +24,6 @@ import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfigura
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -39,20 +38,10 @@ public final class ShardingDataSourceNames {
     @Getter
     private final Collection<String> dataSourceNames;
     
-    public ShardingDataSourceNames(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> rawDataSourceNames) {
+    public ShardingDataSourceNames(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames) {
         Preconditions.checkArgument(null != shardingRuleConfig, "can not construct ShardingDataSourceNames with null ShardingRuleConfig");
         this.shardingRuleConfig = shardingRuleConfig;
-        dataSourceNames = getAllDataSourceNames(rawDataSourceNames);
-    }
-    
-    private Collection<String> getAllDataSourceNames(final Collection<String> dataSourceNames) {
-        Collection<String> result = new LinkedHashSet<>(dataSourceNames);
-        for (MasterSlaveRuleConfiguration each : shardingRuleConfig.getMasterSlaveRuleConfigs()) {
-            result.remove(each.getMasterDataSourceName());
-            result.removeAll(each.getSlaveDataSourceNames());
-            result.add(each.getName());
-        }
-        return result;
+        this.dataSourceNames = dataSourceNames;
     }
     
     /**

@@ -17,19 +17,22 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.api;
 
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import javax.sql.DataSource;
+import com.google.common.collect.ImmutableMap;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
-import org.apache.shardingsphere.orchestration.core.common.CenterType;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.core.common.CenterType;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
 import org.junit.Test;
+
+import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -64,12 +67,10 @@ public final class OrchestrationEncryptDataSourceFactoryTest {
     }
     
     private EncryptRuleConfiguration getEncryptRuleConfiguration() {
-        EncryptRuleConfiguration result = new EncryptRuleConfiguration();
         Properties properties = new Properties();
         properties.setProperty("aes.key.value", "123456");
         EncryptorRuleConfiguration encryptorRuleConfig = new EncryptorRuleConfiguration("aes", properties);
-        result.getEncryptors().put("order_encryptor", encryptorRuleConfig);
-        return result;
+        return new EncryptRuleConfiguration(ImmutableMap.of("order_encryptor", encryptorRuleConfig), Collections.emptyMap());
     }
     
     private OrchestrationConfiguration getOrchestrationConfiguration() {

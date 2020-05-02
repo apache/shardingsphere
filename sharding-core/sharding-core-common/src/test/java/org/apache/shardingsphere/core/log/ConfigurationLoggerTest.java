@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.log;
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
@@ -102,15 +103,12 @@ public final class ConfigurationLoggerTest {
     }
     
     private EncryptRuleConfiguration getEncryptRuleConfiguration() {
-        EncryptRuleConfiguration result = new EncryptRuleConfiguration();
         Properties properties = new Properties();
         properties.put("aes.key.value", "123456abc");
         EncryptorRuleConfiguration encryptorRuleConfiguration = new EncryptorRuleConfiguration("aes", properties);
-        result.getEncryptors().put("encryptor_aes", encryptorRuleConfiguration);
         EncryptTableRuleConfiguration tableRuleConfiguration =
                 new EncryptTableRuleConfiguration(Collections.singletonMap("user_id", new EncryptColumnRuleConfiguration("user_decrypt", "user_encrypt", "user_assisted", "encryptor_aes")));
-        result.getTables().put("t_encrypt", tableRuleConfiguration);
-        return result;
+        return new EncryptRuleConfiguration(ImmutableMap.of("encryptor_aes", encryptorRuleConfiguration), ImmutableMap.of("t_encrypt", tableRuleConfiguration));
     }
     
     @Test

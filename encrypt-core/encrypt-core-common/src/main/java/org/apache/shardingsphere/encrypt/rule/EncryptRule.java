@@ -57,10 +57,6 @@ public final class EncryptRule implements BaseRule {
     @Getter
     private EncryptRuleConfiguration ruleConfiguration;
     
-    public EncryptRule() {
-        ruleConfiguration = new EncryptRuleConfiguration();
-    }
-    
     public EncryptRule(final EncryptRuleConfiguration encryptRuleConfig) {
         this.ruleConfiguration = encryptRuleConfig;
         Preconditions.checkArgument(isValidRuleConfiguration(), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
