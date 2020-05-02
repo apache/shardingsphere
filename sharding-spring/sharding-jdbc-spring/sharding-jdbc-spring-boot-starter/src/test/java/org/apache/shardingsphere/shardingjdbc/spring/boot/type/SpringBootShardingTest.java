@@ -67,9 +67,9 @@ public class SpringBootShardingTest {
     public void assertWithShardingDataSourceNames() {
         RuntimeContext runtimeContext = ((ShardingDataSource) dataSource).getRuntimeContext();
         ShardingRule shardingRule = (ShardingRule) runtimeContext.getRules().iterator().next();
-        assertThat(shardingRule.getShardingDataSourceNames().getDataSourceNames().size(), is(2));
-        assertTrue(shardingRule.getShardingDataSourceNames().getDataSourceNames().contains("ds_0"));
-        assertTrue(shardingRule.getShardingDataSourceNames().getDataSourceNames().contains("ds_1"));
+        assertThat(shardingRule.getDataSourceNames().size(), is(2));
+        assertTrue(shardingRule.getDataSourceNames().contains("ds_0"));
+        assertTrue(shardingRule.getDataSourceNames().contains("ds_1"));
     }
     
     @Test

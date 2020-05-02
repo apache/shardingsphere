@@ -74,14 +74,10 @@ public final class BindingTableRuleTest {
     }
     
     private TableRule createTableRule() {
-        return new TableRule(new TableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..1}"), createShardingDataSourceNames(), null);
+        return new TableRule(new TableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..1}"), Arrays.asList("ds0", "ds1"), null);
     }
     
     private TableRule createSubTableRule() {
-        return new TableRule(new TableRuleConfiguration("SUB_LOGIC_TABLE", "ds${0..1}.sub_table_${0..1}"), createShardingDataSourceNames(), null);
-    }
-    
-    private ShardingDataSourceNames createShardingDataSourceNames() {
-        return new ShardingDataSourceNames(Arrays.asList("ds0", "ds1"));
+        return new TableRule(new TableRuleConfiguration("SUB_LOGIC_TABLE", "ds${0..1}.sub_table_${0..1}"), Arrays.asList("ds0", "ds1"), null);
     }
 }

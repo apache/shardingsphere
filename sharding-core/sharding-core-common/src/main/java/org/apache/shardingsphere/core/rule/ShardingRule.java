@@ -60,7 +60,7 @@ public final class ShardingRule implements TablesAggregationRule {
     
     private final ShardingRuleConfiguration ruleConfiguration;
     
-    private final ShardingDataSourceNames shardingDataSourceNames;
+    private final Collection<String> dataSourceNames;
     
     private final Collection<TableRule> tableRules;
     
@@ -78,7 +78,7 @@ public final class ShardingRule implements TablesAggregationRule {
         Preconditions.checkArgument(null != shardingRuleConfig, "ShardingRuleConfig cannot be null.");
         Preconditions.checkArgument(null != dataSourceNames && !dataSourceNames.isEmpty(), "Data sources cannot be empty.");
         this.ruleConfiguration = shardingRuleConfig;
-        shardingDataSourceNames = new ShardingDataSourceNames(getDataSourceNames(shardingRuleConfig.getTableRuleConfigs(), dataSourceNames));
+        this.dataSourceNames = getDataSourceNames(shardingRuleConfig.getTableRuleConfigs(), dataSourceNames);
         tableRules = createTableRules(shardingRuleConfig);
         broadcastTables = shardingRuleConfig.getBroadcastTables();
         bindingTableRules = createBindingTableRules(shardingRuleConfig.getBindingTableGroups());
@@ -111,7 +111,7 @@ public final class ShardingRule implements TablesAggregationRule {
     
     private Collection<TableRule> createTableRules(final ShardingRuleConfiguration shardingRuleConfig) {
         return shardingRuleConfig.getTableRuleConfigs().stream().map(each ->
-                new TableRule(each, shardingDataSourceNames, getDefaultGenerateKeyColumn(shardingRuleConfig))).collect(Collectors.toList());
+                new TableRule(each, dataSourceNames, getDefaultGenerateKeyColumn(shardingRuleConfig))).collect(Collectors.toList());
     }
     
     private String getDefaultGenerateKeyColumn(final ShardingRuleConfiguration shardingRuleConfig) {
@@ -170,7 +170,7 @@ public final class ShardingRule implements TablesAggregationRule {
             return tableRule.get();
         }
         if (isBroadcastTable(logicTableName)) {
-            return new TableRule(shardingDataSourceNames.getDataSourceNames(), logicTableName);
+            return new TableRule(dataSourceNames, logicTableName);
         }
         throw new ShardingSphereConfigurationException("Cannot find table rule with logic table: '%s'", logicTableName);
     }
@@ -334,7 +334,7 @@ public final class ShardingRule implements TablesAggregationRule {
      */
     public DataNode getDataNode(final String dataSourceName, final String logicTableName) {
         TableRule tableRule = getTableRule(logicTableName);
-        return tableRule.getActualDataNodes().stream().filter(each -> shardingDataSourceNames.getDataSourceNames().contains(each.getDataSourceName())
+        return tableRule.getActualDataNodes().stream().filter(each -> dataSourceNames.contains(each.getDataSourceName())
                 && each.getDataSourceName().equals(dataSourceName)).findFirst()
                 .orElseThrow(() -> new ShardingSphereConfigurationException("Cannot find actual data node for data source name: '%s' and logic table name: '%s'", dataSourceName, logicTableName));
     }
