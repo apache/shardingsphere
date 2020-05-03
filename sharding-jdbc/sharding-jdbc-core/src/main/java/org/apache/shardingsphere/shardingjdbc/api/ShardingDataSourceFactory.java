@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.api;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.core.rule.builder.ConfigurationBuilder;
 import org.apache.shardingsphere.core.rule.builder.RuleBuilder;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
@@ -46,7 +47,7 @@ public final class ShardingDataSourceFactory {
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Properties props) throws SQLException {
-        return new ShardingDataSource(dataSourceMap, RuleBuilder.buildSharding(dataSourceMap.keySet(), shardingRuleConfig), props);
+        return new ShardingDataSource(dataSourceMap, RuleBuilder.build(dataSourceMap.keySet(), ConfigurationBuilder.buildSharding(shardingRuleConfig)), props);
     }
     
     /**

@@ -30,30 +30,12 @@ import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.stream.Collectors;
 
 /**
  * Rule builder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RuleBuilder {
-    
-    /**
-     * Build rules with sharding rule configuration.
-     * 
-     * @param dataSourceNames data source names
-     * @param shardingRuleConfig sharding rule configuration
-     * @return rules
-     */
-    public static Collection<ShardingSphereRule> buildSharding(final Collection<String> dataSourceNames, final ShardingRuleConfiguration shardingRuleConfig) {
-        Collection<ShardingSphereRule> result = new LinkedList<>();
-        result.add(new ShardingRule(shardingRuleConfig, dataSourceNames));
-        result.addAll(shardingRuleConfig.getMasterSlaveRuleConfigs().stream().map(MasterSlaveRule::new).collect(Collectors.toList()));
-        if (null != shardingRuleConfig.getEncryptRuleConfig()) {
-            result.add(new EncryptRule(shardingRuleConfig.getEncryptRuleConfig()));
-        }
-        return result;
-    }
     
     /**
      * Build rules.
