@@ -53,6 +53,7 @@ public final class BatchDMLIT extends BatchIT {
         return IntegrateTestParameters.getParametersWithCase(SQLType.DML);
     }
     
+    @Test
     public void assertExecuteBatch() throws JAXBException, IOException, SQLException, ParseException {
         // TODO fix masterslave
         if ("masterslave".equals(getRuleType())) {
