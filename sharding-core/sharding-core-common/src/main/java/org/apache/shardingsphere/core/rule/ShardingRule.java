@@ -33,7 +33,7 @@ import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.underlying.common.rule.DataNode;
-import org.apache.shardingsphere.underlying.common.rule.TablesAggregationRule;
+import org.apache.shardingsphere.underlying.common.rule.DataNodeRoutedRule;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
  * Databases and tables sharding rule.
  */
 @Getter
-public final class ShardingRule implements TablesAggregationRule {
+public final class ShardingRule implements DataNodeRoutedRule {
     
     static {
         ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);

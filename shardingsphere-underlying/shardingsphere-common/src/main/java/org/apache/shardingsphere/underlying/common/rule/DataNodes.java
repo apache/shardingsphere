@@ -44,13 +44,13 @@ public final class DataNodes {
      * @return data nodes
      */
     public Collection<DataNode> getDataNodes(final String tableName) {
-        Optional<TablesAggregationRule> tablesAggregationRule = rules.stream().filter(each -> each instanceof TablesAggregationRule).findFirst().map(rule -> (TablesAggregationRule) rule);
-        if (!tablesAggregationRule.isPresent()) {
+        Optional<DataNodeRoutedRule> dataNodeRoutedRule = rules.stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
+        if (!dataNodeRoutedRule.isPresent()) {
             return Collections.emptyList();
         }
-        Collection<DataNode> result = new LinkedList<>(tablesAggregationRule.get().getAllDataNodes().get(tableName));
+        Collection<DataNode> result = new LinkedList<>(dataNodeRoutedRule.get().getAllDataNodes().get(tableName));
         for (ShardingSphereRule each : rules) {
-            if (each instanceof TablesAggregationRule) {
+            if (each instanceof DataNodeRoutedRule) {
                 continue;
             }
             for (Entry<String, Collection<String>> entry : each.getDataSourceMapper().entrySet()) {

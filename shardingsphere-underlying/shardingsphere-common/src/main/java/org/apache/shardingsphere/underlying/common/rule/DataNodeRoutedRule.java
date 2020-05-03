@@ -22,9 +22,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Tables aggregation rule.
+ * Data node routed rule.
  */
-public interface TablesAggregationRule extends ShardingSphereRule {
+public interface DataNodeRoutedRule extends ShardingSphereRule {
     
     /**
      * Get all data nodes.

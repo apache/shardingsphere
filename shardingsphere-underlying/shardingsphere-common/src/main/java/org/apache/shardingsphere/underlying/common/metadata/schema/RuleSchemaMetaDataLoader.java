@@ -30,7 +30,7 @@ import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleMetaD
 import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 import org.apache.shardingsphere.underlying.common.rule.DataNodes;
-import org.apache.shardingsphere.underlying.common.rule.TablesAggregationRule;
+import org.apache.shardingsphere.underlying.common.rule.DataNodeRoutedRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -70,8 +70,8 @@ public final class RuleSchemaMetaDataLoader {
         for (Entry<ShardingSphereRule, RuleMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataLoader.class).entrySet()) {
             SchemaMetaData schemaMetaData = entry.getValue().load(databaseType, dataSourceMap, new DataNodes(rules), entry.getKey(), properties, excludedTableNames);
             excludedTableNames.addAll(schemaMetaData.getAllTableNames());
-            if (entry.getKey() instanceof TablesAggregationRule) {
-                excludedTableNames.addAll(((TablesAggregationRule) entry.getKey()).getAllActualTables());
+            if (entry.getKey() instanceof DataNodeRoutedRule) {
+                excludedTableNames.addAll(((DataNodeRoutedRule) entry.getKey()).getAllActualTables());
             }
             configuredSchemaMetaData.merge(schemaMetaData);
         }
