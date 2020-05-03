@@ -32,8 +32,6 @@ import java.util.Properties;
  */
 public abstract class TypedProperties<E extends Enum & TypedPropertyKey> {
     
-    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-    
     @Getter
     private final Properties props;
     
@@ -58,7 +56,7 @@ public abstract class TypedProperties<E extends Enum & TypedPropertyKey> {
             result.put(each, value);
         }
         if (!errorMessages.isEmpty()) {
-            throw new ShardingSphereConfigurationException(Joiner.on(LINE_SEPARATOR).join(errorMessages));
+            throw new ShardingSphereConfigurationException(Joiner.on(System.lineSeparator()).join(errorMessages));
         }
         return result;
     }

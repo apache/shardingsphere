@@ -53,8 +53,6 @@ import java.util.stream.Collectors;
  */
 public final class ShardingMetaDataLoader implements RuleMetaDataLoader<ShardingRule> {
     
-    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-    
     private static final int CPU_CORES = Runtime.getRuntime().availableProcessors();
     
     private static final int FUTURE_GET_TIME_OUT_SECOND = 5;
@@ -137,9 +135,9 @@ public final class ShardingMetaDataLoader implements RuleMetaDataLoader<Sharding
     private void throwExceptionIfNecessary(final Collection<TableMetaDataViolation> violations, final String logicTableName) {
         if (!violations.isEmpty()) {
             StringBuilder errorMessage = new StringBuilder(
-                    "Cannot get uniformed table structure for logic table `%s`, it has different meta data of actual tables are as follows:").append(LINE_SEPARATOR);
+                    "Cannot get uniformed table structure for logic table `%s`, it has different meta data of actual tables are as follows:").append(System.lineSeparator());
             for (TableMetaDataViolation each : violations) {
-                errorMessage.append("actual table: ").append(each.getActualTableName()).append(", meta data: ").append(each.getTableMetaData()).append(LINE_SEPARATOR);
+                errorMessage.append("actual table: ").append(each.getActualTableName()).append(", meta data: ").append(each.getTableMetaData()).append(System.lineSeparator());
             }
             throw new ShardingSphereException(errorMessage.toString(), logicTableName);
         }
