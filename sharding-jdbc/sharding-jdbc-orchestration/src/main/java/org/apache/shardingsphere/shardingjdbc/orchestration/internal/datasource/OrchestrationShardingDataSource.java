@@ -40,7 +40,7 @@ import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguratio
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -144,7 +144,7 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
     public synchronized void renew(final DisabledStateChangedEvent disabledStateChangedEvent) {
         OrchestrationShardingSchema shardingSchema = disabledStateChangedEvent.getShardingSchema();
         if (DefaultSchema.LOGIC_NAME.equals(shardingSchema.getSchemaName())) {
-            for (BaseRule each : dataSource.getRuntimeContext().getRules()) {
+            for (ShardingSphereRule each : dataSource.getRuntimeContext().getRules()) {
                 if (each instanceof MasterSlaveRule) {
                     ((MasterSlaveRule) each).updateDisabledDataSourceNames(shardingSchema.getDataSourceName(), disabledStateChangedEvent.isDisabled());
                 }

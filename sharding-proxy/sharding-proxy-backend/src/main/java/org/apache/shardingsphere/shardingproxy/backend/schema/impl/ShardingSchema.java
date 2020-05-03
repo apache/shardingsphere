@@ -35,7 +35,7 @@ import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 
 import java.sql.SQLException;
 import java.util.Map;
@@ -72,7 +72,7 @@ public final class ShardingSchema extends LogicSchema {
     public synchronized void renew(final DisabledStateChangedEvent disabledStateChangedEvent) {
         OrchestrationShardingSchema shardingSchema = disabledStateChangedEvent.getShardingSchema();
         if (getName().equals(shardingSchema.getSchemaName())) {
-            for (BaseRule each : getRules()) {
+            for (ShardingSphereRule each : getRules()) {
                 if (each instanceof MasterSlaveRule) {
                     ((MasterSlaveRule) each).updateDisabledDataSourceNames(shardingSchema.getDataSourceName(), disabledStateChangedEvent.isDisabled());
                 }

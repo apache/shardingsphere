@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import lombok.EqualsAndHashCode;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedDatabaseMetaDataResultSet;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 import org.apache.shardingsphere.underlying.common.rule.TablesAggregationRule;
 
 import java.sql.Date;
@@ -51,7 +51,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     
     private final int concurrency;
     
-    private final Collection<BaseRule> rules;
+    private final Collection<ShardingSphereRule> rules;
     
     private final ResultSetMetaData resultSetMetaData;
     
@@ -63,7 +63,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     
     private DatabaseMetaDataObject currentDatabaseMetaDataObject;
     
-    public DatabaseMetaDataResultSet(final ResultSet resultSet, final Collection<BaseRule> rules) throws SQLException {
+    public DatabaseMetaDataResultSet(final ResultSet resultSet, final Collection<ShardingSphereRule> rules) throws SQLException {
         this.type = resultSet.getType();
         this.concurrency = resultSet.getConcurrency();
         this.rules = rules;
@@ -97,7 +97,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     
     private DatabaseMetaDataObject generateDatabaseMetaDataObject(final int tableNameColumnIndex, final int indexNameColumnIndex, final ResultSet resultSet) throws SQLException {
         DatabaseMetaDataObject result = new DatabaseMetaDataObject(resultSetMetaData.getColumnCount());
-        Optional<BaseRule> tablesAggregationRule = findTablesAggregationRule();
+        Optional<ShardingSphereRule> tablesAggregationRule = findTablesAggregationRule();
         for (int i = 1; i <= columnLabelIndexMap.size(); i++) {
             if (tableNameColumnIndex == i) {
                 String tableName = resultSet.getString(i);
@@ -114,7 +114,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
         return result;
     }
     
-    private Optional<BaseRule> findTablesAggregationRule() {
+    private Optional<ShardingSphereRule> findTablesAggregationRule() {
         return rules.stream().filter(each -> each instanceof TablesAggregationRule).findFirst();
     }
     

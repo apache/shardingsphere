@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 import org.apache.shardingsphere.underlying.common.rule.TablesAggregationRule;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
@@ -94,7 +94,7 @@ public final class PreparedStatementExecutor {
     }
     
     private SQLExecutorCallback<QueryResult> getExecuteQueryExecutorCallback(final DefaultSQLExecutorCallback callback) {
-        Map<BaseRule, RuleExecuteQueryExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(runtimeContext.getRules(), RuleExecuteQueryExecutorCallback.class);
+        Map<ShardingSphereRule, RuleExecuteQueryExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(runtimeContext.getRules(), RuleExecuteQueryExecutorCallback.class);
         return callbackMap.isEmpty() ? callback : callbackMap.values().iterator().next();
     }
     
@@ -128,11 +128,11 @@ public final class PreparedStatementExecutor {
     }
     
     private SQLExecutorCallback<Integer> getExecuteUpdateExecutorCallback(final DefaultSQLExecutorCallback callback) {
-        Map<BaseRule, RuleExecuteUpdateExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(runtimeContext.getRules(), RuleExecuteUpdateExecutorCallback.class);
+        Map<ShardingSphereRule, RuleExecuteUpdateExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(runtimeContext.getRules(), RuleExecuteUpdateExecutorCallback.class);
         return callbackMap.isEmpty() ? callback : callbackMap.values().iterator().next();
     }
     
-    private boolean isNeedAccumulate(final Collection<BaseRule> rules, final SQLStatementContext sqlStatementContext) {
+    private boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext sqlStatementContext) {
         return rules.stream().anyMatch(each -> ((TablesAggregationRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames()));
     }
     
@@ -170,7 +170,7 @@ public final class PreparedStatementExecutor {
     }
     
     private SQLExecutorCallback<Boolean> getExecuteExecutorCallback(final DefaultSQLExecutorCallback callback) {
-        Map<BaseRule, RuleExecuteExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(runtimeContext.getRules(), RuleExecuteExecutorCallback.class);
+        Map<ShardingSphereRule, RuleExecuteExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(runtimeContext.getRules(), RuleExecuteExecutorCallback.class);
         return callbackMap.isEmpty() ? callback : callbackMap.values().iterator().next();
     }
     

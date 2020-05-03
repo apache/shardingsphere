@@ -20,7 +20,7 @@ package org.apache.shardingsphere.underlying.merge.result.impl.memory;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 import org.apache.shardingsphere.underlying.executor.sql.QueryResult;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 
@@ -41,7 +41,7 @@ import java.util.List;
  * @param <T> type of rule
  */
 @RequiredArgsConstructor
-public abstract class MemoryMergedResult<T extends BaseRule> implements MergedResult {
+public abstract class MemoryMergedResult<T extends ShardingSphereRule> implements MergedResult {
     
     private final Iterator<MemoryQueryResultRow> memoryResultSetRows;
     

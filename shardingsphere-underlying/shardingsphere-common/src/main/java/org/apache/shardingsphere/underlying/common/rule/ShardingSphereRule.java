@@ -23,9 +23,9 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Base rule.
+ * ShardingSphere rule.
  */
-public interface BaseRule {
+public interface ShardingSphereRule {
     
     /**
      * Get data source mapper.

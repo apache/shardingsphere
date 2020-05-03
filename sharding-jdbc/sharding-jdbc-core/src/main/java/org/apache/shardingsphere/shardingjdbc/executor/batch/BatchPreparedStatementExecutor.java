@@ -24,7 +24,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 import org.apache.shardingsphere.underlying.common.rule.TablesAggregationRule;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
@@ -145,11 +145,11 @@ public final class BatchPreparedStatementExecutor {
     }
     
     private SQLExecutorCallback<int[]> getExecuteBatchExecutorCallback(final DefaultSQLExecutorCallback callback) {
-        Map<BaseRule, RuleExecuteBatchExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(runtimeContext.getRules(), RuleExecuteBatchExecutorCallback.class);
+        Map<ShardingSphereRule, RuleExecuteBatchExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(runtimeContext.getRules(), RuleExecuteBatchExecutorCallback.class);
         return callbackMap.isEmpty() ? callback : callbackMap.values().iterator().next();
     }
     
-    private boolean isNeedAccumulate(final Collection<BaseRule> rules, final SQLStatementContext sqlStatementContext) {
+    private boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext sqlStatementContext) {
         return rules.stream().anyMatch(each -> ((TablesAggregationRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames()));
     }
     

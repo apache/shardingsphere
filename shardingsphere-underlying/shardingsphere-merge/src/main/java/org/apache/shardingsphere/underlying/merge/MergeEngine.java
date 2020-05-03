@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDat
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 import org.apache.shardingsphere.underlying.executor.sql.QueryResult;
 import org.apache.shardingsphere.underlying.merge.engine.ResultProcessEngine;
 import org.apache.shardingsphere.underlying.merge.engine.decorator.ResultDecorator;
@@ -55,9 +55,9 @@ public final class MergeEngine {
     
     private final ConfigurationProperties properties;
     
-    private final Map<BaseRule, ResultProcessEngine> engines;
+    private final Map<ShardingSphereRule, ResultProcessEngine> engines;
     
-    public MergeEngine(final DatabaseType databaseType, final SchemaMetaData schemaMetaData, final ConfigurationProperties properties, final Collection<BaseRule> rules) {
+    public MergeEngine(final DatabaseType databaseType, final SchemaMetaData schemaMetaData, final ConfigurationProperties properties, final Collection<ShardingSphereRule> rules) {
         this.databaseType = databaseType;
         this.schemaMetaData = schemaMetaData;
         this.properties = properties;
@@ -80,7 +80,7 @@ public final class MergeEngine {
     
     @SuppressWarnings("unchecked")
     private Optional<MergedResult> executeMerge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
-        for (Entry<BaseRule, ResultProcessEngine> entry : engines.entrySet()) {
+        for (Entry<ShardingSphereRule, ResultProcessEngine> entry : engines.entrySet()) {
             if (entry.getValue() instanceof ResultMergerEngine) {
                 ResultMerger resultMerger = ((ResultMergerEngine) entry.getValue()).newInstance(databaseType, entry.getKey(), properties, sqlStatementContext);
                 return Optional.of(resultMerger.merge(queryResults, sqlStatementContext, schemaMetaData));
@@ -92,7 +92,7 @@ public final class MergeEngine {
     @SuppressWarnings("unchecked")
     private MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext) throws SQLException {
         MergedResult result = null;
-        for (Entry<BaseRule, ResultProcessEngine> entry : engines.entrySet()) {
+        for (Entry<ShardingSphereRule, ResultProcessEngine> entry : engines.entrySet()) {
             if (entry.getValue() instanceof ResultDecoratorEngine) {
                 ResultDecorator resultDecorator = ((ResultDecoratorEngine) entry.getValue()).newInstance(databaseType, schemaMetaData, entry.getKey(), properties, sqlStatementContext);
                 result = null == result ? resultDecorator.decorate(mergedResult, sqlStatementContext, schemaMetaData) : resultDecorator.decorate(result, sqlStatementContext, schemaMetaData);
@@ -104,7 +104,7 @@ public final class MergeEngine {
     @SuppressWarnings("unchecked")
     private Optional<MergedResult> decorate(final QueryResult queryResult, final SQLStatementContext sqlStatementContext) throws SQLException {
         MergedResult result = null;
-        for (Entry<BaseRule, ResultProcessEngine> entry : engines.entrySet()) {
+        for (Entry<ShardingSphereRule, ResultProcessEngine> entry : engines.entrySet()) {
             if (entry.getValue() instanceof ResultDecoratorEngine) {
                 ResultDecorator resultDecorator = ((ResultDecoratorEngine) entry.getValue()).newInstance(databaseType, schemaMetaData, entry.getKey(), properties, sqlStatementContext);
                 result = null == result ? resultDecorator.decorate(queryResult, sqlStatementContext, schemaMetaData) : resultDecorator.decorate(result, sqlStatementContext, schemaMetaData);

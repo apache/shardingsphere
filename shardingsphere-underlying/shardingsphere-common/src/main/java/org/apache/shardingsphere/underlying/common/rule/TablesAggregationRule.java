@@ -24,7 +24,7 @@ import java.util.Optional;
 /**
  * Tables aggregation rule.
  */
-public interface TablesAggregationRule extends BaseRule {
+public interface TablesAggregationRule extends ShardingSphereRule {
     
     /**
      * Get all data nodes.

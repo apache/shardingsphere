@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.shardingjdbc.executor.callback;
 
 import org.apache.shardingsphere.spi.order.OrderedSPI;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutorCallback;
 
 /**
  * Rule based SQL executor callback for execute update.
  */
-public interface RuleExecuteUpdateExecutorCallback extends SQLExecutorCallback<Integer>, OrderedSPI<BaseRule> {
+public interface RuleExecuteUpdateExecutorCallback extends SQLExecutorCallback<Integer>, OrderedSPI<ShardingSphereRule> {
 }

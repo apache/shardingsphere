@@ -35,7 +35,7 @@ import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaDa
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 import org.apache.shardingsphere.underlying.executor.kernel.ExecutorKernel;
 
 import javax.sql.DataSource;
@@ -59,7 +59,7 @@ public final class RuntimeContext implements AutoCloseable {
     
     private final DatabaseType databaseType;
     
-    private final Collection<BaseRule> rules;
+    private final Collection<ShardingSphereRule> rules;
     
     private final ConfigurationProperties properties;
     
@@ -74,7 +74,7 @@ public final class RuntimeContext implements AutoCloseable {
     @Setter
     private ShardingSphereMetaData metaData;
     
-    public RuntimeContext(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final Collection<BaseRule> rules, final Properties props) throws SQLException {
+    public RuntimeContext(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final Collection<ShardingSphereRule> rules, final Properties props) throws SQLException {
         this.dataSourceMap = dataSourceMap;
         this.databaseType = databaseType;
         this.rules = rules;
@@ -90,7 +90,7 @@ public final class RuntimeContext implements AutoCloseable {
         ConfigurationLogger.log(props);
     }
     
-    public RuntimeContext(final DataSource dataSource, final DatabaseType databaseType, final Collection<BaseRule> rules, final Properties props) throws SQLException {
+    public RuntimeContext(final DataSource dataSource, final DatabaseType databaseType, final Collection<ShardingSphereRule> rules, final Properties props) throws SQLException {
         this(ImmutableMap.of("ds", dataSource), databaseType, rules, props);
     }
     

@@ -19,11 +19,11 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execu
 
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteResponse;
 import org.apache.shardingsphere.spi.order.OrderedSPI;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutorCallback;
 
 /**
  * Rule based SQL executor callback for Proxy.
  */
-public interface RuleProxySQLExecutorCallback extends SQLExecutorCallback<ExecuteResponse>, OrderedSPI<BaseRule> {
+public interface RuleProxySQLExecutorCallback extends SQLExecutorCallback<ExecuteResponse>, OrderedSPI<ShardingSphereRule> {
 }

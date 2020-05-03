@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -34,7 +34,7 @@ import java.util.Properties;
  */
 public class ShardingDataSource extends AbstractDataSourceAdapter {
     
-    public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final Collection<BaseRule> rules, final Properties props) throws SQLException {
+    public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules, final Properties props) throws SQLException {
         super(dataSourceMap, rules, props);
         checkDataSource(dataSourceMap);
     }

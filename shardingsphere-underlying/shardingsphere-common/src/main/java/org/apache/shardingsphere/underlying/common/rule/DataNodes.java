@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class DataNodes {
     
-    private final Collection<BaseRule> rules;
+    private final Collection<ShardingSphereRule> rules;
     
     /**
      * Get data nodes.
@@ -49,7 +49,7 @@ public final class DataNodes {
             return Collections.emptyList();
         }
         Collection<DataNode> result = new LinkedList<>(tablesAggregationRule.get().getAllDataNodes().get(tableName));
-        for (BaseRule each : rules) {
+        for (ShardingSphereRule each : rules) {
             if (each instanceof TablesAggregationRule) {
                 continue;
             }

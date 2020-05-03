@@ -22,7 +22,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractConnectionAda
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.DatabaseMetaDataResultSet;
 import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 import org.apache.shardingsphere.underlying.common.rule.TablesAggregationRule;
 
 import java.sql.Connection;
@@ -42,7 +42,7 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     
     private final AbstractConnectionAdapter connection;
     
-    private final Collection<BaseRule> rules;
+    private final Collection<ShardingSphereRule> rules;
     
     private final Collection<String> datasourceNames;
     
