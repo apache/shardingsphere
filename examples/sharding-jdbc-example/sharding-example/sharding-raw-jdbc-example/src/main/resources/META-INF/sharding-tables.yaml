@@ -51,7 +51,7 @@ shardingRule:
         type: SNOWFLAKE
         column: order_item_id
         props:
-          worker.id: 123        
+          worker.id: 123
   bindingTables:
     - t_order,t_order_item
   broadcastTables:
