@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.underlying.common.rule;
 
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.underlying.common.datanode.DataNode;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

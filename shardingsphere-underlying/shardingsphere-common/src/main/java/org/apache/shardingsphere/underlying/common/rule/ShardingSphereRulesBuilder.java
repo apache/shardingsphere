@@ -19,34 +19,33 @@ package org.apache.shardingsphere.underlying.common.rule;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
- * Data node utility.
+ * ShardingSphere rule builder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataNodeUtil {
+public final class ShardingSphereRulesBuilder {
+    
+    static {
+        ShardingSphereServiceLoader.register(ShardingSphereRuleBuilder.class);
+    }
     
     /**
-     * Get data node groups.
+     * Build rules.
      *
-     * @param dataNodes data nodes
-     * @return data node groups, key is data source name, values are data nodes belong to this data source
+     * @param ruleConfigurations rule configurations
+     * @param dataSourceNames data source names
+     * @return rules
      */
-    public static Map<String, List<DataNode>> getDataNodeGroups(final Collection<DataNode> dataNodes) {
-        Map<String, List<DataNode>> result = new LinkedHashMap<>(dataNodes.size(), 1);
-        for (DataNode each : dataNodes) {
-            String dataSourceName = each.getDataSourceName();
-            if (!result.containsKey(dataSourceName)) {
-                result.put(dataSourceName, new LinkedList<>());
-            }
-            result.get(dataSourceName).add(each);
-        }
-        return result;
+    @SuppressWarnings("unchecked")
+    public static Collection<ShardingSphereRule> build(final Collection<RuleConfiguration> ruleConfigurations, final Collection<String> dataSourceNames) {
+        return OrderedSPIRegistry.getRegisteredServices(
+                ruleConfigurations, ShardingSphereRuleBuilder.class).entrySet().stream().map(entry -> entry.getValue().build(entry.getKey(), dataSourceNames)).collect(Collectors.toList());
     }
 }

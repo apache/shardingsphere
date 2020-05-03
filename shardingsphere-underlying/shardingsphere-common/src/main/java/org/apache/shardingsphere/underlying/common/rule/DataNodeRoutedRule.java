@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.underlying.common.rule;
 
+import org.apache.shardingsphere.underlying.common.datanode.DataNode;
+
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;

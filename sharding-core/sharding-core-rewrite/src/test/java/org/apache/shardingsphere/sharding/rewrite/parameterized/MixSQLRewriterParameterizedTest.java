@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.rewrite.parameterized;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.core.rule.builder.ConfigurationBuilder;
-import org.apache.shardingsphere.core.rule.builder.RuleBuilder;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlRootShardingConfiguration;
 import org.apache.shardingsphere.core.yaml.constructor.YamlRootShardingConfigurationConstructor;
 import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
@@ -77,8 +77,8 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     @Override
     protected Collection<SQLRewriteUnit> createSQLRewriteUnits() throws IOException {
         YamlRootShardingConfiguration ruleConfiguration = createRuleConfiguration();
-        Collection<ShardingSphereRule> rules = RuleBuilder.build(
-                ruleConfiguration.getDataSources().keySet(), ConfigurationBuilder.buildSharding(new ShardingRuleConfigurationYamlSwapper().swap(ruleConfiguration.getShardingRule())));
+        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(
+                ConfigurationBuilder.buildSharding(new ShardingRuleConfigurationYamlSwapper().swap(ruleConfiguration.getShardingRule())), ruleConfiguration.getDataSources().keySet());
         SQLParserEngine sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType());
         ShardingSphereMetaData metaData = createShardingSphereMetaData();
         ConfigurationProperties properties = new ConfigurationProperties(ruleConfiguration.getProps());

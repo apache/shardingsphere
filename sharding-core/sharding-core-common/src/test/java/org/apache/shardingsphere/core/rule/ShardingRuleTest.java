@@ -32,7 +32,7 @@ import org.apache.shardingsphere.core.strategy.route.standard.StandardShardingSt
 import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.underlying.common.rule.DataNode;
+import org.apache.shardingsphere.underlying.common.datanode.DataNode;
 import org.junit.Test;
 
 import java.util.Arrays;

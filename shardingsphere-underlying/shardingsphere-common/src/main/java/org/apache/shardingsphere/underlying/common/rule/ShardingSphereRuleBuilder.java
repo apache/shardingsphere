@@ -15,26 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.token.pojo;
+package org.apache.shardingsphere.underlying.common.rule;
 
-import lombok.Getter;
-import org.apache.shardingsphere.underlying.common.datanode.DataNode;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.InsertValue;
+import org.apache.shardingsphere.spi.order.OrderedSPI;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
- * Insert value for sharding.
+ * ShardingSphere rule builder.
+ * 
+ * @param <R> type of ShardingSphere rule
+ * @param <T> type of rule configuration
  */
-@Getter
-public final class ShardingInsertValue extends InsertValue {
+public interface ShardingSphereRuleBuilder<R extends ShardingSphereRule, T extends RuleConfiguration> extends OrderedSPI<T> {
     
-    private final Collection<DataNode> dataNodes;
-    
-    public ShardingInsertValue(final List<ExpressionSegment> values, final Collection<DataNode> dataNodes) {
-        super(values);
-        this.dataNodes = dataNodes;
-    }
+    /**
+     * Build ShardingSphere rule.
+     *
+     * @param ruleConfiguration rule configuration
+     * @param dataSourceNames data source names
+     * @return ShardingSphere rule
+     */
+    R build(T ruleConfiguration, Collection<String> dataSourceNames);
 }

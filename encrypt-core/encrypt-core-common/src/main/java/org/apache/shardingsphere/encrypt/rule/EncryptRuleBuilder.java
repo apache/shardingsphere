@@ -15,26 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.token.pojo;
+package org.apache.shardingsphere.encrypt.rule;
 
-import lombok.Getter;
-import org.apache.shardingsphere.underlying.common.datanode.DataNode;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.InsertValue;
+import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRuleBuilder;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
- * Insert value for sharding.
+ * Encrypt rule builder.
  */
-@Getter
-public final class ShardingInsertValue extends InsertValue {
+public final class EncryptRuleBuilder implements ShardingSphereRuleBuilder<EncryptRule, EncryptRuleConfiguration> {
     
-    private final Collection<DataNode> dataNodes;
+    @Override
+    public EncryptRule build(final EncryptRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
+        return new EncryptRule(ruleConfiguration);
+    }
     
-    public ShardingInsertValue(final List<ExpressionSegment> values, final Collection<DataNode> dataNodes) {
-        super(values);
-        this.dataNodes = dataNodes;
+    @Override
+    public int getOrder() {
+        return 10;
+    }
+    
+    @Override
+    public Class<EncryptRuleConfiguration> getTypeClass() {
+        return EncryptRuleConfiguration.class;
     }
 }

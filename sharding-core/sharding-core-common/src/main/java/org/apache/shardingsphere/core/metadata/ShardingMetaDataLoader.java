@@ -29,8 +29,8 @@ import org.apache.shardingsphere.underlying.common.config.properties.Configurati
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleMetaDataLoader;
-import org.apache.shardingsphere.underlying.common.rule.DataNode;
-import org.apache.shardingsphere.underlying.common.rule.DataNodes;
+import org.apache.shardingsphere.underlying.common.datanode.DataNode;
+import org.apache.shardingsphere.underlying.common.datanode.DataNodes;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

@@ -25,7 +25,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.builder.ConfigurationBuilder;
-import org.apache.shardingsphere.core.rule.builder.RuleBuilder;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
@@ -63,7 +63,7 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
         Preconditions.checkState(null != shardingRuleConfig && !shardingRuleConfig.getTableRuleConfigs().isEmpty(), "Missing the sharding rule configuration on registry center");
         Map<String, DataSourceConfiguration> dataSourceConfigurations = configService.loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME);
         dataSource = new ShardingDataSource(DataSourceConverter.getDataSourceMap(dataSourceConfigurations),
-                RuleBuilder.build(dataSourceConfigurations.keySet(), ConfigurationBuilder.buildSharding(shardingRuleConfig)), configService.loadProperties());
+                ShardingSphereRulesBuilder.build(ConfigurationBuilder.buildSharding(shardingRuleConfig), dataSourceConfigurations.keySet()), configService.loadProperties());
         initShardingOrchestrationFacade();
         persistMetaData(dataSource.getRuntimeContext().getMetaData().getSchema());
     }
@@ -105,7 +105,7 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
     @SneakyThrows
     public final synchronized void renew(final ShardingRuleChangedEvent shardingRuleChangedEvent) {
         dataSource = new ShardingDataSource(dataSource.getDataSourceMap(), 
-                RuleBuilder.build(dataSource.getDataSourceMap().keySet(), shardingRuleChangedEvent.getRuleConfigurations()), dataSource.getRuntimeContext().getProperties().getProps());
+                ShardingSphereRulesBuilder.build(shardingRuleChangedEvent.getRuleConfigurations(), dataSource.getDataSourceMap().keySet()), dataSource.getRuntimeContext().getProperties().getProps());
     }
     
     /**
