@@ -46,7 +46,7 @@ public final class ShardingDataSourceFactory {
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Properties props) throws SQLException {
-        return new ShardingDataSource(dataSourceMap, RuleBuilder.build(dataSourceMap.keySet(), shardingRuleConfig), props);
+        return new ShardingDataSource(dataSourceMap, RuleBuilder.buildSharding(dataSourceMap.keySet(), shardingRuleConfig), props);
     }
     
     /**

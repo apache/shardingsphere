@@ -47,7 +47,7 @@ import java.util.Optional;
 public final class ShardingSchema extends LogicSchema {
     
     public ShardingSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final ShardingRuleConfiguration shardingRuleConfig) throws SQLException {
-        super(name, dataSources, RuleBuilder.build(dataSources.keySet(), shardingRuleConfig));
+        super(name, dataSources, RuleBuilder.buildSharding(dataSources.keySet(), shardingRuleConfig));
     }
     
     /**
@@ -59,7 +59,7 @@ public final class ShardingSchema extends LogicSchema {
     public synchronized void renew(final ShardingRuleChangedEvent shardingRuleChangedEvent) {
         if (getName().equals(shardingRuleChangedEvent.getShardingSchemaName())) {
             ConfigurationLogger.log(shardingRuleChangedEvent.getShardingRuleConfiguration());
-            setRules(RuleBuilder.build(getDataSources().keySet(), shardingRuleChangedEvent.getShardingRuleConfiguration()));
+            setRules(RuleBuilder.buildSharding(getDataSources().keySet(), shardingRuleChangedEvent.getShardingRuleConfiguration()));
         }
     }
     

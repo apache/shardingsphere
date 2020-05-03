@@ -62,7 +62,7 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
         Preconditions.checkState(null != shardingRuleConfig && !shardingRuleConfig.getTableRuleConfigs().isEmpty(), "Missing the sharding rule configuration on registry center");
         Map<String, DataSourceConfiguration> dataSourceConfigurations = configService.loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME);
         dataSource = new ShardingDataSource(DataSourceConverter.getDataSourceMap(dataSourceConfigurations),
-                RuleBuilder.build(dataSourceConfigurations.keySet(), shardingRuleConfig), configService.loadProperties());
+                RuleBuilder.buildSharding(dataSourceConfigurations.keySet(), shardingRuleConfig), configService.loadProperties());
         initShardingOrchestrationFacade();
         persistMetaData(dataSource.getRuntimeContext().getMetaData().getSchema());
     }
@@ -104,7 +104,7 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
     @SneakyThrows
     public final synchronized void renew(final ShardingRuleChangedEvent shardingRuleChangedEvent) {
         dataSource = new ShardingDataSource(dataSource.getDataSourceMap(), 
-                RuleBuilder.build(dataSource.getDataSourceMap().keySet(), shardingRuleChangedEvent.getShardingRuleConfiguration()), dataSource.getRuntimeContext().getProperties().getProps());
+                RuleBuilder.buildSharding(dataSource.getDataSourceMap().keySet(), shardingRuleChangedEvent.getShardingRuleConfiguration()), dataSource.getRuntimeContext().getProperties().getProps());
     }
     
     /**

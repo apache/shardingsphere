@@ -37,13 +37,13 @@ import java.util.stream.Collectors;
 public final class RuleBuilder {
     
     /**
-     * Build rules.
+     * Build rules with sharding rule configuration.
      * 
      * @param dataSourceNames data source names
      * @param shardingRuleConfig sharding rule configuration
      * @return rules
      */
-    public static Collection<ShardingSphereRule> build(final Collection<String> dataSourceNames, final ShardingRuleConfiguration shardingRuleConfig) {
+    public static Collection<ShardingSphereRule> buildSharding(final Collection<String> dataSourceNames, final ShardingRuleConfiguration shardingRuleConfig) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         result.add(new ShardingRule(shardingRuleConfig, dataSourceNames));
         result.addAll(shardingRuleConfig.getMasterSlaveRuleConfigs().stream().map(MasterSlaveRule::new).collect(Collectors.toList()));

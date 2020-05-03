@@ -129,7 +129,7 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @Conditional(LocalShardingRuleCondition.class)
     public DataSource shardingDataSourceByLocal(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
         return new OrchestrationShardingDataSource(new ShardingDataSource(dataSourceMap, 
-                RuleBuilder.build(dataSourceMap.keySet(), new ShardingRuleConfigurationYamlSwapper().swap(this.shardingRule)), root.getProps()), orchestrationConfiguration);
+                RuleBuilder.buildSharding(dataSourceMap.keySet(), new ShardingRuleConfigurationYamlSwapper().swap(this.shardingRule)), root.getProps()), orchestrationConfiguration);
     }
     
     /**

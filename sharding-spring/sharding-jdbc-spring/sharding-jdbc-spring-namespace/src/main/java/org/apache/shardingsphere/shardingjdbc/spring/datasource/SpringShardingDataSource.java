@@ -32,6 +32,6 @@ import java.util.Properties;
 public final class SpringShardingDataSource extends ShardingDataSource {
     
     public SpringShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Properties props) throws SQLException {
-        super(dataSourceMap, RuleBuilder.build(dataSourceMap.keySet(), shardingRuleConfig), props);
+        super(dataSourceMap, RuleBuilder.buildSharding(dataSourceMap.keySet(), shardingRuleConfig), props);
     }
 }

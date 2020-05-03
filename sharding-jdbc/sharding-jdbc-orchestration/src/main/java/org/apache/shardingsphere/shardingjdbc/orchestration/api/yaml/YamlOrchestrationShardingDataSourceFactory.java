@@ -105,7 +105,8 @@ public final class YamlOrchestrationShardingDataSourceFactory {
         if (null == yamlShardingRuleConfiguration) {
             return new OrchestrationShardingDataSource(new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
         } else {
-            ShardingDataSource shardingDataSource = new ShardingDataSource(dataSourceMap, RuleBuilder.build(dataSourceMap.keySet(), SHARDING_RULE_SWAPPER.swap(yamlShardingRuleConfiguration)), props);
+            ShardingDataSource shardingDataSource = new ShardingDataSource(
+                    dataSourceMap, RuleBuilder.buildSharding(dataSourceMap.keySet(), SHARDING_RULE_SWAPPER.swap(yamlShardingRuleConfiguration)), props);
             return new OrchestrationShardingDataSource(shardingDataSource, new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
         }
     }
