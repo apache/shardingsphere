@@ -23,16 +23,16 @@ import org.junit.runner.Description;
 /**
  * Integrate test watcher.
  */
-public final class IntegrateTestRule extends TestWatcher {
+public final class IntegrateTestWatcher extends TestWatcher {
     
     @Override
     protected void succeeded(final Description description) {
-        System.out.println(description);
         super.succeeded(description);
     }
     
     @Override
     protected void failed(final Throwable e, final Description description) {
+        System.out.println("[ERROR] " + description.getDisplayName());
         super.failed(e, description);
     }
 }

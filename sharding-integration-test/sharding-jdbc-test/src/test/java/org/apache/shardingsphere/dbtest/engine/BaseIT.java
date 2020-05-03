@@ -20,7 +20,7 @@ package org.apache.shardingsphere.dbtest.engine;
 import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.dbtest.engine.util.IntegrateTestRule;
+import org.apache.shardingsphere.dbtest.engine.util.IntegrateTestWatcher;
 import org.apache.shardingsphere.dbtest.env.EnvironmentPath;
 import org.apache.shardingsphere.dbtest.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.dbtest.env.datasource.DataSourceUtil;
@@ -52,7 +52,7 @@ public abstract class BaseIT {
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
     
     @Rule
-    public IntegrateTestRule integrateTestRule = new IntegrateTestRule();
+    public IntegrateTestWatcher integrateTestRule = new IntegrateTestWatcher();
     
     private final String ruleType;
     

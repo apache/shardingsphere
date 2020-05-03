@@ -106,12 +106,7 @@ public abstract class BaseDDLIT extends SingleIT {
             assertIfDropIndex(actualIndexes);
             return;
         }
-        try {
-            assertMetadata(actualColumns, actualIndexes, expected.findMetadata(tableName));
-        } catch (final AssertionError ex) {
-            System.out.println(String.format("[ERROR] SQL::%s, Parameter::[%s], Expect::%s", getOriginalSQL(), getAssertion().getParameters(), getAssertion().getExpectedDataFile()));
-            throw ex;
-        }
+        assertMetadata(actualColumns, actualIndexes, expected.findMetadata(tableName));
     }
     
     private void assertMetadata(final List<DataSetColumn> actualColumns, final List<DataSetIndex> actualIndexes, final DataSetMetadata expected) {
