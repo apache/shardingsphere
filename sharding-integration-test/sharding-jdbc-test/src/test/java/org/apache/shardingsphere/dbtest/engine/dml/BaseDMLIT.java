@@ -86,15 +86,20 @@ public abstract class BaseDMLIT extends SingleIT {
         try (FileReader reader = new FileReader(getExpectedDataFile())) {
             expected = (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);
         }
-        assertThat("Only support single table for DML.", expected.getMetadataList().size(), is(1));
-        assertThat(actualUpdateCount, is(expected.getUpdateCount()));
-        DataSetMetadata expectedDataSetMetadata = expected.getMetadataList().get(0);
-        for (String each : new InlineExpressionParser(expectedDataSetMetadata.getDataNodes()).splitAndEvaluate()) {
-            DataNode dataNode = new DataNode(each);
-            try (Connection connection = getDataSourceMap().get(dataNode.getDataSourceName()).getConnection();
-                 PreparedStatement preparedStatement = connection.prepareStatement(String.format("SELECT * FROM %s", dataNode.getTableName()))) {
-                assertDataSet(preparedStatement, expected.findRows(dataNode), expectedDataSetMetadata);
+        try {
+            assertThat("Only support single table for DML.", expected.getMetadataList().size(), is(1));
+            assertThat(actualUpdateCount, is(expected.getUpdateCount()));
+            DataSetMetadata expectedDataSetMetadata = expected.getMetadataList().get(0);
+            for (String each : new InlineExpressionParser(expectedDataSetMetadata.getDataNodes()).splitAndEvaluate()) {
+                DataNode dataNode = new DataNode(each);
+                try (Connection connection = getDataSourceMap().get(dataNode.getDataSourceName()).getConnection();
+                     PreparedStatement preparedStatement = connection.prepareStatement(String.format("SELECT * FROM %s", dataNode.getTableName()))) {
+                    assertDataSet(preparedStatement, expected.findRows(dataNode), expectedDataSetMetadata);
+                }
             }
+        } catch (final AssertionError ex) {
+            System.out.println(String.format("[ERROR] SQL::%s, Parameter::[%s], Expect::%s", getOriginalSQL(), getAssertion().getParameters(), getAssertion().getExpectedDataFile()));
+            throw ex;
         }
     }
     

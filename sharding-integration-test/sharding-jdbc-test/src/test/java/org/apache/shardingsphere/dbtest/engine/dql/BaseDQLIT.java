@@ -107,8 +107,13 @@ public abstract class BaseDQLIT extends SingleIT {
         for (DataSetMetadata each : expected.getMetadataList()) {
             expectedColumns.addAll(each.getColumns());
         }
-        assertMetaData(resultSet.getMetaData(), expectedColumns);
-        assertRows(resultSet, expected.getRows());
+        try {
+            assertMetaData(resultSet.getMetaData(), expectedColumns);
+            assertRows(resultSet, expected.getRows());
+        } catch (final AssertionError ex) {
+            System.out.println(String.format("[ERROR] SQL::%s, Parameter::[%s], Expect::%s", getOriginalSQL(), getAssertion().getParameters(), getAssertion().getExpectedDataFile()));
+            throw ex;
+        }
     }
     
     private void assertMetaData(final ResultSetMetaData actualMetaData, final List<DataSetColumn> expectedColumns) throws SQLException {

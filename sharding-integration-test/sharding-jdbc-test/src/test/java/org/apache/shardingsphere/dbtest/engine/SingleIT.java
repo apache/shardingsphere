@@ -42,20 +42,23 @@ public abstract class SingleIT extends BaseIT {
     
     private final String sql;
     
+    private final String originalSQL;
+    
     public SingleIT(final String path, final IntegrateTestCaseAssertion assertion, final String ruleType,
                     final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
         super(ruleType, databaseType);
         this.assertion = assertion;
         this.caseType = caseType;
-        this.sql = getSQL(sql, assertion, caseType);
+        this.originalSQL = sql;
+        this.sql = convert(sql);
         expectedDataFile = getExpectedDataFile(path, ruleType, databaseType, null != assertion ? assertion.getExpectedDataFile() : null);
     }
     
-    private String getSQL(final String sql, final IntegrateTestCaseAssertion assertion, final SQLCaseType sqlCaseType) throws ParseException {
-        return sqlCaseType == SQLCaseType.Literal ? getLiteralSQL(sql, assertion) : sql;
+    private String convert(final String sql) throws ParseException {
+        return caseType == SQLCaseType.Literal ? getLiteralSQL(sql) : sql;
     }
     
-    private String getLiteralSQL(final String sql, final IntegrateTestCaseAssertion assertion) throws ParseException {
+    private String getLiteralSQL(final String sql) throws ParseException {
         final List<Object> parameters = null != assertion ? assertion.getSQLValues().stream().map(SQLValue::toString).collect(Collectors.toList()) : null;
         if (null == parameters || parameters.isEmpty()) {
             return sql;
