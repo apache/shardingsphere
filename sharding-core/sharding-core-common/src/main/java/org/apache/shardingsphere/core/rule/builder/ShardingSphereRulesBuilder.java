@@ -41,12 +41,12 @@ public final class ShardingSphereRulesBuilder {
     /**
      * Build rules.
      *
-     * @param dataSourceNames data source names
      * @param ruleConfigurations rule configurations
+     * @param dataSourceNames data source names
      * @return rules
      */
     @SuppressWarnings("unchecked")
-    public static Collection<ShardingSphereRule> build(final Collection<String> dataSourceNames, final Collection<RuleConfiguration> ruleConfigurations) {
+    public static Collection<ShardingSphereRule> build(final Collection<RuleConfiguration> ruleConfigurations, final Collection<String> dataSourceNames) {
         return OrderedSPIRegistry.getRegisteredServices(
                 ruleConfigurations, ShardingSphereRuleBuilder.class).entrySet().stream().map(entry -> entry.getValue().build(entry.getKey(), dataSourceNames)).collect(Collectors.toList());
     }

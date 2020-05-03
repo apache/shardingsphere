@@ -78,7 +78,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     protected Collection<SQLRewriteUnit> createSQLRewriteUnits() throws IOException {
         YamlRootShardingConfiguration ruleConfiguration = createRuleConfiguration();
         Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(
-                ruleConfiguration.getDataSources().keySet(), ConfigurationBuilder.buildSharding(new ShardingRuleConfigurationYamlSwapper().swap(ruleConfiguration.getShardingRule())));
+                ConfigurationBuilder.buildSharding(new ShardingRuleConfigurationYamlSwapper().swap(ruleConfiguration.getShardingRule())), ruleConfiguration.getDataSources().keySet());
         SQLParserEngine sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType());
         ShardingSphereMetaData metaData = createShardingSphereMetaData();
         ConfigurationProperties properties = new ConfigurationProperties(ruleConfiguration.getProps());

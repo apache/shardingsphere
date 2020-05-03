@@ -198,7 +198,7 @@ public final class ShardingDataSourceTest {
     
     private ShardingDataSource createShardingDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException {
         return new ShardingDataSource(
-                dataSourceMap, ShardingSphereRulesBuilder.build(dataSourceMap.keySet(), ConfigurationBuilder.buildSharding(createShardingRuleConfig(dataSourceMap))), new Properties());
+                dataSourceMap, ShardingSphereRulesBuilder.build(ConfigurationBuilder.buildSharding(createShardingRuleConfig(dataSourceMap)), dataSourceMap.keySet()), new Properties());
     }
     
     private ShardingRuleConfiguration createShardingRuleConfig(final Map<String, DataSource> dataSourceMap) {

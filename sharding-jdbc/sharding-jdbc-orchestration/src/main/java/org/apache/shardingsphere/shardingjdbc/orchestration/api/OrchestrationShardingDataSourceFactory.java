@@ -53,7 +53,7 @@ public final class OrchestrationShardingDataSourceFactory {
             return createDataSource(orchestrationConfig);
         }
         ShardingDataSource shardingDataSource = new ShardingDataSource(
-                dataSourceMap, ShardingSphereRulesBuilder.build(dataSourceMap.keySet(), ConfigurationBuilder.buildSharding(shardingRuleConfig)), props);
+                dataSourceMap, ShardingSphereRulesBuilder.build(ConfigurationBuilder.buildSharding(shardingRuleConfig), dataSourceMap.keySet()), props);
         return new OrchestrationShardingDataSource(shardingDataSource, orchestrationConfig);
     }
     
