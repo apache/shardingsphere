@@ -56,8 +56,6 @@ public final class ShardingRule implements DataNodeRoutedRule {
         ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
     }
     
-    private static final String SHARDING_LOGIC_DATA_SOURCE = "shardingsphere_sharding_logic_ds";
-    
     private final ShardingRuleConfiguration ruleConfiguration;
     
     private final Collection<String> dataSourceNames;
@@ -351,24 +349,17 @@ public final class ShardingRule implements DataNodeRoutedRule {
     
     /**
      * Get logic and actual binding tables.
-     * 
+     *
      * @param dataSourceName data source name
      * @param logicTable logic table name
      * @param actualTable actual table name
      * @param availableLogicBindingTables available logic binding table names
      * @return logic and actual binding tables
      */
-    public Map<String, String> getLogicAndActualTablesFromBindingTable(final String dataSourceName, 
+    public Map<String, String> getLogicAndActualTablesFromBindingTable(final String dataSourceName,
                                                                        final String logicTable, final String actualTable, final Collection<String> availableLogicBindingTables) {
         Map<String, String> result = new LinkedHashMap<>();
         findBindingTableRule(logicTable).ifPresent(bindingTableRule -> result.putAll(bindingTableRule.getLogicAndActualTables(dataSourceName, logicTable, actualTable, availableLogicBindingTables)));
-        return result;
-    }
-    
-    @Override
-    public Map<String, Collection<String>> getDataSourceMapper() {
-        Map<String, Collection<String>> result = new HashMap<>();
-        result.put(SHARDING_LOGIC_DATA_SOURCE, getAllActualTables());
         return result;
     }
     
