@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.rule.builder.ConfigurationBuilder;
-import org.apache.shardingsphere.core.rule.builder.RuleBuilder;
+import org.apache.shardingsphere.core.rule.builder.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 
@@ -50,7 +50,7 @@ public final class ShardingDataSourceFactory {
      */
     @Deprecated
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Properties props) throws SQLException {
-        return new ShardingDataSource(dataSourceMap, RuleBuilder.build(dataSourceMap.keySet(), ConfigurationBuilder.buildSharding(shardingRuleConfig)), props);
+        return new ShardingDataSource(dataSourceMap, ShardingSphereRulesBuilder.build(dataSourceMap.keySet(), ConfigurationBuilder.buildSharding(shardingRuleConfig)), props);
     }
     
     /**
@@ -63,6 +63,6 @@ public final class ShardingDataSourceFactory {
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigurations, final Properties props) throws SQLException {
-        return new ShardingDataSource(dataSourceMap, RuleBuilder.build(dataSourceMap.keySet(), ruleConfigurations), props);
+        return new ShardingDataSource(dataSourceMap, ShardingSphereRulesBuilder.build(dataSourceMap.keySet(), ruleConfigurations), props);
     }
 }

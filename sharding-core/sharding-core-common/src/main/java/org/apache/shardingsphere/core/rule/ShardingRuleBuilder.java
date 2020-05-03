@@ -15,24 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.spring.datasource;
+package org.apache.shardingsphere.core.rule;
 
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.core.rule.builder.ConfigurationBuilder;
-import org.apache.shardingsphere.core.rule.builder.ShardingSphereRulesBuilder;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRuleBuilder;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
-import java.util.Map;
-import java.util.Properties;
+import java.util.Collection;
 
 /**
- * Sharding data source for spring namespace.
+ * Sharding rule builder.
  */
-public final class SpringShardingDataSource extends ShardingDataSource {
+public final class ShardingRuleBuilder implements ShardingSphereRuleBuilder<ShardingRule, ShardingRuleConfiguration> {
     
-    public SpringShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Properties props) throws SQLException {
-        super(dataSourceMap, ShardingSphereRulesBuilder.build(dataSourceMap.keySet(), ConfigurationBuilder.buildSharding(shardingRuleConfig)), props);
+    @Override
+    public ShardingRule build(final ShardingRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
+        return new ShardingRule(ruleConfiguration, dataSourceNames);
+    }
+    
+    @Override
+    public int getOrder() {
+        return 1;
+    }
+    
+    @Override
+    public Class<ShardingRuleConfiguration> getTypeClass() {
+        return ShardingRuleConfiguration.class;
     }
 }

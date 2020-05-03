@@ -23,7 +23,7 @@ import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfigura
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.core.rule.builder.ConfigurationBuilder;
-import org.apache.shardingsphere.core.rule.builder.RuleBuilder;
+import org.apache.shardingsphere.core.rule.builder.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.fixture.XAShardingTransactionManagerFixture;
@@ -197,7 +197,8 @@ public final class ShardingDataSourceTest {
     }
     
     private ShardingDataSource createShardingDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        return new ShardingDataSource(dataSourceMap, RuleBuilder.build(dataSourceMap.keySet(), ConfigurationBuilder.buildSharding(createShardingRuleConfig(dataSourceMap))), new Properties());
+        return new ShardingDataSource(
+                dataSourceMap, ShardingSphereRulesBuilder.build(dataSourceMap.keySet(), ConfigurationBuilder.buildSharding(createShardingRuleConfig(dataSourceMap))), new Properties());
     }
     
     private ShardingRuleConfiguration createShardingRuleConfig(final Map<String, DataSource> dataSourceMap) {

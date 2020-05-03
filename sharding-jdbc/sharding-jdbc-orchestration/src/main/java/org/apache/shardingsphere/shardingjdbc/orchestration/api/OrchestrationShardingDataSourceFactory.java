@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.rule.builder.ConfigurationBuilder;
-import org.apache.shardingsphere.core.rule.builder.RuleBuilder;
+import org.apache.shardingsphere.core.rule.builder.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
@@ -52,7 +52,8 @@ public final class OrchestrationShardingDataSourceFactory {
         if (null == shardingRuleConfig || shardingRuleConfig.getTableRuleConfigs().isEmpty()) {
             return createDataSource(orchestrationConfig);
         }
-        ShardingDataSource shardingDataSource = new ShardingDataSource(dataSourceMap, RuleBuilder.build(dataSourceMap.keySet(), ConfigurationBuilder.buildSharding(shardingRuleConfig)), props);
+        ShardingDataSource shardingDataSource = new ShardingDataSource(
+                dataSourceMap, ShardingSphereRulesBuilder.build(dataSourceMap.keySet(), ConfigurationBuilder.buildSharding(shardingRuleConfig)), props);
         return new OrchestrationShardingDataSource(shardingDataSource, orchestrationConfig);
     }
     

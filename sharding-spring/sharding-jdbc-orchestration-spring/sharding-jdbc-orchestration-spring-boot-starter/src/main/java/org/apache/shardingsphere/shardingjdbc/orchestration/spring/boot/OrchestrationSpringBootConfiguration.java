@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.builder.ConfigurationBuilder;
-import org.apache.shardingsphere.core.rule.builder.RuleBuilder;
+import org.apache.shardingsphere.core.rule.builder.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.core.strategy.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
@@ -129,7 +129,7 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @Bean
     @Conditional(LocalShardingRuleCondition.class)
     public DataSource shardingDataSourceByLocal(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
-        return new OrchestrationShardingDataSource(new ShardingDataSource(dataSourceMap, RuleBuilder.build(
+        return new OrchestrationShardingDataSource(new ShardingDataSource(dataSourceMap, ShardingSphereRulesBuilder.build(
                 dataSourceMap.keySet(), ConfigurationBuilder.buildSharding(new ShardingRuleConfigurationYamlSwapper().swap(shardingRule))), root.getProps()), orchestrationConfiguration);
     }
     

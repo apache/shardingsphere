@@ -19,23 +19,24 @@ package org.apache.shardingsphere.core.rule.builder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRuleBuilder;
 
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
- * Rule builder.
+ * ShardingSphere rule builder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class RuleBuilder {
+public final class ShardingSphereRulesBuilder {
+    
+    static {
+        ShardingSphereServiceLoader.register(ShardingSphereRuleBuilder.class);
+    }
     
     /**
      * Build rules.
@@ -44,17 +45,9 @@ public final class RuleBuilder {
      * @param ruleConfigurations rule configurations
      * @return rules
      */
+    @SuppressWarnings("unchecked")
     public static Collection<ShardingSphereRule> build(final Collection<String> dataSourceNames, final Collection<RuleConfiguration> ruleConfigurations) {
-        Collection<ShardingSphereRule> result = new LinkedList<>();
-        for (RuleConfiguration each : ruleConfigurations) {
-            if (each instanceof ShardingRuleConfiguration) {
-                result.add(new ShardingRule((ShardingRuleConfiguration) each, dataSourceNames));
-            } else if (each instanceof MasterSlaveRuleConfiguration) {
-                result.add(new MasterSlaveRule((MasterSlaveRuleConfiguration) each));
-            } else if (each instanceof EncryptRuleConfiguration) {
-                result.add(new EncryptRule((EncryptRuleConfiguration) each));
-            }
-        }
-        return result;
+        return OrderedSPIRegistry.getRegisteredServices(
+                ruleConfigurations, ShardingSphereRuleBuilder.class).entrySet().stream().map(entry -> entry.getValue().build(entry.getKey(), dataSourceNames)).collect(Collectors.toList());
     }
 }
