@@ -34,6 +34,7 @@ import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYa
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
+import java.util.Collection;
 import java.util.Properties;
 
 /**
@@ -42,6 +43,17 @@ import java.util.Properties;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class ConfigurationLogger {
+    
+    /**
+     * Log rule configuration.
+     *
+     * @param ruleConfigurations rule configurations
+     */
+    public static void log(final Collection<RuleConfiguration> ruleConfigurations) {
+        for (RuleConfiguration each : ruleConfigurations) {
+            log(each);
+        }
+    }
     
     /**
      * Log rule configuration.

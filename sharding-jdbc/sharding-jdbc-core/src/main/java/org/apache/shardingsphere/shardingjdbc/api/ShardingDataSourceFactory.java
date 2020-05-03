@@ -20,7 +20,8 @@ package org.apache.shardingsphere.shardingjdbc.api;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.core.rule.RuleBuilder;
+import org.apache.shardingsphere.core.rule.builder.ConfigurationBuilder;
+import org.apache.shardingsphere.core.rule.builder.RuleBuilder;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 
@@ -39,14 +40,17 @@ public final class ShardingDataSourceFactory {
     /**
      * Create sharding data source.
      *
+     * @deprecated use createDataSource(final Map dataSourceMap, final Collection ruleConfigurations, final Properties props) instead of it.
+     * 
      * @param dataSourceMap data source map
      * @param shardingRuleConfig rule configuration for databases and tables sharding
      * @param props properties for data source
      * @return sharding data source
      * @throws SQLException SQL exception
      */
+    @Deprecated
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Properties props) throws SQLException {
-        return new ShardingDataSource(dataSourceMap, RuleBuilder.build(dataSourceMap.keySet(), shardingRuleConfig), props);
+        return new ShardingDataSource(dataSourceMap, RuleBuilder.build(dataSourceMap.keySet(), ConfigurationBuilder.buildSharding(shardingRuleConfig)), props);
     }
     
     /**

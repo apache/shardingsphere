@@ -21,7 +21,8 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.log.ConfigurationLogger;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
-import org.apache.shardingsphere.core.rule.RuleBuilder;
+import org.apache.shardingsphere.core.rule.builder.ConfigurationBuilder;
+import org.apache.shardingsphere.core.rule.builder.RuleBuilder;
 import org.apache.shardingsphere.orchestration.core.common.event.ShardingRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
@@ -47,7 +48,7 @@ import java.util.Optional;
 public final class ShardingSchema extends LogicSchema {
     
     public ShardingSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final ShardingRuleConfiguration shardingRuleConfig) throws SQLException {
-        super(name, dataSources, RuleBuilder.build(dataSources.keySet(), shardingRuleConfig));
+        super(name, dataSources, RuleBuilder.build(dataSources.keySet(), ConfigurationBuilder.buildSharding(shardingRuleConfig)));
     }
     
     /**
@@ -58,8 +59,8 @@ public final class ShardingSchema extends LogicSchema {
     @Subscribe
     public synchronized void renew(final ShardingRuleChangedEvent shardingRuleChangedEvent) {
         if (getName().equals(shardingRuleChangedEvent.getShardingSchemaName())) {
-            ConfigurationLogger.log(shardingRuleChangedEvent.getShardingRuleConfiguration());
-            setRules(RuleBuilder.build(getDataSources().keySet(), shardingRuleChangedEvent.getShardingRuleConfiguration()));
+            ConfigurationLogger.log(shardingRuleChangedEvent.getRuleConfigurations());
+            setRules(RuleBuilder.build(getDataSources().keySet(), shardingRuleChangedEvent.getRuleConfigurations()));
         }
     }
     

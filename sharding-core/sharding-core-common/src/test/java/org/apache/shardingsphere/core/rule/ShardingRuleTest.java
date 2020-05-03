@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.rule;
 
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
@@ -26,10 +25,10 @@ import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingSt
 import org.apache.shardingsphere.core.shard.fixture.StandardShardingAlgorithmFixture;
 import org.apache.shardingsphere.core.strategy.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.core.strategy.algorithm.keygen.fixture.IncrementKeyGenerateAlgorithm;
+import org.apache.shardingsphere.core.strategy.algorithm.sharding.inline.InlineShardingAlgorithm;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.none.NoneShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.standard.StandardShardingStrategy;
-import org.apache.shardingsphere.core.strategy.algorithm.sharding.inline.InlineShardingAlgorithm;
 import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
@@ -313,8 +312,6 @@ public final class ShardingRuleTest {
         ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfiguration = createTableRuleConfiguration("LOGIC_TABLE", "ms_ds_${0..1}.table_${0..2}");
         shardingRuleConfiguration.getTableRuleConfigs().add(tableRuleConfiguration);
-        shardingRuleConfiguration.getMasterSlaveRuleConfigs().add(createMasterSlaveRuleConfiguration("ms_ds_0", "master_ds_0", "slave_ds_0"));
-        shardingRuleConfiguration.getMasterSlaveRuleConfigs().add(createMasterSlaveRuleConfiguration("ms_ds_1", "master_ds_1", "slave_ds_1"));
         new ShardingRule(shardingRuleConfiguration, null);
     }
     
@@ -367,23 +364,6 @@ public final class ShardingRuleTest {
     
     private Collection<String> createDataSourceNames() {
         return Arrays.asList("ds_0", "ds_1");
-    }
-    
-    private ShardingRule createMasterSlaveShardingRule() {
-        ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-        TableRuleConfiguration tableRuleConfiguration = createTableRuleConfiguration("LOGIC_TABLE", "ms_ds_${0..1}.table_${0..2}");
-        shardingRuleConfiguration.getTableRuleConfigs().add(tableRuleConfiguration);
-        shardingRuleConfiguration.getMasterSlaveRuleConfigs().add(createMasterSlaveRuleConfiguration("ms_ds_0", "master_ds_0", "slave_ds_0"));
-        shardingRuleConfiguration.getMasterSlaveRuleConfigs().add(createMasterSlaveRuleConfiguration("ms_ds_1", "master_ds_1", "slave_ds_1"));
-        return new ShardingRule(shardingRuleConfiguration, createMasterSlaveDataSourceNames());
-    }
-    
-    private MasterSlaveRuleConfiguration createMasterSlaveRuleConfiguration(final String name, final String masterDataSourceName, final String slaveDataSourceName) {
-        return new MasterSlaveRuleConfiguration(name, masterDataSourceName, Collections.singletonList(slaveDataSourceName));
-    }
-    
-    private Collection<String> createMasterSlaveDataSourceNames() {
-        return Arrays.asList("master_ds_0", "slave_ds_0", "master_ds_1", "slave_ds_1");
     }
     
     private TableRuleConfiguration createTableRuleConfigWithAllStrategies() {

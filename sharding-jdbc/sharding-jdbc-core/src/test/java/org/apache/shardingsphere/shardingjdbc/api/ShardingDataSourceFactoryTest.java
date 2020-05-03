@@ -30,6 +30,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -43,9 +44,8 @@ public final class ShardingDataSourceFactoryTest {
     
     @Test
     public void assertCreateDataSourceWithShardingRuleAndProperties() throws SQLException {
-        ShardingRuleConfiguration shardingRuleConfig = createShardingRuleConfig();
         Properties props = new Properties();
-        ShardingDataSource dataSource = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(getDataSourceMap(), shardingRuleConfig, props);
+        ShardingDataSource dataSource = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(getDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()), props);
         assertThat(dataSource.getRuntimeContext().getProperties().getProps(), is(props));
     }
     
@@ -73,7 +73,7 @@ public final class ShardingDataSourceFactoryTest {
         return result;
     }
     
-    private ShardingRuleConfiguration createShardingRuleConfig() {
+    private ShardingRuleConfiguration createShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getTableRuleConfigs().add(new TableRuleConfiguration("logicTable", "ds.table_${0..2}"));
         return result;

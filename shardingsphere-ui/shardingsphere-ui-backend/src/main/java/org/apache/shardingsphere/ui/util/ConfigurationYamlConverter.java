@@ -37,8 +37,11 @@ import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYa
 import org.apache.shardingsphere.orchestration.core.configuration.DataSourceConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
@@ -47,7 +50,7 @@ import java.util.Properties;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ConfigurationYamlConverter {
-
+    
     /**
      * Load data source configurations.
      *
@@ -60,18 +63,25 @@ public final class ConfigurationYamlConverter {
         Preconditions.checkState(null != result && !result.isEmpty(), "No available data sources to load for orchestration.");
         return Maps.transformValues(result, new DataSourceConfigurationYamlSwapper()::swap);
     }
-
+    
     /**
-     * Load sharding rule configuration.
+     * Load rule configurations.
      *
      * @param data data
-     * @return sharding rule configuration
+     * @return rule configurations
      */
-    public static ShardingRuleConfiguration loadShardingRuleConfiguration(final String data) {
-        return new ShardingRuleConfigurationYamlSwapper().swap(
+    public static Collection<RuleConfiguration> loadRuleConfigurations(final String data) {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfigurationYamlSwapper().swap(
                 YamlEngine.unmarshal(data, YamlShardingRuleConfiguration.class, new YamlRootShardingConfigurationConstructor()));
+        Collection<RuleConfiguration> result = new LinkedList<>();
+        result.add(shardingRuleConfig);
+        result.addAll(shardingRuleConfig.getMasterSlaveRuleConfigs());
+        if (null != shardingRuleConfig.getEncryptRuleConfig() && !shardingRuleConfig.getEncryptRuleConfig().getTables().isEmpty()) {
+            result.add(shardingRuleConfig.getEncryptRuleConfig());
+        }
+        return result;
     }
-
+    
     /**
      * Load master-slave rule configuration.
      *
@@ -81,7 +91,7 @@ public final class ConfigurationYamlConverter {
     public static MasterSlaveRuleConfiguration loadMasterSlaveRuleConfiguration(final String data) {
         return new MasterSlaveRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(data, YamlMasterSlaveRuleConfiguration.class));
     }
-
+    
     /**
      * Load authentication.
      *
