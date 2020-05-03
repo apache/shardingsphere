@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.ui.servcie.impl;
 
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.orchestration.core.registrycenter.RegistryCenterNodeStatus;
 import org.apache.shardingsphere.ui.common.dto.InstanceDTO;
 import org.apache.shardingsphere.ui.common.dto.SlaveDataSourceDTO;
@@ -24,14 +25,14 @@ import org.apache.shardingsphere.ui.servcie.OrchestrationService;
 import org.apache.shardingsphere.ui.servcie.RegistryCenterService;
 import org.apache.shardingsphere.ui.servcie.ShardingSchemaService;
 import org.apache.shardingsphere.ui.util.ConfigurationYamlConverter;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of orchestration operation service.
@@ -90,8 +91,9 @@ public final class OrchestrationServiceImpl implements OrchestrationService {
     }
     
     private void handleShardingRuleConfiguration(final Collection<SlaveDataSourceDTO> slaveDataSourceDTOS, final String configData, final String schemaName) {
-        ShardingRuleConfiguration shardingRuleConfiguration = ConfigurationYamlConverter.loadShardingRuleConfiguration(configData);
-        Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigs = shardingRuleConfiguration.getMasterSlaveRuleConfigs();
+        Collection<RuleConfiguration> configurations = ConfigurationYamlConverter.loadRuleConfigurations(configData);
+        Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigs = configurations.stream().filter(
+            config -> config instanceof MasterSlaveRuleConfiguration).map(config -> (MasterSlaveRuleConfiguration) config).collect(Collectors.toList());
         for (MasterSlaveRuleConfiguration masterSlaveRuleConfiguration : masterSlaveRuleConfigs) {
             addSlaveDataSource(slaveDataSourceDTOS, masterSlaveRuleConfiguration, schemaName);
         }
