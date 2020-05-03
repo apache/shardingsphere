@@ -15,15 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rule.builder;
+package org.apache.shardingsphere.underlying.common.rule;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRuleBuilder;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
