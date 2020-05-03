@@ -23,7 +23,7 @@ import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfigura
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.masterslave.MasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.spi.type.TypedSPIRegistry;
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
+import org.apache.shardingsphere.underlying.common.rule.DataSourceRoutedRule;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  * Databases and tables master-slave rule.
  */
 @Getter
-public final class MasterSlaveRule implements ShardingSphereRule {
+public final class MasterSlaveRule implements DataSourceRoutedRule {
     
     static {
         ShardingSphereServiceLoader.register(MasterSlaveLoadBalanceAlgorithm.class);

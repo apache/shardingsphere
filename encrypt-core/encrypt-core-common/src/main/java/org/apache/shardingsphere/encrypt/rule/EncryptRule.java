@@ -273,9 +273,4 @@ public final class EncryptRule implements ShardingSphereRule {
     public Collection<String> getEncryptTableNames() {
         return tables.keySet();
     }
-    
-    @Override
-    public Map<String, Collection<String>> getDataSourceMapper() {
-        return Collections.emptyMap();
-    }
 }

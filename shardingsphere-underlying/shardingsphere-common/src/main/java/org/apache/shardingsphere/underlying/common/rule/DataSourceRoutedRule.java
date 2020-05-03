@@ -17,17 +17,18 @@
 
 package org.apache.shardingsphere.underlying.common.rule;
 
-import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
+import java.util.Collection;
+import java.util.Map;
 
 /**
- * ShardingSphere rule.
+ * Data source routed rule.
  */
-public interface ShardingSphereRule {
+public interface DataSourceRoutedRule extends ShardingSphereRule {
     
     /**
-     * Get rule configuration.
-     * 
-     * @return rule configuration
+     * Get data source mapper.
+     *
+     * @return data source mapper
      */
-    RuleConfiguration getRuleConfiguration();
+    Map<String, Collection<String>> getDataSourceMapper();
 }

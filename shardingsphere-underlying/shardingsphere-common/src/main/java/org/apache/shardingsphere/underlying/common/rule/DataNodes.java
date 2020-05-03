@@ -50,13 +50,12 @@ public final class DataNodes {
         }
         Collection<DataNode> result = new LinkedList<>(dataNodeRoutedRule.get().getAllDataNodes().get(tableName));
         for (ShardingSphereRule each : rules) {
-            if (each instanceof DataNodeRoutedRule) {
-                continue;
-            }
-            for (Entry<String, Collection<String>> entry : each.getDataSourceMapper().entrySet()) {
-                Collection<DataNode> dataNodes = find(result, entry.getKey());
-                result.removeAll(dataNodes);
-                result.addAll(regenerate(dataNodes, entry.getValue()));
+            if (each instanceof DataSourceRoutedRule) {
+                for (Entry<String, Collection<String>> entry : ((DataSourceRoutedRule) each).getDataSourceMapper().entrySet()) {
+                    Collection<DataNode> dataNodes = find(result, entry.getKey());
+                    result.removeAll(dataNodes);
+                    result.addAll(regenerate(dataNodes, entry.getValue()));
+                }
             }
         }
         return result;
