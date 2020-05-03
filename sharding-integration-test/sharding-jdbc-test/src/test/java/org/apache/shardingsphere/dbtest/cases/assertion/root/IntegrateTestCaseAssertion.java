@@ -69,6 +69,6 @@ public abstract class IntegrateTestCaseAssertion {
     
     @Override
     public final String toString() {
-        return expectedDataFile;
+        return null != parameters ? String.format("%s -> %s", parameters, expectedDataFile) : String.format("%s", expectedDataFile);
     }
 }
