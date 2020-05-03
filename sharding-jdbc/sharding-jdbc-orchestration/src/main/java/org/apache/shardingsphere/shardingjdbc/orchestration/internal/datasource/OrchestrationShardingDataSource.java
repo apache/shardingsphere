@@ -104,7 +104,7 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
     @SneakyThrows
     public final synchronized void renew(final ShardingRuleChangedEvent shardingRuleChangedEvent) {
         dataSource = new ShardingDataSource(dataSource.getDataSourceMap(), 
-                RuleBuilder.buildSharding(dataSource.getDataSourceMap().keySet(), shardingRuleChangedEvent.getShardingRuleConfiguration()), dataSource.getRuntimeContext().getProperties().getProps());
+                RuleBuilder.build(dataSource.getDataSourceMap().keySet(), shardingRuleChangedEvent.getRuleConfigurations()), dataSource.getRuntimeContext().getProperties().getProps());
     }
     
     /**

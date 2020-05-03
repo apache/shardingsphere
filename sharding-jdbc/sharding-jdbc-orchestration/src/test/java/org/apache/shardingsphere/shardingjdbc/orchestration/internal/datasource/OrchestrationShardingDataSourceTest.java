@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -112,14 +113,13 @@ public final class OrchestrationShardingDataSourceTest {
     
     @Test
     public void assertRenewRule() {
-        shardingDataSource.renew(new ShardingRuleChangedEvent(DefaultSchema.LOGIC_NAME, getShardingRuleConfig()));
+        shardingDataSource.renew(new ShardingRuleChangedEvent(DefaultSchema.LOGIC_NAME, Arrays.asList(getShardingRuleConfiguration(), getMasterSlaveRuleConfiguration())));
         assertThat(((ShardingRule) shardingDataSource.getDataSource().getRuntimeContext().getRules().iterator().next()).getTableRules().size(), is(1));
     }
     
-    private ShardingRuleConfiguration getShardingRuleConfig() {
+    private ShardingRuleConfiguration getShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getTableRuleConfigs().add(new TableRuleConfiguration("logic_table", "ds_ms.table_${0..1}"));
-        result.getMasterSlaveRuleConfigs().add(getMasterSlaveRuleConfiguration());
         return result;
     }
     

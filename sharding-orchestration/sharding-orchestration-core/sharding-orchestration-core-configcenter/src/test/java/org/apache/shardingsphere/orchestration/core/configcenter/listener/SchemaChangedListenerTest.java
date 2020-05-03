@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.orchestration.core.configcenter.listener;
 
-import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.ChangedType;
@@ -33,6 +33,7 @@ import org.apache.shardingsphere.orchestration.core.common.event.SchemaDeletedEv
 import org.apache.shardingsphere.orchestration.core.common.event.ShardingOrchestrationEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.ShardingRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,6 +41,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map.Entry;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -97,7 +99,9 @@ public final class SchemaChangedListenerTest {
         ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(ShardingRuleChangedEvent.class));
         assertThat(((ShardingRuleChangedEvent) actual).getShardingSchemaName(), is("sharding_db"));
-        assertThat(((ShardingRuleChangedEvent) actual).getShardingRuleConfiguration().getTableRuleConfigs().size(), is(1));
+        Collection<RuleConfiguration> ruleConfigurations = ((ShardingRuleChangedEvent) actual).getRuleConfigurations();
+        assertThat(ruleConfigurations.size(), is(1));
+        assertThat(((ShardingRuleConfiguration) ruleConfigurations.iterator().next()).getTableRuleConfigs().size(), is(1));
     }
     
     @Test

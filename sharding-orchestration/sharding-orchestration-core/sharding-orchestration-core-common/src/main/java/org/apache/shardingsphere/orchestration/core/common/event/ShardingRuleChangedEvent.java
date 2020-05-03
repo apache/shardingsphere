@@ -19,7 +19,9 @@ package org.apache.shardingsphere.orchestration.core.common.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
+
+import java.util.Collection;
 
 /**
  * Sharding rule changed event.
@@ -30,5 +32,5 @@ public final class ShardingRuleChangedEvent implements ShardingOrchestrationEven
     
     private final String shardingSchemaName;
     
-    private final ShardingRuleConfiguration shardingRuleConfiguration;
+    private final Collection<RuleConfiguration> ruleConfigurations;
 }

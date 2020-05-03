@@ -58,8 +58,8 @@ public final class ShardingSchema extends LogicSchema {
     @Subscribe
     public synchronized void renew(final ShardingRuleChangedEvent shardingRuleChangedEvent) {
         if (getName().equals(shardingRuleChangedEvent.getShardingSchemaName())) {
-            ConfigurationLogger.log(shardingRuleChangedEvent.getShardingRuleConfiguration());
-            setRules(RuleBuilder.buildSharding(getDataSources().keySet(), shardingRuleChangedEvent.getShardingRuleConfiguration()));
+            ConfigurationLogger.log(shardingRuleChangedEvent.getRuleConfigurations());
+            setRules(RuleBuilder.build(getDataSources().keySet(), shardingRuleChangedEvent.getRuleConfigurations()));
         }
     }
     
