@@ -152,10 +152,10 @@ public final class IntegrateTestParameters {
             disabledPlan.add(String.format("%s(%s)", entry.getKey().getName(), entry.getValue().size() * factor));
         }
         System.out.println("[INFO] ======= Test Plan =======");
-        String summary = String.format("[%s] Total: %s, Active: %s, Disabled: %s \n",
+        String summary = String.format("[%s] Total: %s, Active: %s, Disabled: %s %s",
             disabledPlan.isEmpty() ? "INFO" : "WARN",
             (availableCases.values().stream().mapToLong(Collection::size).sum() + disabledCases.values().stream().mapToLong(Collection::size).sum()) * factor,
-            activePlan.isEmpty() ? 0 : Joiner.on(", ").join(activePlan), disabledPlan.isEmpty() ? 0 : Joiner.on(", ").join(disabledPlan));
+            activePlan.isEmpty() ? 0 : Joiner.on(", ").join(activePlan), disabledPlan.isEmpty() ? 0 : Joiner.on(", ").join(disabledPlan), System.lineSeparator());
         System.out.println(summary);
     }
     

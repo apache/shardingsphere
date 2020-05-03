@@ -59,7 +59,7 @@ public abstract class SingleIT extends BaseIT {
     }
     
     private String getLiteralSQL(final String sql) throws ParseException {
-        final List<Object> parameters = null != assertion ? assertion.getSQLValues().stream().map(SQLValue::toString).collect(Collectors.toList()) : null;
+        List<Object> parameters = null != assertion ? assertion.getSQLValues().stream().map(SQLValue::toString).collect(Collectors.toList()) : null;
         if (null == parameters || parameters.isEmpty()) {
             return sql;
         }
