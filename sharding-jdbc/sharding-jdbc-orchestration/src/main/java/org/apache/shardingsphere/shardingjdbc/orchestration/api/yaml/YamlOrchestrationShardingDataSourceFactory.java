@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.core.rule.builder.ConfigurationBuilder;
 import org.apache.shardingsphere.core.rule.builder.RuleBuilder;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
@@ -106,7 +107,7 @@ public final class YamlOrchestrationShardingDataSourceFactory {
             return new OrchestrationShardingDataSource(new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
         } else {
             ShardingDataSource shardingDataSource = new ShardingDataSource(
-                    dataSourceMap, RuleBuilder.buildSharding(dataSourceMap.keySet(), SHARDING_RULE_SWAPPER.swap(yamlShardingRuleConfiguration)), props);
+                    dataSourceMap, RuleBuilder.build(dataSourceMap.keySet(), ConfigurationBuilder.buildSharding(SHARDING_RULE_SWAPPER.swap(yamlShardingRuleConfiguration))), props);
             return new OrchestrationShardingDataSource(shardingDataSource, new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
         }
     }
