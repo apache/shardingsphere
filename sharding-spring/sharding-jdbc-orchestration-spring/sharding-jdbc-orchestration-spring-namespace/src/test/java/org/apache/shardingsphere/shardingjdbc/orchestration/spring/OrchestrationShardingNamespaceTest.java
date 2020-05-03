@@ -28,7 +28,7 @@ import org.apache.shardingsphere.shardingjdbc.orchestration.spring.util.EmbedTes
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.util.FieldValueUtil;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.underlying.common.rule.DataNode;
+import org.apache.shardingsphere.underlying.common.datanode.DataNode;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;

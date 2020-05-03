@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.rule;
+package org.apache.shardingsphere.underlying.common.datanode;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

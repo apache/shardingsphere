@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
-import org.apache.shardingsphere.underlying.common.rule.DataNodes;
+import org.apache.shardingsphere.underlying.common.datanode.DataNodes;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

@@ -30,8 +30,8 @@ import org.apache.shardingsphere.core.strategy.route.none.NoneShardingStrategy;
 import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
-import org.apache.shardingsphere.underlying.common.rule.DataNode;
-import org.apache.shardingsphere.underlying.common.rule.DataNodeUtil;
+import org.apache.shardingsphere.underlying.common.datanode.DataNode;
+import org.apache.shardingsphere.underlying.common.datanode.DataNodeUtil;
 
 import java.util.Collection;
 import java.util.Collections;

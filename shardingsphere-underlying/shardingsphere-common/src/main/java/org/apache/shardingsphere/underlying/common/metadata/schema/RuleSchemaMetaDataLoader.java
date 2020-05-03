@@ -29,7 +29,7 @@ import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleMetaDataDecorator;
 import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
-import org.apache.shardingsphere.underlying.common.rule.DataNodes;
+import org.apache.shardingsphere.underlying.common.datanode.DataNodes;
 import org.apache.shardingsphere.underlying.common.rule.DataNodeRoutedRule;
 
 import javax.sql.DataSource;

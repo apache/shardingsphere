@@ -15,9 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.rule;
+package org.apache.shardingsphere.underlying.common.datanode;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.underlying.common.rule.DataNodeRoutedRule;
+import org.apache.shardingsphere.underlying.common.rule.DataSourceRoutedRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 
 import java.util.Collection;
 import java.util.Collections;
