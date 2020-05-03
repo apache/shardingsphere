@@ -18,21 +18,12 @@
 package org.apache.shardingsphere.underlying.merge.result.impl.fixture;
 
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 
 /**
  * Rule for test.
  */
-public final class TestRule implements BaseRule {
-    
-    @Override
-    public Map<String, Collection<String>> getDataSourceMapper() {
-        return Collections.emptyMap();
-    }
+public final class TestRule implements ShardingSphereRule {
     
     @Override
     public RuleConfiguration getRuleConfiguration() {

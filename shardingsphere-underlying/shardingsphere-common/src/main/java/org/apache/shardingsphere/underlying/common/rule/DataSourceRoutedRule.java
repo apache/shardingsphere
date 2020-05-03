@@ -15,14 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.executor.callback;
+package org.apache.shardingsphere.underlying.common.rule;
 
-import org.apache.shardingsphere.spi.order.OrderedSPI;
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutorCallback;
+import java.util.Collection;
+import java.util.Map;
 
 /**
- * Rule based SQL executor callback for execute update.
+ * Data source routed rule.
  */
-public interface RuleExecuteUpdateExecutorCallback extends SQLExecutorCallback<Integer>, OrderedSPI<ShardingSphereRule> {
+public interface DataSourceRoutedRule extends ShardingSphereRule {
+    
+    /**
+     * Get data source mapper.
+     *
+     * @return data source mapper
+     */
+    Map<String, Collection<String>> getDataSourceMapper();
 }

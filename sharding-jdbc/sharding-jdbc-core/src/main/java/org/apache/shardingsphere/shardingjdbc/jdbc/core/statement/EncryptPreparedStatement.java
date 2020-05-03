@@ -30,7 +30,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.metadata.Shard
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionContextBuilder;
 import org.apache.shardingsphere.underlying.executor.sql.context.SQLUnit;
@@ -173,7 +173,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     
     @SuppressWarnings("unchecked")
     private SQLUnit getSQLUnit(final String sql) {
-        Collection<BaseRule> rules = runtimeContext.getRules();
+        Collection<ShardingSphereRule> rules = runtimeContext.getRules();
         RouteContext routeContext = new DataNodeRouter(runtimeContext.getMetaData(), runtimeContext.getProperties(), rules).route(sqlStatement, sql, getParameters());
         sqlStatementContext = routeContext.getSqlStatementContext();
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(

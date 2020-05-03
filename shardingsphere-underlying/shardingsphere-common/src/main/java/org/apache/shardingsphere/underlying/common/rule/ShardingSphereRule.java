@@ -19,20 +19,10 @@ package org.apache.shardingsphere.underlying.common.rule;
 
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 
-import java.util.Collection;
-import java.util.Map;
-
 /**
- * Base rule.
+ * ShardingSphere rule.
  */
-public interface BaseRule {
-    
-    /**
-     * Get data source mapper.
-     * 
-     * @return data source mapper
-     */
-    Map<String, Collection<String>> getDataSourceMapper();
+public interface ShardingSphereRule {
     
     /**
      * Get rule configuration.

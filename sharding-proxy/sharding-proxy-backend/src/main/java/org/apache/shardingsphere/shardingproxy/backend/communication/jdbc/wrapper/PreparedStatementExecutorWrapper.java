@@ -34,7 +34,7 @@ import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionContextBuilder;
 import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionUnit;
@@ -87,7 +87,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     }
     
     private ExecutionContext doShardingRoute(final String sql) {
-        Collection<BaseRule> rules = logicSchema.getRules();
+        Collection<ShardingSphereRule> rules = logicSchema.getRules();
         SQLStatement sqlStatement = logicSchema.getSqlParserEngine().parse(sql, true);
         RouteContext routeContext = new DataNodeRouter(logicSchema.getMetaData(), SHARDING_PROXY_CONTEXT.getProperties(), rules).route(sqlStatement, sql, parameters);
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(logicSchema.getMetaData().getSchema().getConfiguredSchemaMetaData(),

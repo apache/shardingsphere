@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.decorator.RouteDecorator;
@@ -49,11 +49,11 @@ public final class DataNodeRouter {
     
     private final ConfigurationProperties properties;
     
-    private final Map<BaseRule, RouteDecorator> decorators;
+    private final Map<ShardingSphereRule, RouteDecorator> decorators;
     
     private SPIRoutingHook routingHook;
     
-    public DataNodeRouter(final ShardingSphereMetaData metaData, final ConfigurationProperties properties, final Collection<BaseRule> rules) {
+    public DataNodeRouter(final ShardingSphereMetaData metaData, final ConfigurationProperties properties, final Collection<ShardingSphereRule> rules) {
         this.metaData = metaData;
         this.properties = properties;
         decorators = OrderedSPIRegistry.getRegisteredServices(rules, RouteDecorator.class);
@@ -85,7 +85,7 @@ public final class DataNodeRouter {
     @SuppressWarnings("unchecked")
     private RouteContext executeRoute(final SQLStatement sqlStatement, final String sql, final List<Object> parameters) {
         RouteContext result = createRouteContext(sqlStatement, sql, parameters);
-        for (Entry<BaseRule, RouteDecorator> entry : decorators.entrySet()) {
+        for (Entry<ShardingSphereRule, RouteDecorator> entry : decorators.entrySet()) {
             result = entry.getValue().decorate(result, metaData, entry.getKey(), properties);
         }
         return result;

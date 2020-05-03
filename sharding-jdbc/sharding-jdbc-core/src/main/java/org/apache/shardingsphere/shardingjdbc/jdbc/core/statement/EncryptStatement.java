@@ -27,7 +27,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.EncryptResultS
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationStatement;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionContextBuilder;
 import org.apache.shardingsphere.underlying.executor.sql.log.SQLLogger;
@@ -93,7 +93,7 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     }
     
     private String getRewriteSQL(final String sql) {
-        Collection<BaseRule> rules = runtimeContext.getRules();
+        Collection<ShardingSphereRule> rules = runtimeContext.getRules();
         RouteContext routeContext = new DataNodeRouter(runtimeContext.getMetaData(), runtimeContext.getProperties(),
                 rules).route(runtimeContext.getSqlParserEngine().parse(sql, false), sql, Collections.emptyList());
         sqlStatementContext = routeContext.getSqlStatementContext();

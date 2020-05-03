@@ -38,7 +38,7 @@ import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaDa
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -57,13 +57,13 @@ public abstract class LogicSchema {
     private final SQLParserEngine sqlParserEngine;
     
     @Setter
-    private Collection<BaseRule> rules;
+    private Collection<ShardingSphereRule> rules;
     
     private JDBCBackendDataSource backendDataSource;
     
     private ShardingSphereMetaData metaData;
     
-    public LogicSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final Collection<BaseRule> rules) throws SQLException {
+    public LogicSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final Collection<ShardingSphereRule> rules) throws SQLException {
         this.name = name;
         this.rules = rules;
         sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(LogicSchemas.getInstance().getDatabaseType()));
@@ -72,7 +72,7 @@ public abstract class LogicSchema {
         ShardingOrchestrationEventBus.getInstance().register(this);
     }
     
-    private ShardingSphereMetaData loadOrCreateMetaData(final String name, final Collection<BaseRule> rules) throws SQLException {
+    private ShardingSphereMetaData loadOrCreateMetaData(final String name, final Collection<ShardingSphereRule> rules) throws SQLException {
         boolean isOverwrite = null != ShardingOrchestrationFacade.getInstance() && ShardingOrchestrationFacade.getInstance().isOverwrite();
         DatabaseType databaseType = LogicSchemas.getInstance().getDatabaseType();
         DataSourceMetas dataSourceMetas = new DataSourceMetas(databaseType, getDatabaseAccessConfigurationMap());
@@ -89,7 +89,7 @@ public abstract class LogicSchema {
         return new ShardingSphereMetaData(dataSourceMetas, ruleSchemaMetaData);
     }
     
-    private RuleSchemaMetaData loadRuleSchemaMetaData(final DatabaseType databaseType, final Collection<BaseRule> rules) throws SQLException {
+    private RuleSchemaMetaData loadRuleSchemaMetaData(final DatabaseType databaseType, final Collection<ShardingSphereRule> rules) throws SQLException {
         return new RuleSchemaMetaDataLoader(rules).load(databaseType, getBackendDataSource().getDataSources(), ShardingProxyContext.getInstance().getProperties());
     }
     

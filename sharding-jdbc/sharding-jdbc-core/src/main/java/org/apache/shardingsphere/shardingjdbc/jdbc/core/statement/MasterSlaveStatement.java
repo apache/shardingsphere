@@ -28,7 +28,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveCo
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionConstant;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionContextBuilder;
 import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionUnit;
@@ -89,7 +89,7 @@ public final class MasterSlaveStatement extends AbstractStatementAdapter {
         }
         clearPrevious();
         RuntimeContext runtimeContext = connection.getRuntimeContext();
-        Collection<BaseRule> rules = runtimeContext.getRules();
+        Collection<ShardingSphereRule> rules = runtimeContext.getRules();
         RouteContext routeContext = new DataNodeRouter(runtimeContext.getMetaData(), runtimeContext.getProperties(),
                 rules).route(runtimeContext.getSqlParserEngine().parse(sql, false), sql, Collections.emptyList());
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(

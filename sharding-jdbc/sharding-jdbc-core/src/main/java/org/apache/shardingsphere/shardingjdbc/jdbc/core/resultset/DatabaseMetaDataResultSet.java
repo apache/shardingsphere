@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import lombok.EqualsAndHashCode;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedDatabaseMetaDataResultSet;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
-import org.apache.shardingsphere.underlying.common.rule.TablesAggregationRule;
+import org.apache.shardingsphere.underlying.common.rule.DataNodeRoutedRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -51,7 +51,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     
     private final int concurrency;
     
-    private final Collection<BaseRule> rules;
+    private final Collection<ShardingSphereRule> rules;
     
     private final ResultSetMetaData resultSetMetaData;
     
@@ -63,7 +63,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     
     private DatabaseMetaDataObject currentDatabaseMetaDataObject;
     
-    public DatabaseMetaDataResultSet(final ResultSet resultSet, final Collection<BaseRule> rules) throws SQLException {
+    public DatabaseMetaDataResultSet(final ResultSet resultSet, final Collection<ShardingSphereRule> rules) throws SQLException {
         this.type = resultSet.getType();
         this.concurrency = resultSet.getConcurrency();
         this.rules = rules;
@@ -97,11 +97,11 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     
     private DatabaseMetaDataObject generateDatabaseMetaDataObject(final int tableNameColumnIndex, final int indexNameColumnIndex, final ResultSet resultSet) throws SQLException {
         DatabaseMetaDataObject result = new DatabaseMetaDataObject(resultSetMetaData.getColumnCount());
-        Optional<BaseRule> tablesAggregationRule = findTablesAggregationRule();
+        Optional<DataNodeRoutedRule> dataNodeRoutedRule = findDataNodeRoutedRule();
         for (int i = 1; i <= columnLabelIndexMap.size(); i++) {
             if (tableNameColumnIndex == i) {
                 String tableName = resultSet.getString(i);
-                Optional<String> logicTableName = tablesAggregationRule.isPresent() ? ((TablesAggregationRule) tablesAggregationRule.get()).findLogicTableByActualTable(tableName) : Optional.empty();
+                Optional<String> logicTableName = dataNodeRoutedRule.isPresent() ? dataNodeRoutedRule.get().findLogicTableByActualTable(tableName) : Optional.empty();
                 result.addObject(logicTableName.orElse(tableName));
             } else if (indexNameColumnIndex == i) {
                 String tableName = resultSet.getString(tableNameColumnIndex);
@@ -114,8 +114,8 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
         return result;
     }
     
-    private Optional<BaseRule> findTablesAggregationRule() {
-        return rules.stream().filter(each -> each instanceof TablesAggregationRule).findFirst();
+    private Optional<DataNodeRoutedRule> findDataNodeRoutedRule() {
+        return rules.stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
     }
     
     @Override

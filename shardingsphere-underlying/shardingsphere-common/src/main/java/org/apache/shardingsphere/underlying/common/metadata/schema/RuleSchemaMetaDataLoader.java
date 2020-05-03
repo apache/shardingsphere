@@ -28,9 +28,9 @@ import org.apache.shardingsphere.underlying.common.config.properties.Configurati
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleMetaDataDecorator;
 import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleMetaDataLoader;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 import org.apache.shardingsphere.underlying.common.rule.DataNodes;
-import org.apache.shardingsphere.underlying.common.rule.TablesAggregationRule;
+import org.apache.shardingsphere.underlying.common.rule.DataNodeRoutedRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -52,7 +52,7 @@ public final class RuleSchemaMetaDataLoader {
         ShardingSphereServiceLoader.register(RuleMetaDataDecorator.class);
     }
     
-    private final Collection<BaseRule> rules;
+    private final Collection<ShardingSphereRule> rules;
     
     /**
      * Load rule schema meta data.
@@ -67,11 +67,11 @@ public final class RuleSchemaMetaDataLoader {
     public RuleSchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final ConfigurationProperties properties) throws SQLException {
         Collection<String> excludedTableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         SchemaMetaData configuredSchemaMetaData = new SchemaMetaData(new HashMap<>());
-        for (Entry<BaseRule, RuleMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataLoader.class).entrySet()) {
+        for (Entry<ShardingSphereRule, RuleMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataLoader.class).entrySet()) {
             SchemaMetaData schemaMetaData = entry.getValue().load(databaseType, dataSourceMap, new DataNodes(rules), entry.getKey(), properties, excludedTableNames);
             excludedTableNames.addAll(schemaMetaData.getAllTableNames());
-            if (entry.getKey() instanceof TablesAggregationRule) {
-                excludedTableNames.addAll(((TablesAggregationRule) entry.getKey()).getAllActualTables());
+            if (entry.getKey() instanceof DataNodeRoutedRule) {
+                excludedTableNames.addAll(((DataNodeRoutedRule) entry.getKey()).getAllActualTables());
             }
             configuredSchemaMetaData.merge(schemaMetaData);
         }
@@ -116,7 +116,7 @@ public final class RuleSchemaMetaDataLoader {
     @SuppressWarnings("unchecked")
     public Optional<TableMetaData> load(final DatabaseType databaseType, 
                                         final Map<String, DataSource> dataSourceMap, final String tableName, final ConfigurationProperties properties) throws SQLException {
-        for (Entry<BaseRule, RuleMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataLoader.class).entrySet()) {
+        for (Entry<ShardingSphereRule, RuleMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataLoader.class).entrySet()) {
             Optional<TableMetaData> result = entry.getValue().load(databaseType, dataSourceMap, new DataNodes(rules), tableName, entry.getKey(), properties);
             if (result.isPresent()) {
                 return Optional.of(decorate(tableName, result.get()));
@@ -145,9 +145,9 @@ public final class RuleSchemaMetaDataLoader {
     @SuppressWarnings("unchecked")
     private SchemaMetaData decorate(final SchemaMetaData schemaMetaData) {
         Map<String, TableMetaData> result = new HashMap<>(schemaMetaData.getAllTableNames().size(), 1);
-        Map<BaseRule, RuleMetaDataDecorator> decorators = OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataDecorator.class);
+        Map<ShardingSphereRule, RuleMetaDataDecorator> decorators = OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataDecorator.class);
         for (String each : schemaMetaData.getAllTableNames()) {
-            for (Entry<BaseRule, RuleMetaDataDecorator> entry : decorators.entrySet()) {
+            for (Entry<ShardingSphereRule, RuleMetaDataDecorator> entry : decorators.entrySet()) {
                 result.put(each, entry.getValue().decorate(each, result.getOrDefault(each, schemaMetaData.get(each)), entry.getKey()));
             }
         }
@@ -157,7 +157,7 @@ public final class RuleSchemaMetaDataLoader {
     @SuppressWarnings("unchecked")
     private TableMetaData decorate(final String tableName, final TableMetaData tableMetaData) {
         TableMetaData result = tableMetaData;
-        for (Entry<BaseRule, RuleMetaDataDecorator> entry : OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataDecorator.class).entrySet()) {
+        for (Entry<ShardingSphereRule, RuleMetaDataDecorator> entry : OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataDecorator.class).entrySet()) {
             result = entry.getValue().decorate(tableName, tableMetaData, entry.getKey());
         }
         return result;

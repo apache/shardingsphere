@@ -24,7 +24,7 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -43,8 +43,8 @@ public final class RuleBuilder {
      * @param shardingRuleConfig sharding rule configuration
      * @return rules
      */
-    public static Collection<BaseRule> build(final Collection<String> dataSourceNames, final ShardingRuleConfiguration shardingRuleConfig) {
-        Collection<BaseRule> result = new LinkedList<>();
+    public static Collection<ShardingSphereRule> build(final Collection<String> dataSourceNames, final ShardingRuleConfiguration shardingRuleConfig) {
+        Collection<ShardingSphereRule> result = new LinkedList<>();
         result.add(new ShardingRule(shardingRuleConfig, dataSourceNames));
         result.addAll(shardingRuleConfig.getMasterSlaveRuleConfigs().stream().map(MasterSlaveRule::new).collect(Collectors.toList()));
         if (null != shardingRuleConfig.getEncryptRuleConfig()) {
@@ -60,8 +60,8 @@ public final class RuleBuilder {
      * @param ruleConfigurations rule configurations
      * @return rules
      */
-    public static Collection<BaseRule> build(final Collection<String> dataSourceNames, final Collection<RuleConfiguration> ruleConfigurations) {
-        Collection<BaseRule> result = new LinkedList<>();
+    public static Collection<ShardingSphereRule> build(final Collection<String> dataSourceNames, final Collection<RuleConfiguration> ruleConfigurations) {
+        Collection<ShardingSphereRule> result = new LinkedList<>();
         for (RuleConfiguration each : ruleConfigurations) {
             if (each instanceof ShardingRuleConfiguration) {
                 result.add(new ShardingRule((ShardingRuleConfiguration) each, dataSourceNames));
