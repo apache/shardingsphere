@@ -244,12 +244,12 @@ public final class ConfigCenter {
     }
     
     /**
-     * Load sharding rule configuration.
+     * Load rule configurations.
      *
      * @param shardingSchemaName sharding schema name
-     * @return sharding rule configuration
+     * @return rule configurations
      */
-    public Collection<RuleConfiguration> loadShardingRuleConfiguration(final String shardingSchemaName) {
+    public Collection<RuleConfiguration> loadRuleConfigurations(final String shardingSchemaName) {
         ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfigurationYamlSwapper().swap(
             YamlEngine.unmarshal(repository.get(node.getRulePath(shardingSchemaName)), YamlShardingRuleConfiguration.class, new YamlRootShardingConfigurationConstructor()));
         return ConfigurationBuilder.buildSharding(shardingRuleConfiguration);

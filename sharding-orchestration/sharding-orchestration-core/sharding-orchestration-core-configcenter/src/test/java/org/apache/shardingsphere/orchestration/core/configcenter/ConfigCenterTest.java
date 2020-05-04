@@ -370,7 +370,7 @@ public final class ConfigCenterTest {
     public void assertLoadShardingRuleConfiguration() {
         when(configCenterRepository.get("/test/config/schema/sharding_db/rule")).thenReturn(SHARDING_RULE_YAML);
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
-        Collection<RuleConfiguration> actual = configurationService.loadShardingRuleConfiguration("sharding_db");
+        Collection<RuleConfiguration> actual = configurationService.loadRuleConfigurations("sharding_db");
         assertThat(actual.size(), is(1));
         ShardingRuleConfiguration actualShardingRuleConfiguration = (ShardingRuleConfiguration) actual.iterator().next();
         assertThat(actualShardingRuleConfiguration.getTableRuleConfigs().size(), is(1));

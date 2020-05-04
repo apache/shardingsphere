@@ -170,7 +170,7 @@ public final class SchemaChangedListener extends PostShardingCenterRepositoryEve
             return Collections.singletonList(configurationService.loadEncryptRuleConfiguration(shardingSchemaName));
         }
         if (configurationService.isShardingRule(shardingSchemaName)) {
-            return configurationService.loadShardingRuleConfiguration(shardingSchemaName);
+            return configurationService.loadRuleConfigurations(shardingSchemaName);
         }
         return Collections.singletonList(configurationService.loadMasterSlaveRuleConfiguration(shardingSchemaName));
     }
