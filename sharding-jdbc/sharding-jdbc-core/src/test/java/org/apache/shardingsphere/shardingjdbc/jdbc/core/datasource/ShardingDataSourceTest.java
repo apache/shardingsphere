@@ -22,8 +22,6 @@ import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfi
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.core.rule.builder.ConfigurationBuilder;
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.fixture.XAShardingTransactionManagerFixture;
@@ -33,6 +31,7 @@ import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.underlying.common.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.underlying.common.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRulesBuilder;
 import org.junit.After;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -198,7 +197,7 @@ public final class ShardingDataSourceTest {
     
     private ShardingDataSource createShardingDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException {
         return new ShardingDataSource(
-                dataSourceMap, ShardingSphereRulesBuilder.build(ConfigurationBuilder.buildSharding(createShardingRuleConfig(dataSourceMap)), dataSourceMap.keySet()), new Properties());
+                dataSourceMap, ShardingSphereRulesBuilder.build(Collections.singletonList(createShardingRuleConfig(dataSourceMap)), dataSourceMap.keySet()), new Properties());
     }
     
     private ShardingRuleConfiguration createShardingRuleConfig(final Map<String, DataSource> dataSourceMap) {
