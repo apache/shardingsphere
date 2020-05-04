@@ -20,7 +20,9 @@ package org.apache.shardingsphere.core.rule.builder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -43,6 +45,22 @@ public final class ConfigurationBuilder {
         result.addAll(shardingRuleConfig.getMasterSlaveRuleConfigs());
         if (null != shardingRuleConfig.getEncryptRuleConfig() && !shardingRuleConfig.getEncryptRuleConfig().getTables().isEmpty()) {
             result.add(shardingRuleConfig.getEncryptRuleConfig());
+        }
+        return result;
+    }
+    
+    /**
+     * Build rules with sharding rule configuration.
+     *
+     * @param yamlShardingRuleConfig yaml sharding rule configuration
+     * @return rule configurations
+     */
+    public static Collection<YamlConfiguration> buildShardingYaml(final YamlShardingRuleConfiguration yamlShardingRuleConfig) {
+        Collection<YamlConfiguration> result = new LinkedList<>();
+        result.add(yamlShardingRuleConfig);
+        result.addAll(yamlShardingRuleConfig.getMasterSlaveRules().values());
+        if (null != yamlShardingRuleConfig.getEncryptRule() && !yamlShardingRuleConfig.getEncryptRule().getTables().isEmpty()) {
+            result.add(yamlShardingRuleConfig.getEncryptRule());
         }
         return result;
     }

@@ -108,8 +108,7 @@ public final class Bootstrap {
         Authentication authentication = new AuthenticationYamlSwapper().swap(yamlAuthenticationConfig);
         logAndInitContext(authentication, properties);
         Map<String, Map<String, YamlDataSourceParameter>> schemaRules = getDataSourceParameterMap(ruleConfigs);
-        startProxy(schemaRules.keySet(), port, schemaRules,
-                getRuleConfiguration(ruleConfigs), false);
+        startProxy(schemaRules.keySet(), port, schemaRules, getRuleConfiguration(ruleConfigs), false);
     }
     
     private static void startWithRegistryCenter(final YamlProxyServerConfiguration serverConfig, final Collection<String> shardingSchemaNames,
@@ -120,8 +119,7 @@ public final class Bootstrap {
             Authentication authentication = shardingOrchestrationFacade.getConfigCenter().loadAuthentication();
             Properties properties = shardingOrchestrationFacade.getConfigCenter().loadProperties();
             logAndInitContext(authentication, properties);
-            startProxy(shardingSchemaNames, port, getSchemaDataSourceParameterMap(shardingOrchestrationFacade),
-                    getSchemaRules(shardingOrchestrationFacade), true);
+            startProxy(shardingSchemaNames, port, getSchemaDataSourceParameterMap(shardingOrchestrationFacade), getSchemaRules(shardingOrchestrationFacade), true);
         }
     }
     
@@ -131,8 +129,7 @@ public final class Bootstrap {
         ShardingProxyContext.getInstance().init(authentication, properties);
     }
 
-    private static void startProxy(final Collection<String> shardingSchemaNames, final int port,
-                                   final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources,
+    private static void startProxy(final Collection<String> shardingSchemaNames, final int port, final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources,
                                    final Map<String, RuleConfiguration> schemaRules, final boolean isUsingRegistry) throws SQLException {
         LogicSchemas.getInstance().init(shardingSchemaNames, schemaDataSources, schemaRules, isUsingRegistry);
         initOpenTracing();
