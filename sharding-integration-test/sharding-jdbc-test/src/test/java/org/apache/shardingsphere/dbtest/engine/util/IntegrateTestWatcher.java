@@ -19,6 +19,7 @@ package org.apache.shardingsphere.dbtest.engine.util;
 
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 
 /**
  * Integrate test watcher.
@@ -26,13 +27,24 @@ import org.junit.runner.Description;
 public final class IntegrateTestWatcher extends TestWatcher {
     
     @Override
-    protected void succeeded(final Description description) {
-        super.succeeded(description);
-    }
-    
-    @Override
-    protected void failed(final Throwable e, final Description description) {
-        System.out.println("[ERROR] " + description.getDisplayName());
-        super.failed(e, description);
+    public Statement apply(final Statement base, final Description description) {
+        return new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                try {
+                    base.evaluate();
+                } catch (final AssertionError err) {
+                    AssertionError assertionError = new AssertionError(description.getDisplayName() + err.getMessage());
+                    assertionError.setStackTrace(err.getStackTrace());
+                    throw assertionError;
+                    // CHECKSTYLE:OFF
+                } catch (final Exception ex) {
+                    // CHECKSTYLE:ON
+                    Exception exception = new Exception(description.getDisplayName() + ex.getMessage());
+                    exception.setStackTrace(ex.getStackTrace());
+                    throw exception;
+                }
+            }
+        };
     }
 }

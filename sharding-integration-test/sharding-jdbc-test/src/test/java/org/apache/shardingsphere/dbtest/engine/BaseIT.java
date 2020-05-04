@@ -52,7 +52,7 @@ public abstract class BaseIT {
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
     
     @Rule
-    public IntegrateTestWatcher integrateTestRule = new IntegrateTestWatcher();
+    public IntegrateTestWatcher integrateTestWatcher = new IntegrateTestWatcher();
     
     private final String ruleType;
     
