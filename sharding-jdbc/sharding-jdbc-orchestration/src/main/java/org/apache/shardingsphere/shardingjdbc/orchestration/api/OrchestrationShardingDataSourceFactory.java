@@ -21,13 +21,15 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.rule.builder.ConfigurationBuilder;
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRulesBuilder;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
 
@@ -46,7 +48,9 @@ public final class OrchestrationShardingDataSourceFactory {
      * @param props properties for data source
      * @return sharding data source
      * @throws SQLException SQL exception
+     * @deprecated use createDataSource(final Map dataSourceMap, final Collection ruleConfigurations, final Properties props) instead of it
      */
+    @Deprecated
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig,
                                               final Properties props, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         if (null == shardingRuleConfig || shardingRuleConfig.getTableRuleConfigs().isEmpty()) {
@@ -54,6 +58,25 @@ public final class OrchestrationShardingDataSourceFactory {
         }
         ShardingDataSource shardingDataSource = new ShardingDataSource(
                 dataSourceMap, ShardingSphereRulesBuilder.build(ConfigurationBuilder.buildSharding(shardingRuleConfig), dataSourceMap.keySet()), props);
+        return new OrchestrationShardingDataSource(shardingDataSource, orchestrationConfig);
+    }
+    
+    /**
+     * Create sharding data source.
+     *
+     * @param dataSourceMap data source map
+     * @param ruleConfigurations rule configurations
+     * @param orchestrationConfig orchestration configuration
+     * @param props properties for data source
+     * @return sharding data source
+     * @throws SQLException SQL exception
+     */
+    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigurations,
+                                              final Properties props, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
+        if (null == ruleConfigurations || ruleConfigurations.isEmpty()) {
+            return createDataSource(orchestrationConfig);
+        }
+        ShardingDataSource shardingDataSource = new ShardingDataSource(dataSourceMap, ShardingSphereRulesBuilder.build(ruleConfigurations, dataSourceMap.keySet()), props);
         return new OrchestrationShardingDataSource(shardingDataSource, orchestrationConfig);
     }
     
