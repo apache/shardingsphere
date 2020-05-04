@@ -29,8 +29,8 @@ import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfi
 import org.apache.shardingsphere.core.yaml.constructor.YamlRootShardingConfigurationConstructor;
 import org.apache.shardingsphere.core.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.ShadowRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
@@ -38,6 +38,7 @@ import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYa
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 import org.junit.Test;
@@ -369,9 +370,11 @@ public final class ConfigCenterTest {
     public void assertLoadShardingRuleConfiguration() {
         when(configCenterRepository.get("/test/config/schema/sharding_db/rule")).thenReturn(SHARDING_RULE_YAML);
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
-        ShardingRuleConfiguration actual = configurationService.loadShardingRuleConfiguration("sharding_db");
-        assertThat(actual.getTableRuleConfigs().size(), is(1));
-        assertThat(actual.getTableRuleConfigs().iterator().next().getLogicTable(), is("t_order"));
+        Collection<RuleConfiguration> actual = configurationService.loadShardingRuleConfiguration("sharding_db");
+        assertThat(actual.size(), is(1));
+        ShardingRuleConfiguration actualShardingRuleConfiguration = (ShardingRuleConfiguration) actual.iterator().next();
+        assertThat(actualShardingRuleConfiguration.getTableRuleConfigs().size(), is(1));
+        assertThat(actualShardingRuleConfiguration.getTableRuleConfigs().iterator().next().getLogicTable(), is("t_order"));
     }
     
     @Test

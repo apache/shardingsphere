@@ -152,7 +152,7 @@ public final class Bootstrap {
             if (shardingOrchestrationFacade.getConfigCenter().isEncryptRule(each)) {
                 result.put(each, Collections.singletonList(shardingOrchestrationFacade.getConfigCenter().loadEncryptRuleConfiguration(each)));
             } else if (shardingOrchestrationFacade.getConfigCenter().isShardingRule(each)) {
-                result.put(each, ConfigurationBuilder.buildSharding(shardingOrchestrationFacade.getConfigCenter().loadShardingRuleConfiguration(each)));
+                result.put(each, shardingOrchestrationFacade.getConfigCenter().loadShardingRuleConfiguration(each));
             } else if (shardingOrchestrationFacade.getConfigCenter().isShadowRule(each)) {
                 result.put(each, Collections.singletonList(shardingOrchestrationFacade.getConfigCenter().loadShadowRuleConfiguration(each)));
             } else {
