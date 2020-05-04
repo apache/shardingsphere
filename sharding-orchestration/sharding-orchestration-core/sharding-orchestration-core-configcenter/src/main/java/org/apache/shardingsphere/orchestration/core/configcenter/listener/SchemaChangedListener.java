@@ -31,8 +31,6 @@ import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYa
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.ChangedType;
-import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenterNode;
-import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenter;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.EncryptRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.IgnoredShardingOrchestrationEvent;
@@ -42,12 +40,15 @@ import org.apache.shardingsphere.orchestration.core.common.event.SchemaDeletedEv
 import org.apache.shardingsphere.orchestration.core.common.event.ShardingOrchestrationEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.ShardingRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.listener.PostShardingCenterRepositoryEventListener;
-import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration;
+import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenter;
+import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenterNode;
 import org.apache.shardingsphere.orchestration.core.configuration.DataSourceConfigurationYamlSwapper;
+import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
@@ -161,13 +162,17 @@ public final class SchemaChangedListener extends PostShardingCenterRepositoryEve
     
     private SchemaAddedEvent createSchemaAddedEvent(final String shardingSchemaName) {
         existedSchemaNames.add(shardingSchemaName);
-        return new SchemaAddedEvent(shardingSchemaName, configurationService.loadDataSourceConfigurations(shardingSchemaName), createRuleConfiguration(shardingSchemaName));
+        return new SchemaAddedEvent(shardingSchemaName, configurationService.loadDataSourceConfigurations(shardingSchemaName), createRuleConfigurations(shardingSchemaName));
     }
     
-    private RuleConfiguration createRuleConfiguration(final String shardingSchemaName) {
-        return configurationService.isEncryptRule(shardingSchemaName) 
-                ? configurationService.loadEncryptRuleConfiguration(shardingSchemaName) : configurationService.isShardingRule(shardingSchemaName)
-                    ? configurationService.loadShardingRuleConfiguration(shardingSchemaName) : configurationService.loadMasterSlaveRuleConfiguration(shardingSchemaName);
+    private Collection<RuleConfiguration> createRuleConfigurations(final String shardingSchemaName) {
+        if (configurationService.isEncryptRule(shardingSchemaName)) {
+            return Collections.singletonList(configurationService.loadEncryptRuleConfiguration(shardingSchemaName));
+        }
+        if (configurationService.isShardingRule(shardingSchemaName)) {
+            return ConfigurationBuilder.buildSharding(configurationService.loadShardingRuleConfiguration(shardingSchemaName));
+        }
+        return Collections.singletonList(configurationService.loadMasterSlaveRuleConfiguration(shardingSchemaName));
     }
     
     private ShardingOrchestrationEvent createDeletedEvent(final String shardingSchemaName) {

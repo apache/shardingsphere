@@ -23,6 +23,7 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.core.log.ConfigurationLogger;
 import org.apache.shardingsphere.core.rule.Authentication;
+import org.apache.shardingsphere.core.rule.builder.ConfigurationBuilder;
 import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.core.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
@@ -49,6 +50,7 @@ import org.apache.shardingsphere.underlying.common.config.properties.Configurati
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -75,7 +77,7 @@ public final class Bootstrap {
     public static void main(final String[] args) throws IOException, SQLException {
         int port = getPort(args);
         ShardingConfiguration shardingConfig = new ShardingConfigurationLoader().load(getConfigPath(args));
-        logRuleConfigurationMap(getRuleConfiguration(shardingConfig.getRuleConfigurationMap()).values());
+        logRuleConfigurationMap(getRuleConfigurations(shardingConfig.getRuleConfigurationMap()).values());
         if (null == shardingConfig.getServerConfiguration().getOrchestration()) {
             startWithoutRegistryCenter(shardingConfig.getRuleConfigurationMap(), shardingConfig.getServerConfiguration().getAuthentication(), shardingConfig.getServerConfiguration().getProps(), port);
         } else {
@@ -108,7 +110,7 @@ public final class Bootstrap {
         Authentication authentication = new AuthenticationYamlSwapper().swap(yamlAuthenticationConfig);
         logAndInitContext(authentication, properties);
         Map<String, Map<String, YamlDataSourceParameter>> schemaRules = getDataSourceParameterMap(ruleConfigs);
-        startProxy(schemaRules.keySet(), port, schemaRules, getRuleConfiguration(ruleConfigs), false);
+        startProxy(schemaRules.keySet(), port, schemaRules, getRuleConfigurations(ruleConfigs), false);
     }
     
     private static void startWithRegistryCenter(final YamlProxyServerConfiguration serverConfig, final Collection<String> shardingSchemaNames,
@@ -130,7 +132,7 @@ public final class Bootstrap {
     }
 
     private static void startProxy(final Collection<String> shardingSchemaNames, final int port, final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources,
-                                   final Map<String, RuleConfiguration> schemaRules, final boolean isUsingRegistry) throws SQLException {
+                                   final Map<String, Collection<RuleConfiguration>> schemaRules, final boolean isUsingRegistry) throws SQLException {
         LogicSchemas.getInstance().init(shardingSchemaNames, schemaDataSources, schemaRules, isUsingRegistry);
         initOpenTracing();
         ShardingProxy.getInstance().start(port);
@@ -144,17 +146,17 @@ public final class Bootstrap {
         return result;
     }
     
-    private static Map<String, RuleConfiguration> getSchemaRules(final ShardingOrchestrationFacade shardingOrchestrationFacade) {
-        Map<String, RuleConfiguration> result = new LinkedHashMap<>();
+    private static Map<String, Collection<RuleConfiguration>> getSchemaRules(final ShardingOrchestrationFacade shardingOrchestrationFacade) {
+        Map<String, Collection<RuleConfiguration>> result = new LinkedHashMap<>();
         for (String each : shardingOrchestrationFacade.getConfigCenter().getAllShardingSchemaNames()) {
             if (shardingOrchestrationFacade.getConfigCenter().isEncryptRule(each)) {
-                result.put(each, shardingOrchestrationFacade.getConfigCenter().loadEncryptRuleConfiguration(each));
+                result.put(each, Collections.singletonList(shardingOrchestrationFacade.getConfigCenter().loadEncryptRuleConfiguration(each)));
             } else if (shardingOrchestrationFacade.getConfigCenter().isShardingRule(each)) {
-                result.put(each, shardingOrchestrationFacade.getConfigCenter().loadShardingRuleConfiguration(each));
+                result.put(each, ConfigurationBuilder.buildSharding(shardingOrchestrationFacade.getConfigCenter().loadShardingRuleConfiguration(each)));
             } else if (shardingOrchestrationFacade.getConfigCenter().isShadowRule(each)) {
-                result.put(each, shardingOrchestrationFacade.getConfigCenter().loadShadowRuleConfiguration(each));
+                result.put(each, Collections.singletonList(shardingOrchestrationFacade.getConfigCenter().loadShadowRuleConfiguration(each)));
             } else {
-                result.put(each, shardingOrchestrationFacade.getConfigCenter().loadMasterSlaveRuleConfiguration(each));
+                result.put(each, Collections.singletonList(shardingOrchestrationFacade.getConfigCenter().loadMasterSlaveRuleConfiguration(each)));
             }
         }
         return result;
@@ -166,7 +168,7 @@ public final class Bootstrap {
             shardingOrchestrationFacade.init();
         } else {
             shardingOrchestrationFacade.init(getDataSourceConfigurationMap(ruleConfigs),
-                    getRuleConfiguration(ruleConfigs), new AuthenticationYamlSwapper().swap(serverConfig.getAuthentication()), serverConfig.getProps());
+                    getRuleConfigurations(ruleConfigs), new AuthenticationYamlSwapper().swap(serverConfig.getAuthentication()), serverConfig.getProps());
         }
     }
     
@@ -192,17 +194,17 @@ public final class Bootstrap {
         return result;
     }
     
-    private static Map<String, RuleConfiguration> getRuleConfiguration(final Map<String, YamlProxyRuleConfiguration> localRuleConfigs) {
-        Map<String, RuleConfiguration> result = new HashMap<>();
+    private static Map<String, Collection<RuleConfiguration>> getRuleConfigurations(final Map<String, YamlProxyRuleConfiguration> localRuleConfigs) {
+        Map<String, Collection<RuleConfiguration>> result = new HashMap<>();
         for (Entry<String, YamlProxyRuleConfiguration> entry : localRuleConfigs.entrySet()) {
             if (null != entry.getValue().getShardingRule()) {
-                result.put(entry.getKey(), new ShardingRuleConfigurationYamlSwapper().swap(entry.getValue().getShardingRule()));
+                result.put(entry.getKey(), ConfigurationBuilder.buildSharding(new ShardingRuleConfigurationYamlSwapper().swap(entry.getValue().getShardingRule())));
             } else if (null != entry.getValue().getMasterSlaveRule()) {
-                result.put(entry.getKey(), new MasterSlaveRuleConfigurationYamlSwapper().swap(entry.getValue().getMasterSlaveRule()));
+                result.put(entry.getKey(), Collections.singleton(new MasterSlaveRuleConfigurationYamlSwapper().swap(entry.getValue().getMasterSlaveRule())));
             } else if (null != entry.getValue().getEncryptRule()) {
-                result.put(entry.getKey(), new EncryptRuleConfigurationYamlSwapper().swap(entry.getValue().getEncryptRule()));
+                result.put(entry.getKey(), Collections.singleton(new EncryptRuleConfigurationYamlSwapper().swap(entry.getValue().getEncryptRule())));
             } else if (null != entry.getValue().getShadowRule()) {
-                result.put(entry.getKey(), new ShadowRuleConfigurationYamlSwapper().swap(entry.getValue().getShadowRule()));
+                result.put(entry.getKey(), Collections.singleton(new ShadowRuleConfigurationYamlSwapper().swap(entry.getValue().getShadowRule())));
             }
         }
         return result;
@@ -213,9 +215,9 @@ public final class Bootstrap {
      *
      * @param ruleConfigurations log rule configurations
      */
-    private static void logRuleConfigurationMap(final Collection<RuleConfiguration> ruleConfigurations) {
+    private static void logRuleConfigurationMap(final Collection<Collection<RuleConfiguration>> ruleConfigurations) {
         if (CollectionUtils.isNotEmpty(ruleConfigurations)) {
-            for (RuleConfiguration each : ruleConfigurations) {
+            for (Collection<RuleConfiguration> each : ruleConfigurations) {
                 ConfigurationLogger.log(each);
             }
         }

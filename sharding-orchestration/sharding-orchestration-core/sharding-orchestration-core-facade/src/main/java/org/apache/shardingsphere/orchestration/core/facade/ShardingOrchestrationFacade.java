@@ -22,6 +22,7 @@ import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.rule.Authentication;
+import org.apache.shardingsphere.core.rule.builder.ConfigurationBuilder;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
@@ -120,9 +121,10 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
      * @param props properties
      */
     public void init(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigurationMap,
-                     final Map<String, RuleConfiguration> schemaRuleMap, final Authentication authentication, final Properties props) {
+                     final Map<String, Collection<RuleConfiguration>> schemaRuleMap, final Authentication authentication, final Properties props) {
         for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourceConfigurationMap.entrySet()) {
-            configCenter.persistConfiguration(entry.getKey(), dataSourceConfigurationMap.get(entry.getKey()), schemaRuleMap.get(entry.getKey()), authentication, props, isOverwrite);
+            configCenter.persistConfiguration(
+                    entry.getKey(), dataSourceConfigurationMap.get(entry.getKey()), ConfigurationBuilder.buildToSingle(schemaRuleMap.get(entry.getKey())), authentication, props, isOverwrite);
         }
         init();
     }

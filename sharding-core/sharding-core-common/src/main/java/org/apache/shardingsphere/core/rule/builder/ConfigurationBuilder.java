@@ -19,10 +19,10 @@ package org.apache.shardingsphere.core.rule.builder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -50,18 +50,26 @@ public final class ConfigurationBuilder {
     }
     
     /**
-     * Build rules with sharding rule configuration.
+     * Build rules to rule configuration.
      *
-     * @param yamlShardingRuleConfig yaml sharding rule configuration
-     * @return rule configurations
+     * @param ruleConfigurations rule configurations
+     * @return rule configuration
      */
-    public static Collection<YamlConfiguration> buildShardingYaml(final YamlShardingRuleConfiguration yamlShardingRuleConfig) {
-        Collection<YamlConfiguration> result = new LinkedList<>();
-        result.add(yamlShardingRuleConfig);
-        result.addAll(yamlShardingRuleConfig.getMasterSlaveRules().values());
-        if (null != yamlShardingRuleConfig.getEncryptRule() && !yamlShardingRuleConfig.getEncryptRule().getTables().isEmpty()) {
-            result.add(yamlShardingRuleConfig.getEncryptRule());
+    public static RuleConfiguration buildToSingle(final Collection<RuleConfiguration> ruleConfigurations) {
+        if (ruleConfigurations.size() > 1) {
+            ShardingRuleConfiguration result = (ShardingRuleConfiguration) ruleConfigurations.iterator().next();
+            for (RuleConfiguration each : ruleConfigurations) {
+                if (each instanceof MasterSlaveRuleConfiguration) {
+                    result.getMasterSlaveRuleConfigs().add((MasterSlaveRuleConfiguration) each);
+                } else if (each instanceof EncryptRuleConfiguration && !((EncryptRuleConfiguration) each).getTables().isEmpty()) {
+                    result.setEncryptRuleConfig((EncryptRuleConfiguration) each);
+                }
+            }
+            return result;
         }
-        return result;
+        if (ruleConfigurations.isEmpty()) {
+            return null;
+        }
+        return ruleConfigurations.iterator().next();
     }
 }
