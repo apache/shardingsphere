@@ -22,8 +22,10 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -48,7 +50,16 @@ public final class GroupedParameterBuilderTest {
         actual.addReplacedIndexAndOnDuplicateKeyUpdateParameters(0, 77);
         actual.addReplacedIndexAndOnDuplicateKeyUpdateParameters(1, 88);
         actual.getAddedIndexAndOnDuplicateKeyParameters().put(2, Arrays.asList(99, 110));
-        assertThat(actual.getParameters(), is(Arrays.<Object>asList(3, 4, 5, 6, 77, 88, 99, 110)));
+        actual.getAddedIndexAndOnDuplicateKeyParameters().put(0, Collections.singletonList(66));
+        assertThat(actual.getParameters(), is(Arrays.<Object>asList(3, 4, 5, 6, 66, 77, 88, 99, 110)));
+    }
+
+    @Test
+    public void assertGetDerivedColumnName() {
+        GroupedParameterBuilder actual = new GroupedParameterBuilder(createGroupedParameters(), createOnDuplicateKeyUpdateParameters());
+        String derivedColumnName = "derivedColumnName";
+        actual.setDerivedColumnName(derivedColumnName);
+        assertThat(actual.getDerivedColumnName(), is(Optional.of(derivedColumnName)));
     }
 
     private List<Object> createOnDuplicateKeyUpdateParameters() {
