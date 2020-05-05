@@ -24,6 +24,7 @@ import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingSt
 import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.algorithm.DefaultComplexKeysShardingAlgorithm;
@@ -37,12 +38,14 @@ import org.apache.shardingsphere.transaction.spring.ShardingTransactionTypeScann
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.datanode.DataNode;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
@@ -50,6 +53,7 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -108,10 +112,14 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     public void assertSimpleShardingDataSource() {
         Map<String, DataSource> dataSourceMap = getDataSourceMap("simpleShardingDataSource");
         assertNotNull(dataSourceMap.get("dbtbl_0"));
-        ShardingRule shardingRule = getShardingRule("simpleShardingDataSource");
+        Iterator<ShardingSphereRule> rules = getRules("simpleShardingDataSource").iterator();
+        ShardingRule shardingRule = (ShardingRule) rules.next();
         assertThat(shardingRule.getTableRules().size(), is(1));
         assertThat(shardingRule.getTableRules().iterator().next().getLogicTable(), is("t_order"));
-        shardingRule.getTableRule("t_order");
+        EncryptRule encryptRule = (EncryptRule) rules.next();
+        assertThat(encryptRule.getEncryptTableNames().size(), is(1));
+        assertTrue(encryptRule.getEncryptTableNames().contains("t_order"));
+        assertFalse(rules.hasNext());
     }
     
     @Test
@@ -244,5 +252,9 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     private ShardingRule getShardingRule(final String shardingDataSourceName) {
         ShardingDataSource shardingDataSource = applicationContext.getBean(shardingDataSourceName, ShardingDataSource.class);
         return (ShardingRule) shardingDataSource.getRuntimeContext().getRules().iterator().next();
+    }
+    
+    private Collection<ShardingSphereRule> getRules(final String shardingDataSourceName) {
+        return applicationContext.getBean(shardingDataSourceName, ShardingDataSource.class).getRuntimeContext().getRules();
     }
 }
