@@ -20,12 +20,11 @@ package org.apache.shardingsphere.orchestration.core.configcenter.listener;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.commons.collections4.SetUtils;
-import org.apache.shardingsphere.core.rule.builder.RuleConfigurationBuilder;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.constructor.YamlRootShardingConfigurationConstructor;
 import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.RuleConfigurationsYamlSwapper;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
@@ -140,8 +139,8 @@ public final class SchemaChangedListener extends PostShardingCenterRepositoryEve
     }
     
     private ShardingRuleChangedEvent createShardingRuleChangedEvent(final String shardingSchemaName, final String ruleValue) {
-        return new ShardingRuleChangedEvent(shardingSchemaName, RuleConfigurationBuilder.buildSharding(new ShardingRuleConfigurationYamlSwapper().swap(
-            YamlEngine.unmarshal(ruleValue, YamlShardingRuleConfiguration.class, new YamlRootShardingConfigurationConstructor()))));
+        return new ShardingRuleChangedEvent(shardingSchemaName, new RuleConfigurationsYamlSwapper().swap(
+                YamlEngine.unmarshal(ruleValue, YamlShardingRuleConfiguration.class, new YamlRootShardingConfigurationConstructor())));
     }
     
     private EncryptRuleChangedEvent createEncryptRuleChangedEvent(final String shardingSchemaName, final String ruleValue) {
