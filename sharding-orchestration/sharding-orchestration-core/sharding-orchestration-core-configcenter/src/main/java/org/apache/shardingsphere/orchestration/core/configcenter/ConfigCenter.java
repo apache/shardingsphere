@@ -73,15 +73,15 @@ public final class ConfigCenter {
      *
      * @param shardingSchemaName sharding schema name
      * @param dataSourceConfigs data source configuration map
-     * @param ruleConfig rule configuration
+     * @param ruleConfigurations rule configurations
      * @param authentication authentication
      * @param props sharding properties
      * @param isOverwrite is overwrite registry center's configuration
      */
-    public void persistConfiguration(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs, final RuleConfiguration ruleConfig,
-                                     final Authentication authentication, final Properties props, final boolean isOverwrite) {
+    public void persistConfigurations(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs, final Collection<RuleConfiguration> ruleConfigurations,
+                                      final Authentication authentication, final Properties props, final boolean isOverwrite) {
         persistDataSourceConfiguration(shardingSchemaName, dataSourceConfigs, isOverwrite);
-        persistRuleConfiguration(shardingSchemaName, ruleConfig, isOverwrite);
+        persistRuleConfigurations(shardingSchemaName, ruleConfigurations, isOverwrite);
         persistAuthentication(authentication, isOverwrite);
         persistProperties(props, isOverwrite);
         persistShardingSchemaName(shardingSchemaName);
@@ -106,17 +106,25 @@ public final class ConfigCenter {
         return !Strings.isNullOrEmpty(repository.get(node.getDataSourcePath(shardingSchemaName)));
     }
     
-    private void persistRuleConfiguration(final String shardingSchemaName, final RuleConfiguration ruleConfig, final boolean isOverwrite) {
+    private void persistRuleConfigurations(final String shardingSchemaName, final Collection<RuleConfiguration> ruleConfigurations, final boolean isOverwrite) {
+        if (ruleConfigurations.isEmpty()) {
+            return;
+        }
         if (isOverwrite || !hasRuleConfiguration(shardingSchemaName)) {
-            if (ruleConfig instanceof ShardingRuleConfiguration) {
-                persistShardingRuleConfiguration(shardingSchemaName, (ShardingRuleConfiguration) ruleConfig);
-            } else if (ruleConfig instanceof EncryptRuleConfiguration) {
-                persistEncryptRuleConfiguration(shardingSchemaName, (EncryptRuleConfiguration) ruleConfig);
-            } else if (ruleConfig instanceof ShadowRuleConfiguration) {
-                persistShadowRuleConfiguration(shardingSchemaName, (ShadowRuleConfiguration) ruleConfig);
-            } else {
-                persistMasterSlaveRuleConfiguration(shardingSchemaName, (MasterSlaveRuleConfiguration) ruleConfig);
-            }
+            RuleConfiguration ruleConfiguration = 1 == ruleConfigurations.size() ? ruleConfigurations.iterator().next() : RuleConfigurationBuilder.buildToSingle(ruleConfigurations);
+            persistRuleConfiguration(shardingSchemaName, ruleConfiguration);
+        }
+    }
+    
+    private void persistRuleConfiguration(final String shardingSchemaName, final RuleConfiguration ruleConfiguration) {
+        if (ruleConfiguration instanceof ShardingRuleConfiguration) {
+            persistShardingRuleConfiguration(shardingSchemaName, (ShardingRuleConfiguration) ruleConfiguration);
+        } else if (ruleConfiguration instanceof EncryptRuleConfiguration) {
+            persistEncryptRuleConfiguration(shardingSchemaName, (EncryptRuleConfiguration) ruleConfiguration);
+        } else if (ruleConfiguration instanceof ShadowRuleConfiguration) {
+            persistShadowRuleConfiguration(shardingSchemaName, (ShadowRuleConfiguration) ruleConfiguration);
+        } else {
+            persistMasterSlaveRuleConfiguration(shardingSchemaName, (MasterSlaveRuleConfiguration) ruleConfiguration);
         }
     }
     
