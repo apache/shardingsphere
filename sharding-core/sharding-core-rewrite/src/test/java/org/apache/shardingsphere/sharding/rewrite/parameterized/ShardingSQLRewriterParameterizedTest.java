@@ -18,11 +18,9 @@
 package org.apache.shardingsphere.sharding.rewrite.parameterized;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.core.rule.builder.RuleConfigurationBuilder;
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlRootShardingConfiguration;
 import org.apache.shardingsphere.core.yaml.constructor.YamlRootShardingConfigurationConstructor;
-import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.RuleConfigurationsYamlSwapper;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
@@ -34,6 +32,7 @@ import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaDa
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.underlying.rewrite.engine.result.GenericSQLRewriteResult;
@@ -78,7 +77,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
     protected Collection<SQLRewriteUnit> createSQLRewriteUnits() throws IOException {
         YamlRootShardingConfiguration ruleConfiguration = createRuleConfiguration();
         Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(
-                RuleConfigurationBuilder.buildSharding(new ShardingRuleConfigurationYamlSwapper().swap(ruleConfiguration.getShardingRule())), ruleConfiguration.getDataSources().keySet());
+                new RuleConfigurationsYamlSwapper().swap(ruleConfiguration.getShardingRule()), ruleConfiguration.getDataSources().keySet());
         SQLParserEngine sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType());
         ShardingSphereMetaData metaData = createShardingSphereMetaData();
         ConfigurationProperties properties = new ConfigurationProperties(ruleConfiguration.getProps());
