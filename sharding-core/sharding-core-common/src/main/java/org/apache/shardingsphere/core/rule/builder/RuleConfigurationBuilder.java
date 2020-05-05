@@ -61,7 +61,7 @@ public final class RuleConfigurationBuilder {
             for (RuleConfiguration each : ruleConfigurations) {
                 if (each instanceof MasterSlaveRuleConfiguration) {
                     result.getMasterSlaveRuleConfigs().add((MasterSlaveRuleConfiguration) each);
-                } else if (each instanceof EncryptRuleConfiguration && !((EncryptRuleConfiguration) each).getTables().isEmpty()) {
+                } else if (each instanceof EncryptRuleConfiguration) {
                     result.setEncryptRuleConfig((EncryptRuleConfiguration) each);
                 }
             }

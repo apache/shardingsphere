@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.sharding.rewrite.parameterized;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.core.yaml.config.sharding.YamlRootShardingConfiguration;
-import org.apache.shardingsphere.core.yaml.constructor.YamlRootShardingConfigurationConstructor;
-import org.apache.shardingsphere.core.yaml.swapper.RuleConfigurationsYamlSwapper;
+import org.apache.shardingsphere.core.yaml.config.YamlRootRuleConfigurations;
+import org.apache.shardingsphere.core.yaml.constructor.YamlRootRuleConfigurationsConstructor;
+import org.apache.shardingsphere.core.yaml.swapper.root.RuleRootConfigurationsYamlSwapper;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
@@ -75,12 +75,11 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
     
     @Override
     protected Collection<SQLRewriteUnit> createSQLRewriteUnits() throws IOException {
-        YamlRootShardingConfiguration ruleConfiguration = createRuleConfiguration();
-        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(
-                new RuleConfigurationsYamlSwapper().swap(ruleConfiguration.getShardingRule()), ruleConfiguration.getDataSources().keySet());
+        YamlRootRuleConfigurations ruleConfigurations = createRuleConfigurations();
+        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(new RuleRootConfigurationsYamlSwapper().swap(ruleConfigurations), ruleConfigurations.getDataSources().keySet());
         SQLParserEngine sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType());
         ShardingSphereMetaData metaData = createShardingSphereMetaData();
-        ConfigurationProperties properties = new ConfigurationProperties(ruleConfiguration.getProps());
+        ConfigurationProperties properties = new ConfigurationProperties(ruleConfigurations.getProps());
         RouteContext routeContext = new DataNodeRouter(metaData, properties, rules).route(
                 sqlParserEngine.parse(getTestParameters().getInputSQL(), false), getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(metaData.getSchema().getConfiguredSchemaMetaData(),
@@ -89,10 +88,10 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
                 ? Collections.singletonList(((GenericSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnit()) : (((RouteSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnits()).values();
     }
     
-    private YamlRootShardingConfiguration createRuleConfiguration() throws IOException {
+    private YamlRootRuleConfigurations createRuleConfigurations() throws IOException {
         URL url = ShardingSQLRewriterParameterizedTest.class.getClassLoader().getResource(getTestParameters().getRuleFile());
         Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
-        return YamlEngine.unmarshal(new File(url.getFile()), YamlRootShardingConfiguration.class, new YamlRootShardingConfigurationConstructor());
+        return YamlEngine.unmarshal(new File(url.getFile()), YamlRootRuleConfigurations.class, new YamlRootRuleConfigurationsConstructor());
     }
     
     private ShardingSphereMetaData createShardingSphereMetaData() {

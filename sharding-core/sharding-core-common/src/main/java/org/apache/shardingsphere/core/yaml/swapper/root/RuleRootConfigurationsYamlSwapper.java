@@ -15,14 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.yaml.swapper;
+package org.apache.shardingsphere.core.yaml.swapper.root;
 
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlTableRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.swapper.KeyGeneratorConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.ShardingStrategyConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.TableRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
@@ -33,9 +38,9 @@ import java.util.LinkedList;
 import java.util.Map.Entry;
 
 /**
- * Rule configurations YAML swapper.
+ * Rule root configurations YAML swapper.
  */
-public final class RuleConfigurationsYamlSwapper implements YamlSwapper<YamlShardingRuleConfiguration, Collection<RuleConfiguration>> {
+public final class RuleRootConfigurationsYamlSwapper implements YamlSwapper<YamlRootRuleConfigurations, Collection<RuleConfiguration>> {
     
     private final TableRuleConfigurationYamlSwapper tableRuleConfigurationYamlSwapper = new TableRuleConfigurationYamlSwapper();
     
@@ -48,20 +53,14 @@ public final class RuleConfigurationsYamlSwapper implements YamlSwapper<YamlShar
     private final EncryptRuleConfigurationYamlSwapper encryptRuleConfigurationYamlSwapper = new EncryptRuleConfigurationYamlSwapper();
     
     @Override
-    public YamlShardingRuleConfiguration swap(final Collection<RuleConfiguration> data) {
-        YamlShardingRuleConfiguration result = new YamlShardingRuleConfiguration();
+    public YamlRootRuleConfigurations swap(final Collection<RuleConfiguration> data) {
+        YamlRootRuleConfigurations result = new YamlRootRuleConfigurations();
         for (RuleConfiguration each : data) {
             if (each instanceof ShardingRuleConfiguration) {
-                YamlShardingRuleConfiguration configuration = swap((ShardingRuleConfiguration) each);
-                result.setTables(configuration.getTables());
-                result.setBindingTables(configuration.getBindingTables());
-                result.setBroadcastTables(configuration.getBroadcastTables());
-                result.setDefaultDatabaseStrategy(configuration.getDefaultDatabaseStrategy());
-                result.setDefaultTableStrategy(configuration.getDefaultTableStrategy());
-                result.setDefaultKeyGenerator(configuration.getDefaultKeyGenerator());
+                result.setShardingRule(swap((ShardingRuleConfiguration) each));
             } else if (each instanceof MasterSlaveRuleConfiguration) {
                 result.getMasterSlaveRules().put(((MasterSlaveRuleConfiguration) each).getName(), masterSlaveRuleConfigurationYamlSwapper.swap((MasterSlaveRuleConfiguration) each));
-            } else if (each instanceof EncryptRuleConfiguration && !((EncryptRuleConfiguration) each).getTables().isEmpty()) {
+            } else if (each instanceof EncryptRuleConfiguration) {
                 result.setEncryptRule(encryptRuleConfigurationYamlSwapper.swap((EncryptRuleConfiguration) each));
             }
         }
@@ -88,16 +87,18 @@ public final class RuleConfigurationsYamlSwapper implements YamlSwapper<YamlShar
     }
     
     @Override
-    public Collection<RuleConfiguration> swap(final YamlShardingRuleConfiguration yamlConfiguration) {
+    public Collection<RuleConfiguration> swap(final YamlRootRuleConfigurations configurations) {
         Collection<RuleConfiguration> result = new LinkedList<>();
-        result.add(createShardingRuleConfiguration(yamlConfiguration));
-        for (Entry<String, YamlMasterSlaveRuleConfiguration> entry : yamlConfiguration.getMasterSlaveRules().entrySet()) {
+        if (null != configurations.getShardingRule()) {
+            result.add(createShardingRuleConfiguration(configurations.getShardingRule()));
+        }
+        for (Entry<String, YamlMasterSlaveRuleConfiguration> entry : configurations.getMasterSlaveRules().entrySet()) {
             YamlMasterSlaveRuleConfiguration each = entry.getValue();
             each.setName(entry.getKey());
             result.add(masterSlaveRuleConfigurationYamlSwapper.swap(entry.getValue()));
         }
-        if (null != yamlConfiguration.getEncryptRule() && !yamlConfiguration.getEncryptRule().getTables().isEmpty()) {
-            result.add(encryptRuleConfigurationYamlSwapper.swap(yamlConfiguration.getEncryptRule()));
+        if (null != configurations.getEncryptRule()) {
+            result.add(encryptRuleConfigurationYamlSwapper.swap(configurations.getEncryptRule()));
         }
         return result;
     }

@@ -17,21 +17,18 @@
 
 package org.apache.shardingsphere.core.yaml.constructor;
 
-import org.apache.shardingsphere.core.yaml.config.sharding.YamlRootShardingConfiguration;
+import org.apache.shardingsphere.core.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlNoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.constructor.construct.YamlNoneShardingStrategyConfigurationConstruct;
 import org.apache.shardingsphere.underlying.common.yaml.constructor.AbstractTypeConstructor;
 
 /**
- * YAML root sharding configuration constructor.
- * 
- * @deprecated instead of YamlRootRuleConfigurationsConstructor
+ * YAML root configurations constructor.
  */
-@Deprecated
-public final class YamlRootShardingConfigurationConstructor extends AbstractTypeConstructor {
+public final class YamlRootRuleConfigurationsConstructor extends AbstractTypeConstructor {
     
-    public YamlRootShardingConfigurationConstructor() {
-        super(YamlRootShardingConfiguration.class);
+    public YamlRootRuleConfigurationsConstructor() {
+        super(YamlRootRuleConfigurations.class);
         registerConstruct(YamlNoneShardingStrategyConfiguration.class, new YamlNoneShardingStrategyConfigurationConstruct());
     }
 }
