@@ -22,8 +22,9 @@ import com.google.common.collect.Maps;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.core.rule.builder.RuleConfigurationBuilder;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.RuleConfigurationsYamlSwapper;
 import org.apache.shardingsphere.orchestration.core.configuration.DataSourceConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
@@ -43,6 +44,7 @@ public final class ConfigurationYamlConverter {
      * @param data data
      * @return data source configurations
      */
+    @SuppressWarnings("unchecked")
     public static Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String data) {
         Map<String, YamlDataSourceConfiguration> result = (Map) YamlEngine.unmarshal(data);
         Preconditions.checkState(null != result && !result.isEmpty(), "No available data sources to load for orchestration.");
@@ -56,6 +58,6 @@ public final class ConfigurationYamlConverter {
      * @return sharding rule configuration
      */
     public static ShardingRuleConfiguration loadShardingRuleConfiguration(final String data) {
-        return new ShardingRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(data, YamlShardingRuleConfiguration.class));
+        return (ShardingRuleConfiguration) RuleConfigurationBuilder.buildToSingle(new RuleConfigurationsYamlSwapper().swap(YamlEngine.unmarshal(data, YamlShardingRuleConfiguration.class)));
     }
 }

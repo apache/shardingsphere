@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.orchestration.core.facade;
 
+import org.apache.shardingsphere.core.rule.Authentication;
+import org.apache.shardingsphere.core.rule.ProxyUser;
+import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenter;
 import org.apache.shardingsphere.orchestration.core.facade.listener.ShardingOrchestrationListenerManager;
 import org.apache.shardingsphere.orchestration.core.facade.util.FieldUtil;
 import org.apache.shardingsphere.orchestration.core.metadatacenter.MetaDataCenter;
 import org.apache.shardingsphere.orchestration.core.registrycenter.RegistryCenter;
-import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
-import org.apache.shardingsphere.core.rule.Authentication;
-import org.apache.shardingsphere.core.rule.ProxyUser;
-import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
-import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenter;
-import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
-import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,6 +36,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -92,13 +93,13 @@ public final class ShardingOrchestrationFacadeTest {
     @Test
     public void assertInitWithParameters() {
         Map<String, DataSourceConfiguration> dataSourceConfigurationMap = Collections.singletonMap("test_ds", mock(DataSourceConfiguration.class));
-        Map<String, RuleConfiguration> ruleConfigurationMap = Collections.singletonMap("sharding_db", mock(RuleConfiguration.class));
+        Map<String, Collection<RuleConfiguration>> ruleConfigurationMap = Collections.singletonMap("sharding_db", Collections.singletonList(mock(RuleConfiguration.class)));
         ProxyUser proxyUser = new ProxyUser("root", Collections.singleton("db1"));
         Authentication authentication = new Authentication();
         authentication.getUsers().put("root", proxyUser);
         Properties props = new Properties();
         shardingOrchestrationFacade.init(Collections.singletonMap("sharding_db", dataSourceConfigurationMap), ruleConfigurationMap, authentication, props);
-        verify(configCenter).persistConfiguration("sharding_db", dataSourceConfigurationMap, ruleConfigurationMap.get("sharding_db"), authentication, props, false);
+        verify(configCenter).persistConfigurations("sharding_db", dataSourceConfigurationMap, ruleConfigurationMap.get("sharding_db"), authentication, props, false);
         verify(registryCenter).persistInstanceOnline();
         verify(registryCenter).persistDataSourcesNode();
         verify(listenerManager).initListeners();

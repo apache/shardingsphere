@@ -22,10 +22,7 @@ import com.google.common.eventbus.Subscribe;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
-import org.apache.shardingsphere.core.rule.builder.ConfigurationBuilder;
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
@@ -42,11 +39,14 @@ import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRulesBuilder;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Orchestration sharding data source.
@@ -59,11 +59,11 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
     public OrchestrationShardingDataSource(final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(DefaultSchema.LOGIC_NAME)));
         ConfigCenter configService = getShardingOrchestrationFacade().getConfigCenter();
-        ShardingRuleConfiguration shardingRuleConfig = configService.loadShardingRuleConfiguration(DefaultSchema.LOGIC_NAME);
-        Preconditions.checkState(null != shardingRuleConfig && !shardingRuleConfig.getTableRuleConfigs().isEmpty(), "Missing the sharding rule configuration on registry center");
+        Collection<RuleConfiguration> configurations = configService.loadRuleConfigurations(DefaultSchema.LOGIC_NAME);
+        Preconditions.checkState(null != configurations && !configurations.isEmpty(), "Missing the sharding rule configuration on registry center");
         Map<String, DataSourceConfiguration> dataSourceConfigurations = configService.loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME);
         dataSource = new ShardingDataSource(DataSourceConverter.getDataSourceMap(dataSourceConfigurations),
-                ShardingSphereRulesBuilder.build(ConfigurationBuilder.buildSharding(shardingRuleConfig), dataSourceConfigurations.keySet()), configService.loadProperties());
+                ShardingSphereRulesBuilder.build(configurations, dataSourceConfigurations.keySet()), configService.loadProperties());
         initShardingOrchestrationFacade();
         persistMetaData(dataSource.getRuntimeContext().getMetaData().getSchema());
     }
@@ -76,9 +76,9 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
         persistMetaData(dataSource.getRuntimeContext().getMetaData().getSchema());
     }
     
-    private Map<String, RuleConfiguration> getRuleConfigurationMap() {
-        Map<String, RuleConfiguration> result = new LinkedHashMap<>(1, 1);
-        result.put(DefaultSchema.LOGIC_NAME, dataSource.getRuntimeContext().getRules().iterator().next().getRuleConfiguration());
+    private Map<String, Collection<RuleConfiguration>> getRuleConfigurationMap() {
+        Map<String, Collection<RuleConfiguration>> result = new LinkedHashMap<>(1, 1);
+        result.put(DefaultSchema.LOGIC_NAME, dataSource.getRuntimeContext().getRules().stream().map(ShardingSphereRule::getRuleConfiguration).collect(Collectors.toList()));
         return result;
     }
     

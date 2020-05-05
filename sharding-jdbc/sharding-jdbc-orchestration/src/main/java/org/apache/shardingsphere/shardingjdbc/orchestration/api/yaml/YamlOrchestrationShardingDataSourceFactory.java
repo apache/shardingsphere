@@ -19,10 +19,8 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.rule.builder.ConfigurationBuilder;
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.RuleConfigurationsYamlSwapper;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
@@ -30,6 +28,7 @@ import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.YamlCenterRepositoryConfigurationSwapperUtil;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml.YamlOrchestrationShardingRuleConfiguration;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml.constructor.YamlOrchestrationShardingRuleConfigurationConstructor;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
 import javax.sql.DataSource;
@@ -45,7 +44,7 @@ import java.util.Properties;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlOrchestrationShardingDataSourceFactory {
     
-    private static final ShardingRuleConfigurationYamlSwapper SHARDING_RULE_SWAPPER = new ShardingRuleConfigurationYamlSwapper();
+    private static final RuleConfigurationsYamlSwapper RULE_CONFIGURATIONS_SWAPPER = new RuleConfigurationsYamlSwapper();
     
     /**
      * Create sharding data source.
@@ -107,7 +106,7 @@ public final class YamlOrchestrationShardingDataSourceFactory {
             return new OrchestrationShardingDataSource(new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
         } else {
             ShardingDataSource shardingDataSource = new ShardingDataSource(
-                    dataSourceMap, ShardingSphereRulesBuilder.build(ConfigurationBuilder.buildSharding(SHARDING_RULE_SWAPPER.swap(yamlShardingRuleConfiguration)), dataSourceMap.keySet()), props);
+                    dataSourceMap, ShardingSphereRulesBuilder.build(RULE_CONFIGURATIONS_SWAPPER.swap(yamlShardingRuleConfiguration), dataSourceMap.keySet()), props);
             return new OrchestrationShardingDataSource(shardingDataSource, new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
         }
     }
