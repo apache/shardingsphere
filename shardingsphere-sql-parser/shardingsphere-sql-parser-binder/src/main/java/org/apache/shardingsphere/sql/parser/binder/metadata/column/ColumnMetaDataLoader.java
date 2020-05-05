@@ -96,7 +96,7 @@ public final class ColumnMetaDataLoader {
             delimiterLeft = "";
             delimiterRight = "";
         }
-        return "SELECT * FROM " + delimiterLeft + table + delimiterRight + " WHERE 1 != 1;";
+        return "SELECT * FROM " + delimiterLeft + table + delimiterRight + " WHERE 1 != 1";
     }
     
     private static Collection<String> loadPrimaryKeys(final Connection connection, final String table) throws SQLException {
