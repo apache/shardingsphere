@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.api;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.core.rule.builder.ConfigurationBuilder;
+import org.apache.shardingsphere.core.rule.builder.RuleConfigurationBuilder;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
@@ -57,7 +57,7 @@ public final class OrchestrationShardingDataSourceFactory {
             return createDataSource(orchestrationConfig);
         }
         ShardingDataSource shardingDataSource = new ShardingDataSource(
-                dataSourceMap, ShardingSphereRulesBuilder.build(ConfigurationBuilder.buildSharding(shardingRuleConfig), dataSourceMap.keySet()), props);
+                dataSourceMap, ShardingSphereRulesBuilder.build(RuleConfigurationBuilder.buildSharding(shardingRuleConfig), dataSourceMap.keySet()), props);
         return new OrchestrationShardingDataSource(shardingDataSource, orchestrationConfig);
     }
     
