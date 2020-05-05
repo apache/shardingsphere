@@ -230,7 +230,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
                 runtimeContext.getProperties(), runtimeContext.getRules()).rewrite(sql, new ArrayList<>(getParameters()), routeContext);
         ExecutionContext result = new ExecutionContext(routeContext.getSqlStatementContext(), ExecutionContextBuilder.build(runtimeContext.getMetaData(), sqlRewriteResult));
         findGeneratedKey(result).ifPresent(generatedKey -> generatedValues.add(generatedKey.getGeneratedValues().getLast()));
-        logSQL(runtimeContext);
+        logSQL(runtimeContext, result);
         return result;
     }
     
@@ -273,7 +273,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
                 ? ((InsertStatementContext) executionContext.getSqlStatementContext()).getGeneratedKeyContext() : Optional.empty();
     }
     
-    private void logSQL(final RuntimeContext runtimeContext) {
+    private void logSQL(final RuntimeContext runtimeContext, final ExecutionContext executionContext) {
         if (runtimeContext.getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
             SQLLogger.logSQL(sql, runtimeContext.getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
         }
