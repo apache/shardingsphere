@@ -35,6 +35,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractSQLTest {
     
@@ -64,7 +65,7 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
     public void initTable() {
         try {
             ShardingConnection conn = shardingDataSource.getConnection();
-            RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("jdbc_data.sql")));
+            RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("jdbc_data.sql"))));
             conn.close();
         } catch (final SQLException ex) {
             ex.printStackTrace();

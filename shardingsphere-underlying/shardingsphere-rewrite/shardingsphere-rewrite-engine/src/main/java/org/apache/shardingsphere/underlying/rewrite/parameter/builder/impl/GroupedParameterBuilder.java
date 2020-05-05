@@ -22,9 +22,13 @@ import lombok.Setter;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.ParameterBuilder;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 
 /**
  * Grouped parameter builder.
@@ -35,16 +39,23 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
     private final List<StandardParameterBuilder> parameterBuilders;
 
     @Getter
-    private final List<Object> onDuplicateKeyUpdateAddedParameters = new LinkedList<>();
+    private final List<Object> originalOnDuplicateKeyParameters = new LinkedList<>();
+
+    @Getter
+    private final Map<Integer, Collection<Object>> addedIndexAndOnDuplicateKeyParameters = new TreeMap<>();
+
+    private final Map<Integer, Object> replacedIndexAndOnDuplicateKeyParameters = new LinkedHashMap<>();
 
     @Setter
     private String derivedColumnName;
     
-    public GroupedParameterBuilder(final List<List<Object>> groupedParameters) {
+    public GroupedParameterBuilder(final List<List<Object>> groupedParameters, final List<Object> onDuplicateKeyUpdateParameters) {
         parameterBuilders = new ArrayList<>(groupedParameters.size());
         for (List<Object> each : groupedParameters) {
             parameterBuilders.add(new StandardParameterBuilder(each));
         }
+
+        originalOnDuplicateKeyParameters.addAll(onDuplicateKeyUpdateParameters);
     }
     
     @Override
@@ -53,12 +64,12 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
         for (int i = 0; i < parameterBuilders.size(); i++) {
             result.addAll(getParameters(i));
         }
-        if (!onDuplicateKeyUpdateAddedParameters.isEmpty()) {
-            result.addAll(onDuplicateKeyUpdateAddedParameters);
-        }
+
+        result.addAll(getOnDuplicateKeyParameters());
+
         return result;
     }
-    
+
     /**
      * Get parameters.
      * 
@@ -68,7 +79,22 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
     public List<Object> getParameters(final int count) {
         return parameterBuilders.get(count).getParameters();
     }
-    
+
+    private List<Object> getOnDuplicateKeyParameters() {
+        List<Object> result = new LinkedList<>(originalOnDuplicateKeyParameters);
+        for (Map.Entry<Integer, Object> entry : replacedIndexAndOnDuplicateKeyParameters.entrySet()) {
+            result.set(entry.getKey(), entry.getValue());
+        }
+        for (Map.Entry<Integer, Collection<Object>> entry : ((TreeMap<Integer, Collection<Object>>) addedIndexAndOnDuplicateKeyParameters).descendingMap().entrySet()) {
+            if (entry.getKey() > result.size()) {
+                result.addAll(entry.getValue());
+            } else {
+                result.addAll(entry.getKey(), entry.getValue());
+            }
+        }
+        return result;
+    }
+
     /**
      * Get derived column name.
      * 
@@ -76,5 +102,15 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
      */
     public Optional<String> getDerivedColumnName() {
         return Optional.ofNullable(derivedColumnName);
+    }
+
+    /**
+     * Add replaced OnDuplicateKeyUpdateParameter.
+     *
+     * @param index parameter index to be replaced
+     * @param parameter parameter to be replaced
+     */
+    public void addReplacedIndexAndOnDuplicateKeyUpdateParameters(final int index, final Object parameter) {
+        replacedIndexAndOnDuplicateKeyParameters.put(index, parameter);
     }
 }

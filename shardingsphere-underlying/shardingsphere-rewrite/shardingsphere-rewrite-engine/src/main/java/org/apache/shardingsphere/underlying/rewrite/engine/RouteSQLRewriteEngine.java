@@ -62,7 +62,10 @@ public final class RouteSQLRewriteEngine {
         int count = 0;
         for (Collection<DataNode> each : routeResult.getOriginalDataNodes()) {
             if (isInSameDataNode(each, routeUnit)) {
-                result.addAll(((GroupedParameterBuilder) parameterBuilder).getParameters(count));
+                GroupedParameterBuilder groupedParameterBuilder = (GroupedParameterBuilder) parameterBuilder;
+
+                result.addAll(groupedParameterBuilder.getParameters(count));
+                result.addAll(groupedParameterBuilder.getOriginalOnDuplicateKeyParameters());
             }
             count++;
         }

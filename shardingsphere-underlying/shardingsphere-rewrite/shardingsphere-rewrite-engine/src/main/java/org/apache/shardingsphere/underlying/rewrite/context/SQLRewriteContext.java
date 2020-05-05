@@ -39,41 +39,43 @@ import java.util.List;
  */
 @Getter
 public final class SQLRewriteContext {
-    
+
     private final SchemaMetaData schemaMetaData;
-    
+
     private final SQLStatementContext sqlStatementContext;
-    
+
     private final String sql;
-    
+
     private final List<Object> parameters;
-    
+
     private final ParameterBuilder parameterBuilder;
-    
+
     private final List<SQLToken> sqlTokens = new LinkedList<>();
-    
+
     @Getter(AccessLevel.NONE)
     private final SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
-    
+
     public SQLRewriteContext(final SchemaMetaData schemaMetaData, final SQLStatementContext sqlStatementContext, final String sql, final List<Object> parameters) {
         this.schemaMetaData = schemaMetaData;
         this.sqlStatementContext = sqlStatementContext;
         this.sql = sql;
         this.parameters = parameters;
         addSQLTokenGenerators(new DefaultTokenGeneratorBuilder().getSQLTokenGenerators());
+
         parameterBuilder = sqlStatementContext instanceof InsertStatementContext
-                ? new GroupedParameterBuilder(((InsertStatementContext) sqlStatementContext).getGroupedParameters()) : new StandardParameterBuilder(parameters);
+                ? new GroupedParameterBuilder(((InsertStatementContext) sqlStatementContext).getGroupedParameters(), ((InsertStatementContext) sqlStatementContext).getOnDuplicateKeyUpdateParameters())
+                : new StandardParameterBuilder(parameters);
     }
-    
+
     /**
      * Add SQL token generators.
-     * 
+     *
      * @param sqlTokenGenerators SQL token generators
      */
     public void addSQLTokenGenerators(final Collection<SQLTokenGenerator> sqlTokenGenerators) {
         this.sqlTokenGenerators.addAll(sqlTokenGenerators);
     }
-    
+
     /**
      * Generate SQL tokens.
      */

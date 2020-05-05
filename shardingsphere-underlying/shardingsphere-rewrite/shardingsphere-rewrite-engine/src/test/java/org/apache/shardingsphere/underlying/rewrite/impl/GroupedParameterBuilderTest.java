@@ -20,6 +20,7 @@ package org.apache.shardingsphere.underlying.rewrite.impl;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,7 +32,7 @@ public final class GroupedParameterBuilderTest {
     
     @Test
     public void assertGetParameters() {
-        GroupedParameterBuilder actual = new GroupedParameterBuilder(createGroupedParameters());
+        GroupedParameterBuilder actual = new GroupedParameterBuilder(createGroupedParameters(), new ArrayList<>());
         assertThat(actual.getParameters(), is(Arrays.<Object>asList(3, 4, 5, 6)));
     }
     

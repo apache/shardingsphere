@@ -39,19 +39,23 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
     private static final String INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL = "INSERT INTO t_user (name) VALUES (?),(?),(?),(?)";
 
     private static final String SELECT_FOR_INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL = "SELECT name FROM t_user WHERE id=%d";
-    
+
     private static final String INSERT_WITH_GENERATE_KEY_SQL = "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (?, ?, ?, ?)";
-    
+
     private static final String INSERT_WITHOUT_GENERATE_KEY_SQL = "INSERT INTO t_order_item (order_id, user_id, status) VALUES (?, ?, ?)";
-    
+
+    private static final String INSERT_ON_DUPLICATE_KEY_SQL = "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (?, ?, ?, ?), (?, ?, ?, ?) ON DUPLICATE KEY UPDATE status = ?";
+
     private static final String SELECT_SQL_WITHOUT_PARAMETER_MARKER = "SELECT item_id FROM t_order_item WHERE user_id = %d AND order_id= %s AND status = 'BATCH'";
-    
+
     private static final String SELECT_SQL_WITH_PARAMETER_MARKER = "SELECT item_id FROM t_order_item WHERE user_id = ? AND order_id= ? AND status = 'BATCH'";
-    
+
+    private static final String SELECT_SQL_WITH_PARAMETER_MARKER_RETURN_STATUS = "SELECT item_id, user_id, status FROM t_order_item WHERE  order_id= ? AND user_id = ?";
+
     private static final String UPDATE_SQL = "UPDATE t_order SET status = ? WHERE user_id = ? AND order_id = ?";
-    
+
     private static final String UPDATE_BATCH_SQL = "UPDATE t_order SET status=? WHERE status=?";
-    
+
     @Test
     public void assertAddBatch() throws SQLException {
         try (
@@ -201,7 +205,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
             }
         }
     }
-    
+
     @Test
     public void assertAddBatchWithoutGenerateKeyColumn() throws SQLException {
         try (
@@ -256,7 +260,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
             }
         }
     }
-    
+
     @Test
     public void assertAddBatchWithGenerateKeyColumn() throws SQLException {
         try (
@@ -315,7 +319,88 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
             }
         }
     }
-    
+
+    @Test
+    public void assertAddOnDuplicateKey() throws SQLException {
+        int itemId = 1;
+        int userId1 = 101;
+        int userId2 = 102;
+        int orderId = 200;
+        String status = "init";
+
+        String updatedStatus = "updated on duplicate key";
+
+        try (
+                Connection connection = getShardingDataSource().getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(INSERT_ON_DUPLICATE_KEY_SQL);
+                PreparedStatement queryStatement = connection.prepareStatement(SELECT_SQL_WITH_PARAMETER_MARKER_RETURN_STATUS)) {
+            preparedStatement.setInt(1, itemId);
+            preparedStatement.setInt(2, orderId);
+            preparedStatement.setInt(3, userId1);
+            preparedStatement.setString(4, status);
+
+            preparedStatement.setInt(5, itemId);
+            preparedStatement.setInt(6, orderId);
+            preparedStatement.setInt(7, userId2);
+            preparedStatement.setString(8, status);
+
+            preparedStatement.setString(9, updatedStatus);
+            int result = preparedStatement.executeUpdate();
+            assertThat(result, is(2));
+
+            queryStatement.setInt(1, orderId);
+            queryStatement.setInt(2, userId1);
+            try (ResultSet resultSet = queryStatement.executeQuery()) {
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getInt(2), is(userId1));
+                assertThat(resultSet.getString(3), is(status));
+            }
+
+            queryStatement.setInt(1, orderId);
+            queryStatement.setInt(2, userId2);
+            try (ResultSet resultSet = queryStatement.executeQuery()) {
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getInt(2), is(userId2));
+                assertThat(resultSet.getString(3), is(status));
+            }
+        }
+
+        try (
+                Connection connection = getShardingDataSource().getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(INSERT_ON_DUPLICATE_KEY_SQL);
+                PreparedStatement queryStatement = connection.prepareStatement(SELECT_SQL_WITH_PARAMETER_MARKER_RETURN_STATUS)) {
+            preparedStatement.setInt(1, itemId);
+            preparedStatement.setInt(2, orderId);
+            preparedStatement.setInt(3, userId1);
+            preparedStatement.setString(4, status);
+
+            preparedStatement.setInt(5, itemId);
+            preparedStatement.setInt(6, orderId);
+            preparedStatement.setInt(7, userId2);
+            preparedStatement.setString(8, status);
+
+            preparedStatement.setString(9, updatedStatus);
+            int result = preparedStatement.executeUpdate();
+            assertThat(result, is(2));
+
+            queryStatement.setInt(1, orderId);
+            queryStatement.setInt(2, userId1);
+            try (ResultSet resultSet = queryStatement.executeQuery()) {
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getInt(2), is(userId1));
+                assertThat(resultSet.getString(3), is(updatedStatus));
+            }
+
+            queryStatement.setInt(1, orderId);
+            queryStatement.setInt(2, userId2);
+            try (ResultSet resultSet = queryStatement.executeQuery()) {
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getInt(2), is(userId2));
+                assertThat(resultSet.getString(3), is(updatedStatus));
+            }
+        }
+    }
+
     @Test
     public void assertUpdateBatch() throws SQLException {
         try (
@@ -375,7 +460,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
             assertThat(result.length, is(0));
         }
     }
-    
+
     @Test
     public void assertInitPreparedStatementExecutorWithReplayMethod() throws SQLException {
         try (PreparedStatement preparedStatement = getShardingDataSource().getConnection().prepareStatement(SELECT_SQL_WITH_PARAMETER_MARKER)) {
@@ -386,21 +471,21 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
             assertThat(preparedStatement.getQueryTimeout(), is(1));
         }
     }
-    
+
     @Test(expected = SQLException.class)
     public void assertQueryWithNull() throws SQLException {
         try (PreparedStatement preparedStatement = getShardingDataSource().getConnection().prepareStatement(null)) {
             preparedStatement.executeQuery();
         }
     }
-    
+
     @Test(expected = SQLException.class)
     public void assertQueryWithEmptyString() throws SQLException {
         try (PreparedStatement preparedStatement = getShardingDataSource().getConnection().prepareStatement("")) {
             preparedStatement.executeQuery();
         }
     }
-    
+
     @Test
     public void assertGetParameterMetaData() throws SQLException {
         try (PreparedStatement preparedStatement = getShardingDataSource().getConnection().prepareStatement(SELECT_SQL_WITH_PARAMETER_MARKER)) {
