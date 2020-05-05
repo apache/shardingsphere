@@ -35,7 +35,20 @@ public final class GroupedParameterBuilderTest {
         GroupedParameterBuilder actual = new GroupedParameterBuilder(createGroupedParameters(), new ArrayList<>());
         assertThat(actual.getParameters(), is(Arrays.<Object>asList(3, 4, 5, 6)));
     }
-    
+
+    @Test
+    public void assertGetParametersWithOnDuplicateKeyParameters() {
+        GroupedParameterBuilder actual = new GroupedParameterBuilder(createGroupedParameters(), createOnDuplicateKeyUpdateParameters());
+        assertThat(actual.getParameters(), is(Arrays.<Object>asList(3, 4, 5, 6, 7, 8)));
+    }
+
+    private List<Object> createOnDuplicateKeyUpdateParameters() {
+        LinkedList<Object> result = new LinkedList<>();
+        result.add(7);
+        result.add(8);
+        return result;
+    }
+
     private List<List<Object>> createGroupedParameters() {
         List<List<Object>> result = new LinkedList<>();
         result.add(Arrays.asList(3, 4));
