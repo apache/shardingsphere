@@ -38,7 +38,10 @@ import java.util.Map.Entry;
 
 /**
  * Rule configurations YAML swapper.
+ * 
+ * @deprecated instead of RuleRootConfigurationsYamlSwapper
  */
+@Deprecated
 public final class RuleConfigurationsYamlSwapper implements YamlSwapper<YamlShardingRuleConfiguration, Collection<RuleConfiguration>> {
     
     private final TableRuleConfigurationYamlSwapper tableRuleConfigurationYamlSwapper = new TableRuleConfigurationYamlSwapper();
