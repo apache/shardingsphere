@@ -68,7 +68,7 @@ public final class RuleConfigurationsYamlSwapper implements YamlSwapper<YamlShar
                 result.setDefaultKeyGenerator(configuration.getDefaultKeyGenerator());
             } else if (each instanceof MasterSlaveRuleConfiguration) {
                 result.getMasterSlaveRules().put(((MasterSlaveRuleConfiguration) each).getName(), masterSlaveRuleConfigurationYamlSwapper.swap((MasterSlaveRuleConfiguration) each));
-            } else if (each instanceof EncryptRuleConfiguration && !((EncryptRuleConfiguration) each).getTables().isEmpty()) {
+            } else if (each instanceof EncryptRuleConfiguration) {
                 result.setEncryptRule(encryptRuleConfigurationYamlSwapper.swap((EncryptRuleConfiguration) each));
             }
         }
@@ -103,7 +103,7 @@ public final class RuleConfigurationsYamlSwapper implements YamlSwapper<YamlShar
             each.setName(entry.getKey());
             result.add(masterSlaveRuleConfigurationYamlSwapper.swap(entry.getValue()));
         }
-        if (null != yamlConfiguration.getEncryptRule() && !yamlConfiguration.getEncryptRule().getTables().isEmpty()) {
+        if (null != yamlConfiguration.getEncryptRule()) {
             result.add(encryptRuleConfigurationYamlSwapper.swap(yamlConfiguration.getEncryptRule()));
         }
         return result;

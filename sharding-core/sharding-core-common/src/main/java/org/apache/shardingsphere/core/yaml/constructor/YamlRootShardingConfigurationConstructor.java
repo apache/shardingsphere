@@ -24,7 +24,10 @@ import org.apache.shardingsphere.underlying.common.yaml.constructor.AbstractType
 
 /**
  * YAML root sharding configuration constructor.
+ * 
+ * @deprecated instead of YamlRootRuleConfigurationsConstructor
  */
+@Deprecated
 public final class YamlRootShardingConfigurationConstructor extends AbstractTypeConstructor {
     
     public YamlRootShardingConfigurationConstructor() {

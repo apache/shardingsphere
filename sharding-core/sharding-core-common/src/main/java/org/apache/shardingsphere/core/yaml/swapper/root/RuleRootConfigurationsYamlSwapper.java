@@ -60,7 +60,7 @@ public final class RuleRootConfigurationsYamlSwapper implements YamlSwapper<Yaml
                 result.setShardingRule(swap((ShardingRuleConfiguration) each));
             } else if (each instanceof MasterSlaveRuleConfiguration) {
                 result.getMasterSlaveRules().put(((MasterSlaveRuleConfiguration) each).getName(), masterSlaveRuleConfigurationYamlSwapper.swap((MasterSlaveRuleConfiguration) each));
-            } else if (each instanceof EncryptRuleConfiguration && !((EncryptRuleConfiguration) each).getTables().isEmpty()) {
+            } else if (each instanceof EncryptRuleConfiguration) {
                 result.setEncryptRule(encryptRuleConfigurationYamlSwapper.swap((EncryptRuleConfiguration) each));
             }
         }
@@ -97,7 +97,7 @@ public final class RuleRootConfigurationsYamlSwapper implements YamlSwapper<Yaml
             each.setName(entry.getKey());
             result.add(masterSlaveRuleConfigurationYamlSwapper.swap(entry.getValue()));
         }
-        if (null != configurations.getEncryptRule() && !configurations.getEncryptRule().getTables().isEmpty()) {
+        if (null != configurations.getEncryptRule()) {
             result.add(encryptRuleConfigurationYamlSwapper.swap(configurations.getEncryptRule()));
         }
         return result;

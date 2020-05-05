@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.yaml.config;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.config.shadow.YamlShadowRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
@@ -44,6 +45,8 @@ public final class YamlRootRuleConfigurations implements YamlConfiguration {
     private Map<String, YamlMasterSlaveRuleConfiguration> masterSlaveRules = new LinkedHashMap<>();
     
     private YamlEncryptRuleConfiguration encryptRule;
+    
+    private YamlShadowRuleConfiguration shadowRule;
     
     private Properties props = new Properties();
 }

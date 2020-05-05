@@ -25,9 +25,9 @@ import org.apache.shardingsphere.underlying.common.yaml.constructor.AbstractType
 /**
  * YAML root configurations constructor.
  */
-public final class YamlRootConfigurationsConstructor extends AbstractTypeConstructor {
+public final class YamlRootRuleConfigurationsConstructor extends AbstractTypeConstructor {
     
-    public YamlRootConfigurationsConstructor() {
+    public YamlRootRuleConfigurationsConstructor() {
         super(YamlRootRuleConfigurations.class);
         registerConstruct(YamlNoneShardingStrategyConfiguration.class, new YamlNoneShardingStrategyConfigurationConstruct());
     }
