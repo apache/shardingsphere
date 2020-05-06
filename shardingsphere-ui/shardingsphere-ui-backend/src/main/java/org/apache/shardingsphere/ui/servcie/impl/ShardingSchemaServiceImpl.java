@@ -93,13 +93,7 @@ public final class ShardingSchemaServiceImpl implements ShardingSchemaService {
     
     private void checkRuleConfiguration(final String configData) {
         try {
-            if (configData.contains("encryptors:\n")) {
-                ConfigurationYamlConverter.loadEncryptRuleConfiguration(configData);
-            } else if (configData.contains("tables:\n") || configData.contains("defaultTableStrategy:\n")) {
-                ConfigurationYamlConverter.loadRuleConfigurations(configData);
-            } else {
-                ConfigurationYamlConverter.loadMasterSlaveRuleConfiguration(configData);
-            }
+            ConfigurationYamlConverter.loadRuleConfigurations(configData);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON

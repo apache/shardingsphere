@@ -79,7 +79,8 @@ public final class ConfigurationYamlConverter {
      * @return master-slave rule configuration
      */
     public static MasterSlaveRuleConfiguration loadMasterSlaveRuleConfiguration(final String data) {
-        return new MasterSlaveRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(data, YamlMasterSlaveRuleConfiguration.class));
+        Collection<RuleConfiguration> ruleConfigurations = loadRuleConfigurations(data);
+        return (MasterSlaveRuleConfiguration) ruleConfigurations.stream().filter(each->each instanceof MasterSlaveRuleConfiguration).findFirst().get();
     }
     
     /**
@@ -100,15 +101,5 @@ public final class ConfigurationYamlConverter {
      */
     public static Properties loadProperties(final String data) {
         return YamlEngine.unmarshalProperties(data);
-    }
-    
-    /**
-     * Load encrypt rule configuration.
-     *
-     * @param data data
-     * @return encrypt rule configuration
-     */
-    public static EncryptRuleConfiguration loadEncryptRuleConfiguration(final String data) {
-        return new EncryptRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(data, YamlEncryptRuleConfiguration.class));
     }
 }
