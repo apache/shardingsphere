@@ -18,19 +18,21 @@
 package org.apache.shardingsphere.sql.parser.sql.segment.dal;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 
 /**
  * Variable segment.
  */
-@RequiredArgsConstructor
 @Getter
+@Setter
 public final class VariableSegment implements SQLSegment {
     
-    private final int startIndex;
+    private int startIndex;
     
-    private final int stopIndex;
+    private int stopIndex;
     
-    private final String variable;
+    private String scope;
+    
+    private String variable;
 }
