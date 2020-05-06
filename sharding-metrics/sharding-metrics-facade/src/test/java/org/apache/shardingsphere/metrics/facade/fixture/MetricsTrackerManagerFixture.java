@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.metrics.facade.fixture;
 
 import org.apache.shardingsphere.metrics.api.MetricsTrackerFactory;
+import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.metrics.spi.MetricsTrackerManager;
 
 import java.util.Properties;
@@ -25,13 +26,18 @@ import java.util.Properties;
 public final class MetricsTrackerManagerFixture implements MetricsTrackerManager {
     
     @Override
-    public void init(final int port) {
+    public void start(MetricsConfiguration metricsConfiguration) {
     
     }
     
     @Override
     public MetricsTrackerFactory getMetricsTrackerFactory() {
         return null;
+    }
+    
+    @Override
+    public void stop() {
+    
     }
     
     @Override

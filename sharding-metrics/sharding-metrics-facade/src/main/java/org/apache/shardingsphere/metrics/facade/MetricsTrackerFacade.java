@@ -27,6 +27,7 @@ import org.apache.shardingsphere.metrics.api.NoneHistogramMetricsTrackerDelegate
 import org.apache.shardingsphere.metrics.api.NoneSummaryMetricsTrackerDelegate;
 import org.apache.shardingsphere.metrics.api.SummaryMetricsTracker;
 import org.apache.shardingsphere.metrics.api.SummaryMetricsTrackerDelegate;
+import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.metrics.enums.MetricsTypeEnum;
 import org.apache.shardingsphere.metrics.spi.MetricsTrackerManager;
 
@@ -50,6 +51,8 @@ public final class MetricsTrackerFacade {
     
     private Optional<MetricsTrackerManager> metricsTrackerManager = Optional.empty();
     
+    private volatile Boolean enabled = false;
+    
     private MetricsTrackerFacade() {
         loadMetricsManager();
     }
@@ -66,7 +69,7 @@ public final class MetricsTrackerFacade {
     /**
      * Find metrics tracker manager.
      *
-     * @param metricsName  metrics name
+     * @param metricsName metrics name
      * @return metrics tracker manager
      */
     public Optional<MetricsTrackerManager> findMetricsTrackerManager(final String metricsName) {
@@ -76,15 +79,15 @@ public final class MetricsTrackerFacade {
     /**
      * Init for metrics tracker manager.
      *
-     * @param metricsName metrics name
-     * @param port port
+     * @param metricsConfiguration metrics configuration
      */
-    public void init(final String metricsName, final int port) {
+    public void init(final MetricsConfiguration metricsConfiguration) {
         if (!isInit.compareAndSet(false, true)) {
             return;
         }
-        metricsTrackerManager = findMetricsTrackerManager(metricsName);
-        metricsTrackerManager.ifPresent(manager -> manager.init(port));
+        enabled = true;
+        metricsTrackerManager = findMetricsTrackerManager(metricsConfiguration.getMetricsName());
+        metricsTrackerManager.ifPresent(manager -> manager.start(metricsConfiguration));
     }
     
     /**
@@ -102,7 +105,7 @@ public final class MetricsTrackerFacade {
      * Increment of gauge metrics tracker.
      *
      * @param metricsLabel metrics label
-     * @param labelValues label values
+     * @param labelValues  label values
      */
     public void gaugeInc(final String metricsLabel, final String... labelValues) {
         metricsTrackerManager.flatMap(manager -> manager.getMetricsTrackerFactory().create(MetricsTypeEnum.GAUGE.name(), metricsLabel))
@@ -149,7 +152,7 @@ public final class MetricsTrackerFacade {
      * Start timer of summary metrics tracker.
      *
      * @param metricsLabel metrics label
-     * @param labelValues label values
+     * @param labelValues  label values
      * @return summary metrics tracker delegate
      */
     public SummaryMetricsTrackerDelegate summaryStartTimer(final String metricsLabel, final String... labelValues) {

@@ -15,34 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metrics.spi;
+package org.apache.shardingsphere.metrics.configuration.yaml;
 
-import org.apache.shardingsphere.metrics.api.MetricsTrackerFactory;
-import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
-import org.apache.shardingsphere.spi.type.TypedSPI;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
+
+import java.util.Properties;
 
 /**
- * Metrics tracker manager.
+ * Metrics configuration for YAML.
  */
-public interface MetricsTrackerManager extends TypedSPI {
+@Getter
+@Setter
+public class YamlMetricsConfiguration implements YamlConfiguration {
     
-    /**
-     * Start metrics tracker.
-     *
-     * @param metricsConfiguration metrics configuration
-     */
-    void start(MetricsConfiguration metricsConfiguration);
+    private String name;
     
-    /**
-     * Gets metrics tracker factory.
-     *
-     * @return metrics tracker factory
-     */
-    MetricsTrackerFactory getMetricsTrackerFactory();
+    private String host;
     
-    /**
-     * Stop metrics tracker.
-     */
-    void stop();
+    private Integer port;
+    
+    private Properties props = new Properties();
 }
 
