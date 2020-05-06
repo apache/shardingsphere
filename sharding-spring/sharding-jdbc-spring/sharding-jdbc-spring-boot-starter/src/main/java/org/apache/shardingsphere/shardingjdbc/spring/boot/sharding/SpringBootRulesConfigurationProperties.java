@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring.boot.sharding;
 
-import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.config.YamlRootRuleConfigurations;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Sharding rule configuration properties.
  */
-//@ConfigurationProperties(prefix = "spring.shardingsphere.sharding")
-public class SpringBootShardingRuleConfigurationProperties extends YamlShardingRuleConfiguration {
+@ConfigurationProperties(prefix = "spring.shardingsphere.rules")
+public class SpringBootRulesConfigurationProperties extends YamlRootRuleConfigurations {
 }

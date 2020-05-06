@@ -36,7 +36,7 @@ import java.util.Properties;
  */
 @Getter
 @Setter
-public final class YamlRootRuleConfigurations implements YamlConfiguration {
+public class YamlRootRuleConfigurations implements YamlConfiguration {
     
     private Map<String, DataSource> dataSources = new HashMap<>();
     
