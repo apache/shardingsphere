@@ -1,6 +1,5 @@
 +++
 pre = "<b>3.3.4. </b>"
-toc = true
 title = "APM Integration"
 weight = 4
 +++

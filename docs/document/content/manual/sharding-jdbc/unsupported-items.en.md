@@ -1,6 +1,5 @@
 +++
 pre = "<b>4.1.3. </b>"
-toc = true
 title = "Unsupported JDBC Items"
 weight = 3
 +++

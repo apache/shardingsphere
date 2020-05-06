@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "Spring命名空间配置"
 weight = 4
 +++
@@ -9,7 +8,7 @@ weight = 4
 行表达式标识符可以使用`${...}`或`$->{...}`，但前者与Spring本身的属性文件占位符冲突，因此在Spring环境中使用行表达式标识符建议使用`$->{...}`。
 
 ## 配置示例
-详细example: [shardingsphere-example](https://github.com/apache/incubator-shardingsphere-example/tree/dev/sharding-jdbc-example/sharding-example/sharding-spring-namespace-jpa-example/src/main/resources/META-INF)
+详细example: [shardingsphere-example](https://github.com/apache/shardingsphere-example/tree/dev/sharding-jdbc-example/sharding-example/sharding-spring-namespace-jpa-example/src/main/resources/META-INF)
 ### 数据分片
 
 ```xml

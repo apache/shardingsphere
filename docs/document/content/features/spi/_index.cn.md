@@ -15,7 +15,7 @@ Apache ShardingSphere之所以采用SPI方式进行扩展，是出于整体架�
 
 本章节汇总了Apache ShardingSphere所有通过SPI方式载入的功能模块。
 如无特殊需求，用户可以使用Apache ShardingSphere提供的内置实现，并通过简单配置即可实现相应功能；高级用户则可以参考各个功能模块的接口进行自定义实现。
-我们非常欢迎大家将您的实现类反馈至[开源社区](https://github.com/apache/incubator-shardingsphere/pulls)，让更多用户从中收益。
+我们非常欢迎大家将您的实现类反馈至[开源社区](https://github.com/apache/shardingsphere/pulls)，让更多用户从中收益。
 
 ### SQL解析
 

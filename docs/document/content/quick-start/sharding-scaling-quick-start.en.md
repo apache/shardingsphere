@@ -1,7 +1,6 @@
 +++
 pre = "<b>2.3. </b>"
-toc = true
-title = "Sharding-Scaling"
+title = "Sharding-Scaling(Alpha)"
 weight = 3
 +++
 
@@ -9,17 +8,17 @@ weight = 3
 
 ### Deployment
 
-1. Execute the following command to compile and generate the sharding-scaling binary package:
+#### 1. Execute the following command to compile and generate the sharding-scaling binary package:
 
 ```
-git clone https://github.com/apache/incubator-shardingsphere.git；
-cd incubarot-shardingsphere;
+git clone https://github.com/apache/shardingsphere.git；
+cd shardingsphere;
 mvn clean install -Prelease;
 ```
 
-The binary package's directory is:`/sharding-distribution/sharding-scaling-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-scaling-bin.tar.gz`。
+The binary package's directory is:`/sharding-distribution/sharding-scaling-distribution/target/apache-shardingsphere-${latest.release.version}-sharding-scaling-bin.tar.gz`。
 
-2. Unzip the distribution package, modify the configuration file `conf/server.yaml`, we should ensure the port does not conflict with others, and other values can be left as default:
+#### 2. Unzip the distribution package, modify the configuration file `conf/server.yaml`, we should ensure the port does not conflict with others, and other values can be left as default:
 
 ```
 port: 8888
@@ -28,7 +27,7 @@ pushTimeout: 1000
 workerThread: 30
 ```
 
-3. start up sharding-scaling:
+#### 3. start up sharding-scaling:
 
 ```
 sh bin/start.sh
@@ -38,7 +37,7 @@ sh bin/start.sh
 If the backend database is MySQL, download [MySQL Connector/J](https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.47.tar.gz) 
 and decompress, then copy mysql-connector-java-5.1.47.jar to ${sharding-scaling}\lib directory.
 
-4. See the log file `logs/stdout.log`，ensure successful startup.
+#### 4. See the log file `logs/stdout.log`，ensure successful startup.
 
 ### Start scaling job
 
@@ -52,7 +51,7 @@ curl -X POST \
   -H 'content-type: application/json' \
   -d '{
    "ruleConfiguration": {
-      "sourceDatasource": "ds_0: !!org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration\n  dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n  properties:\n    jdbcUrl: jdbc:mysql://127.0.0.1:3306/test?serverTimezone=UTC&useSSL=false\n    username: root\n    password: '\''123456'\''\n    connectionTimeout: 30000\n    idleTimeout: 60000\n    maxLifetime: 1800000\n    maxPoolSize: 50\n    minPoolSize: 1\n    maintenanceIntervalMilliseconds: 30000\n    readOnly: false\n",
+      "sourceDatasource": "ds_0: !!org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration\n  dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n  properties:\n    jdbcUrl: jdbc:mysql://127.0.0.1:3306/test?serverTimezone=UTC&useSSL=false\n    username: root\n    password: '\''123456'\''\n    connectionTimeout: 30000\n    idleTimeout: 60000\n    maxLifetime: 1800000\n    maxPoolSize: 50\n    minPoolSize: 1\n    maintenanceIntervalMilliseconds: 30000\n    readOnly: false\n",
       "sourceRule": "defaultDatabaseStrategy:\n  inline:\n    algorithmExpression: ds_${user_id % 2}\n    shardingColumn: user_id\ntables:\n  t1:\n    actualDataNodes: ds_0.t1\n    keyGenerator:\n      column: order_id\n      type: SNOWFLAKE\n    logicTable: t1\n    tableStrategy:\n      inline:\n        algorithmExpression: t1\n        shardingColumn: order_id\n  t2:\n    actualDataNodes: ds_0.t2\n    keyGenerator:\n      column: order_item_id\n      type: SNOWFLAKE\n    logicTable: t2\n    tableStrategy:\n      inline:\n        algorithmExpression: t2\n        shardingColumn: order_id\n",
       "destinationDataSources": {
          "name": "dt_0",

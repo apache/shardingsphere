@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "Spring Boot Configuration"
 weight = 3
 +++

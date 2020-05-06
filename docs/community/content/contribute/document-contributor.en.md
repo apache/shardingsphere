@@ -15,13 +15,13 @@ In the contributor guide, we have mentioned how to submit Issues and pull reques
 - Familiar with [Hugo](https://gohugo.io/)
 
 ## Fock document
-Fock the master branch of [ShardingSphere](https://github.com/apache/incubator-shardingsphere).
+Fock the master branch of [ShardingSphere](https://github.com/apache/shardingsphere).
 
 
 ## Directory structure description
 
 ```
-incubator-shardingsphere
+shardingsphere
 ├─docs
   ├─community
   │  ├─archetypes
@@ -69,12 +69,12 @@ incubator-shardingsphere
 
 ## Document Basics
 
-The ShardingSphere document is written in markdown, processed in Hugo, generated HTML, deployed in [asf-site](https://github.com/apache/incubator-shardingsphere-doc/tree/asf-site)   branch, and the source code is located in [Github](https://github.com/apache/incubator-shardingsphere/tree/master).
+The ShardingSphere document is written in markdown, processed in Hugo, generated HTML, deployed in [asf-site](https://github.com/apache/shardingsphere-doc/tree/asf-site)   branch, and the source code is located in [Github](https://github.com/apache/shardingsphere/tree/master).
 
 - [Latest version Official course](https://shardingsphere.apache.org/document/current/en/overview/) source is stored in `/document/`
 - [Community introduction and contribution](https://shardingsphere.apache.org/community/en/contribute/) related document sources are stored in `/community/content/`
 
-You can submit questions, edit content, and view other people's changes from [Github](https://github.com/apache/incubator-shardingsphere/issues).
+You can submit questions, edit content, and view other people's changes from [Github](https://github.com/apache/shardingsphere/issues).
 
 ## Page template
 
@@ -90,7 +90,7 @@ Anyone with a GitHub account can ask questions (error reports) about shardingsph
 1. Describe the problem in detail.
 1. Describe the problems caused to users.
 1. Propose the repair method.
-1. In [Issues](https://github.com/apache/incubator-shardingsphere/issues),`New issue ` asks your question.
+1. In [Issues](https://github.com/apache/shardingsphere/issues),`New issue ` asks your question.
 
 ## Submission changes
 

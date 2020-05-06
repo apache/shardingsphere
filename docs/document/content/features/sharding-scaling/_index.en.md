@@ -1,6 +1,6 @@
 +++
 pre = "<b>3.7. </b>"
-title = "Scaling"
+title = "Scaling(Alpha)"
 weight = 7
 chapter = true
 +++

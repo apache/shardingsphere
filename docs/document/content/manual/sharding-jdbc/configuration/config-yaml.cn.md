@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "Yaml配置"
 weight = 2
 +++

@@ -1,14 +1,13 @@
 +++
-toc = true
 title = "部署运行"
 weight = 1
 +++
 
 ## 二进制运行
 
-1. `git clone https://github.com/apache/incubator-shardingsphere.git`；
+1. `git clone https://github.com/apache/shardingsphere.git`；
 1. 运行 `mvn clean install -Prelease`；
-1. 获取安装包 `/sharding-distribution/shardingsphere-ui-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-ui-bin.tar.gz`；
+1. 获取安装包 `/sharding-distribution/shardingsphere-ui-distribution/target/apache-shardingsphere-${latest.release.version}-sharding-ui-bin.tar.gz`；
 1. 解压缩后运行`bin/start.sh`；
 1. 访问`http://localhost:8088/`。
 

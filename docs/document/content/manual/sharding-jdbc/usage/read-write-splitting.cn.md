@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "读写分离"
 weight = 2
 +++
