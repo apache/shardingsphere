@@ -1,6 +1,5 @@
 +++
 pre = "<b>3.6.1. </b>"
-toc = true
 title = "SQL Case"
 weight = 1
 +++

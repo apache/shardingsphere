@@ -1,6 +1,5 @@
 +++
 pre = "<b>2.2. </b>"
-toc = true
 title = "Sharding-Proxy"
 weight = 2
 +++

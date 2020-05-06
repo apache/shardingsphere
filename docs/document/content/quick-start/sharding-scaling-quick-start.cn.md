@@ -1,7 +1,6 @@
 +++
 pre = "<b>2.3. </b>"
-toc = true
-title = "Sharding-Scaling"
+title = "Sharding-Scaling(Alpha)"
 weight = 3
 +++
 
@@ -9,18 +8,18 @@ weight = 3
 
 ### 部署启动
 
-1. 执行以下命令，编译生成sharding-scaling二进制包：
+#### 1. 执行以下命令，编译生成sharding-scaling二进制包：
 
 ```
 
-git clone https://github.com/apache/incubator-shardingsphere.git；
-cd incubarot-shardingsphere;
+git clone https://github.com/apache/shardingsphere.git；
+cd shardingsphere;
 mvn clean install -Prelease;
 ```
 
-发布包所在目录为：`/sharding-distribution/sharding-scaling-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-scaling-bin.tar.gz`。
+发布包所在目录为：`/sharding-distribution/sharding-scaling-distribution/target/apache-shardingsphere-${latest.release.version}-sharding-scaling-bin.tar.gz`。
 
-2. 解压缩发布包，修改配置文件`conf/server.yaml`，这里主要修改启动端口，保证不与本机其他端口冲突，其他值保持默认即可：
+#### 2. 解压缩发布包，修改配置文件`conf/server.yaml`，这里主要修改启动端口，保证不与本机其他端口冲突，其他值保持默认即可：
 
 ```
 port: 8888
@@ -29,7 +28,7 @@ pushTimeout: 1000
 workerThread: 30
 ```
 
-3. 启动sharding-scaling：
+#### 3. 启动sharding-scaling：
 
 ```
 sh bin/start.sh
@@ -39,7 +38,7 @@ sh bin/start.sh
 如果后端连接MySQL数据库，需要下载[MySQL Connector/J](https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.47.tar.gz)，
 解压缩后，将mysql-connector-java-5.1.47.jar拷贝到${sharding-scaling}\lib目录。
 
-4. 查看日志`logs/stdout.log`，确保启动成功。
+#### 4. 查看日志`logs/stdout.log`，确保启动成功。
 
 ### 创建迁移任务
 
@@ -53,7 +52,7 @@ curl -X POST \
   -H 'content-type: application/json' \
   -d '{
    "ruleConfiguration": {
-      "sourceDatasource": "ds_0: !!YamlDataSourceConfiguration\n  dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n  properties:\n    jdbcUrl: jdbc:mysql://127.0.0.1:3306/test?serverTimezone=UTC&useSSL=false\n    username: root\n    password: '\''123456'\''\n    connectionTimeout: 30000\n    idleTimeout: 60000\n    maxLifetime: 1800000\n    maxPoolSize: 50\n    minPoolSize: 1\n    maintenanceIntervalMilliseconds: 30000\n    readOnly: false\n",
+      "sourceDatasource": "ds_0: !!org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration\n  dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n  properties:\n    jdbcUrl: jdbc:mysql://127.0.0.1:3306/test?serverTimezone=UTC&useSSL=false\n    username: root\n    password: '\''123456'\''\n    connectionTimeout: 30000\n    idleTimeout: 60000\n    maxLifetime: 1800000\n    maxPoolSize: 50\n    minPoolSize: 1\n    maintenanceIntervalMilliseconds: 30000\n    readOnly: false\n",
       "sourceRule": "defaultDatabaseStrategy:\n  inline:\n    algorithmExpression: ds_${user_id % 2}\n    shardingColumn: user_id\ntables:\n  t1:\n    actualDataNodes: ds_0.t1\n    keyGenerator:\n      column: order_id\n      type: SNOWFLAKE\n    logicTable: t1\n    tableStrategy:\n      inline:\n        algorithmExpression: t1\n        shardingColumn: order_id\n  t2:\n    actualDataNodes: ds_0.t2\n    keyGenerator:\n      column: order_item_id\n      type: SNOWFLAKE\n    logicTable: t2\n    tableStrategy:\n      inline:\n        algorithmExpression: t2\n        shardingColumn: order_id\n",
       "destinationDataSources": {
          "name": "dt_0",

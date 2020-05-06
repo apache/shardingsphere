@@ -1,5 +1,4 @@
 +++
-toc = true
 title = "Sharding Hint"
 weight = 3
 +++

@@ -1,6 +1,5 @@
 +++
 pre = "<b>3.3.1. </b>"
-toc = true
 title = "Config Center"
 weight = 1
 +++
@@ -111,9 +110,9 @@ bindingTables:
   - t_order,t_order_item
 broadcastTables:
   - t_config
-  
+
 defaultDataSourceName: ds_0
-    
+
 masterSlaveRules: {}
 ```
 

@@ -9,7 +9,7 @@ chapter = true
 
 欢迎采用了ShardingSphere的公司在此登记，您的支持是我们最大的动力。
 
-请按`公司名` + `首页` + `应用案例（可选）` 的格式在[此处](https://github.com/sharding-sphere/sharding-sphere/issues/234)登记。
+请按`公司名` + `首页` + `应用案例（可选）` 的格式在[此处](https://github.com/apache/shardingsphere/issues/234)登记。
 
 ## 谁在使用ShardingSphere?
 
@@ -142,5 +142,9 @@ chapter = true
 1. <a href="https://www.cloudm.com/" rel="nofollow">聚励云机械</a>
 1. <a href="http://read.zhulang.com/" rel="nofollow">连尚文学</a>
 1. <a href="http://www.dtchuxing.com/" rel="nofollow">公交云</a>
+1. <a href="http://tigosoft.com/" rel="nofollow">泰古信息</a>
+1. <a href="https://www.can-dao.com/" rel="nofollow">餐道</a>
+1. <a href="https://www.yy.com/" rel="nofollow">欢聚时代(YY)</a>
+1. <a href="https://www.ddky.com/" rel="nofollow">叮当快药</a>
 
 <img src="https://shardingsphere.apache.org/community/image/powered-by.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />

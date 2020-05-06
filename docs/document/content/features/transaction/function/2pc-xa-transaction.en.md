@@ -1,6 +1,5 @@
 +++
 pre = "<b>3.4.2.2 </b>"
-toc = true
 title = "2PC transaction-XA"
 weight = 2
 +++
