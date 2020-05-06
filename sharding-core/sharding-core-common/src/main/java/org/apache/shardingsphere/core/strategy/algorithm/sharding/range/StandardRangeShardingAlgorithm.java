@@ -84,7 +84,6 @@ public final class StandardRangeShardingAlgorithm extends AbstractRangeShardingA
         long upper = Long.parseLong(properties.get(PARTITION_UPPER).toString());
         long volume = Long.parseLong(properties.get(PARTITION_VOLUME).toString());
         Preconditions.checkArgument(upper - lower >= volume, "Standard range sharding algorithm partition range can not be smaller than volume.");
-
         int partitionSize = Math.toIntExact(LongMath.divide(upper - lower, volume, RoundingMode.CEILING));
         partitionRangeMap = Maps.newHashMapWithExpectedSize(partitionSize + 2);
         partitionRangeMap.put(0, Range.lessThan(lower));
