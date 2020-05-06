@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.binder.metadata.index;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * Index meta data loader.
@@ -35,7 +34,8 @@ public final class IndexMetaDataLoader {
     private static final String INDEX_NAME = "INDEX_NAME";
     
     /**
-     * Load column meta data list.
+     * Load index meta data list.
+     * In a few jdbc implementation(eg. oracle), return value of getIndexInfo contains a statistics record that not a index itself and INDEX_NAME is null.
      * 
      * @param connection connection
      * @param table table name
@@ -47,7 +47,9 @@ public final class IndexMetaDataLoader {
         try (ResultSet resultSet = connection.getMetaData().getIndexInfo(connection.getCatalog(), connection.getSchema(), table, false, false)) {
             while (resultSet.next()) {
                 String indexName = resultSet.getString(INDEX_NAME);
-                result.add(new IndexMetaData(indexName));
+                if (null != indexName) {
+                    result.add(new IndexMetaData(indexName));
+                }
             }
         }
         return result;
