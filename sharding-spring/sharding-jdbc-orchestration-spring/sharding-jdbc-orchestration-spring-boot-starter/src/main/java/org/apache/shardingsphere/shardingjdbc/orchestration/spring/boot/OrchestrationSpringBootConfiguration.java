@@ -24,7 +24,6 @@ import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfigura
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.strategy.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.root.RuleConfigurationsYamlSwapper;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
@@ -45,7 +44,7 @@ import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.encrypt.
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.masterslave.LocalMasterSlaveRuleCondition;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.masterslave.SpringBootMasterSlaveRuleConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding.LocalShardingRuleCondition;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding.SpringBootShardingRuleConfigurationProperties;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding.OrchestrationSpringBootRulesConfigurationProperties;
 import org.apache.shardingsphere.spring.boot.datasource.DataSourcePropertiesSetterHolder;
 import org.apache.shardingsphere.spring.boot.util.DataSourceUtil;
 import org.apache.shardingsphere.spring.boot.util.PropertyUtil;
@@ -81,7 +80,7 @@ import java.util.Map.Entry;
 @Configuration
 @ComponentScan("org.apache.shardingsphere.spring.boot.converter")
 @EnableConfigurationProperties({
-        SpringBootShardingRuleConfigurationProperties.class, SpringBootMasterSlaveRuleConfigurationProperties.class,
+        OrchestrationSpringBootRulesConfigurationProperties.class, SpringBootMasterSlaveRuleConfigurationProperties.class,
         SpringBootRootConfigurationProperties.class, SpringBootEncryptRuleConfigurationProperties.class})
 @ConditionalOnProperty(prefix = "spring.shardingsphere", name = "enabled", havingValue = "true", matchIfMissing = true)
 @RequiredArgsConstructor
@@ -90,7 +89,7 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     
     private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
     
-    private final SpringBootShardingRuleConfigurationProperties shardingRule;
+    private final OrchestrationSpringBootRulesConfigurationProperties rules;
     
     private final SpringBootMasterSlaveRuleConfigurationProperties masterSlaveRule;
     
@@ -130,7 +129,7 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @Conditional(LocalShardingRuleCondition.class)
     public DataSource shardingDataSourceByLocal(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
         return new OrchestrationShardingDataSource(new ShardingDataSource(dataSourceMap, 
-                ShardingSphereRulesBuilder.build(new RuleConfigurationsYamlSwapper().swap(shardingRule), dataSourceMap.keySet()), root.getProps()), orchestrationConfiguration);
+                ShardingSphereRulesBuilder.build(new OrchestrationRuleRootConfigurationsYamlSwapper().swap(rules), dataSourceMap.keySet()), root.getProps()), orchestrationConfiguration);
     }
     
     /**
