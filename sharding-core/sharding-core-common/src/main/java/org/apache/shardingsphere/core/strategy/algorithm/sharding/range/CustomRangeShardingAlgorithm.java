@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.strategy.algorithm.sharding;
+package org.apache.shardingsphere.core.strategy.algorithm.sharding.range;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
@@ -27,10 +27,8 @@ import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.api.sharding.standard.RangeShardingValue;
-import org.apache.shardingsphere.api.sharding.standard.StandardShardingAlgorithm;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -38,9 +36,9 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * Range sharding algorithm.
+ * Custom range sharding algorithm.
  * <p>
- * Range sharding algorithm is similar to the rule of partition table.
+ * Custom range sharding algorithm is similar to the rule of partition table.
  * User can specify the range by setting the `partition.ranges` parameter.
  * The `partition.ranges` parameter is an ordered list of numbers, separated by commas.
  * </p>
@@ -51,13 +49,11 @@ import java.util.stream.Collectors;
  * The sharding values will be divided into different partition by its value.
  * </p>
  */
-public final class RangeShardingAlgorithm implements StandardShardingAlgorithm<Long> {
+public final class CustomRangeShardingAlgorithm extends AbstractRangeShardingAlgorithm {
 
     private static final String PARTITION_RANGES = "partition.ranges";
 
     private Map<Integer, Range<Long>> partitionRangeMap;
-
-    private volatile boolean init;
 
     @Getter
     @Setter
@@ -66,46 +62,26 @@ public final class RangeShardingAlgorithm implements StandardShardingAlgorithm<L
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Long> shardingValue) {
         checkInit();
-        for (String each : availableTargetNames) {
-            if (each.endsWith(getPartition(partitionRangeMap, shardingValue.getValue()) + "")) {
-                return each;
-            }
-        }
-        throw new UnsupportedOperationException();
+        return getTargetNameByPreciseShardingValue(availableTargetNames, shardingValue, partitionRangeMap);
     }
 
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Long> shardingValue) {
         checkInit();
-        Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
-        int lowerEndpointPartition = getPartition(partitionRangeMap, shardingValue.getValueRange().lowerEndpoint());
-        int upperEndpointPartition = getPartition(partitionRangeMap, shardingValue.getValueRange().upperEndpoint());
-        for (int partition = lowerEndpointPartition; partition <= upperEndpointPartition; partition++) {
-            for (String each : availableTargetNames) {
-                if (each.endsWith(partition + "")) {
-                    result.add(each);
-                }
-            }
-        }
-        return result;
+        return getTargetNameByRangeShardingValue(availableTargetNames, shardingValue, partitionRangeMap);
     }
 
-    private void checkInit() {
-        if (!init) {
-            synchronized (this) {
-                if (!init) {
-                    initProperties();
-                    init = true;
-                }
-            }
-        }
+    @Override
+    public String getType() {
+        return "CUSTOM_RANGE";
     }
 
-    private void initProperties() {
-        Preconditions.checkNotNull(properties.get(PARTITION_RANGES), "Range sharding algorithm partition ranges cannot be null.");
+    @Override
+    public void initProperties() {
+        Preconditions.checkNotNull(properties.get(PARTITION_RANGES), "Custom range sharding algorithm partition ranges cannot be null.");
         List<Long> partitionRanges = Splitter.on(",").trimResults().splitToList(properties.get(PARTITION_RANGES).toString())
                 .stream().map(Longs::tryParse).filter(Objects::nonNull).sorted().collect(Collectors.toList());
-        Preconditions.checkArgument(CollectionUtils.isNotEmpty(partitionRanges), "Range sharding algorithm partition ranges is not valid.");
+        Preconditions.checkArgument(CollectionUtils.isNotEmpty(partitionRanges), "Custom range sharding algorithm partition ranges is not valid.");
         partitionRangeMap = Maps.newHashMapWithExpectedSize(partitionRanges.size() + 1);
         for (int i = 0; i < partitionRanges.size(); i++) {
             Long rangeValue = partitionRanges.get(i);
@@ -119,19 +95,5 @@ public final class RangeShardingAlgorithm implements StandardShardingAlgorithm<L
                 partitionRangeMap.put(i + 1, Range.atLeast(rangeValue));
             }
         }
-    }
-
-    private Integer getPartition(final Map<Integer, Range<Long>> partitionRangeMap, final Long value) {
-        for (Map.Entry<Integer, Range<Long>> entry : partitionRangeMap.entrySet()) {
-            if (entry.getValue().contains(value)) {
-                return entry.getKey();
-            }
-        }
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String getType() {
-        return "RANGE";
     }
 }

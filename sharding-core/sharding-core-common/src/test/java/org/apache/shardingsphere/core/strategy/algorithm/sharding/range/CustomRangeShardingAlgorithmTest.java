@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.strategy.algorithm.sharding;
+package org.apache.shardingsphere.core.strategy.algorithm.sharding.range;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
@@ -36,13 +36,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class RangeShardingAlgorithmTest {
+public final class CustomRangeShardingAlgorithmTest {
 
     private StandardShardingStrategy shardingStrategy;
 
     @Before
     public void setUp() {
-        RangeShardingAlgorithm shardingAlgorithm = new RangeShardingAlgorithm();
+        CustomRangeShardingAlgorithm shardingAlgorithm = new CustomRangeShardingAlgorithm();
         shardingAlgorithm.getProperties().setProperty("partition.ranges", "1,5,10");
         StandardShardingStrategyConfiguration shardingStrategyConfig = new StandardShardingStrategyConfiguration("order_id", shardingAlgorithm);
         shardingStrategy = new StandardShardingStrategy(shardingStrategyConfig);
