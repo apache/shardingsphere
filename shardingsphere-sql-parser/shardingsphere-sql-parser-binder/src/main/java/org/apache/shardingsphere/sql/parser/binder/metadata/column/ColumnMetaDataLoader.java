@@ -101,7 +101,7 @@ public final class ColumnMetaDataLoader {
             delimiterLeft = "";
             delimiterRight = "";
         }
-        return "SELECT * FROM " + delimiterLeft + table + delimiterRight + " WHERE 1 != 1;";
+        return "SELECT * FROM " + delimiterLeft + table + delimiterRight + " WHERE 1 != 1";
     }
     
     private static boolean isTableExist(final Connection connection, final String catalog, final String table) throws SQLException {
