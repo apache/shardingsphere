@@ -33,6 +33,7 @@ encryptRule:
       type: aes
       props:
         aes.key.value: 123456
+
 shadowRule:
   column: shadows
   dataSource: !!org.apache.commons.dbcp2.BasicDataSource

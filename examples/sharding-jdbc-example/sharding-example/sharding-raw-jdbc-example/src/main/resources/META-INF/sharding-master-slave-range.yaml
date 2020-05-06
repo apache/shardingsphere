@@ -82,15 +82,16 @@ shardingRule:
       shardingColumn: user_id
       shardingAlgorithm:
         type: STANDARD_TEST_DB
-  masterSlaveRules:
-    ds_0:
-      masterDataSourceName: ds_master_0
-      slaveDataSourceNames: [ds_master_0_slave_0, ds_master_0_slave_1]
-      loadBalanceAlgorithmType: ROUND_ROBIN
-    ds_1:
-      masterDataSourceName: ds_master_1
-      slaveDataSourceNames: [ds_master_1_slave_0, ds_master_1_slave_1]
-      loadBalanceAlgorithmType: ROUND_ROBIN
+
+masterSlaveRules:
+  ds_0:
+    masterDataSourceName: ds_master_0
+    slaveDataSourceNames: [ds_master_0_slave_0, ds_master_0_slave_1]
+    loadBalanceAlgorithmType: ROUND_ROBIN
+  ds_1:
+    masterDataSourceName: ds_master_1
+    slaveDataSourceNames: [ds_master_1_slave_0, ds_master_1_slave_1]
+    loadBalanceAlgorithmType: ROUND_ROBIN
   
 props:
   sql.show: false

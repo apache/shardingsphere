@@ -47,7 +47,19 @@ public class YamlShardingRuleConfiguration implements YamlConfiguration {
     
     private YamlKeyGeneratorConfiguration defaultKeyGenerator;
     
+    /**
+     * Master slave rules.
+     * 
+     * @deprecated master slave rules
+     */
+    @Deprecated
     private Map<String, YamlMasterSlaveRuleConfiguration> masterSlaveRules = new LinkedHashMap<>();
     
+    /**
+     * Encrypt rule.
+     * 
+     * @deprecated encrypt rule.
+     */
+    @Deprecated
     private YamlEncryptRuleConfiguration encryptRule;
 }
