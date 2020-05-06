@@ -21,7 +21,7 @@ import org.apache.shardingsphere.core.yaml.config.YamlRootRuleConfigurations;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Sharding rule configuration properties.
+ * Spring boot rules configuration properties.
  */
 @ConfigurationProperties(prefix = "spring.shardingsphere.rules")
 public class SpringBootRulesConfigurationProperties extends YamlRootRuleConfigurations {
