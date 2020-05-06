@@ -45,7 +45,6 @@ shardingRule:
   tables:
     config:
       actualDataNodes: db_ms_${0..1}.t_config
-      
     t_order: 
       actualDataNodes: db_ms_${0..1}.t_order_${0..2}
       databaseStrategy: 
@@ -77,7 +76,6 @@ shardingRule:
             type: INLINE
             props:
               algorithm.expression: t_order_item_${order_id % 2}
-  
   bindingTables:
     - t_order,t_order_item
   defaultDatabaseStrategy:
@@ -87,18 +85,18 @@ shardingRule:
       shardingColumns: id, order_id
       shardingAlgorithm:
         type: COMPLEX_TEST
-  
-  masterSlaveRules:
-    db_ms_0:
-      masterDataSourceName: db0_master
-      slaveDataSourceNames:
-        - db0_slave
-      loadBalanceAlgorithmType: ROUND_ROBIN
-    db_ms_1:
-      masterDataSourceName: db1_master
-      slaveDataSourceNames:
-        - db1_slave
-      loadBalanceAlgorithmType: ROUND_ROBIN
+
+masterSlaveRules:
+  db_ms_0:
+    masterDataSourceName: db0_master
+    slaveDataSourceNames:
+      - db0_slave
+    loadBalanceAlgorithmType: ROUND_ROBIN
+  db_ms_1:
+    masterDataSourceName: db1_master
+    slaveDataSourceNames:
+      - db1_slave
+    loadBalanceAlgorithmType: ROUND_ROBIN
 
 orchestration:
   test_sharding_ms_registry_name:

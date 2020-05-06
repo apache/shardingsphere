@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml.const
 
 import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlNoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.constructor.construct.YamlNoneShardingStrategyConfigurationConstruct;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml.YamlOrchestrationShardingRuleConfiguration;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml.YamlOrchestrationRootRuleConfigurations;
 import org.apache.shardingsphere.underlying.common.yaml.constructor.AbstractTypeConstructor;
 
 /**
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.underlying.common.yaml.constructor.AbstractType
 public class YamlOrchestrationShardingRuleConfigurationConstructor extends AbstractTypeConstructor {
     
     public YamlOrchestrationShardingRuleConfigurationConstructor() {
-        super(YamlOrchestrationShardingRuleConfiguration.class);
+        super(YamlOrchestrationRootRuleConfigurations.class);
         registerConstruct(YamlNoneShardingStrategyConfiguration.class, new YamlNoneShardingStrategyConfigurationConstruct());
     }
 }
