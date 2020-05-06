@@ -73,6 +73,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Orchestration spring boot configuration.
@@ -108,7 +109,7 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     public OrchestrationConfiguration orchestrationConfiguration() {
         Preconditions.checkState(isValidOrchestrationConfiguration(), "The orchestration configuration is invalid, please configure orchestration");
         Map<String, CenterConfiguration> instanceConfigurationMap = Maps.newHashMapWithExpectedSize(root.getOrchestration().size());
-        for (Map.Entry<String, YamlCenterRepositoryConfiguration> entry : root.getOrchestration().entrySet()) {
+        for (Entry<String, YamlCenterRepositoryConfiguration> entry : root.getOrchestration().entrySet()) {
             instanceConfigurationMap.put(entry.getKey(), configurationYamlSwapper.swap(entry.getValue()));
         }
         return new OrchestrationConfiguration(instanceConfigurationMap);
