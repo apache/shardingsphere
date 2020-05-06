@@ -23,9 +23,12 @@ import org.apache.shardingsphere.core.yaml.config.common.YamlRootRuleConfigurati
 
 /**
  * Root sharding configuration for YAML.
+ * 
+ * @deprecated instead of YamlRootRuleConfigurations
  */
 @Getter
 @Setter
+@Deprecated
 public class YamlRootShardingConfiguration extends YamlRootRuleConfiguration {
     
     private YamlShardingRuleConfiguration shardingRule;
