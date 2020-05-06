@@ -19,9 +19,7 @@ package org.apache.shardingsphere.core.rule.builder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 
 import java.util.Collection;
@@ -47,29 +45,5 @@ public final class RuleConfigurationBuilder {
             result.add(shardingRuleConfig.getEncryptRuleConfig());
         }
         return result;
-    }
-    
-    /**
-     * Build rules to rule configuration.
-     *
-     * @param ruleConfigurations rule configurations
-     * @return rule configuration
-     */
-    public static RuleConfiguration buildToSingle(final Collection<RuleConfiguration> ruleConfigurations) {
-        if (ruleConfigurations.size() > 1) {
-            ShardingRuleConfiguration result = (ShardingRuleConfiguration) ruleConfigurations.iterator().next();
-            for (RuleConfiguration each : ruleConfigurations) {
-                if (each instanceof MasterSlaveRuleConfiguration) {
-                    result.getMasterSlaveRuleConfigs().add((MasterSlaveRuleConfiguration) each);
-                } else if (each instanceof EncryptRuleConfiguration) {
-                    result.setEncryptRuleConfig((EncryptRuleConfiguration) each);
-                }
-            }
-            return result;
-        }
-        if (ruleConfigurations.isEmpty()) {
-            return null;
-        }
-        return ruleConfigurations.iterator().next();
     }
 }
