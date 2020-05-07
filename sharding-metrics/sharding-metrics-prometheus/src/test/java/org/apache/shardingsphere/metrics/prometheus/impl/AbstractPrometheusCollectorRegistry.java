@@ -15,37 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metrics.facade.fixture;
+package org.apache.shardingsphere.metrics.prometheus.impl;
 
+import io.prometheus.client.CollectorRegistry;
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.metrics.api.MetricsTrackerFactory;
-import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
-import org.apache.shardingsphere.metrics.spi.MetricsTrackerManager;
+import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Properties;
-
-@Getter
-@Setter
-public final class MetricsTrackerManagerFixture implements MetricsTrackerManager {
+@RunWith(MockitoJUnitRunner.class)
+public abstract class AbstractPrometheusCollectorRegistry {
     
-    private final MetricsTrackerFactory metricsTrackerFactory = new MetricsTrackerFactoryFixture();
+    @Getter
+    private CollectorRegistry collectorRegistry;
     
-    private Properties properties = new Properties();
-    
-    @Override
-    public void start(final MetricsConfiguration metricsConfiguration) {
-    
-    }
-    
-    @Override
-    public void stop() {
-    
-    }
-    
-    @Override
-    public String getType() {
-        return "fixture";
+    @Before
+    public void setupCollectorRegistry() {
+        this.collectorRegistry = CollectorRegistry.defaultRegistry;
     }
 }
 

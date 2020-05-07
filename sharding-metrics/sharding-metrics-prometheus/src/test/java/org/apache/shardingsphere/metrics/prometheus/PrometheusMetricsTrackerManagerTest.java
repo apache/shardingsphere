@@ -15,37 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metrics.facade.fixture;
+package org.apache.shardingsphere.metrics.prometheus;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.metrics.api.MetricsTrackerFactory;
+import io.prometheus.client.exporter.HTTPServer;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
-import org.apache.shardingsphere.metrics.spi.MetricsTrackerManager;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Properties;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-@Getter
-@Setter
-public final class MetricsTrackerManagerFixture implements MetricsTrackerManager {
+@RunWith(MockitoJUnitRunner.class)
+public final class PrometheusMetricsTrackerManagerTest {
     
-    private final MetricsTrackerFactory metricsTrackerFactory = new MetricsTrackerFactoryFixture();
-    
-    private Properties properties = new Properties();
-    
-    @Override
-    public void start(final MetricsConfiguration metricsConfiguration) {
-    
-    }
-    
-    @Override
-    public void stop() {
-    
-    }
-    
-    @Override
-    public String getType() {
-        return "fixture";
+    @Test
+    public void start() {
+        PrometheusMetricsTrackerManager manager = new PrometheusMetricsTrackerManager();
+        MetricsConfiguration metricsConfiguration = new MetricsConfiguration("metricsName", "", 9190, null);
+        manager.start(metricsConfiguration);
+        HTTPServer server = manager.getServer();
+        assertNotNull(server);
+        assertEquals(manager.getType(), "prometheus");
+        manager.stop();
     }
 }
 
