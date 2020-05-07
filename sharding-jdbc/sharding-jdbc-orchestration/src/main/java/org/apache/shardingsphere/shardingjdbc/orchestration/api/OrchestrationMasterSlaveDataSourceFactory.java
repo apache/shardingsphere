@@ -32,8 +32,11 @@ import java.util.Properties;
 
 /**
  * Orchestration sharding data source factory.
+ * 
+ * @deprecated instead of OrchestrationShardingDataSourceFactory
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Deprecated
 public final class OrchestrationMasterSlaveDataSourceFactory {
     
     /**

@@ -39,8 +39,11 @@ import java.util.Properties;
 
 /**
  * Orchestration master-slave data source factory for YAML.
+ * 
+ * @deprecated instead of YamlOrchestrationShardingDataSourceFactory
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Deprecated
 public final class YamlOrchestrationMasterSlaveDataSourceFactory {
     
     private static final MasterSlaveRuleConfigurationYamlSwapper MASTER_SLAVE_RULE_SWAPPER = new MasterSlaveRuleConfigurationYamlSwapper();
