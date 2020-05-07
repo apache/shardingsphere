@@ -20,16 +20,15 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere</artifactId>
+        <artifactId>sharding-orchestration</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-orchestration</artifactId>
+    <artifactId>sharding-orchestration-cluster</artifactId>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
     
     <modules>
-        <module>sharding-orchestration-center</module>
-        <module>sharding-orchestration-core</module>
-        <module>sharding-orchestration-cluster</module>
+        <module>sharding-orchestration-cluster-state</module>
+        <module>sharding-orchestration-cluster-heartbeat</module>
     </modules>
 </project>
