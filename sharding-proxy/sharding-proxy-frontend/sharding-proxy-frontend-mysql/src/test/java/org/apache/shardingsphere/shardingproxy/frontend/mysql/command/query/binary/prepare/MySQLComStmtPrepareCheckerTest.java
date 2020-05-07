@@ -78,7 +78,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public class MySQLComStmtPrepareCheckerTest {
+public final class MySQLComStmtPrepareCheckerTest {
     
     @Test
     public void assertIsStatementAllowed() {
