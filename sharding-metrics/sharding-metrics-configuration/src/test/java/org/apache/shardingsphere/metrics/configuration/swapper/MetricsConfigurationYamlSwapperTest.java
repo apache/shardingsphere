@@ -15,37 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metrics.facade.fixture;
+package org.apache.shardingsphere.metrics.configuration.swapper;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.metrics.api.MetricsTrackerFactory;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
-import org.apache.shardingsphere.metrics.spi.MetricsTrackerManager;
+import org.apache.shardingsphere.metrics.configuration.yaml.YamlMetricsConfiguration;
+import org.junit.Assert;
+import org.junit.Test;
 
 import java.util.Properties;
 
-@Getter
-@Setter
-public final class MetricsTrackerManagerFixture implements MetricsTrackerManager {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+public final class MetricsConfigurationYamlSwapperTest {
     
-    private final MetricsTrackerFactory metricsTrackerFactory = new MetricsTrackerFactoryFixture();
-    
-    private Properties properties = new Properties();
-    
-    @Override
-    public void start(final MetricsConfiguration metricsConfiguration) {
-    
-    }
-    
-    @Override
-    public void stop() {
-    
-    }
-    
-    @Override
-    public String getType() {
-        return "fixture";
+    @Test
+    public void swap() {
+        MetricsConfigurationYamlSwapper swapper = new MetricsConfigurationYamlSwapper();
+        YamlMetricsConfiguration yamlConfiguration = swapper.swap(new MetricsConfiguration("prometheus", "127.0.0.1", null, new Properties()));
+        assertNotNull(yamlConfiguration);
+        Assert.assertNull(yamlConfiguration.getPort());
+        MetricsConfiguration configuration = swapper.swap(yamlConfiguration);
+        assertNotNull(configuration);
+        assertEquals(9190, (int) configuration.getPort());
     }
 }
 

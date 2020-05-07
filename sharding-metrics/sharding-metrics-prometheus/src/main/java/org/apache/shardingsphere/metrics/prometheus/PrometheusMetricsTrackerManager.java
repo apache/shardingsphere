@@ -39,9 +39,9 @@ import java.util.Properties;
 @Slf4j
 public final class PrometheusMetricsTrackerManager implements MetricsTrackerManager {
     
-    private Properties properties = new Properties();
+    private final MetricsTrackerFactory metricsTrackerFactory = new PrometheusMetricsTrackerFactory();
     
-    private MetricsTrackerFactory metricsTrackerFactory = new PrometheusMetricsTrackerFactory();
+    private Properties properties = new Properties();
     
     private HTTPServer server;
     
