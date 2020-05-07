@@ -62,7 +62,6 @@ public final class ShardingConfigurationLoaderTest {
         assertDataSourceParameter(actual.getDataSources().get("ds_0"), "jdbc:mysql://127.0.0.1:3306/ds_0");
         assertDataSourceParameter(actual.getDataSources().get("ds_1"), "jdbc:mysql://127.0.0.1:3306/ds_1");
         assertShardingRuleConfiguration(actual.getShardingRule());
-        assertNull(actual.getMasterSlaveRule());
         assertNull(actual.getEncryptRule());
     }
     
@@ -105,7 +104,6 @@ public final class ShardingConfigurationLoaderTest {
         assertNotNull(actual.getDataSource());
         assertDataSourceParameter(actual.getDataSources().get("dataSource"), "jdbc:mysql://127.0.0.1:3306/encrypt_ds");
         assertNull(actual.getShardingRule());
-        assertNull(actual.getMasterSlaveRule());
         assertEncryptRuleConfiguration(actual.getEncryptRule());
     }
     

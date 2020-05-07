@@ -35,12 +35,13 @@ dataSources:
     password: 
     maxTotal: 100
 
-masterSlaveRule:
-  name: db_ms
-  masterDataSourceName: db_master
-  slaveDataSourceNames: 
-    - db_slave_0
-    - db_slave_1
+masterSlaveRules:
+  db_ms:
+    name: db_ms
+    masterDataSourceName: db_master
+    slaveDataSourceNames:
+      - db_slave_0
+      - db_slave_1
 
 orchestration:
   test_ms_registry_name:

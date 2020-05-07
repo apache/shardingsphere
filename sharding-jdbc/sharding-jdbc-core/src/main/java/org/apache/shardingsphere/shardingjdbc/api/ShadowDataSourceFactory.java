@@ -92,7 +92,7 @@ public final class ShadowDataSourceFactory {
         } else if (shadowRule.isSharding()) {
             return ShardingDataSourceFactory.createDataSource(dataSources, Collections.singletonList(shadowRule.getShardingRuleConfig()), props);
         } else if (shadowRule.isMasterSlave()) {
-            return MasterSlaveDataSourceFactory.createDataSource(dataSources, shadowRule.getMasterSlaveRuleConfig(), props);
+            return ShardingDataSourceFactory.createDataSource(dataSources, Collections.singletonList(shadowRule.getMasterSlaveRuleConfig()), props);
         } else {
             return dataSources.values().iterator().next();
         }

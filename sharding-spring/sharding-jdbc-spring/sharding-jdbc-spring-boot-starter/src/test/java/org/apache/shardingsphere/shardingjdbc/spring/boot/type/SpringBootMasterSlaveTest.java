@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.spring.boot.type;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -44,8 +44,8 @@ public class SpringBootMasterSlaveTest {
     
     @Test
     public void assertWithMasterSlaveDataSource() {
-        assertTrue(dataSource instanceof MasterSlaveDataSource);
-        for (DataSource each : ((MasterSlaveDataSource) dataSource).getDataSourceMap().values()) {
+        assertTrue(dataSource instanceof ShardingDataSource);
+        for (DataSource each : ((ShardingDataSource) dataSource).getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(100));
         }
     }

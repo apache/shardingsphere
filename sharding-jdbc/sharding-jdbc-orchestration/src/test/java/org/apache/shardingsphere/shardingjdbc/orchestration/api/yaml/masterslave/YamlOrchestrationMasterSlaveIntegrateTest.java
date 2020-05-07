@@ -21,8 +21,8 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.AbstractYamlDataSourceTest;
-import org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationMasterSlaveDataSourceFactory;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationShardingDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -58,9 +58,9 @@ public final class YamlOrchestrationMasterSlaveIntegrateTest extends AbstractYam
         File yamlFile = new File(YamlOrchestrationMasterSlaveIntegrateTest.class.getResource(filePath).toURI());
         DataSource dataSource;
         if (hasDataSource) {
-            dataSource = YamlOrchestrationMasterSlaveDataSourceFactory.createDataSource(yamlFile);
+            dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(yamlFile);
         } else {
-            dataSource = YamlOrchestrationMasterSlaveDataSourceFactory.createDataSource(
+            dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(
                     Maps.asMap(Sets.newHashSet("db_master", "db_slave_0", "db_slave_1"), AbstractYamlDataSourceTest::createDataSource), yamlFile);
         }
         try (Connection connection = dataSource.getConnection();
@@ -69,6 +69,6 @@ public final class YamlOrchestrationMasterSlaveIntegrateTest extends AbstractYam
             statement.executeQuery("SELECT * FROM t_order_item");
             statement.executeQuery("SELECT * FROM t_config");
         }
-        ((OrchestrationMasterSlaveDataSource) dataSource).close();
+        ((OrchestrationShardingDataSource) dataSource).close();
     }
 }
