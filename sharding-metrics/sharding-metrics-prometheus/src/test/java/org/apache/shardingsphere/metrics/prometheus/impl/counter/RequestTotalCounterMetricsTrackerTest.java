@@ -39,4 +39,3 @@ public final class RequestTotalCounterMetricsTrackerTest extends AbstractPrometh
     }
 }
 
-

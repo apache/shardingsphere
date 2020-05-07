@@ -43,4 +43,3 @@ public final class ChannelCountGaugeMetricsTrackerTest extends AbstractPrometheu
     }
 }
 
-
