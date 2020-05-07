@@ -33,10 +33,10 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
     
     @Getter
     private final List<StandardParameterBuilder> parameterBuilders;
-
+    
     @Getter
     private final List<Object> onDuplicateKeyUpdateAddedParameters = new LinkedList<>();
-
+    
     @Setter
     private String derivedColumnName;
     
