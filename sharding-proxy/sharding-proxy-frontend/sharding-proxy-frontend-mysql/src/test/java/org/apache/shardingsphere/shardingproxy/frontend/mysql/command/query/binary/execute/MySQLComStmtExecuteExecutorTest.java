@@ -27,7 +27,6 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryRespo
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -37,6 +36,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.sql.SQLException;
 import java.util.Collections;
 
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -61,7 +61,7 @@ public class MySQLComStmtExecuteExecutorTest {
         when(sqlException.getCause()).thenReturn(new Exception());
         when(databaseCommunicationEngine.execute()).thenReturn(new ErrorResponse(sqlException));
         mysqlComStmtExecuteExecutor.execute();
-        Assert.assertThat(mysqlComStmtExecuteExecutor.isErrorResponse(), Matchers.is(true));
+        assertThat(mysqlComStmtExecuteExecutor.isErrorResponse(), Matchers.is(true));
     }
     
     @Test
@@ -75,7 +75,7 @@ public class MySQLComStmtExecuteExecutorTest {
         FieldSetter.setField(mysqlComStmtExecuteExecutor, MySQLComStmtExecuteExecutor.class.getDeclaredField("databaseCommunicationEngine"), databaseCommunicationEngine);
         when(databaseCommunicationEngine.execute()).thenReturn(new UpdateResponse());
         mysqlComStmtExecuteExecutor.execute();
-        Assert.assertThat(mysqlComStmtExecuteExecutor.isUpdateResponse(), Matchers.is(true));
+        assertThat(mysqlComStmtExecuteExecutor.isUpdateResponse(), Matchers.is(true));
     }
     
     @Test
@@ -89,6 +89,6 @@ public class MySQLComStmtExecuteExecutorTest {
         FieldSetter.setField(mysqlComStmtExecuteExecutor, MySQLComStmtExecuteExecutor.class.getDeclaredField("databaseCommunicationEngine"), databaseCommunicationEngine);
         when(databaseCommunicationEngine.execute()).thenReturn(new QueryResponse(Collections.singletonList(mock(QueryHeader.class))));
         mysqlComStmtExecuteExecutor.execute();
-        Assert.assertThat(mysqlComStmtExecuteExecutor.isQuery(), Matchers.is(true));
+        assertThat(mysqlComStmtExecuteExecutor.isQuery(), Matchers.is(true));
     }
 }
