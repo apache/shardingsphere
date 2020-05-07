@@ -51,9 +51,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MySQLFrontendEngineTest {
+public final class MySQLProtocolFrontendEngineTest {
     
-    private MySQLProtocolFrontendEngine mysqlFrontendEngine;
+    private MySQLProtocolFrontendEngine mysqlProtocolFrontendEngine;
     
     @Mock
     private ChannelHandlerContext context;
@@ -70,12 +70,12 @@ public final class MySQLFrontendEngineTest {
         Field field = ConnectionIdGenerator.class.getDeclaredField("currentId");
         field.setAccessible(true);
         field.set(ConnectionIdGenerator.getInstance(), 0);
-        mysqlFrontendEngine = new MySQLProtocolFrontendEngine();
+        mysqlProtocolFrontendEngine = new MySQLProtocolFrontendEngine();
     }
     
     @Test
     public void assertHandshake() {
-        mysqlFrontendEngine.getAuthEngine().handshake(context, mock(BackendConnection.class));
+        mysqlProtocolFrontendEngine.getAuthEngine().handshake(context, mock(BackendConnection.class));
         verify(context).writeAndFlush(isA(MySQLHandshakePacket.class));
     }
     
@@ -85,7 +85,7 @@ public final class MySQLFrontendEngineTest {
         ProxyUser proxyUser = new ProxyUser("", Collections.singleton("db1"));
         setAuthentication(proxyUser);
         when(payload.readStringNul()).thenReturn("root");
-        assertTrue(mysqlFrontendEngine.getAuthEngine().auth(context, payload, mock(BackendConnection.class)));
+        assertTrue(mysqlProtocolFrontendEngine.getAuthEngine().auth(context, payload, mock(BackendConnection.class)));
         verify(context).writeAndFlush(isA(MySQLOKPacket.class));
     }
     
@@ -98,7 +98,7 @@ public final class MySQLFrontendEngineTest {
         when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
         when(channel.remoteAddress()).thenReturn(new InetSocketAddress("localhost", 3307));
         when(context.channel()).thenReturn(channel);
-        assertTrue(mysqlFrontendEngine.getAuthEngine().auth(context, payload, mock(BackendConnection.class)));
+        assertTrue(mysqlProtocolFrontendEngine.getAuthEngine().auth(context, payload, mock(BackendConnection.class)));
         verify(context).writeAndFlush(isA(MySQLErrPacket.class));
     }
 
@@ -112,7 +112,7 @@ public final class MySQLFrontendEngineTest {
         when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
         when(context.channel()).thenReturn(channel);
         when(channel.remoteAddress()).thenReturn(new InetSocketAddress(InetAddress.getByAddress(new byte[] {(byte) 192, (byte) 168, (byte) 0, (byte) 102}), 3307));
-        assertTrue(mysqlFrontendEngine.getAuthEngine().auth(context, payload, mock(BackendConnection.class)));
+        assertTrue(mysqlProtocolFrontendEngine.getAuthEngine().auth(context, payload, mock(BackendConnection.class)));
         verify(context).writeAndFlush(Mockito.argThat(
                 (ArgumentMatcher<MySQLErrPacket>) argument -> argument.getErrorMessage().equals("Access denied for user 'root'@'192.168.0.102' (using password: YES)")));
     }
@@ -130,6 +130,6 @@ public final class MySQLFrontendEngineTest {
     private void setConnectionPhase(final MySQLConnectionPhase connectionPhase) {
         Field field = MySQLAuthenticationEngine.class.getDeclaredField("connectionPhase");
         field.setAccessible(true);
-        field.set(mysqlFrontendEngine.getAuthEngine(), connectionPhase);
+        field.set(mysqlProtocolFrontendEngine.getAuthEngine(), connectionPhase);
     }
 }

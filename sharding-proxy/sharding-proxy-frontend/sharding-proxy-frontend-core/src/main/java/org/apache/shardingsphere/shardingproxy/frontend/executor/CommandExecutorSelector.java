@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.shardingproxy.frontend.executor;
 
 import io.netty.channel.ChannelId;
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.util.concurrent.ExecutorService;
@@ -26,7 +27,7 @@ import java.util.concurrent.ExecutorService;
 /**
  * Command executor selector.
  */
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CommandExecutorSelector {
     
     /**
