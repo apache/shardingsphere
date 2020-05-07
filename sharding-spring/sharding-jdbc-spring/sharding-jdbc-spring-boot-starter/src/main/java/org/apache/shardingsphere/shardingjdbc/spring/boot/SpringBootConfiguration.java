@@ -25,7 +25,6 @@ import org.apache.shardingsphere.core.yaml.swapper.ShadowRuleConfigurationYamlSw
 import org.apache.shardingsphere.core.yaml.swapper.root.RuleRootConfigurationsYamlSwapper;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.shardingjdbc.api.EncryptDataSourceFactory;
-import org.apache.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.ShadowDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.common.SpringBootPropertiesConfigurationProperties;
@@ -112,7 +111,7 @@ public class SpringBootConfiguration implements EnvironmentAware {
     @Bean
     @Conditional(MasterSlaveRuleCondition.class)
     public DataSource masterSlaveDataSource() throws SQLException {
-        return MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new MasterSlaveRuleConfigurationYamlSwapper().swap(masterSlaveRule), props.getProps());
+        return ShardingDataSourceFactory.createDataSource(dataSourceMap, Collections.singleton(new MasterSlaveRuleConfigurationYamlSwapper().swap(masterSlaveRule)), props.getProps());
     }
     
     /**
