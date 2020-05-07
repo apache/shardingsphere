@@ -15,34 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metrics.spi;
+package org.apache.shardingsphere.metrics.configuration.config;
 
-import org.apache.shardingsphere.metrics.api.MetricsTrackerFactory;
-import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
-import org.apache.shardingsphere.spi.type.TypedSPI;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.Properties;
 
 /**
- * Metrics tracker manager.
+ * Metrics configuration.
  */
-public interface MetricsTrackerManager extends TypedSPI {
+@Getter
+@Setter
+@AllArgsConstructor
+public final class MetricsConfiguration {
     
-    /**
-     * Start metrics tracker.
-     *
-     * @param metricsConfiguration metrics configuration
-     */
-    void start(MetricsConfiguration metricsConfiguration);
+    private String metricsName;
     
-    /**
-     * Gets metrics tracker factory.
-     *
-     * @return metrics tracker factory
-     */
-    MetricsTrackerFactory getMetricsTrackerFactory();
+    private String host;
     
-    /**
-     * Stop metrics tracker.
-     */
-    void stop();
+    private Integer port;
+    
+    private Properties props;
 }
 

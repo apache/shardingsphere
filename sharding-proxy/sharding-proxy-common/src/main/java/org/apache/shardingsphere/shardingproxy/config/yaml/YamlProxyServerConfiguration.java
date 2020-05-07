@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingproxy.config.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.metrics.configuration.yaml.YamlMetricsConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
 import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
@@ -32,6 +33,8 @@ import java.util.Properties;
 @Getter
 @Setter
 public final class YamlProxyServerConfiguration implements YamlConfiguration {
+    
+    private YamlMetricsConfiguration metrics;
     
     private YamlAuthenticationConfiguration authentication;
     
