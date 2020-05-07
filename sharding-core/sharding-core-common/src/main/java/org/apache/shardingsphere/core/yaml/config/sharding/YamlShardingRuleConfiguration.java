@@ -31,7 +31,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public class YamlShardingRuleConfiguration implements YamlConfiguration {
+public final class YamlShardingRuleConfiguration implements YamlConfiguration {
     
     private Map<String, YamlTableRuleConfiguration> tables = new LinkedHashMap<>();
     
