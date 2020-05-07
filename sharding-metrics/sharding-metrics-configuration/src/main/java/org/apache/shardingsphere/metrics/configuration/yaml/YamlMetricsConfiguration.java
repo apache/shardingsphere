@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.metrics.configuration.yaml;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
 
@@ -30,8 +28,6 @@ import java.util.Properties;
  */
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public final class YamlMetricsConfiguration implements YamlConfiguration {
     
     private String name;

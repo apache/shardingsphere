@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.metrics.configuration.config;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Properties;
@@ -28,6 +28,7 @@ import java.util.Properties;
  */
 @Getter
 @Setter
+@AllArgsConstructor
 public final class MetricsConfiguration {
     
     private String metricsName;
@@ -36,6 +37,6 @@ public final class MetricsConfiguration {
     
     private Integer port;
     
-    private Properties props = new Properties();
+    private Properties props;
 }
 

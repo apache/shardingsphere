@@ -37,13 +37,9 @@ public final class MetricsConfigurationYamlSwapper implements YamlSwapper<YamlMe
     }
     
     @Override
-    public MetricsConfiguration swap(final YamlMetricsConfiguration yamlMetricsConfiguration) {
-        MetricsConfiguration configuration = new MetricsConfiguration();
-        configuration.setMetricsName(yamlMetricsConfiguration.getName());
-        configuration.setHost(yamlMetricsConfiguration.getHost());
-        configuration.setPort(null == yamlMetricsConfiguration.getPort() ? 9190 : yamlMetricsConfiguration.getPort());
-        configuration.setProps(yamlMetricsConfiguration.getProps());
-        return configuration;
+    public MetricsConfiguration swap(final YamlMetricsConfiguration metricsConfiguration) {
+        return new MetricsConfiguration(metricsConfiguration.getName(), metricsConfiguration.getHost(),
+                null == metricsConfiguration.getPort() ? 9190 : metricsConfiguration.getPort(), metricsConfiguration.getProps());
     }
 }
 
