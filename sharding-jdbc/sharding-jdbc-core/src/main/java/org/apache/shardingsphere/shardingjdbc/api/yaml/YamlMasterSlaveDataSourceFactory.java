@@ -32,8 +32,11 @@ import java.util.Map;
 
 /**
  * Master-slave data source factory for YAML.
+ * 
+ * @deprecated instead of ShardingDataSourceFactory
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Deprecated
 public final class YamlMasterSlaveDataSourceFactory {
     
     /**

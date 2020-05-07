@@ -85,7 +85,9 @@ public final class ShardingConfigurationLoaderTest {
         assertDataSourceParameter(actual.getDataSources().get("slave_ds_1"), "jdbc:mysql://127.0.0.1:3306/slave_ds_1");
         assertNull(actual.getShardingRule());
         assertNull(actual.getEncryptRule());
-        assertMasterSlaveRuleConfiguration(actual.getMasterSlaveRule());
+        for (YamlMasterSlaveRuleConfiguration each : actual.getMasterSlaveRules().values()) {
+            assertMasterSlaveRuleConfiguration(each);
+        }
     }
     
     private void assertMasterSlaveRuleConfiguration(final YamlMasterSlaveRuleConfiguration actual) {

@@ -15,9 +15,10 @@
 # limitations under the License.
 #
 
-masterSlaveRule:
-  name: master-slave-ds
-  masterDataSourceName: master
-  slaveDataSourceNames: 
-    - slave_0
-    - slave_1
+masterSlaveRules:
+  master-slave-ds: 
+    name: master-slave-ds
+    masterDataSourceName: master
+    slaveDataSourceNames: 
+      - slave_0
+      - slave_1

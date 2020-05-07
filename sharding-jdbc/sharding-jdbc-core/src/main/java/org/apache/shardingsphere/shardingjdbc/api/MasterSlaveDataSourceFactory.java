@@ -42,7 +42,10 @@ public final class MasterSlaveDataSourceFactory {
      * @param props props
      * @return master-slave data source
      * @throws SQLException SQL exception
+     * 
+     * @deprecated instead of ShardingDataSourceFactory
      */
+    @Deprecated
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final Properties props) throws SQLException {
         return new MasterSlaveDataSource(dataSourceMap, new MasterSlaveRule(masterSlaveRuleConfig), props);
     }

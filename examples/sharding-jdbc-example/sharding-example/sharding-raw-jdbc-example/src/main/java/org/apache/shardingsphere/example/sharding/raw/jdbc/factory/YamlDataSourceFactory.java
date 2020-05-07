@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.example.sharding.raw.jdbc.factory;
 
 import org.apache.shardingsphere.example.type.ShardingType;
-import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 
 import javax.sql.DataSource;
@@ -37,7 +36,7 @@ public class YamlDataSourceFactory {
             case SHARDING_DATABASES_AND_TABLES:
                 return YamlShardingDataSourceFactory.createDataSource(getFile("/META-INF/sharding-databases-tables.yaml"));
             case MASTER_SLAVE:
-                return YamlMasterSlaveDataSourceFactory.createDataSource(getFile("/META-INF/master-slave.yaml"));
+                return YamlShardingDataSourceFactory.createDataSource(getFile("/META-INF/master-slave.yaml"));
             case SHARDING_MASTER_SLAVE:
                 return YamlShardingDataSourceFactory.createDataSource(getFile("/META-INF/sharding-master-slave.yaml"));
             default:

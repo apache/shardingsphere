@@ -209,8 +209,7 @@ public final class ShadowStatement extends AbstractStatementAdapter {
     private List<Statement> getStatementAndReplay(final String sql) throws SQLException {
         List<Statement> result = new ArrayList<>();
         SQLStatement sqlStatement = connection.getRuntimeContext().getSqlParserEngine().parse(sql, false);
-        sqlStatementContext = SQLStatementContextFactory.newInstance(
-                connection.getRuntimeContext().getMetaData().getSchema().getConfiguredSchemaMetaData(), sql, Collections.emptyList(), sqlStatement);
+        sqlStatementContext = SQLStatementContextFactory.newInstance(connection.getRuntimeContext().getMetaData().getSchema().getSchemaMetaData(), sql, Collections.emptyList(), sqlStatement);
         if (sqlStatement instanceof DMLStatement) {
             ShadowJudgementEngine shadowJudgementEngine = new SimpleJudgementEngine((ShadowRule) connection.getRuntimeContext().getRules().iterator().next(), sqlStatementContext);
             isShadowSQL = shadowJudgementEngine.isShadowSQL();
