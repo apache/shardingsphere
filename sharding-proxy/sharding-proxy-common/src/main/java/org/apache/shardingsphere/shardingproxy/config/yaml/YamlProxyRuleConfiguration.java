@@ -19,13 +19,14 @@ package org.apache.shardingsphere.shardingproxy.config.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.yaml.config.shadow.YamlShadowRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.config.shadow.YamlShadowRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -43,6 +44,14 @@ public final class YamlProxyRuleConfiguration implements YamlConfiguration {
     
     private YamlShardingRuleConfiguration shardingRule;
     
+    private Map<String, YamlMasterSlaveRuleConfiguration> masterSlaveRules = new LinkedHashMap<>();
+    
+    /**
+     * Master slave rule.
+     *
+     * @deprecated master slave rule
+     */
+    @Deprecated
     private YamlMasterSlaveRuleConfiguration masterSlaveRule;
     
     private YamlEncryptRuleConfiguration encryptRule;

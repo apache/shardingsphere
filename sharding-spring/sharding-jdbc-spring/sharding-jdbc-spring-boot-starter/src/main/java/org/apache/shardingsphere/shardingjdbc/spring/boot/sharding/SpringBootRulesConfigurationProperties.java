@@ -15,18 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.yaml.config.sharding;
+package org.apache.shardingsphere.shardingjdbc.spring.boot.sharding;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.core.yaml.config.common.YamlRootRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.config.YamlRootRuleConfigurations;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Root sharding configuration for YAML.
+ * Spring boot rules configuration properties.
  */
-@Getter
-@Setter
-public class YamlRootShardingConfiguration extends YamlRootRuleConfiguration {
-    
-    private YamlShardingRuleConfiguration shardingRule;
+@ConfigurationProperties(prefix = "spring.shardingsphere.rules")
+public class SpringBootRulesConfigurationProperties extends YamlRootRuleConfigurations {
 }

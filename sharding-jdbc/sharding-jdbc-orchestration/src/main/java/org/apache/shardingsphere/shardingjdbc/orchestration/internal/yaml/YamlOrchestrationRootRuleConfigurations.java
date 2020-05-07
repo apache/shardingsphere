@@ -17,18 +17,19 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml;
 
-import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.yaml.config.sharding.YamlRootShardingConfiguration;
+import org.apache.shardingsphere.core.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
 
+import java.util.Map;
+
 /**
- * Orchestration sharding configuration for YAML.
+ * YAML root rule configurations for orchestration.
  */
 @Getter
 @Setter
-public final class YamlOrchestrationShardingRuleConfiguration extends YamlRootShardingConfiguration {
+public final class YamlOrchestrationRootRuleConfigurations extends YamlRootRuleConfigurations {
     
     private Map<String, YamlCenterRepositoryConfiguration> orchestration;
 }

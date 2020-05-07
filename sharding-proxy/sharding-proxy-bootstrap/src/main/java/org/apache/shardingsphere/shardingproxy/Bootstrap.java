@@ -23,11 +23,13 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.core.log.ConfigurationLogger;
 import org.apache.shardingsphere.core.rule.Authentication;
+import org.apache.shardingsphere.core.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.core.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.ShadowRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.root.RuleConfigurationsYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.root.RuleRootConfigurationsYamlSwapper;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.metrics.configuration.swapper.MetricsConfigurationYamlSwapper;
 import org.apache.shardingsphere.metrics.configuration.yaml.YamlMetricsConfiguration;
@@ -210,7 +212,11 @@ public final class Bootstrap {
         Map<String, Collection<RuleConfiguration>> result = new HashMap<>();
         for (Entry<String, YamlProxyRuleConfiguration> entry : localRuleConfigs.entrySet()) {
             if (null != entry.getValue().getShardingRule()) {
-                result.put(entry.getKey(), new RuleConfigurationsYamlSwapper().swap(entry.getValue().getShardingRule()));
+                YamlRootRuleConfigurations configurations = new YamlRootRuleConfigurations();
+                configurations.setShardingRule(entry.getValue().getShardingRule());
+                configurations.getMasterSlaveRules().putAll(entry.getValue().getMasterSlaveRules());
+                configurations.setEncryptRule(entry.getValue().getEncryptRule());
+                result.put(entry.getKey(), new RuleRootConfigurationsYamlSwapper().swap(configurations));
             } else if (null != entry.getValue().getMasterSlaveRule()) {
                 result.put(entry.getKey(), Collections.singleton(new MasterSlaveRuleConfigurationYamlSwapper().swap(entry.getValue().getMasterSlaveRule())));
             } else if (null != entry.getValue().getEncryptRule()) {
