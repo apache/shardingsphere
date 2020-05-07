@@ -35,23 +35,22 @@ public class EncryptDatabasesConfiguration implements ExampleConfiguration {
 
     @Override
     public DataSource getDataSource() {
-        
-        EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration();
         Properties properties = new Properties();
         properties.setProperty("aes.key.value", "123456");
         properties.setProperty("query.with.cipher.column", "true");
-        EncryptorRuleConfiguration aesRuleConfiguration = new EncryptorRuleConfiguration("aes", properties);
         EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("user_name_plain", "user_name", "", "name_encryptor");
         Map<String, EncryptColumnRuleConfiguration> columns = new HashMap<>();
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration(columns);
         columns.put("user_name", columnConfigAes);
-        encryptRuleConfiguration.getEncryptors().put("name_encryptor", aesRuleConfiguration);
-        encryptRuleConfiguration.getTables().put("t_user", tableConfig);
-        EncryptorRuleConfiguration testRuleConfiguration = new EncryptorRuleConfiguration("assistedTest", properties);
         EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("", "pwd", "assisted_query_pwd", "pwd_encryptor");
         columns.put("pwd", columnConfigTest);
         tableConfig.getColumns().putAll(columns);
-        encryptRuleConfiguration.getEncryptors().put("pwd_encryptor", testRuleConfiguration);
+        Map<String, EncryptorRuleConfiguration> encryptors = new HashMap<>();
+        encryptors.put("name_encryptor", new EncryptorRuleConfiguration("aes", properties));
+        encryptors.put("pwd_encryptor", new EncryptorRuleConfiguration("assistedTest", properties));
+        Map<String, EncryptTableRuleConfiguration> tables = new HashMap<>();
+        tables.put("t_user", tableConfig);
+        EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(encryptors, tables);
         try {
             return EncryptDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), encryptRuleConfiguration, properties);
         } catch (final SQLException ex) {

@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.api;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.core.rule.builder.RuleConfigurationBuilder;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
@@ -38,28 +36,6 @@ import java.util.Properties;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OrchestrationShardingDataSourceFactory {
-    
-    /**
-     * Create sharding data source.
-     *
-     * @param dataSourceMap data source map
-     * @param shardingRuleConfig sharding rule configuration
-     * @param orchestrationConfig orchestration configuration
-     * @param props properties for data source
-     * @return sharding data source
-     * @throws SQLException SQL exception
-     * @deprecated use createDataSource(final Map dataSourceMap, final Collection ruleConfigurations, final Properties props) instead of it
-     */
-    @Deprecated
-    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig,
-                                              final Properties props, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
-        if (null == shardingRuleConfig || shardingRuleConfig.getTableRuleConfigs().isEmpty()) {
-            return createDataSource(orchestrationConfig);
-        }
-        ShardingDataSource shardingDataSource = new ShardingDataSource(
-                dataSourceMap, ShardingSphereRulesBuilder.build(RuleConfigurationBuilder.buildSharding(shardingRuleConfig), dataSourceMap.keySet()), props);
-        return new OrchestrationShardingDataSource(shardingDataSource, orchestrationConfig);
-    }
     
     /**
      * Create sharding data source.
