@@ -26,17 +26,12 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>sharding-metrics-spi</artifactId>
+    <artifactId>sharding-metrics-configuration</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-spi</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-metrics-configuration</artifactId>
+            <artifactId>shardingsphere-common</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

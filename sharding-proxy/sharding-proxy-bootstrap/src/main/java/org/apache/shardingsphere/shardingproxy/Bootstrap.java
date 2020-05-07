@@ -31,6 +31,9 @@ import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationY
 import org.apache.shardingsphere.core.yaml.swapper.ShadowRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.root.RuleRootConfigurationsYamlSwapper;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.metrics.configuration.swapper.MetricsConfigurationYamlSwapper;
+import org.apache.shardingsphere.metrics.configuration.yaml.YamlMetricsConfiguration;
+import org.apache.shardingsphere.metrics.facade.MetricsTrackerFacade;
 import org.apache.shardingsphere.opentracing.ShardingTracer;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.swapper.OrchestrationConfigurationYamlSwapper;
@@ -80,7 +83,8 @@ public final class Bootstrap {
         ShardingConfiguration shardingConfig = new ShardingConfigurationLoader().load(getConfigPath(args));
         logRuleConfigurationMap(getRuleConfigurations(shardingConfig.getRuleConfigurationMap()).values());
         if (null == shardingConfig.getServerConfiguration().getOrchestration()) {
-            startWithoutRegistryCenter(shardingConfig.getRuleConfigurationMap(), shardingConfig.getServerConfiguration().getAuthentication(), shardingConfig.getServerConfiguration().getProps(), port);
+            startWithoutRegistryCenter(shardingConfig.getRuleConfigurationMap(), shardingConfig.getServerConfiguration().getAuthentication(),
+                    shardingConfig.getServerConfiguration().getMetrics(), shardingConfig.getServerConfiguration().getProps(), port);
         } else {
             startWithRegistryCenter(shardingConfig.getServerConfiguration(), shardingConfig.getRuleConfigurationMap().keySet(), shardingConfig.getRuleConfigurationMap(), port);
         }
@@ -107,9 +111,13 @@ public final class Bootstrap {
     }
     
     private static void startWithoutRegistryCenter(final Map<String, YamlProxyRuleConfiguration> ruleConfigs,
-                                                   final YamlAuthenticationConfiguration yamlAuthenticationConfig, final Properties properties, final int port) throws SQLException {
+                                                   final YamlAuthenticationConfiguration yamlAuthenticationConfig,
+                                                   final YamlMetricsConfiguration metricsConfiguration, final Properties properties, final int port) throws SQLException {
         Authentication authentication = new AuthenticationYamlSwapper().swap(yamlAuthenticationConfig);
         logAndInitContext(authentication, properties);
+        initMetrics(metricsConfiguration);
+        Map<String, Map<String, YamlDataSourceParameter>> schemaRules = getDataSourceParameterMap(ruleConfigs);
+        startProxy(schemaRules.keySet(), port, schemaRules, getRuleConfigurations(ruleConfigs), false);
         Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources = getDataSourceParameterMap(ruleConfigs);
         startProxy(schemaDataSources.keySet(), port, schemaDataSources, getRuleConfigurations(ruleConfigs), false);
     }
@@ -122,6 +130,7 @@ public final class Bootstrap {
             Authentication authentication = shardingOrchestrationFacade.getConfigCenter().loadAuthentication();
             Properties properties = shardingOrchestrationFacade.getConfigCenter().loadProperties();
             logAndInitContext(authentication, properties);
+            initMetrics(serverConfig.getMetrics());
             startProxy(shardingSchemaNames, port, getSchemaDataSourceParameterMap(shardingOrchestrationFacade), getSchemaRules(shardingOrchestrationFacade), true);
         }
     }
@@ -176,6 +185,12 @@ public final class Bootstrap {
     private static void initOpenTracing() {
         if (ShardingProxyContext.getInstance().getProperties().<Boolean>getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED)) {
             ShardingTracer.init();
+        }
+    }
+    
+    private static void initMetrics(final YamlMetricsConfiguration metricsConfiguration) {
+        if (ShardingProxyContext.getInstance().getProperties().<Boolean>getValue(ConfigurationPropertyKey.PROXY_METRICS_ENABLED)) {
+            MetricsTrackerFacade.getInstance().init(new MetricsConfigurationYamlSwapper().swap(metricsConfiguration));
         }
     }
     
