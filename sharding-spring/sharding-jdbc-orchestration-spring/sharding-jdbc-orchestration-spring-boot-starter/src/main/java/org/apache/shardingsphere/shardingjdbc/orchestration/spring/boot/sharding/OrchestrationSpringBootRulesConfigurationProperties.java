@@ -19,15 +19,8 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.shardin
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.config.shadow.YamlShadowRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.core.yaml.config.YamlRootRuleConfigurations;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * Spring boot rules configuration properties for orchestration.
@@ -35,13 +28,5 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "spring.shardingsphere.rules")
 @Getter
 @Setter
-public final class OrchestrationSpringBootRulesConfigurationProperties implements YamlConfiguration {
-    
-    private YamlShardingRuleConfiguration shardingRule;
-    
-    private Map<String, YamlMasterSlaveRuleConfiguration> masterSlaveRules = new LinkedHashMap<>();
-    
-    private YamlEncryptRuleConfiguration encryptRule;
-    
-    private YamlShadowRuleConfiguration shadowRule;
+public final class OrchestrationSpringBootRulesConfigurationProperties extends YamlRootRuleConfigurations {
 }

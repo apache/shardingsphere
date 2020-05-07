@@ -108,6 +108,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         when(schemaMetaData.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "amount", "status"));
         RuleSchemaMetaData ruleSchemaMetaData = mock(RuleSchemaMetaData.class);
         when(ruleSchemaMetaData.getConfiguredSchemaMetaData()).thenReturn(schemaMetaData);
+        when(ruleSchemaMetaData.getSchemaMetaData()).thenReturn(schemaMetaData);
         return new ShardingSphereMetaData(mock(DataSourceMetas.class), ruleSchemaMetaData);
     }
     

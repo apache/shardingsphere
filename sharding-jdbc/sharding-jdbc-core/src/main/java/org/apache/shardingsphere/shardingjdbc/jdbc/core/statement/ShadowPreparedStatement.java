@@ -195,7 +195,7 @@ public final class ShadowPreparedStatement extends AbstractShardingPreparedState
     
     @SuppressWarnings("unchecked")
     private SQLUnit getSQLUnit(final String sql) {
-        SchemaMetaData schemaMetaData = connection.getRuntimeContext().getMetaData().getSchema().getConfiguredSchemaMetaData();
+        SchemaMetaData schemaMetaData = connection.getRuntimeContext().getMetaData().getSchema().getSchemaMetaData();
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, sql, getParameters(), sqlStatement);
         ShadowJudgementEngine shadowJudgementEngine = new PreparedJudgementEngine((ShadowRule) connection.getRuntimeContext().getRules().iterator().next(), sqlStatementContext, getParameters());
         isShadowSQL = shadowJudgementEngine.isShadowSQL();

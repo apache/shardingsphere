@@ -33,9 +33,9 @@ dataSources:
       password:  
 
 masterSlaveRule:
-  name: master-slave-ds
-  masterDataSourceName: master_ds
-  slaveDataSourceNames: 
-    - slave_ds_0
-    - slave_ds_1
-  loadBalanceAlgorithmType: ROUND_ROBIN
+    name: master-slave-ds
+    masterDataSourceName: master_ds
+    slaveDataSourceNames: 
+      - slave_ds_0
+      - slave_ds_1
+    loadBalanceAlgorithmType: ROUND_ROBIN

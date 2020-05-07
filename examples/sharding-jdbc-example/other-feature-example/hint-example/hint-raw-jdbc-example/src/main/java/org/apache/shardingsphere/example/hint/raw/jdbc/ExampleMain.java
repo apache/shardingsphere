@@ -20,7 +20,6 @@ package org.apache.shardingsphere.example.hint.raw.jdbc;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
-import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 
 import javax.sql.DataSource;
@@ -51,7 +50,7 @@ public class ExampleMain {
             case DATABASE_ONLY:
                 return YamlShardingDataSourceFactory.createDataSource(getFile("/META-INF/hint-databases-only.yaml"));
             case MASTER_ONLY:
-                return YamlMasterSlaveDataSourceFactory.createDataSource(getFile("/META-INF/hint-master-only.yaml"));
+                return YamlShardingDataSourceFactory.createDataSource(getFile("/META-INF/hint-master-only.yaml"));
             default:
                 throw new UnsupportedOperationException("unsupported type");
         }

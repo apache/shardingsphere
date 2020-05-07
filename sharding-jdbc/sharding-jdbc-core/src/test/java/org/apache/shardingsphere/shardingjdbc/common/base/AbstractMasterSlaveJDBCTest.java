@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shardingjdbc.common.base;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
+import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
@@ -32,9 +32,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractMasterSlaveJDBCDatabaseAndTableTest extends AbstractSQLTest {
+public abstract class AbstractMasterSlaveJDBCTest extends AbstractSQLTest {
     
-    private static MasterSlaveDataSource masterSlaveDataSource;
+    private static ShardingDataSource masterSlaveDataSource;
     
     private static final String CONFIG_MASTER_SLAVE = "config-master-slave.yaml";
     
@@ -45,7 +45,7 @@ public abstract class AbstractMasterSlaveJDBCDatabaseAndTableTest extends Abstra
         if (null != masterSlaveDataSource) {
             return;
         }
-        masterSlaveDataSource = (MasterSlaveDataSource) YamlMasterSlaveDataSourceFactory.createDataSource(getDataSources(), getFile(CONFIG_MASTER_SLAVE));
+        masterSlaveDataSource = (ShardingDataSource) YamlShardingDataSourceFactory.createDataSource(getDataSources(), getFile(CONFIG_MASTER_SLAVE));
     }
     
     private static Map<String, DataSource> getDataSources() {
@@ -54,10 +54,10 @@ public abstract class AbstractMasterSlaveJDBCDatabaseAndTableTest extends Abstra
     
     private static File getFile(final String fileName) {
         return new File(Preconditions.checkNotNull(
-                AbstractMasterSlaveJDBCDatabaseAndTableTest.class.getClassLoader().getResource(fileName), "file resource `%s` must not be null.", fileName).getFile());
+                AbstractMasterSlaveJDBCTest.class.getClassLoader().getResource(fileName), "file resource `%s` must not be null.", fileName).getFile());
     }
     
-    protected final MasterSlaveDataSource getMasterSlaveDataSource() {
+    protected final ShardingDataSource getMasterSlaveDataSource() {
         return masterSlaveDataSource;
     }
     
