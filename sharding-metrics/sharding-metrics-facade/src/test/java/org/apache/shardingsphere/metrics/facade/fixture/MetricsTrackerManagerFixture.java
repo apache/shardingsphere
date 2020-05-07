@@ -26,7 +26,7 @@ import java.util.Properties;
 public final class MetricsTrackerManagerFixture implements MetricsTrackerManager {
     
     @Override
-    public void start(MetricsConfiguration metricsConfiguration) {
+    public void start(final MetricsConfiguration metricsConfiguration) {
     
     }
     

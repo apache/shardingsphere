@@ -54,7 +54,7 @@ public final class PrometheusMetricsTrackerManager implements MetricsTrackerMana
     @Override
     public void start(final MetricsConfiguration metricsConfiguration) {
         InetSocketAddress inetSocketAddress;
-        if(Strings.isNullOrEmpty(metricsConfiguration.getHost())) {
+        if (Strings.isNullOrEmpty(metricsConfiguration.getHost())) {
             inetSocketAddress = new InetSocketAddress(metricsConfiguration.getPort());
         } else {
             inetSocketAddress = new InetSocketAddress(metricsConfiguration.getHost(), metricsConfiguration.getPort());
