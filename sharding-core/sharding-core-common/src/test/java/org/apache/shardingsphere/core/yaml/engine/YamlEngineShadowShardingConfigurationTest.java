@@ -26,7 +26,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -67,7 +66,6 @@ public final class YamlEngineShadowShardingConfigurationTest {
         assertTOrderItem(actual);
         assertBindingTable(actual);
         assertBroadcastTable(actual);
-        assertMasterSlaveRules(actual);
         assertProps(actual);
         assertShadowDataSourceMapping(actual);
     }
@@ -122,24 +120,6 @@ public final class YamlEngineShadowShardingConfigurationTest {
     private void assertBroadcastTable(final YamlRootShadowConfiguration actual) {
         assertThat(actual.getShadowRule().getShardingRule().getBroadcastTables().size(), is(1));
         assertThat(actual.getShadowRule().getShardingRule().getBroadcastTables().iterator().next(), is("t_config"));
-    }
-    
-    private void assertMasterSlaveRules(final YamlRootShadowConfiguration actual) {
-        assertThat(actual.getShadowRule().getShardingRule().getMasterSlaveRules().size(), is(2));
-        assertMasterSlaveRuleForDs0(actual);
-        assertMasterSlaveRuleForDs1(actual);
-    }
-    
-    private void assertMasterSlaveRuleForDs0(final YamlRootShadowConfiguration actual) {
-        assertThat(actual.getShadowRule().getShardingRule().getMasterSlaveRules().get("ds_0").getMasterDataSourceName(), is("master_ds_0"));
-        assertThat(actual.getShadowRule().getShardingRule().getMasterSlaveRules().get("ds_0").getSlaveDataSourceNames(), is(Arrays.asList("master_ds_0_slave_0", "master_ds_0_slave_1")));
-        assertThat(actual.getShadowRule().getShardingRule().getMasterSlaveRules().get("ds_0").getLoadBalanceAlgorithmType(), is("ROUND_ROBIN"));
-    }
-    
-    private void assertMasterSlaveRuleForDs1(final YamlRootShadowConfiguration actual) {
-        assertThat(actual.getShadowRule().getShardingRule().getMasterSlaveRules().get("ds_1").getMasterDataSourceName(), is("master_ds_1"));
-        assertThat(actual.getShadowRule().getShardingRule().getMasterSlaveRules().get("ds_1").getSlaveDataSourceNames(), is(Arrays.asList("master_ds_1_slave_0", "master_ds_1_slave_1")));
-        assertThat(actual.getShadowRule().getShardingRule().getMasterSlaveRules().get("ds_1").getLoadBalanceAlgorithmType(), is("RANDOM"));
     }
     
     private void assertProps(final YamlRootShadowConfiguration actual) {
