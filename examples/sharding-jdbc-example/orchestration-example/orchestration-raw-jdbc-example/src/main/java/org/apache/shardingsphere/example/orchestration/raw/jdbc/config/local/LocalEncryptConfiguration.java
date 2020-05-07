@@ -51,7 +51,6 @@ public class LocalEncryptConfiguration implements ExampleConfiguration {
     }
     
     private EncryptRuleConfiguration getEncryptRuleConfiguration() {
-        EncryptRuleConfiguration result = new EncryptRuleConfiguration();
         Properties properties = new Properties();
         properties.setProperty("aes.key.value", "123456");
         EncryptorRuleConfiguration aesRuleConfiguration = new EncryptorRuleConfiguration("aes", properties);
@@ -60,8 +59,10 @@ public class LocalEncryptConfiguration implements ExampleConfiguration {
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration(columns);
         columns.put("status", columnConfigAes);
         tableConfig.getColumns().putAll(columns);
-        result.getEncryptors().put("status_encryptor", aesRuleConfiguration);
-        result.getTables().put("t_order", tableConfig);
-        return result;
+        Map<String, EncryptorRuleConfiguration> encryptors = new HashMap<>();
+        encryptors.put("status_encryptor", aesRuleConfiguration);
+        Map<String, EncryptTableRuleConfiguration> tables = new HashMap<>();
+        tables.put("t_order", tableConfig);
+        return new EncryptRuleConfiguration(encryptors, tables);
     }
 }

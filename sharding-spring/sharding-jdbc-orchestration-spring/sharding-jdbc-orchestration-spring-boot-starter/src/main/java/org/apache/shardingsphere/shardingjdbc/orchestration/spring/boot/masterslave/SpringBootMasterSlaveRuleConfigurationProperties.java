@@ -24,5 +24,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Master-slave rule configuration properties.
  */
 @ConfigurationProperties(prefix = "spring.shardingsphere.masterslave")
-public class SpringBootMasterSlaveRuleConfigurationProperties extends YamlMasterSlaveRuleConfiguration {
+public final class SpringBootMasterSlaveRuleConfigurationProperties extends YamlMasterSlaveRuleConfiguration {
 }

@@ -35,7 +35,7 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "spring.shardingsphere.rules")
 @Getter
 @Setter
-public class OrchestrationSpringBootRulesConfigurationProperties implements YamlConfiguration {
+public final class OrchestrationSpringBootRulesConfigurationProperties implements YamlConfiguration {
     
     private YamlShardingRuleConfiguration shardingRule;
     

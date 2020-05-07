@@ -24,5 +24,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Shadow rule configuration properties.
  */
 @ConfigurationProperties(prefix = "spring.shardingsphere.shadow")
-public class SpringBootShadowRuleConfigurationProperties extends YamlShadowRuleConfiguration {
+public final class SpringBootShadowRuleConfigurationProperties extends YamlShadowRuleConfiguration {
 }

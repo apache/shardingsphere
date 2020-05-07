@@ -19,15 +19,10 @@ package org.apache.shardingsphere.core.yaml.swapper.root;
 
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.config.sharding.YamlTableRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.swapper.KeyGeneratorConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.ShardingStrategyConfigurationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.TableRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
@@ -42,11 +37,7 @@ import java.util.Map.Entry;
  */
 public final class RuleRootConfigurationsYamlSwapper implements YamlSwapper<YamlRootRuleConfigurations, Collection<RuleConfiguration>> {
     
-    private final TableRuleConfigurationYamlSwapper tableRuleConfigurationYamlSwapper = new TableRuleConfigurationYamlSwapper();
-    
-    private final ShardingStrategyConfigurationYamlSwapper shardingStrategyConfigurationYamlSwapper = new ShardingStrategyConfigurationYamlSwapper();
-    
-    private final KeyGeneratorConfigurationYamlSwapper keyGeneratorConfigurationYamlSwapper = new KeyGeneratorConfigurationYamlSwapper();
+    private final ShardingRuleConfigurationYamlSwapper shardingRuleConfigurationYamlSwapper = new ShardingRuleConfigurationYamlSwapper();
     
     private final MasterSlaveRuleConfigurationYamlSwapper masterSlaveRuleConfigurationYamlSwapper = new MasterSlaveRuleConfigurationYamlSwapper();
     
@@ -57,7 +48,7 @@ public final class RuleRootConfigurationsYamlSwapper implements YamlSwapper<Yaml
         YamlRootRuleConfigurations result = new YamlRootRuleConfigurations();
         for (RuleConfiguration each : data) {
             if (each instanceof ShardingRuleConfiguration) {
-                result.setShardingRule(swap((ShardingRuleConfiguration) each));
+                result.setShardingRule(shardingRuleConfigurationYamlSwapper.swap((ShardingRuleConfiguration) each));
             } else if (each instanceof MasterSlaveRuleConfiguration) {
                 result.getMasterSlaveRules().put(((MasterSlaveRuleConfiguration) each).getName(), masterSlaveRuleConfigurationYamlSwapper.swap((MasterSlaveRuleConfiguration) each));
             } else if (each instanceof EncryptRuleConfiguration) {
@@ -67,30 +58,11 @@ public final class RuleRootConfigurationsYamlSwapper implements YamlSwapper<Yaml
         return result;
     }
     
-    private YamlShardingRuleConfiguration swap(final ShardingRuleConfiguration data) {
-        YamlShardingRuleConfiguration result = new YamlShardingRuleConfiguration();
-        for (TableRuleConfiguration each : data.getTableRuleConfigs()) {
-            result.getTables().put(each.getLogicTable(), tableRuleConfigurationYamlSwapper.swap(each));
-        }
-        result.getBindingTables().addAll(data.getBindingTableGroups());
-        result.getBroadcastTables().addAll(data.getBroadcastTables());
-        if (null != data.getDefaultDatabaseShardingStrategyConfig()) {
-            result.setDefaultDatabaseStrategy(shardingStrategyConfigurationYamlSwapper.swap(data.getDefaultDatabaseShardingStrategyConfig()));
-        }
-        if (null != data.getDefaultTableShardingStrategyConfig()) {
-            result.setDefaultTableStrategy(shardingStrategyConfigurationYamlSwapper.swap(data.getDefaultTableShardingStrategyConfig()));
-        }
-        if (null != data.getDefaultKeyGeneratorConfig()) {
-            result.setDefaultKeyGenerator(keyGeneratorConfigurationYamlSwapper.swap(data.getDefaultKeyGeneratorConfig()));
-        }
-        return result;
-    }
-    
     @Override
     public Collection<RuleConfiguration> swap(final YamlRootRuleConfigurations configurations) {
         Collection<RuleConfiguration> result = new LinkedList<>();
         if (null != configurations.getShardingRule()) {
-            result.add(createShardingRuleConfiguration(configurations.getShardingRule()));
+            result.add(shardingRuleConfigurationYamlSwapper.swap(configurations.getShardingRule()));
         }
         for (Entry<String, YamlMasterSlaveRuleConfiguration> entry : configurations.getMasterSlaveRules().entrySet()) {
             YamlMasterSlaveRuleConfiguration each = entry.getValue();
@@ -99,27 +71,6 @@ public final class RuleRootConfigurationsYamlSwapper implements YamlSwapper<Yaml
         }
         if (null != configurations.getEncryptRule()) {
             result.add(encryptRuleConfigurationYamlSwapper.swap(configurations.getEncryptRule()));
-        }
-        return result;
-    }
-    
-    private ShardingRuleConfiguration createShardingRuleConfiguration(final YamlShardingRuleConfiguration yamlConfiguration) {
-        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        for (Entry<String, YamlTableRuleConfiguration> entry : yamlConfiguration.getTables().entrySet()) {
-            YamlTableRuleConfiguration tableRuleConfig = entry.getValue();
-            tableRuleConfig.setLogicTable(entry.getKey());
-            result.getTableRuleConfigs().add(tableRuleConfigurationYamlSwapper.swap(tableRuleConfig));
-        }
-        result.getBindingTableGroups().addAll(yamlConfiguration.getBindingTables());
-        result.getBroadcastTables().addAll(yamlConfiguration.getBroadcastTables());
-        if (null != yamlConfiguration.getDefaultDatabaseStrategy()) {
-            result.setDefaultDatabaseShardingStrategyConfig(shardingStrategyConfigurationYamlSwapper.swap(yamlConfiguration.getDefaultDatabaseStrategy()));
-        }
-        if (null != yamlConfiguration.getDefaultTableStrategy()) {
-            result.setDefaultTableShardingStrategyConfig(shardingStrategyConfigurationYamlSwapper.swap(yamlConfiguration.getDefaultTableStrategy()));
-        }
-        if (null != yamlConfiguration.getDefaultKeyGenerator()) {
-            result.setDefaultKeyGeneratorConfig(keyGeneratorConfigurationYamlSwapper.swap(yamlConfiguration.getDefaultKeyGenerator()));
         }
         return result;
     }

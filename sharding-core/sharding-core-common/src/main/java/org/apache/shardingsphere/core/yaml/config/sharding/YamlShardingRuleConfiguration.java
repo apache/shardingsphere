@@ -20,8 +20,6 @@ package org.apache.shardingsphere.core.yaml.config.sharding;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,7 +31,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public class YamlShardingRuleConfiguration implements YamlConfiguration {
+public final class YamlShardingRuleConfiguration implements YamlConfiguration {
     
     private Map<String, YamlTableRuleConfiguration> tables = new LinkedHashMap<>();
     
@@ -46,20 +44,4 @@ public class YamlShardingRuleConfiguration implements YamlConfiguration {
     private YamlShardingStrategyConfiguration defaultTableStrategy;
     
     private YamlKeyGeneratorConfiguration defaultKeyGenerator;
-    
-    /**
-     * Master slave rules.
-     * 
-     * @deprecated master slave rules
-     */
-    @Deprecated
-    private Map<String, YamlMasterSlaveRuleConfiguration> masterSlaveRules = new LinkedHashMap<>();
-    
-    /**
-     * Encrypt rule.
-     * 
-     * @deprecated encrypt rule.
-     */
-    @Deprecated
-    private YamlEncryptRuleConfiguration encryptRule;
 }
