@@ -18,11 +18,8 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import com.google.common.base.Joiner;
-import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.fixture.XAShardingTransactionManagerFixture;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -72,22 +69,6 @@ public final class ShardingDataSourceTest {
         dataSourceMap.put("ds1", dataSource1);
         dataSourceMap.put("ds2", dataSource2);
         assertDatabaseProductName(dataSourceMap, dataSource1.getConnection(), dataSource2.getConnection());
-    }
-    
-    @Test(expected = IllegalStateException.class)
-    public void assertGetDatabaseProductNameWhenDataBaseProductNameDifferentForMasterSlave() throws SQLException {
-        DataSource dataSource1 = mockDataSource(DatabaseTypes.getActualDatabaseType("MySQL"));
-        DataSource masterDataSource = mockDataSource(DatabaseTypes.getActualDatabaseType("H2"));
-        DataSource slaveDataSource = mockDataSource(DatabaseTypes.getActualDatabaseType("H2"));
-        Map<String, DataSource> masterSlaveDataSourceMap = new HashMap<>(2, 1);
-        masterSlaveDataSourceMap.put("masterDataSource", masterDataSource);
-        masterSlaveDataSourceMap.put("slaveDataSource", slaveDataSource);
-        MasterSlaveDataSource dataSource2 = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(masterSlaveDataSourceMap, 
-                new MasterSlaveRuleConfiguration("ds", "masterDataSource", Collections.singletonList("slaveDataSource"), new LoadBalanceStrategyConfiguration("ROUND_ROBIN")), new Properties());
-        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
-        dataSourceMap.put("ds1", dataSource1);
-        dataSourceMap.put("ds2", dataSource2);
-        assertDatabaseProductName(dataSourceMap, dataSource1.getConnection(), masterDataSource.getConnection(), slaveDataSource.getConnection());
     }
     
     @Test
