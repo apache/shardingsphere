@@ -24,7 +24,7 @@ import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
 /**
  * Metrics configuration YAML swapper.
  */
-public class MetricsConfigurationYamlSwapper implements YamlSwapper<YamlMetricsConfiguration, MetricsConfiguration> {
+public final class MetricsConfigurationYamlSwapper implements YamlSwapper<YamlMetricsConfiguration, MetricsConfiguration> {
     
     @Override
     public YamlMetricsConfiguration swap(final MetricsConfiguration metricsConfiguration) {
