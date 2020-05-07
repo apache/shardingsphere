@@ -46,14 +46,6 @@ public final class YamlProxyRuleConfiguration implements YamlConfiguration {
     
     private Map<String, YamlMasterSlaveRuleConfiguration> masterSlaveRules = new LinkedHashMap<>();
     
-    /**
-     * Master slave rule.
-     *
-     * @deprecated master slave rule
-     */
-    @Deprecated
-    private YamlMasterSlaveRuleConfiguration masterSlaveRule;
-    
     private YamlEncryptRuleConfiguration encryptRule;
     
     private YamlShadowRuleConfiguration shadowRule;
