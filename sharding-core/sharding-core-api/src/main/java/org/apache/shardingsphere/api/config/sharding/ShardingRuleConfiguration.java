@@ -19,10 +19,8 @@ package org.apache.shardingsphere.api.config.sharding;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -45,8 +43,4 @@ public final class ShardingRuleConfiguration implements RuleConfiguration {
     private ShardingStrategyConfiguration defaultTableShardingStrategyConfig;
     
     private KeyGeneratorConfiguration defaultKeyGeneratorConfig;
-    
-    private Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigs = new LinkedList<>();
-    
-    private EncryptRuleConfiguration encryptRuleConfig;
 }
