@@ -261,4 +261,10 @@ Answer:
 Answer:
  
 1. Sharding-proxy could be considered as a mysql sever, so we recommend using mysql command line tool to connect to and operate it.
-2. If users would like use a third-party database tool, there may be some errors cause of the certain implementation/options. For example, we recommend Navicat with version 11.1.13(not 12.x), and turn on "introspect using jdbc metadata"(or it will get all real tables info from informations_schema) in idea or datagrip.  
+2. If users would like use a third-party database tool, there may be some errors cause of the certain implementation/options. For example, we recommend Navicat with version 11.1.13(not 12.x), and turn on "introspect using jdbc metadata"(or it will get all real tables info from informations_schema) in idea or datagrip.
+
+## 23. Found a JtaTransactionManager in spring boot project when integrating with ShardingTransaction of XA
+
+Answer:
+
+1. `sharding-transaction-xa-core` include atomikos, it will trigger auto-configuration mechanism in spring-boot, add `@SpringBootApplication(exclude = JtaAutoConfiguration.class)` will solve it. 
