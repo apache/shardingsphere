@@ -60,7 +60,7 @@ public final class RuleSchemaMetaDataLoader {
     
     /**
      * Load rule schema meta data.
-     *
+     * 
      * @param databaseType database type
      * @param dataSourceMap data source map
      * @param properties configuration properties
