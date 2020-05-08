@@ -64,7 +64,7 @@ public final class RuleSchemaMetaDataLoader {
      * @param databaseType database type
      * @param dataSourceMap data source map
      * @param properties configuration properties
-     * @param executorService  executor service
+     * @param executorService executor service
      * @return rule schema meta data
      * @throws SQLException SQL exception
      */
