@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
@@ -36,11 +35,6 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules, final Properties props) throws SQLException {
         super(dataSourceMap, rules, props);
-        checkDataSource(dataSourceMap);
-    }
-    
-    private void checkDataSource(final Map<String, DataSource> dataSourceMap) {
-        dataSourceMap.values().forEach(each -> Preconditions.checkArgument(!(each instanceof MasterSlaveDataSource), "Initialized data sources can not be master-slave data sources."));
     }
     
     @Override
