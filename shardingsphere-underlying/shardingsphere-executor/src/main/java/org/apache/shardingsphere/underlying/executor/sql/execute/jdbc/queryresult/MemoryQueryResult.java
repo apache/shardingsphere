@@ -81,7 +81,8 @@ public final class MemoryQueryResult implements QueryResult {
                 if (metaData.isSigned(columnIndex)) {
                     return resultSet.getLong(columnIndex);
                 }
-                return resultSet.getBigDecimal(columnIndex).toBigInteger();
+                Object result = resultSet.getBigDecimal(columnIndex);
+                return result == null ? null : result.toBigInteger();
             case Types.NUMERIC:
             case Types.DECIMAL:
                 return resultSet.getBigDecimal(columnIndex);
