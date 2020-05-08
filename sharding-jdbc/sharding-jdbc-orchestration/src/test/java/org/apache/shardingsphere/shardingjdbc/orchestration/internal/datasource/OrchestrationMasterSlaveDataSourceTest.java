@@ -32,7 +32,7 @@ import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChang
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.CircuitStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationShardingSchema;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.circuit.connection.CircuitBreakerConnection;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
@@ -65,14 +65,15 @@ public final class OrchestrationMasterSlaveDataSourceTest {
         masterSlaveDataSource = new OrchestrationMasterSlaveDataSource(getMasterSlaveDataSource(), getOrchestrationConfiguration());
     }
     
-    private static MasterSlaveDataSource getMasterSlaveDataSource() throws IOException, SQLException, URISyntaxException {
+    private static ShardingDataSource getMasterSlaveDataSource() throws IOException, SQLException, URISyntaxException {
         File yamlFile = new File(OrchestrationMasterSlaveDataSource.class.getResource("/yaml/unit/masterSlave.yaml").toURI());
-        return (MasterSlaveDataSource) createDataSource(yamlFile);
+        return (ShardingDataSource) createDataSource(yamlFile);
     }
     
     private static DataSource createDataSource(final File yamlFile) throws SQLException, IOException {
         YamlRootMasterSlaveConfiguration config = YamlEngine.unmarshal(yamlFile, YamlRootMasterSlaveConfiguration.class);
-        return new MasterSlaveDataSource(config.getDataSources(), new MasterSlaveRule(new MasterSlaveRuleConfigurationYamlSwapper().swap(config.getMasterSlaveRule())), config.getProps());
+        return new ShardingDataSource(
+                config.getDataSources(), Collections.singletonList(new MasterSlaveRule(new MasterSlaveRuleConfigurationYamlSwapper().swap(config.getMasterSlaveRule()))), config.getProps());
     }
     
     private static OrchestrationConfiguration getOrchestrationConfiguration() {
@@ -172,7 +173,7 @@ public final class OrchestrationMasterSlaveDataSourceTest {
     
     @Test
     public void assertGetDataSource() {
-        assertThat(masterSlaveDataSource.getDataSource(), instanceOf(MasterSlaveDataSource.class));
+        assertThat(masterSlaveDataSource.getDataSource(), instanceOf(ShardingDataSource.class));
     }
     
     @Test

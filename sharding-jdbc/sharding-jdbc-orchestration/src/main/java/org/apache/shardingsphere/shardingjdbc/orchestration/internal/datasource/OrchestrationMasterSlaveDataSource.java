@@ -34,7 +34,7 @@ import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenter;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationShardingSchema;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
@@ -52,25 +52,25 @@ import java.util.Map;
 @Getter(AccessLevel.PROTECTED)
 public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDataSource {
     
-    private MasterSlaveDataSource dataSource;
+    private ShardingDataSource dataSource;
     
     public OrchestrationMasterSlaveDataSource(final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(DefaultSchema.LOGIC_NAME)));
         ConfigCenter configService = getShardingOrchestrationFacade().getConfigCenter();
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = configService.loadMasterSlaveRuleConfiguration(DefaultSchema.LOGIC_NAME);
         Preconditions.checkState(!Strings.isNullOrEmpty(masterSlaveRuleConfig.getMasterDataSourceName()), "No available master slave rule configuration to load.");
-        dataSource = new MasterSlaveDataSource(DataSourceConverter.getDataSourceMap(configService.loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME)),
-                new MasterSlaveRule(masterSlaveRuleConfig), configService.loadProperties());
+        dataSource = new ShardingDataSource(DataSourceConverter.getDataSourceMap(configService.loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME)),
+                Collections.singletonList(new MasterSlaveRule(masterSlaveRuleConfig)), configService.loadProperties());
         initShardingOrchestrationFacade();
         persistMetaData(dataSource.getRuntimeContext().getMetaData().getSchema());
     }
     
-    public OrchestrationMasterSlaveDataSource(final MasterSlaveDataSource masterSlaveDataSource, final OrchestrationConfiguration orchestrationConfig) {
+    public OrchestrationMasterSlaveDataSource(final ShardingDataSource dataSource, final OrchestrationConfiguration orchestrationConfig) {
         super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(DefaultSchema.LOGIC_NAME)));
-        dataSource = masterSlaveDataSource;
-        initShardingOrchestrationFacade(Collections.singletonMap(DefaultSchema.LOGIC_NAME, DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap())),
-                getRuleConfigurationMap(), dataSource.getRuntimeContext().getProperties().getProps());
-        persistMetaData(dataSource.getRuntimeContext().getMetaData().getSchema());
+        this.dataSource = dataSource;
+        initShardingOrchestrationFacade(Collections.singletonMap(DefaultSchema.LOGIC_NAME, DataSourceConverter.getDataSourceConfigurationMap(this.dataSource.getDataSourceMap())),
+                getRuleConfigurationMap(), this.dataSource.getRuntimeContext().getProperties().getProps());
+        persistMetaData(this.dataSource.getRuntimeContext().getMetaData().getSchema());
     }
     
     private Map<String, Collection<RuleConfiguration>> getRuleConfigurationMap() {
@@ -90,8 +90,8 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     @Subscribe
     @SneakyThrows
     public final synchronized void renew(final MasterSlaveRuleChangedEvent masterSlaveRuleChangedEvent) {
-        dataSource = new MasterSlaveDataSource(dataSource.getDataSourceMap(), 
-                new MasterSlaveRule(masterSlaveRuleChangedEvent.getMasterSlaveRuleConfiguration()), dataSource.getRuntimeContext().getProperties().getProps());
+        dataSource = new ShardingDataSource(dataSource.getDataSourceMap(), 
+                Collections.singleton(new MasterSlaveRule(masterSlaveRuleChangedEvent.getMasterSlaveRuleConfiguration())), dataSource.getRuntimeContext().getProperties().getProps());
     }
     
     /**
@@ -105,8 +105,8 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
         Map<String, DataSourceConfiguration> dataSourceConfigurations = dataSourceChangedEvent.getDataSourceConfigurations();
         dataSource.close(getDeletedDataSources(dataSourceConfigurations));
         dataSource.close(getModifiedDataSources(dataSourceConfigurations).keySet());
-        dataSource = new MasterSlaveDataSource(getChangedDataSources(dataSource.getDataSourceMap(), dataSourceConfigurations), 
-                (MasterSlaveRule) dataSource.getRuntimeContext().getRules().iterator().next(), dataSource.getRuntimeContext().getProperties().getProps());
+        dataSource = new ShardingDataSource(getChangedDataSources(dataSource.getDataSourceMap(), dataSourceConfigurations), 
+                dataSource.getRuntimeContext().getRules(), dataSource.getRuntimeContext().getProperties().getProps());
         getDataSourceConfigurations().clear();
         getDataSourceConfigurations().putAll(dataSourceConfigurations);
     }
@@ -119,7 +119,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     @SneakyThrows
     @Subscribe
     public final synchronized void renew(final PropertiesChangedEvent propertiesChangedEvent) {
-        dataSource = new MasterSlaveDataSource(dataSource.getDataSourceMap(), (MasterSlaveRule) dataSource.getRuntimeContext().getRules().iterator().next(), propertiesChangedEvent.getProps());
+        dataSource = new ShardingDataSource(dataSource.getDataSourceMap(), dataSource.getRuntimeContext().getRules(), propertiesChangedEvent.getProps());
     }
     
     /**
