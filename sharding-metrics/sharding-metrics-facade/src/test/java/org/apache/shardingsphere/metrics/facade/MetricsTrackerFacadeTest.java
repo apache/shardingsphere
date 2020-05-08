@@ -70,21 +70,25 @@ public final class MetricsTrackerFacadeTest {
     
     @Test
     public void histogram() {
-        HistogramMetricsTrackerDelegate delegate = metricsTrackerFacade.histogramStartTimer("request");
-        assertEquals(delegate.getClass(), NoneHistogramMetricsTrackerDelegate.class);
+        MetricsConfiguration metricsConfiguration = new MetricsConfiguration("fixture", null, null, null);
+        metricsTrackerFacade.init(metricsConfiguration);
         assertEquals(metricsTrackerFacade.getMetricsTrackerManager().getClass(), MetricsTrackerManagerFixture2.class);
+        HistogramMetricsTrackerDelegate delegate = metricsTrackerFacade.histogramStartTimer("request");
+        metricsTrackerFacade.histogramObserveDuration(delegate);
+        assertEquals(delegate.getClass(), NoneHistogramMetricsTrackerDelegate.class);
         ((MetricsTrackerManagerFixture2) metricsTrackerFacade.getMetricsTrackerManager()).setMetricsTrackerFactory(new MetricsTrackerFactoryFixture());
         HistogramMetricsTrackerDelegate delegateNone = metricsTrackerFacade.histogramStartTimer("request");
         assertEquals(delegateNone.getClass(), NoneHistogramMetricsTrackerDelegate.class);
-        metricsTrackerFacade.histogramObserveDuration(delegateNone);
     }
     
     @Test
     public void summary() {
+        MetricsConfiguration metricsConfiguration = new MetricsConfiguration("fixture", null, null, null);
+        metricsTrackerFacade.init(metricsConfiguration);
+        assertEquals(metricsTrackerFacade.getMetricsTrackerManager().getClass(), MetricsTrackerManagerFixture2.class);
         SummaryMetricsTrackerDelegate delegate = metricsTrackerFacade.summaryStartTimer("request");
         metricsTrackerFacade.summaryObserveDuration(delegate);
         assertEquals(delegate.getClass(), NoneSummaryMetricsTrackerDelegate.class);
-        assertEquals(metricsTrackerFacade.getMetricsTrackerManager().getClass(), MetricsTrackerManagerFixture2.class);
         ((MetricsTrackerManagerFixture2) metricsTrackerFacade.getMetricsTrackerManager()).setMetricsTrackerFactory(new MetricsTrackerFactoryFixture());
         SummaryMetricsTrackerDelegate delegateNone = metricsTrackerFacade.summaryStartTimer("request");
         assertEquals(delegateNone.getClass(), NoneSummaryMetricsTrackerDelegate.class);
