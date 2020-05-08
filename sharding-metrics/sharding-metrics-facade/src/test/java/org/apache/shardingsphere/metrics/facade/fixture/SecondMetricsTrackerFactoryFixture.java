@@ -17,16 +17,25 @@
 
 package org.apache.shardingsphere.metrics.facade.fixture;
 
+import org.apache.shardingsphere.metrics.api.HistogramMetricsTracker;
 import org.apache.shardingsphere.metrics.api.MetricsTracker;
 import org.apache.shardingsphere.metrics.api.MetricsTrackerFactory;
+import org.apache.shardingsphere.metrics.api.SummaryMetricsTracker;
+import org.apache.shardingsphere.metrics.enums.MetricsTypeEnum;
 
 import java.util.Optional;
 
-public final class MetricsTrackerFactoryFixture implements MetricsTrackerFactory {
+public final class SecondMetricsTrackerFactoryFixture implements MetricsTrackerFactory {
     
     @Override
     public Optional<MetricsTracker> create(final String metricsType, final String metricsLabel) {
-        return Optional.empty();
+        if (MetricsTypeEnum.HISTOGRAM.name().equals(metricsType)) {
+            return Optional.of((HistogramMetricsTracker) () -> metricsLabel);
+        } else if (MetricsTypeEnum.SUMMARY.name().equals(metricsType)) {
+            return Optional.of((SummaryMetricsTracker) () -> metricsLabel);
+        } else {
+            return Optional.empty();
+        }
     }
 }
 

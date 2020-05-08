@@ -17,25 +17,35 @@
 
 package org.apache.shardingsphere.metrics.facade.fixture;
 
-import org.apache.shardingsphere.metrics.api.HistogramMetricsTracker;
-import org.apache.shardingsphere.metrics.api.MetricsTracker;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.metrics.api.MetricsTrackerFactory;
-import org.apache.shardingsphere.metrics.api.SummaryMetricsTracker;
-import org.apache.shardingsphere.metrics.enums.MetricsTypeEnum;
+import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
+import org.apache.shardingsphere.metrics.spi.MetricsTrackerManager;
 
-import java.util.Optional;
+import java.util.Properties;
 
-public final class MetricsTrackerFactoryFixture2 implements MetricsTrackerFactory {
+@Getter
+@Setter
+public final class SecondMetricsTrackerManagerFixture implements MetricsTrackerManager {
+    
+    private MetricsTrackerFactory metricsTrackerFactory = new SecondMetricsTrackerFactoryFixture();
+    
+    private Properties properties = new Properties();
     
     @Override
-    public Optional<MetricsTracker> create(final String metricsType, final String metricsLabel) {
-        if (MetricsTypeEnum.HISTOGRAM.name().equals(metricsType)) {
-            return Optional.of((HistogramMetricsTracker) () -> metricsLabel);
-        } else if (MetricsTypeEnum.SUMMARY.name().equals(metricsType)) {
-            return Optional.of((SummaryMetricsTracker) () -> metricsLabel);
-        } else {
-            return Optional.empty();
-        }
+    public void start(final MetricsConfiguration metricsConfiguration) {
+    
+    }
+    
+    @Override
+    public void stop() {
+    
+    }
+    
+    @Override
+    public String getType() {
+        return "fixture";
     }
 }
 

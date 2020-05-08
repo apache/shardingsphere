@@ -27,9 +27,9 @@ import java.util.Properties;
 
 @Getter
 @Setter
-public final class MetricsTrackerManagerFixture2 implements MetricsTrackerManager {
+public final class FirstMetricsTrackerManagerFixture implements MetricsTrackerManager {
     
-    private MetricsTrackerFactory metricsTrackerFactory = new MetricsTrackerFactoryFixture2();
+    private final MetricsTrackerFactory metricsTrackerFactory = new FirstMetricsTrackerFactoryFixture();
     
     private Properties properties = new Properties();
     
