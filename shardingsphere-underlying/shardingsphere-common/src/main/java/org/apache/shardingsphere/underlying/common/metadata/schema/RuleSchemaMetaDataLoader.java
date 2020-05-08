@@ -79,7 +79,6 @@ public final class RuleSchemaMetaDataLoader {
         configuredSchemaMetaData = decorate(configuredSchemaMetaData);
         Map<String, SchemaMetaData> unconfiguredSchemaMetaDataMap = new HashMap<>(dataSourceMap.size(), 1);
         int maxConnectionCount = properties.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        // TODO use multiple threads for different data sources
         dataSourceMap.entrySet().parallelStream().forEach(entry -> {
             try {
                 SchemaMetaData schemaMetaData = SchemaMetaDataLoader.load(entry.getValue(), maxConnectionCount, databaseType.getName(), excludedTableNames);
