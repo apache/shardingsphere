@@ -308,7 +308,8 @@ gpg --verify apache-shardingsphere-${RELEASE.VERSION}-sharding-scaling-bin.tar.g
 #### compare release source with github tag
 
 ```
-curl -Lo tag-${RELEASE.VERSION}.zip https://github.com/apache/shardingsphere/archive/${RELEASE.VERSION}.zip | unzip
+curl -Lo tag-${RELEASE.VERSION}.zip https://github.com/apache/shardingsphere/archive/${RELEASE.VERSION}.zip
+unzip tag-${RELEASE.VERSION}.zip
 unzip apache-shardingsphere-${RELEASE.VERSION}-src.zip
 diff -r apache-shardingsphere-${RELEASE.VERSION}-src-release shardingsphere-${RELEASE.VERSION}
 ```
