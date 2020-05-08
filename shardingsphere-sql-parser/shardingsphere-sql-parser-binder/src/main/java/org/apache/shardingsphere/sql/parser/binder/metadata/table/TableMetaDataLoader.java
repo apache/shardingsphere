@@ -46,15 +46,15 @@ public final class TableMetaDataLoader {
      */
     public static Optional<TableMetaData> load(final DataSource dataSource, final String table, final String databaseType) throws SQLException {
         try (MetaDataConnection connection = new MetaDataConnection(dataSource.getConnection())) {
-            if (!isTableExist(connection, connection.getCatalog(), table)) {
+            if (!isTableExist(connection, table)) {
                 return Optional.empty();
             }
             return Optional.of(new TableMetaData(ColumnMetaDataLoader.load(connection, table, databaseType), IndexMetaDataLoader.load(connection, table)));
         }
     }
     
-    private static boolean isTableExist(final Connection connection, final String catalog, final String table) throws SQLException {
-        try (ResultSet resultSet = connection.getMetaData().getTables(catalog, null, table, null)) {
+    private static boolean isTableExist(final Connection connection, final String table) throws SQLException {
+        try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), connection.getSchema(), table, null)) {
             return resultSet.next();
         }
     }
