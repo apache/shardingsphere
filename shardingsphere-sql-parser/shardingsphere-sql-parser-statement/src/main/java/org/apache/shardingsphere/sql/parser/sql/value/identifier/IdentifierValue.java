@@ -27,13 +27,22 @@ import org.apache.shardingsphere.sql.parser.sql.value.ValueASTNode;
  */
 @Getter
 public final class IdentifierValue implements ValueASTNode<String> {
-    
+
     private final String value;
-    
+
     private final QuoteCharacter quoteCharacter;
-    
+
     public IdentifierValue(final String text) {
         value = SQLUtil.getExactlyValue(text);
         quoteCharacter = QuoteCharacter.getQuoteCharacter(text);
+    }
+
+    /**
+     * Get value with quote characters, i.e. `table1` or `field1`
+     *
+     * @return value with quote characters
+     */
+    public String getValueWithQuoteCharacters() {
+        return null == value ? "" : quoteCharacter.getStartDelimiter() + value + quoteCharacter.getEndDelimiter();
     }
 }

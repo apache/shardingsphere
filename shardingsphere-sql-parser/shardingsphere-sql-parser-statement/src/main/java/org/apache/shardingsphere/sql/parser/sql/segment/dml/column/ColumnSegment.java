@@ -37,22 +37,25 @@ import java.util.Optional;
 @Setter
 @ToString
 public final class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvailable {
-    
+
     private final int startIndex;
-    
+
     private final int stopIndex;
-    
+
     private final IdentifierValue identifier;
-    
+
     private OwnerSegment owner;
-    
+
     /**
-     * Get qualified name.
+     * Get qualified name with quote characters.
+     * i.e. `field1`, `table1`, field1, table1, `table1`.`field1`, `table1`.field1, table1.`field1` or table1.field1
      *
-     * @return qualified name
+     * @return qualified name with quote characters
      */
     public String getQualifiedName() {
-        return null == owner ? identifier.getValue() : owner.getIdentifier().getValue() + "." + identifier.getValue();
+        return null == owner
+            ? identifier.getValueWithQuoteCharacters()
+            : owner.getIdentifier().getValueWithQuoteCharacters() + "." + identifier.getValueWithQuoteCharacters();
     }
 
     @Override
