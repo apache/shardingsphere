@@ -28,15 +28,23 @@ insertSpecification_
     ;
 
 insertValuesClause
-    : columnNames? (VALUES | VALUE) assignmentValues (COMMA_ assignmentValues)*
+    : columnNames? (VALUES | VALUE) (assignmentValues (COMMA_ assignmentValues)* | rowConstructorList) valueReference_?
     ;
 
 insertSelectClause
-    : columnNames? select
+    : valueReference_? columnNames? select
     ;
 
 onDuplicateKeyClause
     : ON DUPLICATE KEY UPDATE assignment (COMMA_ assignment)*
+    ;
+
+valueReference_
+    : AS alias derivedColumns_?
+    ;
+
+derivedColumns_
+    : LP_ alias (COMMA_ alias)* RP_
     ;
 
 replace
@@ -60,7 +68,7 @@ assignment
     ;
 
 setAssignmentsClause
-    : SET assignment (COMMA_ assignment)*
+    : valueReference_? SET assignment (COMMA_ assignment)*
     ;
 
 assignmentValues
@@ -97,7 +105,7 @@ multipleTableNames
     ;
 
 select 
-    : withClause_? unionClause
+    : withClause_? (unionClause | selectClause)
     ;
 
 call
@@ -144,7 +152,7 @@ loadDataStatement
       ((FIELDS | COLUMNS) selectFieldsInto_+ )?
       ( LINES selectLinesInto_+ )?
       ( IGNORE numberLiterals (LINES | ROWS) )?
-      ( LP_ identifier (COMMA_ identifier)* RP_ )?
+      fieldOrVarSpec?
       (setAssignmentsClause)?
     ;
 
@@ -157,7 +165,7 @@ loadXmlStatement
       (CHARACTER SET identifier)?
       (ROWS IDENTIFIED BY LT_ STRING_ GT_)?
       ( IGNORE numberLiterals (LINES | ROWS) )?
-      ( LP_ identifier (COMMA_ identifier)* RP_ )?
+      fieldOrVarSpec?
       (setAssignmentsClause)?
     ;
 
@@ -186,11 +194,11 @@ cteClause_
     ;
 
 unionClause
-    : selectClause (UNION (ALL | DISTINCT)? selectClause)*
+    : unionClause UNION (ALL | DISTINCT)? unionClause | selectClause (UNION (ALL | DISTINCT)? selectClause)*
     ;
 
 selectClause
-    : SELECT selectSpecification* projections fromClause? whereClause? groupByClause? havingClause? windowClause_? orderByClause? limitClause? selectIntoExpression_? lockClause?
+    : withClause_? LP_? SELECT selectSpecification* projections fromClause? whereClause? groupByClause? havingClause? windowClause_? orderByClause? limitClause? selectIntoExpression_? lockClause? RP_?
     ;
 
 selectSpecification
