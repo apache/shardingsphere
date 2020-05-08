@@ -146,12 +146,12 @@ public final class RuleSchemaMetaDataLoader {
     
     private Map<String, SchemaMetaData> asyncLoad(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final ListeningExecutorService executorService,
                                                   final int maxConnectionCount, final Collection<String> excludedTableNames) {
-        Map<String, SchemaMetaData> unconfiguredSchemaMetaDataMap = new ConcurrentHashMap<>(dataSourceMap.size(), 1);
+        Map<String, SchemaMetaData> result = new ConcurrentHashMap<>(dataSourceMap.size(), 1);
         dataSourceMap.entrySet().stream().map(each -> executorService.submit(() -> {
             try {
                 SchemaMetaData schemaMetaData = SchemaMetaDataLoader.load(each.getValue(), maxConnectionCount, databaseType.getName(), excludedTableNames);
                 if (!schemaMetaData.getAllTableNames().isEmpty()) {
-                    unconfiguredSchemaMetaDataMap.put(each.getKey(), schemaMetaData);
+                    result.put(each.getKey(), schemaMetaData);
                 }
             } catch (SQLException e) {
                 throw new ShardingSphereException("RuleSchemaMetaData load faild", e);
@@ -163,19 +163,19 @@ public final class RuleSchemaMetaDataLoader {
                 throw new ShardingSphereException("RuleSchemaMetaData load faild", e);
             }
         });
-        return unconfiguredSchemaMetaDataMap;
+        return result;
     }
     
     private Map<String, SchemaMetaData> syncLoad(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
                                                  final int maxConnectionCount, final Collection<String> excludedTableNames) throws SQLException {
-        Map<String, SchemaMetaData> unconfiguredSchemaMetaDataMap = new HashMap<>(dataSourceMap.size(), 1);
+        Map<String, SchemaMetaData> result = new HashMap<>(dataSourceMap.size(), 1);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             SchemaMetaData schemaMetaData = SchemaMetaDataLoader.load(entry.getValue(), maxConnectionCount, databaseType.getName(), excludedTableNames);
             if (!schemaMetaData.getAllTableNames().isEmpty()) {
-                unconfiguredSchemaMetaDataMap.put(entry.getKey(), schemaMetaData);
+                result.put(entry.getKey(), schemaMetaData);
             }
         }
-        return unconfiguredSchemaMetaDataMap;
+        return result;
     }
     
     @SuppressWarnings("unchecked")
