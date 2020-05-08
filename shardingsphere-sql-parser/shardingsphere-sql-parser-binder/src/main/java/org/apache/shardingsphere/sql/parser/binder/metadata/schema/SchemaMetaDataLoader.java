@@ -21,6 +21,7 @@ import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.sql.parser.binder.metadata.MetaDataConnection;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaDataLoader;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaDataLoader;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
@@ -77,7 +78,7 @@ public final class SchemaMetaDataLoader {
      */
     public static SchemaMetaData load(final DataSource dataSource, final int maxConnectionCount, final String databaseType, final Collection<String> excludedTableNames) throws SQLException {
         List<String> tableNames;
-        try (Connection connection = dataSource.getConnection()) {
+        try (MetaDataConnection connection = new MetaDataConnection(dataSource.getConnection())) {
             tableNames = loadAllTableNames(connection);
             tableNames.removeAll(excludedTableNames);
         }
@@ -91,11 +92,11 @@ public final class SchemaMetaDataLoader {
         return new SchemaMetaData(tableMetaDataMap);
     }
     
-    private static Map<String, TableMetaData> load(final Connection connection, final Collection<String> tables, final String databaseType) throws SQLException {
-        try (Connection con = connection) {
+    private static Map<String, TableMetaData> load(final Connection con, final Collection<String> tables, final String databaseType) throws SQLException {
+        try (MetaDataConnection connection = new MetaDataConnection(con)) {
             Map<String, TableMetaData> result = new LinkedHashMap<>();
             for (String each : tables) {
-                result.put(each, new TableMetaData(ColumnMetaDataLoader.load(con, each, databaseType), IndexMetaDataLoader.load(con, each)));
+                result.put(each, new TableMetaData(ColumnMetaDataLoader.load(connection, each, databaseType), IndexMetaDataLoader.load(connection, each)));
             }
             return result;
         }
