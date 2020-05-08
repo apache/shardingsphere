@@ -26,6 +26,7 @@ import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRulesBuild
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -46,5 +47,20 @@ public final class ShardingDataSourceFactory {
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigurations, final Properties props) throws SQLException {
         return new ShardingDataSource(dataSourceMap, ShardingSphereRulesBuilder.build(ruleConfigurations, dataSourceMap.keySet()), props);
+    }
+    
+    /**
+     * Create sharding data source.
+     *
+     * @param dataSource data source
+     * @param ruleConfigurations rule configurations
+     * @param props properties for data source
+     * @return sharding data source
+     * @throws SQLException SQL exception
+     */
+    public static DataSource createDataSource(final DataSource dataSource, final Collection<RuleConfiguration> ruleConfigurations, final Properties props) throws SQLException {
+        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
+        dataSourceMap.put("unique_ds", dataSource);
+        return createDataSource(dataSourceMap, ruleConfigurations, props);
     }
 }
