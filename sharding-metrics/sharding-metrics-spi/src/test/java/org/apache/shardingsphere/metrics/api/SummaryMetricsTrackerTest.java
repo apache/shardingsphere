@@ -28,6 +28,7 @@ public final class SummaryMetricsTrackerTest {
     @Test
     public void testSummaryMetricsTracker() {
         SummaryMetricsTracker trackerTest = () -> "summary";
+        trackerTest.observer(3000L);
         SummaryMetricsTrackerDelegate delegate = trackerTest.startTimer();
         assertEquals(delegate.getClass(), NoneSummaryMetricsTrackerDelegate.class);
         delegate.observeDuration();

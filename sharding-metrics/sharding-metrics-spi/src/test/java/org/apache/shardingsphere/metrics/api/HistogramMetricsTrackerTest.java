@@ -31,6 +31,7 @@ public final class HistogramMetricsTrackerTest {
         HistogramMetricsTrackerDelegate delegate = trackerTest.startTimer();
         assertEquals(delegate.getClass(), NoneHistogramMetricsTrackerDelegate.class);
         delegate.observeDuration();
+        trackerTest.observer(3000L);
         Assert.assertEquals(trackerTest.metricsType(), MetricsTypeEnum.HISTOGRAM.name());
     }
 }
