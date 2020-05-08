@@ -15,4 +15,6 @@
 # limitations under the License.
 #
 
+org.apache.shardingsphere.metrics.facade.fixture.MetricsTrackerManagerFixture2
 org.apache.shardingsphere.metrics.facade.fixture.MetricsTrackerManagerFixture
+

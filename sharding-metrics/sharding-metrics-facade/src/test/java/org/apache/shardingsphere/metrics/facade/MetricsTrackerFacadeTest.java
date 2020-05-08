@@ -22,6 +22,8 @@ import org.apache.shardingsphere.metrics.api.NoneHistogramMetricsTrackerDelegate
 import org.apache.shardingsphere.metrics.api.NoneSummaryMetricsTrackerDelegate;
 import org.apache.shardingsphere.metrics.api.SummaryMetricsTrackerDelegate;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
+import org.apache.shardingsphere.metrics.facade.fixture.MetricsTrackerFactoryFixture;
+import org.apache.shardingsphere.metrics.facade.fixture.MetricsTrackerManagerFixture2;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +43,7 @@ public final class MetricsTrackerFacadeTest {
     public void setUp() {
         MetricsConfiguration metricsConfiguration = new MetricsConfiguration("fixture", null, null, null);
         metricsTrackerFacade.init(metricsConfiguration);
+        assertEquals(metricsTrackerFacade.getMetricsTrackerManager().getClass(), MetricsTrackerManagerFixture2.class);
         assertTrue(metricsTrackerFacade.getEnabled());
     }
     
@@ -69,7 +72,11 @@ public final class MetricsTrackerFacadeTest {
     public void histogram() {
         HistogramMetricsTrackerDelegate delegate = metricsTrackerFacade.histogramStartTimer("request");
         assertEquals(delegate.getClass(), NoneHistogramMetricsTrackerDelegate.class);
-        metricsTrackerFacade.histogramObserveDuration(delegate);
+        assertEquals(metricsTrackerFacade.getMetricsTrackerManager().getClass(), MetricsTrackerManagerFixture2.class);
+        ((MetricsTrackerManagerFixture2) metricsTrackerFacade.getMetricsTrackerManager()).setMetricsTrackerFactory(new MetricsTrackerFactoryFixture());
+        HistogramMetricsTrackerDelegate delegateNone = metricsTrackerFacade.histogramStartTimer("request");
+        assertEquals(delegateNone.getClass(), NoneHistogramMetricsTrackerDelegate.class);
+        metricsTrackerFacade.histogramObserveDuration(delegateNone);
     }
     
     @Test
@@ -77,6 +84,10 @@ public final class MetricsTrackerFacadeTest {
         SummaryMetricsTrackerDelegate delegate = metricsTrackerFacade.summaryStartTimer("request");
         metricsTrackerFacade.summaryObserveDuration(delegate);
         assertEquals(delegate.getClass(), NoneSummaryMetricsTrackerDelegate.class);
+        assertEquals(metricsTrackerFacade.getMetricsTrackerManager().getClass(), MetricsTrackerManagerFixture2.class);
+        ((MetricsTrackerManagerFixture2) metricsTrackerFacade.getMetricsTrackerManager()).setMetricsTrackerFactory(new MetricsTrackerFactoryFixture());
+        SummaryMetricsTrackerDelegate delegateNone = metricsTrackerFacade.summaryStartTimer("request");
+        assertEquals(delegateNone.getClass(), NoneSummaryMetricsTrackerDelegate.class);
     }
 }
 

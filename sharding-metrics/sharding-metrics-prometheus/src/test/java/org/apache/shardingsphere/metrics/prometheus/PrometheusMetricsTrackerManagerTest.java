@@ -30,11 +30,23 @@ import static org.junit.Assert.assertNotNull;
 public final class PrometheusMetricsTrackerManagerTest {
     
     @Test
-    public void start() {
+    public void startNoHost() {
         PrometheusMetricsTrackerManager manager = new PrometheusMetricsTrackerManager();
         MetricsConfiguration metricsConfiguration = new MetricsConfiguration("metricsName", "", 9190, null);
         manager.start(metricsConfiguration);
         HTTPServer server = manager.getServer();
+        assertNotNull(server);
+        assertEquals(manager.getType(), "prometheus");
+        manager.stop();
+    }
+    
+    @Test
+    public void startHost() {
+        PrometheusMetricsTrackerManager manager = new PrometheusMetricsTrackerManager();
+        MetricsConfiguration metricsConfiguration = new MetricsConfiguration("metricsName", "127.0.0.1", 9195, null);
+        manager.start(metricsConfiguration);
+        HTTPServer server = manager.getServer();
+        assertEquals(server.getPort(), 9195);
         assertNotNull(server);
         assertEquals(manager.getType(), "prometheus");
         manager.stop();
