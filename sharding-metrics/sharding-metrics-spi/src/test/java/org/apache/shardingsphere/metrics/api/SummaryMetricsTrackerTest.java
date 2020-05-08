@@ -15,30 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metrics.prometheus.impl.gauge;
+package org.apache.shardingsphere.metrics.api;
 
-import org.apache.shardingsphere.metrics.enums.MetricsLabelEnum;
 import org.apache.shardingsphere.metrics.enums.MetricsTypeEnum;
-import org.apache.shardingsphere.metrics.prometheus.impl.AbstractPrometheusCollectorRegistry;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class ChannelCountGaugeMetricsTrackerTest extends AbstractPrometheusCollectorRegistry {
+public final class SummaryMetricsTrackerTest {
     
     @Test
-    public void gauge() {
-        String name = "channel_count";
-        ChannelCountGaugeMetricsTracker tracker = new ChannelCountGaugeMetricsTracker();
-        assertThat(tracker.metricsLabel(), is(MetricsLabelEnum.CHANNEL_COUNT.getName()));
-        assertThat(tracker.metricsType(), is(MetricsTypeEnum.GAUGE.name()));
-        tracker.inc(2.0);
-        Double inc = getCollectorRegistry().getSampleValue(name);
-        assertThat(inc, is(2.0));
-        tracker.dec(1.0);
-        Double dec = getCollectorRegistry().getSampleValue(name);
-        assertThat(dec, is(1.0));
+    public void testSummaryMetricsTracker() {
+        SummaryMetricsTracker trackerTest = () -> "summary";
+        trackerTest.observer(3000L);
+        SummaryMetricsTrackerDelegate delegate = trackerTest.startTimer();
+        assertThat(delegate.getClass().getName(), is(NoneSummaryMetricsTrackerDelegate.class.getName()));
+        delegate.observeDuration();
+        assertThat(trackerTest.metricsType(), is(MetricsTypeEnum.SUMMARY.name()));
     }
 }
 

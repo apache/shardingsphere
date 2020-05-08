@@ -48,6 +48,7 @@ public final class MetricsTrackerFacade {
     
     private static final MetricsTrackerFacade INSTANCE = new MetricsTrackerFacade();
     
+    @Getter
     private MetricsTrackerManager metricsTrackerManager;
     
     @Getter

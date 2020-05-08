@@ -23,18 +23,19 @@ import org.apache.shardingsphere.metrics.enums.MetricsTypeEnum;
 import org.apache.shardingsphere.metrics.prometheus.impl.AbstractPrometheusCollectorRegistry;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 public final class RequestLatencySummaryMetricsTrackerTest extends AbstractPrometheusCollectorRegistry {
     
     @Test
     public void summary() {
         RequestLatencySummaryMetricsTracker tracker = new RequestLatencySummaryMetricsTracker();
-        assertEquals(tracker.metricsLabel(), MetricsLabelEnum.REQUEST_LATENCY.getName());
-        assertEquals(tracker.metricsType(), MetricsTypeEnum.SUMMARY.name());
-        assertNotEquals(tracker.metricsType(), MetricsTypeEnum.HISTOGRAM.name());
+        assertThat(tracker.metricsLabel(), is(MetricsLabelEnum.REQUEST_LATENCY.getName()));
+        assertThat(tracker.metricsType(), is(MetricsTypeEnum.SUMMARY.name()));
+        assertThat(tracker.metricsType(), not(MetricsTypeEnum.HISTOGRAM.name()));
         SummaryMetricsTrackerDelegate trackerDelegate = tracker.startTimer();
         trackerDelegate.observeDuration();
         String metricName = "requests_latency_summary_millis";

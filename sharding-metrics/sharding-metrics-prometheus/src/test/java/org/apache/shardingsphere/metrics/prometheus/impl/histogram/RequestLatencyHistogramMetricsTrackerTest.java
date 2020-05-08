@@ -23,18 +23,19 @@ import org.apache.shardingsphere.metrics.enums.MetricsTypeEnum;
 import org.apache.shardingsphere.metrics.prometheus.impl.AbstractPrometheusCollectorRegistry;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 public final class RequestLatencyHistogramMetricsTrackerTest extends AbstractPrometheusCollectorRegistry {
     
     @Test
     public void histogram() {
         RequestLatencyHistogramMetricsTracker tracker = new RequestLatencyHistogramMetricsTracker();
-        assertEquals(tracker.metricsLabel(), MetricsLabelEnum.REQUEST_LATENCY.getName());
-        assertEquals(tracker.metricsType(), MetricsTypeEnum.HISTOGRAM.name());
-        assertNotEquals(tracker.metricsType(), MetricsTypeEnum.COUNTER.name());
+        assertThat(tracker.metricsLabel(), is(MetricsLabelEnum.REQUEST_LATENCY.getName()));
+        assertThat(tracker.metricsType(), is(MetricsTypeEnum.HISTOGRAM.name()));
+        assertThat(tracker.metricsType(), not(MetricsTypeEnum.COUNTER.name()));
         HistogramMetricsTrackerDelegate trackerDelegate = tracker.startTimer();
         trackerDelegate.observeDuration();
         String metricName = "requests_latency_Histogram_millis";

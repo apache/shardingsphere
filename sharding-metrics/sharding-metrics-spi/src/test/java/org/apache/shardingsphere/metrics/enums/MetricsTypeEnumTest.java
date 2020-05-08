@@ -15,30 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metrics.configuration.swapper;
+package org.apache.shardingsphere.metrics.enums;
 
-import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
-import org.apache.shardingsphere.metrics.configuration.yaml.YamlMetricsConfiguration;
 import org.junit.Test;
 
-import java.util.Properties;
-
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
-public final class MetricsConfigurationYamlSwapperTest {
+public final class MetricsTypeEnumTest {
     
     @Test
-    public void swap() {
-        MetricsConfigurationYamlSwapper swapper = new MetricsConfigurationYamlSwapper();
-        YamlMetricsConfiguration yamlConfiguration = swapper.swap(new MetricsConfiguration("prometheus", "127.0.0.1", null, new Properties()));
-        assertNotNull(yamlConfiguration);
-        assertNull(yamlConfiguration.getPort());
-        MetricsConfiguration configuration = swapper.swap(yamlConfiguration);
-        assertNotNull(configuration);
-        assertThat(configuration.getPort(), is(9190));
+    public void testMetricsType() {
+        assertThat(MetricsTypeEnum.GAUGE.name(), is("GAUGE"));
+        assertThat(MetricsTypeEnum.GAUGE.name(), not("gauge"));
+        assertThat(MetricsTypeEnum.COUNTER.name(), is("COUNTER"));
+        assertThat(MetricsTypeEnum.HISTOGRAM.name(), is("HISTOGRAM"));
+        assertThat(MetricsTypeEnum.SUMMARY.name(), is("SUMMARY"));
     }
 }
 

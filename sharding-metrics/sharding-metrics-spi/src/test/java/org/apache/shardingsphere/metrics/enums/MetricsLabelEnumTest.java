@@ -15,30 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metrics.configuration.swapper;
+package org.apache.shardingsphere.metrics.enums;
 
-import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
-import org.apache.shardingsphere.metrics.configuration.yaml.YamlMetricsConfiguration;
 import org.junit.Test;
 
-import java.util.Properties;
-
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
-public final class MetricsConfigurationYamlSwapperTest {
+public final class MetricsLabelEnumTest {
     
     @Test
-    public void swap() {
-        MetricsConfigurationYamlSwapper swapper = new MetricsConfigurationYamlSwapper();
-        YamlMetricsConfiguration yamlConfiguration = swapper.swap(new MetricsConfiguration("prometheus", "127.0.0.1", null, new Properties()));
-        assertNotNull(yamlConfiguration);
-        assertNull(yamlConfiguration.getPort());
-        MetricsConfiguration configuration = swapper.swap(yamlConfiguration);
-        assertNotNull(configuration);
-        assertThat(configuration.getPort(), is(9190));
+    public void testMetricsLabel() {
+        assertThat(MetricsLabelEnum.REQUEST_TOTAL.getName(), is("request_total"));
+        assertThat(MetricsLabelEnum.SQL_STATEMENT_COUNT.getName(), is("sql_statement_count"));
+        assertThat(MetricsLabelEnum.CHANNEL_COUNT.getName(), is("channel_count"));
+        assertThat(MetricsLabelEnum.REQUEST_LATENCY.getName(), is("request_latency"));
     }
 }
 
