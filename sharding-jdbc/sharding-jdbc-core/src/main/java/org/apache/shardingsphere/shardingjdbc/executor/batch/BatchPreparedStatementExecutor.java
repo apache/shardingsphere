@@ -103,9 +103,7 @@ public final class BatchPreparedStatementExecutor {
     }
     
     private void reviseBatchExecutionUnits(final BatchExecutionUnit batchExecutionUnit) {
-        batchExecutionUnits.stream()
-                .filter(each -> each.equals(batchExecutionUnit))
-                .forEach(each -> reviseBatchExecutionUnit(each, batchExecutionUnit));
+        batchExecutionUnits.stream().filter(each -> each.equals(batchExecutionUnit)).forEach(each -> reviseBatchExecutionUnit(each, batchExecutionUnit));
     }
     
     private void reviseBatchExecutionUnit(final BatchExecutionUnit oldBatchExecutionUnit, final BatchExecutionUnit newBatchExecutionUnit) {
@@ -196,13 +194,8 @@ public final class BatchPreparedStatementExecutor {
      * @return parameter sets
      */
     public List<List<Object>> getParameterSet(final Statement statement) {
-        return inputGroups.stream()
-                .map(each -> findStatementExecuteUnit(statement, each))
-                .filter(Optional::isPresent)
-                .findFirst()
-                .map(Optional::get)
-                .map(this::getParameterSets)
-                .orElse(Collections.emptyList());
+        return inputGroups.stream().map(each -> findStatementExecuteUnit(statement, each)).filter(Optional::isPresent).findFirst().map(Optional::get)
+                .map(this::getParameterSets).orElse(Collections.emptyList());
     }
     
     private Optional<StatementExecuteUnit> findStatementExecuteUnit(final Statement statement, final InputGroup<StatementExecuteUnit> executeGroup) {

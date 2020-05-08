@@ -69,18 +69,12 @@ public final class ShadowDataSourceFactory {
     }
     
     private static DataSource createActualDataSource(final Map<String, DataSource> dataSourceMap, final ShadowRuleConfiguration shadowRule, final Properties props) {
-        Map<String, DataSource> actualDataSource = shadowRule.getShadowMappings()
-                .entrySet()
-                .stream()
-                .collect(Collectors.toMap(Entry::getKey, each -> dataSourceMap.get(each.getKey())));
+        Map<String, DataSource> actualDataSource = shadowRule.getShadowMappings().entrySet().stream().collect(Collectors.toMap(Entry::getKey, each -> dataSourceMap.get(each.getKey())));
         return createFacadeDataSource(actualDataSource, shadowRule, props);
     }
     
     private static DataSource createShadowDataSource(final Map<String, DataSource> dataSourceMap, final ShadowRuleConfiguration shadowRule, final Properties props) {
-        Map<String, DataSource> shadowDataSource = shadowRule.getShadowMappings()
-                .entrySet()
-                .stream()
-                .collect(Collectors.toMap(Entry::getKey, each -> dataSourceMap.get(each.getValue())));
+        Map<String, DataSource> shadowDataSource = shadowRule.getShadowMappings().entrySet().stream().collect(Collectors.toMap(Entry::getKey, each -> dataSourceMap.get(each.getValue())));
         return createFacadeDataSource(shadowDataSource, shadowRule, props);
     }
     
