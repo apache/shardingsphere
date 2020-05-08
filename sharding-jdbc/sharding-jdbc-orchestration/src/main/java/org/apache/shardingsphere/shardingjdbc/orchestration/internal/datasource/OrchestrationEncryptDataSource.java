@@ -35,11 +35,14 @@ import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.DataSo
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Orchestration encrypt data source.
@@ -77,9 +80,9 @@ public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSou
         Preconditions.checkState(1 == dataSourceConfigurations.size(), String.format("There should be only one datasource for encrypt, but now has %d datasource(s)", dataSourceConfigurations.size()));
     }
     
-    private Map<String, RuleConfiguration> getRuleConfigurationMap() {
-        Map<String, RuleConfiguration> result = new HashMap<>(1);
-        result.put(DefaultSchema.LOGIC_NAME, dataSource.getRuntimeContext().getRules().iterator().next().getRuleConfiguration());
+    private Map<String, Collection<RuleConfiguration>> getRuleConfigurationMap() {
+        Map<String, Collection<RuleConfiguration>> result = new HashMap<>(1);
+        result.put(DefaultSchema.LOGIC_NAME, dataSource.getRuntimeContext().getRules().stream().map(ShardingSphereRule::getRuleConfiguration).collect(Collectors.toList()));
         return result;
     }
     

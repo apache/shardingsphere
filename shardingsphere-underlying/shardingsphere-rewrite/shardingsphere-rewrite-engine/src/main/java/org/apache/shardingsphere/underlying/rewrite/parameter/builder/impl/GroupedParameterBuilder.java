@@ -39,6 +39,8 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
     private final List<StandardParameterBuilder> parameterBuilders;
 
     @Getter
+    private final List<Object> onDuplicateKeyUpdateAddedParameters = new LinkedList<>();
+
     private final List<Object> originalOnDuplicateKeyParameters = new LinkedList<>();
 
     @Getter

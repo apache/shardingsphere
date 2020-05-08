@@ -32,6 +32,8 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.impl.TransparentSc
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -45,15 +47,22 @@ public final class LogicSchemaFactory {
      * 
      * @param schemaName schema name
      * @param schemaDataSources schema data sources
-     * @param ruleConfiguration rule configuration
+     * @param ruleConfigurations rule configurations
      * @param isUsingRegistry is using registry or not
      * @return new instance of logic schema
      * @throws SQLException SQL exception
      */
     public static LogicSchema newInstance(final String schemaName, final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources,
-                                          final RuleConfiguration ruleConfiguration, final boolean isUsingRegistry) throws SQLException {
+                                          final Collection<RuleConfiguration> ruleConfigurations, final boolean isUsingRegistry) throws SQLException {
+        if (ruleConfigurations.size() > 1) {
+            return new ShardingSchema(schemaName, schemaDataSources.get(schemaName), ruleConfigurations);
+        }
+        if (ruleConfigurations.isEmpty()) {
+            return new TransparentSchema(schemaName, schemaDataSources.get(schemaName));
+        }
+        RuleConfiguration ruleConfiguration = ruleConfigurations.iterator().next();
         if (ruleConfiguration instanceof ShardingRuleConfiguration) {
-            return new ShardingSchema(schemaName, schemaDataSources.get(schemaName), (ShardingRuleConfiguration) ruleConfiguration);
+            return new ShardingSchema(schemaName, schemaDataSources.get(schemaName), Collections.singleton(ruleConfiguration));
         }
         if (ruleConfiguration instanceof MasterSlaveRuleConfiguration) {
             return new MasterSlaveSchema(schemaName, schemaDataSources.get(schemaName), (MasterSlaveRuleConfiguration) ruleConfiguration, isUsingRegistry);

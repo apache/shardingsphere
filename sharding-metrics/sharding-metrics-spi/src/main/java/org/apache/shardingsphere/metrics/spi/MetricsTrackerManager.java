@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.metrics.spi;
 
 import org.apache.shardingsphere.metrics.api.MetricsTrackerFactory;
+import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.spi.type.TypedSPI;
 
 /**
@@ -26,11 +27,11 @@ import org.apache.shardingsphere.spi.type.TypedSPI;
 public interface MetricsTrackerManager extends TypedSPI {
     
     /**
-     * Init metrics tracker.
+     * Start metrics tracker.
      *
-     * @param port port
+     * @param metricsConfiguration metrics configuration
      */
-    void init(int port);
+    void start(MetricsConfiguration metricsConfiguration);
     
     /**
      * Gets metrics tracker factory.
@@ -38,5 +39,10 @@ public interface MetricsTrackerManager extends TypedSPI {
      * @return metrics tracker factory
      */
     MetricsTrackerFactory getMetricsTrackerFactory();
+    
+    /**
+     * Stop metrics tracker.
+     */
+    void stop();
 }
 

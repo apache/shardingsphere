@@ -26,7 +26,7 @@ dataSources:
     url: jdbc:h2:mem:ds_s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password:
-    
+
 shardingRule:
   tables:
     t_order:
@@ -66,11 +66,6 @@ shardingRule:
           worker.id: 123
   bindingTables:
     - t_order,t_order_item
-  masterSlaveRules:
-    ds_ms:
-      masterDataSourceName: ds_m
-      slaveDataSourceNames:
-        - ds_s
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
@@ -80,5 +75,12 @@ shardingRule:
           algorithm.expression: ds_ms_${user_id % 2}
   defaultTableStrategy:
     none:
+
+masterSlaveRules:
+  ds_ms:
+    masterDataSourceName: ds_m
+    slaveDataSourceNames:
+      - ds_s
+
 props:
   sql.show: false

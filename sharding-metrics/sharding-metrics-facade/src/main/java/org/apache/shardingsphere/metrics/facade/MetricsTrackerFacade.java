@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.metrics.facade;
 
+import com.google.common.base.Preconditions;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.metrics.api.CounterMetricsTracker;
 import org.apache.shardingsphere.metrics.api.GaugeMetricsTracker;
@@ -27,6 +29,7 @@ import org.apache.shardingsphere.metrics.api.NoneHistogramMetricsTrackerDelegate
 import org.apache.shardingsphere.metrics.api.NoneSummaryMetricsTrackerDelegate;
 import org.apache.shardingsphere.metrics.api.SummaryMetricsTracker;
 import org.apache.shardingsphere.metrics.api.SummaryMetricsTrackerDelegate;
+import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.metrics.enums.MetricsTypeEnum;
 import org.apache.shardingsphere.metrics.spi.MetricsTrackerManager;
 
@@ -34,7 +37,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ServiceLoader;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Metrics tracker facade.
@@ -46,9 +48,10 @@ public final class MetricsTrackerFacade {
     
     private static final MetricsTrackerFacade INSTANCE = new MetricsTrackerFacade();
     
-    private volatile AtomicBoolean isInit = new AtomicBoolean(false);
+    private MetricsTrackerManager metricsTrackerManager;
     
-    private Optional<MetricsTrackerManager> metricsTrackerManager = Optional.empty();
+    @Getter
+    private volatile Boolean enabled = false;
     
     private MetricsTrackerFacade() {
         loadMetricsManager();
@@ -66,25 +69,23 @@ public final class MetricsTrackerFacade {
     /**
      * Find metrics tracker manager.
      *
-     * @param metricsName  metrics name
+     * @param metricsName metrics name
      * @return metrics tracker manager
      */
-    public Optional<MetricsTrackerManager> findMetricsTrackerManager(final String metricsName) {
-        return Optional.ofNullable(METRICS_MAP.get(metricsName));
+    public MetricsTrackerManager findMetricsTrackerManager(final String metricsName) {
+        return METRICS_MAP.get(metricsName);
     }
     
     /**
      * Init for metrics tracker manager.
      *
-     * @param metricsName metrics name
-     * @param port port
+     * @param metricsConfiguration metrics configuration
      */
-    public void init(final String metricsName, final int port) {
-        if (!isInit.compareAndSet(false, true)) {
-            return;
-        }
-        metricsTrackerManager = findMetricsTrackerManager(metricsName);
-        metricsTrackerManager.ifPresent(manager -> manager.init(port));
+    public void init(final MetricsConfiguration metricsConfiguration) {
+        metricsTrackerManager = findMetricsTrackerManager(metricsConfiguration.getMetricsName());
+        Preconditions.checkNotNull(metricsTrackerManager, "Can not find metrics tracker manager with metrics name in metrics configuration.");
+        metricsTrackerManager.start(metricsConfiguration);
+        enabled = true;
     }
     
     /**
@@ -94,19 +95,23 @@ public final class MetricsTrackerFacade {
      * @param labelValues  label values
      */
     public void counterInc(final String metricsLabel, final String... labelValues) {
-        metricsTrackerManager.flatMap(manager -> manager.getMetricsTrackerFactory().create(MetricsTypeEnum.COUNTER.name(), metricsLabel))
+        if (enabled) {
+            metricsTrackerManager.getMetricsTrackerFactory().create(MetricsTypeEnum.COUNTER.name(), metricsLabel)
                 .ifPresent(metricsTracker -> ((CounterMetricsTracker) metricsTracker).inc(1.0, labelValues));
+        }
     }
     
     /**
      * Increment of gauge metrics tracker.
      *
      * @param metricsLabel metrics label
-     * @param labelValues label values
+     * @param labelValues  label values
      */
     public void gaugeInc(final String metricsLabel, final String... labelValues) {
-        metricsTrackerManager.flatMap(manager -> manager.getMetricsTrackerFactory().create(MetricsTypeEnum.GAUGE.name(), metricsLabel))
+        if (enabled) {
+            metricsTrackerManager.getMetricsTrackerFactory().create(MetricsTypeEnum.GAUGE.name(), metricsLabel)
                 .ifPresent(metricsTracker -> ((GaugeMetricsTracker) metricsTracker).inc(1.0, labelValues));
+        }
     }
     
     /**
@@ -116,8 +121,10 @@ public final class MetricsTrackerFacade {
      * @param labelValues  label values
      */
     public void gaugeDec(final String metricsLabel, final String... labelValues) {
-        metricsTrackerManager.flatMap(manager -> manager.getMetricsTrackerFactory().create(MetricsTypeEnum.GAUGE.name(), metricsLabel))
+        if (enabled) {
+            metricsTrackerManager.getMetricsTrackerFactory().create(MetricsTypeEnum.GAUGE.name(), metricsLabel)
                 .ifPresent(metricsTracker -> ((GaugeMetricsTracker) metricsTracker).dec(1.0, labelValues));
+        }
     }
     
     /**
@@ -128,7 +135,7 @@ public final class MetricsTrackerFacade {
      * @return histogram metrics tracker delegate
      */
     public HistogramMetricsTrackerDelegate histogramStartTimer(final String metricsLabel, final String... labelValues) {
-        Optional<MetricsTracker> metricsTracker = metricsTrackerManager.flatMap(manager -> manager.getMetricsTrackerFactory().create(MetricsTypeEnum.HISTOGRAM.name(), metricsLabel));
+        Optional<MetricsTracker> metricsTracker = metricsTrackerManager.getMetricsTrackerFactory().create(MetricsTypeEnum.HISTOGRAM.name(), metricsLabel);
         if (metricsTracker.isPresent()) {
             return ((HistogramMetricsTracker) metricsTracker.get()).startTimer(labelValues);
         } else {
@@ -149,11 +156,11 @@ public final class MetricsTrackerFacade {
      * Start timer of summary metrics tracker.
      *
      * @param metricsLabel metrics label
-     * @param labelValues label values
+     * @param labelValues  label values
      * @return summary metrics tracker delegate
      */
     public SummaryMetricsTrackerDelegate summaryStartTimer(final String metricsLabel, final String... labelValues) {
-        Optional<MetricsTracker> metricsTracker = metricsTrackerManager.flatMap(manager -> manager.getMetricsTrackerFactory().create(MetricsTypeEnum.SUMMARY.name(), metricsLabel));
+        Optional<MetricsTracker> metricsTracker = metricsTrackerManager.getMetricsTrackerFactory().create(MetricsTypeEnum.SUMMARY.name(), metricsLabel);
         if (metricsTracker.isPresent()) {
             return ((SummaryMetricsTracker) metricsTracker.get()).startTimer(labelValues);
         } else {

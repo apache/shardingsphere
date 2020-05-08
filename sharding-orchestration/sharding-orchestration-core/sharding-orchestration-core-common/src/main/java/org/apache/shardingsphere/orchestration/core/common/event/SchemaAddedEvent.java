@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -36,5 +37,5 @@ public final class SchemaAddedEvent implements ShardingOrchestrationEvent {
     
     private final Map<String, DataSourceConfiguration> dataSourceConfigurations;
     
-    private final RuleConfiguration ruleConfiguration;
+    private final Collection<RuleConfiguration> ruleConfigurations;
 }

@@ -20,4 +20,5 @@ org.apache.shardingsphere.core.strategy.algorithm.sharding.ModuloShardingAlgorit
 org.apache.shardingsphere.core.strategy.algorithm.sharding.HashShardingAlgorithm
 org.apache.shardingsphere.core.strategy.algorithm.sharding.DatetimeShardingAlgorithm
 org.apache.shardingsphere.core.strategy.algorithm.sharding.CustomDateTimeShardingAlgorithm
-org.apache.shardingsphere.core.strategy.algorithm.sharding.RangeShardingAlgorithm
+org.apache.shardingsphere.core.strategy.algorithm.sharding.range.CustomRangeShardingAlgorithm
+org.apache.shardingsphere.core.strategy.algorithm.sharding.range.StandardRangeShardingAlgorithm

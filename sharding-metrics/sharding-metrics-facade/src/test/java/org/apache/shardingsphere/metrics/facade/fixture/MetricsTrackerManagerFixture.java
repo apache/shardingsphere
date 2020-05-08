@@ -17,36 +17,35 @@
 
 package org.apache.shardingsphere.metrics.facade.fixture;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.metrics.api.MetricsTrackerFactory;
+import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.metrics.spi.MetricsTrackerManager;
 
 import java.util.Properties;
 
+@Getter
+@Setter
 public final class MetricsTrackerManagerFixture implements MetricsTrackerManager {
     
+    private final MetricsTrackerFactory metricsTrackerFactory = new MetricsTrackerFactoryFixture();
+    
+    private Properties properties = new Properties();
+    
     @Override
-    public void init(final int port) {
+    public void start(final MetricsConfiguration metricsConfiguration) {
     
     }
     
     @Override
-    public MetricsTrackerFactory getMetricsTrackerFactory() {
-        return null;
+    public void stop() {
+    
     }
     
     @Override
     public String getType() {
         return "fixture";
-    }
-    
-    @Override
-    public Properties getProperties() {
-        return null;
-    }
-    
-    @Override
-    public void setProperties(final Properties properties) {
-    
     }
 }
 

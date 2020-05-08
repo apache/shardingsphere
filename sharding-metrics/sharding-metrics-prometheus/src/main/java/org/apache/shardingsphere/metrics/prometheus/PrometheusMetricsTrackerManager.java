@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.metrics.prometheus;
 
+import com.google.common.base.Strings;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.HTTPServer;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.metrics.api.MetricsTrackerFactory;
+import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.metrics.spi.MetricsTrackerManager;
 
 import java.net.InetSocketAddress;
@@ -33,11 +36,14 @@ import java.util.Properties;
  */
 @Getter
 @Setter
+@Slf4j
 public final class PrometheusMetricsTrackerManager implements MetricsTrackerManager {
+    
+    private final MetricsTrackerFactory metricsTrackerFactory = new PrometheusMetricsTrackerFactory();
     
     private Properties properties = new Properties();
     
-    private MetricsTrackerFactory metricsTrackerFactory = new PrometheusMetricsTrackerFactory();
+    private HTTPServer server;
     
     @Override
     public String getType() {
@@ -46,8 +52,20 @@ public final class PrometheusMetricsTrackerManager implements MetricsTrackerMana
     
     @SneakyThrows
     @Override
-    public void init(final int port) {
-        new HTTPServer(new InetSocketAddress(port), CollectorRegistry.defaultRegistry, true);
+    public void start(final MetricsConfiguration metricsConfiguration) {
+        InetSocketAddress inetSocketAddress;
+        if (Strings.isNullOrEmpty(metricsConfiguration.getHost())) {
+            inetSocketAddress = new InetSocketAddress(metricsConfiguration.getPort());
+        } else {
+            inetSocketAddress = new InetSocketAddress(metricsConfiguration.getHost(), metricsConfiguration.getPort());
+        }
+        server = new HTTPServer(inetSocketAddress, CollectorRegistry.defaultRegistry, true);
+        log.info("you start prometheus metrics http server  host is :{}, port is :{} ", inetSocketAddress.getHostString(), inetSocketAddress.getPort());
+    }
+    
+    @Override
+    public void stop() {
+        server.stop();
     }
 }
 

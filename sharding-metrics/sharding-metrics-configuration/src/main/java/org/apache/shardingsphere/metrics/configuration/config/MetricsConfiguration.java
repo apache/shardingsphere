@@ -15,14 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding;
+package org.apache.shardingsphere.metrics.configuration.config;
 
-import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.Properties;
 
 /**
- * Sharding rule configuration properties.
+ * Metrics configuration.
  */
-@ConfigurationProperties(prefix = "spring.shardingsphere.sharding")
-public class SpringBootShardingRuleConfigurationProperties extends YamlShardingRuleConfiguration {
+@Getter
+@Setter
+@AllArgsConstructor
+public final class MetricsConfiguration {
+    
+    private String metricsName;
+    
+    private String host;
+    
+    private Integer port;
+    
+    private Properties props;
 }
+

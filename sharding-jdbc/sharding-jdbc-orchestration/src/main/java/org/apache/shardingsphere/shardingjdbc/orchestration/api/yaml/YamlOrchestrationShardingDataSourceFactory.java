@@ -19,17 +19,15 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.rule.builder.ConfigurationBuilder;
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRulesBuilder;
-import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.root.RuleRootConfigurationsYamlSwapper;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.YamlCenterRepositoryConfigurationSwapperUtil;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml.YamlOrchestrationShardingRuleConfiguration;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml.YamlOrchestrationRootRuleConfigurations;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml.constructor.YamlOrchestrationShardingRuleConfigurationConstructor;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
 import javax.sql.DataSource;
@@ -45,7 +43,7 @@ import java.util.Properties;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlOrchestrationShardingDataSourceFactory {
     
-    private static final ShardingRuleConfigurationYamlSwapper SHARDING_RULE_SWAPPER = new ShardingRuleConfigurationYamlSwapper();
+    private static final RuleRootConfigurationsYamlSwapper SWAPPER = new RuleRootConfigurationsYamlSwapper();
     
     /**
      * Create sharding data source.
@@ -56,8 +54,8 @@ public final class YamlOrchestrationShardingDataSourceFactory {
      * @throws IOException IO exception
      */
     public static DataSource createDataSource(final File yamlFile) throws SQLException, IOException {
-        YamlOrchestrationShardingRuleConfiguration config = unmarshal(yamlFile);
-        return createDataSource(config.getDataSources(), config.getShardingRule(), config.getProps(), config.getOrchestration());
+        YamlOrchestrationRootRuleConfigurations configurations = unmarshal(yamlFile);
+        return createDataSource(configurations.getDataSources(), configurations, configurations.getProps(), configurations.getOrchestration());
     }
     
     /**
@@ -70,8 +68,8 @@ public final class YamlOrchestrationShardingDataSourceFactory {
      * @throws IOException IO exception
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final File yamlFile) throws SQLException, IOException {
-        YamlOrchestrationShardingRuleConfiguration config = unmarshal(yamlFile);
-        return createDataSource(dataSourceMap, config.getShardingRule(), config.getProps(), config.getOrchestration());
+        YamlOrchestrationRootRuleConfigurations configurations = unmarshal(yamlFile);
+        return createDataSource(dataSourceMap, configurations, configurations.getProps(), configurations.getOrchestration());
     }
     
     /**
@@ -83,8 +81,8 @@ public final class YamlOrchestrationShardingDataSourceFactory {
      * @throws IOException IO exception
      */
     public static DataSource createDataSource(final byte[] yamlBytes) throws SQLException, IOException {
-        YamlOrchestrationShardingRuleConfiguration config = unmarshal(yamlBytes);
-        return createDataSource(config.getDataSources(), config.getShardingRule(), config.getProps(), config.getOrchestration());
+        YamlOrchestrationRootRuleConfigurations configurations = unmarshal(yamlBytes);
+        return createDataSource(configurations.getDataSources(), configurations, configurations.getProps(), configurations.getOrchestration());
     }
     
     /**
@@ -97,26 +95,26 @@ public final class YamlOrchestrationShardingDataSourceFactory {
      * @throws IOException IO exception
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlBytes) throws SQLException, IOException {
-        YamlOrchestrationShardingRuleConfiguration config = unmarshal(yamlBytes);
-        return createDataSource(dataSourceMap, config.getShardingRule(), config.getProps(), config.getOrchestration());
+        YamlOrchestrationRootRuleConfigurations configurations = unmarshal(yamlBytes);
+        return createDataSource(dataSourceMap, configurations, configurations.getProps(), configurations.getOrchestration());
     }
     
-    private static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final YamlShardingRuleConfiguration yamlShardingRuleConfiguration, 
+    private static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final YamlOrchestrationRootRuleConfigurations configurations, 
                                                final Properties props, final Map<String, YamlCenterRepositoryConfiguration> yamlInstanceConfigurationMap) throws SQLException {
-        if (null == yamlShardingRuleConfiguration) {
+        if (null == configurations) {
             return new OrchestrationShardingDataSource(new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
         } else {
             ShardingDataSource shardingDataSource = new ShardingDataSource(
-                    dataSourceMap, ShardingSphereRulesBuilder.build(ConfigurationBuilder.buildSharding(SHARDING_RULE_SWAPPER.swap(yamlShardingRuleConfiguration)), dataSourceMap.keySet()), props);
+                    dataSourceMap, ShardingSphereRulesBuilder.build(SWAPPER.swap(configurations), dataSourceMap.keySet()), props);
             return new OrchestrationShardingDataSource(shardingDataSource, new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
         }
     }
     
-    private static YamlOrchestrationShardingRuleConfiguration unmarshal(final File yamlFile) throws IOException {
-        return YamlEngine.unmarshal(yamlFile, YamlOrchestrationShardingRuleConfiguration.class, new YamlOrchestrationShardingRuleConfigurationConstructor());
+    private static YamlOrchestrationRootRuleConfigurations unmarshal(final File yamlFile) throws IOException {
+        return YamlEngine.unmarshal(yamlFile, YamlOrchestrationRootRuleConfigurations.class, new YamlOrchestrationShardingRuleConfigurationConstructor());
     }
     
-    private static YamlOrchestrationShardingRuleConfiguration unmarshal(final byte[] yamlBytes) throws IOException {
-        return YamlEngine.unmarshal(yamlBytes, YamlOrchestrationShardingRuleConfiguration.class, new YamlOrchestrationShardingRuleConfigurationConstructor());
+    private static YamlOrchestrationRootRuleConfigurations unmarshal(final byte[] yamlBytes) throws IOException {
+        return YamlEngine.unmarshal(yamlBytes, YamlOrchestrationRootRuleConfigurations.class, new YamlOrchestrationShardingRuleConfigurationConstructor());
     }
 }

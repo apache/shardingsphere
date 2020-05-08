@@ -114,6 +114,11 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     PROXY_OPENTRACING_ENABLED("proxy.opentracing.enabled", String.valueOf(Boolean.FALSE), boolean.class),
     
     /**
+     * Enable metrics for Sharding-Proxy.
+     */
+    PROXY_METRICS_ENABLED("proxy.metrics.enabled", String.valueOf(Boolean.FALSE), boolean.class),
+    
+    /**
      * Enable hint for Sharding-Proxy.
      */
     PROXY_HINT_ENABLED("proxy.hint.enabled", String.valueOf(Boolean.FALSE), boolean.class),

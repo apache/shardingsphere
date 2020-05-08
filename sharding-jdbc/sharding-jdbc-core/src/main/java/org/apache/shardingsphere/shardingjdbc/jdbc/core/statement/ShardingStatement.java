@@ -244,7 +244,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(runtimeContext.getMetaData().getSchema().getConfiguredSchemaMetaData(),
                 runtimeContext.getProperties(), runtimeContext.getRules()).rewrite(sql, Collections.emptyList(), routeContext);
         ExecutionContext result = new ExecutionContext(routeContext.getSqlStatementContext(), ExecutionContextBuilder.build(runtimeContext.getMetaData(), sqlRewriteResult));
-        logSQL(sql, runtimeContext.getProperties());
+        logSQL(sql, runtimeContext.getProperties(), result);
         return result;
     }
     
@@ -255,7 +255,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         statements.clear();
     }
     
-    private void logSQL(final String sql, final ConfigurationProperties properties) {
+    private void logSQL(final String sql, final ConfigurationProperties properties, final ExecutionContext executionContext) {
         if (properties.<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
             SQLLogger.logSQL(sql, properties.<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
         }

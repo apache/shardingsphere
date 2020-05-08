@@ -41,6 +41,7 @@ import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -72,12 +73,12 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
         persistMetaData(dataSource.getRuntimeContext().getMetaData().getSchema());
     }
     
-    private Map<String, RuleConfiguration> getRuleConfigurationMap() {
+    private Map<String, Collection<RuleConfiguration>> getRuleConfigurationMap() {
         MasterSlaveRule masterSlaveRule = (MasterSlaveRule) dataSource.getRuntimeContext().getRules().iterator().next();
-        Map<String, RuleConfiguration> result = new HashMap<>();
-        result.put(DefaultSchema.LOGIC_NAME, new MasterSlaveRuleConfiguration(
+        Map<String, Collection<RuleConfiguration>> result = new HashMap<>();
+        result.put(DefaultSchema.LOGIC_NAME, Collections.singletonList(new MasterSlaveRuleConfiguration(
                 masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames(), 
-                new LoadBalanceStrategyConfiguration(masterSlaveRule.getLoadBalanceAlgorithm().getType(), masterSlaveRule.getLoadBalanceAlgorithm().getProperties())));
+                new LoadBalanceStrategyConfiguration(masterSlaveRule.getLoadBalanceAlgorithm().getType(), masterSlaveRule.getLoadBalanceAlgorithm().getProperties()))));
         return result;
     }
     

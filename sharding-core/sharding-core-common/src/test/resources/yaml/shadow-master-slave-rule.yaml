@@ -47,8 +47,6 @@ dataSources:
     username: sa
     password:
 
-
-
 shadowRule:
   column: is_shadow
   shadowMappings:

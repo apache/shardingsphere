@@ -22,15 +22,14 @@ import com.google.common.collect.Maps;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.rule.Authentication;
+import org.apache.shardingsphere.core.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.constructor.YamlRootShardingConfigurationConstructor;
+import org.apache.shardingsphere.core.yaml.constructor.YamlRootRuleConfigurationsConstructor;
 import org.apache.shardingsphere.core.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.root.RuleRootConfigurationsYamlSwapper;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
@@ -41,7 +40,6 @@ import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
@@ -71,15 +69,7 @@ public final class ConfigurationYamlConverter {
      * @return rule configurations
      */
     public static Collection<RuleConfiguration> loadRuleConfigurations(final String data) {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfigurationYamlSwapper().swap(
-                YamlEngine.unmarshal(data, YamlShardingRuleConfiguration.class, new YamlRootShardingConfigurationConstructor()));
-        Collection<RuleConfiguration> result = new LinkedList<>();
-        result.add(shardingRuleConfig);
-        result.addAll(shardingRuleConfig.getMasterSlaveRuleConfigs());
-        if (null != shardingRuleConfig.getEncryptRuleConfig() && !shardingRuleConfig.getEncryptRuleConfig().getTables().isEmpty()) {
-            result.add(shardingRuleConfig.getEncryptRuleConfig());
-        }
-        return result;
+        return new RuleRootConfigurationsYamlSwapper().swap(YamlEngine.unmarshal(data, YamlRootRuleConfigurations.class, new YamlRootRuleConfigurationsConstructor()));
     }
     
     /**
@@ -89,7 +79,8 @@ public final class ConfigurationYamlConverter {
      * @return master-slave rule configuration
      */
     public static MasterSlaveRuleConfiguration loadMasterSlaveRuleConfiguration(final String data) {
-        return new MasterSlaveRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(data, YamlMasterSlaveRuleConfiguration.class));
+        Collection<RuleConfiguration> ruleConfigurations = loadRuleConfigurations(data);
+        return (MasterSlaveRuleConfiguration) ruleConfigurations.stream().filter(each->each instanceof MasterSlaveRuleConfiguration).findFirst().get();
     }
     
     /**
@@ -110,15 +101,5 @@ public final class ConfigurationYamlConverter {
      */
     public static Properties loadProperties(final String data) {
         return YamlEngine.unmarshalProperties(data);
-    }
-    
-    /**
-     * Load encrypt rule configuration.
-     *
-     * @param data data
-     * @return encrypt rule configuration
-     */
-    public static EncryptRuleConfiguration loadEncryptRuleConfiguration(final String data) {
-        return new EncryptRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(data, YamlEncryptRuleConfiguration.class));
     }
 }

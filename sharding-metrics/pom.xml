@@ -23,6 +23,7 @@
         <module>sharding-metrics-spi</module>
         <module>sharding-metrics-facade</module>
         <module>sharding-metrics-prometheus</module>
+        <module>sharding-metrics-configuration</module>
     </modules>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>

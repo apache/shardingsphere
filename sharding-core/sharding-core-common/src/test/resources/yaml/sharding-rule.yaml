@@ -110,19 +110,20 @@ shardingRule:
           algorithm.expression: ds_${order_id % 2}
   defaultTableStrategy: 
     none:
-  masterSlaveRules:
-    ds_0:
-      masterDataSourceName: master_ds_0
-      slaveDataSourceNames:
-        - master_ds_0_slave_0
-        - master_ds_0_slave_1
-      loadBalanceAlgorithmType: ROUND_ROBIN
-    ds_1:
-      masterDataSourceName: master_ds_1
-      slaveDataSourceNames: 
-        - master_ds_1_slave_0
-        - master_ds_1_slave_1
-      loadBalanceAlgorithmType: RANDOM
+
+masterSlaveRules:
+  ds_0:
+    masterDataSourceName: master_ds_0
+    slaveDataSourceNames:
+      - master_ds_0_slave_0
+      - master_ds_0_slave_1
+    loadBalanceAlgorithmType: ROUND_ROBIN
+  ds_1:
+    masterDataSourceName: master_ds_1
+    slaveDataSourceNames: 
+      - master_ds_1_slave_0
+      - master_ds_1_slave_1
+    loadBalanceAlgorithmType: RANDOM
 
 props:
   sql.show: true

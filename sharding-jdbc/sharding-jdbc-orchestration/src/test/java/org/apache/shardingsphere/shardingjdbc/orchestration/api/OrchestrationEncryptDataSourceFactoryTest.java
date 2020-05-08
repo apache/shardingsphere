@@ -25,6 +25,7 @@ import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.CenterType;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
+import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -38,6 +39,11 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
 public final class OrchestrationEncryptDataSourceFactoryTest {
+    
+    @Before
+    public void setUp() throws SQLException {
+        OrchestrationEncryptDataSourceFactory.createDataSource(getDataSource(), getEncryptRuleConfiguration(), new Properties(), getOrchestrationConfiguration());
+    }
     
     @Test
     public void assertCreateDataSourceWithDataSource() throws SQLException {

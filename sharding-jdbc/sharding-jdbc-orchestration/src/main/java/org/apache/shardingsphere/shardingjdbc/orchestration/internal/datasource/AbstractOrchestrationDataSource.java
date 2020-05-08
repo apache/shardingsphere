@@ -38,6 +38,7 @@ import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -109,8 +110,8 @@ public abstract class AbstractOrchestrationDataSource extends AbstractUnsupporte
     }
     
     protected final void initShardingOrchestrationFacade(
-            final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigurations, final Map<String, RuleConfiguration> schemaRuleMap, final Properties props) {
-        shardingOrchestrationFacade.init(dataSourceConfigurations, schemaRuleMap, null, props);
+            final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigurations, final Map<String, Collection<RuleConfiguration>> schemaRules, final Properties props) {
+        shardingOrchestrationFacade.init(dataSourceConfigurations, schemaRules, null, props);
         this.dataSourceConfigurations.putAll(dataSourceConfigurations.get(DefaultSchema.LOGIC_NAME));
     }
     

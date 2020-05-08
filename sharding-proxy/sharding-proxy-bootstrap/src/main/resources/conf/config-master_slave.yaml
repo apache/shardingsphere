@@ -54,12 +54,13 @@
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
 #
-#masterSlaveRule:
-#  name: ms_ds
-#  masterDataSourceName: master_ds
-#  slaveDataSourceNames:
-#    - slave_ds_0
-#    - slave_ds_1
+#masterSlaveRules:
+#  ms_ds: 
+#    name: ms_ds
+#    masterDataSourceName: master_ds
+#    slaveDataSourceNames:
+#      - slave_ds_0
+#      - slave_ds_1
 
 ######################################################################################################
 #
@@ -95,9 +96,10 @@
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
 #
-#masterSlaveRule:
-#  name: ms_ds
-#  masterDataSourceName: master_ds
-#  slaveDataSourceNames:
-#    - slave_ds_0
-#    - slave_ds_1
+#masterSlaveRules:
+#  ms_ds: 
+#    name: ms_ds
+#    masterDataSourceName: master_ds
+#    slaveDataSourceNames:
+#      - slave_ds_0
+#      - slave_ds_1
