@@ -34,3 +34,4 @@ public final class HistogramMetricsTrackerTest {
         Assert.assertEquals(trackerTest.metricsType(), MetricsTypeEnum.HISTOGRAM.name());
     }
 }
+

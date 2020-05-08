@@ -34,3 +34,4 @@ public final class SummaryMetricsTrackerTest {
         Assert.assertEquals(trackerTest.metricsType(), MetricsTypeEnum.SUMMARY.name());
     }
 }
+
