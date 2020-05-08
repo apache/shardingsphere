@@ -25,6 +25,7 @@ import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrch
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.orchestration.core.metadatacenter.event.MetaDataChangedEvent;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
+import org.apache.shardingsphere.shardingproxy.backend.executor.BackendExecutorContext;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.shardingproxy.util.DataSourceConverter;
@@ -39,6 +40,7 @@ import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourc
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
+import org.apache.shardingsphere.underlying.executor.kernel.ExecutorKernel;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -90,7 +92,9 @@ public abstract class LogicSchema {
     }
     
     private RuleSchemaMetaData loadRuleSchemaMetaData(final DatabaseType databaseType, final Collection<ShardingSphereRule> rules) throws SQLException {
-        return new RuleSchemaMetaDataLoader(rules).load(databaseType, getBackendDataSource().getDataSources(), ShardingProxyContext.getInstance().getProperties());
+        ExecutorKernel executorKernel = BackendExecutorContext.getInstance().getExecutorKernel();
+        return new RuleSchemaMetaDataLoader(rules).load(databaseType, getBackendDataSource().getDataSources(), ShardingProxyContext.getInstance().getProperties(),
+                executorKernel.getExecutorService().getExecutorService());
     }
     
     private Map<String, DatabaseAccessConfiguration> getDatabaseAccessConfigurationMap() {
