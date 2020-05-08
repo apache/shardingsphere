@@ -34,10 +34,8 @@ import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepo
 import org.apache.shardingsphere.orchestration.center.yaml.swapper.CenterRepositoryConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.common.SpringBootRootConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.encrypt.LocalEncryptRuleCondition;
@@ -144,7 +142,8 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @Conditional(LocalMasterSlaveRuleCondition.class)
     public DataSource masterSlaveDataSourceByLocal(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfigurationYamlSwapper().swap(masterSlaveRule);
-        return new OrchestrationMasterSlaveDataSource(new MasterSlaveDataSource(dataSourceMap, new MasterSlaveRule(masterSlaveRuleConfig), root.getProps()), orchestrationConfiguration);
+        return new OrchestrationShardingDataSource(
+                new ShardingDataSource(dataSourceMap, Collections.singleton(new MasterSlaveRule(masterSlaveRuleConfig)), root.getProps()), orchestrationConfiguration);
     }
     
     /**
@@ -175,10 +174,8 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
         try (ShardingOrchestrationFacade shardingOrchestrationFacade = new ShardingOrchestrationFacade(orchestrationConfiguration, Collections.singletonList(DefaultSchema.LOGIC_NAME))) {
             if (shardingOrchestrationFacade.getConfigCenter().isEncryptRule(DefaultSchema.LOGIC_NAME)) {
                 return new OrchestrationEncryptDataSource(orchestrationConfiguration);
-            } else if (shardingOrchestrationFacade.getConfigCenter().isShardingRule(DefaultSchema.LOGIC_NAME)) {
-                return new OrchestrationShardingDataSource(orchestrationConfiguration);
             } else {
-                return new OrchestrationMasterSlaveDataSource(orchestrationConfiguration);
+                return new OrchestrationShardingDataSource(orchestrationConfiguration);
             }
         }
     }

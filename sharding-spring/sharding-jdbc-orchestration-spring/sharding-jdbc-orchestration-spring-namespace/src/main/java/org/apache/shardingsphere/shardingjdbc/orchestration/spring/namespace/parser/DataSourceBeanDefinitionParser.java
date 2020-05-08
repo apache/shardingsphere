@@ -19,12 +19,11 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.pa
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringEncryptDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringMasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.constants.EncryptDataSourceBeanDefinitionParserTag;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
-import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -50,13 +49,11 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     }
     
     private Class<?> getOrchestrationDataSourceClass(final String localName) {
-        switch (localName) { 
-            case ShardingDataSourceBeanDefinitionParserTag.ROOT_TAG:
-                return OrchestrationSpringShardingDataSource.class;
+        switch (localName) {
             case EncryptDataSourceBeanDefinitionParserTag.ROOT_TAG:
                 return OrchestrationSpringEncryptDataSource.class;
             default:
-                return OrchestrationSpringMasterSlaveDataSource.class;
+                return OrchestrationSpringShardingDataSource.class;
         }
     }
     
