@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.metrics.api;
 
 import org.apache.shardingsphere.metrics.enums.MetricsTypeEnum;
-import org.junit.Assert;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 public final class HistogramMetricsTrackerTest {
     
@@ -29,10 +30,10 @@ public final class HistogramMetricsTrackerTest {
     public void testHistogramMetricsTracker() {
         HistogramMetricsTracker trackerTest = () -> "histogram";
         HistogramMetricsTrackerDelegate delegate = trackerTest.startTimer();
-        assertEquals(delegate.getClass(), NoneHistogramMetricsTrackerDelegate.class);
+        assertThat(delegate.getClass().getName(), is(NoneHistogramMetricsTrackerDelegate.class.getName()));
         delegate.observeDuration();
         trackerTest.observer(3000L);
-        Assert.assertEquals(trackerTest.metricsType(), MetricsTypeEnum.HISTOGRAM.name());
+        assertEquals(trackerTest.metricsType(), MetricsTypeEnum.HISTOGRAM.name());
     }
 }
 

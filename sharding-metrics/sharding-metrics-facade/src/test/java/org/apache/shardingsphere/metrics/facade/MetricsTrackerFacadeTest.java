@@ -30,9 +30,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -44,7 +46,7 @@ public final class MetricsTrackerFacadeTest {
     public void setUp() {
         MetricsConfiguration metricsConfiguration = new MetricsConfiguration("fixture", null, null, null);
         metricsTrackerFacade.init(metricsConfiguration);
-        assertEquals(metricsTrackerFacade.getMetricsTrackerManager().getClass(), MetricsTrackerManagerFixture2.class);
+        assertThat(metricsTrackerFacade.getMetricsTrackerManager().getClass().getName(), is(MetricsTrackerManagerFixture2.class.getName()));
         assertTrue(metricsTrackerFacade.getEnabled());
     }
     
@@ -75,7 +77,7 @@ public final class MetricsTrackerFacadeTest {
         ((MetricsTrackerManagerFixture2) metricsTrackerFacade.getMetricsTrackerManager()).setMetricsTrackerFactory(new MetricsTrackerFactoryFixture2());
         HistogramMetricsTrackerDelegate delegate = metricsTrackerFacade.histogramStartTimer("request");
         metricsTrackerFacade.histogramObserveDuration(delegate);
-        assertEquals(delegate.getClass(), NoneHistogramMetricsTrackerDelegate.class);
+        assertThat(delegate.getClass().getName(), is(NoneHistogramMetricsTrackerDelegate.class.getName()));
     }
     
     @Test
@@ -84,17 +86,16 @@ public final class MetricsTrackerFacadeTest {
         ((MetricsTrackerManagerFixture2) metricsTrackerFacade.getMetricsTrackerManager()).setMetricsTrackerFactory(new MetricsTrackerFactoryFixture2());
         SummaryMetricsTrackerDelegate delegate = metricsTrackerFacade.summaryStartTimer("request");
         metricsTrackerFacade.summaryObserveDuration(delegate);
-        assertEquals(delegate.getClass(), NoneSummaryMetricsTrackerDelegate.class);
+        assertThat(delegate.getClass().getName(), is(NoneSummaryMetricsTrackerDelegate.class.getName()));
     }
     
     @Test
     public void testNoneDelegate() {
         ((MetricsTrackerManagerFixture2) metricsTrackerFacade.getMetricsTrackerManager()).setMetricsTrackerFactory(new MetricsTrackerFactoryFixture());
         SummaryMetricsTrackerDelegate summaryMetricsTrackerDelegate = metricsTrackerFacade.summaryStartTimer("request");
-        assertEquals(summaryMetricsTrackerDelegate.getClass(), NoneSummaryMetricsTrackerDelegate.class);
-    
+        assertThat(summaryMetricsTrackerDelegate.getClass().getName(), is(NoneSummaryMetricsTrackerDelegate.class.getName()));
         HistogramMetricsTrackerDelegate histogramMetricsTrackerDelegate = metricsTrackerFacade.histogramStartTimer("request");
-        assertEquals(histogramMetricsTrackerDelegate.getClass(), NoneHistogramMetricsTrackerDelegate.class);
+        assertThat(histogramMetricsTrackerDelegate.getClass().getName(), is(NoneHistogramMetricsTrackerDelegate.class.getName()));
     }
 }
 

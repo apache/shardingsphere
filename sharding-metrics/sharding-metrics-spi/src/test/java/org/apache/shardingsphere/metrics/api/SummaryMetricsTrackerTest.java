@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.metrics.api;
 
 import org.apache.shardingsphere.metrics.enums.MetricsTypeEnum;
-import org.junit.Assert;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 public final class SummaryMetricsTrackerTest {
     
@@ -30,9 +31,9 @@ public final class SummaryMetricsTrackerTest {
         SummaryMetricsTracker trackerTest = () -> "summary";
         trackerTest.observer(3000L);
         SummaryMetricsTrackerDelegate delegate = trackerTest.startTimer();
-        assertEquals(delegate.getClass(), NoneSummaryMetricsTrackerDelegate.class);
+        assertThat(delegate.getClass().getName(), is(NoneSummaryMetricsTrackerDelegate.class.getName()));
         delegate.observeDuration();
-        Assert.assertEquals(trackerTest.metricsType(), MetricsTypeEnum.SUMMARY.name());
+        assertEquals(trackerTest.metricsType(), MetricsTypeEnum.SUMMARY.name());
     }
 }
 
