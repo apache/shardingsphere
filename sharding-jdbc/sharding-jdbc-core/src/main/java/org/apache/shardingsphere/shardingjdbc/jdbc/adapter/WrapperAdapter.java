@@ -65,8 +65,6 @@ public abstract class WrapperAdapter implements Wrapper {
      * @param target target object
      */
     public final void replayMethodsInvocation(final Object target) {
-        for (JdbcMethodInvocation each : jdbcMethodInvocations) {
-            each.invoke(target);
-        }
+        jdbcMethodInvocations.forEach(each -> each.invoke(target));
     }
 }

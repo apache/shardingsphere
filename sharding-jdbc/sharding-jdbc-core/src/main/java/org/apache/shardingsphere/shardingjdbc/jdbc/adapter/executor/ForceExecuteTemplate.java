@@ -52,9 +52,7 @@ public final class ForceExecuteTemplate<T> {
             return;
         }
         SQLException ex = new SQLException();
-        for (SQLException each : exceptions) {
-            ex.setNextException(each);
-        }
+        exceptions.forEach(ex::setNextException);
         throw ex;
     }
 }

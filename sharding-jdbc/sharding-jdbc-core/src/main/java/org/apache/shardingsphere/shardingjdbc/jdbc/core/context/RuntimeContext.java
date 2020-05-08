@@ -85,9 +85,8 @@ public final class RuntimeContext implements AutoCloseable {
         shardingTransactionManagerEngine = new ShardingTransactionManagerEngine();
         shardingTransactionManagerEngine.init(databaseType, dataSourceMap);
         metaData = createMetaData(dataSourceMap, databaseType);
-        // TODO log multiple rules
         if (!rules.isEmpty()) {
-            ConfigurationLogger.log(rules.iterator().next().getRuleConfiguration());
+            rules.forEach(each -> ConfigurationLogger.log(each.getRuleConfiguration()));
         }
         ConfigurationLogger.log(props);
     }

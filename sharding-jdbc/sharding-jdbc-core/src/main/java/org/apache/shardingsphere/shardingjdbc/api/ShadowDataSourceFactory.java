@@ -27,9 +27,10 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShadowDataSou
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * Shadow data source factory.
@@ -68,20 +69,12 @@ public final class ShadowDataSourceFactory {
     }
     
     private static DataSource createActualDataSource(final Map<String, DataSource> dataSourceMap, final ShadowRuleConfiguration shadowRule, final Properties props) {
-        Map<String, DataSource> actualDataSource = new HashMap<>(shadowRule.getShadowMappings().size() / 2);
-        for (String actual : shadowRule.getShadowMappings().keySet()) {
-            actualDataSource.put(actual, dataSourceMap.get(actual));
-        }
-        
+        Map<String, DataSource> actualDataSource = shadowRule.getShadowMappings().entrySet().stream().collect(Collectors.toMap(Entry::getKey, each -> dataSourceMap.get(each.getKey())));
         return createFacadeDataSource(actualDataSource, shadowRule, props);
     }
     
     private static DataSource createShadowDataSource(final Map<String, DataSource> dataSourceMap, final ShadowRuleConfiguration shadowRule, final Properties props) {
-        Map<String, DataSource> shadowDataSource = new HashMap<>(shadowRule.getShadowMappings().size() / 2);
-        for (String actual : shadowRule.getShadowMappings().keySet()) {
-            shadowDataSource.put(actual, dataSourceMap.get(shadowRule.getShadowMappings().get(actual)));
-        }
-        
+        Map<String, DataSource> shadowDataSource = shadowRule.getShadowMappings().entrySet().stream().collect(Collectors.toMap(Entry::getKey, each -> dataSourceMap.get(each.getValue())));
         return createFacadeDataSource(shadowDataSource, shadowRule, props);
     }
     

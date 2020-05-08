@@ -40,9 +40,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     }
     
     private void checkDataSource(final Map<String, DataSource> dataSourceMap) {
-        for (DataSource each : dataSourceMap.values()) {
-            Preconditions.checkArgument(!(each instanceof MasterSlaveDataSource), "Initialized data sources can not be master-slave data sources.");
-        }
+        dataSourceMap.values().forEach(each -> Preconditions.checkArgument(!(each instanceof MasterSlaveDataSource), "Initialized data sources can not be master-slave data sources."));
     }
     
     @Override

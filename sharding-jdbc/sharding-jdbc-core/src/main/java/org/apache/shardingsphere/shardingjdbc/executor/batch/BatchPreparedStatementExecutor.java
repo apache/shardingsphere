@@ -103,11 +103,7 @@ public final class BatchPreparedStatementExecutor {
     }
     
     private void reviseBatchExecutionUnits(final BatchExecutionUnit batchExecutionUnit) {
-        for (BatchExecutionUnit each : batchExecutionUnits) {
-            if (each.equals(batchExecutionUnit)) {
-                reviseBatchExecutionUnit(each, batchExecutionUnit);
-            }
-        }
+        batchExecutionUnits.stream().filter(each -> each.equals(batchExecutionUnit)).forEach(each -> reviseBatchExecutionUnit(each, batchExecutionUnit));
     }
     
     private void reviseBatchExecutionUnit(final BatchExecutionUnit oldBatchExecutionUnit, final BatchExecutionUnit newBatchExecutionUnit) {
@@ -117,15 +113,13 @@ public final class BatchPreparedStatementExecutor {
     
     private void handleNewBatchExecutionUnits(final Collection<BatchExecutionUnit> newExecutionUnits) {
         newExecutionUnits.removeAll(batchExecutionUnits);
-        for (BatchExecutionUnit each : newExecutionUnits) {
-            each.mapAddBatchCount(batchCount);
-        }
+        newExecutionUnits.forEach(each -> each.mapAddBatchCount(batchCount));
         batchExecutionUnits.addAll(newExecutionUnits);
     }
     
     /**
      * Execute batch.
-     * 
+     *
      * @param sqlStatementContext SQL statement context
      * @return execute results
      * @throws SQLException SQL exception
@@ -200,15 +194,8 @@ public final class BatchPreparedStatementExecutor {
      * @return parameter sets
      */
     public List<List<Object>> getParameterSet(final Statement statement) {
-        List<List<Object>> result = new LinkedList<>();
-        for (InputGroup<StatementExecuteUnit> each : inputGroups) {
-            Optional<StatementExecuteUnit> target = findStatementExecuteUnit(statement, each);
-            if (target.isPresent()) {
-                result = getParameterSets(target.get());
-                break;
-            }
-        }
-        return result;
+        return inputGroups.stream().map(each -> findStatementExecuteUnit(statement, each)).filter(Optional::isPresent).findFirst().map(Optional::get)
+                .map(this::getParameterSets).orElse(Collections.emptyList());
     }
     
     private Optional<StatementExecuteUnit> findStatementExecuteUnit(final Statement statement, final InputGroup<StatementExecuteUnit> executeGroup) {
