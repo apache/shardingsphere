@@ -265,3 +265,9 @@ ShardingSphere中很多功能实现类的加载方式是通过[SPI](https://shar
 
 1. sharding-proxy可以看做是一个mysql server，所以首选支持mysql命令连接和操作。
 2. 如果使用其他第三方数据库工具，可能由于不同工具的特定实现导致出现异常。建议选择特定版本的工具或者打开特定参数，例如使用Navicat 11.1.13版本(不建议12.x)，使用IDEA/DataGrip时打开`introspect using JDBC metadata`选项。
+
+## 23. 引入`sharding-transaction-xa-core`后，如何避免spring-boot自动加载默认的JtaTransactionManager？
+
+回答:
+
+1. 需要在spring-boot的引导类中添加 `@SpringBootApplication(exclude = JtaAutoConfiguration.class)`。
