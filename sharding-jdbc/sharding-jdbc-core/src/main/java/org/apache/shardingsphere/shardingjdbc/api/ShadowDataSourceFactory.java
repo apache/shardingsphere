@@ -28,6 +28,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -71,7 +72,7 @@ public final class ShadowDataSourceFactory {
         Map<String, DataSource> actualDataSource = shadowRule.getShadowMappings()
                 .entrySet()
                 .stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, each -> dataSourceMap.get(each.getKey())));
+                .collect(Collectors.toMap(Entry::getKey, each -> dataSourceMap.get(each.getKey())));
         return createFacadeDataSource(actualDataSource, shadowRule, props);
     }
     
@@ -79,7 +80,7 @@ public final class ShadowDataSourceFactory {
         Map<String, DataSource> shadowDataSource = shadowRule.getShadowMappings()
                 .entrySet()
                 .stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, each -> dataSourceMap.get(each.getValue())));
+                .collect(Collectors.toMap(Entry::getKey, each -> dataSourceMap.get(each.getValue())));
         return createFacadeDataSource(shadowDataSource, shadowRule, props);
     }
     
