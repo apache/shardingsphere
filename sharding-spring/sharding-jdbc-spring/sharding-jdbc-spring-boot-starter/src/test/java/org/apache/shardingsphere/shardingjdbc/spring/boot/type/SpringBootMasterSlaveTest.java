@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.shardingjdbc.spring.boot.type;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -28,6 +30,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
+import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -43,10 +46,22 @@ public class SpringBootMasterSlaveTest {
     private DataSource dataSource;
     
     @Test
-    public void assertWithMasterSlaveDataSource() {
+    public void assertDataSource() {
         assertTrue(dataSource instanceof ShardingDataSource);
         for (DataSource each : ((ShardingDataSource) dataSource).getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(100));
         }
+        Collection<ShardingSphereRule> rules = ((ShardingDataSource) dataSource).getRuntimeContext().getRules();
+        assertThat(rules.size(), is(1));
+        assertMasterSlaveRule((MasterSlaveRule) rules.iterator().next());
+    }
+    
+    private void assertMasterSlaveRule(final MasterSlaveRule rule) {
+        assertThat(rule.getName(), is("ds_ms"));
+        assertThat(rule.getMasterDataSourceName(), is("ds_master"));
+        assertThat(rule.getSlaveDataSourceNames().size(), is(2));
+        assertThat(rule.getSlaveDataSourceNames().get(0), is("ds_slave_0"));
+        assertThat(rule.getSlaveDataSourceNames().get(1), is("ds_slave_1"));
+        assertThat(rule.getLoadBalanceAlgorithm().getType(), is("RANDOM"));
     }
 }
