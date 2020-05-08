@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleMetaDataDecorator;
 import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
@@ -79,12 +80,16 @@ public final class RuleSchemaMetaDataLoader {
         Map<String, SchemaMetaData> unconfiguredSchemaMetaDataMap = new HashMap<>(dataSourceMap.size(), 1);
         int maxConnectionCount = properties.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         // TODO use multiple threads for different data sources
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            SchemaMetaData schemaMetaData = SchemaMetaDataLoader.load(entry.getValue(), maxConnectionCount, databaseType.getName(), excludedTableNames);
-            if (!schemaMetaData.getAllTableNames().isEmpty()) {
-                unconfiguredSchemaMetaDataMap.put(entry.getKey(), schemaMetaData);
+        dataSourceMap.entrySet().parallelStream().forEach(entry -> {
+            try {
+                SchemaMetaData schemaMetaData = SchemaMetaDataLoader.load(entry.getValue(), maxConnectionCount, databaseType.getName(), excludedTableNames);
+                if (!schemaMetaData.getAllTableNames().isEmpty()) {
+                    unconfiguredSchemaMetaDataMap.put(entry.getKey(), schemaMetaData);
+                }
+            } catch (SQLException e) {
+                throw new ShardingSphereException("RuleSchemaMetaData load faild", e);
             }
-        }
+        });
         return new RuleSchemaMetaData(configuredSchemaMetaData, unconfiguredSchemaMetaDataMap);
     }
     
