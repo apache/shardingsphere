@@ -21,7 +21,6 @@ import org.apache.shardingsphere.metrics.enums.MetricsTypeEnum;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public final class SummaryMetricsTrackerTest {
@@ -33,7 +32,7 @@ public final class SummaryMetricsTrackerTest {
         SummaryMetricsTrackerDelegate delegate = trackerTest.startTimer();
         assertThat(delegate.getClass().getName(), is(NoneSummaryMetricsTrackerDelegate.class.getName()));
         delegate.observeDuration();
-        assertEquals(trackerTest.metricsType(), MetricsTypeEnum.SUMMARY.name());
+        assertThat(trackerTest.metricsType(), is(MetricsTypeEnum.SUMMARY.name()));
     }
 }
 

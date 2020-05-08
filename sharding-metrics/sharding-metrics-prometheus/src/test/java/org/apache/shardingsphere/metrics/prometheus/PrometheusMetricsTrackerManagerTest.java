@@ -23,8 +23,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class PrometheusMetricsTrackerManagerTest {
@@ -36,7 +37,7 @@ public final class PrometheusMetricsTrackerManagerTest {
         manager.start(metricsConfiguration);
         HTTPServer server = manager.getServer();
         assertNotNull(server);
-        assertEquals(manager.getType(), "prometheus");
+        assertThat(manager.getType(), is("prometheus"));
         manager.stop();
     }
     
@@ -46,9 +47,9 @@ public final class PrometheusMetricsTrackerManagerTest {
         MetricsConfiguration metricsConfiguration = new MetricsConfiguration("metricsName", "127.0.0.1", 9195, null);
         manager.start(metricsConfiguration);
         HTTPServer server = manager.getServer();
-        assertEquals(server.getPort(), 9195);
+        assertThat(server.getPort(), is(9195));
         assertNotNull(server);
-        assertEquals(manager.getType(), "prometheus");
+        assertThat(manager.getType(), is("prometheus"));
         manager.stop();
     }
 }

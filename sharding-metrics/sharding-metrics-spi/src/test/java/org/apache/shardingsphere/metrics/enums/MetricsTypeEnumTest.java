@@ -19,18 +19,19 @@ package org.apache.shardingsphere.metrics.enums;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertThat;
 
 public final class MetricsTypeEnumTest {
     
     @Test
     public void testMetricsType() {
-        assertEquals(MetricsTypeEnum.GAUGE.name(), "GAUGE");
-        assertNotEquals(MetricsTypeEnum.GAUGE.name(), "gauge");
-        assertEquals(MetricsTypeEnum.COUNTER.name(), "COUNTER");
-        assertEquals(MetricsTypeEnum.HISTOGRAM.name(), "HISTOGRAM");
-        assertEquals(MetricsTypeEnum.SUMMARY.name(), "SUMMARY");
+        assertThat(MetricsTypeEnum.GAUGE.name(), is("GAUGE"));
+        assertThat(MetricsTypeEnum.GAUGE.name(), not("gauge"));
+        assertThat(MetricsTypeEnum.COUNTER.name(), is("COUNTER"));
+        assertThat(MetricsTypeEnum.HISTOGRAM.name(), is("HISTOGRAM"));
+        assertThat(MetricsTypeEnum.SUMMARY.name(), is("SUMMARY"));
     }
 }
 

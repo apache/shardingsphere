@@ -21,7 +21,6 @@ import org.apache.shardingsphere.metrics.enums.MetricsTypeEnum;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public final class HistogramMetricsTrackerTest {
@@ -33,7 +32,7 @@ public final class HistogramMetricsTrackerTest {
         assertThat(delegate.getClass().getName(), is(NoneHistogramMetricsTrackerDelegate.class.getName()));
         delegate.observeDuration();
         trackerTest.observer(3000L);
-        assertEquals(trackerTest.metricsType(), MetricsTypeEnum.HISTOGRAM.name());
+        assertThat(trackerTest.metricsType(), is(MetricsTypeEnum.HISTOGRAM.name()));
     }
 }
 

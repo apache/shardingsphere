@@ -20,14 +20,15 @@ package org.apache.shardingsphere.metrics.api;
 import org.apache.shardingsphere.metrics.enums.MetricsTypeEnum;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public final class CounterMetricsTrackerTest implements CounterMetricsTracker {
     
     @Test
     public void testMetricsType() {
         CounterMetricsTrackerTest trackerTest = new CounterMetricsTrackerTest();
-        assertEquals(trackerTest.metricsType(), MetricsTypeEnum.COUNTER.name());
+        assertThat(trackerTest.metricsType(), is(MetricsTypeEnum.COUNTER.name()));
     }
     
     @Override

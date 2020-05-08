@@ -19,16 +19,17 @@ package org.apache.shardingsphere.metrics.enums;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public final class MetricsLabelEnumTest {
     
     @Test
     public void testMetricsLabel() {
-        assertEquals(MetricsLabelEnum.REQUEST_TOTAL.getName(), "request_total");
-        assertEquals(MetricsLabelEnum.SQL_STATEMENT_COUNT.getName(), "sql_statement_count");
-        assertEquals(MetricsLabelEnum.CHANNEL_COUNT.getName(), "channel_count");
-        assertEquals(MetricsLabelEnum.REQUEST_LATENCY.getName(), "request_latency");
+        assertThat(MetricsLabelEnum.REQUEST_TOTAL.getName(), is("request_total"));
+        assertThat(MetricsLabelEnum.SQL_STATEMENT_COUNT.getName(), is("sql_statement_count"));
+        assertThat(MetricsLabelEnum.CHANNEL_COUNT.getName(), is("channel_count"));
+        assertThat(MetricsLabelEnum.REQUEST_LATENCY.getName(), is("request_latency"));
     }
 }
 

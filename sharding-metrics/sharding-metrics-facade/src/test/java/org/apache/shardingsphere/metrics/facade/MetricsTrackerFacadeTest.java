@@ -34,7 +34,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class MetricsTrackerFacadeTest {
@@ -46,7 +45,7 @@ public final class MetricsTrackerFacadeTest {
         MetricsConfiguration metricsConfiguration = new MetricsConfiguration("fixture", null, null, null);
         metricsTrackerFacade.init(metricsConfiguration);
         assertThat(metricsTrackerFacade.getMetricsTrackerManager().getClass().getName(), is(MetricsTrackerManagerFixture2.class.getName()));
-        assertTrue(metricsTrackerFacade.getEnabled());
+        assertThat(metricsTrackerFacade.getEnabled(), is(true));
     }
     
     @Test

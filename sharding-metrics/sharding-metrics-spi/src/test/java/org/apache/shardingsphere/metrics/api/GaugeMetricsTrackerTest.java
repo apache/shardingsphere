@@ -20,14 +20,15 @@ package org.apache.shardingsphere.metrics.api;
 import org.apache.shardingsphere.metrics.enums.MetricsTypeEnum;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public final class GaugeMetricsTrackerTest implements GaugeMetricsTracker {
     
     @Test
     public void testMetricsType() {
         GaugeMetricsTrackerTest trackerTest = new GaugeMetricsTrackerTest();
-        assertEquals(trackerTest.metricsType(), MetricsTypeEnum.GAUGE.name());
+        assertThat(trackerTest.metricsType(), is(MetricsTypeEnum.GAUGE.name()));
     }
     
     @Override

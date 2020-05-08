@@ -19,13 +19,14 @@ package org.apache.shardingsphere.metrics.configuration.swapper;
 
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.metrics.configuration.yaml.YamlMetricsConfiguration;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Properties;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 public final class MetricsConfigurationYamlSwapperTest {
     
@@ -34,10 +35,10 @@ public final class MetricsConfigurationYamlSwapperTest {
         MetricsConfigurationYamlSwapper swapper = new MetricsConfigurationYamlSwapper();
         YamlMetricsConfiguration yamlConfiguration = swapper.swap(new MetricsConfiguration("prometheus", "127.0.0.1", null, new Properties()));
         assertNotNull(yamlConfiguration);
-        Assert.assertNull(yamlConfiguration.getPort());
+        assertNull(yamlConfiguration.getPort());
         MetricsConfiguration configuration = swapper.swap(yamlConfiguration);
         assertNotNull(configuration);
-        assertEquals(9190, (int) configuration.getPort());
+        assertThat(configuration.getPort(), is(9190));
     }
 }
 
