@@ -48,6 +48,8 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     
     private final ShardingSphereMetaData shardingSphereMetaData;
     
+    private final Random random = new Random();
+    
     private String currentDataSourceName;
     
     private DatabaseMetaData currentDatabaseMetaData;
@@ -242,7 +244,7 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     
     private String getRandomDataSourceName() {
         Collection<String> datasourceNames = connection.getCachedConnections().isEmpty() ? this.datasourceNames : connection.getCachedConnections().keySet();
-        return new ArrayList<>(datasourceNames).get(new Random().nextInt(datasourceNames.size()));
+        return new ArrayList<>(datasourceNames).get(random.nextInt(datasourceNames.size()));
     }
     
     private DatabaseMetaData getDatabaseMetaData() throws SQLException {
