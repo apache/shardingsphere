@@ -48,12 +48,11 @@ public final class LogicSchemaFactory {
      * @param schemaName schema name
      * @param schemaDataSources schema data sources
      * @param ruleConfigurations rule configurations
-     * @param isUsingRegistry is using registry or not
      * @return new instance of logic schema
      * @throws SQLException SQL exception
      */
     public static LogicSchema newInstance(final String schemaName, final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources,
-                                          final Collection<RuleConfiguration> ruleConfigurations, final boolean isUsingRegistry) throws SQLException {
+                                          final Collection<RuleConfiguration> ruleConfigurations) throws SQLException {
         if (ruleConfigurations.size() > 1) {
             return new ShardingSchema(schemaName, schemaDataSources.get(schemaName), ruleConfigurations);
         }
@@ -65,7 +64,7 @@ public final class LogicSchemaFactory {
             return new ShardingSchema(schemaName, schemaDataSources.get(schemaName), Collections.singleton(ruleConfiguration));
         }
         if (ruleConfiguration instanceof MasterSlaveRuleConfiguration) {
-            return new MasterSlaveSchema(schemaName, schemaDataSources.get(schemaName), (MasterSlaveRuleConfiguration) ruleConfiguration, isUsingRegistry);
+            return new MasterSlaveSchema(schemaName, schemaDataSources.get(schemaName), (MasterSlaveRuleConfiguration) ruleConfiguration);
         }
         if (ruleConfiguration instanceof EncryptRuleConfiguration) {
             return new EncryptSchema(schemaName, schemaDataSources.get(schemaName), (EncryptRuleConfiguration) ruleConfiguration);

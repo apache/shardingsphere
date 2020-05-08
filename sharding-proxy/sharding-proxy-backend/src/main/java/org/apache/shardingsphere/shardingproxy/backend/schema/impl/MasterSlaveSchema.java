@@ -37,11 +37,11 @@ import java.util.Map;
 public final class MasterSlaveSchema extends LogicSchema {
     
     public MasterSlaveSchema(final String name,
-                             final Map<String, YamlDataSourceParameter> dataSources, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isUsingRegistry) throws SQLException {
-        super(name, dataSources, Collections.singletonList(createMasterSlaveRule(masterSlaveRuleConfig, isUsingRegistry)));
+                             final Map<String, YamlDataSourceParameter> dataSources, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) throws SQLException {
+        super(name, dataSources, Collections.singletonList(createMasterSlaveRule(masterSlaveRuleConfig)));
     }
     
-    private static MasterSlaveRule createMasterSlaveRule(final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isUsingRegistry) {
+    private static MasterSlaveRule createMasterSlaveRule(final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
         return new MasterSlaveRule(masterSlaveRuleConfig);
     }
     
