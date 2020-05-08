@@ -19,17 +19,16 @@ package org.apache.shardingsphere.shardingproxy.backend.schema;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShadowSchema;
-import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.EncryptSchema;
-import org.apache.shardingsphere.shardingproxy.backend.schema.impl.MasterSlaveSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShadowSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.TransparentSchema;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -64,7 +63,7 @@ public final class LogicSchemaFactory {
             return new ShardingSchema(schemaName, schemaDataSources.get(schemaName), Collections.singleton(ruleConfiguration));
         }
         if (ruleConfiguration instanceof MasterSlaveRuleConfiguration) {
-            return new MasterSlaveSchema(schemaName, schemaDataSources.get(schemaName), (MasterSlaveRuleConfiguration) ruleConfiguration);
+            return new ShardingSchema(schemaName, schemaDataSources.get(schemaName), Collections.singleton(ruleConfiguration));
         }
         if (ruleConfiguration instanceof EncryptRuleConfiguration) {
             return new EncryptSchema(schemaName, schemaDataSources.get(schemaName), (EncryptRuleConfiguration) ruleConfiguration);
