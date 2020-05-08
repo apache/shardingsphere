@@ -19,17 +19,16 @@ package org.apache.shardingsphere.shardingproxy.backend.schema;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShadowSchema;
-import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.EncryptSchema;
-import org.apache.shardingsphere.shardingproxy.backend.schema.impl.MasterSlaveSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShadowSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.TransparentSchema;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -48,12 +47,11 @@ public final class LogicSchemaFactory {
      * @param schemaName schema name
      * @param schemaDataSources schema data sources
      * @param ruleConfigurations rule configurations
-     * @param isUsingRegistry is using registry or not
      * @return new instance of logic schema
      * @throws SQLException SQL exception
      */
     public static LogicSchema newInstance(final String schemaName, final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources,
-                                          final Collection<RuleConfiguration> ruleConfigurations, final boolean isUsingRegistry) throws SQLException {
+                                          final Collection<RuleConfiguration> ruleConfigurations) throws SQLException {
         if (ruleConfigurations.size() > 1) {
             return new ShardingSchema(schemaName, schemaDataSources.get(schemaName), ruleConfigurations);
         }
@@ -65,7 +63,7 @@ public final class LogicSchemaFactory {
             return new ShardingSchema(schemaName, schemaDataSources.get(schemaName), Collections.singleton(ruleConfiguration));
         }
         if (ruleConfiguration instanceof MasterSlaveRuleConfiguration) {
-            return new MasterSlaveSchema(schemaName, schemaDataSources.get(schemaName), (MasterSlaveRuleConfiguration) ruleConfiguration, isUsingRegistry);
+            return new ShardingSchema(schemaName, schemaDataSources.get(schemaName), Collections.singleton(ruleConfiguration));
         }
         if (ruleConfiguration instanceof EncryptRuleConfiguration) {
             return new EncryptSchema(schemaName, schemaDataSources.get(schemaName), (EncryptRuleConfiguration) ruleConfiguration);

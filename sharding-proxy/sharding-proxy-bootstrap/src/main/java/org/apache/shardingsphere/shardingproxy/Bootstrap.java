@@ -117,9 +117,9 @@ public final class Bootstrap {
         logAndInitContext(authentication, properties);
         initMetrics(metricsConfiguration);
         Map<String, Map<String, YamlDataSourceParameter>> schemaRules = getDataSourceParameterMap(ruleConfigs);
-        startProxy(schemaRules.keySet(), port, schemaRules, getRuleConfigurations(ruleConfigs), false);
+        startProxy(schemaRules.keySet(), port, schemaRules, getRuleConfigurations(ruleConfigs));
         Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources = getDataSourceParameterMap(ruleConfigs);
-        startProxy(schemaDataSources.keySet(), port, schemaDataSources, getRuleConfigurations(ruleConfigs), false);
+        startProxy(schemaDataSources.keySet(), port, schemaDataSources, getRuleConfigurations(ruleConfigs));
     }
     
     private static void startWithRegistryCenter(final YamlProxyServerConfiguration serverConfig, final Collection<String> shardingSchemaNames,
@@ -131,7 +131,7 @@ public final class Bootstrap {
             Properties properties = shardingOrchestrationFacade.getConfigCenter().loadProperties();
             logAndInitContext(authentication, properties);
             initMetrics(serverConfig.getMetrics());
-            startProxy(shardingSchemaNames, port, getSchemaDataSourceParameterMap(shardingOrchestrationFacade), getSchemaRules(shardingOrchestrationFacade), true);
+            startProxy(shardingSchemaNames, port, getSchemaDataSourceParameterMap(shardingOrchestrationFacade), getSchemaRules(shardingOrchestrationFacade));
         }
     }
     
@@ -142,8 +142,8 @@ public final class Bootstrap {
     }
 
     private static void startProxy(final Collection<String> shardingSchemaNames, final int port, final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources,
-                                   final Map<String, Collection<RuleConfiguration>> schemaRules, final boolean isUsingRegistry) throws SQLException {
-        LogicSchemas.getInstance().init(shardingSchemaNames, schemaDataSources, schemaRules, isUsingRegistry);
+                                   final Map<String, Collection<RuleConfiguration>> schemaRules) throws SQLException {
+        LogicSchemas.getInstance().init(shardingSchemaNames, schemaDataSources, schemaRules);
         initOpenTracing();
         ShardingProxy.getInstance().start(port);
     }
