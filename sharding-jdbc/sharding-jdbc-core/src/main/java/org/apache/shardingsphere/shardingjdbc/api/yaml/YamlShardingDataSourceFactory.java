@@ -29,6 +29,7 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -80,6 +81,21 @@ public final class YamlShardingDataSourceFactory {
     /**
      * Create sharding data source.
      *
+     * @param dataSource data source
+     * @param yamlFile YAML file for rule configuration of databases and tables sharding without data sources
+     * @return sharding data source
+     * @throws SQLException SQL exception
+     * @throws IOException IO exception
+     */
+    public static DataSource createDataSource(final DataSource dataSource, final File yamlFile) throws SQLException, IOException {
+        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
+        dataSourceMap.put("unique_ds", dataSource);
+        return createDataSource(dataSourceMap, yamlFile);
+    }
+    
+    /**
+     * Create sharding data source.
+     *
      * @param dataSourceMap data source map
      * @param yamlBytes YAML bytes for rule configuration of databases and tables sharding without data sources
      * @return sharding data source
@@ -89,5 +105,20 @@ public final class YamlShardingDataSourceFactory {
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlBytes) throws SQLException, IOException {
         YamlRootRuleConfigurations configurations = YamlEngine.unmarshal(yamlBytes, YamlRootRuleConfigurations.class, new YamlRootRuleConfigurationsConstructor());
         return ShardingDataSourceFactory.createDataSource(dataSourceMap, new RuleRootConfigurationsYamlSwapper().swap(configurations), configurations.getProps());
+    }
+    
+    /**
+     * Create sharding data source.
+     *
+     * @param dataSource data source
+     * @param yamlBytes YAML bytes for rule configuration of databases and tables sharding without data sources
+     * @return sharding data source
+     * @throws SQLException SQL exception
+     * @throws IOException IO exception
+     */
+    public static DataSource createDataSource(final DataSource dataSource, final byte[] yamlBytes) throws SQLException, IOException {
+        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
+        dataSourceMap.put("unique_ds", dataSource);
+        return createDataSource(dataSourceMap, yamlBytes);
     }
 }
