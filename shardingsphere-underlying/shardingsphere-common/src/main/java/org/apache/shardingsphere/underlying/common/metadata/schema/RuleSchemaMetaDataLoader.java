@@ -160,10 +160,7 @@ public final class RuleSchemaMetaDataLoader {
     
     @SuppressWarnings("unchecked")
     private TableMetaData decorate(final String tableName, final TableMetaData tableMetaData) {
-        TableMetaData result = tableMetaData;
-        for (Entry<ShardingSphereRule, RuleMetaDataDecorator> entry : OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataDecorator.class).entrySet()) {
-            result = entry.getValue().decorate(tableName, tableMetaData, entry.getKey());
-        }
-        return result;
+        return OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataDecorator.class).entrySet().stream()
+                .map(entry -> entry.getValue().decorate(tableName, tableMetaData, entry.getKey())).reduce((first, second) -> second).orElse(tableMetaData);
     }
 }
