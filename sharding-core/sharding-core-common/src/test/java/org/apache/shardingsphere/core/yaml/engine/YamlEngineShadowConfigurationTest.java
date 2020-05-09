@@ -26,25 +26,24 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class YamlEngineShadowMasterSlaveConfigurationTest {
+public final class YamlEngineShadowConfigurationTest {
     
     @Test
     public void assertUnmarshalWithYamlFile() throws IOException {
-        URL url = getClass().getClassLoader().getResource("yaml/shadow-master-slave-rule.yaml");
+        URL url = getClass().getClassLoader().getResource("yaml/shadow-rule.yaml");
         assertNotNull(url);
-        assertYamlMasterSlaveConfig(YamlEngine.unmarshal(new File(url.getFile()), YamlRootShadowConfiguration.class));
+        assertYamlShadowConfig(YamlEngine.unmarshal(new File(url.getFile()), YamlRootShadowConfiguration.class));
     }
     
     @Test
     public void assertUnmarshalWithYamlBytes() throws IOException {
-        URL url = getClass().getClassLoader().getResource("yaml/shadow-master-slave-rule.yaml");
+        URL url = getClass().getClassLoader().getResource("yaml/shadow-rule.yaml");
         assertNotNull(url);
         StringBuilder yamlContent = new StringBuilder();
         try (
@@ -55,12 +54,11 @@ public final class YamlEngineShadowMasterSlaveConfigurationTest {
                 yamlContent.append(line).append("\n");
             }
         }
-        assertYamlMasterSlaveConfig(YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlRootShadowConfiguration.class));
+        assertYamlShadowConfig(YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlRootShadowConfiguration.class));
     }
     
-    private void assertYamlMasterSlaveConfig(final YamlRootShadowConfiguration actual) {
+    private void assertYamlShadowConfig(final YamlRootShadowConfiguration actual) {
         assertDataSourceMap(actual);
-        assertMasterSlaveRule(actual);
         assertThat(actual.getShadowRule().getColumn(), is("is_shadow"));
         assertShadowMappings(actual);
     }
@@ -70,13 +68,6 @@ public final class YamlEngineShadowMasterSlaveConfigurationTest {
         assertTrue(actual.getDataSources().containsKey("master_ds"));
         assertTrue(actual.getDataSources().containsKey("slave_ds_0"));
         assertTrue(actual.getDataSources().containsKey("slave_ds_1"));
-    }
-    
-    private void assertMasterSlaveRule(final YamlRootShadowConfiguration actual) {
-        assertThat(actual.getShadowRule().getMasterSlaveRule().getName(), is("master-slave-ds"));
-        assertThat(actual.getShadowRule().getMasterSlaveRule().getMasterDataSourceName(), is("master_ds"));
-        assertThat(actual.getShadowRule().getMasterSlaveRule().getSlaveDataSourceNames(), is(Arrays.asList("slave_ds_0", "slave_ds_1")));
-        assertThat(actual.getShadowRule().getMasterSlaveRule().getLoadBalanceAlgorithmType(), is("ROUND_ROBIN"));
     }
     
     private void assertShadowMappings(final YamlRootShadowConfiguration actual) {
