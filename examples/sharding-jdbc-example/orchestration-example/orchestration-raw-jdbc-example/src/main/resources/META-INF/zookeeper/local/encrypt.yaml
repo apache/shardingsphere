@@ -24,11 +24,12 @@ orchestration:
     props:
       overwrite: true
 
-dataSource: !!com.zaxxer.hikari.HikariDataSource
-  driverClassName: com.mysql.jdbc.Driver
-  jdbcUrl: jdbc:mysql://localhost:3306/demo_ds
-  username: root
-  password:
+dataSources:
+  uinque_ds: !!com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds
+    username: root
+    password:
 
 encryptRule:
   encryptors:
