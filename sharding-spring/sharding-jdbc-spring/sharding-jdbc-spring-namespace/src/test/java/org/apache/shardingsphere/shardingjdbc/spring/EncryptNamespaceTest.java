@@ -19,9 +19,9 @@ package org.apache.shardingsphere.shardingjdbc.spring;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.strategy.impl.AESEncryptor;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -36,7 +36,7 @@ import static org.junit.Assert.assertTrue;
 public class EncryptNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @Test
-    public void assertEncryptDataSource() {
+    public void assertDataSource() {
         EncryptRule encryptRule = getEncryptRuleRule();
         assertTrue(encryptRule.findEncryptor("t_order", "user_id").isPresent());
         assertThat(encryptRule.getCipherColumn("t_order", "user_id"), is("user_encrypt"));
@@ -47,12 +47,12 @@ public class EncryptNamespaceTest extends AbstractJUnit4SpringContextTests {
     }
     
     private EncryptRule getEncryptRuleRule() {
-        EncryptDataSource encryptDataSource = applicationContext.getBean("encryptDataSource", EncryptDataSource.class);
-        return (EncryptRule) encryptDataSource.getRuntimeContext().getRules().iterator().next();
+        ShardingDataSource dataSource = applicationContext.getBean("encryptDataSource", ShardingDataSource.class);
+        return (EncryptRule) dataSource.getRuntimeContext().getRules().iterator().next();
     }
     
     private ConfigurationProperties getProperties() {
-        EncryptDataSource encryptDataSource = applicationContext.getBean("encryptDataSource", EncryptDataSource.class);
-        return encryptDataSource.getRuntimeContext().getProperties();
+        ShardingDataSource dataSource = applicationContext.getBean("encryptDataSource", ShardingDataSource.class);
+        return dataSource.getRuntimeContext().getProperties();
     }
 }

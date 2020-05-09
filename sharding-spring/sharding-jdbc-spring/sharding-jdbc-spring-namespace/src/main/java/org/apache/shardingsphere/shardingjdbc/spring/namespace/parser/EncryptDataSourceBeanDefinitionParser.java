@@ -17,16 +17,21 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring.namespace.parser;
 
-import org.apache.shardingsphere.shardingjdbc.spring.datasource.SpringEncryptDataSource;
+import org.apache.shardingsphere.shardingjdbc.spring.datasource.SpringShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.EncryptDataSourceBeanDefinitionParserTag;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.ManagedList;
+import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -36,22 +41,26 @@ public final class EncryptDataSourceBeanDefinitionParser extends AbstractBeanDef
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SpringEncryptDataSource.class);
-        factory.addConstructorArgValue(parseDataSource(element));
-        factory.addConstructorArgValue(parseEncryptRuleConfiguration(element));
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SpringShardingDataSource.class);
+        factory.addConstructorArgValue(parseDataSources(element));
+        factory.addConstructorArgValue(parseRuleConfigurations(element));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
         factory.setDestroyMethodName("close");
         return factory.getBeanDefinition();
     }
     
-    private RuntimeBeanReference parseDataSource(final Element element) {
+    private Map<String, RuntimeBeanReference> parseDataSources(final Element element) {
         String dataSource = element.getAttribute(EncryptDataSourceBeanDefinitionParserTag.DATA_SOURCE_NAME_TAG);
-        return new RuntimeBeanReference(dataSource);
+        Map<String, RuntimeBeanReference> result = new ManagedMap<>(1);
+        result.put("unique_ds", new RuntimeBeanReference(dataSource));
+        return result;
     }
     
-    private AbstractBeanDefinition parseEncryptRuleConfiguration(final Element element) {
+    private Collection<BeanDefinition> parseRuleConfigurations(final Element element) {
+        Collection<BeanDefinition> result = new ManagedList<>(1);
         Element encryptRuleElement = DomUtils.getChildElementByTagName(element, EncryptDataSourceBeanDefinitionParserTag.ENCRYPT_RULE_TAG);
-        return EncryptRuleBeanDefinitionParser.parseEncryptRuleElement(encryptRuleElement);
+        result.add(EncryptRuleBeanDefinitionParser.parseEncryptRuleElement(encryptRuleElement));
+        return result;
     }
     
     private Properties parseProperties(final Element element, final ParserContext parserContext) {
