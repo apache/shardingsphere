@@ -25,6 +25,9 @@ import org.apache.shardingsphere.database.protocol.packet.CommandPacket;
 import org.apache.shardingsphere.database.protocol.packet.CommandPacketType;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
+import org.apache.shardingsphere.metrics.api.HistogramMetricsTrackerDelegate;
+import org.apache.shardingsphere.metrics.enums.MetricsLabelEnum;
+import org.apache.shardingsphere.metrics.facade.MetricsTrackerFacade;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
@@ -62,6 +65,7 @@ public final class CommandExecutorTask implements Runnable {
     public void run() {
         RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
         rootInvokeHook.start();
+        Optional<HistogramMetricsTrackerDelegate> trackerDelegate = MetricsTrackerFacade.getInstance().histogramStartTimer(MetricsLabelEnum.REQUEST_LATENCY.getName());
         int connectionSize = 0;
         boolean isNeedFlush = false;
         try (BackendConnection backendConnection = this.backendConnection;
@@ -82,6 +86,7 @@ public final class CommandExecutorTask implements Runnable {
                 context.flush();
             }
             rootInvokeHook.finish(connectionSize);
+            trackerDelegate.ifPresent(HistogramMetricsTrackerDelegate::observeDuration);
         }
     }
     
