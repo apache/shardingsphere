@@ -22,13 +22,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.strategy.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.core.yaml.swapper.ShadowRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.root.RuleRootConfigurationsYamlSwapper;
-import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.shardingjdbc.api.EncryptDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.ShadowDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.common.SpringBootPropertiesConfigurationProperties;
-import org.apache.shardingsphere.shardingjdbc.spring.boot.encrypt.EncryptRuleCondition;
-import org.apache.shardingsphere.shardingjdbc.spring.boot.encrypt.SpringBootEncryptRuleConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.shadow.ShadowRuleCondition;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.shadow.SpringBootShadowRuleConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.sharding.ShardingRuleCondition;
@@ -64,17 +60,13 @@ import java.util.Map;
  */
 @Configuration
 @ComponentScan("org.apache.shardingsphere.spring.boot.converter")
-@EnableConfigurationProperties({
-        SpringBootRulesConfigurationProperties.class, SpringBootEncryptRuleConfigurationProperties.class,
-        SpringBootPropertiesConfigurationProperties.class, SpringBootShadowRuleConfigurationProperties.class})
+@EnableConfigurationProperties({SpringBootRulesConfigurationProperties.class, SpringBootPropertiesConfigurationProperties.class, SpringBootShadowRuleConfigurationProperties.class})
 @ConditionalOnProperty(prefix = "spring.shardingsphere", name = "enabled", havingValue = "true", matchIfMissing = true)
 @AutoConfigureBefore(DataSourceAutoConfiguration.class)
 @RequiredArgsConstructor
 public class SpringBootConfiguration implements EnvironmentAware {
     
     private final SpringBootRulesConfigurationProperties rules;
-    
-    private final SpringBootEncryptRuleConfigurationProperties encryptRule;
     
     private final SpringBootShadowRuleConfigurationProperties shadowRule;
     
@@ -94,18 +86,6 @@ public class SpringBootConfiguration implements EnvironmentAware {
     @Conditional(ShardingRuleCondition.class)
     public DataSource shardingDataSource() throws SQLException {
         return ShardingDataSourceFactory.createDataSource(dataSourceMap, new RuleRootConfigurationsYamlSwapper().swap(rules), props.getProps());
-    }
-    
-    /**
-     * Get encrypt data source bean.
-     *
-     * @return data source bean
-     * @throws SQLException SQL exception
-     */
-    @Bean
-    @Conditional(EncryptRuleCondition.class)
-    public DataSource encryptDataSource() throws SQLException {
-        return EncryptDataSourceFactory.createDataSource(dataSourceMap.values().iterator().next(), new EncryptRuleConfigurationYamlSwapper().swap(encryptRule), props.getProps());
     }
     
     /**

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring.boot.sharding;
 
-import org.apache.shardingsphere.shardingjdbc.spring.boot.encrypt.EncryptRuleCondition;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.shadow.ShadowRuleCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
@@ -31,8 +30,7 @@ public final class ShardingRuleCondition extends SpringBootCondition {
     
     @Override
     public ConditionOutcome getMatchOutcome(final ConditionContext conditionContext, final AnnotatedTypeMetadata annotatedTypeMetadata) {
-        boolean isEncryptRule = new EncryptRuleCondition().getMatchOutcome(conditionContext, annotatedTypeMetadata).isMatch();
         boolean isShadow = new ShadowRuleCondition().getMatchOutcome(conditionContext, annotatedTypeMetadata).isMatch();
-        return isEncryptRule || isShadow ? ConditionOutcome.noMatch("Have found master-slave or encrypt rule in environment") : ConditionOutcome.match();
+        return isShadow ? ConditionOutcome.noMatch("Have found master-slave or encrypt rule in environment") : ConditionOutcome.match();
     }
 }
