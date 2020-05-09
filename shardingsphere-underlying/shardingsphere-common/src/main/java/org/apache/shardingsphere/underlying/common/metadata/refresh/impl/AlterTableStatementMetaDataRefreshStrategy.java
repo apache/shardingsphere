@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.underlying.common.metadata.refresh.impl;
 
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.AlterTableStatementContext;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.TableMetaDataLoaderCallback;
@@ -32,7 +33,7 @@ import java.util.Map;
 public final class AlterTableStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<AlterTableStatementContext> {
     
     @Override
-    public void refreshMetaData(final ShardingSphereMetaData metaData, 
+    public void refreshMetaData(final ShardingSphereMetaData metaData, final DatabaseType databaseType, 
                                 final Map<String, DataSource> dataSourceMap, final AlterTableStatementContext sqlStatementContext, final TableMetaDataLoaderCallback callback) throws SQLException {
         String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         callback.load(tableName).ifPresent(tableMetaData -> metaData.getSchema().getConfiguredSchemaMetaData().put(tableName, tableMetaData));

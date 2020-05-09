@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.underlying.common.metadata.refresh.impl;
 
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.DropTableStatementContext;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.TableMetaDataLoaderCallback;
@@ -31,7 +32,7 @@ import java.util.Map;
 public final class DropTableStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<DropTableStatementContext> {
     
     @Override
-    public void refreshMetaData(final ShardingSphereMetaData metaData, 
+    public void refreshMetaData(final ShardingSphereMetaData metaData, final DatabaseType databaseType, 
                                 final Map<String, DataSource> dataSourceMap, final DropTableStatementContext sqlStatementContext, final TableMetaDataLoaderCallback callback) {
         sqlStatementContext.getSqlStatement().getTables().forEach(each -> metaData.getSchema().getConfiguredSchemaMetaData().remove(each.getTableName().getIdentifier().getValue()));
     }

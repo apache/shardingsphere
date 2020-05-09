@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTabl
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.impl.DropIndexStatementMetaDataRefreshStrategy;
 import org.junit.Test;
 
@@ -32,6 +33,7 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class DropIndexStatementMetaDataRefreshStrategyTest extends AbstractMetaDataRefreshStrategyTest {
     
@@ -42,7 +44,7 @@ public final class DropIndexStatementMetaDataRefreshStrategyTest extends Abstrac
         dropIndexStatement.getIndexes().add(new IndexSegment(1, 2, new IdentifierValue("index")));
         dropIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         DropIndexStatementContext dropIndexStatementContext = new DropIndexStatementContext(dropIndexStatement);
-        metaDataRefreshStrategy.refreshMetaData(getMetaData(), Collections.emptyMap(), dropIndexStatementContext, tableName -> Optional.empty());
+        metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), dropIndexStatementContext, tableName -> Optional.empty());
         assertThat(getMetaData().getSchema().getConfiguredSchemaMetaData().get("t_order").getIndexes().containsKey("index"), is(false));
     }
 }

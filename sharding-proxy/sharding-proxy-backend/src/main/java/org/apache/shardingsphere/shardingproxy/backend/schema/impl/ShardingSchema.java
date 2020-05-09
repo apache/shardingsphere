@@ -89,7 +89,7 @@ public final class ShardingSchema extends LogicSchema {
         }
         Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
         if (refreshStrategy.isPresent()) {
-            refreshStrategy.get().refreshMetaData(getMetaData(), getBackendDataSource().getDataSources(), sqlStatementContext, this::loadTableMetaData);
+            refreshStrategy.get().refreshMetaData(getMetaData(), LogicSchemas.getInstance().getDatabaseType(), getBackendDataSource().getDataSources(), sqlStatementContext, this::loadTableMetaData);
             if (null != ShardingOrchestrationFacade.getInstance()) {
                 ShardingOrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(getName(), getMetaData().getSchema());
             }

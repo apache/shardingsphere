@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTabl
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.impl.AlterTableStatementMetaDataRefreshStrategy;
 import org.junit.Test;
 
@@ -34,6 +35,7 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class AlterTableStatementMetaDataRefreshStrategyTest extends AbstractMetaDataRefreshStrategyTest {
     
@@ -42,7 +44,7 @@ public final class AlterTableStatementMetaDataRefreshStrategyTest extends Abstra
         MetaDataRefreshStrategy<AlterTableStatementContext> metaDataRefreshStrategy = new AlterTableStatementMetaDataRefreshStrategy();
         AlterTableStatement alterTableStatement = new AlterTableStatement(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         AlterTableStatementContext alterTableStatementContext = new AlterTableStatementContext(alterTableStatement);
-        metaDataRefreshStrategy.refreshMetaData(getMetaData(), Collections.emptyMap(), alterTableStatementContext, tableName -> Optional.of(new TableMetaData(
+        metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), alterTableStatementContext, tableName -> Optional.of(new TableMetaData(
                 Collections.singletonList(new ColumnMetaData("order_id", 1, "String", true, false, false)),
                 Collections.singletonList(new IndexMetaData("index_alter")))));
         assertThat(getMetaData().getSchema().getConfiguredSchemaMetaData().get("t_order").getIndexes().containsKey("index_alter"), is(true));

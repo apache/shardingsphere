@@ -22,6 +22,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTabl
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.impl.DropTableStatementMetaDataRefreshStrategy;
 import org.junit.Test;
 
@@ -31,6 +32,7 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class DropTableStatementMetaDataRefreshStrategyTest extends AbstractMetaDataRefreshStrategyTest {
     
@@ -40,7 +42,7 @@ public final class DropTableStatementMetaDataRefreshStrategyTest extends Abstrac
         DropTableStatement dropTableStatement = new DropTableStatement();
         dropTableStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         DropTableStatementContext dropTableStatementContext = new DropTableStatementContext(dropTableStatement);
-        metaDataRefreshStrategy.refreshMetaData(getMetaData(), Collections.emptyMap(), dropTableStatementContext, tableName -> Optional.empty());
+        metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), dropTableStatementContext, tableName -> Optional.empty());
         assertThat(getMetaData().getSchema().getConfiguredSchemaMetaData().containsTable("t_order"), is(false));
     }
 }
