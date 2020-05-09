@@ -53,10 +53,3 @@ shadowRule:
     master_ds: shadow_master_ds
     slave_ds_0: shadow_slave_ds_0
     slave_ds_1: shadow_slave_ds_1
-  masterSlaveRule:
-    name: master-slave-ds
-    masterDataSourceName: master_ds
-    slaveDataSourceNames:
-      - slave_ds_0
-      - slave_ds_1
-    loadBalanceAlgorithmType: ROUND_ROBIN
