@@ -97,7 +97,7 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <repository>apache/sharding-proxy</repository>
+                            <repository>apache/sharding-proxy-test</repository>
                             <tag>${project.version}</tag>
                             <buildArgs>
                                 <APP_NAME>${project.build.finalName}</APP_NAME>
