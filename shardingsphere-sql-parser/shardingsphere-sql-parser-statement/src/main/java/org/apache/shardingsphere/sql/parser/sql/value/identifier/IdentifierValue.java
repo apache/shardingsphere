@@ -36,4 +36,13 @@ public final class IdentifierValue implements ValueASTNode<String> {
         value = SQLUtil.getExactlyValue(text);
         quoteCharacter = QuoteCharacter.getQuoteCharacter(text);
     }
+
+    /**
+     * Get value with quote characters, i.e. `table1` or `field1`
+     *
+     * @return value with quote characters
+     */
+    public String getValueWithQuoteCharacters() {
+        return null == value ? "" : quoteCharacter.getStartDelimiter() + value + quoteCharacter.getEndDelimiter();
+    }
 }
