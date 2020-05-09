@@ -240,7 +240,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private Multimap<String, Connection> getCachedConnections(final AbstractConnectionAdapter connectionAdapter) {
         Field field = AbstractConnectionAdapter.class.getDeclaredField("cachedConnections");
         field.setAccessible(true);

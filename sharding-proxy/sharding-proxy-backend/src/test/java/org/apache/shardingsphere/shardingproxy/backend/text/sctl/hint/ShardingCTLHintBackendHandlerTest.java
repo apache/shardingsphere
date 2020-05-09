@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint;
 
 import com.google.common.collect.ImmutableMap;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
@@ -41,6 +40,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collections;
 
@@ -129,8 +129,7 @@ public final class ShardingCTLHintBackendHandlerTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertShowStatus() {
+    public void assertShowStatus() throws SQLException {
         clearThreadLocal();
         String sql = "sctl:hint show status";
         ShardingCTLHintBackendHandler defaultShardingCTLHintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
@@ -159,8 +158,7 @@ public final class ShardingCTLHintBackendHandlerTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertShowTableStatus() {
+    public void assertShowTableStatus() throws SQLException {
         clearThreadLocal();
         LogicSchema logicSchema = mock(LogicSchema.class);
         when(logicSchema.getMetaData()).thenReturn(

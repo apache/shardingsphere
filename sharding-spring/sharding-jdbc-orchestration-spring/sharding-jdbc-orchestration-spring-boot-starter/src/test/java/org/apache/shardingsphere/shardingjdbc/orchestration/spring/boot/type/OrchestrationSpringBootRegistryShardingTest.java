@@ -225,7 +225,7 @@ public class OrchestrationSpringBootRegistryShardingTest {
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private <T> T getFieldValue(final String fieldName, final Class<?> fieldClass, final Object target) {
         Field field = fieldClass.getDeclaredField(fieldName);
         field.setAccessible(true);

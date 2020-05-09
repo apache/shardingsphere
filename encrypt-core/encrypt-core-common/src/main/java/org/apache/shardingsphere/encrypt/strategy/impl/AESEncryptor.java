@@ -55,8 +55,8 @@ public final class AESEncryptor implements Encryptor {
     public void init() {
     }
     
-    @Override
     @SneakyThrows
+    @Override
     public String encrypt(final Object plaintext) {
         if (null == plaintext) {
             return null;
@@ -65,8 +65,8 @@ public final class AESEncryptor implements Encryptor {
         return Base64.encodeBase64String(result);
     }
     
-    @Override
     @SneakyThrows
+    @Override
     public Object decrypt(final String ciphertext) {
         if (null == ciphertext) {
             return null;

@@ -83,7 +83,7 @@ public final class BroadcastBackendHandlerTest {
         when(databaseCommunicationEngineFactory.newTextProtocolInstance(any(), anyString(), any())).thenReturn(databaseCommunicationEngine);
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setBackendHandlerFactory(final BroadcastBackendHandler schemaBroadcastBackendHandler) {
         Field field = schemaBroadcastBackendHandler.getClass().getDeclaredField("databaseCommunicationEngineFactory");
         field.setAccessible(true);

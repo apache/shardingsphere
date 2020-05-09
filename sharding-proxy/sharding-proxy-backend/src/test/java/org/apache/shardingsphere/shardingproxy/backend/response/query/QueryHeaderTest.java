@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.response.query;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
@@ -34,6 +33,7 @@ import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMet
 import org.junit.Test;
 
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
@@ -125,7 +125,6 @@ public final class QueryHeaderTest {
         assertTrue(header.isAutoIncrement());
     }
     
-    @SneakyThrows
     private ShardingSchema getShardingSchema() {
         ShardingSchema result = mock(ShardingSchema.class);
         ColumnMetaData columnMetaData = new ColumnMetaData("order_id", Types.INTEGER, "int", true, false, false);
@@ -150,8 +149,7 @@ public final class QueryHeaderTest {
         return new ProjectionsContext(0, 0, false, Arrays.asList(new ColumnProjection("o", "order_id", "id"), new ExpressionProjection("o.order_id + 1", "expr")));
     }
     
-    @SneakyThrows
-    private ResultSetMetaData createResultSetMetaData() {
+    private ResultSetMetaData createResultSetMetaData() throws SQLException {
         ResultSetMetaData result = mock(ResultSetMetaData.class);
         when(result.getTableName(1)).thenReturn("t_order");
         when(result.getColumnLabel(1)).thenReturn("order_id");

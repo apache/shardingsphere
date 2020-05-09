@@ -143,7 +143,7 @@ public final class BackendTransactionManagerTest {
         setLocalTransactionManager();
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setLocalTransactionManager() {
         Field field = BackendTransactionManager.class.getDeclaredField("localTransactionManager");
         field.setAccessible(true);

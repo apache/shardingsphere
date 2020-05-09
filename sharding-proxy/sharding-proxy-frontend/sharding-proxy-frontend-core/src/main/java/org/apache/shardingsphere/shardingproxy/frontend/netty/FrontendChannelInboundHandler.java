@@ -21,7 +21,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.metrics.enums.MetricsLabelEnum;
@@ -34,6 +33,8 @@ import org.apache.shardingsphere.shardingproxy.frontend.executor.CommandExecutor
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+
+import java.sql.SQLException;
 
 /**
  * Frontend channel inbound handler.
@@ -81,8 +82,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     }
     
     @Override
-    @SneakyThrows
-    public void channelInactive(final ChannelHandlerContext context) {
+    public void channelInactive(final ChannelHandlerContext context) throws SQLException {
         context.fireChannelInactive();
         databaseProtocolFrontendEngine.release(backendConnection);
         backendConnection.close(true);

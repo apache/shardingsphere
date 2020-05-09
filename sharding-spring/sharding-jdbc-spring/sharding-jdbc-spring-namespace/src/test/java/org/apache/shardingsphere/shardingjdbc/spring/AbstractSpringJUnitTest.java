@@ -42,8 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@TestExecutionListeners(inheritListeners = false, listeners =
-    {DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class})
+@TestExecutionListeners(inheritListeners = false, listeners = {DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class})
 public abstract class AbstractSpringJUnitTest extends AbstractJUnit4SpringContextTests {
     
     @Resource
@@ -83,7 +82,7 @@ public abstract class AbstractSpringJUnitTest extends AbstractJUnit4SpringContex
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private void reInitMetaData() {
         Map<String, DataSource> dataSourceMap = shardingDataSource.getDataSourceMap();
         ShardingSphereMetaData newMetaData = (ShardingSphereMetaData) getCreateMetaDataMethod().invoke(
@@ -91,14 +90,14 @@ public abstract class AbstractSpringJUnitTest extends AbstractJUnit4SpringContex
         setFieldValue(shardingDataSource.getRuntimeContext(), "metaData", newMetaData);
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private Method getCreateMetaDataMethod() {
         Method result = shardingDataSource.getRuntimeContext().getClass().getDeclaredMethod("createMetaData", Map.class, DatabaseType.class);
         result.setAccessible(true);
         return result;
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setFieldValue(final Object object, final String name, final Object value) {
         Optional<Field> field = getField(object, name);
         if (field.isPresent()) {

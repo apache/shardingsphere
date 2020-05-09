@@ -57,7 +57,7 @@ public final class SPITimeServiceTest {
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private Optional<TimeServiceFixture> getFixtureHook() {
         Field routingHooksField = SPITimeService.class.getDeclaredField("timeServices");
         routingHooksField.setAccessible(true);

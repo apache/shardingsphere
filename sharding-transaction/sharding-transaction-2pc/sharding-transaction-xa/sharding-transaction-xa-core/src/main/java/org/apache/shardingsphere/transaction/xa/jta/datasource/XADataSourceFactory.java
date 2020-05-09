@@ -19,7 +19,6 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinitionFactory;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
@@ -40,7 +39,6 @@ public final class XADataSourceFactory {
      * @param dataSource data source
      * @return XA data source
      */
-    @SneakyThrows
     public static XADataSource build(final DatabaseType databaseType, final DataSource dataSource) {
         return new DataSourceSwapper(XADataSourceDefinitionFactory.getXADataSourceDefinition(databaseType)).swap(dataSource);
     }

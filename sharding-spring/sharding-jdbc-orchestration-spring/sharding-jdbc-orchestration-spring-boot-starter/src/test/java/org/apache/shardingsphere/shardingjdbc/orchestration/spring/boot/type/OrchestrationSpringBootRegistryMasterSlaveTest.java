@@ -86,7 +86,7 @@ public class OrchestrationSpringBootRegistryMasterSlaveTest {
     }
     
     @Test
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     public void assertWithMasterSlaveDataSource() {
         assertTrue(dataSource instanceof OrchestrationShardingDataSource);
         Field field = OrchestrationShardingDataSource.class.getDeclaredField("dataSource");

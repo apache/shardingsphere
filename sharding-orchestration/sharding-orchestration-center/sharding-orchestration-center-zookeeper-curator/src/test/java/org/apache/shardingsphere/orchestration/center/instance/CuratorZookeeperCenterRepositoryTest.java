@@ -18,12 +18,10 @@
 package org.apache.shardingsphere.orchestration.center.instance;
 
 import com.google.common.util.concurrent.SettableFuture;
-import lombok.SneakyThrows;
 import org.apache.curator.framework.CuratorFramework;
-
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.util.EmbedTestingServer;
-import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -34,8 +32,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public final class CuratorZookeeperCenterRepositoryTest {
@@ -45,7 +43,6 @@ public final class CuratorZookeeperCenterRepositoryTest {
     private static String serverLists;
     
     @BeforeClass
-    @SneakyThrows
     public static void init() {
         EmbedTestingServer.start();
         serverLists = EmbedTestingServer.getTestingServerConnectionString();

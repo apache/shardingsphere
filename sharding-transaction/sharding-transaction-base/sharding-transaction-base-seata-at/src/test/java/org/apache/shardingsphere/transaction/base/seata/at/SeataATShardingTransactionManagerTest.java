@@ -73,7 +73,6 @@ public final class SeataATShardingTransactionManagerTest {
     private final Queue<Object> responseQueue = MOCK_SEATA_SERVER.getMessageHandler().getResponseQueue();
     
     @BeforeClass
-    @SneakyThrows
     public static void before() {
         Executors.newSingleThreadExecutor().submit(MOCK_SEATA_SERVER::start);
         while (true) {
@@ -177,7 +176,7 @@ public final class SeataATShardingTransactionManagerTest {
         assertThat(responseQueue.poll(), instanceOf(MergeResultMessage.class));
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("unchecked")
     private Map<String, DataSource> getShardingDataSourceMap() {
         Field field = seataATShardingTransactionManager.getClass().getDeclaredField("dataSourceMap");
@@ -185,7 +184,7 @@ public final class SeataATShardingTransactionManagerTest {
         return (Map<String, DataSource>) field.get(seataATShardingTransactionManager);
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setXID(final String xid) {
         Field field = SeataTransactionHolder.get().getClass().getDeclaredField("xid");
         field.setAccessible(true);
@@ -193,7 +192,7 @@ public final class SeataATShardingTransactionManagerTest {
         RootContext.bind(xid);
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private void releaseRpcClient() {
         Field field = TmRpcClient.getInstance().getClass().getDeclaredField("initialized");
         field.setAccessible(true);

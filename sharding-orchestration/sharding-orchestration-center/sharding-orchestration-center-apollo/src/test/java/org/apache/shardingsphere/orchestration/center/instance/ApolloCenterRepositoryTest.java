@@ -57,8 +57,8 @@ public final class ApolloCenterRepositoryTest {
     
     private static final ApolloOpenApiWrapper OPEN_API_WRAPPER = mock(ApolloOpenApiWrapper.class);
     
+    @SneakyThrows(ReflectiveOperationException.class)
     @BeforeClass
-    @SneakyThrows
     public static void init() {
         CenterConfiguration configuration = new CenterConfiguration("apollo");
         configuration.setServerLists("http://config-service-url");
