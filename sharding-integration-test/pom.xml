@@ -28,6 +28,7 @@
     <packaging>pom</packaging>
     
     <modules>
+        <module>sharding-proxy-docker-build</module>
         <module>sharding-jdbc-test</module>
     </modules>
     
