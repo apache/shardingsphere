@@ -23,13 +23,13 @@
         <artifactId>shardingsphere</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-integration-test</artifactId>
+    <artifactId>shardingsphere-integration-test</artifactId>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
     
     <modules>
         <module>sharding-proxy-docker-build</module>
-        <module>sharding-jdbc-test</module>
+        <module>shardingsphere-test-suite</module>
     </modules>
     
     <properties>
