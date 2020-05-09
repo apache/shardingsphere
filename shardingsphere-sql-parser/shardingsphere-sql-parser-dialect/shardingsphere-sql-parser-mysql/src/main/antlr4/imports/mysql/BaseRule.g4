@@ -575,3 +575,7 @@ ignoredIdentifier_
 ignoredIdentifiers_
     : ignoredIdentifier_ (COMMA_ ignoredIdentifier_)*
     ;
+
+fieldOrVarSpec
+    : LP_ (identifier (COMMA_ identifier)*)? RP_
+    ;
