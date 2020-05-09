@@ -20,12 +20,12 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dal.imp
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.segment.impl.assignment.ExpectedVariable;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.dal.SetVariableStatementTestCase;
+import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.SetStatement;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -42,11 +42,17 @@ public final class SetVariableStatementAssert {
      * @param expected expected variable statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SetStatement actual, final SetVariableStatementTestCase expected) {
-        if (null != expected.getVariable()) {
-            assertNotNull(assertContext.getText("Actual variable expression should exist."), actual.getVariable());
-            assertThat(assertContext.getText("variable expression assertion error: "), actual.getVariable().getVariable(), is(expected.getVariable()));
-        } else {
-            assertNull(assertContext.getText("Actual variable expression should not exist."), actual.getVariable());
+        assertThat(assertContext.getText("variableAssign size assertion error: "), actual.getVariableAssigns().size(), is(expected.getValueAssigns().size()));
+        if (0 != expected.getValueAssigns().size()) {
+            for (int i = 0; i < expected.getValueAssigns().size(); i++) {
+                assertVariable(assertContext, actual.getVariableAssigns().get(i).getVariable(), expected.getValueAssigns().get(i).getVariable());
+                assertThat(assertContext.getText("variableAssign assert error."), actual.getVariableAssigns().get(i).getAssignValue(), is(expected.getValueAssigns().get(i).getValue()));
+            }
         }
+    }
+    
+    public static void assertVariable(final SQLCaseAssertContext assertContext, final VariableSegment actual, final ExpectedVariable expected) {
+        assertThat(assertContext.getText("variable assertion error: "), actual.getVariable(), is(expected.getName()));
+        assertThat(assertContext.getText("scope assertion error: "), actual.getScope(), is(expected.getScope()));
     }
 }

@@ -23,7 +23,6 @@ import org.apache.shardingsphere.metrics.prometheus.impl.AbstractPrometheusColle
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public final class ChannelCountGaugeMetricsTrackerTest extends AbstractPrometheusCollectorRegistry {
@@ -32,8 +31,8 @@ public final class ChannelCountGaugeMetricsTrackerTest extends AbstractPrometheu
     public void gauge() {
         String name = "channel_count";
         ChannelCountGaugeMetricsTracker tracker = new ChannelCountGaugeMetricsTracker();
-        assertEquals(tracker.metricsLabel(), MetricsLabelEnum.CHANNEL_COUNT.getName());
-        assertEquals(tracker.metricsType(), MetricsTypeEnum.GAUGE.name());
+        assertThat(tracker.metricsLabel(), is(MetricsLabelEnum.CHANNEL_COUNT.getName()));
+        assertThat(tracker.metricsType(), is(MetricsTypeEnum.GAUGE.name()));
         tracker.inc(2.0);
         Double inc = getCollectorRegistry().getSampleValue(name);
         assertThat(inc, is(2.0));

@@ -15,14 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.masterslave;
+package org.apache.shardingsphere.metrics.enums;
 
-import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.junit.Test;
 
-/**
- * Master-slave rule configuration properties.
- */
-@ConfigurationProperties(prefix = "spring.shardingsphere.masterslave")
-public final class SpringBootMasterSlaveRuleConfigurationProperties extends YamlMasterSlaveRuleConfiguration {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class MetricsLabelEnumTest {
+    
+    @Test
+    public void testMetricsLabel() {
+        assertThat(MetricsLabelEnum.REQUEST_TOTAL.getName(), is("request_total"));
+        assertThat(MetricsLabelEnum.SQL_STATEMENT_COUNT.getName(), is("sql_statement_count"));
+        assertThat(MetricsLabelEnum.CHANNEL_COUNT.getName(), is("channel_count"));
+        assertThat(MetricsLabelEnum.REQUEST_LATENCY.getName(), is("request_latency"));
+    }
 }
+

@@ -17,21 +17,17 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.connection;
 
-import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.shardingjdbc.fixture.TestDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.fixture.BASEShardingTransactionManagerFixture;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.fixture.XAShardingTransactionManagerFixture;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -39,10 +35,8 @@ import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -52,26 +46,19 @@ import static org.mockito.Mockito.when;
 
 public final class ShardingConnectionTest {
     
-    private static MasterSlaveDataSource masterSlaveDataSource;
-    
-    private static final String DS_NAME = "default";
+    private static Map<String, DataSource> dataSourceMap = new HashMap<>();
     
     private ShardingConnection connection;
     
     private RuntimeContext runtimeContext;
     
-    private Map<String, DataSource> dataSourceMap;
-    
     @BeforeClass
     public static void init() throws SQLException {
         DataSource masterDataSource = new TestDataSource("test_ds_master");
         DataSource slaveDataSource = new TestDataSource("test_ds_slave");
-        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
+        dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("test_ds_master", masterDataSource);
         dataSourceMap.put("test_ds_slave", slaveDataSource);
-        MasterSlaveRule masterSlaveRule = new MasterSlaveRule(
-                new MasterSlaveRuleConfiguration("test_ds", "test_ds_master", Collections.singletonList("test_ds_slave"), new LoadBalanceStrategyConfiguration("ROUND_ROBIN")));
-        masterSlaveDataSource = new MasterSlaveDataSource(dataSourceMap, masterSlaveRule, new Properties());
         ((TestDataSource) slaveDataSource).setThrowExceptionWhenClosing(true);
     }
     
@@ -82,8 +69,6 @@ public final class ShardingConnectionTest {
         when(runtimeContext.getShardingTransactionManagerEngine()).thenReturn(new ShardingTransactionManagerEngine());
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(new TableRuleConfiguration("test"));
-        dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put(DS_NAME, masterSlaveDataSource);
         connection = new ShardingConnection(dataSourceMap, runtimeContext, TransactionType.LOCAL);
     }
     
@@ -100,7 +85,7 @@ public final class ShardingConnectionTest {
     
     @Test
     public void assertGetConnectionFromCache() throws SQLException {
-        assertThat(connection.getConnection(DS_NAME), is(connection.getConnection(DS_NAME)));
+        assertThat(connection.getConnection("test_ds_master"), is(connection.getConnection("test_ds_master")));
     }
     
     @Test(expected = IllegalStateException.class)

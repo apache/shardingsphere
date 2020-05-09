@@ -36,14 +36,15 @@ public final class PostgreSQLDataSourceChecker extends AbstractDataSourceChecker
         try {
             for (DataSource dataSource : dataSources) {
                 String tableName;
-                Connection connection = dataSource.getConnection();
-                ResultSet tables = connection.getMetaData().getTables(connection.getCatalog(), null, "%", new String[]{"TABLE"});
-                if (tables.next()) {
-                    tableName = tables.getString(3);
-                } else {
-                    throw new PrepareFailedException("No tables find in the source datasource");
+                try (Connection connection = dataSource.getConnection()) {
+                    ResultSet tables = connection.getMetaData().getTables(connection.getCatalog(), null, "%", new String[]{"TABLE"});
+                    if (tables.next()) {
+                        tableName = tables.getString(3);
+                    } else {
+                        throw new PrepareFailedException("No tables find in the source datasource");
+                    }
+                    connection.prepareStatement(String.format("SELECT * FROM %s LIMIT 1", tableName)).executeQuery();
                 }
-                connection.prepareStatement(String.format("SELECT * FROM %s LIMIT 1", tableName)).executeQuery();
             }
         } catch (SQLException e) {
             throw new PrepareFailedException("Datasources check failed!");

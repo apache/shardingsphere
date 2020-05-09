@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.type;
 
-import java.lang.reflect.Field;
-import javax.annotation.Resource;
-import javax.sql.DataSource;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
+import org.apache.shardingsphere.core.rule.MasterSlaveRule;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.util.EmbedTestingServer;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,6 +31,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.annotation.Resource;
+import javax.sql.DataSource;
+import java.lang.reflect.Field;
+import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -53,14 +57,25 @@ public class OrchestrationSpringBootMasterSlaveTest {
     
     @Test
     @SneakyThrows
-    public void assertWithMasterSlaveDataSource() {
-        assertTrue(dataSource instanceof OrchestrationMasterSlaveDataSource);
-        Field field = OrchestrationMasterSlaveDataSource.class.getDeclaredField("dataSource");
+    public void assertDataSource() {
+        assertTrue(dataSource instanceof OrchestrationShardingDataSource);
+        Field field = OrchestrationShardingDataSource.class.getDeclaredField("dataSource");
         field.setAccessible(true);
-        MasterSlaveDataSource masterSlaveDataSource = (MasterSlaveDataSource) field.get(dataSource);
-        for (DataSource each : masterSlaveDataSource.getDataSourceMap().values()) {
+        ShardingDataSource shardingDataSource = (ShardingDataSource) field.get(dataSource);
+        for (DataSource each : shardingDataSource.getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
             assertThat(((BasicDataSource) each).getUsername(), is("root"));
         }
+        Collection<ShardingSphereRule> rules = shardingDataSource.getRuntimeContext().getRules();
+        assertThat(rules.size(), is(1));
+        assertMasterSlaveRule((MasterSlaveRule) rules.iterator().next());
+    }
+    
+    private void assertMasterSlaveRule(final MasterSlaveRule rule) {
+        assertThat(rule.getName(), is("ds_ms"));
+        assertThat(rule.getMasterDataSourceName(), is("ds_master"));
+        assertThat(rule.getSlaveDataSourceNames().size(), is(2));
+        assertThat(rule.getSlaveDataSourceNames().get(0), is("ds_slave_0"));
+        assertThat(rule.getSlaveDataSourceNames().get(1), is("ds_slave_1"));
     }
 }

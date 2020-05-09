@@ -15,23 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.spring.datasource;
+package org.apache.shardingsphere.metrics.facade.fixture;
 
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.metrics.api.MetricsTrackerFactory;
+import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
+import org.apache.shardingsphere.metrics.spi.MetricsTrackerManager;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
-import java.util.Map;
 import java.util.Properties;
 
-/**
- * Master-slave datasource for spring namespace.
- */
-public final class SpringMasterSlaveDataSource extends MasterSlaveDataSource {
+@Getter
+@Setter
+public final class FirstMetricsTrackerManagerFixture implements MetricsTrackerManager {
     
-    public SpringMasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration, final Properties props) throws SQLException {
-        super(dataSourceMap, new MasterSlaveRule(masterSlaveRuleConfiguration), null == props ? new Properties() : props);
+    private final MetricsTrackerFactory metricsTrackerFactory = new FirstMetricsTrackerFactoryFixture();
+    
+    private Properties properties = new Properties();
+    
+    @Override
+    public void start(final MetricsConfiguration metricsConfiguration) {
+    
+    }
+    
+    @Override
+    public void stop() {
+    
+    }
+    
+    @Override
+    public String getType() {
+        return "fixture";
     }
 }
+

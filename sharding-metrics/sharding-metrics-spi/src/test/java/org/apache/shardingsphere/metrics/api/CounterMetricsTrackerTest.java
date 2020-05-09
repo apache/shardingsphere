@@ -15,37 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metrics.facade.fixture;
+package org.apache.shardingsphere.metrics.api;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.metrics.api.MetricsTrackerFactory;
-import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
-import org.apache.shardingsphere.metrics.spi.MetricsTrackerManager;
+import org.apache.shardingsphere.metrics.enums.MetricsTypeEnum;
+import org.junit.Test;
 
-import java.util.Properties;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-@Getter
-@Setter
-public final class MetricsTrackerManagerFixture implements MetricsTrackerManager {
+public final class CounterMetricsTrackerTest implements CounterMetricsTracker {
     
-    private final MetricsTrackerFactory metricsTrackerFactory = new MetricsTrackerFactoryFixture();
-    
-    private Properties properties = new Properties();
-    
-    @Override
-    public void start(final MetricsConfiguration metricsConfiguration) {
-    
+    @Test
+    public void testMetricsType() {
+        CounterMetricsTrackerTest trackerTest = new CounterMetricsTrackerTest();
+        assertThat(trackerTest.metricsType(), is(MetricsTypeEnum.COUNTER.name()));
     }
     
     @Override
-    public void stop() {
-    
+    public String metricsLabel() {
+        return null;
     }
     
     @Override
-    public String getType() {
-        return "fixture";
+    public void inc(final double amount, final String... labelValues) {
     }
 }
 

@@ -15,18 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metrics.facade.fixture;
+package org.apache.shardingsphere.metrics.enums;
 
-import org.apache.shardingsphere.metrics.api.MetricsTracker;
-import org.apache.shardingsphere.metrics.api.MetricsTrackerFactory;
+import org.junit.Test;
 
-import java.util.Optional;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertThat;
 
-public final class MetricsTrackerFactoryFixture implements MetricsTrackerFactory {
+public final class MetricsTypeEnumTest {
     
-    @Override
-    public Optional<MetricsTracker> create(final String metricsType, final String metricsLabel) {
-        return Optional.empty();
+    @Test
+    public void testMetricsType() {
+        assertThat(MetricsTypeEnum.GAUGE.name(), is("GAUGE"));
+        assertThat(MetricsTypeEnum.GAUGE.name(), not("gauge"));
+        assertThat(MetricsTypeEnum.COUNTER.name(), is("COUNTER"));
+        assertThat(MetricsTypeEnum.HISTOGRAM.name(), is("HISTOGRAM"));
+        assertThat(MetricsTypeEnum.SUMMARY.name(), is("SUMMARY"));
     }
 }
 

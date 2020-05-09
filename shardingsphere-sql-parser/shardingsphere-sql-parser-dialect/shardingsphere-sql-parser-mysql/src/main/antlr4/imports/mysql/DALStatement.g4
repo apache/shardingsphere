@@ -84,7 +84,11 @@ showProfileType
     ;
 
 setVariable
-    : SET variable?
+    : SET variableAssign (COMMA_ variableAssign)*
+    ;
+
+variableAssign
+    : variable EQ_ expr
     ;
 
 showBinaryLogs

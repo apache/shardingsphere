@@ -203,7 +203,8 @@ gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.
 #### 对比源码包与Github上tag的内容差异
 
 ```
-curl -Lo tag-shardingsphere-ui-${RELEASE.VERSION}.zip https://github.com/apache/shardingsphere/archive/shardingsphere-ui-${RELEASE.VERSION}.zip | unzip
+curl -Lo tag-shardingsphere-ui-${RELEASE.VERSION}.zip https://github.com/apache/shardingsphere/archive/shardingsphere-ui-${RELEASE.VERSION}.zip
+unzip tag-shardingsphere-ui-${RELEASE.VERSION}.zip
 unzip apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src.zip
 diff -r apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src/ shardingsphere-shardingsphere-ui-${RELEASE.VERSION}/shardingsphere-ui/
 ```

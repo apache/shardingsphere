@@ -104,7 +104,7 @@ public final class RuntimeContext implements AutoCloseable {
     private ShardingSphereMetaData createMetaData(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) throws SQLException {
         long start = System.currentTimeMillis();
         DataSourceMetas dataSourceMetas = new DataSourceMetas(databaseType, getDatabaseAccessConfigurationMap(dataSourceMap));
-        RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataLoader(rules).load(getDatabaseType(), dataSourceMap, getProperties());
+        RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataLoader(rules).load(getDatabaseType(), dataSourceMap, getProperties(), executorKernel.getExecutorService().getExecutorService());
         ShardingSphereMetaData result = new ShardingSphereMetaData(dataSourceMetas, ruleSchemaMetaData);
         log.info("Meta data load finished, cost {} milliseconds.", System.currentTimeMillis() - start);
         return result;

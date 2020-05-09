@@ -15,14 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.spring.boot.masterslave;
+package org.apache.shardingsphere.metrics.api;
 
-import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.apache.shardingsphere.metrics.enums.MetricsTypeEnum;
+import org.junit.Test;
 
-/**
- * Master-slave rule configuration properties.
- */
-@ConfigurationProperties(prefix = "spring.shardingsphere.masterslave")
-public class SpringBootMasterSlaveRuleConfigurationProperties extends YamlMasterSlaveRuleConfiguration {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class GaugeMetricsTrackerTest implements GaugeMetricsTracker {
+    
+    @Test
+    public void testMetricsType() {
+        GaugeMetricsTrackerTest trackerTest = new GaugeMetricsTrackerTest();
+        assertThat(trackerTest.metricsType(), is(MetricsTypeEnum.GAUGE.name()));
+    }
+    
+    @Override
+    public void inc(final double amount, final String... labelValues) {
+    
+    }
+    
+    @Override
+    public void dec(final double amount, final String... labelValues) {
+    
+    }
+    
+    @Override
+    public String metricsLabel() {
+        return null;
+    }
 }
+
