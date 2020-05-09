@@ -105,7 +105,7 @@ multipleTableNames
     ;
 
 select 
-    : withClause_? (unionClause | selectClause)
+    : withClause_? unionClause
     ;
 
 call
@@ -194,11 +194,11 @@ cteClause_
     ;
 
 unionClause
-    : unionClause UNION (ALL | DISTINCT)? unionClause | selectClause (UNION (ALL | DISTINCT)? selectClause)*
+    : selectClause (UNION (ALL | DISTINCT)? selectClause)*
     ;
 
 selectClause
-    : withClause_? LP_? SELECT selectSpecification* projections fromClause? whereClause? groupByClause? havingClause? windowClause_? orderByClause? limitClause? selectIntoExpression_? lockClause? RP_?
+    : LP_? SELECT selectSpecification* projections fromClause? whereClause? groupByClause? havingClause? windowClause_? orderByClause? limitClause? selectIntoExpression_? lockClause? RP_?
     ;
 
 selectSpecification

@@ -33,5 +33,4 @@ public class ExpectedValueAssign extends AbstractExpectedSQLSegment {
     
     @XmlAttribute
     private String value;
-    
 }
