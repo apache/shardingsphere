@@ -58,6 +58,8 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor imp
     
     private final MetaDataManager metaDataManager;
     
+    private final Random random = new Random();
+    
     @Setter
     private Channel channel;
     
@@ -80,7 +82,7 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor imp
     public void dump(final Channel channel) {
         JDBCDataSourceConfiguration jdbcDataSourceConfiguration = (JDBCDataSourceConfiguration) rdbmsConfiguration.getDataSourceConfiguration();
         final JdbcUri uri = new JdbcUri(jdbcDataSourceConfiguration.getJdbcUrl());
-        MySQLClient client = new MySQLClient(new Random().nextInt(), uri.getHostname(), uri.getPort(), jdbcDataSourceConfiguration.getUsername(), jdbcDataSourceConfiguration.getPassword());
+        MySQLClient client = new MySQLClient(random.nextInt(), uri.getHostname(), uri.getPort(), jdbcDataSourceConfiguration.getUsername(), jdbcDataSourceConfiguration.getPassword());
         client.connect();
         client.subscribe(binlogPosition.getFilename(), binlogPosition.getPosition());
         while (isRunning()) {
