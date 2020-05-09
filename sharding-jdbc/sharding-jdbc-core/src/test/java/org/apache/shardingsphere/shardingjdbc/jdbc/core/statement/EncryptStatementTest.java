@@ -58,7 +58,7 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
     private static final String SHOW_COLUMNS_SQL = "SHOW columns FROM t_encrypt";
     
     @Test
-    public void assertSqlShow() throws SQLException {
+    public void assertSQLShow() {
         assertTrue(getEncryptConnectionWithProps().getRuntimeContext().getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
     }
     

@@ -153,14 +153,14 @@ public final class RuleSchemaMetaDataLoader {
                 if (!schemaMetaData.getAllTableNames().isEmpty()) {
                     result.put(each.getKey(), schemaMetaData);
                 }
-            } catch (SQLException e) {
-                throw new ShardingSphereException("RuleSchemaMetaData load faild", e);
+            } catch (final SQLException ex) {
+                throw new ShardingSphereException("RuleSchemaMetaData load failed", ex);
             }
         })).forEach(listenableFuture -> {
             try {
                 listenableFuture.get();
-            } catch (InterruptedException | ExecutionException e) {
-                throw new ShardingSphereException("RuleSchemaMetaData load faild", e);
+            } catch (final InterruptedException | ExecutionException ex) {
+                throw new ShardingSphereException("RuleSchemaMetaData load failed", ex);
             }
         });
         return result;

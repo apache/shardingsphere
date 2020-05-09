@@ -82,7 +82,7 @@ public final class ShardingRouteEngineFactoryTest {
     
     private Collection<String> tableNames;
 
-    private ConfigurationProperties properties = new ConfigurationProperties(new Properties());
+    private final ConfigurationProperties properties = new ConfigurationProperties(new Properties());
     
     @Before
     public void setUp() {

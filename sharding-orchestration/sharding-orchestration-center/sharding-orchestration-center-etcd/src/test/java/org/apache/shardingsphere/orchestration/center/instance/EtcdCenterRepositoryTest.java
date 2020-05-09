@@ -26,7 +26,6 @@ import io.etcd.jetcd.KeyValue;
 import io.etcd.jetcd.Lease;
 import io.etcd.jetcd.Watch;
 import io.etcd.jetcd.kv.GetResponse;
-import io.etcd.jetcd.kv.PutResponse;
 import io.etcd.jetcd.lease.LeaseGrantResponse;
 import io.etcd.jetcd.options.GetOption;
 import io.etcd.jetcd.options.PutOption;
@@ -80,12 +79,9 @@ public final class EtcdCenterRepositoryTest {
     private GetResponse getResponse;
     
     @Mock
-    private PutResponse putResponse;
-    
-    @Mock
     private CompletableFuture putFuture;
     
-    private EtcdCenterRepository centerRepository = new EtcdCenterRepository();
+    private final EtcdCenterRepository centerRepository = new EtcdCenterRepository();
     
     @Before
     public void setUp() {

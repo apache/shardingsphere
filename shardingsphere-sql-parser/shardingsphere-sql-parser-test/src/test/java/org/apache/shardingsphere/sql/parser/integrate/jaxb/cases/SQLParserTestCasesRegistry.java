@@ -36,7 +36,7 @@ import java.util.Map;
  */
 public final class SQLParserTestCasesRegistry {
     
-    private Map<String, SQLParserTestCase> sqlParserTestCases;
+    private final Map<String, SQLParserTestCase> sqlParserTestCases;
     
     public SQLParserTestCasesRegistry(final String rootDirectory) {
         sqlParserTestCases = load(rootDirectory);

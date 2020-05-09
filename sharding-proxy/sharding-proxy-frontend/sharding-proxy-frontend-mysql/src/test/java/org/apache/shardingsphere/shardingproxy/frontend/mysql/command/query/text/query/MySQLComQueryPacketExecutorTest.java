@@ -47,7 +47,7 @@ public class MySQLComQueryPacketExecutorTest {
     @Mock
     private TextProtocolBackendHandler textProtocolBackendHandler;
     
-    private MySQLComQueryPacketExecutor mysqlComQueryPacketExecutor = new MySQLComQueryPacketExecutor(mock(MySQLComQueryPacket.class), null);
+    private final MySQLComQueryPacketExecutor mysqlComQueryPacketExecutor = new MySQLComQueryPacketExecutor(mock(MySQLComQueryPacket.class), null);
     
     @Test
     @SneakyThrows

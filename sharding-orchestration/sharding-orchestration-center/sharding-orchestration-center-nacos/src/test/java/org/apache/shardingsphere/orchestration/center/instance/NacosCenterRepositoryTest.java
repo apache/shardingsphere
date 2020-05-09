@@ -48,20 +48,20 @@ import static org.mockito.Mockito.when;
 
 public final class NacosCenterRepositoryTest {
     
-    private static ConfigCenterRepository configCenterRepository = new NacosCenterRepository();
+    private static final ConfigCenterRepository REPOSITORY = new NacosCenterRepository();
     
-    private ConfigService configService = mock(ConfigService.class);
+    private final ConfigService configService = mock(ConfigService.class);
     
-    private String group = "SHARDING_SPHERE_DEFAULT_GROUP";
+    private final String group = "SHARDING_SPHERE_DEFAULT_GROUP";
     
     @Before
     public void init() {
         Properties properties = new Properties();
         properties.setProperty("group", group);
         properties.setProperty("timeout", "3000");
-        CenterConfiguration configuration = new CenterConfiguration(configCenterRepository.getType(), properties);
+        CenterConfiguration configuration = new CenterConfiguration(REPOSITORY.getType(), properties);
         configuration.setServerLists("127.0.0.1:8848");
-        configCenterRepository.init(configuration);
+        REPOSITORY.init(configuration);
         setConfigService(configService);
     }
     
@@ -69,14 +69,14 @@ public final class NacosCenterRepositoryTest {
     private void setConfigService(final ConfigService configService) {
         Field configServiceField = NacosCenterRepository.class.getDeclaredField("configService");
         configServiceField.setAccessible(true);
-        configServiceField.set(configCenterRepository, configService);
+        configServiceField.set(REPOSITORY, configService);
     }
     
     @Test
     @SneakyThrows
     public void assertPersist() {
         String value = "value";
-        configCenterRepository.persist("/sharding/test", value);
+        REPOSITORY.persist("/sharding/test", value);
         verify(configService).publishConfig("sharding.test", group, value);
     }
     
@@ -85,7 +85,7 @@ public final class NacosCenterRepositoryTest {
     public void assertGet() {
         String value = "value";
         when(configService.getConfig(eq("sharding.test"), eq(group), anyLong())).thenReturn(value);
-        assertThat(configCenterRepository.get("/sharding/test"), is(value));
+        assertThat(REPOSITORY.get("/sharding/test"), is(value));
     }
     
     @Test
@@ -93,32 +93,30 @@ public final class NacosCenterRepositoryTest {
     public void assertWatch() {
         final String expectValue = "expectValue";
         final String[] actualValue = {null};
-        doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(expectValue)))
-            .when(configService)
-            .addListener(anyString(), anyString(), any(Listener.class));
+        doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(expectValue))).when(configService).addListener(anyString(), anyString(), any(Listener.class));
         DataChangedEventListener listener = dataChangedEvent -> actualValue[0] = dataChangedEvent.getValue();
-        configCenterRepository.watch("/sharding/test", listener);
+        REPOSITORY.watch("/sharding/test", listener);
         assertThat(actualValue[0], is(expectValue));
     }
     
     @Test
     @SneakyThrows
     public void assertGetWithNonExistentKey() {
-        assertNull(configCenterRepository.get("/sharding/nonExistentKey"));
+        assertNull(REPOSITORY.get("/sharding/nonExistentKey"));
     }
     
     @Test
     @SneakyThrows
     public void assertGetWhenThrowException() {
         doThrow(NacosException.class).when(configService).getConfig(eq("sharding.test"), eq(group), anyLong());
-        assertNull(configCenterRepository.get("/sharding/test"));
+        assertNull(REPOSITORY.get("/sharding/test"));
     }
     
     @Test
     @SneakyThrows
     public void assertUpdate() {
         String updatedValue = "newValue";
-        configCenterRepository.persist("/sharding/test", updatedValue);
+        REPOSITORY.persist("/sharding/test", updatedValue);
         verify(configService).publishConfig("sharding.test", group, updatedValue);
     }
     
@@ -128,14 +126,12 @@ public final class NacosCenterRepositoryTest {
         final String expectValue = "expectValue";
         final String[] actualValue = {null};
         final ChangedType[] actualType = {null};
-        doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(expectValue)))
-                .when(configService)
-                .addListener(anyString(), anyString(), any(Listener.class));
+        doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(expectValue))).when(configService).addListener(anyString(), anyString(), any(Listener.class));
         DataChangedEventListener listener = dataChangedEvent -> {
             actualValue[0] = dataChangedEvent.getValue();
             actualType[0] = dataChangedEvent.getChangedType();
         };
-        configCenterRepository.watch("/sharding/test", listener);
+        REPOSITORY.watch("/sharding/test", listener);
         assertThat(actualValue[0], is(expectValue));
         assertThat(actualType[0], is(ChangedType.UPDATED));
     }
@@ -144,18 +140,16 @@ public final class NacosCenterRepositoryTest {
     @SneakyThrows
     public void assertWatchDeletedChangedType() {
         final ChangedType[] actualType = {null};
-        doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(null)))
-                .when(configService)
-                .addListener(anyString(), anyString(), any(Listener.class));
+        doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(null))).when(configService).addListener(anyString(), anyString(), any(Listener.class));
         DataChangedEventListener listener = dataChangedEvent -> actualType[0] = dataChangedEvent.getChangedType();
-        configCenterRepository.watch("/sharding/test", listener);
+        REPOSITORY.watch("/sharding/test", listener);
         assertThat(actualType[0], is(ChangedType.UPDATED));
     }
     
     @Test
     @SneakyThrows
     public void assertDelete() {
-        configCenterRepository.delete("/sharding/test");
+        REPOSITORY.delete("/sharding/test");
         verify(configService).removeConfig("sharding.test", group);
     }
     

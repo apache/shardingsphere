@@ -23,7 +23,6 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.regex.Matcher;
@@ -147,7 +146,7 @@ public final class ConfigCenterNode {
      * @return config paths list.
      */
     public Collection<String> getAllSchemaConfigPaths(final Collection<String> schemaNames) {
-        Collection<String> result = new ArrayList<>(Arrays.asList(getSchemaPath()));
+        Collection<String> result = new ArrayList<>(Collections.singletonList(getSchemaPath()));
         for (String schemaName : schemaNames) {
             result.add(getSchemaNamePath(schemaName));
             result.add(getRulePath(schemaName));

@@ -49,7 +49,7 @@ public final class MySQLVarcharBinlogProtocolValueTest {
     
     @Test
     public void assertReadVarcharValueWithMeta1() {
-        String expected = "teststring";
+        String expected = "test_value";
         columnDef.setColumnMeta(10);
         when(payload.getByteBuf()).thenReturn(byteBuf);
         when(byteBuf.readUnsignedByte()).thenReturn((short) expected.length());

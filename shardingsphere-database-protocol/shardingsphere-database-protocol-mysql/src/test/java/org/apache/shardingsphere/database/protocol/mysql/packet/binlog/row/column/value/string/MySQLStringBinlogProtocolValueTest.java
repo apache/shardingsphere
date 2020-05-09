@@ -77,7 +77,7 @@ public final class MySQLStringBinlogProtocolValueTest {
     
     @Test
     public void assertReadStringValue() {
-        String expected = "teststring";
+        String expected = "test_value";
         columnDef.setColumnMeta(MySQLColumnType.MYSQL_TYPE_STRING.getValue() << 8);
         when(payload.getByteBuf()).thenReturn(byteBuf);
         when(byteBuf.readUnsignedByte()).thenReturn((short) expected.length());

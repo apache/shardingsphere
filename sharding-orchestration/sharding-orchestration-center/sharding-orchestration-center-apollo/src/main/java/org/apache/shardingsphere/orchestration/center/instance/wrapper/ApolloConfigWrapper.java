@@ -36,7 +36,7 @@ public final class ApolloConfigWrapper {
     
     private static final String APOLLO_KEY_ENV = "env";
     
-    private Config apolloConfig;
+    private final Config apolloConfig;
     
     public ApolloConfigWrapper(final CenterConfiguration config, final ApolloProperties properties) {
         String appId = properties.getValue(ApolloPropertyKey.APP_ID);

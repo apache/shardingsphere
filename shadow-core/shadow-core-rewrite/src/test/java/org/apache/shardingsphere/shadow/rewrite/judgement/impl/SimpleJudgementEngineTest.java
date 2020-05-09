@@ -25,7 +25,6 @@ import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatement
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
@@ -41,7 +40,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -70,26 +68,14 @@ public final class SimpleJudgementEngineTest {
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, 
                 Arrays.asList(new ColumnSegment(0, 0, new IdentifierValue("id")), new ColumnSegment(0, 0, new IdentifierValue("name")), new ColumnSegment(0, 0, new IdentifierValue("shadow"))));
         insertStatement.setInsertColumns(insertColumnsSegment);
-        insertStatement.getValues()
-                .addAll(Collections.singletonList(new InsertValuesSegment(0, 0, new ArrayList<ExpressionSegment>() {
-                    {
-                        add(new LiteralExpressionSegment(0, 0, 1));
-                        add(new LiteralExpressionSegment(0, 0, "name"));
-                        add(new LiteralExpressionSegment(0, 0, true));
-                    }
-                })));
+        insertStatement.getValues().addAll(Collections.singletonList(new InsertValuesSegment(
+                0, 0, Arrays.asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "name"), new LiteralExpressionSegment(0, 0, true)))));
         InsertStatementContext insertStatementContext = new InsertStatementContext(schemaMetaData, Collections.emptyList(), insertStatement);
         SimpleJudgementEngine simpleJudgementEngine = new SimpleJudgementEngine(shadowRule, insertStatementContext);
         Assert.assertTrue("should be shadow", simpleJudgementEngine.isShadowSQL());
         insertStatement.getValues().clear();
-        insertStatement.getValues()
-                .addAll(Collections.singletonList(new InsertValuesSegment(0, 0, new ArrayList<ExpressionSegment>() {
-                    {
-                        add(new LiteralExpressionSegment(0, 0, 1));
-                        add(new LiteralExpressionSegment(0, 0, "name"));
-                        add(new LiteralExpressionSegment(0, 0, false));
-                    }
-                })));
+        insertStatement.getValues().addAll(Collections.singletonList(
+                new InsertValuesSegment(0, 0, Arrays.asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "name"), new LiteralExpressionSegment(0, 0, false)))));
         insertStatementContext = new InsertStatementContext(schemaMetaData, Collections.emptyList(), insertStatement);
         simpleJudgementEngine = new SimpleJudgementEngine(shadowRule, insertStatementContext);
         Assert.assertFalse("should not be shadow", simpleJudgementEngine.isShadowSQL());

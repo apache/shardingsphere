@@ -38,9 +38,9 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourceUtil {
     
-    private static DataSourcePoolType dataSourcePoolType = DataSourcePoolType.HikariCP;
+    private static final DataSourcePoolType DATA_SOURCE_POOL_TYPE = DataSourcePoolType.HikariCP;
     
-    private static Map<DataSourceCacheKey, DataSource> cache = new HashMap<>();
+    private static final Map<DataSourceCacheKey, DataSource> CACHE = new HashMap<>();
     
     /**
      * Create data source.
@@ -51,11 +51,11 @@ public final class DataSourceUtil {
      */
     public static DataSource createDataSource(final DatabaseType databaseType, final String dataSourceName) {
         DataSourceCacheKey dataSourceCacheKey = new DataSourceCacheKey(databaseType, dataSourceName);
-        if (cache.containsKey(dataSourceCacheKey)) {
-            return cache.get(dataSourceCacheKey);
+        if (CACHE.containsKey(dataSourceCacheKey)) {
+            return CACHE.get(dataSourceCacheKey);
         }
         DataSource result;
-        switch (dataSourcePoolType) {
+        switch (DATA_SOURCE_POOL_TYPE) {
             case DBCP:
                 result = createDBCP(databaseType, dataSourceName);
                 break;
@@ -63,9 +63,9 @@ public final class DataSourceUtil {
                 result = createHikariCP(databaseType, dataSourceName);
                 break;
             default:
-                throw new UnsupportedOperationException(dataSourcePoolType.name());
+                throw new UnsupportedOperationException(DATA_SOURCE_POOL_TYPE.name());
         }
-        cache.put(dataSourceCacheKey, result);
+        CACHE.put(dataSourceCacheKey, result);
         return result;
     }
     
@@ -102,7 +102,7 @@ public final class DataSourceUtil {
     
     @RequiredArgsConstructor
     @EqualsAndHashCode
-    static class DataSourceCacheKey {
+    private static class DataSourceCacheKey {
         
         private final DatabaseType databaseType;
         

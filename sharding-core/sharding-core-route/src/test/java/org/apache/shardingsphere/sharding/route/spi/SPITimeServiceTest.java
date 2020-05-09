@@ -33,7 +33,7 @@ import static org.junit.Assert.assertTrue;
 
 public final class SPITimeServiceTest {
     
-    private SPITimeService timeService = new SPITimeService();
+    private final SPITimeService timeService = new SPITimeService();
     
     @Test
     public void assertGetTime() {

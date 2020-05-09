@@ -54,7 +54,7 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
     
     private final Map<DatabaseType, Statement> statements = new HashMap<>();
     
-    private String sql = JDBCTestSQL.SELECT_GROUP_BY_USER_ID_SQL;
+    private final String sql = JDBCTestSQL.SELECT_GROUP_BY_USER_ID_SQL;
     
     @Before
     public void init() {
