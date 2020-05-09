@@ -22,21 +22,15 @@ import com.google.common.collect.Maps;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.strategy.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.core.yaml.swapper.root.RuleRootConfigurationsYamlSwapper;
-import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.swapper.CenterRepositoryConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.common.SpringBootRootConfigurationProperties;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.encrypt.LocalEncryptRuleCondition;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.encrypt.SpringBootEncryptRuleConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding.LocalShardingRuleCondition;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding.OrchestrationSpringBootRulesConfigurationProperties;
 import org.apache.shardingsphere.spring.boot.datasource.DataSourcePropertiesSetterHolder;
@@ -73,7 +67,7 @@ import java.util.Map.Entry;
  */
 @Configuration
 @ComponentScan("org.apache.shardingsphere.spring.boot.converter")
-@EnableConfigurationProperties({OrchestrationSpringBootRulesConfigurationProperties.class, SpringBootRootConfigurationProperties.class, SpringBootEncryptRuleConfigurationProperties.class})
+@EnableConfigurationProperties({OrchestrationSpringBootRulesConfigurationProperties.class, SpringBootRootConfigurationProperties.class})
 @ConditionalOnProperty(prefix = "spring.shardingsphere", name = "enabled", havingValue = "true", matchIfMissing = true)
 @RequiredArgsConstructor
 @AutoConfigureBefore(DataSourceAutoConfiguration.class)
@@ -82,8 +76,6 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
     
     private final OrchestrationSpringBootRulesConfigurationProperties rules;
-    
-    private final SpringBootEncryptRuleConfigurationProperties encryptRule;
     
     private final SpringBootRootConfigurationProperties root;
     
@@ -120,21 +112,6 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     public DataSource shardingDataSourceByLocal(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
         return new OrchestrationShardingDataSource(new ShardingDataSource(dataSourceMap, 
                 ShardingSphereRulesBuilder.build(new RuleRootConfigurationsYamlSwapper().swap(rules), dataSourceMap.keySet()), root.getProps()), orchestrationConfiguration);
-    }
-    
-    /**
-     * Get orchestration encrypt data source bean by local configuration.
-     *
-     * @param orchestrationConfiguration orchestration configuration
-     * @return orchestration encrypt data source bean
-     * @throws SQLException SQL exception
-     */
-    @Bean
-    @Conditional(LocalEncryptRuleCondition.class)
-    public DataSource encryptDataSourceByLocal(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
-        EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfigurationYamlSwapper().swap(encryptRule);
-        return new OrchestrationEncryptDataSource(
-                new EncryptDataSource(dataSourceMap.values().iterator().next(), new EncryptRule(encryptRuleConfig), root.getProps()), orchestrationConfiguration);
     }
     
     /**

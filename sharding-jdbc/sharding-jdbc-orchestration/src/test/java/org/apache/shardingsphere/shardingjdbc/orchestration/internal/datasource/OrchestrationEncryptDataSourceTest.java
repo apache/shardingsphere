@@ -24,22 +24,26 @@ import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.yaml.config.YamlRootEncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.CenterType;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.EncryptRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
-import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlEncryptDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.api.EncryptDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
-import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
-import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
+import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -62,9 +66,14 @@ public final class OrchestrationEncryptDataSourceTest {
         encryptDataSource = new OrchestrationEncryptDataSource(getEncryptDatasource(), getOrchestrationConfiguration());
     }
     
-    private EncryptDataSource getEncryptDatasource() throws URISyntaxException {
+    private EncryptDataSource getEncryptDatasource() throws URISyntaxException, IOException, SQLException {
         File yamlFile = new File(OrchestrationEncryptDataSource.class.getResource("/yaml/unit/encrypt.yaml").toURI());
-        return (EncryptDataSource) YamlEncryptDataSourceFactory.createDataSource(yamlFile);
+        return (EncryptDataSource) createDataSource(yamlFile);
+    }
+    
+    private DataSource createDataSource(final File yamlFile) throws IOException, SQLException {
+        YamlRootEncryptRuleConfiguration config = YamlEngine.unmarshal(yamlFile, YamlRootEncryptRuleConfiguration.class);
+        return EncryptDataSourceFactory.createDataSource(config.getDataSource(), new EncryptRuleConfigurationYamlSwapper().swap(config.getEncryptRule()), config.getProps());
     }
     
     private OrchestrationConfiguration getOrchestrationConfiguration() {
