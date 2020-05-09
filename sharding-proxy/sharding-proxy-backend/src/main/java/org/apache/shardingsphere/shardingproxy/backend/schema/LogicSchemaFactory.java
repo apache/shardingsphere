@@ -23,7 +23,6 @@ import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfigura
 import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
-import org.apache.shardingsphere.shardingproxy.backend.schema.impl.EncryptSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShadowSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.TransparentSchema;
@@ -66,7 +65,7 @@ public final class LogicSchemaFactory {
             return new ShardingSchema(schemaName, schemaDataSources.get(schemaName), Collections.singleton(ruleConfiguration));
         }
         if (ruleConfiguration instanceof EncryptRuleConfiguration) {
-            return new EncryptSchema(schemaName, schemaDataSources.get(schemaName), (EncryptRuleConfiguration) ruleConfiguration);
+            return new ShardingSchema(schemaName, schemaDataSources.get(schemaName), Collections.singleton(ruleConfiguration));
         }
         if (ruleConfiguration instanceof ShadowRuleConfiguration) {
             return new ShadowSchema(schemaName, schemaDataSources.get(schemaName), (ShadowRuleConfiguration) ruleConfiguration);
