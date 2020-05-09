@@ -22,8 +22,6 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
 import org.apache.shardingsphere.core.rule.ShadowRule;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShadowDataSource;
 
 import javax.sql.DataSource;
@@ -83,7 +81,7 @@ public final class ShadowDataSourceFactory {
     @SneakyThrows
     private static DataSource createFacadeDataSource(final Map<String, DataSource> dataSources, final ShadowRuleConfiguration shadowRule, final Properties props) {
         if (shadowRule.isEncrypt()) {
-            return new EncryptDataSource(dataSources.values().iterator().next(), new EncryptRule(shadowRule.getEncryptRuleConfig()), props);
+            return ShardingDataSourceFactory.createDataSource(dataSources, Collections.singletonList(shadowRule.getEncryptRuleConfig()), props);
         } else if (shadowRule.isSharding()) {
             return ShardingDataSourceFactory.createDataSource(dataSources, Collections.singletonList(shadowRule.getShardingRuleConfig()), props);
         } else if (shadowRule.isMasterSlave()) {
