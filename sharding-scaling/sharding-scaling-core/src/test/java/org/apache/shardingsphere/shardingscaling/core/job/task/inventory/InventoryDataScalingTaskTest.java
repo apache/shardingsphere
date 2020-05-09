@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingscaling.core.job.task.inventory;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingscaling.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
@@ -32,6 +31,7 @@ import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
 
@@ -40,11 +40,11 @@ import static org.junit.Assert.assertThat;
 
 public final class InventoryDataScalingTaskTest {
     
-    private static String dataSourceUrl = "jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
+    private static final String DATA_SOURCE_URL = "jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
     
-    private static String userName = "root";
+    private static final String USERNAME = "root";
     
-    private static String password = "password";
+    private static final String PASSWORD = "password";
     
     private SyncConfiguration syncConfiguration;
     
@@ -55,7 +55,7 @@ public final class InventoryDataScalingTaskTest {
         RdbmsConfiguration dumperConfig = mockDumperConfig();
         RdbmsConfiguration importerConfig = mockImporterConfig();
         ScalingContext.getInstance().init(new ServerConfiguration());
-        syncConfiguration = new SyncConfiguration(3, Collections.EMPTY_MAP, dumperConfig, importerConfig);
+        syncConfiguration = new SyncConfiguration(3, Collections.emptyMap(), dumperConfig, importerConfig);
         dataSourceManager = new DataSourceManager();
     }
     
@@ -72,15 +72,14 @@ public final class InventoryDataScalingTaskTest {
     }
     
     @Test
-    public void assertGetProgress() {
+    public void assertGetProgress() throws SQLException {
         initTableData(syncConfiguration.getDumperConfiguration());
         InventoryDataScalingTask inventoryDataSyncTask = new InventoryDataScalingTask(syncConfiguration, dataSourceManager);
         inventoryDataSyncTask.start();
         assertThat(((InventoryDataSyncTaskProgress) inventoryDataSyncTask.getProgress()).getEstimatedRows(), is(2L));
     }
     
-    @SneakyThrows
-    private void initTableData(final RdbmsConfiguration dumperConfig) {
+    private void initTableData(final RdbmsConfiguration dumperConfig) throws SQLException {
         DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfiguration());
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
@@ -91,7 +90,7 @@ public final class InventoryDataScalingTaskTest {
     }
     
     private RdbmsConfiguration mockDumperConfig() {
-        DataSourceConfiguration dataSourceConfiguration = new JDBCDataSourceConfiguration(dataSourceUrl, userName, password);
+        DataSourceConfiguration dataSourceConfiguration = new JDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD);
         RdbmsConfiguration result = new RdbmsConfiguration();
         result.setDataSourceConfiguration(dataSourceConfiguration);
         result.setTableName("t_order");
@@ -99,7 +98,7 @@ public final class InventoryDataScalingTaskTest {
     }
     
     private RdbmsConfiguration mockImporterConfig() {
-        DataSourceConfiguration dataSourceConfiguration = new JDBCDataSourceConfiguration(dataSourceUrl, userName, password);
+        DataSourceConfiguration dataSourceConfiguration = new JDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD);
         RdbmsConfiguration result = new RdbmsConfiguration();
         result.setDataSourceConfiguration(dataSourceConfiguration);
         return result;

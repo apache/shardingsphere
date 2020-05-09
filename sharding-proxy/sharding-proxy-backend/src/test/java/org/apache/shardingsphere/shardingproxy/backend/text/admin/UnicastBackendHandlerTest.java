@@ -83,7 +83,7 @@ public final class UnicastBackendHandlerTest {
         when(databaseCommunicationEngineFactory.newTextProtocolInstance(any(), anyString(), any())).thenReturn(databaseCommunicationEngine);
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setDatabaseCommunicationEngine(final UnicastBackendHandler unicastSchemaBackendHandler) {
         Field field = unicastSchemaBackendHandler.getClass().getDeclaredField("databaseCommunicationEngineFactory");
         field.setAccessible(true);

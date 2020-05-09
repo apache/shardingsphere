@@ -17,19 +17,19 @@
 
 package org.apache.shardingsphere.underlying.common.yaml.constructor;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.yaml.snakeyaml.constructor.Construct;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.nodes.Node;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Abstract type constructor.
  */
 public abstract class AbstractTypeConstructor extends Constructor {
     
-    private Map<Class, Construct> typeConstructs = new HashMap<>();
+    private final Map<Class, Construct> typeConstructs = new HashMap<>();
     
     protected AbstractTypeConstructor(final Class<?> rootClass) {
         super(rootClass);

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shardingjdbc.api;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
 import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShadowDataSource;
@@ -77,7 +76,6 @@ public final class ShadowDataSourceFactory {
         return createFacadeDataSource(shadowDataSource, shadowRule, props);
     }
     
-    @SneakyThrows
     private static DataSource createFacadeDataSource(final Map<String, DataSource> dataSources, final ShadowRuleConfiguration shadowRule, final Properties props) {
         //FIXME shadow
         return dataSources.values().iterator().next();

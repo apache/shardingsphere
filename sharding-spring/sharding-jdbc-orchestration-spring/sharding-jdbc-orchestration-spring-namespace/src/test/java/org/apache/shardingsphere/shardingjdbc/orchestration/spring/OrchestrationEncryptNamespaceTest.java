@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
@@ -52,7 +51,6 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
         assertEncryptRule(getEncryptRule());
     }
     
-    @SneakyThrows
     private EncryptRule getEncryptRule() {
         OrchestrationSpringShardingDataSource orchestrationDataSource = (OrchestrationSpringShardingDataSource) applicationContext.getBean("encryptDataSourceOrchestration");
         ShardingDataSource dataSource = (ShardingDataSource) FieldValueUtil.getFieldValue(orchestrationDataSource, "dataSource", true);

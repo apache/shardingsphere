@@ -17,18 +17,19 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource;
 
-import java.sql.SQLException;
-import javax.sql.DataSource;
+import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
-import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
+
+import javax.sql.DataSource;
+import java.sql.SQLException;
 
 /**
  * Orchestration sharding datasource for spring namespace.
  */
 public final class OrchestrationSpringShardingDataSource extends OrchestrationShardingDataSource {
     
-    public OrchestrationSpringShardingDataSource(final DataSource dataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
+    public OrchestrationSpringShardingDataSource(final DataSource dataSource, final OrchestrationConfiguration orchestrationConfig) {
         super((ShardingDataSource) dataSource, orchestrationConfig);
     }
     

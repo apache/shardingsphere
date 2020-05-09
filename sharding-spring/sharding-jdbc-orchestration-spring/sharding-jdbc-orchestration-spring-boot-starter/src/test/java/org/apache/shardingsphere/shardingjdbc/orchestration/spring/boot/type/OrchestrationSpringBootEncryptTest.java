@@ -55,7 +55,7 @@ public class OrchestrationSpringBootEncryptTest {
     }
     
     @Test
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     public void assertWithEncryptDataSource() {
         assertTrue(dataSource instanceof OrchestrationShardingDataSource);
         Field field = OrchestrationShardingDataSource.class.getDeclaredField("dataSource");

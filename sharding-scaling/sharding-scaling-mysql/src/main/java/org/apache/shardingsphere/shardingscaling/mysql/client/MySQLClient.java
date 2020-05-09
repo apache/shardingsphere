@@ -65,13 +65,13 @@ public final class MySQLClient {
     
     private final String password;
     
-    private EventLoopGroup eventLoopGroup = new NioEventLoopGroup(1);
+    private final EventLoopGroup eventLoopGroup = new NioEventLoopGroup(1);
     
     private Channel channel;
     
     private Promise<Object> responseCallback;
     
-    private ArrayBlockingQueue<AbstractBinlogEvent> blockingEventQueue = new ArrayBlockingQueue(10000);
+    private final ArrayBlockingQueue<AbstractBinlogEvent> blockingEventQueue = new ArrayBlockingQueue<>(10000);
     
     private ServerInfo serverInfo;
     
@@ -196,6 +196,7 @@ public final class MySQLClient {
         return blockingEventQueue.poll();
     }
     
+    @SuppressWarnings("unchecked")
     private <T> T waitExpectedResponse(final Class<T> type) {
         try {
             Object response = responseCallback.get();
@@ -242,7 +243,7 @@ public final class MySQLClient {
         }
         
         @Override
-        public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
+        public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
             log.error("protocol resolution error", cause);
         }
     }

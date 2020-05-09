@@ -58,7 +58,7 @@ public final class InventoryDataScalingTask implements ScalingTask {
     
     private long estimatedRows;
     
-    private AtomicLong syncedRows = new AtomicLong();
+    private final AtomicLong syncedRows = new AtomicLong();
     
     private Dumper dumper;
     

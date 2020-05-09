@@ -46,9 +46,9 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class IntegrateTestParameters {
     
-    private static IntegrateTestCasesLoader integrateTestCasesLoader = IntegrateTestCasesLoader.getInstance();
+    private static final IntegrateTestCasesLoader INTEGRATE_TEST_CASES_LOADER = IntegrateTestCasesLoader.getInstance();
     
-    private static IntegrateTestEnvironment integrateTestEnvironment = IntegrateTestEnvironment.getInstance();
+    private static final IntegrateTestEnvironment INTEGRATE_TEST_ENVIRONMENT = IntegrateTestEnvironment.getInstance();
     
     /**
      * Get parameters with assertions.
@@ -59,7 +59,7 @@ public final class IntegrateTestParameters {
     public static Collection<Object[]> getParametersWithAssertion(final SQLType sqlType) {
         Map<DatabaseType, Collection<Object[]>> availableCases = new LinkedHashMap<>();
         Map<DatabaseType, Collection<Object[]>> disabledCases = new LinkedHashMap<>();
-        integrateTestCasesLoader.getTestCases(sqlType).forEach(integrateTestCase -> getDatabaseTypes(integrateTestCase.getDbTypes()).forEach(databaseType -> {
+        INTEGRATE_TEST_CASES_LOADER.getTestCases(sqlType).forEach(integrateTestCase -> getDatabaseTypes(integrateTestCase.getDbTypes()).forEach(databaseType -> {
             if (IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType)) {
                 availableCases.putIfAbsent(databaseType, new LinkedList<>());
                 Arrays.stream(SQLCaseType.values()).forEach(sqlCaseType -> availableCases.get(databaseType).addAll(getParametersWithAssertion(databaseType, sqlCaseType, integrateTestCase)));
@@ -72,7 +72,6 @@ public final class IntegrateTestParameters {
         return availableCases.values().stream().flatMap(Collection::stream).collect(Collectors.toList());
     }
     
-    @SneakyThrows
     private static Collection<Object[]> getParametersWithAssertion(final DatabaseType databaseType, final SQLCaseType caseType, final IntegrateTestCase integrateTestCase) {
         Collection<Object[]> result = new LinkedList<>();
         if (integrateTestCase.getIntegrateTestCaseAssertions().isEmpty()) {
@@ -88,7 +87,7 @@ public final class IntegrateTestParameters {
     private static Collection<Object[]> getParametersWithAssertion(
             final IntegrateTestCase integrateTestCase, final IntegrateTestCaseAssertion assertion, final DatabaseType databaseType, final SQLCaseType caseType) {
         Collection<Object[]> result = new LinkedList<>();
-        for (String each : integrateTestEnvironment.getRuleTypes()) {
+        for (String each : INTEGRATE_TEST_ENVIRONMENT.getRuleTypes()) {
             Object[] data = new Object[6];
             data[0] = integrateTestCase.getPath();
             data[1] = assertion;
@@ -110,7 +109,7 @@ public final class IntegrateTestParameters {
     public static Collection<Object[]> getParametersWithCase(final SQLType sqlType) {
         Map<DatabaseType, Collection<Object[]>> availableCases = new LinkedHashMap<>();
         Map<DatabaseType, Collection<Object[]>> disabledCases = new LinkedHashMap<>();
-        integrateTestCasesLoader.getTestCases(sqlType).forEach(integrateTestCase ->
+        INTEGRATE_TEST_CASES_LOADER.getTestCases(sqlType).forEach(integrateTestCase ->
             getDatabaseTypes(integrateTestCase.getDbTypes()).forEach(databaseType -> {
                 if (IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType)) {
                     availableCases.putIfAbsent(databaseType, new LinkedList<>());
@@ -126,7 +125,7 @@ public final class IntegrateTestParameters {
     
     private static Collection<Object[]> getParametersWithCase(final DatabaseType databaseType, final IntegrateTestCase integrateTestCase) {
         Collection<Object[]> result = new LinkedList<>();
-        for (String each : integrateTestEnvironment.getRuleTypes()) {
+        for (String each : INTEGRATE_TEST_ENVIRONMENT.getRuleTypes()) {
             Object[] data = new Object[4];
             data[0] = integrateTestCase;
             data[1] = each;

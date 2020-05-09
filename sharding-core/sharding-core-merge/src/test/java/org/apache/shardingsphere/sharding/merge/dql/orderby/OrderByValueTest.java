@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.merge.dql.orderby;
 
 import com.google.common.collect.Lists;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByContext;
@@ -53,8 +52,7 @@ import static org.mockito.Mockito.when;
 public final class OrderByValueTest {
     
     @Test
-    @SneakyThrows
-    public void assertCompareToForAsc() {
+    public void assertCompareToForAsc() throws SQLException, NoSuchFieldException {
         SelectStatement selectStatement = new SelectStatement();
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
@@ -81,8 +79,7 @@ public final class OrderByValueTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertCompareToForDesc() {
+    public void assertCompareToForDesc() throws SQLException, NoSuchFieldException {
         SelectStatement selectStatement = new SelectStatement();
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
@@ -109,8 +106,7 @@ public final class OrderByValueTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertCompareToWhenEqual() {
+    public void assertCompareToWhenEqual() throws SQLException, NoSuchFieldException {
         SelectStatement selectStatement = new SelectStatement();
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);

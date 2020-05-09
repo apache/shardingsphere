@@ -40,7 +40,7 @@ public class JdbcMethodInvocation {
      * 
      * @param target target object
      */
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     public void invoke(final Object target) {
         method.invoke(target, arguments);
     }

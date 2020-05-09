@@ -33,7 +33,7 @@ import static org.junit.Assert.assertTrue;
 
 public final class ShardingStatementTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
-    private String sql = "INSERT INTO t_order_item(order_id, user_id, status) VALUES (%d, %d, '%s')";
+    private final String sql = "INSERT INTO t_order_item(order_id, user_id, status) VALUES (%d, %d, '%s')";
     
     @Test
     public void assertGetGeneratedKeys() throws SQLException {

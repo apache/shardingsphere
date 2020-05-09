@@ -40,7 +40,7 @@ import static org.junit.Assert.assertThat;
 @RunWith(MockitoJUnitRunner.class)
 public final class MetricsTrackerFacadeTest {
     
-    private MetricsTrackerFacade metricsTrackerFacade = MetricsTrackerFacade.getInstance();
+    private final MetricsTrackerFacade metricsTrackerFacade = MetricsTrackerFacade.getInstance();
     
     @Before
     public void setUp() {

@@ -34,7 +34,7 @@ public final class MockLogicSchemasUtil {
      * @param prefix prefix of schema
      * @param size size of schemas
      */
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     public static void setLogicSchemas(final String prefix, final int size) {
         Field field = LogicSchemas.getInstance().getClass().getDeclaredField("logicSchemas");
         field.setAccessible(true);

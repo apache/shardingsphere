@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
-import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
@@ -105,8 +104,7 @@ public final class OrchestrationShardingDataSourceTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertInitializeOrchestrationShardingDataSource() {
+    public void assertInitializeOrchestrationShardingDataSource() throws SQLException {
         OrchestrationShardingDataSource shardingDataSource = new OrchestrationShardingDataSource(getOrchestrationConfiguration());
         assertThat(shardingDataSource.getConnection(), instanceOf(Connection.class));
     }

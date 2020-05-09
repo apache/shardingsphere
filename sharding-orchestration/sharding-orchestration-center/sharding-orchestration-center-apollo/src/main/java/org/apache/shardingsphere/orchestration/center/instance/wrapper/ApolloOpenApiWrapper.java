@@ -29,17 +29,17 @@ import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration
  */
 public final class ApolloOpenApiWrapper {
     
-    private ApolloOpenApiClient client;
+    private final ApolloOpenApiClient client;
     
-    private String namespace;
+    private final String namespace;
     
-    private String appId;
+    private final String appId;
     
-    private String env;
+    private final String env;
     
-    private String clusterName;
+    private final String clusterName;
     
-    private String administrator;
+    private final String administrator;
     
     public ApolloOpenApiWrapper(final CenterConfiguration config, final ApolloProperties properties) {
         namespace = config.getNamespace();
@@ -51,8 +51,7 @@ public final class ApolloOpenApiWrapper {
         String portalUrl = properties.getValue(ApolloPropertyKey.PORTAL_URL);
         Integer connectTimeout = properties.getValue(ApolloPropertyKey.CONNECT_TIMEOUT);
         Integer readTimeout = properties.getValue(ApolloPropertyKey.READ_TIMEOUT);
-        client = ApolloOpenApiClient.newBuilder().withPortalUrl(portalUrl).withConnectTimeout(connectTimeout)
-                .withReadTimeout(readTimeout).withToken(apolloToken).build();
+        client = ApolloOpenApiClient.newBuilder().withPortalUrl(portalUrl).withConnectTimeout(connectTimeout).withReadTimeout(readTimeout).withToken(apolloToken).build();
     }
     
     /**

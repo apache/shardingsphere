@@ -74,7 +74,7 @@ public final class ShardingSphereDatabaseMetaDataTest {
     @Mock
     private RuntimeContext runtimeContext;
     
-    private Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
+    private final Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
     
     private ShardingSphereDatabaseMetaData shardingSphereDatabaseMetaData;
     

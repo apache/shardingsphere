@@ -124,7 +124,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         this.logicSchema = LogicSchemas.getInstance().getLogicSchema(schemaName);
     }
     
-    @SneakyThrows
+    @SneakyThrows(InterruptedException.class)
     private boolean isSwitchFailed() {
         int retryCount = 0;
         while (stateHandler.isInTransaction() && retryCount < MAXIMUM_RETRY_COUNT) {

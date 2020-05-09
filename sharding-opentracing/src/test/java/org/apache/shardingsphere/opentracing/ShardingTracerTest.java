@@ -72,7 +72,7 @@ public final class ShardingTracerTest {
         ShardingTracer.init();
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private static void clearGlobalTracer() {
         Field tracerField = GlobalTracer.class.getDeclaredField("tracer");
         tracerField.setAccessible(true);
