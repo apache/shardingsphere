@@ -26,9 +26,7 @@ import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.swapper.CenterRepositoryConfigurationYamlSwapper;
-import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.common.SpringBootRootConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding.LocalShardingRuleCondition;
@@ -36,7 +34,6 @@ import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding
 import org.apache.shardingsphere.spring.boot.datasource.DataSourcePropertiesSetterHolder;
 import org.apache.shardingsphere.spring.boot.util.DataSourceUtil;
 import org.apache.shardingsphere.spring.boot.util.PropertyUtil;
-import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRulesBuilder;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -124,13 +121,7 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @Bean
     @ConditionalOnMissingBean(DataSource.class)
     public DataSource dataSource(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
-        try (ShardingOrchestrationFacade shardingOrchestrationFacade = new ShardingOrchestrationFacade(orchestrationConfiguration, Collections.singletonList(DefaultSchema.LOGIC_NAME))) {
-            if (shardingOrchestrationFacade.getConfigCenter().isEncryptRule(DefaultSchema.LOGIC_NAME)) {
-                return new OrchestrationEncryptDataSource(orchestrationConfiguration);
-            } else {
-                return new OrchestrationShardingDataSource(orchestrationConfiguration);
-            }
-        }
+        return new OrchestrationShardingDataSource(orchestrationConfiguration);
     }
     
     @Override

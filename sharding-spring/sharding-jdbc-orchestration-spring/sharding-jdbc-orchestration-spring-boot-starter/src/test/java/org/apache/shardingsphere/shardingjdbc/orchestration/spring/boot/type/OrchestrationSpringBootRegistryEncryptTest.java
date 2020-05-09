@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.type;
 
-import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry.TestCenterRepository;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.util.EmbedTestingServer;
 import org.junit.BeforeClass;
@@ -78,13 +77,12 @@ public class OrchestrationSpringBootRegistryEncryptTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertWithEncryptDataSource() {
-        assertTrue(dataSource instanceof OrchestrationEncryptDataSource);
-        Field field = OrchestrationEncryptDataSource.class.getDeclaredField("dataSource");
+    public void assertWithEncryptDataSource() throws NoSuchFieldException, IllegalAccessException {
+        assertTrue(dataSource instanceof OrchestrationShardingDataSource);
+        Field field = OrchestrationShardingDataSource.class.getDeclaredField("dataSource");
         field.setAccessible(true);
-        EncryptDataSource encryptDataSource = (EncryptDataSource) field.get(dataSource);
-        BasicDataSource embedDataSource = (BasicDataSource) encryptDataSource.getDataSource();
+        ShardingDataSource encryptDataSource = (ShardingDataSource) field.get(dataSource);
+        BasicDataSource embedDataSource = (BasicDataSource) encryptDataSource.getDataSourceMap().values().iterator().next();
         assertThat(embedDataSource.getMaxTotal(), is(100));
         assertThat(embedDataSource.getUsername(), is("sa"));
         EncryptRuleConfiguration encryptRuleConfig = ((EncryptRule) encryptDataSource.getRuntimeContext().getRules().iterator().next()).getRuleConfiguration();
