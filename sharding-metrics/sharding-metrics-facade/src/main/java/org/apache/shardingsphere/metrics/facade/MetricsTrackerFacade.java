@@ -19,6 +19,7 @@ package org.apache.shardingsphere.metrics.facade;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.metrics.api.CounterMetricsTracker;
 import org.apache.shardingsphere.metrics.api.GaugeMetricsTracker;
@@ -52,7 +53,8 @@ public final class MetricsTrackerFacade {
     private MetricsTrackerManager metricsTrackerManager;
     
     @Getter
-    private volatile Boolean enabled = false;
+    @Setter
+    private volatile boolean enabled;
     
     private MetricsTrackerFacade() {
         loadMetricsManager();
@@ -135,13 +137,12 @@ public final class MetricsTrackerFacade {
      * @param labelValues  label values
      * @return histogram metrics tracker delegate
      */
-    public HistogramMetricsTrackerDelegate histogramStartTimer(final String metricsLabel, final String... labelValues) {
-        Optional<MetricsTracker> metricsTracker = metricsTrackerManager.getMetricsTrackerFactory().create(MetricsTypeEnum.HISTOGRAM.name(), metricsLabel);
-        if (metricsTracker.isPresent()) {
-            return ((HistogramMetricsTracker) metricsTracker.get()).startTimer(labelValues);
-        } else {
-            return new NoneHistogramMetricsTrackerDelegate();
+    public Optional<HistogramMetricsTrackerDelegate> histogramStartTimer(final String metricsLabel, final String... labelValues) {
+        if (!enabled) {
+            return Optional.empty();
         }
+        Optional<MetricsTracker> metricsTracker = metricsTrackerManager.getMetricsTrackerFactory().create(MetricsTypeEnum.HISTOGRAM.name(), metricsLabel);
+        return metricsTracker.map(tracker -> Optional.of(((HistogramMetricsTracker) tracker).startTimer(labelValues))).orElseGet(() -> Optional.of(new NoneHistogramMetricsTrackerDelegate()));
     }
     
     /**
@@ -160,13 +161,12 @@ public final class MetricsTrackerFacade {
      * @param labelValues  label values
      * @return summary metrics tracker delegate
      */
-    public SummaryMetricsTrackerDelegate summaryStartTimer(final String metricsLabel, final String... labelValues) {
-        Optional<MetricsTracker> metricsTracker = metricsTrackerManager.getMetricsTrackerFactory().create(MetricsTypeEnum.SUMMARY.name(), metricsLabel);
-        if (metricsTracker.isPresent()) {
-            return ((SummaryMetricsTracker) metricsTracker.get()).startTimer(labelValues);
-        } else {
-            return new NoneSummaryMetricsTrackerDelegate();
+    public Optional<SummaryMetricsTrackerDelegate> summaryStartTimer(final String metricsLabel, final String... labelValues) {
+        if (!enabled) {
+            return Optional.empty();
         }
+        Optional<MetricsTracker> metricsTracker = metricsTrackerManager.getMetricsTrackerFactory().create(MetricsTypeEnum.SUMMARY.name(), metricsLabel);
+        return metricsTracker.map(tracker -> Optional.of(((SummaryMetricsTracker) tracker).startTimer(labelValues))).orElseGet(() -> Optional.of(new NoneSummaryMetricsTrackerDelegate()));
     }
     
     /**
