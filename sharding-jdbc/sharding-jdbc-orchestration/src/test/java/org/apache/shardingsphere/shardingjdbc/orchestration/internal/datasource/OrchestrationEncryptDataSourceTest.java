@@ -32,7 +32,6 @@ import org.apache.shardingsphere.orchestration.core.common.CenterType;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.EncryptRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
-import org.apache.shardingsphere.shardingjdbc.api.EncryptDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
@@ -73,7 +72,7 @@ public final class OrchestrationEncryptDataSourceTest {
     
     private DataSource createDataSource(final File yamlFile) throws IOException, SQLException {
         YamlRootEncryptRuleConfiguration config = YamlEngine.unmarshal(yamlFile, YamlRootEncryptRuleConfiguration.class);
-        return EncryptDataSourceFactory.createDataSource(config.getDataSource(), new EncryptRuleConfigurationYamlSwapper().swap(config.getEncryptRule()), config.getProps());
+        return new EncryptDataSource(config.getDataSource(), new EncryptRule(new EncryptRuleConfigurationYamlSwapper().swap(config.getEncryptRule())), config.getProps());
     }
     
     private OrchestrationConfiguration getOrchestrationConfiguration() {
