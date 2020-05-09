@@ -24,13 +24,17 @@ import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaDa
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.TableMetaDataLoaderCallback;
 
+import javax.sql.DataSource;
+import java.util.Map;
+
 /**
  * Create index statement meta data refresh strategy.
  */
 public final class CreateIndexStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<CreateIndexStatementContext> {
     
     @Override
-    public void refreshMetaData(final ShardingSphereMetaData metaData, final CreateIndexStatementContext sqlStatementContext, final TableMetaDataLoaderCallback callback) {
+    public void refreshMetaData(final ShardingSphereMetaData metaData, 
+                                final Map<String, DataSource> dataSourceMap, final CreateIndexStatementContext sqlStatementContext, final TableMetaDataLoaderCallback callback) {
         CreateIndexStatement createIndexStatement = sqlStatementContext.getSqlStatement();
         if (null == createIndexStatement.getIndex()) {
             return;

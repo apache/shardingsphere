@@ -22,14 +22,17 @@ import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaDa
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.TableMetaDataLoaderCallback;
 
+import javax.sql.DataSource;
+import java.util.Map;
+
 /**
  * Drop table statement meta data refresh strategy.
  */
 public final class DropTableStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<DropTableStatementContext> {
     
     @Override
-    public void refreshMetaData(final ShardingSphereMetaData metaData, final DropTableStatementContext sqlStatementContext, final TableMetaDataLoaderCallback callback) {
+    public void refreshMetaData(final ShardingSphereMetaData metaData, 
+                                final Map<String, DataSource> dataSourceMap, final DropTableStatementContext sqlStatementContext, final TableMetaDataLoaderCallback callback) {
         sqlStatementContext.getSqlStatement().getTables().forEach(each -> metaData.getSchema().getConfiguredSchemaMetaData().remove(each.getTableName().getIdentifier().getValue()));
     }
 }
-

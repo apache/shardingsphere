@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.underlying.common.metadata.refresh;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
@@ -29,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue
 import org.apache.shardingsphere.underlying.common.metadata.refresh.impl.AlterTableStatementMetaDataRefreshStrategy;
 import org.junit.Test;
 
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -37,16 +37,14 @@ import static org.junit.Assert.assertThat;
 
 public final class AlterTableStatementMetaDataRefreshStrategyTest extends AbstractMetaDataRefreshStrategyTest {
     
-    @SneakyThrows
     @Test
-    public void refreshMetaData() {
+    public void refreshMetaData() throws SQLException {
         MetaDataRefreshStrategy<AlterTableStatementContext> metaDataRefreshStrategy = new AlterTableStatementMetaDataRefreshStrategy();
         AlterTableStatement alterTableStatement = new AlterTableStatement(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         AlterTableStatementContext alterTableStatementContext = new AlterTableStatementContext(alterTableStatement);
-        metaDataRefreshStrategy.refreshMetaData(getMetaData(), alterTableStatementContext, tableName -> Optional.of(new TableMetaData(
+        metaDataRefreshStrategy.refreshMetaData(getMetaData(), Collections.emptyMap(), alterTableStatementContext, tableName -> Optional.of(new TableMetaData(
                 Collections.singletonList(new ColumnMetaData("order_id", 1, "String", true, false, false)),
                 Collections.singletonList(new IndexMetaData("index_alter")))));
         assertThat(getMetaData().getSchema().getConfiguredSchemaMetaData().get("t_order").getIndexes().containsKey("index_alter"), is(true));
     }
 }
-
