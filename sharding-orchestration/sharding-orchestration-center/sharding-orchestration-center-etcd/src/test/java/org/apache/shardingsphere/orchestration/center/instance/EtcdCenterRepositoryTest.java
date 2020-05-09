@@ -26,12 +26,12 @@ import io.etcd.jetcd.KeyValue;
 import io.etcd.jetcd.Lease;
 import io.etcd.jetcd.Watch;
 import io.etcd.jetcd.kv.GetResponse;
-import io.etcd.jetcd.kv.PutResponse;
 import io.etcd.jetcd.lease.LeaseGrantResponse;
 import io.etcd.jetcd.options.GetOption;
 import io.etcd.jetcd.options.PutOption;
 import io.grpc.stub.StreamObserver;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -80,12 +80,11 @@ public final class EtcdCenterRepositoryTest {
     private GetResponse getResponse;
     
     @Mock
-    private PutResponse putResponse;
-    
-    @Mock
     private CompletableFuture putFuture;
     
     private EtcdCenterRepository centerRepository = new EtcdCenterRepository();
+    
+    private static final String CENTER_TYPE = "etcd";
     
     @Before
     public void setUp() {
@@ -110,6 +109,7 @@ public final class EtcdCenterRepositoryTest {
         when(client.getKVClient()).thenReturn(kv);
         when(kv.get(any(ByteSequence.class))).thenReturn(getFuture);
         when(kv.get(any(ByteSequence.class), any(GetOption.class))).thenReturn(getFuture);
+        when(kv.put(any(ByteSequence.class), any(ByteSequence.class))).thenReturn(putFuture);
         when(kv.put(any(ByteSequence.class), any(ByteSequence.class), any(PutOption.class))).thenReturn(putFuture);
         when(getFuture.get()).thenReturn(getResponse);
         when(client.getLeaseClient()).thenReturn(lease);
@@ -165,5 +165,32 @@ public final class EtcdCenterRepositoryTest {
     public void assertDelete() {
         centerRepository.delete("key");
         verify(kv).delete(ByteSequence.from("key", Charsets.UTF_8));
+    }
+    
+    @Test
+    public void assertPersist() {
+        centerRepository.persist("key1", "value1");
+        verify(kv).put(any(ByteSequence.class), any(ByteSequence.class));
+    }
+    
+    @Test
+    public void assertClose() {
+        centerRepository.close();
+        verify(client).close();
+    }
+    
+    @Test
+    public void assertGetType() {
+        assertThat(centerRepository.getType(), is(CENTER_TYPE));
+    }
+    
+    @Test
+    public void assertInit() {
+        CenterConfiguration configuration = new CenterConfiguration(CENTER_TYPE);
+        configuration.setServerLists("127.0.0.1");
+        Properties properties = new Properties();
+        centerRepository.setProperties(properties);
+        centerRepository.init(configuration);
+        assertThat(centerRepository.getProperties(), is(properties));
     }
 }
