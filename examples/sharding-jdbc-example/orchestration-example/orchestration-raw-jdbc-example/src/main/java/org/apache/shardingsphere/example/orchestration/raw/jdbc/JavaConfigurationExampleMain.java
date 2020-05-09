@@ -44,9 +44,9 @@ import java.util.Map;
  */
 public class JavaConfigurationExampleMain {
     
-    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
+//    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
 //    private static ShardingType shardingType = ShardingType.MASTER_SLAVE;
-//    private static ShardingType shardingType = ShardingType.ENCRYPT;
+    private static ShardingType shardingType = ShardingType.ENCRYPT;
     
     private static boolean loadConfigFromRegCenter = false;
 //    private static boolean loadConfigFromRegCenter = true;
@@ -83,9 +83,9 @@ public class JavaConfigurationExampleMain {
         return configuration.getDataSource();
     }
     
-    private static Map<String, CenterConfiguration> getRegistryCenterConfiguration(final RegistryCenterType registryCenterType, ShardingType shardingType) {
-        return RegistryCenterType.ZOOKEEPER == registryCenterType ? RegistryCenterConfigurationUtil.getZooKeeperConfiguration(String.valueOf(!loadConfigFromRegCenter), shardingType) :
-            RegistryCenterConfigurationUtil.getNacosConfiguration(String.valueOf(!loadConfigFromRegCenter), shardingType);
+    private static Map<String, CenterConfiguration> getRegistryCenterConfiguration(final RegistryCenterType registryCenterType, final ShardingType shardingType) {
+        return RegistryCenterType.ZOOKEEPER == registryCenterType ? RegistryCenterConfigurationUtil.getZooKeeperConfiguration(String.valueOf(!loadConfigFromRegCenter), shardingType)
+                : RegistryCenterConfigurationUtil.getNacosConfiguration(String.valueOf(!loadConfigFromRegCenter), shardingType);
     }
     
     private static ExampleService getExampleService(final DataSource dataSource) {

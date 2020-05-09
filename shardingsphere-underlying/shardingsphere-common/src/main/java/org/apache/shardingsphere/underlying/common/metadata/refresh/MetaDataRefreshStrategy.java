@@ -39,4 +39,3 @@ public interface MetaDataRefreshStrategy<T extends SQLStatementContext> {
      */
     void refreshMetaData(ShardingSphereMetaData metaData, T sqlStatementContext, TableMetaDataLoaderCallback callback) throws SQLException;
 }
-
