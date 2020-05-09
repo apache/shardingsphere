@@ -56,7 +56,7 @@ replaceSpecification_
     ;
 
 update
-    : UPDATE updateSpecification_ tableReferences setAssignmentsClause whereClause? orderByClause? limitClause?
+    : withClause_? UPDATE updateSpecification_ tableReferences setAssignmentsClause whereClause? orderByClause? limitClause?
     ;
 
 updateSpecification_
