@@ -15,14 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.spring.boot.shadow;
+package org.apache.shardingsphere.core.rule;
 
-import org.apache.shardingsphere.core.yaml.config.shadow.YamlShadowRuleConfiguration;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRuleBuilder;
+
+import java.util.Collection;
 
 /**
- * Shadow rule configuration properties.
+ * Shadow rule builder.
  */
-@ConfigurationProperties(prefix = "spring.shardingsphere.shadow", ignoreInvalidFields = true)
-public class SpringBootShadowRuleConfigurationProperties extends YamlShadowRuleConfiguration {
+public final class ShadowRuleBuilder implements ShardingSphereRuleBuilder<ShadowRule, ShadowRuleConfiguration> {
+    
+    @Override
+    public ShadowRule build(final ShadowRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
+        return new ShadowRule(ruleConfiguration);
+    }
+    
+    @Override
+    public int getOrder() {
+        return -5;
+    }
+    
+    @Override
+    public Class<ShadowRuleConfiguration> getTypeClass() {
+        return ShadowRuleConfiguration.class;
+    }
 }
