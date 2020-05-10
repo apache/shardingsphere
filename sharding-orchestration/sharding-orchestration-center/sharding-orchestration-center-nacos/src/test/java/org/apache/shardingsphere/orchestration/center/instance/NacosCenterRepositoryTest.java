@@ -34,8 +34,7 @@ import java.lang.reflect.Field;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -157,6 +156,48 @@ public final class NacosCenterRepositoryTest {
     public void assertDelete() {
         configCenterRepository.delete("/sharding/test");
         verify(configService).removeConfig("sharding.test", group);
+    }
+    
+    @SneakyThrows
+    @Test
+    public void assertDeleteWhenThrowException() {
+        when(configService.getConfig(eq("sharding.test"), eq(group), anyLong())).thenReturn("value");
+        doThrow(NacosException.class).when(configService).removeConfig(eq("sharding.test"), eq(group));
+        configCenterRepository.delete("/sharding/test");
+        assertNotNull(configCenterRepository.get("/sharding/test"));
+    }
+    
+    @SneakyThrows
+    @Test
+    public void assertWatchWhenThrowException() {
+        final ChangedType[] actualType = {null};
+        doThrow(NacosException.class)
+                .when(configService)
+                .addListener(anyString(), anyString(), any(Listener.class));
+        DataChangedEventListener listener = dataChangedEvent -> actualType[0] = dataChangedEvent.getChangedType();
+        configCenterRepository.watch("/sharding/test", listener);
+        assertNull(actualType[0]);
+    }
+    
+    @Test
+    @SneakyThrows
+    public void assertPersistWhenThrowException() {
+        String value = "value";
+        doThrow(NacosException.class).when(configService).publishConfig(eq("sharding.test"), eq(group), eq(value));
+        configCenterRepository.persist("/sharding/test", value);
+        assertNull(configCenterRepository.get("/sharding/test"));
+    }
+    
+    @Test
+    public void assertProperties() {
+        Properties properties = new Properties();
+        configCenterRepository.setProperties(properties);
+        assertThat(configCenterRepository.getProperties(), is(properties));
+    }
+    
+    @Test
+    public void assertGetChildrenKeys() {
+        assertNull(configCenterRepository.getChildrenKeys("/sharding/test"));
     }
     
     private VoidAnswer3 getListenerAnswer(final String expectValue) {
