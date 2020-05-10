@@ -40,12 +40,12 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShardingDataSourceFactoryTest {
+public final class ShardingSphereDataSourceFactoryTest {
     
     @Test
     public void assertCreateDataSourceWithShardingRuleAndProperties() throws SQLException {
         Properties props = new Properties();
-        ShardingDataSource dataSource = (ShardingDataSource) ShardingDataSourceFactory.createDataSource(getDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()), props);
+        ShardingDataSource dataSource = (ShardingDataSource) ShardingSphereDataSourceFactory.createDataSource(getDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()), props);
         assertThat(dataSource.getRuntimeContext().getProperties().getProps(), is(props));
     }
     

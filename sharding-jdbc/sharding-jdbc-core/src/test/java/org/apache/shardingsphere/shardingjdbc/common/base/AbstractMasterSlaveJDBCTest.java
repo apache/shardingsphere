@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.common.base;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -45,7 +45,7 @@ public abstract class AbstractMasterSlaveJDBCTest extends AbstractSQLTest {
         if (null != masterSlaveDataSource) {
             return;
         }
-        masterSlaveDataSource = (ShardingDataSource) YamlShardingDataSourceFactory.createDataSource(getDataSources(), getFile(CONFIG_MASTER_SLAVE));
+        masterSlaveDataSource = (ShardingDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSources(), getFile(CONFIG_MASTER_SLAVE));
     }
     
     private static Map<String, DataSource> getDataSources() {

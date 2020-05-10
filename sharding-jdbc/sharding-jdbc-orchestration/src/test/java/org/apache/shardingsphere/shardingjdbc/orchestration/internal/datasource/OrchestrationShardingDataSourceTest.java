@@ -32,7 +32,7 @@ import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChang
 import org.apache.shardingsphere.orchestration.core.common.event.ShardingRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationShardingSchema;
-import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
@@ -68,7 +68,7 @@ public final class OrchestrationShardingDataSourceTest {
     
     private static ShardingDataSource getShardingDataSource() throws IOException, SQLException, URISyntaxException {
         File yamlFile = new File(OrchestrationShardingDataSourceTest.class.getResource("/yaml/unit/sharding.yaml").toURI());
-        return (ShardingDataSource) YamlShardingDataSourceFactory.createDataSource(yamlFile);
+        return (ShardingDataSource) YamlShardingSphereDataSourceFactory.createDataSource(yamlFile);
     }
     
     private static OrchestrationConfiguration getOrchestrationConfiguration() {

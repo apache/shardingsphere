@@ -31,18 +31,18 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Sharding data source factory.
+ * ShardingSphere data source factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingDataSourceFactory {
+public final class ShardingSphereDataSourceFactory {
     
     /**
-     * Create sharding data source.
+     * Create ShardingSphere data source.
      *
      * @param dataSourceMap data source map
      * @param ruleConfigurations rule configurations
      * @param props properties for data source
-     * @return sharding data source
+     * @return ShardingSphere data source
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigurations, final Properties props) throws SQLException {
@@ -50,12 +50,12 @@ public final class ShardingDataSourceFactory {
     }
     
     /**
-     * Create sharding data source.
+     * Create ShardingSphere data source.
      *
      * @param dataSource data source
      * @param ruleConfigurations rule configurations
      * @param props properties for data source
-     * @return sharding data source
+     * @return ShardingSphere data source
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final DataSource dataSource, final Collection<RuleConfiguration> ruleConfigurations, final Properties props) throws SQLException {

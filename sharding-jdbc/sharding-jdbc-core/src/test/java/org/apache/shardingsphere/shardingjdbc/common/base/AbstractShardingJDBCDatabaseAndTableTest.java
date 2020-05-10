@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.common.base;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.h2.tools.RunScript;
@@ -49,7 +49,7 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
         if (null != shardingDataSource) {
             return;
         }
-        shardingDataSource = (ShardingDataSource) YamlShardingDataSourceFactory.createDataSource(getDataSources(), getFile(CONFIG_SHARDING));
+        shardingDataSource = (ShardingDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSources(), getFile(CONFIG_SHARDING));
     }
     
     private static Map<String, DataSource> getDataSources() {

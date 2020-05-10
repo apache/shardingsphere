@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.transaction.base.seata.raw.jdbc;
 
-import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
@@ -39,7 +39,7 @@ class SeataATOrderService {
     private final DataSource dataSource;
     
     SeataATOrderService(final String yamlConfigFile) throws IOException, SQLException {
-        dataSource = YamlShardingDataSourceFactory.createDataSource(getFile(yamlConfigFile));
+        dataSource = YamlShardingSphereDataSourceFactory.createDataSource(getFile(yamlConfigFile));
     }
     
     private File getFile(final String fileName) {
