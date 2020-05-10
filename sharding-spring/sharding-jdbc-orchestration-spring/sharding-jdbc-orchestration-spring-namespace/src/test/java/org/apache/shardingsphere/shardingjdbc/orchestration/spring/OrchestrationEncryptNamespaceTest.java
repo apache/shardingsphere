@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.spring;
 
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.util.EmbedTestingServer;
@@ -48,26 +47,24 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
     @Test
     public void assertEncryptDataSourceType() {
         assertNotNull(applicationContext.getBean("encryptDataSourceOrchestration", OrchestrationSpringShardingSphereDataSource.class));
-        assertEncryptRule(getEncryptRule());
+        assertEncryptRule(getEncryptRuleConfiguration());
     }
     
-    private EncryptRule getEncryptRule() {
+    private EncryptRuleConfiguration getEncryptRuleConfiguration() {
         OrchestrationSpringShardingSphereDataSource orchestrationDataSource = (OrchestrationSpringShardingSphereDataSource) applicationContext.getBean("encryptDataSourceOrchestration");
         ShardingSphereDataSource dataSource = (ShardingSphereDataSource) FieldValueUtil.getFieldValue(orchestrationDataSource, "dataSource", true);
-        return (EncryptRule) dataSource.getRuntimeContext().getRules().iterator().next();
+        return (EncryptRuleConfiguration) dataSource.getRuntimeContext().getConfigurations().iterator().next();
     }
     
-    private void assertEncryptRule(final EncryptRule encryptRule) {
-        assertNotNull(encryptRule.getRuleConfiguration());
-        EncryptRuleConfiguration ruleConfiguration = encryptRule.getRuleConfiguration();
-        assertThat(ruleConfiguration.getEncryptors().size(), is(2));
-        assertThat(ruleConfiguration.getTables().size(), is(1));
-        assertThat(ruleConfiguration.getTables().get("t_order").getColumns().get("user_id").getCipherColumn(), is("user_encrypt"));
-        assertThat(ruleConfiguration.getTables().get("t_order").getColumns().get("order_id").getPlainColumn(), is("order_decrypt"));
-        EncryptorRuleConfiguration encryptorRule = ruleConfiguration.getEncryptors().get("encryptor_md5");
+    private void assertEncryptRule(final EncryptRuleConfiguration configuration) {
+        assertThat(configuration.getEncryptors().size(), is(2));
+        assertThat(configuration.getTables().size(), is(1));
+        assertThat(configuration.getTables().get("t_order").getColumns().get("user_id").getCipherColumn(), is("user_encrypt"));
+        assertThat(configuration.getTables().get("t_order").getColumns().get("order_id").getPlainColumn(), is("order_decrypt"));
+        EncryptorRuleConfiguration encryptorRule = configuration.getEncryptors().get("encryptor_md5");
         assertNotNull(encryptorRule);
         assertThat(encryptorRule.getType(), is("MD5"));
-        encryptorRule = ruleConfiguration.getEncryptors().get("encryptor_aes");
+        encryptorRule = configuration.getEncryptors().get("encryptor_aes");
         assertThat(encryptorRule.getType(), is("AES"));
         assertThat(encryptorRule.getProperties().getProperty("aes.key.value"), is("123456"));
     }
