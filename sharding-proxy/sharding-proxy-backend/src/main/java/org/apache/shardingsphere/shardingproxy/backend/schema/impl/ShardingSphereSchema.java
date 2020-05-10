@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.orchestration.core.common.event.ShardingRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
-import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationShardingSchema;
+import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
@@ -35,7 +35,6 @@ import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefr
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRulesBuilder;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -47,8 +46,6 @@ import java.util.Optional;
  */
 public final class ShardingSphereSchema extends LogicSchema {
     
-    public ShardingSphereSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final Collection<RuleConfiguration> ruleConfigurations) throws SQLException {
-        super(name, dataSources, ShardingSphereRulesBuilder.build(ruleConfigurations, dataSources.keySet()));
     public ShardingSphereSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final Collection<RuleConfiguration> configurations) throws SQLException {
         super(name, dataSources, configurations);
     }
