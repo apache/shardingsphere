@@ -99,7 +99,7 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
      */
     public void close(final Collection<String> dataSourceNames) throws Exception {
         dataSourceNames.forEach(each -> close(dataSourceMap.get(each)));
-        getRuntimeContext().close();
+        runtimeContext.close();
     }
     
     private void close(final DataSource dataSource) {
