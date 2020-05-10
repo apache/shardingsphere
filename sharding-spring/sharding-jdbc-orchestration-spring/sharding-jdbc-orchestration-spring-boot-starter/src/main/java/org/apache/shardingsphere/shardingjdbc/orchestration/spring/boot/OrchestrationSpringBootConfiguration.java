@@ -26,8 +26,8 @@ import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.swapper.CenterRepositoryConfigurationYamlSwapper;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.common.SpringBootRootConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding.LocalShardingRuleCondition;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding.OrchestrationSpringBootRulesConfigurationProperties;
@@ -106,8 +106,8 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
      */
     @Bean
     @Conditional(LocalShardingRuleCondition.class)
-    public DataSource shardingDataSourceByLocal(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
-        return new OrchestrationShardingDataSource(new ShardingDataSource(dataSourceMap, 
+    public DataSource shardingSphereDataSourceByLocal(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
+        return new OrchestrationShardingSphereDataSource(new ShardingSphereDataSource(dataSourceMap, 
                 ShardingSphereRulesBuilder.build(new RuleRootConfigurationsYamlSwapper().swap(rules), dataSourceMap.keySet()), root.getProps()), orchestrationConfiguration);
     }
     
@@ -121,7 +121,7 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @Bean
     @ConditionalOnMissingBean(DataSource.class)
     public DataSource dataSource(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
-        return new OrchestrationShardingDataSource(orchestrationConfiguration);
+        return new OrchestrationShardingSphereDataSource(orchestrationConfiguration);
     }
     
     @Override

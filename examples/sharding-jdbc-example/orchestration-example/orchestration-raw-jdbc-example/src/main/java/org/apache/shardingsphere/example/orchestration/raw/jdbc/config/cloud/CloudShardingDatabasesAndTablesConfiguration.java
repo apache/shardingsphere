@@ -20,7 +20,7 @@ package org.apache.shardingsphere.example.orchestration.raw.jdbc.config.cloud;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
-import org.apache.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingSphereDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -36,6 +36,6 @@ public final class CloudShardingDatabasesAndTablesConfiguration implements Examp
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        return OrchestrationShardingDataSourceFactory.createDataSource(new OrchestrationConfiguration(centerConfigurationMap));
+        return OrchestrationShardingSphereDataSourceFactory.createDataSource(new OrchestrationConfiguration(centerConfigurationMap));
     }
 }

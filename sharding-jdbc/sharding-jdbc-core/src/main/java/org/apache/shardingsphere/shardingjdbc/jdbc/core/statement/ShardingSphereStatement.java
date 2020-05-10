@@ -21,11 +21,11 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.shardingjdbc.executor.StatementExecutor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractStatementAdapter;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionConstant;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.GeneratedKeysResultSet;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.ShardingResultSet;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.ShardingSphereResultSet;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
@@ -64,12 +64,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Statement that support sharding.
+ * ShardingSphere statement.
  */
-public final class ShardingStatement extends AbstractStatementAdapter {
+public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     @Getter
-    private final ShardingConnection connection;
+    private final ShardingSphereConnection connection;
     
     private final List<Statement> statements;
     
@@ -83,15 +83,15 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     private ResultSet currentResultSet;
     
-    public ShardingStatement(final ShardingConnection connection) {
+    public ShardingSphereStatement(final ShardingSphereConnection connection) {
         this(connection, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
     }
     
-    public ShardingStatement(final ShardingConnection connection, final int resultSetType, final int resultSetConcurrency) {
+    public ShardingSphereStatement(final ShardingSphereConnection connection, final int resultSetType, final int resultSetConcurrency) {
         this(connection, resultSetType, resultSetConcurrency, ResultSet.HOLD_CURSORS_OVER_COMMIT);
     }
     
-    public ShardingStatement(final ShardingConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
+    public ShardingSphereStatement(final ShardingSphereConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         super(Statement.class);
         this.connection = connection;
         statements = new LinkedList<>();
@@ -113,7 +113,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
             cacheStatements(inputGroups);
             List<QueryResult> queryResults = statementExecutor.executeQuery(inputGroups);
             MergedResult mergedResult = mergeQuery(queryResults);
-            result = new ShardingResultSet(statements.stream().map(this::getResultSet).collect(Collectors.toList()), mergedResult, this, executionContext);
+            result = new ShardingSphereResultSet(statements.stream().map(this::getResultSet).collect(Collectors.toList()), mergedResult, this, executionContext);
         } finally {
             currentResultSet = null;
         }
@@ -280,7 +280,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         if (executionContext.getSqlStatementContext() instanceof SelectStatementContext || executionContext.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
             List<ResultSet> resultSets = getResultSets();
             MergedResult mergedResult = mergeQuery(getQueryResults(resultSets));
-            currentResultSet = new ShardingResultSet(resultSets, mergedResult, this, executionContext);
+            currentResultSet = new ShardingSphereResultSet(resultSets, mergedResult, this, executionContext);
         }
         return currentResultSet;
     }

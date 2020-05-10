@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.executor;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
@@ -53,7 +53,7 @@ public abstract class AbstractBaseExecutorTest {
     
     private ExecutorKernel executorKernel;
     
-    private ShardingConnection connection;
+    private ShardingSphereConnection connection;
     
     @Before
     public void setUp() throws SQLException {
@@ -76,7 +76,7 @@ public abstract class AbstractBaseExecutorTest {
         Map<String, DataSource> dataSourceSourceMap = new LinkedHashMap<>();
         dataSourceSourceMap.put("ds_0", dataSource);
         dataSourceSourceMap.put("ds_1", dataSource);
-        connection = new ShardingConnection(dataSourceSourceMap, runtimeContext, TransactionType.LOCAL);
+        connection = new ShardingSphereConnection(dataSourceSourceMap, runtimeContext, TransactionType.LOCAL);
     }
     
     private ShardingRule getShardingRule() {

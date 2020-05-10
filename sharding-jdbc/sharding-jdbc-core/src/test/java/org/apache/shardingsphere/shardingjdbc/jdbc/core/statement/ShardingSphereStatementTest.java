@@ -31,14 +31,14 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class ShardingStatementTest extends AbstractShardingJDBCDatabaseAndTableTest {
+public final class ShardingSphereStatementTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
     private final String sql = "INSERT INTO t_order_item(order_id, user_id, status) VALUES (%d, %d, '%s')";
     
     @Test
     public void assertGetGeneratedKeys() throws SQLException {
         try (
-                Connection connection = getShardingDataSource().getConnection();
+                Connection connection = getShardingSphereDataSource().getConnection();
                 Statement statement = connection.createStatement()) {
             assertFalse(statement.execute(String.format(sql, 1, 1, "init")));
             assertFalse(statement.execute(String.format(sql, 1, 1, "init"), Statement.NO_GENERATED_KEYS));
@@ -67,14 +67,14 @@ public final class ShardingStatementTest extends AbstractShardingJDBCDatabaseAnd
     
     @Test(expected = SQLException.class)
     public void assertQueryWithNull() throws SQLException {
-        try (Statement statement = getShardingDataSource().getConnection().createStatement()) {
+        try (Statement statement = getShardingSphereDataSource().getConnection().createStatement()) {
             statement.executeQuery(null);
         }
     }
     
     @Test(expected = SQLException.class)
     public void assertQueryWithEmptyString() throws SQLException {
-        try (Statement statement = getShardingDataSource().getConnection().createStatement()) {
+        try (Statement statement = getShardingSphereDataSource().getConnection().createStatement()) {
             statement.executeQuery("");
         }
     }
@@ -82,7 +82,7 @@ public final class ShardingStatementTest extends AbstractShardingJDBCDatabaseAnd
     @Test
     public void assertExecuteGetResultSet() throws SQLException {
         String sql = "UPDATE t_order_item SET status = '%s' WHERE user_id = %d AND order_id = %d";
-        try (Statement statement = getShardingDataSource().getConnection().createStatement()) {
+        try (Statement statement = getShardingSphereDataSource().getConnection().createStatement()) {
             assertFalse(statement.execute(String.format(sql, "OK", 1, 1)));
             assertNull(statement.getResultSet());
         }
@@ -91,7 +91,7 @@ public final class ShardingStatementTest extends AbstractShardingJDBCDatabaseAnd
     @Test
     public void assertExecuteUpdateGetResultSet() throws SQLException {
         String sql = "UPDATE t_order_item SET status = '%s' WHERE user_id = %d AND order_id = %d";
-        try (Statement statement = getShardingDataSource().getConnection().createStatement()) {
+        try (Statement statement = getShardingSphereDataSource().getConnection().createStatement()) {
             statement.executeUpdate(String.format(sql, "OK", 1, 1));
             assertNull(statement.getResultSet());
         }

@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.strategy.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.core.yaml.swapper.root.RuleRootConfigurationsYamlSwapper;
-import org.apache.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.common.SpringBootPropertiesConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.sharding.ShardingRuleCondition;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.sharding.SpringBootRulesConfigurationProperties;
@@ -71,15 +71,15 @@ public class SpringBootConfiguration implements EnvironmentAware {
     private final String jndiName = "jndi-name";
     
     /**
-     * Get sharding data source bean.
+     * Get ShardingSphere data source bean.
      *
      * @return data source bean
      * @throws SQLException SQL exception
      */
     @Bean
     @Conditional(ShardingRuleCondition.class)
-    public DataSource shardingDataSource() throws SQLException {
-        return ShardingDataSourceFactory.createDataSource(dataSourceMap, new RuleRootConfigurationsYamlSwapper().swap(rules), props.getProps());
+    public DataSource shardingSphereDataSource() throws SQLException {
+        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new RuleRootConfigurationsYamlSwapper().swap(rules), props.getProps());
     }
     
     /**

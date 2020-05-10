@@ -44,11 +44,11 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShardingConnectionTest {
+public final class ShardingSphereConnectionTest {
     
     private static Map<String, DataSource> dataSourceMap = new HashMap<>();
     
-    private ShardingConnection connection;
+    private ShardingSphereConnection connection;
     
     private RuntimeContext runtimeContext;
     
@@ -69,7 +69,7 @@ public final class ShardingConnectionTest {
         when(runtimeContext.getShardingTransactionManagerEngine()).thenReturn(new ShardingTransactionManagerEngine());
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(new TableRuleConfiguration("test"));
-        connection = new ShardingConnection(dataSourceMap, runtimeContext, TransactionType.LOCAL);
+        connection = new ShardingSphereConnection(dataSourceMap, runtimeContext, TransactionType.LOCAL);
     }
     
     @After
@@ -95,7 +95,7 @@ public final class ShardingConnectionTest {
     
     @Test
     public void assertXATransactionOperation() throws SQLException {
-        connection = new ShardingConnection(dataSourceMap, runtimeContext, TransactionType.XA);
+        connection = new ShardingSphereConnection(dataSourceMap, runtimeContext, TransactionType.XA);
         connection.setAutoCommit(false);
         assertTrue(XAShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.BEGIN));
         connection.commit();
@@ -106,7 +106,7 @@ public final class ShardingConnectionTest {
     
     @Test
     public void assertBASETransactionOperation() throws SQLException {
-        connection = new ShardingConnection(dataSourceMap, runtimeContext, TransactionType.BASE);
+        connection = new ShardingSphereConnection(dataSourceMap, runtimeContext, TransactionType.BASE);
         connection.setAutoCommit(false);
         assertTrue(BASEShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.BEGIN));
         connection.commit();

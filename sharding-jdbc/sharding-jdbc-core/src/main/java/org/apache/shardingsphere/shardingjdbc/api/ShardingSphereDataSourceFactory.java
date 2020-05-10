@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.api;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRulesBuilder;
 
@@ -31,31 +31,31 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Sharding data source factory.
+ * ShardingSphere data source factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingDataSourceFactory {
+public final class ShardingSphereDataSourceFactory {
     
     /**
-     * Create sharding data source.
+     * Create ShardingSphere data source.
      *
      * @param dataSourceMap data source map
      * @param ruleConfigurations rule configurations
      * @param props properties for data source
-     * @return sharding data source
+     * @return ShardingSphere data source
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigurations, final Properties props) throws SQLException {
-        return new ShardingDataSource(dataSourceMap, ShardingSphereRulesBuilder.build(ruleConfigurations, dataSourceMap.keySet()), props);
+        return new ShardingSphereDataSource(dataSourceMap, ShardingSphereRulesBuilder.build(ruleConfigurations, dataSourceMap.keySet()), props);
     }
     
     /**
-     * Create sharding data source.
+     * Create ShardingSphere data source.
      *
      * @param dataSource data source
      * @param ruleConfigurations rule configurations
      * @param props properties for data source
-     * @return sharding data source
+     * @return ShardingSphere data source
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final DataSource dataSource, final Collection<RuleConfiguration> ruleConfigurations, final Properties props) throws SQLException {

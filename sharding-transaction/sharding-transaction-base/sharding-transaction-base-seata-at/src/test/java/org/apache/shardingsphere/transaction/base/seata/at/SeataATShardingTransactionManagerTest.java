@@ -117,7 +117,7 @@ public final class SeataATShardingTransactionManagerTest {
     
     @Test
     public void assertInit() {
-        Map<String, DataSource> actual = getShardingDataSourceMap();
+        Map<String, DataSource> actual = getDataSourceMap();
         assertThat(actual.size(), is(1));
         assertThat(actual.get("demo_ds"), instanceOf(DataSourceProxy.class));
         assertThat(seataATShardingTransactionManager.getTransactionType(), is(TransactionType.BASE));
@@ -178,7 +178,7 @@ public final class SeataATShardingTransactionManagerTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("unchecked")
-    private Map<String, DataSource> getShardingDataSourceMap() {
+    private Map<String, DataSource> getDataSourceMap() {
         Field field = seataATShardingTransactionManager.getClass().getDeclaredField("dataSourceMap");
         field.setAccessible(true);
         return (Map<String, DataSource>) field.get(seataATShardingTransactionManager);

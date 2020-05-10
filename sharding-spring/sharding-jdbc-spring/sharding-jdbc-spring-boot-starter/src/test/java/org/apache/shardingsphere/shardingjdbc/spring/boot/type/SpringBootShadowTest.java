@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.spring.boot.type;
 
 import org.apache.shardingsphere.core.rule.ShadowRule;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,17 +45,17 @@ public class SpringBootShadowTest {
     
     @Test
     public void assertSqlShow() {
-        assertTrue(((ShardingDataSource) dataSource).getRuntimeContext().getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
+        assertTrue(((ShardingSphereDataSource) dataSource).getRuntimeContext().getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
     }
     
     @Test
     public void assertDataSource() {
-        assertTrue(dataSource instanceof ShardingDataSource);
+        assertTrue(dataSource instanceof ShardingSphereDataSource);
         assertShadowRule();
     }
     
     public void assertShadowRule() {
-        ShadowRule shadowRule = (ShadowRule) ((ShardingDataSource) dataSource).getRuntimeContext().getRules().iterator().next();
+        ShadowRule shadowRule = (ShadowRule) ((ShardingSphereDataSource) dataSource).getRuntimeContext().getRules().iterator().next();
         assertThat(shadowRule.getColumn(), is("is_shadow"));
     }
 }

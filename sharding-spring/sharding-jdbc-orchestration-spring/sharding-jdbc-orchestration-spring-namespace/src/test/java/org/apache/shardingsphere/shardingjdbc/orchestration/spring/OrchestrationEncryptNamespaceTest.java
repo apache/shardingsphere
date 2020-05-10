@@ -20,8 +20,8 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.spring;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.util.EmbedTestingServer;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.util.FieldValueUtil;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
@@ -47,13 +47,13 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
     
     @Test
     public void assertEncryptDataSourceType() {
-        assertNotNull(applicationContext.getBean("encryptDataSourceOrchestration", OrchestrationSpringShardingDataSource.class));
+        assertNotNull(applicationContext.getBean("encryptDataSourceOrchestration", OrchestrationSpringShardingSphereDataSource.class));
         assertEncryptRule(getEncryptRule());
     }
     
     private EncryptRule getEncryptRule() {
-        OrchestrationSpringShardingDataSource orchestrationDataSource = (OrchestrationSpringShardingDataSource) applicationContext.getBean("encryptDataSourceOrchestration");
-        ShardingDataSource dataSource = (ShardingDataSource) FieldValueUtil.getFieldValue(orchestrationDataSource, "dataSource", true);
+        OrchestrationSpringShardingSphereDataSource orchestrationDataSource = (OrchestrationSpringShardingSphereDataSource) applicationContext.getBean("encryptDataSourceOrchestration");
+        ShardingSphereDataSource dataSource = (ShardingSphereDataSource) FieldValueUtil.getFieldValue(orchestrationDataSource, "dataSource", true);
         return (EncryptRule) dataSource.getRuntimeContext().getRules().iterator().next();
     }
     
@@ -81,8 +81,8 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
     }
     
     private ConfigurationProperties getProperties(final String encryptDatasourceName) {
-        OrchestrationSpringShardingDataSource orchestrationDataSource = applicationContext.getBean(encryptDatasourceName, OrchestrationSpringShardingDataSource.class);
-        ShardingDataSource dataSource = (ShardingDataSource) FieldValueUtil.getFieldValue(orchestrationDataSource, "dataSource", true);
+        OrchestrationSpringShardingSphereDataSource orchestrationDataSource = applicationContext.getBean(encryptDatasourceName, OrchestrationSpringShardingSphereDataSource.class);
+        ShardingSphereDataSource dataSource = (ShardingSphereDataSource) FieldValueUtil.getFieldValue(orchestrationDataSource, "dataSource", true);
         return dataSource.getRuntimeContext().getProperties();
     }
 }

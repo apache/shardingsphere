@@ -41,7 +41,7 @@ public abstract class AbstractShardingBothDataBasesAndTablesJUnitTest extends Ab
         String configSql = "INSERT INTO t_config (id, status) VALUES (?, ?)";
         for (int orderId = 1; orderId <= 4; orderId++) {
             for (int userId = 1; userId <= 2; userId++) {
-                try (Connection connection = getShardingDataSource().getConnection()) {
+                try (Connection connection = getShardingSphereDataSource().getConnection()) {
                     PreparedStatement preparedStatement = connection.prepareStatement(orderSql);
                     preparedStatement.setInt(1, orderId);
                     preparedStatement.setInt(2, userId);
@@ -78,7 +78,7 @@ public abstract class AbstractShardingBothDataBasesAndTablesJUnitTest extends Ab
     private void selectData() throws SQLException {
         String sql = "SELECT i.order_id, i.order_item_id  FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id"
             + " WHERE o.user_id = ? AND o.order_id = ? AND i.order_id = ? ORDER BY i.order_item_id DESC";
-        try (Connection connection = getShardingDataSource().getConnection()) {
+        try (Connection connection = getShardingSphereDataSource().getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setInt(1, 1);
             preparedStatement.setInt(2, 1);

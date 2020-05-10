@@ -21,7 +21,7 @@ import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jdbc.repository.UserRepositoryImpl;
 import org.apache.shardingsphere.example.core.jdbc.service.UserServiceImpl;
-import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingSphereDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -31,7 +31,7 @@ import java.sql.SQLException;
 public class YamlConfigurationExampleMain {
     
     public static void main(final String[] args) throws SQLException, IOException {
-        DataSource dataSource = YamlShardingDataSourceFactory.createDataSource(getFile());
+        DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(getFile());
         ExampleExecuteTemplate.run(getExampleService(dataSource));
     }
     

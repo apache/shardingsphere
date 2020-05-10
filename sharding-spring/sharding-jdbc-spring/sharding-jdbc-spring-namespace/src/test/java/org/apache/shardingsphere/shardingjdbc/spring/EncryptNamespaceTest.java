@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.spring;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.strategy.impl.AESEncryptor;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.junit.Test;
@@ -47,12 +47,12 @@ public class EncryptNamespaceTest extends AbstractJUnit4SpringContextTests {
     }
     
     private EncryptRule getEncryptRuleRule() {
-        ShardingDataSource dataSource = applicationContext.getBean("encryptDataSource", ShardingDataSource.class);
+        ShardingSphereDataSource dataSource = applicationContext.getBean("encryptDataSource", ShardingSphereDataSource.class);
         return (EncryptRule) dataSource.getRuntimeContext().getRules().iterator().next();
     }
     
     private ConfigurationProperties getProperties() {
-        ShardingDataSource dataSource = applicationContext.getBean("encryptDataSource", ShardingDataSource.class);
+        ShardingSphereDataSource dataSource = applicationContext.getBean("encryptDataSource", ShardingSphereDataSource.class);
         return dataSource.getRuntimeContext().getProperties();
     }
 }

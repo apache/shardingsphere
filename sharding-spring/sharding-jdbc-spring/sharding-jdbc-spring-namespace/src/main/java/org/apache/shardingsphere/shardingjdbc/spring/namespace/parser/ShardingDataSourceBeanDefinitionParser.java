@@ -21,7 +21,7 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.shardingjdbc.spring.datasource.SpringShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.spring.datasource.SpringShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.EncryptDataSourceBeanDefinitionParserTag;
 import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -50,7 +50,7 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SpringShardingDataSource.class);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SpringShardingSphereDataSource.class);
         factory.addConstructorArgValue(parseDataSources(element));
         factory.addConstructorArgValue(parseRuleConfigurations(element));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
