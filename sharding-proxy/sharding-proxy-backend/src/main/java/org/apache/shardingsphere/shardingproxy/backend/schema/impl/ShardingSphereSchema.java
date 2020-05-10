@@ -35,7 +35,6 @@ import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefr
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRulesBuilder;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -47,8 +46,8 @@ import java.util.Optional;
  */
 public final class ShardingSphereSchema extends LogicSchema {
     
-    public ShardingSphereSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final Collection<RuleConfiguration> ruleConfigurations) throws SQLException {
-        super(name, dataSources, ShardingSphereRulesBuilder.build(ruleConfigurations, dataSources.keySet()));
+    public ShardingSphereSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final Collection<RuleConfiguration> configurations) throws SQLException {
+        super(name, dataSources, configurations);
     }
     
     /**
@@ -60,7 +59,7 @@ public final class ShardingSphereSchema extends LogicSchema {
     public synchronized void renew(final ShardingRuleChangedEvent shardingRuleChangedEvent) {
         if (getName().equals(shardingRuleChangedEvent.getShardingSchemaName())) {
             ConfigurationLogger.log(shardingRuleChangedEvent.getRuleConfigurations());
-            setRules(ShardingSphereRulesBuilder.build(shardingRuleChangedEvent.getRuleConfigurations(), getDataSources().keySet()));
+            setConfigurations(shardingRuleChangedEvent.getRuleConfigurations());
         }
     }
     

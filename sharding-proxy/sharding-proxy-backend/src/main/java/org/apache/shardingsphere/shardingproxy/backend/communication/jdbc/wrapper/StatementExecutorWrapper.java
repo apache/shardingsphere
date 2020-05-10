@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
 import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.rewrite.judgement.ShadowJudgementEngine;
 import org.apache.shardingsphere.shadow.rewrite.judgement.impl.SimpleJudgementEngine;
@@ -93,7 +94,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
         if (sqlStatement instanceof DMLStatement) {
             ShadowJudgementEngine shadowJudgementEngine = new SimpleJudgementEngine((ShadowRule) shadowSchema.getRules().iterator().next(), sqlStatementContext);
             String dataSourceName = shadowJudgementEngine.isShadowSQL()
-                    ? ((ShadowRule) shadowSchema.getRules().iterator().next()).getRuleConfiguration().getShadowMappings().get(logicSchema.getDataSources().keySet().iterator().next())
+                    ? ((ShadowRuleConfiguration) shadowSchema.getConfigurations().iterator().next()).getShadowMappings().get(logicSchema.getDataSources().keySet().iterator().next())
                     : logicSchema.getDataSources().keySet().iterator().next();
             SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(
                     logicSchema.getMetaData().getSchema().getConfiguredSchemaMetaData(), ShardingProxyContext.getInstance().getProperties(), shadowSchema.getRules());
