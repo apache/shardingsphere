@@ -31,14 +31,14 @@ import java.util.Properties;
 /**
  * ShardingSphere data source.
  */
-public class ShardingSphereDataSource extends AbstractDataSourceAdapter {
+public final class ShardingSphereDataSource extends AbstractDataSourceAdapter {
     
     public ShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
         super(dataSourceMap, configurations, props);
     }
     
     @Override
-    public final ShardingSphereConnection getConnection() {
+    public ShardingSphereConnection getConnection() {
         return new ShardingSphereConnection(getDataSourceMap(), getRuntimeContext(), TransactionTypeHolder.get());
     }
 }
