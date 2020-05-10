@@ -35,16 +35,16 @@ import java.sql.Statement;
 import java.util.Map;
 
 /**
- * Connection that support sharding.
+ * ShardingSphere Connection.
  */
 @Getter
-public final class ShardingConnection extends AbstractConnectionAdapter {
+public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     private final TransactionType transactionType;
     
     private final ShardingTransactionManager shardingTransactionManager;
     
-    public ShardingConnection(final Map<String, DataSource> dataSourceMap, final RuntimeContext runtimeContext, final TransactionType transactionType) {
+    public ShardingSphereConnection(final Map<String, DataSource> dataSourceMap, final RuntimeContext runtimeContext, final TransactionType transactionType) {
         super(dataSourceMap, runtimeContext);
         this.transactionType = transactionType;
         shardingTransactionManager = runtimeContext.getShardingTransactionManagerEngine().getTransactionManager(transactionType);

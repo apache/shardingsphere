@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource;
 import com.google.common.base.Joiner;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.fixture.XAShardingTransactionManagerFixture;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
@@ -153,8 +153,8 @@ public final class ShardingSphereDataSourceTest {
         TransactionTypeHolder.set(TransactionType.XA);
         ShardingSphereDataSource shardingSphereDataSource = createShardingSphereDataSource(dataSourceMap);
         assertThat(shardingSphereDataSource.getDataSourceMap().size(), is(1));
-        ShardingConnection shardingConnection = shardingSphereDataSource.getConnection();
-        assertThat(shardingConnection.getDataSourceMap().size(), is(1));
+        ShardingSphereConnection connection = shardingSphereDataSource.getConnection();
+        assertThat(connection.getDataSourceMap().size(), is(1));
     }
     
     @Test
@@ -164,16 +164,16 @@ public final class ShardingSphereDataSourceTest {
         dataSourceMap.put("ds", dataSource);
         TransactionTypeHolder.set(TransactionType.XA);
         ShardingSphereDataSource shardingSphereDataSource = createShardingSphereDataSource(dataSourceMap);
-        ShardingConnection shardingConnection = shardingSphereDataSource.getConnection();
-        assertThat(shardingConnection.getDataSourceMap().size(), is(1));
-        assertThat(shardingConnection.getTransactionType(), is(TransactionType.XA));
-        assertThat(shardingConnection.getShardingTransactionManager(), instanceOf(XAShardingTransactionManagerFixture.class));
+        ShardingSphereConnection connection = shardingSphereDataSource.getConnection();
+        assertThat(connection.getDataSourceMap().size(), is(1));
+        assertThat(connection.getTransactionType(), is(TransactionType.XA));
+        assertThat(connection.getShardingTransactionManager(), instanceOf(XAShardingTransactionManagerFixture.class));
         TransactionTypeHolder.set(TransactionType.LOCAL);
-        shardingConnection = shardingSphereDataSource.getConnection();
-        assertThat(shardingConnection.getConnection("ds"), is(dataSource.getConnection()));
-        assertThat(shardingConnection.getDataSourceMap(), is(dataSourceMap));
-        assertThat(shardingConnection.getTransactionType(), is(TransactionType.LOCAL));
-        assertThat(shardingConnection.getShardingTransactionManager() == null, is(true));
+        connection = shardingSphereDataSource.getConnection();
+        assertThat(connection.getConnection("ds"), is(dataSource.getConnection()));
+        assertThat(connection.getDataSourceMap(), is(dataSourceMap));
+        assertThat(connection.getTransactionType(), is(TransactionType.LOCAL));
+        assertThat(connection.getShardingTransactionManager() == null, is(true));
     }
     
     private ShardingSphereDataSource createShardingSphereDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException {

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.shardingjdbc.common.base.AbstractShardingJDBCDatabaseAndTableTest;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingPreparedStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.util.JDBCTestSQL;
@@ -50,7 +50,7 @@ import static org.mockito.Mockito.when;
 
 public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
-    private final List<ShardingConnection> shardingConnections = new ArrayList<>();
+    private final List<ShardingSphereConnection> shardingSphereConnections = new ArrayList<>();
     
     private final Map<DatabaseType, Statement> statements = new HashMap<>();
     
@@ -58,9 +58,9 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
     
     @Before
     public void init() {
-        ShardingConnection shardingConnection = getShardingSphereDataSource().getConnection();
-        shardingConnections.add(shardingConnection);
-        statements.put(DatabaseTypes.getActualDatabaseType("H2"), shardingConnection.createStatement());
+        ShardingSphereConnection connection = getShardingSphereDataSource().getConnection();
+        shardingSphereConnections.add(connection);
+        statements.put(DatabaseTypes.getActualDatabaseType("H2"), connection.createStatement());
     }
     
     @After
@@ -68,7 +68,7 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
         for (Statement each : statements.values()) {
             each.close();
         }
-        for (ShardingConnection each : shardingConnections) {
+        for (ShardingSphereConnection each : shardingSphereConnections) {
             each.close();
         }
     }

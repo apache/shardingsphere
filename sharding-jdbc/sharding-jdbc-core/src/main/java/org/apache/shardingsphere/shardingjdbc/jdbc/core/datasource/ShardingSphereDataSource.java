@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 
@@ -38,7 +38,7 @@ public class ShardingSphereDataSource extends AbstractDataSourceAdapter {
     }
     
     @Override
-    public final ShardingConnection getConnection() {
-        return new ShardingConnection(getDataSourceMap(), getRuntimeContext(), TransactionTypeHolder.get());
+    public final ShardingSphereConnection getConnection() {
+        return new ShardingSphereConnection(getDataSourceMap(), getRuntimeContext(), TransactionTypeHolder.get());
     }
 }

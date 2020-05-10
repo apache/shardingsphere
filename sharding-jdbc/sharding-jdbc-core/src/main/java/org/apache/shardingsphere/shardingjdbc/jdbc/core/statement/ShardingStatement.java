@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.shardingjdbc.executor.StatementExecutor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractStatementAdapter;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionConstant;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.GeneratedKeysResultSet;
@@ -69,7 +69,7 @@ import java.util.stream.Collectors;
 public final class ShardingStatement extends AbstractStatementAdapter {
     
     @Getter
-    private final ShardingConnection connection;
+    private final ShardingSphereConnection connection;
     
     private final List<Statement> statements;
     
@@ -83,15 +83,15 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     private ResultSet currentResultSet;
     
-    public ShardingStatement(final ShardingConnection connection) {
+    public ShardingStatement(final ShardingSphereConnection connection) {
         this(connection, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
     }
     
-    public ShardingStatement(final ShardingConnection connection, final int resultSetType, final int resultSetConcurrency) {
+    public ShardingStatement(final ShardingSphereConnection connection, final int resultSetType, final int resultSetConcurrency) {
         this(connection, resultSetType, resultSetConcurrency, ResultSet.HOLD_CURSORS_OVER_COMMIT);
     }
     
-    public ShardingStatement(final ShardingConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
+    public ShardingStatement(final ShardingSphereConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         super(Statement.class);
         this.connection = connection;
         statements = new LinkedList<>();

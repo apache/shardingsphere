@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.common.base;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.h2.tools.RunScript;
 import org.junit.AfterClass;
@@ -63,7 +63,7 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
     @Before
     public void initTable() {
         try {
-            ShardingConnection conn = shardingSphereDataSource.getConnection();
+            ShardingSphereConnection conn = shardingSphereDataSource.getConnection();
             RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("jdbc_data.sql")));
             conn.close();
         } catch (final SQLException ex) {

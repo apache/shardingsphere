@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteTemplate;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.ShardingSphereResultSetMetaData;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingPreparedStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
@@ -67,7 +67,8 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     }
     
     private Collection<ShardingSphereRule> getRules() {
-        ShardingConnection connection = statement instanceof ShardingPreparedStatement ? ((ShardingPreparedStatement) statement).getConnection() : ((ShardingStatement) statement).getConnection();
+        ShardingSphereConnection connection = statement instanceof ShardingPreparedStatement
+                ? ((ShardingPreparedStatement) statement).getConnection() : ((ShardingStatement) statement).getConnection();
         return connection.getRuntimeContext().getRules();
     }
     

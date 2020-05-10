@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 
 import org.apache.shardingsphere.shardingjdbc.common.base.AbstractShardingJDBCDatabaseAndTableTest;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingPreparedStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.util.JDBCTestSQL;
 import org.junit.After;
@@ -49,15 +49,15 @@ import static org.junit.Assert.assertTrue;
 
 public final class PreparedStatementAdapterTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
-    private final List<ShardingConnection> shardingConnections = new ArrayList<>();
+    private final List<ShardingSphereConnection> shardingSphereConnections = new ArrayList<>();
     
     private final List<PreparedStatement> preparedStatements = new ArrayList<>();
     
     @Before
     public void init() throws SQLException {
-        ShardingConnection shardingConnection = getShardingSphereDataSource().getConnection();
-        shardingConnections.add(shardingConnection);
-        preparedStatements.add(shardingConnection.prepareStatement(JDBCTestSQL.SELECT_GROUP_BY_USER_ID_SQL));
+        ShardingSphereConnection connection = getShardingSphereDataSource().getConnection();
+        shardingSphereConnections.add(connection);
+        preparedStatements.add(connection.prepareStatement(JDBCTestSQL.SELECT_GROUP_BY_USER_ID_SQL));
     }
     
     @After
@@ -65,7 +65,7 @@ public final class PreparedStatementAdapterTest extends AbstractShardingJDBCData
         for (PreparedStatement each : preparedStatements) {
             each.close();
         }
-        for (ShardingConnection each : shardingConnections) {
+        for (ShardingSphereConnection each : shardingSphereConnections) {
             each.close();
         }
     }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
@@ -89,12 +89,12 @@ public final class ShardingResultSetTest {
     }
     
     private ShardingStatement getShardingStatement() {
-        ShardingConnection shardingConnection = mock(ShardingConnection.class);
+        ShardingSphereConnection connection = mock(ShardingSphereConnection.class);
         RuntimeContext runtimeContext = mock(RuntimeContext.class);
         when(runtimeContext.getProperties()).thenReturn(new ConfigurationProperties(new Properties()));
-        when(shardingConnection.getRuntimeContext()).thenReturn(runtimeContext);
+        when(connection.getRuntimeContext()).thenReturn(runtimeContext);
         ShardingStatement result = mock(ShardingStatement.class);
-        when(result.getConnection()).thenReturn(shardingConnection);
+        when(result.getConnection()).thenReturn(connection);
         return result;
     }
     

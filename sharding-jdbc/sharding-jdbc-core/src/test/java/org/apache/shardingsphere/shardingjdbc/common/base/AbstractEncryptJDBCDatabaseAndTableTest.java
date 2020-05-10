@@ -23,7 +23,7 @@ import org.apache.shardingsphere.encrypt.yaml.config.YamlRootEncryptRuleConfigur
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.shardingjdbc.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 import org.h2.tools.RunScript;
@@ -77,18 +77,18 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
     
     @Before
     public void initTable() {
-        try (ShardingConnection connection = encryptDataSource.getConnection()) {
+        try (ShardingSphereConnection connection = encryptDataSource.getConnection()) {
             RunScript.execute(connection, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("encrypt_data.sql")));
         } catch (final SQLException ex) {
             ex.printStackTrace();
         }
     }
     
-    protected final ShardingConnection getEncryptConnection() {
+    protected final ShardingSphereConnection getEncryptConnection() {
         return encryptDataSource.getConnection();
     }
     
-    protected final ShardingConnection getEncryptConnectionWithProps() {
+    protected final ShardingSphereConnection getEncryptConnectionWithProps() {
         return encryptDataSourceWithProps.getConnection();
     }
     

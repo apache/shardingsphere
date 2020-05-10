@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 
 import org.apache.shardingsphere.shardingjdbc.common.base.AbstractShardingJDBCDatabaseAndTableTest;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingSphereConnection;
 import org.junit.Test;
 
 import java.io.PrintWriter;
@@ -84,6 +84,6 @@ public final class DataSourceAdapterTest extends AbstractShardingJDBCDatabaseAnd
     
     @Test
     public void assertGetConnectionWithUsername() throws SQLException {
-        assertThat(getShardingSphereDataSource().getConnection("username", "password"), instanceOf(ShardingConnection.class));
+        assertThat(getShardingSphereDataSource().getConnection("username", "password"), instanceOf(ShardingSphereConnection.class));
     }
 }
