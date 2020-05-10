@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -33,8 +33,8 @@ import java.util.Properties;
  */
 public class ShardingSphereDataSource extends AbstractDataSourceAdapter {
     
-    public ShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules, final Properties props) throws SQLException {
-        super(dataSourceMap, rules, props);
+    public ShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
+        super(dataSourceMap, configurations, props);
     }
     
     @Override

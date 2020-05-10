@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRulesBuilder;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -40,27 +39,27 @@ public final class ShardingSphereDataSourceFactory {
      * Create ShardingSphere data source.
      *
      * @param dataSourceMap data source map
-     * @param ruleConfigurations rule configurations
+     * @param configurations rule configurations
      * @param props properties for data source
      * @return ShardingSphere data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigurations, final Properties props) throws SQLException {
-        return new ShardingSphereDataSource(dataSourceMap, ShardingSphereRulesBuilder.build(ruleConfigurations, dataSourceMap.keySet()), props);
+    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
+        return new ShardingSphereDataSource(dataSourceMap, configurations, props);
     }
     
     /**
      * Create ShardingSphere data source.
      *
      * @param dataSource data source
-     * @param ruleConfigurations rule configurations
+     * @param configurations rule configurations
      * @param props properties for data source
      * @return ShardingSphere data source
      * @throws SQLException SQL exception
      */
-    public static DataSource createDataSource(final DataSource dataSource, final Collection<RuleConfiguration> ruleConfigurations, final Properties props) throws SQLException {
+    public static DataSource createDataSource(final DataSource dataSource, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put("unique_ds", dataSource);
-        return createDataSource(dataSourceMap, ruleConfigurations, props);
+        return createDataSource(dataSourceMap, configurations, props);
     }
 }

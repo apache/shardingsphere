@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shardingjdbc.spring.datasource;
 
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRulesBuilder;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -32,7 +31,7 @@ import java.util.Properties;
  */
 public final class SpringShardingSphereDataSource extends ShardingSphereDataSource {
     
-    public SpringShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigurations, final Properties props) throws SQLException {
-        super(dataSourceMap, ShardingSphereRulesBuilder.build(ruleConfigurations, dataSourceMap.keySet()), props);
+    public SpringShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
+        super(dataSourceMap, configurations, props);
     }
 }

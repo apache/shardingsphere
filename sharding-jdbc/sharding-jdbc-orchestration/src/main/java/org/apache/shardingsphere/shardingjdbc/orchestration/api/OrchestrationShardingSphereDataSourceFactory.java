@@ -23,7 +23,6 @@ import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfig
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRulesBuilder;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -53,7 +52,7 @@ public final class OrchestrationShardingSphereDataSourceFactory {
         if (null == ruleConfigurations || ruleConfigurations.isEmpty()) {
             return createDataSource(orchestrationConfig);
         }
-        ShardingSphereDataSource shardingSphereDataSource = new ShardingSphereDataSource(dataSourceMap, ShardingSphereRulesBuilder.build(ruleConfigurations, dataSourceMap.keySet()), props);
+        ShardingSphereDataSource shardingSphereDataSource = new ShardingSphereDataSource(dataSourceMap, ruleConfigurations, props);
         return new OrchestrationShardingSphereDataSource(shardingSphereDataSource, orchestrationConfig);
     }
     

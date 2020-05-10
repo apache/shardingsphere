@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shardingjdbc.api;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
-import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShadowDataSource;
 
 import javax.sql.DataSource;
@@ -48,7 +47,7 @@ public final class ShadowDataSourceFactory {
      */
     public static DataSource createDataSource(final DataSource actualDataSource, final DataSource shadowDataSource,
                                               final ShadowRuleConfiguration shadowRuleConfiguration, final Properties props) throws SQLException {
-        return new ShadowDataSource(actualDataSource, shadowDataSource, new ShadowRule(shadowRuleConfiguration), props);
+        return new ShadowDataSource(actualDataSource, shadowDataSource, shadowRuleConfiguration, props);
     }
     
     /**
@@ -63,7 +62,7 @@ public final class ShadowDataSourceFactory {
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap,
                                               final ShadowRuleConfiguration shadowRuleConfiguration, final Properties props) throws SQLException {
         return new ShadowDataSource(createActualDataSource(dataSourceMap, shadowRuleConfiguration, props),
-                createShadowDataSource(dataSourceMap, shadowRuleConfiguration, props), new ShadowRule(shadowRuleConfiguration), props);
+                createShadowDataSource(dataSourceMap, shadowRuleConfiguration, props), shadowRuleConfiguration, props);
     }
     
     private static DataSource createActualDataSource(final Map<String, DataSource> dataSourceMap, final ShadowRuleConfiguration shadowRule, final Properties props) {
