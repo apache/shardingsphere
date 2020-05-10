@@ -34,7 +34,6 @@ import java.lang.reflect.Field;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertNotNull;
