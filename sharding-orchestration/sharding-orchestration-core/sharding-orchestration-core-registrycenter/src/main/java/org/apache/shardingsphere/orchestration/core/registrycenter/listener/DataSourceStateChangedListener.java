@@ -24,7 +24,7 @@ import org.apache.shardingsphere.orchestration.core.common.listener.PostSharding
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registrycenter.RegistryCenterNode;
 import org.apache.shardingsphere.orchestration.core.registrycenter.RegistryCenterNodeStatus;
-import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationShardingSchema;
+import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationSchema;
 
 import java.util.Collections;
 
@@ -45,7 +45,7 @@ public final class DataSourceStateChangedListener extends PostShardingCenterRepo
         return new DisabledStateChangedEvent(getShardingSchema(event.getKey()), isDataSourceDisabled(event));
     }
     
-    private OrchestrationShardingSchema getShardingSchema(final String dataSourceNodeFullPath) {
+    private OrchestrationSchema getShardingSchema(final String dataSourceNodeFullPath) {
         return registryCenterNode.getOrchestrationShardingSchema(dataSourceNodeFullPath);
     }
     

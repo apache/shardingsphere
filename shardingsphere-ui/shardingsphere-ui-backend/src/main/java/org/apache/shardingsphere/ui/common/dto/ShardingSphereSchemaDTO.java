@@ -15,34 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.core.registrycenter.schema;
+package org.apache.shardingsphere.ui.common.dto;
 
-import com.google.common.base.Splitter;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
-
-import java.util.List;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
- * Orchestration sharding schema.
+ * ShardingSphere schema DTO.
  */
-@RequiredArgsConstructor
+@Setter
 @Getter
-public final class OrchestrationShardingSchema {
+@NoArgsConstructor
+@AllArgsConstructor
+public final class ShardingSphereSchemaDTO {
     
-    private final String schemaName;
+    private String name;
     
-    private final String dataSourceName;
+    private String ruleConfiguration;
     
-    public OrchestrationShardingSchema(final String value) {
-        if (value.contains(".")) {
-            List<String> values = Splitter.on(".").splitToList(value);
-            schemaName = values.get(0);
-            dataSourceName = values.get(1);
-        } else {
-            schemaName = DefaultSchema.LOGIC_NAME;
-            dataSourceName = value;
-        }
-    }
+    private String dataSourceConfiguration;
+    
 }

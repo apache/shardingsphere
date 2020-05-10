@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.backend.response.query;
 
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
@@ -125,8 +125,8 @@ public final class QueryHeaderTest {
         assertTrue(header.isAutoIncrement());
     }
     
-    private ShardingSchema getShardingSchema() {
-        ShardingSchema result = mock(ShardingSchema.class);
+    private ShardingSphereSchema getShardingSchema() {
+        ShardingSphereSchema result = mock(ShardingSphereSchema.class);
         ColumnMetaData columnMetaData = new ColumnMetaData("order_id", Types.INTEGER, "int", true, false, false);
         SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
         when(schemaMetaData.get("t_logic_order")).thenReturn(new TableMetaData(Collections.singletonList(columnMetaData), Collections.singletonList(new IndexMetaData("order_id"))));

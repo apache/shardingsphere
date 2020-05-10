@@ -31,7 +31,7 @@ import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenter;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.orchestration.core.metadatacenter.event.MetaDataChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
-import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationShardingSchema;
+import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationSchema;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
@@ -143,11 +143,11 @@ public class OrchestrationShardingSphereDataSource extends AbstractOrchestration
      */
     @Subscribe
     public synchronized void renew(final DisabledStateChangedEvent disabledStateChangedEvent) {
-        OrchestrationShardingSchema shardingSchema = disabledStateChangedEvent.getShardingSchema();
-        if (DefaultSchema.LOGIC_NAME.equals(shardingSchema.getSchemaName())) {
+        OrchestrationSchema orchestrationSchema = disabledStateChangedEvent.getOrchestrationSchema();
+        if (DefaultSchema.LOGIC_NAME.equals(orchestrationSchema.getSchemaName())) {
             for (ShardingSphereRule each : dataSource.getRuntimeContext().getRules()) {
                 if (each instanceof MasterSlaveRule) {
-                    ((MasterSlaveRule) each).updateDisabledDataSourceNames(shardingSchema.getDataSourceName(), disabledStateChangedEvent.isDisabled());
+                    ((MasterSlaveRule) each).updateDisabledDataSourceNames(orchestrationSchema.getDataSourceName(), disabledStateChangedEvent.isDisabled());
                 }
             }
         }

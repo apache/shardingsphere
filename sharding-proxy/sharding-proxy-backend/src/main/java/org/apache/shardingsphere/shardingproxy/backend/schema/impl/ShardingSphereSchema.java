@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.orchestration.core.common.event.ShardingRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
-import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationShardingSchema;
+import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
@@ -43,11 +43,11 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Sharding schema.
+ * ShardingSphere schema.
  */
-public final class ShardingSchema extends LogicSchema {
+public final class ShardingSphereSchema extends LogicSchema {
     
-    public ShardingSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final Collection<RuleConfiguration> ruleConfigurations) throws SQLException {
+    public ShardingSphereSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final Collection<RuleConfiguration> ruleConfigurations) throws SQLException {
         super(name, dataSources, ShardingSphereRulesBuilder.build(ruleConfigurations, dataSources.keySet()));
     }
     
@@ -71,11 +71,11 @@ public final class ShardingSchema extends LogicSchema {
      */
     @Subscribe
     public synchronized void renew(final DisabledStateChangedEvent disabledStateChangedEvent) {
-        OrchestrationShardingSchema shardingSchema = disabledStateChangedEvent.getShardingSchema();
-        if (getName().equals(shardingSchema.getSchemaName())) {
+        OrchestrationSchema orchestrationSchema = disabledStateChangedEvent.getOrchestrationSchema();
+        if (getName().equals(orchestrationSchema.getSchemaName())) {
             for (ShardingSphereRule each : getRules()) {
                 if (each instanceof MasterSlaveRule) {
-                    ((MasterSlaveRule) each).updateDisabledDataSourceNames(shardingSchema.getDataSourceName(), disabledStateChangedEvent.isDisabled());
+                    ((MasterSlaveRule) each).updateDisabledDataSourceNames(orchestrationSchema.getDataSourceName(), disabledStateChangedEvent.isDisabled());
                 }
             }
         }
