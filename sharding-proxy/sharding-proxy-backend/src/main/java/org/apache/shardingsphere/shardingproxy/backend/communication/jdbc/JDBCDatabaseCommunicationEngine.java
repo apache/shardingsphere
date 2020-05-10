@@ -31,7 +31,7 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryRespo
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
-import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSphereSchema;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
@@ -90,7 +90,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         }
         response = executeEngine.execute(executionContext);
         // TODO refresh non-sharding table meta data
-        if (logicSchema instanceof ShardingSchema) {
+        if (logicSchema instanceof ShardingSphereSchema) {
             logicSchema.refreshTableMetaData(executionContext.getSqlStatementContext());
         }
         return merge(executionContext.getSqlStatementContext());

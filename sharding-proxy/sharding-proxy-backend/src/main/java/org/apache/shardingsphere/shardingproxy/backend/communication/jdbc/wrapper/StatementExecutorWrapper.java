@@ -23,7 +23,7 @@ import org.apache.shardingsphere.shadow.rewrite.judgement.ShadowJudgementEngine;
 import org.apache.shardingsphere.shadow.rewrite.judgement.impl.SimpleJudgementEngine;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShadowSchema;
-import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSphereSchema;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
@@ -66,7 +66,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     
     @Override
     public ExecutionContext route(final String sql) {
-        if (logicSchema instanceof ShardingSchema) {
+        if (logicSchema instanceof ShardingSphereSchema) {
             return doShardingRoute(sql);
         }
         if (logicSchema instanceof ShadowSchema) {

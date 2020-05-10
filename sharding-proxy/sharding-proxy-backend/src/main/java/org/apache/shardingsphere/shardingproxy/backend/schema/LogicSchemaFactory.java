@@ -24,7 +24,7 @@ import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShadowSchema;
-import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSphereSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.TransparentSchema;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
@@ -52,20 +52,20 @@ public final class LogicSchemaFactory {
     public static LogicSchema newInstance(final String schemaName, final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources,
                                           final Collection<RuleConfiguration> ruleConfigurations) throws SQLException {
         if (ruleConfigurations.size() > 1) {
-            return new ShardingSchema(schemaName, schemaDataSources.get(schemaName), ruleConfigurations);
+            return new ShardingSphereSchema(schemaName, schemaDataSources.get(schemaName), ruleConfigurations);
         }
         if (ruleConfigurations.isEmpty()) {
             return new TransparentSchema(schemaName, schemaDataSources.get(schemaName));
         }
         RuleConfiguration ruleConfiguration = ruleConfigurations.iterator().next();
         if (ruleConfiguration instanceof ShardingRuleConfiguration) {
-            return new ShardingSchema(schemaName, schemaDataSources.get(schemaName), Collections.singleton(ruleConfiguration));
+            return new ShardingSphereSchema(schemaName, schemaDataSources.get(schemaName), Collections.singleton(ruleConfiguration));
         }
         if (ruleConfiguration instanceof MasterSlaveRuleConfiguration) {
-            return new ShardingSchema(schemaName, schemaDataSources.get(schemaName), Collections.singleton(ruleConfiguration));
+            return new ShardingSphereSchema(schemaName, schemaDataSources.get(schemaName), Collections.singleton(ruleConfiguration));
         }
         if (ruleConfiguration instanceof EncryptRuleConfiguration) {
-            return new ShardingSchema(schemaName, schemaDataSources.get(schemaName), Collections.singleton(ruleConfiguration));
+            return new ShardingSphereSchema(schemaName, schemaDataSources.get(schemaName), Collections.singleton(ruleConfiguration));
         }
         if (ruleConfiguration instanceof ShadowRuleConfiguration) {
             return new ShadowSchema(schemaName, schemaDataSources.get(schemaName), (ShadowRuleConfiguration) ruleConfiguration);

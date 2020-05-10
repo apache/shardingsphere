@@ -31,7 +31,7 @@ import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChang
 import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.ShardingRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
-import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationShardingSchema;
+import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationSchema;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
@@ -167,7 +167,7 @@ public final class OrchestrationShardingSphereDataSourceTest {
     }
     
     private DisabledStateChangedEvent getDisabledStateChangedEvent() {
-        OrchestrationShardingSchema shardingSchema = new OrchestrationShardingSchema("logic_db.ds_s");
-        return new DisabledStateChangedEvent(shardingSchema, true);
+        OrchestrationSchema orchestrationSchema = new OrchestrationSchema("logic_db.ds_s");
+        return new DisabledStateChangedEvent(orchestrationSchema, true);
     }
 }
