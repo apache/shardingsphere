@@ -45,7 +45,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Orchestration ShardingSphere data source.
@@ -76,7 +75,7 @@ public class OrchestrationShardingSphereDataSource extends AbstractOrchestration
     
     private Map<String, Collection<RuleConfiguration>> getRuleConfigurationMap() {
         Map<String, Collection<RuleConfiguration>> result = new LinkedHashMap<>(1, 1);
-        result.put(DefaultSchema.LOGIC_NAME, dataSource.getRuntimeContext().getRules().stream().map(ShardingSphereRule::getRuleConfiguration).collect(Collectors.toList()));
+        result.put(DefaultSchema.LOGIC_NAME, dataSource.getRuntimeContext().getConfigurations());
         return result;
     }
     
