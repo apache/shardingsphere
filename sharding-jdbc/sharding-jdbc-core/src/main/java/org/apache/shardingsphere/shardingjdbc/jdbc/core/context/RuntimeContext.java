@@ -91,10 +91,7 @@ public final class RuntimeContext implements AutoCloseable {
         shardingTransactionManagerEngine = new ShardingTransactionManagerEngine();
         shardingTransactionManagerEngine.init(databaseType, dataSourceMap);
         metaData = createMetaData(dataSourceMap, databaseType);
-        if (!rules.isEmpty()) {
-            rules.forEach(each -> ConfigurationLogger.log(each.getRuleConfiguration()));
-        }
-        ConfigurationLogger.log(props);
+        log(configurations, props);
     }
     
     public RuntimeContext(final DataSource dataSource, final DatabaseType databaseType, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
@@ -126,6 +123,11 @@ public final class RuntimeContext implements AutoCloseable {
             }
         }
         return result;
+    }
+    
+    private void log(final Collection<RuleConfiguration> configurations, final Properties props) {
+        configurations.forEach(ConfigurationLogger::log);
+        ConfigurationLogger.log(props);
     }
     
     @Override
