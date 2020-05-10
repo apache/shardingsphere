@@ -42,9 +42,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Sharding adapter for {@code PreparedStatement}.
+ * Adapter for {@code PreparedStatement}.
  */
-public abstract class AbstractShardingPreparedStatementAdapter extends AbstractUnsupportedOperationPreparedStatement {
+public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupportedOperationPreparedStatement {
     
     private final List<SetParameterMethodInvocation> setParameterMethodInvocations = new LinkedList<>();
     

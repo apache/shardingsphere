@@ -64,9 +64,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Statement that support sharding.
+ * ShardingSphere statement.
  */
-public final class ShardingStatement extends AbstractStatementAdapter {
+public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     @Getter
     private final ShardingSphereConnection connection;
@@ -83,15 +83,15 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     private ResultSet currentResultSet;
     
-    public ShardingStatement(final ShardingSphereConnection connection) {
+    public ShardingSphereStatement(final ShardingSphereConnection connection) {
         this(connection, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
     }
     
-    public ShardingStatement(final ShardingSphereConnection connection, final int resultSetType, final int resultSetConcurrency) {
+    public ShardingSphereStatement(final ShardingSphereConnection connection, final int resultSetType, final int resultSetConcurrency) {
         this(connection, resultSetType, resultSetConcurrency, ResultSet.HOLD_CURSORS_OVER_COMMIT);
     }
     
-    public ShardingStatement(final ShardingSphereConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
+    public ShardingSphereStatement(final ShardingSphereConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         super(Statement.class);
         this.connection = connection;
         statements = new LinkedList<>();

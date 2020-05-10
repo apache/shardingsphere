@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 
 import org.apache.shardingsphere.shardingjdbc.common.base.AbstractShardingJDBCDatabaseAndTableTest;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingPreparedStatement;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingSpherePreparedStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.util.JDBCTestSQL;
 import org.junit.After;
 import org.junit.Before;
@@ -313,14 +313,14 @@ public final class PreparedStatementAdapterTest extends AbstractShardingJDBCData
             each.setObject(3, null);
             each.setObject(4, null);
             each.setObject(5, obj, 0, 0);
-            assertThat(((ShardingPreparedStatement) each).getParameters().size(), is(5));
+            assertThat(((ShardingSpherePreparedStatement) each).getParameters().size(), is(5));
             each.clearParameters();
-            assertTrue(((ShardingPreparedStatement) each).getParameters().isEmpty());
+            assertTrue(((ShardingSpherePreparedStatement) each).getParameters().isEmpty());
         }
     }
     
     private void assertParameter(final PreparedStatement actual, final int index, final Object parameter) {
-        assertThat(((ShardingPreparedStatement) actual).getParameters().get(index - 1), is(parameter));
+        assertThat(((ShardingSpherePreparedStatement) actual).getParameters().get(index - 1), is(parameter));
     }
     
     private static class SerializableStringReader extends StringReader {

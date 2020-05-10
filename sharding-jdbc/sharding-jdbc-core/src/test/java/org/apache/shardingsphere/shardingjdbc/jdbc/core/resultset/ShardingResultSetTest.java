@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
@@ -66,7 +66,7 @@ public final class ShardingResultSetTest {
         mergeResultSet = mock(MergedResult.class);
         RuntimeContext runtimeContext = mock(RuntimeContext.class);
         when(runtimeContext.getProperties()).thenReturn(new ConfigurationProperties(new Properties()));
-        shardingResultSet = new ShardingResultSet(getResultSets(), mergeResultSet, getShardingStatement(), createExecutionContext());
+        shardingResultSet = new ShardingResultSet(getResultSets(), mergeResultSet, getShardingSphereStatement(), createExecutionContext());
     }
     
     private ExecutionContext createExecutionContext() {
@@ -88,12 +88,12 @@ public final class ShardingResultSetTest {
         return Collections.singletonList(resultSet);
     }
     
-    private ShardingStatement getShardingStatement() {
+    private ShardingSphereStatement getShardingSphereStatement() {
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class);
         RuntimeContext runtimeContext = mock(RuntimeContext.class);
         when(runtimeContext.getProperties()).thenReturn(new ConfigurationProperties(new Properties()));
         when(connection.getRuntimeContext()).thenReturn(runtimeContext);
-        ShardingStatement result = mock(ShardingStatement.class);
+        ShardingSphereStatement result = mock(ShardingSphereStatement.class);
         when(result.getConnection()).thenReturn(connection);
         return result;
     }

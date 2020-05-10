@@ -31,7 +31,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class ShardingStatementTest extends AbstractShardingJDBCDatabaseAndTableTest {
+public final class ShardingSphereStatementTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
     private final String sql = "INSERT INTO t_order_item(order_id, user_id, status) VALUES (%d, %d, '%s')";
     

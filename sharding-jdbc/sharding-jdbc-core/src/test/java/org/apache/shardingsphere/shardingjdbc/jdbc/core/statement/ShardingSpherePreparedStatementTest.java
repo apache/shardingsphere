@@ -34,7 +34,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDatabaseAndTableTest {
+public final class ShardingSpherePreparedStatementTest extends AbstractShardingJDBCDatabaseAndTableTest {
 
     private static final String INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL = "INSERT INTO t_user (name) VALUES (?),(?),(?),(?)";
 
