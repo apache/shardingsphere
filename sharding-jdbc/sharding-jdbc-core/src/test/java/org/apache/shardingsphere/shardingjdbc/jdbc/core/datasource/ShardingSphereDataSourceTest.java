@@ -28,7 +28,6 @@ import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.underlying.common.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.underlying.common.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRulesBuilder;
 import org.junit.After;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -177,8 +176,7 @@ public final class ShardingSphereDataSourceTest {
     }
     
     private ShardingSphereDataSource createShardingSphereDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        return new ShardingSphereDataSource(
-                dataSourceMap, ShardingSphereRulesBuilder.build(Collections.singletonList(createShardingRuleConfig(dataSourceMap)), dataSourceMap.keySet()), new Properties());
+        return new ShardingSphereDataSource(dataSourceMap, Collections.singletonList(createShardingRuleConfig(dataSourceMap)), new Properties());
     }
     
     private ShardingRuleConfiguration createShardingRuleConfig(final Map<String, DataSource> dataSourceMap) {

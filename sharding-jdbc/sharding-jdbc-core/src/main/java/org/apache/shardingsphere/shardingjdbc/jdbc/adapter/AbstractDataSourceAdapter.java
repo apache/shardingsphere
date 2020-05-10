@@ -22,9 +22,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -51,10 +51,10 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     @Setter
     private PrintWriter logWriter = new PrintWriter(System.out);
     
-    public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules, final Properties props) throws SQLException {
+    public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
         this.dataSourceMap = dataSourceMap;
         databaseType = createDatabaseType();
-        runtimeContext = new RuntimeContext(dataSourceMap, databaseType, rules, props);
+        runtimeContext = new RuntimeContext(dataSourceMap, databaseType, configurations, props);
     }
     
     private DatabaseType createDatabaseType() throws SQLException {

@@ -35,7 +35,6 @@ import org.apache.shardingsphere.spring.boot.datasource.DataSourcePropertiesSett
 import org.apache.shardingsphere.spring.boot.util.DataSourceUtil;
 import org.apache.shardingsphere.spring.boot.util.PropertyUtil;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRulesBuilder;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -107,8 +106,8 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @Bean
     @Conditional(LocalShardingRuleCondition.class)
     public DataSource shardingSphereDataSourceByLocal(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
-        return new OrchestrationShardingSphereDataSource(new ShardingSphereDataSource(dataSourceMap, 
-                ShardingSphereRulesBuilder.build(new RuleRootConfigurationsYamlSwapper().swap(rules), dataSourceMap.keySet()), root.getProps()), orchestrationConfiguration);
+        return new OrchestrationShardingSphereDataSource(
+                new ShardingSphereDataSource(dataSourceMap, new RuleRootConfigurationsYamlSwapper().swap(rules), root.getProps()), orchestrationConfiguration);
     }
     
     /**

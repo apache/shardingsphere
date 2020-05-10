@@ -27,7 +27,6 @@ import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.YamlCenterRepositoryConfigurationSwapperUtil;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml.YamlOrchestrationRootRuleConfigurations;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml.constructor.YamlOrchestrationShardingRuleConfigurationConstructor;
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
 import javax.sql.DataSource;
@@ -104,8 +103,7 @@ public final class YamlOrchestrationShardingSphereDataSourceFactory {
         if (null == configurations) {
             return new OrchestrationShardingSphereDataSource(new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
         } else {
-            ShardingSphereDataSource shardingSphereDataSource = new ShardingSphereDataSource(
-                    dataSourceMap, ShardingSphereRulesBuilder.build(SWAPPER.swap(configurations), dataSourceMap.keySet()), props);
+            ShardingSphereDataSource shardingSphereDataSource = new ShardingSphereDataSource(dataSourceMap, SWAPPER.swap(configurations), props);
             return new OrchestrationShardingSphereDataSource(
                     shardingSphereDataSource, new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
         }

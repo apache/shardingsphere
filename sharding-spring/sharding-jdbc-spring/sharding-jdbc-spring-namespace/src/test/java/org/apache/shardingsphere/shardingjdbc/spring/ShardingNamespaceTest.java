@@ -31,7 +31,6 @@ import org.apache.shardingsphere.shardingjdbc.spring.algorithm.DefaultComplexKey
 import org.apache.shardingsphere.shardingjdbc.spring.algorithm.DefaultHintShardingAlgorithm;
 import org.apache.shardingsphere.shardingjdbc.spring.algorithm.StandardModuloDatabaseShardingAlgorithm;
 import org.apache.shardingsphere.shardingjdbc.spring.algorithm.StandardModuloTableShardingAlgorithm;
-import org.apache.shardingsphere.shardingjdbc.spring.datasource.SpringShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.fixture.IncrementKeyGenerateAlgorithm;
 import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.transaction.spring.ShardingTransactionTypeScanner;
@@ -219,7 +218,7 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @Test
     public void assertShardingSphereDataSourceType() {
-        assertTrue(applicationContext.getBean("simpleShardingDataSource", ShardingSphereDataSource.class) instanceof SpringShardingSphereDataSource);
+        assertNotNull(applicationContext.getBean("simpleShardingDataSource", ShardingSphereDataSource.class));
     }
     
     @Test

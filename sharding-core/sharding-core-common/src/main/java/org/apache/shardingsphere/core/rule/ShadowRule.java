@@ -29,14 +29,12 @@ import java.util.Map;
 @Getter
 public final class ShadowRule implements ShardingSphereRule {
     
-    private ShadowRuleConfiguration ruleConfiguration;
-    
     private Map<String, String> shadowMappings;
     
     private String column;
     
     public ShadowRule(final ShadowRuleConfiguration shadowRuleConfiguration) {
         column = shadowRuleConfiguration.getColumn();
-        ruleConfiguration = shadowRuleConfiguration;
+        shadowMappings = shadowRuleConfiguration.getShadowMappings();
     }
 }

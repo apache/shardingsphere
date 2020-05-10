@@ -17,17 +17,8 @@
 
 package org.apache.shardingsphere.underlying.common.rule;
 
-import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-
 /**
  * ShardingSphere rule.
  */
 public interface ShardingSphereRule {
-    
-    /**
-     * Get rule configuration.
-     * 
-     * @return rule configuration
-     */
-    RuleConfiguration getRuleConfiguration();
 }

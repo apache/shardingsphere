@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
 import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.rewrite.judgement.ShadowJudgementEngine;
 import org.apache.shardingsphere.shadow.rewrite.judgement.impl.PreparedJudgementEngine;
@@ -100,7 +101,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
             SQLRewriteUnit sqlRewriteResult = ((GenericSQLRewriteResult) sqlRewriteEntry.rewrite(
                     sql, parameters, new RouteContext(sqlStatementContext, parameters, new RouteResult()))).getSqlRewriteUnit();
             String dataSourceName = shadowJudgementEngine.isShadowSQL()
-                    ? ((ShadowRule) shadowSchema.getRules().iterator().next()).getRuleConfiguration().getShadowMappings().get(logicSchema.getDataSources().keySet().iterator().next())
+                    ? ((ShadowRuleConfiguration) shadowSchema.getConfigurations().iterator().next()).getShadowMappings().get(logicSchema.getDataSources().keySet().iterator().next())
                     : logicSchema.getDataSources().keySet().iterator().next();
             executionUnits.add(new ExecutionUnit(dataSourceName, new SQLUnit(sqlRewriteResult.getSql(), sqlRewriteResult.getParameters())));
         } else {

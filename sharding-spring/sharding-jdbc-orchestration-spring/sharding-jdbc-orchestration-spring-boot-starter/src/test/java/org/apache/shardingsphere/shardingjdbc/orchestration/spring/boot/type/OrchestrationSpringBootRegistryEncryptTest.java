@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.type;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry.TestCenterRepository;
@@ -85,9 +84,9 @@ public class OrchestrationSpringBootRegistryEncryptTest {
         BasicDataSource embedDataSource = (BasicDataSource) encryptDataSource.getDataSourceMap().values().iterator().next();
         assertThat(embedDataSource.getMaxTotal(), is(100));
         assertThat(embedDataSource.getUsername(), is("sa"));
-        EncryptRuleConfiguration encryptRuleConfig = ((EncryptRule) encryptDataSource.getRuntimeContext().getRules().iterator().next()).getRuleConfiguration();
-        assertThat(encryptRuleConfig.getEncryptors().size(), is(1));
-        assertTrue(encryptRuleConfig.getEncryptors().containsKey("order_encrypt"));
-        assertThat(encryptRuleConfig.getEncryptors().get("order_encrypt").getType(), is("aes"));
+        EncryptRuleConfiguration configuration = (EncryptRuleConfiguration) encryptDataSource.getRuntimeContext().getConfigurations().iterator().next();
+        assertThat(configuration.getEncryptors().size(), is(1));
+        assertTrue(configuration.getEncryptors().containsKey("order_encrypt"));
+        assertThat(configuration.getEncryptors().get("order_encrypt").getType(), is("aes"));
     }
 }
