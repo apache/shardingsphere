@@ -38,5 +38,6 @@ public final class ShadowRule implements ShardingSphereRule {
     public ShadowRule(final ShadowRuleConfiguration shadowRuleConfiguration) {
         column = shadowRuleConfiguration.getColumn();
         ruleConfiguration = shadowRuleConfiguration;
+        shadowMappings = shadowRuleConfiguration.getShadowMappings();
     }
 }
