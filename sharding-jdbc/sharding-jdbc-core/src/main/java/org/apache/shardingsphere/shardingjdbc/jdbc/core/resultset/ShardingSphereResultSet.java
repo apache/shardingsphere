@@ -41,15 +41,15 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Result that support sharding.
+ * ShardingSphere result set.
  */
-public final class ShardingResultSet extends AbstractResultSetAdapter {
+public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     private final MergedResult mergeResultSet;
     
     private final Map<String, Integer> columnLabelAndIndexMap;
     
-    public ShardingResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Statement statement, final ExecutionContext executionContext) throws SQLException {
+    public ShardingSphereResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Statement statement, final ExecutionContext executionContext) throws SQLException {
         super(resultSets, statement, executionContext);
         this.mergeResultSet = mergeResultSet;
         columnLabelAndIndexMap = createColumnLabelAndIndexMap(resultSets.get(0).getMetaData());

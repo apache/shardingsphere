@@ -25,7 +25,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingSpher
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionConstant;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.GeneratedKeysResultSet;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.ShardingResultSet;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.ShardingSphereResultSet;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
@@ -113,7 +113,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             cacheStatements(inputGroups);
             List<QueryResult> queryResults = statementExecutor.executeQuery(inputGroups);
             MergedResult mergedResult = mergeQuery(queryResults);
-            result = new ShardingResultSet(statements.stream().map(this::getResultSet).collect(Collectors.toList()), mergedResult, this, executionContext);
+            result = new ShardingSphereResultSet(statements.stream().map(this::getResultSet).collect(Collectors.toList()), mergedResult, this, executionContext);
         } finally {
             currentResultSet = null;
         }
@@ -280,7 +280,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         if (executionContext.getSqlStatementContext() instanceof SelectStatementContext || executionContext.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
             List<ResultSet> resultSets = getResultSets();
             MergedResult mergedResult = mergeQuery(getQueryResults(resultSets));
-            currentResultSet = new ShardingResultSet(resultSets, mergedResult, this, executionContext);
+            currentResultSet = new ShardingSphereResultSet(resultSets, mergedResult, this, executionContext);
         }
         return currentResultSet;
     }
