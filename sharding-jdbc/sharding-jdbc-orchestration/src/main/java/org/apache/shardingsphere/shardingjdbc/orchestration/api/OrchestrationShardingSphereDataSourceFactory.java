@@ -20,8 +20,8 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.api;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRulesBuilder;
 
@@ -33,10 +33,10 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Orchestration sharding data source factory.
+ * Orchestration ShardingSphere data source factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class OrchestrationShardingDataSourceFactory {
+public final class OrchestrationShardingSphereDataSourceFactory {
     
     /**
      * Create sharding data source.
@@ -53,8 +53,8 @@ public final class OrchestrationShardingDataSourceFactory {
         if (null == ruleConfigurations || ruleConfigurations.isEmpty()) {
             return createDataSource(orchestrationConfig);
         }
-        ShardingDataSource shardingDataSource = new ShardingDataSource(dataSourceMap, ShardingSphereRulesBuilder.build(ruleConfigurations, dataSourceMap.keySet()), props);
-        return new OrchestrationShardingDataSource(shardingDataSource, orchestrationConfig);
+        ShardingSphereDataSource shardingSphereDataSource = new ShardingSphereDataSource(dataSourceMap, ShardingSphereRulesBuilder.build(ruleConfigurations, dataSourceMap.keySet()), props);
+        return new OrchestrationShardingSphereDataSource(shardingSphereDataSource, orchestrationConfig);
     }
     
     /**
@@ -82,6 +82,6 @@ public final class OrchestrationShardingDataSourceFactory {
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final OrchestrationConfiguration orchestrationConfig) throws SQLException {
-        return new OrchestrationShardingDataSource(orchestrationConfig);
+        return new OrchestrationShardingSphereDataSource(orchestrationConfig);
     }
 }

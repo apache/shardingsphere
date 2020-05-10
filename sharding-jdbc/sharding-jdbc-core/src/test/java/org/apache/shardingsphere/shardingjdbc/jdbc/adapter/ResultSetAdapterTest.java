@@ -52,7 +52,7 @@ public final class ResultSetAdapterTest extends AbstractShardingJDBCDatabaseAndT
     
     @Before
     public void init() throws SQLException {
-        ShardingConnection shardingConnection = getShardingDataSource().getConnection();
+        ShardingConnection shardingConnection = getShardingSphereDataSource().getConnection();
         shardingConnections.add(shardingConnection);
         Statement statement = shardingConnection.createStatement();
         statements.add(statement);

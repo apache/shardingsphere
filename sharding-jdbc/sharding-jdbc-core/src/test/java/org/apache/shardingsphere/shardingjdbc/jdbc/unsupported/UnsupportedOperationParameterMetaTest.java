@@ -40,7 +40,7 @@ public final class UnsupportedOperationParameterMetaTest extends AbstractShardin
     
     @Before
     public void init() throws SQLException {
-        ShardingConnection shardingConnection = getShardingDataSource().getConnection();
+        ShardingConnection shardingConnection = getShardingSphereDataSource().getConnection();
         shardingConnections.add(shardingConnection);
         PreparedStatement preparedStatement = shardingConnection.prepareStatement(SQL);
         parameterMetaData.add(preparedStatement.getParameterMetaData());

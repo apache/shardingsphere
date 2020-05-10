@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource;
+package org.apache.shardingsphere.shardingjdbc.spring.datasource;
 
-import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
-import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRulesBuilder;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -29,16 +28,11 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Sharding data source.
+ * ShardingSphere data source for spring namespace.
  */
-public class ShardingDataSource extends AbstractDataSourceAdapter {
+public final class SpringShardingSphereDataSource extends ShardingSphereDataSource {
     
-    public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules, final Properties props) throws SQLException {
-        super(dataSourceMap, rules, props);
-    }
-    
-    @Override
-    public final ShardingConnection getConnection() {
-        return new ShardingConnection(getDataSourceMap(), getRuntimeContext(), TransactionTypeHolder.get());
+    public SpringShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> ruleConfigurations, final Properties props) throws SQLException {
+        super(dataSourceMap, ShardingSphereRulesBuilder.build(ruleConfigurations, dataSourceMap.keySet()), props);
     }
 }

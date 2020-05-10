@@ -58,7 +58,7 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
     
     @Before
     public void init() {
-        ShardingConnection shardingConnection = getShardingDataSource().getConnection();
+        ShardingConnection shardingConnection = getShardingSphereDataSource().getConnection();
         shardingConnections.add(shardingConnection);
         statements.put(DatabaseTypes.getActualDatabaseType("H2"), shardingConnection.createStatement());
     }
@@ -171,11 +171,11 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
         when(statement1.getUpdateCount()).thenReturn(Integer.MAX_VALUE);
         final Statement statement2 = Mockito.mock(Statement.class);
         when(statement2.getUpdateCount()).thenReturn(Integer.MAX_VALUE);
-        ShardingStatement shardingStatement1 = spy(new ShardingStatement(getShardingDataSource().getConnection()));
+        ShardingStatement shardingStatement1 = spy(new ShardingStatement(getShardingSphereDataSource().getConnection()));
         doReturn(true).when(shardingStatement1).isAccumulate();
         doReturn(Lists.newArrayList(statement1, statement2)).when(shardingStatement1).getRoutedStatements();
         assertThat(shardingStatement1.getUpdateCount(), is(Integer.MAX_VALUE));
-        ShardingPreparedStatement shardingStatement2 = spy(new ShardingPreparedStatement(getShardingDataSource().getConnection(), sql));
+        ShardingPreparedStatement shardingStatement2 = spy(new ShardingPreparedStatement(getShardingSphereDataSource().getConnection(), sql));
         doReturn(true).when(shardingStatement2).isAccumulate();
         doReturn(Lists.newArrayList(statement1, statement2)).when(shardingStatement2).getRoutedStatements();
         assertThat(shardingStatement2.getUpdateCount(), is(Integer.MAX_VALUE));
@@ -187,11 +187,11 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
         when(statement1.getUpdateCount()).thenReturn(10);
         final Statement statement2 = Mockito.mock(Statement.class);
         when(statement2.getUpdateCount()).thenReturn(10);
-        ShardingStatement shardingStatement1 = spy(new ShardingStatement(getShardingDataSource().getConnection()));
+        ShardingStatement shardingStatement1 = spy(new ShardingStatement(getShardingSphereDataSource().getConnection()));
         doReturn(false).when(shardingStatement1).isAccumulate();
         doReturn(Lists.newArrayList(statement1, statement2)).when(shardingStatement1).getRoutedStatements();
         assertThat(shardingStatement1.getUpdateCount(), is(10));
-        ShardingPreparedStatement shardingStatement2 = spy(new ShardingPreparedStatement(getShardingDataSource().getConnection(), sql));
+        ShardingPreparedStatement shardingStatement2 = spy(new ShardingPreparedStatement(getShardingSphereDataSource().getConnection(), sql));
         doReturn(false).when(shardingStatement2).isAccumulate();
         doReturn(Lists.newArrayList(statement1, statement2)).when(shardingStatement2).getRoutedStatements();
         assertThat(shardingStatement2.getUpdateCount(), is(10));

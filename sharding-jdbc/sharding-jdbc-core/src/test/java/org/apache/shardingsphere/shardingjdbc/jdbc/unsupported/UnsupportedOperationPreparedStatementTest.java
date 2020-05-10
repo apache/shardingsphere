@@ -41,7 +41,7 @@ public final class UnsupportedOperationPreparedStatementTest extends AbstractSha
     
     @Before
     public void init() throws SQLException {
-        ShardingConnection shardingConnection = getShardingDataSource().getConnection();
+        ShardingConnection shardingConnection = getShardingSphereDataSource().getConnection();
         shardingConnections.add(shardingConnection);
         PreparedStatement preparedStatement = shardingConnection.prepareStatement(SQL);
         statements.add(preparedStatement);

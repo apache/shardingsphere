@@ -27,11 +27,11 @@ public final class UnsupportedOperationDataSourceTest extends AbstractShardingJD
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetLoginTimeout() throws SQLException {
-        getShardingDataSource().getLoginTimeout();
+        getShardingSphereDataSource().getLoginTimeout();
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertSetLoginTimeout() throws SQLException {
-        getShardingDataSource().setLoginTimeout(0);
+        getShardingSphereDataSource().setLoginTimeout(0);
     }
 }

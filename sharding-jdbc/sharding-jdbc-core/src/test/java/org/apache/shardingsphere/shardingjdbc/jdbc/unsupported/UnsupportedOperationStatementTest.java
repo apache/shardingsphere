@@ -38,7 +38,7 @@ public final class UnsupportedOperationStatementTest extends AbstractShardingJDB
     
     @Before
     public void init() {
-        ShardingConnection connection = getShardingDataSource().getConnection();
+        ShardingConnection connection = getShardingSphereDataSource().getConnection();
         shardingConnections.add(connection);
         statements.add(connection.createStatement());
     }

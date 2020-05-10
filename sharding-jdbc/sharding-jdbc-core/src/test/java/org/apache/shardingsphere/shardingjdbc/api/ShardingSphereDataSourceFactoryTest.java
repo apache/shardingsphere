@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.api;
 
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -45,7 +45,8 @@ public final class ShardingSphereDataSourceFactoryTest {
     @Test
     public void assertCreateDataSourceWithShardingRuleAndProperties() throws SQLException {
         Properties props = new Properties();
-        ShardingDataSource dataSource = (ShardingDataSource) ShardingSphereDataSourceFactory.createDataSource(getDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()), props);
+        ShardingSphereDataSource dataSource = (ShardingSphereDataSource) ShardingSphereDataSourceFactory.createDataSource(
+                getDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()), props);
         assertThat(dataSource.getRuntimeContext().getProperties().getProps(), is(props));
     }
     

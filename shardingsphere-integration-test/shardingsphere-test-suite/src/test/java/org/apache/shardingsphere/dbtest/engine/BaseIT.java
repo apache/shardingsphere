@@ -26,7 +26,7 @@ import org.apache.shardingsphere.dbtest.env.datasource.DataSourceUtil;
 import org.apache.shardingsphere.dbtest.env.schema.SchemaEnvironmentManager;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShadowDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.junit.After;
 import org.junit.runner.RunWith;
@@ -154,8 +154,8 @@ public abstract class BaseIT {
     
     @After
     public void tearDown() {
-        if (dataSource instanceof ShardingDataSource) {
-            ((ShardingDataSource) dataSource).getRuntimeContext().getExecutorKernel().close();
+        if (dataSource instanceof ShardingSphereDataSource) {
+            ((ShardingSphereDataSource) dataSource).getRuntimeContext().getExecutorKernel().close();
         }
     }
 }

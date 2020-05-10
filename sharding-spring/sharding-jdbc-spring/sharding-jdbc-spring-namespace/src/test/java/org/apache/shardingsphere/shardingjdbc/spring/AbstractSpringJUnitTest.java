@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.spring;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.h2.tools.RunScript;
@@ -47,7 +47,7 @@ public abstract class AbstractSpringJUnitTest extends AbstractJUnit4SpringContex
     
     @Resource
     @Getter
-    private ShardingDataSource shardingDataSource;
+    private ShardingSphereDataSource shardingSphereDataSource;
     
     private final ClassLoader classLoader = AbstractSpringJUnitTest.class.getClassLoader();
     
@@ -84,15 +84,15 @@ public abstract class AbstractSpringJUnitTest extends AbstractJUnit4SpringContex
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
     private void reInitMetaData() {
-        Map<String, DataSource> dataSourceMap = shardingDataSource.getDataSourceMap();
+        Map<String, DataSource> dataSourceMap = shardingSphereDataSource.getDataSourceMap();
         ShardingSphereMetaData newMetaData = (ShardingSphereMetaData) getCreateMetaDataMethod().invoke(
-                shardingDataSource.getRuntimeContext(), dataSourceMap, shardingDataSource.getRuntimeContext().getDatabaseType());
-        setFieldValue(shardingDataSource.getRuntimeContext(), "metaData", newMetaData);
+                shardingSphereDataSource.getRuntimeContext(), dataSourceMap, shardingSphereDataSource.getRuntimeContext().getDatabaseType());
+        setFieldValue(shardingSphereDataSource.getRuntimeContext(), "metaData", newMetaData);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private Method getCreateMetaDataMethod() {
-        Method result = shardingDataSource.getRuntimeContext().getClass().getDeclaredMethod("createMetaData", Map.class, DatabaseType.class);
+        Method result = shardingSphereDataSource.getRuntimeContext().getClass().getDeclaredMethod("createMetaData", Map.class, DatabaseType.class);
         result.setAccessible(true);
         return result;
     }

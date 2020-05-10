@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring.namespace.parser;
 
-import org.apache.shardingsphere.shardingjdbc.spring.datasource.SpringShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.spring.datasource.SpringShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.EncryptDataSourceBeanDefinitionParserTag;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
@@ -41,7 +41,7 @@ public final class EncryptDataSourceBeanDefinitionParser extends AbstractBeanDef
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SpringShardingDataSource.class);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SpringShardingSphereDataSource.class);
         factory.addConstructorArgValue(parseDataSources(element));
         factory.addConstructorArgValue(parseRuleConfigurations(element));
         factory.addConstructorArgValue(parseProperties(element, parserContext));

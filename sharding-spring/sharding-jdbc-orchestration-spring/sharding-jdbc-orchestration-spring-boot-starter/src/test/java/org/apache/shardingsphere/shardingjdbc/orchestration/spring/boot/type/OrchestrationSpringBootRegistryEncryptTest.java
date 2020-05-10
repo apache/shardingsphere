@@ -20,8 +20,8 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.type;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry.TestCenterRepository;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.util.EmbedTestingServer;
 import org.junit.BeforeClass;
@@ -78,10 +78,10 @@ public class OrchestrationSpringBootRegistryEncryptTest {
     
     @Test
     public void assertWithEncryptDataSource() throws NoSuchFieldException, IllegalAccessException {
-        assertTrue(dataSource instanceof OrchestrationShardingDataSource);
-        Field field = OrchestrationShardingDataSource.class.getDeclaredField("dataSource");
+        assertTrue(dataSource instanceof OrchestrationShardingSphereDataSource);
+        Field field = OrchestrationShardingSphereDataSource.class.getDeclaredField("dataSource");
         field.setAccessible(true);
-        ShardingDataSource encryptDataSource = (ShardingDataSource) field.get(dataSource);
+        ShardingSphereDataSource encryptDataSource = (ShardingSphereDataSource) field.get(dataSource);
         BasicDataSource embedDataSource = (BasicDataSource) encryptDataSource.getDataSourceMap().values().iterator().next();
         assertThat(embedDataSource.getMaxTotal(), is(100));
         assertThat(embedDataSource.getUsername(), is("sa"));

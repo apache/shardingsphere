@@ -24,7 +24,7 @@ import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYa
 import org.apache.shardingsphere.shardingjdbc.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 import org.h2.tools.RunScript;
 import org.junit.AfterClass;
@@ -43,9 +43,9 @@ import java.util.Properties;
 
 public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQLTest {
     
-    private static ShardingDataSource encryptDataSource;
+    private static ShardingSphereDataSource encryptDataSource;
     
-    private static ShardingDataSource encryptDataSourceWithProps;
+    private static ShardingSphereDataSource encryptDataSourceWithProps;
     
     private static final List<String> ENCRYPT_DB_NAMES = Collections.singletonList("encrypt");
     
@@ -58,8 +58,8 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
         }
         File encryptFile = getFile(ENCRYPT_CONFIG_FILE);
         DataSource dataSource = getDataSources().values().iterator().next();
-        encryptDataSource = (ShardingDataSource) createDataSourceWithEmptyProps(dataSource, encryptFile);
-        encryptDataSourceWithProps = (ShardingDataSource) YamlShardingSphereDataSourceFactory.createDataSource(dataSource, encryptFile);
+        encryptDataSource = (ShardingSphereDataSource) createDataSourceWithEmptyProps(dataSource, encryptFile);
+        encryptDataSourceWithProps = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(dataSource, encryptFile);
     }
     
     private static File getFile(final String fileName) {

@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.yaml.swapper.root.RuleRootConfigurationsYamlSwapper;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.YamlCenterRepositoryConfigurationSwapperUtil;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml.YamlOrchestrationRootRuleConfigurations;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml.constructor.YamlOrchestrationShardingRuleConfigurationConstructor;
@@ -38,18 +38,18 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Orchestration sharding data source factory for YAML.
+ * Orchestration ShardingSphere data source factory for YAML.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class YamlOrchestrationShardingDataSourceFactory {
+public final class YamlOrchestrationShardingSphereDataSourceFactory {
     
     private static final RuleRootConfigurationsYamlSwapper SWAPPER = new RuleRootConfigurationsYamlSwapper();
     
     /**
-     * Create sharding data source.
+     * Create ShardingSphere data source.
      *
-     * @param yamlFile YAML file for rule configuration of databases and tables sharding with data sources
-     * @return sharding data source
+     * @param yamlFile YAML file for rule configurations
+     * @return ShardingSphere data source
      * @throws SQLException SQL exception
      * @throws IOException IO exception
      */
@@ -59,11 +59,11 @@ public final class YamlOrchestrationShardingDataSourceFactory {
     }
     
     /**
-     * Create sharding data source.
+     * Create ShardingSphere data source.
      *
      * @param dataSourceMap data source map
-     * @param yamlFile YAML file for rule configuration of databases and tables sharding without data sources
-     * @return sharding data source
+     * @param yamlFile YAML file for rule configurations
+     * @return ShardingSphere data source
      * @throws SQLException SQL exception
      * @throws IOException IO exception
      */
@@ -73,10 +73,10 @@ public final class YamlOrchestrationShardingDataSourceFactory {
     }
     
     /**
-     * Create sharding data source.
+     * Create ShardingSphere data source.
      *
-     * @param yamlBytes YAML bytes for rule configuration of databases and tables sharding with data sources
-     * @return sharding data source
+     * @param yamlBytes YAML bytes for rule configurations
+     * @return ShardingSphere data source
      * @throws SQLException SQL exception
      * @throws IOException IO exception
      */
@@ -86,11 +86,11 @@ public final class YamlOrchestrationShardingDataSourceFactory {
     }
     
     /**
-     * Create sharding data source.
+     * Create ShardingSphere data source.
      *
      * @param dataSourceMap data source map
-     * @param yamlBytes YAML bytes for rule configuration of databases and tables sharding without data sources
-     * @return sharding data source
+     * @param yamlBytes YAML bytes for rule configurations
+     * @return ShardingSphere data source
      * @throws SQLException SQL exception
      * @throws IOException IO exception
      */
@@ -102,11 +102,12 @@ public final class YamlOrchestrationShardingDataSourceFactory {
     private static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final YamlOrchestrationRootRuleConfigurations configurations, 
                                                final Properties props, final Map<String, YamlCenterRepositoryConfiguration> yamlInstanceConfigurationMap) throws SQLException {
         if (null == configurations) {
-            return new OrchestrationShardingDataSource(new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
+            return new OrchestrationShardingSphereDataSource(new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
         } else {
-            ShardingDataSource shardingDataSource = new ShardingDataSource(
+            ShardingSphereDataSource shardingSphereDataSource = new ShardingSphereDataSource(
                     dataSourceMap, ShardingSphereRulesBuilder.build(SWAPPER.swap(configurations), dataSourceMap.keySet()), props);
-            return new OrchestrationShardingDataSource(shardingDataSource, new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
+            return new OrchestrationShardingSphereDataSource(
+                    shardingSphereDataSource, new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
         }
     }
     

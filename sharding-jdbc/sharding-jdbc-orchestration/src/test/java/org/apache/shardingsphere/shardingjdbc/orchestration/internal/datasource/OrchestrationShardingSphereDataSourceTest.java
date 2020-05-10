@@ -33,7 +33,7 @@ import org.apache.shardingsphere.orchestration.core.common.event.ShardingRuleCha
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationShardingSchema;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 import org.junit.BeforeClass;
@@ -57,18 +57,18 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class OrchestrationShardingDataSourceTest {
+public final class OrchestrationShardingSphereDataSourceTest {
     
-    private static OrchestrationShardingDataSource shardingDataSource;
+    private static OrchestrationShardingSphereDataSource orchestrationDataSource;
     
     @BeforeClass
     public static void setUp() throws SQLException, IOException, URISyntaxException {
-        shardingDataSource = new OrchestrationShardingDataSource(getShardingDataSource(), getOrchestrationConfiguration());
+        orchestrationDataSource = new OrchestrationShardingSphereDataSource(getShardingSphereDataSource(), getOrchestrationConfiguration());
     }
     
-    private static ShardingDataSource getShardingDataSource() throws IOException, SQLException, URISyntaxException {
-        File yamlFile = new File(OrchestrationShardingDataSourceTest.class.getResource("/yaml/unit/sharding.yaml").toURI());
-        return (ShardingDataSource) YamlShardingSphereDataSourceFactory.createDataSource(yamlFile);
+    private static ShardingSphereDataSource getShardingSphereDataSource() throws IOException, SQLException, URISyntaxException {
+        File yamlFile = new File(OrchestrationShardingSphereDataSourceTest.class.getResource("/yaml/unit/sharding.yaml").toURI());
+        return (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(yamlFile);
     }
     
     private static OrchestrationConfiguration getOrchestrationConfiguration() {
@@ -104,15 +104,15 @@ public final class OrchestrationShardingDataSourceTest {
     }
     
     @Test
-    public void assertInitializeOrchestrationShardingDataSource() throws SQLException {
-        OrchestrationShardingDataSource shardingDataSource = new OrchestrationShardingDataSource(getOrchestrationConfiguration());
-        assertThat(shardingDataSource.getConnection(), instanceOf(Connection.class));
+    public void assertInitializeOrchestrationShardingSphereDataSource() throws SQLException {
+        OrchestrationShardingSphereDataSource orchestrationShardingSphereDataSource = new OrchestrationShardingSphereDataSource(getOrchestrationConfiguration());
+        assertThat(orchestrationShardingSphereDataSource.getConnection(), instanceOf(Connection.class));
     }
     
     @Test
     public void assertRenewRule() {
-        shardingDataSource.renew(new ShardingRuleChangedEvent(DefaultSchema.LOGIC_NAME, Arrays.asList(getShardingRuleConfiguration(), getMasterSlaveRuleConfiguration())));
-        assertThat(((ShardingRule) shardingDataSource.getDataSource().getRuntimeContext().getRules().iterator().next()).getTableRules().size(), is(1));
+        orchestrationDataSource.renew(new ShardingRuleChangedEvent(DefaultSchema.LOGIC_NAME, Arrays.asList(getShardingRuleConfiguration(), getMasterSlaveRuleConfiguration())));
+        assertThat(((ShardingRule) orchestrationDataSource.getDataSource().getRuntimeContext().getRules().iterator().next()).getTableRules().size(), is(1));
     }
     
     private ShardingRuleConfiguration getShardingRuleConfiguration() {
@@ -127,8 +127,8 @@ public final class OrchestrationShardingDataSourceTest {
     
     @Test
     public void assertRenewDataSource() {
-        shardingDataSource.renew(new DataSourceChangedEvent(DefaultSchema.LOGIC_NAME, getDataSourceConfigurations()));
-        assertThat(shardingDataSource.getDataSource().getDataSourceMap().size(), is(3));
+        orchestrationDataSource.renew(new DataSourceChangedEvent(DefaultSchema.LOGIC_NAME, getDataSourceConfigurations()));
+        assertThat(orchestrationDataSource.getDataSource().getDataSourceMap().size(), is(3));
         
     }
     
@@ -147,8 +147,8 @@ public final class OrchestrationShardingDataSourceTest {
     
     @Test
     public void assertRenewProperties() {
-        shardingDataSource.renew(getPropertiesChangedEvent());
-        assertThat(shardingDataSource.getDataSource().getRuntimeContext().getProperties().getProps().getProperty("sql.show"), is("true"));
+        orchestrationDataSource.renew(getPropertiesChangedEvent());
+        assertThat(orchestrationDataSource.getDataSource().getRuntimeContext().getProperties().getProps().getProperty("sql.show"), is("true"));
     }
     
     private PropertiesChangedEvent getPropertiesChangedEvent() {
@@ -159,8 +159,8 @@ public final class OrchestrationShardingDataSourceTest {
     
     @Test
     public void assertRenewDisabledState() {
-        shardingDataSource.renew(getDisabledStateChangedEvent());
-        Optional<MasterSlaveRule> masterSlaveRule = shardingDataSource.getDataSource().getRuntimeContext().getRules().stream().filter(
+        orchestrationDataSource.renew(getDisabledStateChangedEvent());
+        Optional<MasterSlaveRule> masterSlaveRule = orchestrationDataSource.getDataSource().getRuntimeContext().getRules().stream().filter(
             each -> each instanceof MasterSlaveRule).findFirst().map(rule -> (MasterSlaveRule) rule);
         assertTrue(masterSlaveRule.isPresent());
         assertThat(masterSlaveRule.get().getSlaveDataSourceNames().size(), is(0));

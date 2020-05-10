@@ -71,14 +71,14 @@ public class SpringBootConfiguration implements EnvironmentAware {
     private final String jndiName = "jndi-name";
     
     /**
-     * Get sharding data source bean.
+     * Get ShardingSphere data source bean.
      *
      * @return data source bean
      * @throws SQLException SQL exception
      */
     @Bean
     @Conditional(ShardingRuleCondition.class)
-    public DataSource shardingDataSource() throws SQLException {
+    public DataSource shardingSphereDataSource() throws SQLException {
         return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new RuleRootConfigurationsYamlSwapper().swap(rules), props.getProps());
     }
     

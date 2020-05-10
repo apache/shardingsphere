@@ -37,7 +37,7 @@ public final class UnsupportedOperationConnectionTest extends AbstractShardingJD
     
     @Before
     public void init() {
-        shardingConnections.add(getShardingDataSource().getConnection());
+        shardingConnections.add(getShardingSphereDataSource().getConnection());
     }
     
     @After

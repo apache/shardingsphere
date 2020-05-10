@@ -21,7 +21,7 @@ import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfi
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.strategy.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.core.strategy.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.spi.masterslave.MasterSlaveLoadBalanceAlgorithm;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
@@ -59,7 +59,7 @@ public class MasterSlaveNamespaceTest extends AbstractJUnit4SpringContextTests {
     }
     
     private MasterSlaveRule getMasterSlaveRule(final String masterSlaveDataSourceName) {
-        ShardingDataSource dataSource = applicationContext.getBean(masterSlaveDataSourceName, ShardingDataSource.class);
+        ShardingSphereDataSource dataSource = applicationContext.getBean(masterSlaveDataSourceName, ShardingSphereDataSource.class);
         return (MasterSlaveRule) dataSource.getRuntimeContext().getRules().iterator().next();
     }
 }

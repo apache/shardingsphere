@@ -22,7 +22,7 @@ import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
-import org.apache.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingSphereDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -44,7 +44,7 @@ public final class LocalMasterSlaveConfiguration implements ExampleConfiguration
     public DataSource getDataSource() throws SQLException {
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration("demo_ds_master_slave", "demo_ds_master", Arrays.asList("demo_ds_slave_0", "demo_ds_slave_1"));
         OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(centerConfigurationMap);
-        return OrchestrationShardingDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singleton(masterSlaveRuleConfig), new Properties(), orchestrationConfig);
+        return OrchestrationShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singleton(masterSlaveRuleConfig), new Properties(), orchestrationConfig);
     }
     
     private Map<String, DataSource> createDataSourceMap() {

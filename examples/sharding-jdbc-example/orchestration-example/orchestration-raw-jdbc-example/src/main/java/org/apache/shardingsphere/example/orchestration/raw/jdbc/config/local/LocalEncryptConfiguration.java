@@ -25,7 +25,7 @@ import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
-import org.apache.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingSphereDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -44,7 +44,7 @@ public class LocalEncryptConfiguration implements ExampleConfiguration {
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        return OrchestrationShardingDataSourceFactory.createDataSource(
+        return OrchestrationShardingSphereDataSourceFactory.createDataSource(
                 DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(getEncryptRuleConfiguration()), new Properties(), getOrchestrationConfiguration());
     }
     

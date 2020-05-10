@@ -43,7 +43,7 @@ public final class UnsupportedOperationResultSetTest extends AbstractShardingJDB
     
     @Before
     public void init() throws SQLException {
-        ShardingConnection connection = getShardingDataSource().getConnection();
+        ShardingConnection connection = getShardingSphereDataSource().getConnection();
         shardingConnections.add(connection);
         Statement statement = connection.createStatement();
         statements.add(statement);

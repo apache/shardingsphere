@@ -54,7 +54,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public final class ShardingDataSourceTest {
+public final class ShardingSphereDataSourceTest {
     
     @After
     public void tearDown() {
@@ -99,7 +99,7 @@ public final class ShardingDataSourceTest {
     
     private void assertDatabaseProductName(final Map<String, DataSource> dataSourceMap, final Connection... connections) throws SQLException {
         try {
-            assertThat(createShardingDataSource(dataSourceMap).getDatabaseType(), instanceOf(H2DatabaseType.class));
+            assertThat(createShardingSphereDataSource(dataSourceMap).getDatabaseType(), instanceOf(H2DatabaseType.class));
         } finally {
             for (Connection each : connections) {
                 verify(each, atLeast(1)).close();
@@ -142,7 +142,7 @@ public final class ShardingDataSourceTest {
         DataSource dataSource = mockDataSource(DatabaseTypes.getActualDatabaseType("H2"));
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put("ds", dataSource);
-        assertThat(createShardingDataSource(dataSourceMap).getConnection().getConnection("ds"), is(dataSource.getConnection()));
+        assertThat(createShardingSphereDataSource(dataSourceMap).getConnection().getConnection("ds"), is(dataSource.getConnection()));
     }
     
     @Test
@@ -151,9 +151,9 @@ public final class ShardingDataSourceTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put("ds", dataSource);
         TransactionTypeHolder.set(TransactionType.XA);
-        ShardingDataSource shardingDataSource = createShardingDataSource(dataSourceMap);
-        assertThat(shardingDataSource.getDataSourceMap().size(), is(1));
-        ShardingConnection shardingConnection = shardingDataSource.getConnection();
+        ShardingSphereDataSource shardingSphereDataSource = createShardingSphereDataSource(dataSourceMap);
+        assertThat(shardingSphereDataSource.getDataSourceMap().size(), is(1));
+        ShardingConnection shardingConnection = shardingSphereDataSource.getConnection();
         assertThat(shardingConnection.getDataSourceMap().size(), is(1));
     }
     
@@ -163,21 +163,21 @@ public final class ShardingDataSourceTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put("ds", dataSource);
         TransactionTypeHolder.set(TransactionType.XA);
-        ShardingDataSource shardingDataSource = createShardingDataSource(dataSourceMap);
-        ShardingConnection shardingConnection = shardingDataSource.getConnection();
+        ShardingSphereDataSource shardingSphereDataSource = createShardingSphereDataSource(dataSourceMap);
+        ShardingConnection shardingConnection = shardingSphereDataSource.getConnection();
         assertThat(shardingConnection.getDataSourceMap().size(), is(1));
         assertThat(shardingConnection.getTransactionType(), is(TransactionType.XA));
         assertThat(shardingConnection.getShardingTransactionManager(), instanceOf(XAShardingTransactionManagerFixture.class));
         TransactionTypeHolder.set(TransactionType.LOCAL);
-        shardingConnection = shardingDataSource.getConnection();
+        shardingConnection = shardingSphereDataSource.getConnection();
         assertThat(shardingConnection.getConnection("ds"), is(dataSource.getConnection()));
         assertThat(shardingConnection.getDataSourceMap(), is(dataSourceMap));
         assertThat(shardingConnection.getTransactionType(), is(TransactionType.LOCAL));
         assertThat(shardingConnection.getShardingTransactionManager() == null, is(true));
     }
     
-    private ShardingDataSource createShardingDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        return new ShardingDataSource(
+    private ShardingSphereDataSource createShardingSphereDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException {
+        return new ShardingSphereDataSource(
                 dataSourceMap, ShardingSphereRulesBuilder.build(Collections.singletonList(createShardingRuleConfig(dataSourceMap)), dataSourceMap.keySet()), new Properties());
     }
     
