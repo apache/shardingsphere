@@ -45,6 +45,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -120,6 +121,28 @@ public final class ConfigCenterTest {
         verify(configCenterRepository, times(0)).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
         verify(configCenterRepository, times(0)).persist("/test/config/schema/sharding_db/rule", SHARDING_RULE_YAML);
         verify(configCenterRepository, times(0)).persist("/test/config/props", PROPS_YAML);
+    }
+    
+    @Test
+    public void assertMoreShardingSchema() {
+        when(configCenterRepository.get("/test/config/schema/sharding_db/datasource")).thenReturn(DATA_SOURCE_YAML);
+        when(configCenterRepository.get("/test/config/schema/sharding_db/rule")).thenReturn(SHARDING_RULE_YAML);
+        when(configCenterRepository.get("/test/config/props")).thenReturn(PROPS_YAML);
+        when(configCenterRepository.get("/test/config/schema")).thenReturn("myTest1,myTest2");
+        ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
+        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), null, createProperties(), false);
+        verify(configCenterRepository, times(1)).persist("/test/config/schema", "myTest1,myTest2,sharding_db");
+    }
+    
+    @Test
+    public void assertMoreAndContainsShardingSchema() {
+        when(configCenterRepository.get("/test/config/schema/sharding_db/datasource")).thenReturn(DATA_SOURCE_YAML);
+        when(configCenterRepository.get("/test/config/schema/sharding_db/rule")).thenReturn(SHARDING_RULE_YAML);
+        when(configCenterRepository.get("/test/config/props")).thenReturn(PROPS_YAML);
+        when(configCenterRepository.get("/test/config/schema")).thenReturn("myTest1,sharding_db");
+        ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
+        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), null, createProperties(), false);
+        verify(configCenterRepository, times(0)).persist("/test/config/schema", "myTest1,sharding_db");
     }
     
     @Test
@@ -248,8 +271,13 @@ public final class ConfigCenterTest {
     }
     
     @Test
+    public void assertNullRuleConfiguration() {
+        ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
+        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), Collections.EMPTY_LIST, null, createProperties(), true);
+    }
+    
+    @Test
     @Ignore
-    // TODO process shadow
     public void assertPersistConfigurationForShadow() {
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
         configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createShadowRuleConfiguration(), null, createProperties(), true);
