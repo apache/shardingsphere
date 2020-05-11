@@ -158,21 +158,21 @@ public final class MySQLAuthenticationEngineTest {
         return result;
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setConnectionPhase(final MySQLConnectionPhase connectionPhase) {
         Field field = MySQLAuthenticationEngine.class.getDeclaredField("connectionPhase");
         field.setAccessible(true);
         field.set(authenticationEngine, connectionPhase);
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private MySQLConnectionPhase getConnectionPhase() {
         Field field = MySQLAuthenticationEngine.class.getDeclaredField("connectionPhase");
         field.setAccessible(true);
         return (MySQLConnectionPhase) field.get(authenticationEngine);
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private byte[] getAuthResponse() {
         Field field = MySQLAuthenticationEngine.class.getDeclaredField("authResponse");
         field.setAccessible(true);

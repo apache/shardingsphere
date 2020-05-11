@@ -50,12 +50,11 @@ public final class PostgreSQLXAConnectionWrapperTest {
     private Connection connection;
     
     @Before
-    @SuppressWarnings("unchecked")
     public void setUp() throws SQLException, ClassNotFoundException {
         BaseConnection connection = (BaseConnection) mock(Class.forName("org.postgresql.core.BaseConnection"));
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, DatabaseTypes.getActualDatabaseType("PostgreSQL"), "ds1");
         xaDataSource = XADataSourceFactory.build(DatabaseTypes.getActualDatabaseType("PostgreSQL"), dataSource);
-        when(this.connection.unwrap((Class<Object>) any())).thenReturn(connection);
+        when(this.connection.unwrap(any())).thenReturn(connection);
         
     }
     

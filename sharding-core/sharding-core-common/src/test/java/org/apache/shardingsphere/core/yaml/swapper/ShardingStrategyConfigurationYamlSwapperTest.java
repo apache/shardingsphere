@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 
 public final class ShardingStrategyConfigurationYamlSwapperTest {
     
-    private ShardingStrategyConfigurationYamlSwapper shardingStrategyConfigurationYamlSwapper = new ShardingStrategyConfigurationYamlSwapper();
+    private final ShardingStrategyConfigurationYamlSwapper shardingStrategyConfigurationYamlSwapper = new ShardingStrategyConfigurationYamlSwapper();
     
     @Test
     public void assertSwapToYamlWithStandard() {

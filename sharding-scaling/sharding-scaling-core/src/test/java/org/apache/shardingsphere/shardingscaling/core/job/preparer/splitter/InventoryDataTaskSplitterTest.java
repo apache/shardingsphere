@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingscaling.core.job.preparer.splitter;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingscaling.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
@@ -30,6 +29,7 @@ import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashMap;
@@ -41,11 +41,11 @@ import static org.junit.Assert.assertThat;
 
 public class InventoryDataTaskSplitterTest {
     
-    private static String dataSourceUrl = "jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
+    private static final String DATA_SOURCE_URL = "jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
     
-    private static String userName = "root";
+    private static final String USERNAME = "root";
     
-    private static String password = "password";
+    private static final String PASSWORD = "password";
     
     private SyncConfiguration syncConfiguration;
     
@@ -71,7 +71,7 @@ public class InventoryDataTaskSplitterTest {
     }
     
     @Test
-    public void assertSplitInventoryDataWithIntPrimary() {
+    public void assertSplitInventoryDataWithIntPrimary() throws SQLException {
         initIntPrimaryEnvironment(syncConfiguration.getDumperConfiguration());
         Collection<ScalingTask> actual = inventoryDataTaskSplitter.splitInventoryData(syncConfiguration, dataSourceManager);
         assertNotNull(actual);
@@ -79,7 +79,7 @@ public class InventoryDataTaskSplitterTest {
     }
     
     @Test
-    public void assertSplitInventoryDataWithCharPrimary() {
+    public void assertSplitInventoryDataWithCharPrimary() throws SQLException {
         initCharPrimaryEnvironment(syncConfiguration.getDumperConfiguration());
         Collection<ScalingTask> actual = inventoryDataTaskSplitter.splitInventoryData(syncConfiguration, dataSourceManager);
         assertNotNull(actual);
@@ -87,7 +87,7 @@ public class InventoryDataTaskSplitterTest {
     }
     
     @Test
-    public void assertSplitInventoryDataWithUnionPrimary() {
+    public void assertSplitInventoryDataWithUnionPrimary() throws SQLException {
         initUnionPrimaryEnvironment(syncConfiguration.getDumperConfiguration());
         Collection<ScalingTask> actual = inventoryDataTaskSplitter.splitInventoryData(syncConfiguration, dataSourceManager);
         assertNotNull(actual);
@@ -95,15 +95,14 @@ public class InventoryDataTaskSplitterTest {
     }
     
     @Test
-    public void assertSplitInventoryDataWithoutPrimary() {
+    public void assertSplitInventoryDataWithoutPrimary() throws SQLException {
         initNoPrimaryEnvironment(syncConfiguration.getDumperConfiguration());
         Collection<ScalingTask> actual = inventoryDataTaskSplitter.splitInventoryData(syncConfiguration, dataSourceManager);
         assertNotNull(actual);
         assertThat(actual.size(), is(1));
     }
     
-    @SneakyThrows
-    private void initIntPrimaryEnvironment(final RdbmsConfiguration dumperConfig) {
+    private void initIntPrimaryEnvironment(final RdbmsConfiguration dumperConfig) throws SQLException {
         DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfiguration());
         try (Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement()) {
@@ -113,8 +112,7 @@ public class InventoryDataTaskSplitterTest {
         }
     }
     
-    @SneakyThrows
-    private void initCharPrimaryEnvironment(final RdbmsConfiguration dumperConfig) {
+    private void initCharPrimaryEnvironment(final RdbmsConfiguration dumperConfig) throws SQLException {
         DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfiguration());
         try (Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement()) {
@@ -124,8 +122,7 @@ public class InventoryDataTaskSplitterTest {
         }
     }
     
-    @SneakyThrows
-    private void initUnionPrimaryEnvironment(final RdbmsConfiguration dumperConfig) {
+    private void initUnionPrimaryEnvironment(final RdbmsConfiguration dumperConfig) throws SQLException {
         DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfiguration());
         try (Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement()) {
@@ -135,8 +132,7 @@ public class InventoryDataTaskSplitterTest {
         }
     }
     
-    @SneakyThrows
-    private void initNoPrimaryEnvironment(final RdbmsConfiguration dumperConfig) {
+    private void initNoPrimaryEnvironment(final RdbmsConfiguration dumperConfig) throws SQLException {
         DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfiguration());
         try (Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement()) {
@@ -147,7 +143,7 @@ public class InventoryDataTaskSplitterTest {
     }
     
     private RdbmsConfiguration mockDumperConfig() {
-        DataSourceConfiguration dataSourceConfiguration = new JDBCDataSourceConfiguration(dataSourceUrl, userName, password);
+        DataSourceConfiguration dataSourceConfiguration = new JDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD);
         RdbmsConfiguration result = new RdbmsConfiguration();
         result.setDataSourceConfiguration(dataSourceConfiguration);
         return result;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.spring.namespace.parser;
 
 import com.google.common.base.Splitter;
-import org.apache.shardingsphere.shardingjdbc.spring.datasource.SpringShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
@@ -43,7 +43,7 @@ public final class MasterSlaveDataSourceBeanDefinitionParser extends AbstractBea
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SpringShardingDataSource.class);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingSphereDataSource.class);
         MasterSlaveRuleConfigurationBeanDefinition configurationBeanDefinition = new MasterSlaveRuleConfigurationBeanDefinition(element);
         factory.addConstructorArgValue(parseDataSources(configurationBeanDefinition));
         factory.addConstructorArgValue(parseRuleConfigurations(configurationBeanDefinition));

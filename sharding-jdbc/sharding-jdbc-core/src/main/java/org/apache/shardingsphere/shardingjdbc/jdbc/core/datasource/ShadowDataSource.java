@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
-import org.apache.shardingsphere.core.rule.ShadowRule;
+import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShadowConnection;
 
@@ -43,8 +43,8 @@ public final class ShadowDataSource extends AbstractDataSourceAdapter {
     
     private final DataSource shadowDataSource;
     
-    public ShadowDataSource(final DataSource actualDataSource, final DataSource shadowDataSource, final ShadowRule shadowRule, final Properties props) throws SQLException {
-        super(ImmutableMap.of(ACTUAL_DATABASE, actualDataSource, SHADOW_DATABASE, shadowDataSource), Collections.singletonList(shadowRule), props);
+    public ShadowDataSource(final DataSource actualDataSource, final DataSource shadowDataSource, final ShadowRuleConfiguration configuration, final Properties props) throws SQLException {
+        super(ImmutableMap.of(ACTUAL_DATABASE, actualDataSource, SHADOW_DATABASE, shadowDataSource), Collections.singletonList(configuration), props);
         this.actualDataSource = actualDataSource;
         this.shadowDataSource = shadowDataSource;
     }

@@ -50,7 +50,7 @@ public final class TableRuleConfigurationYamlSwapperTest {
     @Mock
     private KeyGeneratorConfigurationYamlSwapper keyGeneratorConfigurationYamlSwapper;
     
-    private TableRuleConfigurationYamlSwapper tableRuleConfigurationYamlSwapper = new TableRuleConfigurationYamlSwapper();
+    private final TableRuleConfigurationYamlSwapper tableRuleConfigurationYamlSwapper = new TableRuleConfigurationYamlSwapper();
     
     @Before
     public void setUp() throws ReflectiveOperationException {

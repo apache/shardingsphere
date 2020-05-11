@@ -22,6 +22,8 @@ package org.apache.shardingsphere.underlying.common.properties;
  */
 public final class TypedPropertyValueException extends Exception {
     
+    private static final long serialVersionUID = -2989212435757964906L;
+    
     public TypedPropertyValueException(final TypedPropertyKey key, final String value) {
         super(String.format("Value `%s` of `%s` cannot convert to type `%s`.", value, key.getKey(), key.getType().getName()));
     }

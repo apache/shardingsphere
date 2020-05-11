@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.shardingscaling.core.schedule;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingscaling.core.job.ShardingScalingJob;
 import org.apache.shardingsphere.shardingscaling.core.config.ScalingContext;
-import org.apache.shardingsphere.shardingscaling.core.job.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.execute.engine.ExecuteCallback;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.ShardingScalingExecutor;
+import org.apache.shardingsphere.shardingscaling.core.job.ShardingScalingJob;
+import org.apache.shardingsphere.shardingscaling.core.job.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.job.task.ScalingTask;
 
 import java.util.Collection;
@@ -64,7 +63,7 @@ public final class ScalingTaskScheduler implements Runnable {
         shardingScalingJob.setStatus(SyncTaskControlStatus.MIGRATE_INVENTORY_DATA.name());
         ExecuteCallback inventoryDataTaskCallback = createInventoryDataTaskCallback();
         for (ScalingTask each : shardingScalingJob.getInventoryDataTasks()) {
-            ScalingContext.getInstance().getTaskExecuteEngine().submit((ShardingScalingExecutor) each, inventoryDataTaskCallback);
+            ScalingContext.getInstance().getTaskExecuteEngine().submit(each, inventoryDataTaskCallback);
         }
     }
     
@@ -95,7 +94,7 @@ public final class ScalingTaskScheduler implements Runnable {
         }
         ExecuteCallback incrementalDataTaskCallback = createIncrementalDataTaskCallback();
         for (ScalingTask each : shardingScalingJob.getIncrementalDataTasks()) {
-            ScalingContext.getInstance().getTaskExecuteEngine().submit((ShardingScalingExecutor) each, incrementalDataTaskCallback);
+            ScalingContext.getInstance().getTaskExecuteEngine().submit(each, incrementalDataTaskCallback);
         }
         shardingScalingJob.setStatus(SyncTaskControlStatus.SYNCHRONIZE_INCREMENTAL_DATA.name());
     }

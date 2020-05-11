@@ -32,7 +32,7 @@ public final class DistinctSumAggregationUnit implements AggregationUnit {
     
     private BigDecimal result;
     
-    private Collection<Comparable<?>> values = new HashSet<>();
+    private final Collection<Comparable<?>> values = new HashSet<>();
     
     @Override
     public void merge(final List<Comparable<?>> values) {

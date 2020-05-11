@@ -21,16 +21,17 @@ import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jdbc.repository.UserRepositoryImpl;
 import org.apache.shardingsphere.example.core.jdbc.service.UserServiceImpl;
-import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlEncryptDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingSphereDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 
 public class YamlConfigurationExampleMain {
     
-    public static void main(final String[] args) throws SQLException {
-        DataSource dataSource = YamlEncryptDataSourceFactory.createDataSource(getFile());
+    public static void main(final String[] args) throws SQLException, IOException {
+        DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(getFile());
         ExampleExecuteTemplate.run(getExampleService(dataSource));
     }
     

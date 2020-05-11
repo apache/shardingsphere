@@ -29,7 +29,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class DistinctCountAggregationUnit implements AggregationUnit {
     
-    private Collection<Comparable<?>> values = new HashSet<>();
+    private final Collection<Comparable<?>> values = new HashSet<>();
     
     @Override
     public void merge(final List<Comparable<?>> values) {

@@ -19,9 +19,12 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.stateme
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.segment.impl.assignment.ExpectedValueAssign;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Set variable statement test case.
@@ -30,6 +33,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Setter
 public final class SetVariableStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute(name = "variable")
-    private String variable;
+    @XmlElement(name = "variable-assign")
+    private List<ExpectedValueAssign> valueAssigns = new LinkedList<>();
 }

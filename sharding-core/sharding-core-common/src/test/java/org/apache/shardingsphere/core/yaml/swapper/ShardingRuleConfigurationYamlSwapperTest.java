@@ -55,7 +55,7 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
     @Mock
     private KeyGeneratorConfigurationYamlSwapper keyGeneratorConfigurationYamlSwapper;
     
-    private ShardingRuleConfigurationYamlSwapper shardingRuleConfigurationYamlSwapper = new ShardingRuleConfigurationYamlSwapper();
+    private final ShardingRuleConfigurationYamlSwapper shardingRuleConfigurationYamlSwapper = new ShardingRuleConfigurationYamlSwapper();
     
     @Before
     public void setUp() throws ReflectiveOperationException {

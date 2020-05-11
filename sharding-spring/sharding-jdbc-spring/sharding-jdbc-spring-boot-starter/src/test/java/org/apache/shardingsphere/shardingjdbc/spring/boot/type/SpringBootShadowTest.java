@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring.boot.type;
 
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.core.rule.ShadowRule;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShadowDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,31 +45,17 @@ public class SpringBootShadowTest {
     
     @Test
     public void assertSqlShow() {
-        assertTrue(((ShadowDataSource) dataSource).getRuntimeContext().getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
+        assertTrue(((ShardingSphereDataSource) dataSource).getRuntimeContext().getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
     }
     
     @Test
-    public void assertWithShadowDataSource() {
-        assertTrue(dataSource instanceof ShadowDataSource);
-        assertActualDatasource();
-        assertShadowDatasource();
+    public void assertDataSource() {
+        assertTrue(dataSource instanceof ShardingSphereDataSource);
+        assertShadowRule();
     }
     
-    private void assertActualDatasource() {
-        DataSource dataSource = ((ShadowDataSource) this.dataSource).getActualDataSource();
-        assertTrue(dataSource instanceof BasicDataSource);
-        assertThat(((BasicDataSource) dataSource).getMaxTotal(), is(100));
-    }
-    
-    private void assertShadowDatasource() {
-        DataSource dataSource = ((ShadowDataSource) this.dataSource).getShadowDataSource();
-        assertTrue(dataSource instanceof BasicDataSource);
-        assertThat(((BasicDataSource) dataSource).getMaxTotal(), is(99));
-    }
-    
-    @Test
-    public void assertWithShadowRule() {
-        ShadowRule shadowRule = (ShadowRule) ((ShadowDataSource) dataSource).getRuntimeContext().getRules().iterator().next();
+    public void assertShadowRule() {
+        ShadowRule shadowRule = (ShadowRule) ((ShardingSphereDataSource) dataSource).getRuntimeContext().getRules().iterator().next();
         assertThat(shadowRule.getColumn(), is("is_shadow"));
     }
 }

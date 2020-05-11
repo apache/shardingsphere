@@ -36,4 +36,3 @@ public interface TableMetaDataLoaderCallback {
      */
     Optional<TableMetaData> load(String tableName) throws SQLException;
 }
-

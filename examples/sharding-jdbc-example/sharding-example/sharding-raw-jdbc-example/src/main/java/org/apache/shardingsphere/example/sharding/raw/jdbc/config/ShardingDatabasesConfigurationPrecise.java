@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.strategy.algorithm.keygen.SnowflakeKeyGene
 import org.apache.shardingsphere.core.strategy.algorithm.sharding.inline.InlineShardingAlgorithm;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
-import org.apache.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 
@@ -50,7 +50,7 @@ public final class ShardingDatabasesConfigurationPrecise implements ExampleConfi
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", shardingAlgorithm));
         Collection<RuleConfiguration> configurations = new LinkedList<>();
         configurations.add(shardingRuleConfig);
-        return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), configurations, new Properties());
+        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), configurations, new Properties());
     }
     
     private static TableRuleConfiguration getOrderTableRuleConfiguration() {

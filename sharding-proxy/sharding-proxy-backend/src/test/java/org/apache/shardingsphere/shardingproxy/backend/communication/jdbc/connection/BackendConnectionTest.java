@@ -61,7 +61,6 @@ public final class BackendConnectionTest {
     private final BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
     
     @Before
-    @SneakyThrows
     public void setUp() {
         MockLogicSchemasUtil.setLogicSchemas("schema", 2);
         backendConnection.setCurrentSchema("schema_0");
@@ -111,7 +110,7 @@ public final class BackendConnectionTest {
         assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TRANSACTION));
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setMethodInvocation() {
         MethodInvocation invocation = mock(MethodInvocation.class);
         Collection<MethodInvocation> methodInvocations = new ArrayList<>();
@@ -122,8 +121,7 @@ public final class BackendConnectionTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertMultiThreadGetConnection() {
+    public void assertMultiThreadGetConnection() throws SQLException, InterruptedException {
         MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
         when(backendDataSource.getConnections(anyString(), eq(2), any(), eq(TransactionType.LOCAL))).thenReturn(MockConnectionUtil.mockNewConnections(2));
         Thread thread1 = new Thread(this::assertOneThreadResult);

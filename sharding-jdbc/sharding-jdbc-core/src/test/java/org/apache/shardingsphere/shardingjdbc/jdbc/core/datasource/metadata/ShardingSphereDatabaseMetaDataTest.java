@@ -21,7 +21,7 @@ import com.google.common.collect.LinkedHashMultimap;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.DatabaseMetaDataResultSet;
 import org.junit.Before;
@@ -69,12 +69,12 @@ public final class ShardingSphereDatabaseMetaDataTest {
     private ResultSet resultSet;
     
     @Mock
-    private ShardingConnection shardingConnection;
+    private ShardingSphereConnection shardingSphereConnection;
     
     @Mock
     private RuntimeContext runtimeContext;
     
-    private Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
+    private final Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
     
     private ShardingSphereDatabaseMetaData shardingSphereDatabaseMetaData;
     
@@ -85,13 +85,13 @@ public final class ShardingSphereDatabaseMetaDataTest {
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(resultSet.getMetaData()).thenReturn(mock(ResultSetMetaData.class));
         CachedDatabaseMetaData cachedDatabaseMetaData = new CachedDatabaseMetaData(databaseMetaData);
-        when(shardingConnection.getCachedConnections()).thenReturn(LinkedHashMultimap.create());
-        when(shardingConnection.getConnection(anyString())).thenReturn(connection);
-        when(shardingConnection.getDataSourceMap()).thenReturn(dataSourceMap);
-        when(shardingConnection.getRuntimeContext()).thenReturn(runtimeContext);
+        when(shardingSphereConnection.getCachedConnections()).thenReturn(LinkedHashMultimap.create());
+        when(shardingSphereConnection.getConnection(anyString())).thenReturn(connection);
+        when(shardingSphereConnection.getDataSourceMap()).thenReturn(dataSourceMap);
+        when(shardingSphereConnection.getRuntimeContext()).thenReturn(runtimeContext);
         when(runtimeContext.getCachedDatabaseMetaData()).thenReturn(cachedDatabaseMetaData);
         when(runtimeContext.getRules()).thenReturn(Collections.singletonList(mockShardingRule()));
-        shardingSphereDatabaseMetaData = new ShardingSphereDatabaseMetaData(shardingConnection);
+        shardingSphereDatabaseMetaData = new ShardingSphereDatabaseMetaData(shardingSphereConnection);
     }
     
     private ShardingRule mockShardingRule() {

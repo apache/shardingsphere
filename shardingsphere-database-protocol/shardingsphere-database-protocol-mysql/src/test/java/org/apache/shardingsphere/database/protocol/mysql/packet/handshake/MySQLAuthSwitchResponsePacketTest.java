@@ -33,7 +33,7 @@ public class MySQLAuthSwitchResponsePacketTest {
     @Mock
     private MySQLPacketPayload payload;
     
-    private byte[] authPluginResponse = new byte[]{0x22, 0x33};
+    private final byte[] authPluginResponse = new byte[]{0x22, 0x33};
     
     @Test
     public void assertMySQLAuthSwitchResponsePacket() {

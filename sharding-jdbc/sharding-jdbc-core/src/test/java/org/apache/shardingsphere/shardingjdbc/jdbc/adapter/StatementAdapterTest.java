@@ -20,9 +20,9 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.shardingjdbc.common.base.AbstractShardingJDBCDatabaseAndTableTest;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingPreparedStatement;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingSphereConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingSpherePreparedStatement;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.util.JDBCTestSQL;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.junit.After;
@@ -50,17 +50,17 @@ import static org.mockito.Mockito.when;
 
 public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
-    private final List<ShardingConnection> shardingConnections = new ArrayList<>();
+    private final List<ShardingSphereConnection> shardingSphereConnections = new ArrayList<>();
     
     private final Map<DatabaseType, Statement> statements = new HashMap<>();
     
-    private String sql = JDBCTestSQL.SELECT_GROUP_BY_USER_ID_SQL;
+    private final String sql = JDBCTestSQL.SELECT_GROUP_BY_USER_ID_SQL;
     
     @Before
     public void init() {
-        ShardingConnection shardingConnection = getShardingDataSource().getConnection();
-        shardingConnections.add(shardingConnection);
-        statements.put(DatabaseTypes.getActualDatabaseType("H2"), shardingConnection.createStatement());
+        ShardingSphereConnection connection = getShardingSphereDataSource().getConnection();
+        shardingSphereConnections.add(connection);
+        statements.put(DatabaseTypes.getActualDatabaseType("H2"), connection.createStatement());
     }
     
     @After
@@ -68,7 +68,7 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
         for (Statement each : statements.values()) {
             each.close();
         }
-        for (ShardingConnection each : shardingConnections) {
+        for (ShardingSphereConnection each : shardingSphereConnections) {
             each.close();
         }
     }
@@ -79,7 +79,7 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
             each.executeQuery(sql);
             each.close();
             assertTrue(each.isClosed());
-            assertTrue(((ShardingStatement) each).getRoutedStatements().isEmpty());
+            assertTrue(((ShardingSphereStatement) each).getRoutedStatements().isEmpty());
         }
     }
     
@@ -88,13 +88,13 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
         for (Entry<DatabaseType, Statement> each : statements.entrySet()) {
             each.getValue().setPoolable(true);
             each.getValue().executeQuery(sql);
-            assertPoolable((ShardingStatement) each.getValue(), true);
+            assertPoolable((ShardingSphereStatement) each.getValue(), true);
             each.getValue().setPoolable(false);
-            assertPoolable((ShardingStatement) each.getValue(), false);
+            assertPoolable((ShardingSphereStatement) each.getValue(), false);
         }
     }
     
-    private void assertPoolable(final ShardingStatement actual, final boolean poolable) throws SQLException {
+    private void assertPoolable(final ShardingSphereStatement actual, final boolean poolable) throws SQLException {
         assertThat(actual.isPoolable(), is(poolable));
         assertThat(actual.getRoutedStatements().size(), is(4));
         for (Statement each : actual.getRoutedStatements()) {
@@ -108,13 +108,13 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
         for (Statement each : statements.values()) {
             each.setFetchSize(4);
             each.executeQuery(sql);
-            assertFetchSize((ShardingStatement) each, 4);
+            assertFetchSize((ShardingSphereStatement) each, 4);
             each.setFetchSize(100);
-            assertFetchSize((ShardingStatement) each, 100);
+            assertFetchSize((ShardingSphereStatement) each, 100);
         }
     }
     
-    private void assertFetchSize(final ShardingStatement actual, final int fetchSize) throws SQLException {
+    private void assertFetchSize(final ShardingSphereStatement actual, final int fetchSize) throws SQLException {
         assertThat(actual.getFetchSize(), is(fetchSize));
         assertThat(actual.getRoutedStatements().size(), is(4));
         for (Statement each : actual.getRoutedStatements()) {
@@ -171,14 +171,14 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
         when(statement1.getUpdateCount()).thenReturn(Integer.MAX_VALUE);
         final Statement statement2 = Mockito.mock(Statement.class);
         when(statement2.getUpdateCount()).thenReturn(Integer.MAX_VALUE);
-        ShardingStatement shardingStatement1 = spy(new ShardingStatement(getShardingDataSource().getConnection()));
-        doReturn(true).when(shardingStatement1).isAccumulate();
-        doReturn(Lists.newArrayList(statement1, statement2)).when(shardingStatement1).getRoutedStatements();
-        assertThat(shardingStatement1.getUpdateCount(), is(Integer.MAX_VALUE));
-        ShardingPreparedStatement shardingStatement2 = spy(new ShardingPreparedStatement(getShardingDataSource().getConnection(), sql));
-        doReturn(true).when(shardingStatement2).isAccumulate();
-        doReturn(Lists.newArrayList(statement1, statement2)).when(shardingStatement2).getRoutedStatements();
-        assertThat(shardingStatement2.getUpdateCount(), is(Integer.MAX_VALUE));
+        ShardingSphereStatement shardingSphereStatement1 = spy(new ShardingSphereStatement(getShardingSphereDataSource().getConnection()));
+        doReturn(true).when(shardingSphereStatement1).isAccumulate();
+        doReturn(Lists.newArrayList(statement1, statement2)).when(shardingSphereStatement1).getRoutedStatements();
+        assertThat(shardingSphereStatement1.getUpdateCount(), is(Integer.MAX_VALUE));
+        ShardingSpherePreparedStatement shardingSphereStatement2 = spy(new ShardingSpherePreparedStatement(getShardingSphereDataSource().getConnection(), sql));
+        doReturn(true).when(shardingSphereStatement2).isAccumulate();
+        doReturn(Lists.newArrayList(statement1, statement2)).when(shardingSphereStatement2).getRoutedStatements();
+        assertThat(shardingSphereStatement2.getUpdateCount(), is(Integer.MAX_VALUE));
     }
     
     @Test
@@ -187,14 +187,14 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
         when(statement1.getUpdateCount()).thenReturn(10);
         final Statement statement2 = Mockito.mock(Statement.class);
         when(statement2.getUpdateCount()).thenReturn(10);
-        ShardingStatement shardingStatement1 = spy(new ShardingStatement(getShardingDataSource().getConnection()));
-        doReturn(false).when(shardingStatement1).isAccumulate();
-        doReturn(Lists.newArrayList(statement1, statement2)).when(shardingStatement1).getRoutedStatements();
-        assertThat(shardingStatement1.getUpdateCount(), is(10));
-        ShardingPreparedStatement shardingStatement2 = spy(new ShardingPreparedStatement(getShardingDataSource().getConnection(), sql));
-        doReturn(false).when(shardingStatement2).isAccumulate();
-        doReturn(Lists.newArrayList(statement1, statement2)).when(shardingStatement2).getRoutedStatements();
-        assertThat(shardingStatement2.getUpdateCount(), is(10));
+        ShardingSphereStatement shardingSphereStatement1 = spy(new ShardingSphereStatement(getShardingSphereDataSource().getConnection()));
+        doReturn(false).when(shardingSphereStatement1).isAccumulate();
+        doReturn(Lists.newArrayList(statement1, statement2)).when(shardingSphereStatement1).getRoutedStatements();
+        assertThat(shardingSphereStatement1.getUpdateCount(), is(10));
+        ShardingSpherePreparedStatement shardingSphereStatement2 = spy(new ShardingSpherePreparedStatement(getShardingSphereDataSource().getConnection(), sql));
+        doReturn(false).when(shardingSphereStatement2).isAccumulate();
+        doReturn(Lists.newArrayList(statement1, statement2)).when(shardingSphereStatement2).getRoutedStatements();
+        assertThat(shardingSphereStatement2.getUpdateCount(), is(10));
     }
     
     @Test

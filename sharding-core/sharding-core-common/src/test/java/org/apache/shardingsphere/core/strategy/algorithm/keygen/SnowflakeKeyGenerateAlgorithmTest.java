@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.core.strategy.algorithm.keygen;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThat;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.core.strategy.algorithm.keygen.fixture.FixedTimeService;
+import org.junit.Test;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -29,11 +29,13 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.strategy.algorithm.keygen.fixture.FixedTimeService;
-import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThat;
 
 public final class SnowflakeKeyGenerateAlgorithmTest {
     
@@ -42,8 +44,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     private static final int DEFAULT_KEY_AMOUNT = 10;
     
     @Test
-    @SneakyThrows
-    public void assertGenerateKeyWithMultipleThreads() {
+    public void assertGenerateKeyWithMultipleThreads() throws ExecutionException, InterruptedException {
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         int taskNumber = threadNumber << 2;
@@ -122,7 +123,6 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     }
     
     @Test(expected = IllegalStateException.class)
-    @SneakyThrows
     public void assertGenerateKeyWithClockCallBackBeyondTolerateTime() {
         SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
         TimeService timeService = new FixedTimeService(1);

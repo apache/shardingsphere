@@ -27,7 +27,7 @@ import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
-import org.apache.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 
@@ -58,7 +58,7 @@ public final class LocalShardingTablesConfiguration implements ExampleConfigurat
         OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(centerConfigurationMap);
         Collection<RuleConfiguration> configurations = new LinkedList<>();
         configurations.add(shardingRuleConfig);
-        return OrchestrationShardingDataSourceFactory.createDataSource(createDataSourceMap(), configurations, new Properties(), orchestrationConfig);
+        return OrchestrationShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), configurations, new Properties(), orchestrationConfig);
     }
     
     private TableRuleConfiguration getOrderTableRuleConfiguration() {

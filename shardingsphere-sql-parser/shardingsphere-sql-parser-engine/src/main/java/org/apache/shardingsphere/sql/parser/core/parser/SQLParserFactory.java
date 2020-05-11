@@ -55,7 +55,7 @@ public final class SQLParserFactory {
         throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseTypeName));
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private static SQLParser createSQLParser(final String sql, final SQLParserConfiguration configuration) {
         Lexer lexer = (Lexer) configuration.getLexerClass().getConstructor(CharStream.class).newInstance(CharStreams.fromString(sql));
         return configuration.getParserClass().getConstructor(TokenStream.class).newInstance(new CommonTokenStream(lexer));

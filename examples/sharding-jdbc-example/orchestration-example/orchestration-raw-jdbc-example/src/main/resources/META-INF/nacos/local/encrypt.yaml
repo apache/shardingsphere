@@ -15,30 +15,12 @@
 # limitations under the License.
 #
 
-orchestration:
-  demo_nacos_yaml_ds_encrypt:
-    orchestrationType: config_center
-    instanceType: nacos
-    serverLists: localhost:8848
-    namespace:
-    props:
-      overwrite: true
-      group: SHARDING_SPHERE_DEFAULT_GROUP
-      timeout: 3000
-      
-  demo_zookeeper_yaml_ds_encrypt:
-    orchestrationType: registry_center,metadata_center
-    instanceType: zookeeper
-    serverLists: localhost:2181
-    namespace: orchestration-yaml-demo
-    props:
-      overwrite: true
-
-dataSource: !!com.zaxxer.hikari.HikariDataSource
-  driverClassName: com.mysql.jdbc.Driver
-  jdbcUrl: jdbc:mysql://localhost:3306/demo_ds
-  username: root
-  password:
+dataSources:
+  unique_ds: !!com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds
+    username: root
+    password:
 
 encryptRule:
   encryptors:
@@ -56,3 +38,22 @@ encryptRule:
 props:
   query.with.cipher.column: true
   sql.show: false
+
+orchestration:
+  demo_nacos_yaml_ds_encrypt:
+    orchestrationType: config_center
+    instanceType: nacos
+    serverLists: localhost:8848
+    namespace:
+    props:
+      overwrite: true
+      group: SHARDING_SPHERE_DEFAULT_GROUP
+      timeout: 3000
+
+  demo_zookeeper_yaml_ds_encrypt:
+    orchestrationType: registry_center,metadata_center
+    instanceType: zookeeper
+    serverLists: localhost:2181
+    namespace: orchestration-yaml-demo
+    props:
+      overwrite: true

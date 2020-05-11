@@ -50,8 +50,7 @@ import static org.mockito.Mockito.when;
 public final class MemoryQueryResultTest {
     
     @Test(expected = SQLException.class)
-    @SneakyThrows
-    public void assertConstructorWithSqlException() {
+    public void assertConstructorWithSqlException() throws SQLException {
         ResultSet resultSet = getResultSet();
         when(resultSet.next()).thenThrow(new SQLException());
         new MemoryQueryResult(resultSet);

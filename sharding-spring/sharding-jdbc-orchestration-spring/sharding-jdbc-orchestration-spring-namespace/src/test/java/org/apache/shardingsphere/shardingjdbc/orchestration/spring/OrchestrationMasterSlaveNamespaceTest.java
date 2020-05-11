@@ -20,8 +20,8 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.spring;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.strategy.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.core.strategy.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.util.EmbedTestingServer;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.util.FieldValueUtil;
 import org.apache.shardingsphere.spi.masterslave.MasterSlaveLoadBalanceAlgorithm;
@@ -48,7 +48,7 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
     
     @Test
     public void assertMasterSlaveDataSourceType() {
-        assertNotNull(applicationContext.getBean("defaultMasterSlaveDataSourceOrchestration", OrchestrationSpringShardingDataSource.class));
+        assertNotNull(applicationContext.getBean("defaultMasterSlaveDataSourceOrchestration", OrchestrationSpringShardingSphereDataSource.class));
     }
     
     @Test
@@ -77,8 +77,8 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
     }
     
     private MasterSlaveRule getMasterSlaveRule(final String masterSlaveDataSourceName) {
-        OrchestrationSpringShardingDataSource masterSlaveDataSource = applicationContext.getBean(masterSlaveDataSourceName, OrchestrationSpringShardingDataSource.class);
-        ShardingDataSource dataSource = (ShardingDataSource) FieldValueUtil.getFieldValue(masterSlaveDataSource, "dataSource", true);
+        OrchestrationSpringShardingSphereDataSource masterSlaveDataSource = applicationContext.getBean(masterSlaveDataSourceName, OrchestrationSpringShardingSphereDataSource.class);
+        ShardingSphereDataSource dataSource = (ShardingSphereDataSource) FieldValueUtil.getFieldValue(masterSlaveDataSource, "dataSource", true);
         return (MasterSlaveRule) dataSource.getRuntimeContext().getRules().iterator().next();
     }
     
@@ -89,8 +89,8 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
     }
     
     private ConfigurationProperties getProperties(final String masterSlaveDataSourceName) {
-        OrchestrationSpringShardingDataSource masterSlaveDataSource = applicationContext.getBean(masterSlaveDataSourceName, OrchestrationSpringShardingDataSource.class);
-        ShardingDataSource dataSource = (ShardingDataSource) FieldValueUtil.getFieldValue(masterSlaveDataSource, "dataSource", true);
+        OrchestrationSpringShardingSphereDataSource masterSlaveDataSource = applicationContext.getBean(masterSlaveDataSourceName, OrchestrationSpringShardingSphereDataSource.class);
+        ShardingSphereDataSource dataSource = (ShardingSphereDataSource) FieldValueUtil.getFieldValue(masterSlaveDataSource, "dataSource", true);
         return dataSource.getRuntimeContext().getProperties();
     }
 }

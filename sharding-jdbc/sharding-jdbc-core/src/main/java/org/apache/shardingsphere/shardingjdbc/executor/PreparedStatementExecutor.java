@@ -182,7 +182,7 @@ public final class PreparedStatementExecutor {
         Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
         if (refreshStrategy.isPresent()) {
             RuleSchemaMetaDataLoader metaDataLoader = new RuleSchemaMetaDataLoader(runtimeContext.getRules());
-            refreshStrategy.get().refreshMetaData(runtimeContext.getMetaData(), sqlStatementContext,
+            refreshStrategy.get().refreshMetaData(runtimeContext.getMetaData(), runtimeContext.getDatabaseType(), dataSourceMap, sqlStatementContext,
                 tableName -> metaDataLoader.load(runtimeContext.getDatabaseType(), dataSourceMap, tableName, runtimeContext.getProperties()));
         }
     }

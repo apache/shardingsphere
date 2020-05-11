@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.spring.boot.type;
 
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -45,9 +45,9 @@ public class SpringBootBroadcastTableTest {
     
     @Test
     public void assertBroadcastTable() {
-        assertThat(dataSource, instanceOf(ShardingDataSource.class));
-        ShardingDataSource shardingDataSource = (ShardingDataSource) dataSource;
-        ShardingRule shardingRule = (ShardingRule) shardingDataSource.getRuntimeContext().getRules().iterator().next();
+        assertThat(dataSource, instanceOf(ShardingSphereDataSource.class));
+        ShardingSphereDataSource shardingSphereDataSource = (ShardingSphereDataSource) dataSource;
+        ShardingRule shardingRule = (ShardingRule) shardingSphereDataSource.getRuntimeContext().getRules().iterator().next();
         assertThat(shardingRule.getBroadcastTables(), is(Collections.singletonList("t_config")));
         assertThat(shardingRule.getDataSourceNames().size(), is(3));
     }

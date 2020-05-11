@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.core.yaml.swapper.root;
 
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.ShadowRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
@@ -43,6 +45,8 @@ public final class RuleRootConfigurationsYamlSwapper implements YamlSwapper<Yaml
     
     private final EncryptRuleConfigurationYamlSwapper encryptRuleConfigurationYamlSwapper = new EncryptRuleConfigurationYamlSwapper();
     
+    private final ShadowRuleConfigurationYamlSwapper shadowRuleConfigurationYamlSwapper = new ShadowRuleConfigurationYamlSwapper();
+    
     @Override
     public YamlRootRuleConfigurations swap(final Collection<RuleConfiguration> data) {
         YamlRootRuleConfigurations result = new YamlRootRuleConfigurations();
@@ -53,6 +57,8 @@ public final class RuleRootConfigurationsYamlSwapper implements YamlSwapper<Yaml
                 result.getMasterSlaveRules().put(((MasterSlaveRuleConfiguration) each).getName(), masterSlaveRuleConfigurationYamlSwapper.swap((MasterSlaveRuleConfiguration) each));
             } else if (each instanceof EncryptRuleConfiguration) {
                 result.setEncryptRule(encryptRuleConfigurationYamlSwapper.swap((EncryptRuleConfiguration) each));
+            } else if (each instanceof ShadowRuleConfiguration) {
+                result.setShadowRule(shadowRuleConfigurationYamlSwapper.swap((ShadowRuleConfiguration) each));
             }
         }
         return result;
@@ -71,6 +77,9 @@ public final class RuleRootConfigurationsYamlSwapper implements YamlSwapper<Yaml
         }
         if (null != configurations.getEncryptRule()) {
             result.add(encryptRuleConfigurationYamlSwapper.swap(configurations.getEncryptRule()));
+        }
+        if (null != configurations.getShadowRule()) {
+            result.add(shadowRuleConfigurationYamlSwapper.swap(configurations.getShadowRule()));
         }
         return result;
     }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.unsupported;
 
 import org.apache.shardingsphere.shardingjdbc.common.base.AbstractShardingJDBCDatabaseAndTableTest;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingSphereConnection;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,21 +34,21 @@ public final class UnsupportedOperationParameterMetaTest extends AbstractShardin
     
     private static final String SQL = "SELECT user_id AS usr_id FROM t_order WHERE status = 'init'";
     
-    private final List<ShardingConnection> shardingConnections = new ArrayList<>();
+    private final List<ShardingSphereConnection> shardingSphereConnections = new ArrayList<>();
     
     private final List<ParameterMetaData> parameterMetaData = new ArrayList<>();
     
     @Before
     public void init() throws SQLException {
-        ShardingConnection shardingConnection = getShardingDataSource().getConnection();
-        shardingConnections.add(shardingConnection);
-        PreparedStatement preparedStatement = shardingConnection.prepareStatement(SQL);
+        ShardingSphereConnection connection = getShardingSphereDataSource().getConnection();
+        shardingSphereConnections.add(connection);
+        PreparedStatement preparedStatement = connection.prepareStatement(SQL);
         parameterMetaData.add(preparedStatement.getParameterMetaData());
     }
     
     @After
     public void close() throws SQLException {
-        for (ShardingConnection each : shardingConnections) {
+        for (ShardingSphereConnection each : shardingSphereConnections) {
             each.close();
         }
     }

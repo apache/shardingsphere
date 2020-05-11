@@ -20,7 +20,7 @@ package org.apache.shardingsphere.orchestration.core.registrycenter.event;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.orchestration.core.common.event.ShardingOrchestrationEvent;
-import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationShardingSchema;
+import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationSchema;
 
 /**
  * Disabled state event.
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.orchestration.core.registrycenter.schema.Orches
 @Getter
 public final class DisabledStateChangedEvent implements ShardingOrchestrationEvent {
     
-    private final OrchestrationShardingSchema shardingSchema;
+    private final OrchestrationSchema orchestrationSchema;
     
     private final boolean disabled;
 }

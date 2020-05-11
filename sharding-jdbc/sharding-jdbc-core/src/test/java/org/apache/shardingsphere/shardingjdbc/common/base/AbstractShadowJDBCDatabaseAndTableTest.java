@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shardingjdbc.common.base;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
-import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShadowDataSource;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
@@ -43,7 +42,7 @@ public abstract class AbstractShadowJDBCDatabaseAndTableTest extends AbstractSQL
         }
         initDataSource();
         Map<String, DataSource> dataSources = getDatabaseTypeMap().get(DatabaseTypes.getActualDatabaseType("H2"));
-        shadowDataSource = new ShadowDataSource(dataSources.get("jdbc_0"), dataSources.get("jdbc_1"), new ShadowRule(createShadowRuleConfiguration()), createProperties());
+        shadowDataSource = new ShadowDataSource(dataSources.get("jdbc_0"), dataSources.get("jdbc_1"), createShadowRuleConfiguration(), createProperties());
     }
     
     private static Properties createProperties() {
