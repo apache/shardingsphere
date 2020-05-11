@@ -15,23 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.rewrite.condition;
+package org.apache.shardingsphere.shadow.route.engine;
 
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.junit.Test;
-
-import java.util.Collections;
-import java.util.List;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class ShadowConditionEngineTest {
+/**
+ * Route decorator for shadow.
+ */
+public interface ShadowDataSourceRouter {
     
-    @Test
-    public void assertGetConditionValues() {
-        List<Object> actual = new ShadowCondition("col", 0, 0, new LiteralExpressionSegment(0, 0, 1)).getValues(Collections.emptyList());
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get(0), is(1));
+    /**
+     * Judge whether SQL is shadow.
+     *
+     * @return SQL is shadow or not
+     */
+    boolean isShadowSQL();
+    
+    /**
+     * Judge whether field is shadow.
+     * @param value the field
+     * @return field is shadow or not
+     */
+    default boolean isShadowField(final Object value) {
+        return (value instanceof Boolean && (Boolean) value)
+                || (value instanceof Integer && 1 == (Integer) value)
+                || (value instanceof String && Boolean.parseBoolean((String) value));
     }
+    
 }

@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.rewrite.judgement.impl;
+package org.apache.shardingsphere.shadow.route.engine.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.common.condition.ShadowCondition;
 import org.apache.shardingsphere.shadow.common.condition.ShadowConditionEngine;
-import org.apache.shardingsphere.shadow.rewrite.judgement.ShadowJudgementEngine;
+import org.apache.shardingsphere.shadow.route.engine.ShadowDataSourceRouter;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
@@ -35,9 +35,8 @@ import java.util.Optional;
 /**
  * Simple shadow judgement engine.
  */
-//TODO need to remove
 @RequiredArgsConstructor
-public final class SimpleJudgementEngine implements ShadowJudgementEngine {
+public final class SimpleShadowDataSourceRouter implements ShadowDataSourceRouter {
     
     private final ShadowRule shadowRule;
     
