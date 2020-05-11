@@ -57,6 +57,10 @@ public final class ApolloCenterRepositoryTest {
     
     private static final ApolloOpenApiWrapper OPEN_API_WRAPPER = mock(ApolloOpenApiWrapper.class);
     
+    private static final String PORTAL_URL = "http://127.0.0.1";
+    
+    private static final String TOKEN = "testToken";
+    
     @SneakyThrows(ReflectiveOperationException.class)
     @BeforeClass
     public static void init() {
@@ -64,7 +68,10 @@ public final class ApolloCenterRepositoryTest {
         configuration.setServerLists("http://config-service-url");
         configuration.setNamespace("orchestration");
         Properties properties = new Properties();
+        properties.setProperty(ApolloPropertyKey.PORTAL_URL.getKey(), PORTAL_URL);
+        properties.setProperty(ApolloPropertyKey.TOKEN.getKey(), TOKEN);
         REPOSITORY.setProperties(properties);
+        REPOSITORY.init(configuration);
         ApolloConfigWrapper configWrapper = new ApolloConfigWrapper(configuration, new ApolloProperties(properties));
         FieldSetter.setField(REPOSITORY, ApolloCenterRepository.class.getDeclaredField("configWrapper"), configWrapper);
         FieldSetter.setField(REPOSITORY, ApolloCenterRepository.class.getDeclaredField("openApiWrapper"), OPEN_API_WRAPPER);
@@ -73,6 +80,11 @@ public final class ApolloCenterRepositoryTest {
     @Test
     public void assertGet() {
         assertThat(REPOSITORY.get("/test/children/0"), is("value0"));
+    }
+    
+    @Test
+    public void assertGetByOpenApi() {
+        assertNull(REPOSITORY.get("/test/children/6"));
     }
     
     @Test
@@ -126,5 +138,21 @@ public final class ApolloCenterRepositoryTest {
     public void assertDelete() {
         REPOSITORY.delete("/test/children/2");
         verify(OPEN_API_WRAPPER).remove(ConfigKeyUtils.pathToKey("/test/children/2"));
+    }
+    
+    @Test
+    public void assertGetChildrenKeys() {
+        assertNull(REPOSITORY.getChildrenKeys("/test/children"));
+    }
+    
+    @Test
+    public void assertPersist() {
+        REPOSITORY.persist("/test/children/6", "value6");
+        verify(OPEN_API_WRAPPER).persist(ConfigKeyUtils.pathToKey("/test/children/6"), "value6");
+    }
+    
+    @Test
+    public void assertGetType() {
+        assertThat(REPOSITORY.getType(), is("apollo"));
     }
 }
