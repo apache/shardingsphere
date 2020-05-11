@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.yaml.engine;
 
+import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveGroupConfiguration;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlRootMasterSlaveConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 import org.junit.Test;
@@ -71,9 +72,9 @@ public final class YamlEngineMasterSlaveConfigurationTest {
     }
     
     private void assertMasterSlaveRule(final YamlRootMasterSlaveConfiguration actual) {
-        assertThat(actual.getMasterSlaveRule().getName(), is("master-slave-ds"));
-        assertThat(actual.getMasterSlaveRule().getMasterDataSourceName(), is("master_ds"));
-        assertThat(actual.getMasterSlaveRule().getSlaveDataSourceNames(), is(Arrays.asList("slave_ds_0", "slave_ds_1")));
-        assertThat(actual.getMasterSlaveRule().getLoadBalanceAlgorithmType(), is("ROUND_ROBIN"));
+        YamlMasterSlaveGroupConfiguration actualGroup = actual.getMasterSlaveRule().getGroups().get("master-slave-ds");
+        assertThat(actualGroup.getMasterDataSourceName(), is("master_ds"));
+        assertThat(actualGroup.getSlaveDataSourceNames(), is(Arrays.asList("slave_ds_0", "slave_ds_1")));
+        assertThat(actualGroup.getLoadBalanceAlgorithmType(), is("ROUND_ROBIN"));
     }
 }

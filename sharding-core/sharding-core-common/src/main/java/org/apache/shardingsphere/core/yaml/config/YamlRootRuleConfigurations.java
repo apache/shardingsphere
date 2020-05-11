@@ -27,7 +27,6 @@ import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration
 
 import javax.sql.DataSource;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -42,7 +41,7 @@ public class YamlRootRuleConfigurations implements YamlConfiguration {
     
     private YamlShardingRuleConfiguration shardingRule;
     
-    private Map<String, YamlMasterSlaveRuleConfiguration> masterSlaveRules = new LinkedHashMap<>();
+    private YamlMasterSlaveRuleConfiguration masterSlaveRule;
     
     private YamlEncryptRuleConfiguration encryptRule;
     

@@ -21,7 +21,6 @@ import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfigura
 import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.YamlRootRuleConfigurations;
-import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.ShadowRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
@@ -32,7 +31,6 @@ import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Map.Entry;
 
 /**
  * Rule root configurations YAML swapper.
@@ -54,7 +52,7 @@ public final class RuleRootConfigurationsYamlSwapper implements YamlSwapper<Yaml
             if (each instanceof ShardingRuleConfiguration) {
                 result.setShardingRule(shardingRuleConfigurationYamlSwapper.swap((ShardingRuleConfiguration) each));
             } else if (each instanceof MasterSlaveRuleConfiguration) {
-                result.getMasterSlaveRules().put(((MasterSlaveRuleConfiguration) each).getName(), masterSlaveRuleConfigurationYamlSwapper.swap((MasterSlaveRuleConfiguration) each));
+                result.setMasterSlaveRule(masterSlaveRuleConfigurationYamlSwapper.swap((MasterSlaveRuleConfiguration) each));
             } else if (each instanceof EncryptRuleConfiguration) {
                 result.setEncryptRule(encryptRuleConfigurationYamlSwapper.swap((EncryptRuleConfiguration) each));
             } else if (each instanceof ShadowRuleConfiguration) {
@@ -70,10 +68,8 @@ public final class RuleRootConfigurationsYamlSwapper implements YamlSwapper<Yaml
         if (null != configurations.getShardingRule()) {
             result.add(shardingRuleConfigurationYamlSwapper.swap(configurations.getShardingRule()));
         }
-        for (Entry<String, YamlMasterSlaveRuleConfiguration> entry : configurations.getMasterSlaveRules().entrySet()) {
-            YamlMasterSlaveRuleConfiguration each = entry.getValue();
-            each.setName(entry.getKey());
-            result.add(masterSlaveRuleConfigurationYamlSwapper.swap(entry.getValue()));
+        if (null != configurations.getMasterSlaveRule()) {
+            result.add(masterSlaveRuleConfigurationYamlSwapper.swap(configurations.getMasterSlaveRule()));
         }
         if (null != configurations.getEncryptRule()) {
             result.add(encryptRuleConfigurationYamlSwapper.swap(configurations.getEncryptRule()));

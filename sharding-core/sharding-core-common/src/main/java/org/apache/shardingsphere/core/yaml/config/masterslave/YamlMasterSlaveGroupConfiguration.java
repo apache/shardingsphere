@@ -19,17 +19,25 @@ package org.apache.shardingsphere.core.yaml.config.masterslave;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 /**
- * Master-slave rule configuration for YAML.
+ * Master-slave group configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlMasterSlaveRuleConfiguration implements YamlConfiguration {
+public final class YamlMasterSlaveGroupConfiguration {
     
-    private Map<String, YamlMasterSlaveGroupConfiguration> groups = new LinkedHashMap<>();
+    private String name;
+    
+    private String masterDataSourceName;
+    
+    private List<String> slaveDataSourceNames = new ArrayList<>();
+    
+    private String loadBalanceAlgorithmType;
+    
+    private Properties props = new Properties();
 }

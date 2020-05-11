@@ -57,11 +57,11 @@ public class SpringBootMasterSlaveTest {
     }
     
     private void assertMasterSlaveRule(final MasterSlaveRule rule) {
-        assertThat(rule.getName(), is("ds_ms"));
-        assertThat(rule.getMasterDataSourceName(), is("ds_master"));
-        assertThat(rule.getSlaveDataSourceNames().size(), is(2));
-        assertThat(rule.getSlaveDataSourceNames().get(0), is("ds_slave_0"));
-        assertThat(rule.getSlaveDataSourceNames().get(1), is("ds_slave_1"));
-        assertThat(rule.getLoadBalanceAlgorithm().getType(), is("RANDOM"));
+        assertThat(rule.getGroups().get("ds_ms").getName(), is("ds_ms"));
+        assertThat(rule.getGroups().get("ds_ms").getMasterDataSourceName(), is("ds_master"));
+        assertThat(rule.getGroups().get("ds_ms").getSlaveDataSourceNames().size(), is(2));
+        assertThat(rule.getGroups().get("ds_ms").getSlaveDataSourceNames().get(0), is("ds_slave_0"));
+        assertThat(rule.getGroups().get("ds_ms").getSlaveDataSourceNames().get(1), is("ds_slave_1"));
+        assertThat(rule.getGroups().get("ds_ms").getLoadBalanceAlgorithm().getType(), is("RANDOM"));
     }
 }

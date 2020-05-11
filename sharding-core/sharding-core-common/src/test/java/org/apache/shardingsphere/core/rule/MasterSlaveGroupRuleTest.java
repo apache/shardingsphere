@@ -19,8 +19,6 @@ package org.apache.shardingsphere.core.rule;
 
 import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveGroupConfiguration;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -29,26 +27,20 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class MasterSlaveRuleTest {
+public final class MasterSlaveGroupRuleTest {
     
-    private MasterSlaveRule masterSlaveRule;
-    
-    @Before
-    public void setUp() {
-        MasterSlaveGroupConfiguration groupConfiguration = new MasterSlaveGroupConfiguration(
-                "test_ms", "master_db", Arrays.asList("slave_db_0", "slave_db_1"), new LoadBalanceStrategyConfiguration("RANDOM"));
-        masterSlaveRule = new MasterSlaveRule(new MasterSlaveRuleConfiguration(Collections.singleton(groupConfiguration)));
-    }
+    private final MasterSlaveGroupRule masterSlaveRule = new MasterSlaveGroupRule(
+            new MasterSlaveGroupConfiguration("test_ms", "master_db", Arrays.asList("slave_db_0", "slave_db_1"), new LoadBalanceStrategyConfiguration("RANDOM")));
     
     @Test
     public void assertGetSlaveDataSourceNamesWithoutDisabledDataSourceNames() {
-        assertThat(masterSlaveRule.getSlaveDataSourceNames("test_ms"), is(Arrays.asList("slave_db_0", "slave_db_1")));
+        assertThat(masterSlaveRule.getSlaveDataSourceNames(), is(Arrays.asList("slave_db_0", "slave_db_1")));
     }
     
     @Test
     public void assertGetSlaveDataSourceNamesWithDisabledDataSourceNames() {
         masterSlaveRule.updateDisabledDataSourceNames("slave_db_0", true);
-        assertThat(masterSlaveRule.getSlaveDataSourceNames("test_ms"), is(Collections.singletonList("slave_db_1")));
+        assertThat(masterSlaveRule.getSlaveDataSourceNames(), is(Collections.singletonList("slave_db_1")));
     }
     
     @Test

@@ -54,17 +54,17 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
     @Test
     public void assertDefaultMaserSlaveDataSource() {
         MasterSlaveRule masterSlaveRule = getMasterSlaveRule("defaultMasterSlaveDataSourceOrchestration");
-        assertThat(masterSlaveRule.getMasterDataSourceName(), is("dbtbl_0_master"));
-        assertTrue(masterSlaveRule.getSlaveDataSourceNames().contains("dbtbl_0_slave_0"));
-        assertTrue(masterSlaveRule.getSlaveDataSourceNames().contains("dbtbl_0_slave_1"));
+        assertThat(masterSlaveRule.getGroups().get("defaultMasterSlaveDataSource").getMasterDataSourceName(), is("dbtbl_0_master"));
+        assertTrue(masterSlaveRule.getSlaveDataSourceNames("defaultMasterSlaveDataSource").contains("dbtbl_0_slave_0"));
+        assertTrue(masterSlaveRule.getSlaveDataSourceNames("defaultMasterSlaveDataSource").contains("dbtbl_0_slave_1"));
     }
     
     @Test
     public void assertTypeMasterSlaveDataSource() {
         MasterSlaveRule randomSlaveRule = getMasterSlaveRule("randomMasterSlaveDataSourceOrchestration");
+        assertTrue(randomSlaveRule.getGroups().get("randomMasterSlaveDataSource").getLoadBalanceAlgorithm() instanceof RandomMasterSlaveLoadBalanceAlgorithm);
         MasterSlaveRule roundRobinSlaveRule = getMasterSlaveRule("roundRobinMasterSlaveDataSourceOrchestration");
-        assertTrue(randomSlaveRule.getLoadBalanceAlgorithm() instanceof RandomMasterSlaveLoadBalanceAlgorithm);
-        assertTrue(roundRobinSlaveRule.getLoadBalanceAlgorithm() instanceof RoundRobinMasterSlaveLoadBalanceAlgorithm);
+        assertTrue(roundRobinSlaveRule.getGroups().get("roundRobinMasterSlaveDataSource").getLoadBalanceAlgorithm() instanceof RoundRobinMasterSlaveLoadBalanceAlgorithm);
     }
     
     @Test
@@ -73,7 +73,7 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
     public void assertRefMasterSlaveDataSource() {
         MasterSlaveLoadBalanceAlgorithm randomLoadBalanceAlgorithm = applicationContext.getBean("randomLoadBalanceAlgorithm", MasterSlaveLoadBalanceAlgorithm.class);
         MasterSlaveRule masterSlaveRule = getMasterSlaveRule("refMasterSlaveDataSourceOrchestration");
-        assertThat(masterSlaveRule.getLoadBalanceAlgorithm(), is(randomLoadBalanceAlgorithm));
+        assertThat(masterSlaveRule.getGroups().get("randomLoadBalanceAlgorithm").getLoadBalanceAlgorithm(), is(randomLoadBalanceAlgorithm));
     }
     
     private MasterSlaveRule getMasterSlaveRule(final String masterSlaveDataSourceName) {

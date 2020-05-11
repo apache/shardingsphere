@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.spring.namespace.parser;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveGroupConfiguration;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.ManagedList;
@@ -30,10 +30,10 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Master slave rule configuration bean definition.
+ * Master slave group configuration bean definition.
  */
 @Getter
-public final class MasterSlaveRuleConfigurationBeanDefinition {
+public final class MasterSlaveGroupConfigurationBeanDefinition {
     
     private static final String MASTER_DATA_SOURCE_NAME_ATTRIBUTE = "master-data-source-name";
     
@@ -47,14 +47,14 @@ public final class MasterSlaveRuleConfigurationBeanDefinition {
     
     private BeanDefinition beanDefinition;
     
-    public MasterSlaveRuleConfigurationBeanDefinition(final Element element) {
+    public MasterSlaveGroupConfigurationBeanDefinition(final Element element) {
         masterDataSourceName = element.getAttribute(MASTER_DATA_SOURCE_NAME_ATTRIBUTE);
         slaveDataSourceNames = element.getAttribute(SLAVE_DATA_SOURCE_NAMES_ATTRIBUTE);
         beanDefinition = getBeanDefinition(element);
     }
     
     private BeanDefinition getBeanDefinition(final Element element) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(MasterSlaveRuleConfiguration.class);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(MasterSlaveGroupConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute("id"));
         factory.addConstructorArgValue(masterDataSourceName);
         factory.addConstructorArgValue(parseSlaveDataSourcesRef());
