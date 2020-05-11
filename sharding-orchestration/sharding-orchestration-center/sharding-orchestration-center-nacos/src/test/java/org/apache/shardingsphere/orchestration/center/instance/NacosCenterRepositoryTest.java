@@ -150,8 +150,8 @@ public final class NacosCenterRepositoryTest {
     public void assertDeleteWhenThrowException() {
         when(configService.getConfig(eq("sharding.test"), eq(group), anyLong())).thenReturn("value");
         doThrow(NacosException.class).when(configService).removeConfig(eq("sharding.test"), eq(group));
-        configCenterRepository.delete("/sharding/test");
-        assertNotNull(configCenterRepository.get("/sharding/test"));
+        REPOSITORY.delete("/sharding/test");
+        assertNotNull(REPOSITORY.get("/sharding/test"));
     }
     
     @SneakyThrows
@@ -162,7 +162,7 @@ public final class NacosCenterRepositoryTest {
                 .when(configService)
                 .addListener(anyString(), anyString(), any(Listener.class));
         DataChangedEventListener listener = dataChangedEvent -> actualType[0] = dataChangedEvent.getChangedType();
-        configCenterRepository.watch("/sharding/test", listener);
+        REPOSITORY.watch("/sharding/test", listener);
         assertNull(actualType[0]);
     }
     
@@ -171,20 +171,20 @@ public final class NacosCenterRepositoryTest {
     public void assertPersistWhenThrowException() {
         String value = "value";
         doThrow(NacosException.class).when(configService).publishConfig(eq("sharding.test"), eq(group), eq(value));
-        configCenterRepository.persist("/sharding/test", value);
-        assertNull(configCenterRepository.get("/sharding/test"));
+        REPOSITORY.persist("/sharding/test", value);
+        assertNull(REPOSITORY.get("/sharding/test"));
     }
     
     @Test
     public void assertProperties() {
         Properties properties = new Properties();
-        configCenterRepository.setProperties(properties);
-        assertThat(configCenterRepository.getProperties(), is(properties));
+        REPOSITORY.setProperties(properties);
+        assertThat(REPOSITORY.getProperties(), is(properties));
     }
     
     @Test
     public void assertGetChildrenKeys() {
-        assertNull(configCenterRepository.getChildrenKeys("/sharding/test"));
+        assertNull(REPOSITORY.getChildrenKeys("/sharding/test"));
     }
     
     private VoidAnswer3 getListenerAnswer(final String expectValue) {
