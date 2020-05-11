@@ -23,7 +23,7 @@ import lombok.SneakyThrows;
 import java.lang.reflect.Field;
 
 /**
- * Field Utility.
+ * Field util.
  */
 @RequiredArgsConstructor
 public final class FieldUtil {
