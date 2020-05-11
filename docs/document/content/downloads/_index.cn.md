@@ -11,7 +11,7 @@ ShardingSphere的发布版包括源码包及其对应的二进制包。由于下
 
 **ShardingSphere**
 
-| 版本 | 发布日期 | 说明 | 下载 | 
+| 版本 | 发布日期 | 说明 | 下载 |
 | - | - | - | - |
 | 4.1.0     | Apr 30, 2020 | 源码 | [source](https://www.apache.org/dyn/closer.cgi/shardingsphere/4.1.0/apache-shardingsphere-4.1.0-src.zip) ([asc](https://downloads.apache.org/shardingsphere/4.1.0/apache-shardingsphere-4.1.0-src.zip.asc) [sha512](https://downloads.apache.org/shardingsphere/4.1.0/apache-shardingsphere-4.1.0-src.zip.sha512)) |
 |           |              | Sharding-JDBC 二进制包 | [binary](https://www.apache.org/dyn/closer.cgi/shardingsphere/4.1.0/apache-shardingsphere-4.1.0-sharding-jdbc-bin.tar.gz) ([asc](https://downloads.apache.org/shardingsphere/4.1.0/apache-shardingsphere-4.1.0-sharding-jdbc-bin.tar.gz.asc) [sha512](https://downloads.apache.org/shardingsphere/4.1.0/apache-shardingsphere-4.1.0-sharding-jdbc-bin.tar.gz.sha512)) |
@@ -20,7 +20,7 @@ ShardingSphere的发布版包括源码包及其对应的二进制包。由于下
 
 **ShardingSphere UI**
 
-| 版本 | 发布日期 | 说明 | 下载 | 
+| 版本 | 发布日期 | 说明 | 下载 |
 | - | - | - | - |
 | 4.1.0     | Apr 30, 2020 | 源码 | [source](https://www.apache.org/dyn/closer.cgi/shardingsphere/shardingsphere-ui-4.1.0/apache-shardingsphere-4.1.0-shardingsphere-ui-src.zip ) ([asc](https://downloads.apache.org/shardingsphere/shardingsphere-ui-4.1.0/apache-shardingsphere-4.1.0-shardingsphere-ui-src.zip.asc) [sha512](https://downloads.apache.org/shardingsphere/shardingsphere-ui-4.1.0/apache-shardingsphere-4.1.0-shardingsphere-ui-src.zip.sha512)) |
 |           |              | ShardingSphere-UI 二进制包 | [binary](https://www.apache.org/dyn/closer.cgi/shardingsphere/shardingsphere-ui-4.1.0/apache-shardingsphere-4.1.0-shardingsphere-ui-bin.tar.gz) ([asc](https://downloads.apache.org/shardingsphere/shardingsphere-ui-4.1.0/apache-shardingsphere-4.1.0-shardingsphere-ui-bin.tar.gz.asc) [sha512](https://downloads.apache.org/shardingsphere/shardingsphere-ui-4.1.0/apache-shardingsphere-4.1.0-shardingsphere-ui-bin.tar.gz.sha512)) |
