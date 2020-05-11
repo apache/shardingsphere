@@ -9,7 +9,7 @@ chapter = true
 
 ShardingSphere的发布版包括源码包及其对应的二进制包。由于下载内容分布在镜像服务器上，所以下载后应该进行GPG或SHA-512校验，以此来保证内容没有被篡改。
 
-### ShardingSphere
+**ShardingSphere**
 
 | 版本       | 发布日期      | 说明 | 下载 | 
 | --------- | ------------ | ---- | ---- |
@@ -18,7 +18,7 @@ ShardingSphere的发布版包括源码包及其对应的二进制包。由于下
 |           |              | Sharding-Proxy 二进制包 | [binary](https://www.apache.org/dyn/closer.cgi/shardingsphere/4.1.0/apache-shardingsphere-4.1.0-sharding-proxy-bin.tar.gz) ([asc](https://downloads.apache.org/shardingsphere/4.1.0/apache-shardingsphere-4.1.0-sharding-proxy-bin.tar.gz.asc) [sha512](https://downloads.apache.org/shardingsphere/4.1.0/apache-shardingsphere-4.1.0-sharding-proxy-bin.tar.gz.sha512)) |
 |           |              | Sharding-Scaling 二进制包 | [binary](https://www.apache.org/dyn/closer.cgi/shardingsphere/4.1.0/apache-shardingsphere-4.1.0-sharding-scaling-bin.tar.gz) ([asc](https://downloads.apache.org/shardingsphere/4.1.0/apache-shardingsphere-4.1.0-sharding-scaling-bin.tar.gz.asc) [sha512](https://downloads.apache.org/shardingsphere/4.1.0/apache-shardingsphere-4.1.0-sharding-scaling-bin.tar.gz.sha512)) |
 
-### ShardingSphere UI
+**ShardingSphere UI**
 
 | 版本       | 发布日期      | 说明 | 下载 | 
 | --------- | ------------ | ---- | ---- |

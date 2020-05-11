@@ -9,7 +9,7 @@ chapter = true
 
 ShardingSphere is released as source code tarballs with corresponding binary tarballs for convenience. The downloads are distributed via mirror sites and should be checked for tampering using GPG or SHA-512.
 
-### ShardingSphere
+**ShardingSphere**
 
 | Version   | Release date | Description | Downloads | 
 | --------- | ------------ | ----------- | --------- |
@@ -18,7 +18,7 @@ ShardingSphere is released as source code tarballs with corresponding binary tar
 |           |              | Sharding-Proxy Binary Distribution | [binary](https://www.apache.org/dyn/closer.cgi/shardingsphere/4.1.0/apache-shardingsphere-4.1.0-sharding-proxy-bin.tar.gz) ([asc](https://downloads.apache.org/shardingsphere/4.1.0/apache-shardingsphere-4.1.0-sharding-proxy-bin.tar.gz.asc) [sha512](https://downloads.apache.org/shardingsphere/4.1.0/apache-shardingsphere-4.1.0-sharding-proxy-bin.tar.gz.sha512)) |
 |           |              | Sharding-Scaling Binary Distribution | [binary](https://www.apache.org/dyn/closer.cgi/shardingsphere/4.1.0/apache-shardingsphere-4.1.0-sharding-scaling-bin.tar.gz) ([asc](https://downloads.apache.org/shardingsphere/4.1.0/apache-shardingsphere-4.1.0-sharding-scaling-bin.tar.gz.asc) [sha512](https://downloads.apache.org/shardingsphere/4.1.0/apache-shardingsphere-4.1.0-sharding-scaling-bin.tar.gz.sha512)) |
 
-### ShardingSphere UI
+**ShardingSphere UI**
 
 | Version   | Release date | Description | Downloads | 
 | --------- | ------------ | ----------- | --------- |
