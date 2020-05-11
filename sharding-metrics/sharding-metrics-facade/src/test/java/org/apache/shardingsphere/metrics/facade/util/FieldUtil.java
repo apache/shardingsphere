@@ -15,31 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metrics.configuration.yaml;
+package org.apache.shardingsphere.metrics.facade.util;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 
-import java.util.Properties;
+import java.lang.reflect.Field;
 
 /**
- * Metrics configuration for YAML.
+ * Field util.
  */
-@Getter
-@Setter
-public final class YamlMetricsConfiguration implements YamlConfiguration {
+@RequiredArgsConstructor
+public final class FieldUtil {
     
-    private String name;
-    
-    private String host;
-    
-    private Integer port;
-    
-    private Boolean async;
-    
-    private Integer threadCount;
-    
-    private Properties props = new Properties();
+    /**
+     * Set field.
+     *
+     * @param target target to be settled
+     * @param fieldName field name to be settled
+     * @param fieldValue field value to be settled
+     */
+    @SneakyThrows
+    public static void setField(final Object target, final String fieldName, final Object fieldValue) {
+        Field field = target.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(target, fieldValue);
+    }
 }
-

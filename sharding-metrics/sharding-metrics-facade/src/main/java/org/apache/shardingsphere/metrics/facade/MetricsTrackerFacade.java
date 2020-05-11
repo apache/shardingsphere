@@ -19,19 +19,11 @@ package org.apache.shardingsphere.metrics.facade;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.metrics.api.CounterMetricsTracker;
-import org.apache.shardingsphere.metrics.api.GaugeMetricsTracker;
-import org.apache.shardingsphere.metrics.api.HistogramMetricsTracker;
 import org.apache.shardingsphere.metrics.api.HistogramMetricsTrackerDelegate;
-import org.apache.shardingsphere.metrics.api.MetricsTracker;
-import org.apache.shardingsphere.metrics.api.NoneHistogramMetricsTrackerDelegate;
-import org.apache.shardingsphere.metrics.api.NoneSummaryMetricsTrackerDelegate;
-import org.apache.shardingsphere.metrics.api.SummaryMetricsTracker;
 import org.apache.shardingsphere.metrics.api.SummaryMetricsTrackerDelegate;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
-import org.apache.shardingsphere.metrics.enums.MetricsTypeEnum;
+import org.apache.shardingsphere.metrics.facade.handler.MetricsTrackerHandler;
 import org.apache.shardingsphere.metrics.spi.MetricsTrackerManager;
 
 import java.util.HashMap;
@@ -53,7 +45,6 @@ public final class MetricsTrackerFacade {
     private MetricsTrackerManager metricsTrackerManager;
     
     @Getter
-    @Setter
     private volatile boolean enabled;
     
     private MetricsTrackerFacade() {
@@ -88,6 +79,7 @@ public final class MetricsTrackerFacade {
         metricsTrackerManager = findMetricsTrackerManager(metricsConfiguration.getMetricsName());
         Preconditions.checkNotNull(metricsTrackerManager, "Can not find metrics tracker manager with metrics name in metrics configuration.");
         metricsTrackerManager.start(metricsConfiguration);
+        MetricsTrackerHandler.getInstance().init(metricsConfiguration.getAsync(), metricsConfiguration.getThreadCount(), metricsTrackerManager);
         enabled = true;
     }
     
@@ -99,8 +91,7 @@ public final class MetricsTrackerFacade {
      */
     public void counterInc(final String metricsLabel, final String... labelValues) {
         if (enabled) {
-            metricsTrackerManager.getMetricsTrackerFactory().create(MetricsTypeEnum.COUNTER.name(), metricsLabel)
-                .ifPresent(metricsTracker -> ((CounterMetricsTracker) metricsTracker).inc(1.0, labelValues));
+            MetricsTrackerHandler.getInstance().counterInc(metricsLabel, labelValues);
         }
     }
     
@@ -112,8 +103,7 @@ public final class MetricsTrackerFacade {
      */
     public void gaugeInc(final String metricsLabel, final String... labelValues) {
         if (enabled) {
-            metricsTrackerManager.getMetricsTrackerFactory().create(MetricsTypeEnum.GAUGE.name(), metricsLabel)
-                .ifPresent(metricsTracker -> ((GaugeMetricsTracker) metricsTracker).inc(1.0, labelValues));
+            MetricsTrackerHandler.getInstance().gaugeInc(metricsLabel, labelValues);
         }
     }
     
@@ -125,8 +115,7 @@ public final class MetricsTrackerFacade {
      */
     public void gaugeDec(final String metricsLabel, final String... labelValues) {
         if (enabled) {
-            metricsTrackerManager.getMetricsTrackerFactory().create(MetricsTypeEnum.GAUGE.name(), metricsLabel)
-                .ifPresent(metricsTracker -> ((GaugeMetricsTracker) metricsTracker).dec(1.0, labelValues));
+            MetricsTrackerHandler.getInstance().gaugeDec(metricsLabel, labelValues);
         }
     }
     
@@ -141,8 +130,7 @@ public final class MetricsTrackerFacade {
         if (!enabled) {
             return Optional.empty();
         }
-        Optional<MetricsTracker> metricsTracker = metricsTrackerManager.getMetricsTrackerFactory().create(MetricsTypeEnum.HISTOGRAM.name(), metricsLabel);
-        return metricsTracker.map(tracker -> Optional.of(((HistogramMetricsTracker) tracker).startTimer(labelValues))).orElseGet(() -> Optional.of(new NoneHistogramMetricsTrackerDelegate()));
+        return MetricsTrackerHandler.getInstance().histogramStartTimer(metricsLabel, labelValues);
     }
     
     /**
@@ -151,7 +139,7 @@ public final class MetricsTrackerFacade {
      * @param delegate histogram metrics tracker delegate
      */
     public void histogramObserveDuration(final HistogramMetricsTrackerDelegate delegate) {
-        delegate.observeDuration();
+        MetricsTrackerHandler.getInstance().histogramObserveDuration(delegate);
     }
     
     /**
@@ -165,8 +153,7 @@ public final class MetricsTrackerFacade {
         if (!enabled) {
             return Optional.empty();
         }
-        Optional<MetricsTracker> metricsTracker = metricsTrackerManager.getMetricsTrackerFactory().create(MetricsTypeEnum.SUMMARY.name(), metricsLabel);
-        return metricsTracker.map(tracker -> Optional.of(((SummaryMetricsTracker) tracker).startTimer(labelValues))).orElseGet(() -> Optional.of(new NoneSummaryMetricsTrackerDelegate()));
+        return MetricsTrackerHandler.getInstance().summaryStartTimer(metricsLabel, labelValues);
     }
     
     /**
@@ -175,7 +162,7 @@ public final class MetricsTrackerFacade {
      * @param delegate summary metrics tracker delegate
      */
     public void summaryObserveDuration(final SummaryMetricsTrackerDelegate delegate) {
-        delegate.observeDuration();
+        MetricsTrackerHandler.getInstance().summaryObserveDuration(delegate);
     }
     
     private void loadMetricsManager() {
