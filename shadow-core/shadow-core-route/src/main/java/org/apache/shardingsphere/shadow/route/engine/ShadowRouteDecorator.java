@@ -71,7 +71,7 @@ public final class ShadowRouteDecorator implements RouteDecorator<ShadowRule> {
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
         if (!(sqlStatement instanceof DMLStatement)) {
             for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
-                String shadowDataSourceName = shadowRule.getShadowMappings().get(each);
+                String shadowDataSourceName = shadowRule.getShadowMappings().get(each.getDataSourceMapper().getActualName());
                 toBeAdded.add(new RouteUnit(new RouteMapper(shadowDataSourceName, shadowDataSourceName), Collections.emptyList()));
             }
             routeContext.getRouteResult().getRouteUnits().addAll(toBeAdded);
@@ -80,7 +80,7 @@ public final class ShadowRouteDecorator implements RouteDecorator<ShadowRule> {
         if (isShadowSql(routeContext, shadowRule)) {
             for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
                 routeContext.getRouteResult().getRouteUnits().remove(each);
-                String shadowDataSourceName = shadowRule.getShadowMappings().get(each);
+                String shadowDataSourceName = shadowRule.getShadowMappings().get(each.getDataSourceMapper().getActualName());
                 routeContext.getRouteResult().getRouteUnits().add(new RouteUnit(new RouteMapper(shadowDataSourceName, shadowDataSourceName), Collections.emptyList()));
             }
         }
