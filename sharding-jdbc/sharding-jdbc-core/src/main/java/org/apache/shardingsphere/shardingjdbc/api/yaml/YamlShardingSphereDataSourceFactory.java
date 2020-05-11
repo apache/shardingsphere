@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.core.yaml.constructor.YamlRootRuleConfigurationsConstructor;
 import org.apache.shardingsphere.core.yaml.swapper.root.RuleRootConfigurationsYamlSwapper;
 import org.apache.shardingsphere.shardingjdbc.api.ShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
 import javax.sql.DataSource;
@@ -89,7 +90,7 @@ public final class YamlShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final DataSource dataSource, final File yamlFile) throws SQLException, IOException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put("unique_ds", dataSource);
+        dataSourceMap.put(DefaultSchema.LOGIC_NAME, dataSource);
         return createDataSource(dataSourceMap, yamlFile);
     }
     
@@ -118,7 +119,7 @@ public final class YamlShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final DataSource dataSource, final byte[] yamlBytes) throws SQLException, IOException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put("unique_ds", dataSource);
+        dataSourceMap.put(DefaultSchema.LOGIC_NAME, dataSource);
         return createDataSource(dataSourceMap, yamlBytes);
     }
 }

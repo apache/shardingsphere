@@ -23,6 +23,7 @@ import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfig
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
+import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -69,7 +70,7 @@ public final class OrchestrationShardingSphereDataSourceFactory {
     public static DataSource createDataSource(final DataSource dataSource, final Collection<RuleConfiguration> ruleConfigurations,
                                               final Properties props, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put("unique_ds", dataSource);
+        dataSourceMap.put(DefaultSchema.LOGIC_NAME, dataSource);
         return createDataSource(dataSourceMap, ruleConfigurations, props, orchestrationConfig);
     }
     

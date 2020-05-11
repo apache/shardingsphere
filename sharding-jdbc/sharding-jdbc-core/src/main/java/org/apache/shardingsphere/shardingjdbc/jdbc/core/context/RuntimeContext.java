@@ -30,6 +30,7 @@ import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfigur
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
@@ -95,7 +96,7 @@ public final class RuntimeContext implements AutoCloseable {
     }
     
     public RuntimeContext(final DataSource dataSource, final DatabaseType databaseType, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
-        this(ImmutableMap.of("unique_ds", dataSource), databaseType, configurations, props);
+        this(ImmutableMap.of(DefaultSchema.LOGIC_NAME, dataSource), databaseType, configurations, props);
     }
     
     private CachedDatabaseMetaData createCachedDatabaseMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {

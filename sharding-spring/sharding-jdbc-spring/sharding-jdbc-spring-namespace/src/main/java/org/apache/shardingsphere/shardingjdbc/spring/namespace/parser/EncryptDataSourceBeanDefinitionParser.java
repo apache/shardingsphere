@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.spring.namespace.parser;
 
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.EncryptDataSourceBeanDefinitionParserTag;
+import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -52,7 +53,7 @@ public final class EncryptDataSourceBeanDefinitionParser extends AbstractBeanDef
     private Map<String, RuntimeBeanReference> parseDataSources(final Element element) {
         String dataSource = element.getAttribute(EncryptDataSourceBeanDefinitionParserTag.DATA_SOURCE_NAME_TAG);
         Map<String, RuntimeBeanReference> result = new ManagedMap<>(1);
-        result.put("unique_ds", new RuntimeBeanReference(dataSource));
+        result.put(DefaultSchema.LOGIC_NAME, new RuntimeBeanReference(dataSource));
         return result;
     }
     
