@@ -11,8 +11,8 @@ ShardingSphere is released as source code tarballs with corresponding binary tar
 
 ### ShardingSphere
 
-| Version   | Release date |  | Downloads | 
-| --------- | ------------ | ------- | ----------------- |
+| Version   | Release date | Description | Downloads | 
+| --------- | ------------ | ----------- | --------- |
 | 4.1.0     | Apr 30, 2020 | Source codes | [source](https://www.apache.org/dyn/closer.cgi/shardingsphere/4.1.0/apache-shardingsphere-4.1.0-src.zip) ([asc](https://downloads.apache.org/shardingsphere/4.1.0/apache-shardingsphere-4.1.0-src.zip.asc) [sha512](https://downloads.apache.org/shardingsphere/4.1.0/apache-shardingsphere-4.1.0-src.zip.sha512)) |
 |           |              | Sharding-JDBC Binary Distribution | [binary](https://www.apache.org/dyn/closer.cgi/shardingsphere/4.1.0/apache-shardingsphere-4.1.0-sharding-jdbc-bin.tar.gz) ([asc](https://downloads.apache.org/shardingsphere/4.1.0/apache-shardingsphere-4.1.0-sharding-jdbc-bin.tar.gz.asc) [sha512](https://downloads.apache.org/shardingsphere/4.1.0/apache-shardingsphere-4.1.0-sharding-jdbc-bin.tar.gz.sha512)) |
 |           |              | Sharding-Proxy Binary Distribution | [binary](https://www.apache.org/dyn/closer.cgi/shardingsphere/4.1.0/apache-shardingsphere-4.1.0-sharding-proxy-bin.tar.gz) ([asc](https://downloads.apache.org/shardingsphere/4.1.0/apache-shardingsphere-4.1.0-sharding-proxy-bin.tar.gz.asc) [sha512](https://downloads.apache.org/shardingsphere/4.1.0/apache-shardingsphere-4.1.0-sharding-proxy-bin.tar.gz.sha512)) |
@@ -20,8 +20,8 @@ ShardingSphere is released as source code tarballs with corresponding binary tar
 
 ### ShardingSphere UI
 
-| Version   | Release date |  | Downloads | 
-| --------- | ------------ | ------- | ----------------- |
+| Version   | Release date | Description | Downloads | 
+| --------- | ------------ | ----------- | --------- |
 | 4.1.0     | Apr 30, 2020 | Source codes | [source](https://www.apache.org/dyn/closer.cgi/shardingsphere/shardingsphere-ui-4.1.0/apache-shardingsphere-4.1.0-shardingsphere-ui-src.zip ) ([asc](https://downloads.apache.org/shardingsphere/shardingsphere-ui-4.1.0/apache-shardingsphere-4.1.0-shardingsphere-ui-src.zip.asc) [sha512](https://downloads.apache.org/shardingsphere/shardingsphere-ui-4.1.0/apache-shardingsphere-4.1.0-shardingsphere-ui-src.zip.sha512)) |
 |           |              | ShardingSphere-UI Binary Distribution | [binary](https://www.apache.org/dyn/closer.cgi/shardingsphere/shardingsphere-ui-4.1.0/apache-shardingsphere-4.1.0-shardingsphere-ui-bin.tar.gz) ([asc](https://downloads.apache.org/shardingsphere/shardingsphere-ui-4.1.0/apache-shardingsphere-4.1.0-shardingsphere-ui-bin.tar.gz.asc) [sha512](https://downloads.apache.org/shardingsphere/shardingsphere-ui-4.1.0/apache-shardingsphere-4.1.0-shardingsphere-ui-bin.tar.gz.sha512)) |
 
