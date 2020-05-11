@@ -40,10 +40,8 @@ import java.util.concurrent.TimeoutException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.doThrow;
 
 public final class ApolloCenterRepositoryTest {
     
@@ -151,13 +149,6 @@ public final class ApolloCenterRepositoryTest {
     public void assertPersist() {
         REPOSITORY.persist("/test/children/6", "value6");
         verify(OPEN_API_WRAPPER).persist(ConfigKeyUtils.pathToKey("/test/children/6"), "value6");
-    }
-    
-    @Test
-    public void assertPersistWhenThrowException() {
-        doThrow(Exception.class).when(OPEN_API_WRAPPER).persist(anyString(), anyString());
-        REPOSITORY.persist("/test/children/7", "value7");
-        verify(OPEN_API_WRAPPER).persist(ConfigKeyUtils.pathToKey("/test/children/7"), "value7");
     }
     
     @Test

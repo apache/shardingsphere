@@ -41,9 +41,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.junit.Assert.assertNull;
 
-
 @RunWith(MockitoJUnitRunner.class)
 public final class ApolloOpenApiWrapperTest {
+    
+    private static final String NAME_SPACE = "orchestration";
+    
+    private static final String PORTAL_URL = "http://127.0.0.1";
+    
+    private static final String TOKEN = "testToken";
     
     @Mock
     private ApolloOpenApiClient client;
@@ -52,12 +57,6 @@ public final class ApolloOpenApiWrapperTest {
     private OpenItemDTO openItemDTO;
     
     private ApolloOpenApiWrapper apolloOpenApiWrapper;
-    
-    private static final String NAME_SPACE = "orchestration";
-    
-    private static final String PORTAL_URL = "http://127.0.0.1";
-    
-    private static final String TOKEN = "testToken";
     
     @SneakyThrows({NoSuchFieldException.class, SecurityException.class})
     @Before
@@ -77,32 +76,27 @@ public final class ApolloOpenApiWrapperTest {
     @Test
     public void getValue() {
         apolloOpenApiWrapper.getValue(ConfigKeyUtils.pathToKey("/test/children/0"));
-        verify(client).getItem(ApolloPropertyKey.APP_ID.getDefaultValue() ,
-                ApolloPropertyKey.ENV.getDefaultValue(), ApolloPropertyKey.CLUSTER_NAME.getDefaultValue(), NAME_SPACE,
-                ConfigKeyUtils.pathToKey("/test/children/0"));
+        verify(client).getItem(ApolloPropertyKey.APP_ID.getDefaultValue(), ApolloPropertyKey.ENV.getDefaultValue(),
+                ApolloPropertyKey.CLUSTER_NAME.getDefaultValue(), NAME_SPACE, ConfigKeyUtils.pathToKey("/test/children/0"));
     }
     
     @Test
     public void getValueNotNull() {
-        when(client.getItem(ApolloPropertyKey.APP_ID.getDefaultValue() ,
-                ApolloPropertyKey.ENV.getDefaultValue(), ApolloPropertyKey.CLUSTER_NAME.getDefaultValue(), NAME_SPACE,
-                ConfigKeyUtils.pathToKey("/test/children/0"))).thenReturn(openItemDTO);
+        when(client.getItem(ApolloPropertyKey.APP_ID.getDefaultValue(), ApolloPropertyKey.ENV.getDefaultValue(),
+                ApolloPropertyKey.CLUSTER_NAME.getDefaultValue(), NAME_SPACE, ConfigKeyUtils.pathToKey("/test/children/0"))).thenReturn(openItemDTO);
         assertNull(apolloOpenApiWrapper.getValue(ConfigKeyUtils.pathToKey("/test/children/0")));
     }
     
     @Test
     public void persist() {
         apolloOpenApiWrapper.persist(ConfigKeyUtils.pathToKey("/test/children/0"), "value0");
-        verify(client).createOrUpdateItem(anyString() ,
-                anyString(), anyString(), anyString(), any(OpenItemDTO.class));
-        verify(client).publishNamespace(anyString() ,
-                anyString(), anyString(), anyString(), any(NamespaceReleaseDTO.class));
+        verify(client).createOrUpdateItem(anyString(), anyString(), anyString(), anyString(), any(OpenItemDTO.class));
+        verify(client).publishNamespace(anyString(), anyString(), anyString(), anyString(), any(NamespaceReleaseDTO.class));
     }
     
     @Test
     public void remove() {
         apolloOpenApiWrapper.remove(ConfigKeyUtils.pathToKey("/test/children/0"));
-        verify(client).removeItem(anyString() ,
-                anyString(), anyString(), anyString(), eq(ConfigKeyUtils.pathToKey("/test/children/0")) ,anyString());
+        verify(client).removeItem(anyString(), anyString(), anyString(), anyString(), eq(ConfigKeyUtils.pathToKey("/test/children/0")), anyString());
     }
 }
