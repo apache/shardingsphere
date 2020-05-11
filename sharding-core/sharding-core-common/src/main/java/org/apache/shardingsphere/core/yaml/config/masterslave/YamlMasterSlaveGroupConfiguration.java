@@ -15,20 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml;
+package org.apache.shardingsphere.core.yaml.config.masterslave;
 
-import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.yaml.config.masterslave.YamlRootMasterSlaveConfiguration;
-import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 /**
- * Orchestration master-slave configuration for YAML.
+ * Master-slave group configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlOrchestrationMasterSlaveRuleConfiguration extends YamlRootMasterSlaveConfiguration {
+public final class YamlMasterSlaveGroupConfiguration {
     
-    private Map<String, YamlCenterRepositoryConfiguration> orchestration;
+    private String name;
+    
+    private String masterDataSourceName;
+    
+    private List<String> slaveDataSourceNames = new ArrayList<>();
+    
+    private String loadBalanceAlgorithmType;
+    
+    private Properties props = new Properties();
 }

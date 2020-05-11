@@ -26,7 +26,6 @@ import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguratio
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -44,7 +43,7 @@ public final class YamlProxyRuleConfiguration implements YamlConfiguration {
     
     private YamlShardingRuleConfiguration shardingRule;
     
-    private Map<String, YamlMasterSlaveRuleConfiguration> masterSlaveRules = new LinkedHashMap<>();
+    private YamlMasterSlaveRuleConfiguration masterSlaveRule;
     
     private YamlEncryptRuleConfiguration encryptRule;
     

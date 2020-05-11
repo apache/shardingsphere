@@ -215,7 +215,7 @@ public final class Bootstrap {
             } else {
                 YamlRootRuleConfigurations configurations = new YamlRootRuleConfigurations();
                 configurations.setShardingRule(entry.getValue().getShardingRule());
-                configurations.getMasterSlaveRules().putAll(entry.getValue().getMasterSlaveRules());
+                configurations.getMasterSlaveRule().getGroups().putAll(entry.getValue().getMasterSlaveRule().getGroups());
                 configurations.setEncryptRule(entry.getValue().getEncryptRule());
                 result.put(entry.getKey(), new RuleRootConfigurationsYamlSwapper().swap(configurations));
             }

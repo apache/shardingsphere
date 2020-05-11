@@ -82,8 +82,8 @@ public final class ConfigCenterTest {
             + "      tableStrategy:\n" + "        standard:\n" + "          shardingAlgorithm:\n" + "            props:\n" 
             + "              algorithm.expression: t_order_${order_id % 2}\n" + "            type: INLINE\n" + "          shardingColumn: order_id\n";
     
-    private static final String MASTER_SLAVE_RULE_YAML = "masterSlaveRules:\n  ms_ds:\n    masterDataSourceName: master_ds\n"
-            + "    name: ms_ds\n" + "    slaveDataSourceNames:\n" + "    - slave_ds_0\n" + "    - slave_ds_1\n";
+    private static final String MASTER_SLAVE_RULE_YAML = "masterSlaveRule:\n  groups:\n    ms_ds:\n      masterDataSourceName: master_ds\n"
+            + "      name: ms_ds\n" + "      slaveDataSourceNames:\n" + "      - slave_ds_0\n" + "      - slave_ds_1\n";
     
     private static final String ENCRYPT_RULE_YAML = "encryptRule:\n  encryptors:\n" + "    order_encryptor:\n"
             + "      props:\n" + "        aes.key.value: 123456\n" + "      type: aes\n" + "  tables:\n" + "    t_order:\n" + "      columns:\n" 
@@ -273,7 +273,7 @@ public final class ConfigCenterTest {
     @Test
     public void assertNullRuleConfiguration() {
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
-        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), Collections.EMPTY_LIST, null, createProperties(), true);
+        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), Collections.emptyList(), null, createProperties(), true);
     }
     
     @Test
@@ -403,7 +403,7 @@ public final class ConfigCenterTest {
         when(configCenterRepository.get("/test/config/schema/sharding_db/rule")).thenReturn(MASTER_SLAVE_RULE_YAML);
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
         MasterSlaveRuleConfiguration actual = configurationService.loadMasterSlaveRuleConfiguration("sharding_db");
-        assertThat(actual.getName(), is("ms_ds"));
+        assertThat(actual.getGroups().iterator().next().getName(), is("ms_ds"));
     }
     
     @Test

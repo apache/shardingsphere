@@ -74,13 +74,15 @@ public class OrchestrationSpringBootRegistryMasterSlaveTest {
             + "    maxTotal: 16\n"
             + "    password: ''\n"
             + "    username: root\n");
-        testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/rule", "masterSlaveRules:\n  ds_ms:\n"
-            + "    loadBalanceAlgorithmType: ROUND_ROBIN\n"
-            + "    masterDataSourceName: ds_master\n"
-            + "    name: ds_ms\n"
-            + "    slaveDataSourceNames: \n"
-            + "      - ds_slave_0\n"
-            + "      - ds_slave_1\n");
+        testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/rule", "masterSlaveRule:\n"
+            + "  groups:\n"
+            + "    ds_ms:\n"
+            + "      loadBalanceAlgorithmType: ROUND_ROBIN\n"
+            + "      masterDataSourceName: ds_master\n"
+            + "      name: ds_ms\n"
+            + "      slaveDataSourceNames: \n"
+            + "        - ds_slave_0\n"
+            + "        - ds_slave_1\n");
         testCenter.persist("/demo_spring_boot_ds_center/config/props", "{}\n");
         testCenter.persist("/demo_spring_boot_ds_center/registry/datasources", "");
     }

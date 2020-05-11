@@ -17,38 +17,18 @@
 
 package org.apache.shardingsphere.api.config.masterslave;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import java.util.List;
+
+import java.util.Collection;
 
 /**
  * Master-slave rule configuration.
  */
+@RequiredArgsConstructor
 @Getter
 public final class MasterSlaveRuleConfiguration implements RuleConfiguration {
     
-    private final String name;
-    
-    private final String masterDataSourceName;
-    
-    private final List<String> slaveDataSourceNames;
-    
-    private final LoadBalanceStrategyConfiguration loadBalanceStrategyConfiguration;
-    
-    public MasterSlaveRuleConfiguration(final String name, final String masterDataSourceName, final List<String> slaveDataSourceNames) {
-        this(name, masterDataSourceName, slaveDataSourceNames, null);
-    }
-    
-    public MasterSlaveRuleConfiguration(final String name, 
-                                        final String masterDataSourceName, final List<String> slaveDataSourceNames, final LoadBalanceStrategyConfiguration loadBalanceStrategyConfiguration) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(name), "Name is required.");
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(masterDataSourceName), "MasterDataSourceName is required.");
-        Preconditions.checkArgument(null != slaveDataSourceNames && !slaveDataSourceNames.isEmpty(), "SlaveDataSourceNames is required.");
-        this.name = name;
-        this.masterDataSourceName = masterDataSourceName;
-        this.slaveDataSourceNames = slaveDataSourceNames;
-        this.loadBalanceStrategyConfiguration = loadBalanceStrategyConfiguration;
-    }
+    private final Collection<MasterSlaveGroupConfiguration> groups;
 }

@@ -39,7 +39,7 @@ public final class MasterSlaveRouteDecorator implements RouteDecorator<MasterSla
     @Override
     public RouteContext decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final MasterSlaveRule masterSlaveRule, final ConfigurationProperties properties) {
         if (routeContext.getRouteResult().getRouteUnits().isEmpty()) {
-            String dataSourceName = new MasterSlaveDataSourceRouter(masterSlaveRule).route(routeContext.getSqlStatementContext().getSqlStatement());
+            String dataSourceName = new MasterSlaveDataSourceRouter(masterSlaveRule.getGroups().values().iterator().next()).route(routeContext.getSqlStatementContext().getSqlStatement());
             RouteResult routeResult = new RouteResult();
             routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.emptyList()));
             return new RouteContext(routeContext.getSqlStatementContext(), Collections.emptyList(), routeResult);
@@ -47,9 +47,10 @@ public final class MasterSlaveRouteDecorator implements RouteDecorator<MasterSla
         Collection<RouteUnit> toBeRemoved = new LinkedList<>();
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
         for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
-            if (masterSlaveRule.getName().equalsIgnoreCase(each.getDataSourceMapper().getActualName())) {
+            String dataSourceName = each.getDataSourceMapper().getLogicName();
+            if (masterSlaveRule.getGroups().containsKey(dataSourceName) && masterSlaveRule.getGroups().get(dataSourceName).getName().equalsIgnoreCase(each.getDataSourceMapper().getActualName())) {
                 toBeRemoved.add(each);
-                String actualDataSourceName = new MasterSlaveDataSourceRouter(masterSlaveRule).route(routeContext.getSqlStatementContext().getSqlStatement());
+                String actualDataSourceName = new MasterSlaveDataSourceRouter(masterSlaveRule.getGroups().get(dataSourceName)).route(routeContext.getSqlStatementContext().getSqlStatement());
                 toBeAdded.add(new RouteUnit(new RouteMapper(each.getDataSourceMapper().getLogicName(), actualDataSourceName), each.getTableMappers()));
             }
         }
