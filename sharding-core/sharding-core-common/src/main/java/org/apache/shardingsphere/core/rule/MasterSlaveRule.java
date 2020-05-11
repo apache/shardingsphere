@@ -51,25 +51,13 @@ public final class MasterSlaveRule implements DataSourceRoutedRule {
     
     private final MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm;
     
-    private final MasterSlaveRuleConfiguration ruleConfiguration;
-    
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
-    public MasterSlaveRule(final String name, final String masterDataSourceName, final List<String> slaveDataSourceNames, final MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm) {
-        this.name = name;
-        this.masterDataSourceName = masterDataSourceName;
-        this.slaveDataSourceNames = slaveDataSourceNames;
-        this.loadBalanceAlgorithm = null == loadBalanceAlgorithm ? TypedSPIRegistry.getRegisteredService(MasterSlaveLoadBalanceAlgorithm.class) : loadBalanceAlgorithm;
-        ruleConfiguration = new MasterSlaveRuleConfiguration(name, masterDataSourceName, slaveDataSourceNames, 
-                new LoadBalanceStrategyConfiguration(this.loadBalanceAlgorithm.getType(), this.loadBalanceAlgorithm.getProperties()));
-    }
-    
-    public MasterSlaveRule(final MasterSlaveRuleConfiguration config) {
-        name = config.getName();
-        masterDataSourceName = config.getMasterDataSourceName();
-        slaveDataSourceNames = config.getSlaveDataSourceNames();
-        loadBalanceAlgorithm = createMasterSlaveLoadBalanceAlgorithm(config.getLoadBalanceStrategyConfiguration());
-        ruleConfiguration = config;
+    public MasterSlaveRule(final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration) {
+        name = masterSlaveRuleConfiguration.getName();
+        masterDataSourceName = masterSlaveRuleConfiguration.getMasterDataSourceName();
+        slaveDataSourceNames = masterSlaveRuleConfiguration.getSlaveDataSourceNames();
+        loadBalanceAlgorithm = createMasterSlaveLoadBalanceAlgorithm(masterSlaveRuleConfiguration.getLoadBalanceStrategyConfiguration());
     }
     
     private MasterSlaveLoadBalanceAlgorithm createMasterSlaveLoadBalanceAlgorithm(final LoadBalanceStrategyConfiguration loadBalanceStrategyConfiguration) {

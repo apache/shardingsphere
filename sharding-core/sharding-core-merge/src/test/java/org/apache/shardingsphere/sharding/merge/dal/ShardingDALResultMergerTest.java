@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 
 public final class ShardingDALResultMergerTest {
     
-    private List<QueryResult> queryResults = new LinkedList<>();
+    private final List<QueryResult> queryResults = new LinkedList<>();
     
     @Before
     public void setUp() {

@@ -38,5 +38,5 @@ public final class ExpectedJoinSpecification extends AbstractExpectedDelimiterSQ
     private final List<ExpectedAndPredicate> andPredicates = new LinkedList<>();
     
     @XmlElement
-    private final List<ExpectedColumn> columus = new LinkedList<>();
+    private final List<ExpectedColumn> columns = new LinkedList<>();
 }

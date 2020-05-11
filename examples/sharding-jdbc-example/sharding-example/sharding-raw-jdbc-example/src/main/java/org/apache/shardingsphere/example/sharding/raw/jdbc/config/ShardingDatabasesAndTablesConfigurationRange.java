@@ -26,7 +26,7 @@ import org.apache.shardingsphere.example.algorithm.StandardModuloShardingDatabas
 import org.apache.shardingsphere.example.algorithm.StandardModuloShardingTableAlgorithm;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
-import org.apache.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 
@@ -51,7 +51,7 @@ public final class ShardingDatabasesAndTablesConfigurationRange implements Examp
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new StandardModuloShardingTableAlgorithm()));
         Collection<RuleConfiguration> configurations = new LinkedList<>();
         configurations.add(shardingRuleConfig);
-        return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), configurations, new Properties());
+        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), configurations, new Properties());
     }
     
     private static TableRuleConfiguration getOrderTableRuleConfiguration() {

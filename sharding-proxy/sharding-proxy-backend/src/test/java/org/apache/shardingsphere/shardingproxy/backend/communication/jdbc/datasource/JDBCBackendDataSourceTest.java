@@ -53,7 +53,7 @@ public final class JDBCBackendDataSourceTest {
         setDataSource();
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setDataSource() {
         Field field = jdbcBackendDataSource.getClass().getDeclaredField("dataSources");
         field.setAccessible(true);

@@ -44,6 +44,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -82,7 +83,7 @@ public final class EtcdCenterRepositoryTest {
     @Mock
     private CompletableFuture putFuture;
     
-    private EtcdCenterRepository centerRepository = new EtcdCenterRepository();
+    private final EtcdCenterRepository centerRepository = new EtcdCenterRepository();
     
     private static final String CENTER_TYPE = "etcd";
     
@@ -92,18 +93,18 @@ public final class EtcdCenterRepositoryTest {
         setProperties();
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setClient() {
         mockClient();
         FieldSetter.setField(centerRepository, centerRepository.getClass().getDeclaredField("client"), client);
     }
-
-    @SneakyThrows
+    
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setProperties() {
         FieldSetter.setField(centerRepository, centerRepository.getClass().getDeclaredField("etcdProperties"), new EtcdProperties(new Properties()));
     }
     
-    @SneakyThrows
+    @SneakyThrows({InterruptedException.class, ExecutionException.class})
     @SuppressWarnings("unchecked")
     private Client mockClient() {
         when(client.getKVClient()).thenReturn(kv);

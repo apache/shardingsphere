@@ -49,12 +49,11 @@ public final class MySQLXAConnectionWrapperTest {
     private Connection connection;
     
     @Before
-    @SuppressWarnings("unchecked")
     public void setUp() throws SQLException, ClassNotFoundException {
         Connection connection = (Connection) mock(Class.forName("com.mysql.jdbc.Connection"));
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, DatabaseTypes.getActualDatabaseType("MySQL"), "ds1");
         xaDataSource = XADataSourceFactory.build(DatabaseTypes.getActualDatabaseType("MySQL"), dataSource);
-        when(this.connection.unwrap((Class<Object>) any())).thenReturn(connection);
+        when(this.connection.unwrap(any())).thenReturn(connection);
     }
     
     @Test

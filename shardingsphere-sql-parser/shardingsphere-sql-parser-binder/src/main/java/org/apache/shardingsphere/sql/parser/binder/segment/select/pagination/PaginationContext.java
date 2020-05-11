@@ -133,18 +133,18 @@ public final class PaginationContext {
     /**
      * Get revised row count.
      * 
-     * @param shardingStatement sharding optimized statement
+     * @param selectStatementContext select statement context
      * @return revised row count
      */
-    public long getRevisedRowCount(final SelectStatementContext shardingStatement) {
-        if (isMaxRowCount(shardingStatement)) {
+    public long getRevisedRowCount(final SelectStatementContext selectStatementContext) {
+        if (isMaxRowCount(selectStatementContext)) {
             return Integer.MAX_VALUE;
         }
         return rowCountSegment instanceof LimitValueSegment ? actualOffset + actualRowCount : actualRowCount;
     }
     
-    private boolean isMaxRowCount(final SelectStatementContext shardingStatement) {
-        return (!shardingStatement.getGroupByContext().getItems().isEmpty()
-                || !shardingStatement.getProjectionsContext().getAggregationProjections().isEmpty()) && !shardingStatement.isSameGroupByAndOrderByItems();
+    private boolean isMaxRowCount(final SelectStatementContext selectStatementContext) {
+        return (!selectStatementContext.getGroupByContext().getItems().isEmpty()
+                || !selectStatementContext.getProjectionsContext().getAggregationProjections().isEmpty()) && !selectStatementContext.isSameGroupByAndOrderByItems();
     }
 }

@@ -63,7 +63,7 @@ public final class ShardingProxy {
      *
      * @param port port
      */
-    @SneakyThrows
+    @SneakyThrows(InterruptedException.class)
     public void start(final int port) {
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();

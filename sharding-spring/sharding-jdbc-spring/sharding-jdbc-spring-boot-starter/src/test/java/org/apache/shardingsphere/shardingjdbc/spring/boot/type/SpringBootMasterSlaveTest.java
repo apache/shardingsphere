@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.spring.boot.type;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,11 +47,11 @@ public class SpringBootMasterSlaveTest {
     
     @Test
     public void assertDataSource() {
-        assertTrue(dataSource instanceof ShardingDataSource);
-        for (DataSource each : ((ShardingDataSource) dataSource).getDataSourceMap().values()) {
+        assertTrue(dataSource instanceof ShardingSphereDataSource);
+        for (DataSource each : ((ShardingSphereDataSource) dataSource).getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(100));
         }
-        Collection<ShardingSphereRule> rules = ((ShardingDataSource) dataSource).getRuntimeContext().getRules();
+        Collection<ShardingSphereRule> rules = ((ShardingSphereDataSource) dataSource).getRuntimeContext().getRules();
         assertThat(rules.size(), is(1));
         assertMasterSlaveRule((MasterSlaveRule) rules.iterator().next());
     }

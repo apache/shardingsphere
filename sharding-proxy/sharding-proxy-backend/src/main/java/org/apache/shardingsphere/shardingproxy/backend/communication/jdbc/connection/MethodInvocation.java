@@ -40,7 +40,7 @@ class MethodInvocation {
      * 
      * @param target target object
      */
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     void invoke(final Object target) {
         method.invoke(target, arguments);
     }

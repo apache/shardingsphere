@@ -20,9 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.pa
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringEncryptDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringShardingDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.constants.EncryptDataSourceBeanDefinitionParserTag;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
@@ -43,18 +41,9 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(getOrchestrationDataSourceClass(element.getLocalName()));
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(OrchestrationSpringShardingSphereDataSource.class);
         configureFactory(element, factory);
         return factory.getBeanDefinition();
-    }
-    
-    private Class<?> getOrchestrationDataSourceClass(final String localName) {
-        switch (localName) {
-            case EncryptDataSourceBeanDefinitionParserTag.ROOT_TAG:
-                return OrchestrationSpringEncryptDataSource.class;
-            default:
-                return OrchestrationSpringShardingDataSource.class;
-        }
     }
     
     private void configureFactory(final Element element, final BeanDefinitionBuilder factory) {

@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statemen
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.File;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
@@ -36,13 +37,13 @@ import java.util.Map;
  */
 public final class SQLParserTestCasesRegistry {
     
-    private Map<String, SQLParserTestCase> sqlParserTestCases;
+    private final Map<String, SQLParserTestCase> sqlParserTestCases;
     
     public SQLParserTestCasesRegistry(final String rootDirectory) {
         sqlParserTestCases = load(rootDirectory);
     }
     
-    @SneakyThrows
+    @SneakyThrows(URISyntaxException.class)
     private Map<String, SQLParserTestCase> load(final String directory) {
         URL url = SQLParserTestCasesRegistry.class.getClassLoader().getResource(directory);
         Preconditions.checkNotNull(url, "Can not find SQL parser test cases.");

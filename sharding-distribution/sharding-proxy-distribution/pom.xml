@@ -53,26 +53,6 @@
         </dependency>
     </dependencies>
     
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>com.spotify</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <configuration>
-                    <imageName>apache/sharding-proxy:5.0.0-RC1</imageName>
-                    <dockerDirectory>${project.basedir}/src/main/docker</dockerDirectory>
-                    <resources>
-                        <resource>
-                            <targetPath>/</targetPath>
-                            <directory>${project.build.directory}</directory>
-                            <include>${project.build.finalName}.tar.gz</include>
-                        </resource>
-                    </resources>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-    
     <profiles>
         <profile>
             <id>release</id>
@@ -94,6 +74,32 @@
                                 </goals>
                             </execution>
                         </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>docker</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.spotify</groupId>
+                        <artifactId>dockerfile-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>sharding-proxy-bin</id>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <repository>apache/sharding-proxy</repository>
+                            <tag>${project.version}</tag>
+                            <buildArgs>
+                                <APP_NAME>${project.build.finalName}-sharding-proxy-bin</APP_NAME>
+                            </buildArgs>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>

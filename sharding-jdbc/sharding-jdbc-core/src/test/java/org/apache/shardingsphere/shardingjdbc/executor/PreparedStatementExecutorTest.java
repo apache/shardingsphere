@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.executor;
 
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutor;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.underlying.executor.sql.QueryResult;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.StatementExecuteUnit;
 import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
@@ -59,7 +59,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     @Override
     public void setUp() throws SQLException {
         super.setUp();
-        ShardingConnection connection = getConnection();
+        ShardingSphereConnection connection = getConnection();
         actual = spy(new PreparedStatementExecutor(connection.getDataSourceMap(), connection.getRuntimeContext(), new SQLExecutor(getExecutorKernel(), false)));
     }
     
@@ -234,7 +234,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
     
     private PreparedStatement getPreparedStatement() throws SQLException {
         PreparedStatement statement = mock(PreparedStatement.class);
-        ShardingConnection connection = mock(ShardingConnection.class);
+        ShardingSphereConnection connection = mock(ShardingSphereConnection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:ds_master;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
         when(connection.getMetaData()).thenReturn(databaseMetaData);

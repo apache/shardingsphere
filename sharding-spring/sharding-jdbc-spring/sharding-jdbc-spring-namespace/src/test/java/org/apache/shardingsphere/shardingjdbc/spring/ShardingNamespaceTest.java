@@ -26,12 +26,11 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.algorithm.DefaultComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.shardingjdbc.spring.algorithm.DefaultHintShardingAlgorithm;
 import org.apache.shardingsphere.shardingjdbc.spring.algorithm.StandardModuloDatabaseShardingAlgorithm;
 import org.apache.shardingsphere.shardingjdbc.spring.algorithm.StandardModuloTableShardingAlgorithm;
-import org.apache.shardingsphere.shardingjdbc.spring.datasource.SpringShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.fixture.IncrementKeyGenerateAlgorithm;
 import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.transaction.spring.ShardingTransactionTypeScanner;
@@ -109,7 +108,7 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     }
     
     @Test
-    public void assertSimpleShardingDataSource() {
+    public void assertSimpleShardingSphereDataSource() {
         Map<String, DataSource> dataSourceMap = getDataSourceMap("simpleShardingDataSource");
         assertNotNull(dataSourceMap.get("dbtbl_0"));
         Iterator<ShardingSphereRule> rules = getRules("simpleShardingDataSource").iterator();
@@ -207,8 +206,8 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @Test
     public void assertPropsDataSource() {
-        ShardingDataSource shardingDataSource = applicationContext.getBean("propsDataSource", ShardingDataSource.class);
-        RuntimeContext runtimeContext = shardingDataSource.getRuntimeContext();
+        ShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean("propsDataSource", ShardingSphereDataSource.class);
+        RuntimeContext runtimeContext = shardingSphereDataSource.getRuntimeContext();
         assertTrue(runtimeContext.getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
         ConfigurationProperties properties = runtimeContext.getProperties();
         boolean showSql = properties.getValue(ConfigurationPropertyKey.SQL_SHOW);
@@ -218,14 +217,14 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     }
     
     @Test
-    public void assertShardingDataSourceType() {
-        assertTrue(applicationContext.getBean("simpleShardingDataSource", ShardingDataSource.class) instanceof SpringShardingDataSource);
+    public void assertShardingSphereDataSourceType() {
+        assertNotNull(applicationContext.getBean("simpleShardingDataSource", ShardingSphereDataSource.class));
     }
     
     @Test
     public void assertDefaultActualDataNodes() {
-        ShardingDataSource shardingDataSource = applicationContext.getBean("multiTableRulesDataSource", ShardingDataSource.class);
-        RuntimeContext runtimeContext = shardingDataSource.getRuntimeContext();
+        ShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean("multiTableRulesDataSource", ShardingSphereDataSource.class);
+        RuntimeContext runtimeContext = shardingSphereDataSource.getRuntimeContext();
         ShardingRule shardingRule = (ShardingRule) runtimeContext.getRules().iterator().next();
         assertThat(shardingRule.getTableRules().size(), is(2));
         Iterator<TableRule> tableRules = shardingRule.getTableRules().iterator();
@@ -244,17 +243,17 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
         assertNotNull(applicationContext.getBean(ShardingTransactionTypeScanner.class));
     }
     
-    private Map<String, DataSource> getDataSourceMap(final String shardingDataSourceName) {
-        ShardingDataSource shardingDataSource = applicationContext.getBean(shardingDataSourceName, ShardingDataSource.class);
-        return shardingDataSource.getDataSourceMap();
+    private Map<String, DataSource> getDataSourceMap(final String dataSourceName) {
+        ShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(dataSourceName, ShardingSphereDataSource.class);
+        return shardingSphereDataSource.getDataSourceMap();
     }
     
-    private ShardingRule getShardingRule(final String shardingDataSourceName) {
-        ShardingDataSource shardingDataSource = applicationContext.getBean(shardingDataSourceName, ShardingDataSource.class);
-        return (ShardingRule) shardingDataSource.getRuntimeContext().getRules().iterator().next();
+    private ShardingRule getShardingRule(final String dataSourceName) {
+        ShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(dataSourceName, ShardingSphereDataSource.class);
+        return (ShardingRule) shardingSphereDataSource.getRuntimeContext().getRules().iterator().next();
     }
     
-    private Collection<ShardingSphereRule> getRules(final String shardingDataSourceName) {
-        return applicationContext.getBean(shardingDataSourceName, ShardingDataSource.class).getRuntimeContext().getRules();
+    private Collection<ShardingSphereRule> getRules(final String dataSourceName) {
+        return applicationContext.getBean(dataSourceName, ShardingSphereDataSource.class).getRuntimeContext().getRules();
     }
 }

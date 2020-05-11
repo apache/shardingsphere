@@ -23,10 +23,11 @@ import org.apache.shardingsphere.encrypt.api.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
-import org.apache.shardingsphere.shardingjdbc.api.EncryptDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.api.ShardingSphereDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -52,7 +53,7 @@ public class EncryptDatabasesConfiguration implements ExampleConfiguration {
         tables.put("t_user", tableConfig);
         EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(encryptors, tables);
         try {
-            return EncryptDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), encryptRuleConfiguration, properties);
+            return ShardingSphereDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(encryptRuleConfiguration), properties);
         } catch (final SQLException ex) {
             ex.printStackTrace();
             return null;

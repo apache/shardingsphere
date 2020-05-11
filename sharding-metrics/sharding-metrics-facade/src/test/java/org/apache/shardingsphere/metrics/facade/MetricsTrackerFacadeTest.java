@@ -30,6 +30,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Optional;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -38,14 +40,14 @@ import static org.junit.Assert.assertThat;
 @RunWith(MockitoJUnitRunner.class)
 public final class MetricsTrackerFacadeTest {
     
-    private MetricsTrackerFacade metricsTrackerFacade = MetricsTrackerFacade.getInstance();
+    private final MetricsTrackerFacade metricsTrackerFacade = MetricsTrackerFacade.getInstance();
     
     @Before
     public void setUp() {
         MetricsConfiguration metricsConfiguration = new MetricsConfiguration("fixture", null, null, null);
         metricsTrackerFacade.init(metricsConfiguration);
         assertThat(metricsTrackerFacade.getMetricsTrackerManager().getClass().getName(), is(SecondMetricsTrackerManagerFixture.class.getName()));
-        assertThat(metricsTrackerFacade.getEnabled(), is(true));
+        assertThat(metricsTrackerFacade.isEnabled(), is(true));
     }
     
     @Test
@@ -73,27 +75,42 @@ public final class MetricsTrackerFacadeTest {
     public void histogram() {
         assertThat(metricsTrackerFacade.getMetricsTrackerManager().getClass().getName(), is(SecondMetricsTrackerManagerFixture.class.getName()));
         ((SecondMetricsTrackerManagerFixture) metricsTrackerFacade.getMetricsTrackerManager()).setMetricsTrackerFactory(new SecondMetricsTrackerFactoryFixture());
-        HistogramMetricsTrackerDelegate delegate = metricsTrackerFacade.histogramStartTimer("request");
-        metricsTrackerFacade.histogramObserveDuration(delegate);
-        assertThat(delegate.getClass().getName(), is(NoneHistogramMetricsTrackerDelegate.class.getName()));
+        Optional<HistogramMetricsTrackerDelegate> histogramDelegate = metricsTrackerFacade.histogramStartTimer("request");
+        assertThat(histogramDelegate.isPresent(), is(true));
+        histogramDelegate.ifPresent(delegate -> {
+            metricsTrackerFacade.histogramObserveDuration(delegate);
+            assertThat(delegate.getClass().getName(), is(NoneHistogramMetricsTrackerDelegate.class.getName()));
+        });
     }
     
     @Test
     public void summary() {
         assertThat(metricsTrackerFacade.getMetricsTrackerManager().getClass().getName(), is(SecondMetricsTrackerManagerFixture.class.getName()));
         ((SecondMetricsTrackerManagerFixture) metricsTrackerFacade.getMetricsTrackerManager()).setMetricsTrackerFactory(new SecondMetricsTrackerFactoryFixture());
-        SummaryMetricsTrackerDelegate delegate = metricsTrackerFacade.summaryStartTimer("request");
-        metricsTrackerFacade.summaryObserveDuration(delegate);
-        assertThat(delegate.getClass().getName(), is(NoneSummaryMetricsTrackerDelegate.class.getName()));
+        Optional<SummaryMetricsTrackerDelegate> summaryDelegate = metricsTrackerFacade.summaryStartTimer("request");
+        assertThat(summaryDelegate.isPresent(), is(true));
+        summaryDelegate.ifPresent(delegate -> {
+            metricsTrackerFacade.summaryObserveDuration(delegate);
+            assertThat(delegate.getClass().getName(), is(NoneSummaryMetricsTrackerDelegate.class.getName()));
+        });
     }
     
     @Test
     public void testNoneDelegate() {
         ((SecondMetricsTrackerManagerFixture) metricsTrackerFacade.getMetricsTrackerManager()).setMetricsTrackerFactory(new FirstMetricsTrackerFactoryFixture());
-        SummaryMetricsTrackerDelegate summaryMetricsTrackerDelegate = metricsTrackerFacade.summaryStartTimer("request");
-        assertThat(summaryMetricsTrackerDelegate.getClass().getName(), is(NoneSummaryMetricsTrackerDelegate.class.getName()));
-        HistogramMetricsTrackerDelegate histogramMetricsTrackerDelegate = metricsTrackerFacade.histogramStartTimer("request");
-        assertThat(histogramMetricsTrackerDelegate.getClass().getName(), is(NoneHistogramMetricsTrackerDelegate.class.getName()));
+        Optional<SummaryMetricsTrackerDelegate> summaryDelegate = metricsTrackerFacade.summaryStartTimer("request");
+        summaryDelegate.ifPresent(delegate -> assertThat(delegate.getClass().getName(), is(NoneSummaryMetricsTrackerDelegate.class.getName())));
+        Optional<HistogramMetricsTrackerDelegate> histogramDelegate = metricsTrackerFacade.histogramStartTimer("request");
+        histogramDelegate.ifPresent(delegate -> assertThat(delegate.getClass().getName(), is(NoneHistogramMetricsTrackerDelegate.class.getName())));
+    }
+    
+    @Test
+    public void testNotInit() {
+        metricsTrackerFacade.setEnabled(false);
+        Optional<HistogramMetricsTrackerDelegate> histogramDelegate = metricsTrackerFacade.histogramStartTimer("request");
+        assertThat(histogramDelegate, is(Optional.empty()));
+        Optional<SummaryMetricsTrackerDelegate> summaryDelegate = metricsTrackerFacade.summaryStartTimer("request");
+        assertThat(summaryDelegate, is(Optional.empty()));
     }
 }
 

@@ -18,12 +18,10 @@
 package org.apache.shardingsphere.orchestration.center.instance;
 
 import com.google.common.util.concurrent.SettableFuture;
-import lombok.SneakyThrows;
 import org.apache.curator.framework.CuratorFramework;
-
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.util.EmbedTestingServer;
-import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -34,75 +32,74 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public final class CuratorZookeeperCenterRepositoryTest {
     
-    private static CuratorZookeeperCenterRepository centerRepository = new CuratorZookeeperCenterRepository();
+    private static final CuratorZookeeperCenterRepository REPOSITORY = new CuratorZookeeperCenterRepository();
     
     private static String serverLists;
     
     @BeforeClass
-    @SneakyThrows
     public static void init() {
         EmbedTestingServer.start();
         serverLists = EmbedTestingServer.getTestingServerConnectionString();
-        CenterConfiguration configuration = new CenterConfiguration(centerRepository.getType(), new Properties());
+        CenterConfiguration configuration = new CenterConfiguration(REPOSITORY.getType(), new Properties());
         configuration.setServerLists(serverLists);
-        centerRepository.init(configuration);
+        REPOSITORY.init(configuration);
     }
     
     @Test
     public void assertPersist() {
-        centerRepository.persist("/test", "value1");
-        assertThat(centerRepository.get("/test"), is("value1"));
+        REPOSITORY.persist("/test", "value1");
+        assertThat(REPOSITORY.get("/test"), is("value1"));
     }
     
     @Test
     public void assertUpdate() {
-        centerRepository.persist("/test", "value2");
-        assertThat(centerRepository.get("/test"), is("value2"));
+        REPOSITORY.persist("/test", "value2");
+        assertThat(REPOSITORY.get("/test"), is("value2"));
     }
     
     @Test
     public void assertPersistEphemeral() {
-        centerRepository.persistEphemeral("/test/ephemeral", "value3");
-        assertThat(centerRepository.get("/test/ephemeral"), is("value3"));
+        REPOSITORY.persistEphemeral("/test/ephemeral", "value3");
+        assertThat(REPOSITORY.get("/test/ephemeral"), is("value3"));
     }
     
     @Test
     public void assertGetChildrenKeys() {
-        centerRepository.persist("/test/children/1", "value11");
-        centerRepository.persist("/test/children/2", "value12");
-        centerRepository.persist("/test/children/3", "value13");
-        List<String> childrenKeys = centerRepository.getChildrenKeys("/test/children");
+        REPOSITORY.persist("/test/children/1", "value11");
+        REPOSITORY.persist("/test/children/2", "value12");
+        REPOSITORY.persist("/test/children/3", "value13");
+        List<String> childrenKeys = REPOSITORY.getChildrenKeys("/test/children");
         assertThat(childrenKeys.size(), is(3));
     }
     
     @Test
     public void assertWatchUpdatedChangedType() throws Exception {
-        centerRepository.persist("/test/children_updated/1", "value1");
+        REPOSITORY.persist("/test/children_updated/1", "value1");
         final SettableFuture<DataChangedEvent> future = SettableFuture.create();
-        centerRepository.watch("/test/children_updated", future::set);
-        centerRepository.persist("/test/children_updated/1", "value2");
+        REPOSITORY.watch("/test/children_updated", future::set);
+        REPOSITORY.persist("/test/children_updated/1", "value2");
         DataChangedEvent dataChangedEvent = future.get(5, TimeUnit.SECONDS);
         assertNotNull(dataChangedEvent);
         assertThat(dataChangedEvent.getChangedType(), is(DataChangedEvent.ChangedType.UPDATED));
         assertThat(dataChangedEvent.getKey(), is("/test/children_updated/1"));
         assertThat(dataChangedEvent.getValue(), is("value2"));
-        assertThat(centerRepository.get("/test/children_updated/1"), is("value2"));
+        assertThat(REPOSITORY.get("/test/children_updated/1"), is("value2"));
     }
     
     @Test
     public void assertWatchDeletedChangedType() throws Exception {
-        centerRepository.persist("/test/children_deleted/5", "value5");
+        REPOSITORY.persist("/test/children_deleted/5", "value5");
         SettableFuture<DataChangedEvent> future = SettableFuture.create();
-        centerRepository.watch("/test/children_deleted/5", future::set);
+        REPOSITORY.watch("/test/children_deleted/5", future::set);
         Field field = CuratorZookeeperCenterRepository.class.getDeclaredField("client");
         field.setAccessible(true);
-        CuratorFramework client = (CuratorFramework) field.get(centerRepository);
+        CuratorFramework client = (CuratorFramework) field.get(REPOSITORY);
         client.delete().forPath("/test/children_deleted/5");
         DataChangedEvent dataChangedEvent = future.get(5, TimeUnit.SECONDS);
         assertNotNull(dataChangedEvent);
@@ -113,16 +110,16 @@ public final class CuratorZookeeperCenterRepositoryTest {
     
     @Test
     public void assertWatchAddedChangedType() throws InterruptedException {
-        centerRepository.persist("/test/children_added/4", "value4");
+        REPOSITORY.persist("/test/children_added/4", "value4");
         AtomicReference<DataChangedEvent> actualDataChangedEvent = new AtomicReference<>();
-        centerRepository.watch("/test/children_added", actualDataChangedEvent::set);
+        REPOSITORY.watch("/test/children_added", actualDataChangedEvent::set);
         Thread.sleep(50L);
         assertNull(actualDataChangedEvent.get());
     }
     
     @Test
     public void assertGetWithNonExistentKey() {
-        assertNull(centerRepository.get("/test/nonExistentKey"));
+        assertNull(REPOSITORY.get("/test/nonExistentKey"));
     }
     
     @Test
@@ -189,12 +186,12 @@ public final class CuratorZookeeperCenterRepositoryTest {
     
     @Test
     public void assertDelete() {
-        centerRepository.persist("/test/children/1", "value1");
-        centerRepository.persist("/test/children/2", "value2");
-        assertThat(centerRepository.get("/test/children/1"), is("value1"));
-        assertThat(centerRepository.get("/test/children/2"), is("value2"));
-        centerRepository.delete("/test/children");
-        assertNull(centerRepository.get("/test/children/1"));
-        assertNull(centerRepository.get("/test/children/2"));
+        REPOSITORY.persist("/test/children/1", "value1");
+        REPOSITORY.persist("/test/children/2", "value2");
+        assertThat(REPOSITORY.get("/test/children/1"), is("value1"));
+        assertThat(REPOSITORY.get("/test/children/2"), is("value2"));
+        REPOSITORY.delete("/test/children");
+        assertNull(REPOSITORY.get("/test/children/1"));
+        assertNull(REPOSITORY.get("/test/children/2"));
     }
 }

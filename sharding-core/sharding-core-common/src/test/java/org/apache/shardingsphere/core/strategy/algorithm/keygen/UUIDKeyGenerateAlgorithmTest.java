@@ -25,7 +25,7 @@ import static org.junit.Assert.assertThat;
 
 public final class UUIDKeyGenerateAlgorithmTest {
     
-    private UUIDKeyGenerateAlgorithm uuidKeyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
+    private final UUIDKeyGenerateAlgorithm uuidKeyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
     
     @Test
     public void assertGenerateKey() {

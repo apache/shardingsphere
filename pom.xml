@@ -51,7 +51,7 @@
         <module>sharding-spring</module>
         
         <module>sharding-distribution</module>
-        <module>sharding-integration-test</module>
+        <module>shardingsphere-integration-test</module>
         <module>shadow-core</module>
         <module>master-slave-core</module>
     </modules>
@@ -136,7 +136,7 @@
         <jdepend-maven-plugin.version>2.0</jdepend-maven-plugin.version>
         <taglist-maven-plugin.version>2.4</taglist-maven-plugin.version>
         <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
-        <docker-maven-plugin.version>0.4.14</docker-maven-plugin.version>
+        <dockerfile-maven.version>1.4.6</dockerfile-maven.version>
         
         <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
         <maven.deploy.skip>false</maven.deploy.skip>
@@ -650,6 +650,11 @@
                     <artifactId>antlr4-maven-plugin</artifactId>
                     <version>${antlr4.version}</version>
                 </plugin>
+                <plugin>
+                    <groupId>com.spotify</groupId>
+                    <artifactId>dockerfile-maven-plugin</artifactId>
+                    <version>${dockerfile-maven.version}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -782,11 +787,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>com.spotify</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <version>${docker-maven-plugin.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.rat</groupId>

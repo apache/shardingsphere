@@ -27,6 +27,7 @@ import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
@@ -39,7 +40,7 @@ public final class RuleSchemaMetaDataYamlSwapper implements YamlSwapper<YamlRule
         YamlRuleSchemaMetaData result = new YamlRuleSchemaMetaData();
         result.setConfiguredSchemaMetaData(convertYamlSchema(metaData.getConfiguredSchemaMetaData()));
         Map<String, YamlSchemaMetaData> unconfigured = metaData.getUnconfiguredSchemaMetaDataMap().entrySet().stream()
-                .collect(Collectors.toMap(entry -> entry.getKey(), entry -> convertYamlSchema(entry.getValue())));
+                .collect(Collectors.toMap(Entry::getKey, entry -> convertYamlSchema(entry.getValue())));
         result.setUnconfiguredSchemaMetaDataMap(unconfigured);
         return result;
     }
@@ -48,12 +49,12 @@ public final class RuleSchemaMetaDataYamlSwapper implements YamlSwapper<YamlRule
     public RuleSchemaMetaData swap(final YamlRuleSchemaMetaData yaml) {
         SchemaMetaData configured = null == yaml.getConfiguredSchemaMetaData() ? new SchemaMetaData(Collections.emptyMap()) : convertSchema(yaml.getConfiguredSchemaMetaData());
         Map<String, SchemaMetaData> unconfigured = null == yaml.getUnconfiguredSchemaMetaDataMap() ? Collections.emptyMap() : yaml.getUnconfiguredSchemaMetaDataMap().entrySet().stream()
-             .collect(Collectors.toMap(entry -> entry.getKey(), entry -> convertSchema(entry.getValue())));
+             .collect(Collectors.toMap(Entry::getKey, entry -> convertSchema(entry.getValue())));
         return new RuleSchemaMetaData(configured, unconfigured);
     }
 
     private SchemaMetaData convertSchema(final YamlSchemaMetaData schema) {
-        return new SchemaMetaData(schema.getTables().entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey(), entry -> convertTable(entry.getValue()))));
+        return new SchemaMetaData(schema.getTables().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> convertTable(entry.getValue()))));
     }
 
     private TableMetaData convertTable(final YamlTableMetaData table) {
@@ -91,7 +92,7 @@ public final class RuleSchemaMetaDataYamlSwapper implements YamlSwapper<YamlRule
     }
 
     private Map<String, YamlIndexMetaData> convertYamlIndexes(final Map<String, IndexMetaData> indexes) {
-        return indexes.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey(), entry -> convertYamlIndex(entry.getValue())));
+        return indexes.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> convertYamlIndex(entry.getValue())));
     }
 
     private YamlIndexMetaData convertYamlIndex(final IndexMetaData index) {
@@ -101,7 +102,7 @@ public final class RuleSchemaMetaDataYamlSwapper implements YamlSwapper<YamlRule
     }
 
     private Map<String, YamlColumnMetaData> convertYamlColumns(final Map<String, ColumnMetaData> columns) {
-        return columns.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey(), entry -> convertYamlColumn(entry.getValue())));
+        return columns.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> convertYamlColumn(entry.getValue())));
     }
 
     private YamlColumnMetaData convertYamlColumn(final ColumnMetaData column) {

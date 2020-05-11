@@ -26,9 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -63,14 +61,10 @@ public final class MySQLJsonBinlogProtocolValueTest {
         when(jsonValueByteBuf.slice()).thenReturn(jsonValueByteBuf);
         when(jsonValueByteBuf.readUnsignedByte()).thenReturn((short) JsonValueTypes.SMALL_JSON_OBJECT, (short) JsonValueTypes.LITERAL);
         when(jsonValueByteBuf.readUnsignedShortLE()).thenReturn(1, 0, 0, 3, JsonValueTypes.LITERAL_TRUE & 0xff);
-        when(jsonValueByteBuf.getBytes(0, new byte[3], 0, 3)).then(new Answer<Object>() {
-            
-            @Override
-            public Object answer(final InvocationOnMock invocationOnMock) throws Throwable {
-                byte[] bytes = invocationOnMock.getArgument(1);
-                System.arraycopy(KEY.getBytes(), 0, bytes, 0, KEY.length());
-                return jsonValueByteBuf;
-            }
+        when(jsonValueByteBuf.getBytes(0, new byte[3], 0, 3)).then(invocationOnMock -> {
+            byte[] bytes = invocationOnMock.getArgument(1);
+            System.arraycopy(KEY.getBytes(), 0, bytes, 0, KEY.length());
+            return jsonValueByteBuf;
         });
     }
     

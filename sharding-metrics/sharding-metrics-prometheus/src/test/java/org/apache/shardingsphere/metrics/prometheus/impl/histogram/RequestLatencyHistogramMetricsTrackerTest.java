@@ -38,7 +38,7 @@ public final class RequestLatencyHistogramMetricsTrackerTest extends AbstractPro
         assertThat(tracker.metricsType(), not(MetricsTypeEnum.COUNTER.name()));
         HistogramMetricsTrackerDelegate trackerDelegate = tracker.startTimer();
         trackerDelegate.observeDuration();
-        String metricName = "requests_latency_Histogram_millis";
+        String metricName = "requests_latency_histogram_millis";
         Double count = getCollectorRegistry().getSampleValue(metricName + "_count");
         assertNotNull(count);
         Double sum = getCollectorRegistry().getSampleValue(metricName + "_sum");

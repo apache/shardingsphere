@@ -30,7 +30,7 @@ public final class ResetIncrementKeyGenerateAlgorithm implements KeyGenerateAlgo
     private static final AtomicInteger COUNT = new AtomicInteger();
     
     @Getter
-    private final String type = "RESETINCREMENT";
+    private final String type = "RESET_INCREMENT";
 
     @Getter
     @Setter

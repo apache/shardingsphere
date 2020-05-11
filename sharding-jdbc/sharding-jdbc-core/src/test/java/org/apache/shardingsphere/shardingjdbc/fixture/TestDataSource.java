@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.fixture;
 import lombok.EqualsAndHashCode;
 import lombok.Setter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.mockito.ArgumentMatchers;
 
 import javax.sql.DataSource;
@@ -44,7 +44,7 @@ public final class TestDataSource extends AbstractDataSourceAdapter {
     private boolean throwExceptionWhenClosing;
     
     public TestDataSource(final String name) throws SQLException {
-        super(Collections.singletonMap("test", getDataSource()), Collections.singletonList(mock(ShardingSphereRule.class)), new Properties());
+        super(Collections.singletonMap("test", getDataSource()), Collections.singleton(mock(RuleConfiguration.class)), new Properties());
         this.name = name;
     }
     

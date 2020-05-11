@@ -62,9 +62,9 @@ public final class TextProtocolBackendHandlerFactory {
         if (Strings.isNullOrEmpty(sql)) {
             return new SkipBackendHandler();
         }
-        final String trimSql = SCTLUtils.trimComment(sql);
-        if (trimSql.toUpperCase().startsWith(ShardingCTLBackendHandlerFactory.SCTL)) {
-            return ShardingCTLBackendHandlerFactory.newInstance(trimSql, backendConnection);
+        String trimSQL = SCTLUtils.trimComment(sql);
+        if (trimSQL.toUpperCase().startsWith(ShardingCTLBackendHandlerFactory.SCTL)) {
+            return ShardingCTLBackendHandlerFactory.newInstance(trimSQL, backendConnection);
         }
         SQLStatement sqlStatement = new SQLParserEngine(databaseType.getName()).parse(sql, false);
         if (sqlStatement instanceof TCLStatement) {
@@ -102,7 +102,7 @@ public final class TextProtocolBackendHandlerFactory {
         if (dalStatement instanceof ShowDatabasesStatement) {
             return new ShowDatabasesBackendHandler(backendConnection);
         }
-        // FIXME: There are three SetStatement class.
+        // FIXME: There are three SetStatement classes.
         if (dalStatement instanceof SetStatement) {
             return new BroadcastBackendHandler(sql, backendConnection);
         }

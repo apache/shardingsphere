@@ -20,11 +20,11 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -32,7 +32,6 @@ import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -52,17 +51,10 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     @Setter
     private PrintWriter logWriter = new PrintWriter(System.out);
     
-    public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules, final Properties props) throws SQLException {
+    public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
         this.dataSourceMap = dataSourceMap;
         databaseType = createDatabaseType();
-        runtimeContext = new RuntimeContext(dataSourceMap, databaseType, rules, props);
-    }
-    
-    public AbstractDataSourceAdapter(final DataSource dataSource, final Collection<ShardingSphereRule> rules, final Properties props) throws SQLException {
-        dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put("unique", dataSource);
-        databaseType = createDatabaseType();
-        runtimeContext = new RuntimeContext(dataSourceMap, databaseType, rules, props);
+        runtimeContext = new RuntimeContext(dataSourceMap, databaseType, configurations, props);
     }
     
     private DatabaseType createDatabaseType() throws SQLException {

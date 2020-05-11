@@ -18,17 +18,17 @@
 package org.apache.shardingsphere.shardingjdbc.spring.boot.type;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.fixture.TestJndiInitialContextFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.annotation.Resource;
 import javax.naming.Context;
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -56,7 +56,7 @@ public class SpringBootJNDITest {
     
     private static DataSource dataSource1;
     
-    @Autowired
+    @Resource
     private DataSource dataSource;
     
     @BeforeClass
@@ -79,8 +79,8 @@ public class SpringBootJNDITest {
     
     @Test
     public void assertJndiDatasource() throws SQLException {
-        assertThat(dataSource, instanceOf(ShardingDataSource.class));
-        Map<String, DataSource> dataSourceMap = ((ShardingDataSource) dataSource).getDataSourceMap();
+        assertThat(dataSource, instanceOf(ShardingSphereDataSource.class));
+        Map<String, DataSource> dataSourceMap = ((ShardingSphereDataSource) dataSource).getDataSourceMap();
         assertThat(dataSourceMap.size(), is(2));
         assertTrue(dataSourceMap.containsKey("jndi0"));
         assertTrue(dataSourceMap.containsKey("jndi1"));

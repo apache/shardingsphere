@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.merge.dql.orderby;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
@@ -52,14 +51,14 @@ public final class OrderByValue implements Comparable<OrderByValue> {
     
     private List<Comparable<?>> orderValues;
     
-    public OrderByValue(final QueryResult queryResult, final Collection<OrderByItem> orderByItems, final SelectStatementContext selectStatementContext, final SchemaMetaData schemaMetaData) {
+    public OrderByValue(final QueryResult queryResult, final Collection<OrderByItem> orderByItems, 
+                        final SelectStatementContext selectStatementContext, final SchemaMetaData schemaMetaData) throws SQLException {
         this.queryResult = queryResult;
         this.orderByItems = orderByItems;
         this.orderValuesCaseSensitive = getOrderValuesCaseSensitive(selectStatementContext, schemaMetaData);
     }
     
-    @SneakyThrows
-    private List<Boolean> getOrderValuesCaseSensitive(final SelectStatementContext selectStatementContext, final SchemaMetaData schemaMetaData) {
+    private List<Boolean> getOrderValuesCaseSensitive(final SelectStatementContext selectStatementContext, final SchemaMetaData schemaMetaData) throws SQLException {
         List<Boolean> result = new ArrayList<>(orderByItems.size());
         for (OrderByItem eachOrderByItem : orderByItems) {
             result.add(getOrderValuesCaseSensitiveFromTables(selectStatementContext, schemaMetaData, eachOrderByItem));
@@ -67,8 +66,8 @@ public final class OrderByValue implements Comparable<OrderByValue> {
         return result;
     }
     
-    private boolean getOrderValuesCaseSensitiveFromTables(final SelectStatementContext selectStatementContext, final SchemaMetaData schemaMetaData,
-                                                       final OrderByItem eachOrderByItem) throws SQLException {
+    private boolean getOrderValuesCaseSensitiveFromTables(final SelectStatementContext selectStatementContext, 
+                                                          final SchemaMetaData schemaMetaData, final OrderByItem eachOrderByItem) throws SQLException {
         for (SimpleTableSegment eachSimpleTableSegment : selectStatementContext.getAllTables()) {
             String tableName = eachSimpleTableSegment.getTableName().getIdentifier().getValue();
             TableMetaData tableMetaData = schemaMetaData.get(tableName);

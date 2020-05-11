@@ -21,8 +21,8 @@ import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingSt
 import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.fixture.IncrementKeyGenerateAlgorithm;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.util.EmbedTestingServer;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.util.FieldValueUtil;
@@ -54,7 +54,7 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
     }
     
     @Test
-    public void assertSimpleShardingDataSource() {
+    public void assertSimpleShardingSphereDataSource() {
         Map<String, DataSource> dataSourceMap = getDataSourceMap("simpleShardingOrchestration");
         ShardingRule shardingRule = getShardingRule("simpleShardingOrchestration");
         assertNotNull(dataSourceMap.get("dbtbl_0"));
@@ -116,7 +116,7 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
         assertThat(bindingTableRule.getBindingActualTable("dbtbl_0", "t_order", "t_order_item"), is("t_order"));
         assertThat(bindingTableRule.getBindingActualTable("dbtbl_1", "t_order", "t_order_item"), is("t_order"));
     }
-
+    
     @Test
     public void assertMultiBindingTableRulesDatasource() {
         ShardingRule shardingRule = getShardingRule("multiBindingTableRulesDatasourceOrchestration");
@@ -147,8 +147,8 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
     
     @Test
     public void assertPropsDataSource() {
-        OrchestrationSpringShardingDataSource shardingDataSource = applicationContext.getBean("propsDataSourceOrchestration", OrchestrationSpringShardingDataSource.class);
-        ShardingDataSource dataSource = (ShardingDataSource) FieldValueUtil.getFieldValue(shardingDataSource, "dataSource", true);
+        OrchestrationSpringShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean("propsDataSourceOrchestration", OrchestrationSpringShardingSphereDataSource.class);
+        ShardingSphereDataSource dataSource = (ShardingSphereDataSource) FieldValueUtil.getFieldValue(shardingSphereDataSource, "dataSource", true);
         ConfigurationProperties properties = dataSource.getRuntimeContext().getProperties();
         assertTrue(properties.<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
         boolean showSql = properties.getValue(ConfigurationPropertyKey.SQL_SHOW);
@@ -156,16 +156,16 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
         int executorSize = properties.getValue(ConfigurationPropertyKey.EXECUTOR_SIZE);
         assertThat(executorSize, is(10));
     }
-
+    
     @Test
-    public void assertShardingDataSourceType() {
-        assertTrue(applicationContext.getBean("simpleShardingOrchestration") instanceof OrchestrationSpringShardingDataSource);
+    public void assertShardingSphereDataSourceType() {
+        assertTrue(applicationContext.getBean("simpleShardingOrchestration") instanceof OrchestrationSpringShardingSphereDataSource);
     }
     
     @Test
     public void assertDefaultActualDataNodes() {
-        OrchestrationSpringShardingDataSource multiTableRulesDataSource = applicationContext.getBean("multiTableRulesDataSourceOrchestration", OrchestrationSpringShardingDataSource.class);
-        ShardingDataSource dataSource = (ShardingDataSource) FieldValueUtil.getFieldValue(multiTableRulesDataSource, "dataSource", true);
+        OrchestrationSpringShardingSphereDataSource multiTableRulesDataSource = applicationContext.getBean("multiTableRulesDataSourceOrchestration", OrchestrationSpringShardingSphereDataSource.class);
+        ShardingSphereDataSource dataSource = (ShardingSphereDataSource) FieldValueUtil.getFieldValue(multiTableRulesDataSource, "dataSource", true);
         ShardingRule shardingRule = (ShardingRule) dataSource.getRuntimeContext().getRules().iterator().next();
         assertThat(shardingRule.getTableRules().size(), is(2));
         Iterator<TableRule> tableRules = shardingRule.getTableRules().iterator();
@@ -179,16 +179,15 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
         assertTrue(orderItemRule.getActualDataNodes().contains(new DataNode("dbtbl_1", "t_order_item")));
     }
     
-    @SuppressWarnings("unchecked")
-    private Map<String, DataSource> getDataSourceMap(final String shardingDataSourceName) {
-        OrchestrationSpringShardingDataSource shardingDataSource = applicationContext.getBean(shardingDataSourceName, OrchestrationSpringShardingDataSource.class);
-        ShardingDataSource dataSource = (ShardingDataSource) FieldValueUtil.getFieldValue(shardingDataSource, "dataSource", true);
+    private Map<String, DataSource> getDataSourceMap(final String dataSourceName) {
+        OrchestrationSpringShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(dataSourceName, OrchestrationSpringShardingSphereDataSource.class);
+        ShardingSphereDataSource dataSource = (ShardingSphereDataSource) FieldValueUtil.getFieldValue(shardingSphereDataSource, "dataSource", true);
         return dataSource.getDataSourceMap();
     }
     
-    private ShardingRule getShardingRule(final String shardingDataSourceName) {
-        OrchestrationSpringShardingDataSource shardingDataSource = applicationContext.getBean(shardingDataSourceName, OrchestrationSpringShardingDataSource.class);
-        ShardingDataSource dataSource = (ShardingDataSource) FieldValueUtil.getFieldValue(shardingDataSource, "dataSource", true);
+    private ShardingRule getShardingRule(final String dataSourceName) {
+        OrchestrationSpringShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(dataSourceName, OrchestrationSpringShardingSphereDataSource.class);
+        ShardingSphereDataSource dataSource = (ShardingSphereDataSource) FieldValueUtil.getFieldValue(shardingSphereDataSource, "dataSource", true);
         return (ShardingRule) dataSource.getRuntimeContext().getRules().iterator().next();
     }
 }
