@@ -72,7 +72,7 @@ public final class ShadowRouteDecorator implements RouteDecorator<ShadowRule> {
         if (!(sqlStatement instanceof DMLStatement)) {
             for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
                 String shadowDataSourceName = shadowRule.getShadowMappings().get(each.getDataSourceMapper().getActualName());
-                toBeAdded.add(new RouteUnit(new RouteMapper(shadowDataSourceName, shadowDataSourceName), Collections.emptyList()));
+                toBeAdded.add(new RouteUnit(new RouteMapper(each.getDataSourceMapper().getLogicName(), shadowDataSourceName), Collections.emptyList()));
             }
             routeContext.getRouteResult().getRouteUnits().addAll(toBeAdded);
             return routeContext;
@@ -81,7 +81,7 @@ public final class ShadowRouteDecorator implements RouteDecorator<ShadowRule> {
             for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
                 routeContext.getRouteResult().getRouteUnits().remove(each);
                 String shadowDataSourceName = shadowRule.getShadowMappings().get(each.getDataSourceMapper().getActualName());
-                routeContext.getRouteResult().getRouteUnits().add(new RouteUnit(new RouteMapper(shadowDataSourceName, shadowDataSourceName), Collections.emptyList()));
+                routeContext.getRouteResult().getRouteUnits().add(new RouteUnit(new RouteMapper(each.getDataSourceMapper().getLogicName(), shadowDataSourceName), Collections.emptyList()));
             }
         }
         return routeContext;
