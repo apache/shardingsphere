@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.rule;
 
-import lombok.Getter;
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveGroupConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.rule.DataSourceRoutedRule;
@@ -26,20 +26,40 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * Master-slave rule.
  */
-@Getter
 public final class MasterSlaveRule implements DataSourceRoutedRule {
     
     private final Map<String, MasterSlaveDataSourceRule> dataSourceRules;
     
     public MasterSlaveRule(final MasterSlaveRuleConfiguration configuration) {
+        Preconditions.checkArgument(!configuration.getDataSources().isEmpty(), "Master-slave data source rules can not be empty.");
         dataSourceRules = new HashMap<>(configuration.getDataSources().size(), 1);
         for (MasterSlaveGroupConfiguration each : configuration.getDataSources()) {
             dataSourceRules.put(each.getName(), new MasterSlaveDataSourceRule(each));
         }
+    }
+    
+    /**
+     * Get single data source rule.
+     *
+     * @return master-slave data source rule
+     */
+    public MasterSlaveDataSourceRule getSingleDataSourceRule() {
+        return dataSourceRules.values().iterator().next();
+    }
+    
+    /**
+     * Find data source rule.
+     * 
+     * @param dataSourceName data source name
+     * @return master-slave data source rule
+     */
+    public Optional<MasterSlaveDataSourceRule> findDataSourceRule(final String dataSourceName) {
+        return Optional.ofNullable(dataSourceRules.get(dataSourceName));
     }
     
     /**

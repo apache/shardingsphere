@@ -20,32 +20,45 @@ package org.apache.shardingsphere.core.rule;
 import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveGroupConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class MasterSlaveRuleTest {
     
-    private MasterSlaveRule masterSlaveRule;
-    
-    @Before
-    public void setUp() {
-        MasterSlaveGroupConfiguration groupConfiguration = new MasterSlaveGroupConfiguration(
-                "test_ms", "master_db", Arrays.asList("slave_db_0", "slave_db_1"), new LoadBalanceStrategyConfiguration("RANDOM"));
-        masterSlaveRule = new MasterSlaveRule(new MasterSlaveRuleConfiguration(Collections.singleton(groupConfiguration)));
+    @Test(expected = IllegalArgumentException.class)
+    public void assertNewWithEmptyDataSourceRule() {
+        new MasterSlaveRule(new MasterSlaveRuleConfiguration(Collections.emptyList()));
     }
     
     @Test
-    public void assertGetDataSourceRules() {
-        assertThat(masterSlaveRule.getDataSourceRules().size(), is(1));
-        assertThat(masterSlaveRule.getDataSourceRules().get("test_ms").getName(), is("test_ms"));
-        assertThat(masterSlaveRule.getDataSourceRules().get("test_ms").getMasterDataSourceName(), is("master_db"));
-        assertThat(masterSlaveRule.getDataSourceRules().get("test_ms").getSlaveDataSourceNames(), is(Arrays.asList("slave_db_0", "slave_db_1")));
-        assertThat(masterSlaveRule.getDataSourceRules().get("test_ms").getLoadBalanceAlgorithm().getType(), is("RANDOM"));
+    public void assertFindDataSourceRule() {
+        Optional<MasterSlaveDataSourceRule> actual = createMasterSlaveRule().findDataSourceRule("test_ms");
+        assertTrue(actual.isPresent());
+        assertDataSourceRule(actual.get());
+    }
+    
+    @Test
+    public void assertGetSingleDataSourceRule() {
+        assertDataSourceRule(createMasterSlaveRule().getSingleDataSourceRule());
+    }
+    
+    private MasterSlaveRule createMasterSlaveRule() {
+        MasterSlaveGroupConfiguration configuration = new MasterSlaveGroupConfiguration(
+                "test_ms", "master_db", Arrays.asList("slave_db_0", "slave_db_1"), new LoadBalanceStrategyConfiguration("RANDOM"));
+        return new MasterSlaveRule(new MasterSlaveRuleConfiguration(Collections.singleton(configuration)));
+    }
+    
+    private void assertDataSourceRule(final MasterSlaveDataSourceRule actual) {
+        assertThat(actual.getName(), is("test_ms"));
+        assertThat(actual.getMasterDataSourceName(), is("master_db"));
+        assertThat(actual.getSlaveDataSourceNames(), is(Arrays.asList("slave_db_0", "slave_db_1")));
+        assertThat(actual.getLoadBalanceAlgorithm().getType(), is("RANDOM"));
     }
 }

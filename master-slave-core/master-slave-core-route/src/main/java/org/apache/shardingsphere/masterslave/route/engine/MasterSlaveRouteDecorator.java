@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.masterslave.route.engine;
 
+import org.apache.shardingsphere.core.rule.MasterSlaveDataSourceRule;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.masterslave.route.engine.impl.MasterSlaveDataSourceRouter;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.underlying.route.decorator.RouteDecorator;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Route decorator for master-slave.
@@ -39,7 +41,7 @@ public final class MasterSlaveRouteDecorator implements RouteDecorator<MasterSla
     @Override
     public RouteContext decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final MasterSlaveRule masterSlaveRule, final ConfigurationProperties properties) {
         if (routeContext.getRouteResult().getRouteUnits().isEmpty()) {
-            String dataSourceName = new MasterSlaveDataSourceRouter(masterSlaveRule.getDataSourceRules().values().iterator().next()).route(routeContext.getSqlStatementContext().getSqlStatement());
+            String dataSourceName = new MasterSlaveDataSourceRouter(masterSlaveRule.getSingleDataSourceRule()).route(routeContext.getSqlStatementContext().getSqlStatement());
             RouteResult routeResult = new RouteResult();
             routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.emptyList()));
             return new RouteContext(routeContext.getSqlStatementContext(), Collections.emptyList(), routeResult);
@@ -48,10 +50,10 @@ public final class MasterSlaveRouteDecorator implements RouteDecorator<MasterSla
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
         for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
             String dataSourceName = each.getDataSourceMapper().getLogicName();
-            if (masterSlaveRule.getDataSourceRules().containsKey(dataSourceName) 
-                    && masterSlaveRule.getDataSourceRules().get(dataSourceName).getName().equalsIgnoreCase(each.getDataSourceMapper().getActualName())) {
+            Optional<MasterSlaveDataSourceRule> dataSourceRule = masterSlaveRule.findDataSourceRule(dataSourceName);
+            if (dataSourceRule.isPresent() && dataSourceRule.get().getName().equalsIgnoreCase(each.getDataSourceMapper().getActualName())) {
                 toBeRemoved.add(each);
-                String actualDataSourceName = new MasterSlaveDataSourceRouter(masterSlaveRule.getDataSourceRules().get(dataSourceName)).route(routeContext.getSqlStatementContext().getSqlStatement());
+                String actualDataSourceName = new MasterSlaveDataSourceRouter(dataSourceRule.get()).route(routeContext.getSqlStatementContext().getSqlStatement());
                 toBeAdded.add(new RouteUnit(new RouteMapper(each.getDataSourceMapper().getLogicName(), actualDataSourceName), each.getTableMappers()));
             }
         }

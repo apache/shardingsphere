@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.spring.boot.type;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.shardingsphere.core.rule.MasterSlaveDataSourceRule;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
@@ -57,11 +58,12 @@ public class SpringBootMasterSlaveTest {
     }
     
     private void assertMasterSlaveRule(final MasterSlaveRule rule) {
-        assertThat(rule.getDataSourceRules().get("ds_ms").getName(), is("ds_ms"));
-        assertThat(rule.getDataSourceRules().get("ds_ms").getMasterDataSourceName(), is("ds_master"));
-        assertThat(rule.getDataSourceRules().get("ds_ms").getSlaveDataSourceNames().size(), is(2));
-        assertThat(rule.getDataSourceRules().get("ds_ms").getSlaveDataSourceNames().get(0), is("ds_slave_0"));
-        assertThat(rule.getDataSourceRules().get("ds_ms").getSlaveDataSourceNames().get(1), is("ds_slave_1"));
-        assertThat(rule.getDataSourceRules().get("ds_ms").getLoadBalanceAlgorithm().getType(), is("RANDOM"));
+        MasterSlaveDataSourceRule dataSourceRule = rule.getSingleDataSourceRule();
+        assertThat(dataSourceRule.getName(), is("ds_ms"));
+        assertThat(dataSourceRule.getMasterDataSourceName(), is("ds_master"));
+        assertThat(dataSourceRule.getSlaveDataSourceNames().size(), is(2));
+        assertThat(dataSourceRule.getSlaveDataSourceNames().get(0), is("ds_slave_0"));
+        assertThat(dataSourceRule.getSlaveDataSourceNames().get(1), is("ds_slave_1"));
+        assertThat(dataSourceRule.getLoadBalanceAlgorithm().getType(), is("RANDOM"));
     }
 }

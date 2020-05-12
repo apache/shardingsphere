@@ -93,7 +93,7 @@ public final class MasterSlaveDataSourceRule {
      * @return data source mapper
      */
     public Map<String, Collection<String>> getDataSourceMapper() {
-        Map<String, Collection<String>> result = new HashMap<>();
+        Map<String, Collection<String>> result = new HashMap<>(1, 1);
         Collection<String> actualDataSourceNames = new LinkedList<>();
         actualDataSourceNames.add(masterDataSourceName);
         actualDataSourceNames.addAll(slaveDataSourceNames);
