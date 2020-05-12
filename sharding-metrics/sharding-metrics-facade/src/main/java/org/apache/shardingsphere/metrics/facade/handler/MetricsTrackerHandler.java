@@ -47,8 +47,6 @@ public final class MetricsTrackerHandler {
     
     private static final String NAME_FORMAT = "ShardingSphere-Metrics-%d";
     
-    private static final MetricsTrackerHandler INSTANCE = new MetricsTrackerHandler();
-    
     private static final int FUTURE_GET_TIME_OUT_MILLISECONDS = 500;
     
     private static final int QUEUE_SIZE = 5000;
@@ -62,12 +60,12 @@ public final class MetricsTrackerHandler {
     private volatile boolean async;
     
     /**
-     * Gets instance.
+     * Get metrics tracker handler of lazy load singleton.
      *
-     * @return the instance
+     * @return Metrics tracker handler
      */
     public static MetricsTrackerHandler getInstance() {
-        return INSTANCE;
+        return MetricsTrackerHandlerHolder.INSTANCE;
     }
     
     /**
@@ -221,6 +219,14 @@ public final class MetricsTrackerHandler {
     private Optional<SummaryMetricsTrackerDelegate> handlerSummaryStartTimer(final String metricsLabel, final String... labelValues) {
         Optional<MetricsTracker> metricsTracker = metricsTrackerManager.getMetricsTrackerFactory().create(MetricsTypeEnum.SUMMARY.name(), metricsLabel);
         return metricsTracker.map(tracker -> Optional.of(((SummaryMetricsTracker) tracker).startTimer(labelValues))).orElseGet(() -> Optional.of(new NoneSummaryMetricsTrackerDelegate()));
+    }
+    
+    /**
+     * Metrics tracker handler holder.
+     */
+    private static class MetricsTrackerHandlerHolder {
+        
+        private static final MetricsTrackerHandler INSTANCE = new MetricsTrackerHandler();
     }
 }
 
