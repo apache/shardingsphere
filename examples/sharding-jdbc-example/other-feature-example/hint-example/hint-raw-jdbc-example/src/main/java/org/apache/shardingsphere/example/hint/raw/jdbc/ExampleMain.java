@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.hint.raw.jdbc;
 
-import org.apache.shardingsphere.api.hint.HintManager;
+import org.apache.shardingsphere.sharding.api.hint.HintManager;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingSphereDataSourceFactory;

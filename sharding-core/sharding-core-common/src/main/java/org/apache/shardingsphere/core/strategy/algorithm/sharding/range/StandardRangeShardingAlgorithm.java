@@ -23,8 +23,8 @@ import com.google.common.collect.Range;
 import com.google.common.math.LongMath;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.api.sharding.standard.PreciseShardingValue;
-import org.apache.shardingsphere.api.sharding.standard.RangeShardingValue;
+import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
+import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 
 import java.math.RoundingMode;
 import java.util.Collection;

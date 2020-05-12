@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
-import org.apache.shardingsphere.api.hint.HintManager;
+import org.apache.shardingsphere.sharding.api.hint.HintManager;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.fixture.AbstractRoutingEngineTest;
