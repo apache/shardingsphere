@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingproxy.backend.schema;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShadowSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSphereSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.TransparentSchema;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
@@ -49,11 +47,6 @@ public final class LogicSchemaFactory {
                                           final Collection<RuleConfiguration> ruleConfigurations) throws SQLException {
         if (ruleConfigurations.isEmpty()) {
             return new TransparentSchema(schemaName, schemaDataSources.get(schemaName));
-        }
-        // TODO process shadow rule
-        RuleConfiguration ruleConfiguration = ruleConfigurations.iterator().next();
-        if (ruleConfiguration instanceof ShadowRuleConfiguration) {
-            return new ShadowSchema(schemaName, schemaDataSources.get(schemaName), (ShadowRuleConfiguration) ruleConfiguration);
         }
         return new ShardingSphereSchema(schemaName, schemaDataSources.get(schemaName), ruleConfigurations);
     }
