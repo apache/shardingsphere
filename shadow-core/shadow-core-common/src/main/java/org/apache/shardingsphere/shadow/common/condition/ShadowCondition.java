@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.rewrite.condition;
+package org.apache.shardingsphere.shadow.common.condition;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
