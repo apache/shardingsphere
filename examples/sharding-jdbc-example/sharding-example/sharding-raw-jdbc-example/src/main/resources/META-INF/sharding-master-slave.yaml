@@ -90,7 +90,7 @@ shardingRule:
           algorithm.expression: ds_${user_id % 2}
 
 masterSlaveRule:
-  groups:
+  dataSources:
     ds_0:
       masterDataSourceName: ds_master_0
       slaveDataSourceNames: [ds_master_0_slave_0, ds_master_0_slave_1]

@@ -32,7 +32,7 @@ dataSources:
     password:
 
 masterSlaveRule:
-  groups:
+  dataSources:
     ms_ds:
       name: ds_ms
       masterDataSourceName: ds_master

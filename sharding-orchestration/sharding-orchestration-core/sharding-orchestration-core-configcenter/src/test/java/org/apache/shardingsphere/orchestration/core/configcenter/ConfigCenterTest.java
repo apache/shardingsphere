@@ -82,7 +82,7 @@ public final class ConfigCenterTest {
             + "      tableStrategy:\n" + "        standard:\n" + "          shardingAlgorithm:\n" + "            props:\n" 
             + "              algorithm.expression: t_order_${order_id % 2}\n" + "            type: INLINE\n" + "          shardingColumn: order_id\n";
     
-    private static final String MASTER_SLAVE_RULE_YAML = "masterSlaveRule:\n  groups:\n    ms_ds:\n      masterDataSourceName: master_ds\n"
+    private static final String MASTER_SLAVE_RULE_YAML = "masterSlaveRule:\n  dataSources:\n    ms_ds:\n      masterDataSourceName: master_ds\n"
             + "      name: ms_ds\n" + "      slaveDataSourceNames:\n" + "      - slave_ds_0\n" + "      - slave_ds_1\n";
     
     private static final String ENCRYPT_RULE_YAML = "encryptRule:\n  encryptors:\n" + "    order_encryptor:\n"
@@ -403,7 +403,7 @@ public final class ConfigCenterTest {
         when(configCenterRepository.get("/test/config/schema/sharding_db/rule")).thenReturn(MASTER_SLAVE_RULE_YAML);
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
         MasterSlaveRuleConfiguration actual = configurationService.loadMasterSlaveRuleConfiguration("sharding_db");
-        assertThat(actual.getGroups().iterator().next().getName(), is("ms_ds"));
+        assertThat(actual.getDataSources().iterator().next().getName(), is("ms_ds"));
     }
     
     @Test

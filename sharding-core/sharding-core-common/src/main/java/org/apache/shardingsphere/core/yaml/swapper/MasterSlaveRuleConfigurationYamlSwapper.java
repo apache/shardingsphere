@@ -39,7 +39,7 @@ public final class MasterSlaveRuleConfigurationYamlSwapper implements YamlSwappe
     @Override
     public YamlMasterSlaveRuleConfiguration swap(final MasterSlaveRuleConfiguration data) {
         YamlMasterSlaveRuleConfiguration result = new YamlMasterSlaveRuleConfiguration();
-        result.setGroups(data.getGroups().stream().collect(Collectors.toMap(MasterSlaveGroupConfiguration::getName, this::swap, (a, b) -> b, LinkedHashMap::new)));
+        result.setDataSources(data.getDataSources().stream().collect(Collectors.toMap(MasterSlaveGroupConfiguration::getName, this::swap, (a, b) -> b, LinkedHashMap::new)));
         return result;
     }
     
@@ -57,7 +57,7 @@ public final class MasterSlaveRuleConfigurationYamlSwapper implements YamlSwappe
     @Override
     public MasterSlaveRuleConfiguration swap(final YamlMasterSlaveRuleConfiguration yamlConfiguration) {
         Collection<MasterSlaveGroupConfiguration> groups = new LinkedList<>();
-        for (Entry<String, YamlMasterSlaveGroupConfiguration> entry : yamlConfiguration.getGroups().entrySet()) {
+        for (Entry<String, YamlMasterSlaveGroupConfiguration> entry : yamlConfiguration.getDataSources().entrySet()) {
             groups.add(swap(entry.getKey(), entry.getValue()));
         }
         return new MasterSlaveRuleConfiguration(groups);

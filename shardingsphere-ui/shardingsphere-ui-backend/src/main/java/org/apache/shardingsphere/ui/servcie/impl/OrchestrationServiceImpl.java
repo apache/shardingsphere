@@ -108,7 +108,7 @@ public final class OrchestrationServiceImpl implements OrchestrationService {
     
     private void addSlaveDataSource(final Collection<SlaveDataSourceDTO> slaveDataSourceDTOS, final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration, final String schemaName) {
         Collection<String> disabledSchemaDataSourceNames = getDisabledSchemaDataSourceNames();
-        for (MasterSlaveGroupConfiguration each : masterSlaveRuleConfiguration.getGroups()) {
+        for (MasterSlaveGroupConfiguration each : masterSlaveRuleConfiguration.getDataSources()) {
             slaveDataSourceDTOS.addAll(getSlaveDataSourceDTOS(schemaName, disabledSchemaDataSourceNames, each));
         }
     }

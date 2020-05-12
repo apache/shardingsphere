@@ -16,7 +16,7 @@
 #
 
 masterSlaveRule:
-  groups:
+  dataSources:
     test_ds:
       name: test_ds
       masterDataSourceName: test_ds_master

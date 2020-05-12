@@ -72,8 +72,8 @@ public class OrchestrationSpringBootMasterSlaveTest {
     }
     
     private void assertMasterSlaveRule(final MasterSlaveRule rule) {
-        assertThat(rule.getGroups().get("ds_ms").getName(), is("ds_ms"));
-        assertThat(rule.getGroups().get("ds_ms").getMasterDataSourceName(), is("ds_master"));
+        assertThat(rule.getDataSourceRules().get("ds_ms").getName(), is("ds_ms"));
+        assertThat(rule.getDataSourceRules().get("ds_ms").getMasterDataSourceName(), is("ds_master"));
         assertThat(rule.getSlaveDataSourceNames("ds_ms").size(), is(2));
         assertThat(rule.getSlaveDataSourceNames("ds_ms").get(0), is("ds_slave_0"));
         assertThat(rule.getSlaveDataSourceNames("ds_ms").get(1), is("ds_slave_1"));
