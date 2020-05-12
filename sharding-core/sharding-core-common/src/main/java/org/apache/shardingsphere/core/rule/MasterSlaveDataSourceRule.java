@@ -65,16 +65,6 @@ public final class MasterSlaveDataSourceRule {
     }
     
     /**
-     * Judge whether contain data source name.
-     *
-     * @param dataSourceName data source name
-     * @return contain or not.
-     */
-    public boolean containDataSourceName(final String dataSourceName) {
-        return masterDataSourceName.equals(dataSourceName) || slaveDataSourceNames.contains(dataSourceName);
-    }
-    
-    /**
      * Get slave data source names.
      *
      * @return available slave data source names
