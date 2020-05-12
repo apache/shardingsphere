@@ -31,5 +31,5 @@ import java.util.Map;
 @Setter
 public final class YamlMasterSlaveRuleConfiguration implements YamlConfiguration {
     
-    private Map<String, YamlMasterSlaveGroupConfiguration> dataSources = new LinkedHashMap<>();
+    private Map<String, YamlMasterSlaveDataSourceConfiguration> dataSources = new LinkedHashMap<>();
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.spring.namespace.parser;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveGroupConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveDataSourceConfiguration;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.ManagedList;
@@ -30,10 +30,10 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Master slave group configuration bean definition.
+ * Master slave data source configuration bean definition.
  */
 @Getter
-public final class MasterSlaveGroupConfigurationBeanDefinition {
+public final class MasterSlaveDataSourceConfigurationBeanDefinition {
     
     private static final String MASTER_DATA_SOURCE_NAME_ATTRIBUTE = "master-data-source-name";
     
@@ -47,14 +47,14 @@ public final class MasterSlaveGroupConfigurationBeanDefinition {
     
     private BeanDefinition beanDefinition;
     
-    public MasterSlaveGroupConfigurationBeanDefinition(final Element element) {
+    public MasterSlaveDataSourceConfigurationBeanDefinition(final Element element) {
         masterDataSourceName = element.getAttribute(MASTER_DATA_SOURCE_NAME_ATTRIBUTE);
         slaveDataSourceNames = element.getAttribute(SLAVE_DATA_SOURCE_NAMES_ATTRIBUTE);
         beanDefinition = getBeanDefinition(element);
     }
     
     private BeanDefinition getBeanDefinition(final Element element) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(MasterSlaveGroupConfiguration.class);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(MasterSlaveDataSourceConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute("id"));
         factory.addConstructorArgValue(masterDataSourceName);
         factory.addConstructorArgValue(parseSlaveDataSourcesRef());

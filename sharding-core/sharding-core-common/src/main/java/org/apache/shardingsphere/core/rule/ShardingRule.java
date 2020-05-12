@@ -47,7 +47,7 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
- * Databases and tables sharding rule.
+ * Sharding rule.
  */
 @Getter
 public final class ShardingRule implements DataNodeRoutedRule {

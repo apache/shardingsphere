@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.masterslave.route.engine;
 
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveGroupConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveDataSourceConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
@@ -77,7 +77,7 @@ public final class MasterSlaveRouteDecoratorTest {
     public void setUp() {
         routeDecorator = new MasterSlaveRouteDecorator();
         masterSlaveRule = new MasterSlaveRule(
-                new MasterSlaveRuleConfiguration(Collections.singleton(new MasterSlaveGroupConfiguration(DATASOURCE_NAME, MASTER_DATASOURCE, Collections.singletonList(SLAVE_DATASOURCE)))));
+                new MasterSlaveRuleConfiguration(Collections.singleton(new MasterSlaveDataSourceConfiguration(DATASOURCE_NAME, MASTER_DATASOURCE, Collections.singletonList(SLAVE_DATASOURCE)))));
     }
     
     @After

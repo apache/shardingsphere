@@ -19,10 +19,11 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveGroupConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveDataSourceConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
+import org.apache.shardingsphere.core.rule.MasterSlaveDataSourceRule;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
@@ -123,8 +124,9 @@ public final class OrchestrationShardingSphereDataSourceTest {
     }
     
     private MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() {
-        MasterSlaveGroupConfiguration groupConfiguration = new MasterSlaveGroupConfiguration("ds_ms", "ds_m", Collections.singletonList("ds_s"), new LoadBalanceStrategyConfiguration("ROUND_ROBIN"));
-        return new MasterSlaveRuleConfiguration(Collections.singleton(groupConfiguration));
+        MasterSlaveDataSourceConfiguration dataSourceConfiguration = new MasterSlaveDataSourceConfiguration(
+                "ds_ms", "ds_m", Collections.singletonList("ds_s"), new LoadBalanceStrategyConfiguration("ROUND_ROBIN"));
+        return new MasterSlaveRuleConfiguration(Collections.singleton(dataSourceConfiguration));
     }
     
     @Test
@@ -165,7 +167,9 @@ public final class OrchestrationShardingSphereDataSourceTest {
         Optional<MasterSlaveRule> masterSlaveRule = orchestrationDataSource.getDataSource().getRuntimeContext().getRules().stream().filter(
             each -> each instanceof MasterSlaveRule).findFirst().map(rule -> (MasterSlaveRule) rule);
         assertTrue(masterSlaveRule.isPresent());
-        assertThat(masterSlaveRule.get().getSlaveDataSourceNames("ds_ms").size(), is(0));
+        Optional<MasterSlaveDataSourceRule> masterSlaveDataSourceRule = masterSlaveRule.get().findDataSourceRule("ds_ms");
+        assertTrue(masterSlaveDataSourceRule.isPresent());
+        assertThat(masterSlaveDataSourceRule.get().getSlaveDataSourceNames().size(), is(0));
     }
     
     private DisabledStateChangedEvent getDisabledStateChangedEvent() {

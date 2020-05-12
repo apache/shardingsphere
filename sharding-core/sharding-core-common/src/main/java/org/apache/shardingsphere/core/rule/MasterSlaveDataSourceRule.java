@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.core.rule;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveGroupConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveDataSourceConfiguration;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.masterslave.MasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.spi.type.TypedSPIRegistry;
@@ -50,28 +51,19 @@ public final class MasterSlaveDataSourceRule {
     
     private final MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm;
     
+    @Getter(AccessLevel.NONE)
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
-    public MasterSlaveDataSourceRule(final MasterSlaveGroupConfiguration masterSlaveGroupConfiguration) {
-        name = masterSlaveGroupConfiguration.getName();
-        masterDataSourceName = masterSlaveGroupConfiguration.getMasterDataSourceName();
-        slaveDataSourceNames = masterSlaveGroupConfiguration.getSlaveDataSourceNames();
-        loadBalanceAlgorithm = createMasterSlaveLoadBalanceAlgorithm(masterSlaveGroupConfiguration.getLoadBalanceStrategyConfiguration());
+    public MasterSlaveDataSourceRule(final MasterSlaveDataSourceConfiguration configuration) {
+        name = configuration.getName();
+        masterDataSourceName = configuration.getMasterDataSourceName();
+        slaveDataSourceNames = configuration.getSlaveDataSourceNames();
+        loadBalanceAlgorithm = createLoadBalanceAlgorithm(configuration.getLoadBalanceStrategyConfiguration());
     }
     
-    private MasterSlaveLoadBalanceAlgorithm createMasterSlaveLoadBalanceAlgorithm(final LoadBalanceStrategyConfiguration loadBalanceStrategyConfiguration) {
-        return null == loadBalanceStrategyConfiguration ? TypedSPIRegistry.getRegisteredService(MasterSlaveLoadBalanceAlgorithm.class)
-                : TypedSPIRegistry.getRegisteredService(MasterSlaveLoadBalanceAlgorithm.class, loadBalanceStrategyConfiguration.getType(), loadBalanceStrategyConfiguration.getProperties());
-    }
-    
-    /**
-     * Judge whether contain data source name.
-     *
-     * @param dataSourceName data source name
-     * @return contain or not.
-     */
-    public boolean containDataSourceName(final String dataSourceName) {
-        return masterDataSourceName.equals(dataSourceName) || slaveDataSourceNames.contains(dataSourceName);
+    private MasterSlaveLoadBalanceAlgorithm createLoadBalanceAlgorithm(final LoadBalanceStrategyConfiguration configuration) {
+        return null == configuration ? TypedSPIRegistry.getRegisteredService(MasterSlaveLoadBalanceAlgorithm.class)
+                : TypedSPIRegistry.getRegisteredService(MasterSlaveLoadBalanceAlgorithm.class, configuration.getType(), configuration.getProperties());
     }
     
     /**
@@ -103,7 +95,7 @@ public final class MasterSlaveDataSourceRule {
      * @return data source mapper
      */
     public Map<String, Collection<String>> getDataSourceMapper() {
-        Map<String, Collection<String>> result = new HashMap<>();
+        Map<String, Collection<String>> result = new HashMap<>(1, 1);
         Collection<String> actualDataSourceNames = new LinkedList<>();
         actualDataSourceNames.add(masterDataSourceName);
         actualDataSourceNames.addAll(slaveDataSourceNames);

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.sharding.raw.jdbc.config;
 
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveGroupConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveDataSourceConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
@@ -86,9 +86,11 @@ public final class ShardingMasterSlaveConfigurationRange implements ExampleConfi
     }
     
     private static MasterSlaveRuleConfiguration createMasterSlaveRuleConfiguration() {
-        MasterSlaveGroupConfiguration groupConfiguration1 = new MasterSlaveGroupConfiguration("ds_0", "demo_ds_master_0", Arrays.asList("demo_ds_master_0_slave_0", "demo_ds_master_0_slave_1"));
-        MasterSlaveGroupConfiguration groupConfiguration2 = new MasterSlaveGroupConfiguration("ds_1", "demo_ds_master_1", Arrays.asList("demo_ds_master_1_slave_0", "demo_ds_master_1_slave_1"));
-        return new MasterSlaveRuleConfiguration(Arrays.asList(groupConfiguration1, groupConfiguration2));
+        MasterSlaveDataSourceConfiguration dataSourceConfiguration1 = new MasterSlaveDataSourceConfiguration(
+                "ds_0", "demo_ds_master_0", Arrays.asList("demo_ds_master_0_slave_0", "demo_ds_master_0_slave_1"));
+        MasterSlaveDataSourceConfiguration dataSourceConfiguration2 = new MasterSlaveDataSourceConfiguration(
+                "ds_1", "demo_ds_master_1", Arrays.asList("demo_ds_master_1_slave_0", "demo_ds_master_1_slave_1"));
+        return new MasterSlaveRuleConfiguration(Arrays.asList(dataSourceConfiguration1, dataSourceConfiguration2));
     }
     
     private static Properties createProperties() {

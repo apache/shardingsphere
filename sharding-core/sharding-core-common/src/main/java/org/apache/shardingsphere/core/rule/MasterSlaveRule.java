@@ -17,42 +17,49 @@
 
 package org.apache.shardingsphere.core.rule;
 
-import lombok.Getter;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveGroupConfiguration;
+import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveDataSourceConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.rule.DataSourceRoutedRule;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
- * Databases and tables master-slave rule.
+ * Master-slave rule.
  */
-@Getter
 public final class MasterSlaveRule implements DataSourceRoutedRule {
     
     private final Map<String, MasterSlaveDataSourceRule> dataSourceRules;
     
-    public MasterSlaveRule(final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration) {
-        dataSourceRules = new HashMap<>(masterSlaveRuleConfiguration.getDataSources().size(), 1);
-        for (MasterSlaveGroupConfiguration each : masterSlaveRuleConfiguration.getDataSources()) {
+    public MasterSlaveRule(final MasterSlaveRuleConfiguration configuration) {
+        Preconditions.checkArgument(!configuration.getDataSources().isEmpty(), "Master-slave data source rules can not be empty.");
+        dataSourceRules = new HashMap<>(configuration.getDataSources().size(), 1);
+        for (MasterSlaveDataSourceConfiguration each : configuration.getDataSources()) {
             dataSourceRules.put(each.getName(), new MasterSlaveDataSourceRule(each));
         }
     }
     
     /**
-     * Get slave data source names.
+     * Get single data source rule.
      *
-     * @param groupName master-slave group name
-     * @return available slave data source names
+     * @return master-slave data source rule
      */
-    public List<String> getSlaveDataSourceNames(final String groupName) {
-        return dataSourceRules.containsKey(groupName) ? dataSourceRules.get(groupName).getSlaveDataSourceNames() : Collections.emptyList();
+    public MasterSlaveDataSourceRule getSingleDataSourceRule() {
+        return dataSourceRules.values().iterator().next();
+    }
+    
+    /**
+     * Find data source rule.
+     * 
+     * @param dataSourceName data source name
+     * @return master-slave data source rule
+     */
+    public Optional<MasterSlaveDataSourceRule> findDataSourceRule(final String dataSourceName) {
+        return Optional.ofNullable(dataSourceRules.get(dataSourceName));
     }
     
     /**
@@ -65,19 +72,6 @@ public final class MasterSlaveRule implements DataSourceRoutedRule {
         for (Entry<String, MasterSlaveDataSourceRule> entry : dataSourceRules.entrySet()) {
             entry.getValue().updateDisabledDataSourceNames(dataSourceName, isDisabled);
         }
-    }
-    
-    /**
-     * Get disabled data source names.
-     * 
-     * @return disabled data source names
-     */
-    public Collection<String> getDisabledDataSourceNames() {
-        Collection<String> result = new HashSet<>();
-        for (Entry<String, MasterSlaveDataSourceRule> entry : dataSourceRules.entrySet()) {
-            result.addAll(entry.getValue().getDisabledDataSourceNames());
-        }
-        return result;
     }
     
     @Override

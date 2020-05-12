@@ -19,9 +19,9 @@ package org.apache.shardingsphere.core.yaml.swapper;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveGroupConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveDataSourceConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveGroupConfiguration;
+import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveDataSourceConfiguration;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
 
@@ -39,12 +39,12 @@ public final class MasterSlaveRuleConfigurationYamlSwapper implements YamlSwappe
     @Override
     public YamlMasterSlaveRuleConfiguration swap(final MasterSlaveRuleConfiguration data) {
         YamlMasterSlaveRuleConfiguration result = new YamlMasterSlaveRuleConfiguration();
-        result.setDataSources(data.getDataSources().stream().collect(Collectors.toMap(MasterSlaveGroupConfiguration::getName, this::swap, (a, b) -> b, LinkedHashMap::new)));
+        result.setDataSources(data.getDataSources().stream().collect(Collectors.toMap(MasterSlaveDataSourceConfiguration::getName, this::swap, (a, b) -> b, LinkedHashMap::new)));
         return result;
     }
     
-    private YamlMasterSlaveGroupConfiguration swap(final MasterSlaveGroupConfiguration group) {
-        YamlMasterSlaveGroupConfiguration result = new YamlMasterSlaveGroupConfiguration();
+    private YamlMasterSlaveDataSourceConfiguration swap(final MasterSlaveDataSourceConfiguration group) {
+        YamlMasterSlaveDataSourceConfiguration result = new YamlMasterSlaveDataSourceConfiguration();
         result.setName(group.getName());
         result.setMasterDataSourceName(group.getMasterDataSourceName());
         result.setSlaveDataSourceNames(group.getSlaveDataSourceNames());
@@ -56,18 +56,18 @@ public final class MasterSlaveRuleConfigurationYamlSwapper implements YamlSwappe
     
     @Override
     public MasterSlaveRuleConfiguration swap(final YamlMasterSlaveRuleConfiguration yamlConfiguration) {
-        Collection<MasterSlaveGroupConfiguration> groups = new LinkedList<>();
-        for (Entry<String, YamlMasterSlaveGroupConfiguration> entry : yamlConfiguration.getDataSources().entrySet()) {
+        Collection<MasterSlaveDataSourceConfiguration> groups = new LinkedList<>();
+        for (Entry<String, YamlMasterSlaveDataSourceConfiguration> entry : yamlConfiguration.getDataSources().entrySet()) {
             groups.add(swap(entry.getKey(), entry.getValue()));
         }
         return new MasterSlaveRuleConfiguration(groups);
     }
     
-    private MasterSlaveGroupConfiguration swap(final String name, final YamlMasterSlaveGroupConfiguration yamlGroup) {
-        return new MasterSlaveGroupConfiguration(name, yamlGroup.getMasterDataSourceName(), yamlGroup.getSlaveDataSourceNames(), getLoadBalanceStrategyConfiguration(yamlGroup));
+    private MasterSlaveDataSourceConfiguration swap(final String name, final YamlMasterSlaveDataSourceConfiguration yamlGroup) {
+        return new MasterSlaveDataSourceConfiguration(name, yamlGroup.getMasterDataSourceName(), yamlGroup.getSlaveDataSourceNames(), getLoadBalanceStrategyConfiguration(yamlGroup));
     }
     
-    private LoadBalanceStrategyConfiguration getLoadBalanceStrategyConfiguration(final YamlMasterSlaveGroupConfiguration yamlGroup) {
+    private LoadBalanceStrategyConfiguration getLoadBalanceStrategyConfiguration(final YamlMasterSlaveDataSourceConfiguration yamlGroup) {
         return Strings.isNullOrEmpty(yamlGroup.getLoadBalanceAlgorithmType()) ? null : new LoadBalanceStrategyConfiguration(yamlGroup.getLoadBalanceAlgorithmType(), yamlGroup.getProps());
     }
 }

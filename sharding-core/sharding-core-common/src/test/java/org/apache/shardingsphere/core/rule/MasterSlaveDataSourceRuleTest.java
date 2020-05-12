@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.rule;
 
 import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveGroupConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveDataSourceConfiguration;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -29,30 +29,30 @@ import static org.junit.Assert.assertThat;
 
 public final class MasterSlaveDataSourceRuleTest {
     
-    private final MasterSlaveDataSourceRule masterSlaveRule = new MasterSlaveDataSourceRule(
-            new MasterSlaveGroupConfiguration("test_ms", "master_db", Arrays.asList("slave_db_0", "slave_db_1"), new LoadBalanceStrategyConfiguration("RANDOM")));
+    private final MasterSlaveDataSourceRule masterSlaveDataSourceRule = new MasterSlaveDataSourceRule(
+            new MasterSlaveDataSourceConfiguration("test_ms", "master_db", Arrays.asList("slave_db_0", "slave_db_1"), new LoadBalanceStrategyConfiguration("RANDOM")));
     
     @Test
     public void assertGetSlaveDataSourceNamesWithoutDisabledDataSourceNames() {
-        assertThat(masterSlaveRule.getSlaveDataSourceNames(), is(Arrays.asList("slave_db_0", "slave_db_1")));
+        assertThat(masterSlaveDataSourceRule.getSlaveDataSourceNames(), is(Arrays.asList("slave_db_0", "slave_db_1")));
     }
     
     @Test
     public void assertGetSlaveDataSourceNamesWithDisabledDataSourceNames() {
-        masterSlaveRule.updateDisabledDataSourceNames("slave_db_0", true);
-        assertThat(masterSlaveRule.getSlaveDataSourceNames(), is(Collections.singletonList("slave_db_1")));
+        masterSlaveDataSourceRule.updateDisabledDataSourceNames("slave_db_0", true);
+        assertThat(masterSlaveDataSourceRule.getSlaveDataSourceNames(), is(Collections.singletonList("slave_db_1")));
     }
     
     @Test
     public void assertUpdateDisabledDataSourceNamesForDisabled() {
-        masterSlaveRule.updateDisabledDataSourceNames("slave_db_0", true);
-        assertThat(masterSlaveRule.getDisabledDataSourceNames(), is(Collections.singleton("slave_db_0")));
+        masterSlaveDataSourceRule.updateDisabledDataSourceNames("slave_db_0", true);
+        assertThat(masterSlaveDataSourceRule.getSlaveDataSourceNames(), is(Collections.singletonList("slave_db_1")));
     }
     
     @Test
     public void assertUpdateDisabledDataSourceNamesForEnabled() {
-        masterSlaveRule.updateDisabledDataSourceNames("slave_db_0", true);
-        masterSlaveRule.updateDisabledDataSourceNames("slave_db_0", false);
-        assertThat(masterSlaveRule.getDisabledDataSourceNames(), is(Collections.emptySet()));
+        masterSlaveDataSourceRule.updateDisabledDataSourceNames("slave_db_0", true);
+        masterSlaveDataSourceRule.updateDisabledDataSourceNames("slave_db_0", false);
+        assertThat(masterSlaveDataSourceRule.getSlaveDataSourceNames(), is(Arrays.asList("slave_db_0", "slave_db_1")));
     }
 }

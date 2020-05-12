@@ -30,5 +30,5 @@ import java.util.Collection;
 @Getter
 public final class MasterSlaveRuleConfiguration implements RuleConfiguration {
     
-    private final Collection<MasterSlaveGroupConfiguration> dataSources;
+    private final Collection<MasterSlaveDataSourceConfiguration> dataSources;
 }
