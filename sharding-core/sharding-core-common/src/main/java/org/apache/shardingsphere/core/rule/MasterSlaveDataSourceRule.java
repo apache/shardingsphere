@@ -33,10 +33,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Master-slave group rule.
+ * Master-slave data source rule.
  */
 @Getter
-public final class MasterSlaveGroupRule {
+public final class MasterSlaveDataSourceRule {
     
     static {
         ShardingSphereServiceLoader.register(MasterSlaveLoadBalanceAlgorithm.class);
@@ -52,7 +52,7 @@ public final class MasterSlaveGroupRule {
     
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
-    public MasterSlaveGroupRule(final MasterSlaveGroupConfiguration masterSlaveGroupConfiguration) {
+    public MasterSlaveDataSourceRule(final MasterSlaveGroupConfiguration masterSlaveGroupConfiguration) {
         name = masterSlaveGroupConfiguration.getName();
         masterDataSourceName = masterSlaveGroupConfiguration.getMasterDataSourceName();
         slaveDataSourceNames = masterSlaveGroupConfiguration.getSlaveDataSourceNames();

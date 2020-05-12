@@ -85,7 +85,7 @@ public final class ConfigurationLoggerTest {
     
     @Test
     public void assertLogMasterSlaveRuleConfiguration() {
-        String yaml = "groups:\n" + "  ms_ds:\n" + "    masterDataSourceName: master_ds\n" + "    name: ms_ds\n" + "    slaveDataSourceNames:\n" + "    - slave_ds_0\n" + "    - slave_ds_1\n";
+        String yaml = "dataSources:\n" + "  ms_ds:\n" + "    masterDataSourceName: master_ds\n" + "    name: ms_ds\n" + "    slaveDataSourceNames:\n" + "    - slave_ds_0\n" + "    - slave_ds_1\n";
         assertLogInfo(MasterSlaveRuleConfiguration.class.getSimpleName(), yaml);
         ConfigurationLogger.log(getMasterSlaveRuleConfiguration());
     }
@@ -130,7 +130,7 @@ public final class ConfigurationLoggerTest {
     
     @Test
     public void assertLogRuleConfigurationWithMasterSlaveRuleConfiguration() {
-        String yaml = "groups:\n" + "  ms_ds:\n" + "    masterDataSourceName: master_ds\n" + "    name: ms_ds\n" + "    slaveDataSourceNames:\n" + "    - slave_ds_0\n" + "    - slave_ds_1\n";
+        String yaml = "dataSources:\n" + "  ms_ds:\n" + "    masterDataSourceName: master_ds\n" + "    name: ms_ds\n" + "    slaveDataSourceNames:\n" + "    - slave_ds_0\n" + "    - slave_ds_1\n";
         assertLogInfo(MasterSlaveRuleConfiguration.class.getSimpleName(), yaml);
         ConfigurationLogger.log(getMasterSlaveRuleConfiguration());
     }

@@ -27,9 +27,9 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class MasterSlaveGroupRuleTest {
+public final class MasterSlaveDataSourceRuleTest {
     
-    private final MasterSlaveGroupRule masterSlaveRule = new MasterSlaveGroupRule(
+    private final MasterSlaveDataSourceRule masterSlaveRule = new MasterSlaveDataSourceRule(
             new MasterSlaveGroupConfiguration("test_ms", "master_db", Arrays.asList("slave_db_0", "slave_db_1"), new LoadBalanceStrategyConfiguration("RANDOM")));
     
     @Test

@@ -61,7 +61,7 @@ shardingRule:
         type: COMPLEX_TEST
 
 masterSlaveRule:
-  groups:
+  dataSources:
     db_ms_0:
       masterDataSourceName: db0_master
       slaveDataSourceNames:

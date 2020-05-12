@@ -75,7 +75,7 @@ public class OrchestrationSpringBootRegistryMasterSlaveTest {
             + "    password: ''\n"
             + "    username: root\n");
         testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/rule", "masterSlaveRule:\n"
-            + "  groups:\n"
+            + "  dataSources:\n"
             + "    ds_ms:\n"
             + "      loadBalanceAlgorithmType: ROUND_ROBIN\n"
             + "      masterDataSourceName: ds_master\n"

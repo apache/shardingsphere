@@ -36,12 +36,12 @@ import java.util.Map.Entry;
 @Getter
 public final class MasterSlaveRule implements DataSourceRoutedRule {
     
-    private final Map<String, MasterSlaveGroupRule> groups;
+    private final Map<String, MasterSlaveDataSourceRule> dataSourceRules;
     
     public MasterSlaveRule(final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration) {
-        groups = new HashMap<>(masterSlaveRuleConfiguration.getGroups().size(), 1);
-        for (MasterSlaveGroupConfiguration each : masterSlaveRuleConfiguration.getGroups()) {
-            groups.put(each.getName(), new MasterSlaveGroupRule(each));
+        dataSourceRules = new HashMap<>(masterSlaveRuleConfiguration.getDataSources().size(), 1);
+        for (MasterSlaveGroupConfiguration each : masterSlaveRuleConfiguration.getDataSources()) {
+            dataSourceRules.put(each.getName(), new MasterSlaveDataSourceRule(each));
         }
     }
     
@@ -52,7 +52,7 @@ public final class MasterSlaveRule implements DataSourceRoutedRule {
      * @return available slave data source names
      */
     public List<String> getSlaveDataSourceNames(final String groupName) {
-        return groups.containsKey(groupName) ? groups.get(groupName).getSlaveDataSourceNames() : Collections.emptyList();
+        return dataSourceRules.containsKey(groupName) ? dataSourceRules.get(groupName).getSlaveDataSourceNames() : Collections.emptyList();
     }
     
     /**
@@ -62,7 +62,7 @@ public final class MasterSlaveRule implements DataSourceRoutedRule {
      * @param isDisabled is disabled
      */
     public void updateDisabledDataSourceNames(final String dataSourceName, final boolean isDisabled) {
-        for (Entry<String, MasterSlaveGroupRule> entry : groups.entrySet()) {
+        for (Entry<String, MasterSlaveDataSourceRule> entry : dataSourceRules.entrySet()) {
             entry.getValue().updateDisabledDataSourceNames(dataSourceName, isDisabled);
         }
     }
@@ -74,7 +74,7 @@ public final class MasterSlaveRule implements DataSourceRoutedRule {
      */
     public Collection<String> getDisabledDataSourceNames() {
         Collection<String> result = new HashSet<>();
-        for (Entry<String, MasterSlaveGroupRule> entry : groups.entrySet()) {
+        for (Entry<String, MasterSlaveDataSourceRule> entry : dataSourceRules.entrySet()) {
             result.addAll(entry.getValue().getDisabledDataSourceNames());
         }
         return result;
@@ -83,7 +83,7 @@ public final class MasterSlaveRule implements DataSourceRoutedRule {
     @Override
     public Map<String, Collection<String>> getDataSourceMapper() {
         Map<String, Collection<String>> result = new HashMap<>();
-        for (Entry<String, MasterSlaveGroupRule> entry : groups.entrySet()) {
+        for (Entry<String, MasterSlaveDataSourceRule> entry : dataSourceRules.entrySet()) {
             result.putAll(entry.getValue().getDataSourceMapper());
         }
         return result;

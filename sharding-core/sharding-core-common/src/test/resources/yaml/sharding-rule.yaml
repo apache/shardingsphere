@@ -112,7 +112,7 @@ shardingRule:
     none:
 
 masterSlaveRule:
-  groups:
+  dataSources:
     ds_0:
       masterDataSourceName: master_ds_0
       slaveDataSourceNames:

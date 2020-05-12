@@ -33,7 +33,7 @@ dataSources:
       password:  
 
 masterSlaveRule:
-  groups:
+  dataSources:
     master-slave-ds:
       masterDataSourceName: master_ds
       slaveDataSourceNames: 

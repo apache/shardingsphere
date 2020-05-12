@@ -54,7 +54,7 @@
 #    maxPoolSize: 50
 #
 #masterSlaveRule:
-#  groups:
+#  dataSources:
 #    ms_ds:
 #      name: ms_ds
 #      masterDataSourceName: master_ds
@@ -97,7 +97,7 @@
 #    maxPoolSize: 50
 #
 #masterSlaveRule:
-#  groups:
+#  dataSources:
 #    ms_ds:
 #      name: ms_ds
 #      masterDataSourceName: master_ds
