@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.ui.servcie.impl;
 
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveGroupConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveDataSourceConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.orchestration.core.registrycenter.RegistryCenterNodeStatus;
 import org.apache.shardingsphere.ui.common.dto.InstanceDTO;
@@ -108,12 +108,12 @@ public final class OrchestrationServiceImpl implements OrchestrationService {
     
     private void addSlaveDataSource(final Collection<SlaveDataSourceDTO> slaveDataSourceDTOS, final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration, final String schemaName) {
         Collection<String> disabledSchemaDataSourceNames = getDisabledSchemaDataSourceNames();
-        for (MasterSlaveGroupConfiguration each : masterSlaveRuleConfiguration.getDataSources()) {
+        for (MasterSlaveDataSourceConfiguration each : masterSlaveRuleConfiguration.getDataSources()) {
             slaveDataSourceDTOS.addAll(getSlaveDataSourceDTOS(schemaName, disabledSchemaDataSourceNames, each));
         }
     }
     
-    private Collection<SlaveDataSourceDTO> getSlaveDataSourceDTOS(final String schemaName, final Collection<String> disabledSchemaDataSourceNames, final MasterSlaveGroupConfiguration group) {
+    private Collection<SlaveDataSourceDTO> getSlaveDataSourceDTOS(final String schemaName, final Collection<String> disabledSchemaDataSourceNames, final MasterSlaveDataSourceConfiguration group) {
         Collection<SlaveDataSourceDTO> result = new LinkedList<>();
         for (String each : group.getSlaveDataSourceNames()) {
             result.add(new SlaveDataSourceDTO(schemaName, group.getMasterDataSourceName(), each, !disabledSchemaDataSourceNames.contains(schemaName + "." + each)));

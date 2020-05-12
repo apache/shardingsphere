@@ -25,10 +25,10 @@ import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import java.util.List;
 
 /**
- * Master-slave group configuration.
+ * Master-slave data source configuration.
  */
 @Getter
-public final class MasterSlaveGroupConfiguration implements RuleConfiguration {
+public final class MasterSlaveDataSourceConfiguration implements RuleConfiguration {
     
     private final String name;
     
@@ -38,12 +38,12 @@ public final class MasterSlaveGroupConfiguration implements RuleConfiguration {
     
     private final LoadBalanceStrategyConfiguration loadBalanceStrategyConfiguration;
     
-    public MasterSlaveGroupConfiguration(final String name, final String masterDataSourceName, final List<String> slaveDataSourceNames) {
+    public MasterSlaveDataSourceConfiguration(final String name, final String masterDataSourceName, final List<String> slaveDataSourceNames) {
         this(name, masterDataSourceName, slaveDataSourceNames, null);
     }
     
-    public MasterSlaveGroupConfiguration(final String name,
-                                         final String masterDataSourceName, final List<String> slaveDataSourceNames, final LoadBalanceStrategyConfiguration loadBalanceStrategyConfiguration) {
+    public MasterSlaveDataSourceConfiguration(final String name,
+                                              final String masterDataSourceName, final List<String> slaveDataSourceNames, final LoadBalanceStrategyConfiguration loadBalanceStrategyConfiguration) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(name), "Name is required.");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(masterDataSourceName), "MasterDataSourceName is required.");
         Preconditions.checkArgument(null != slaveDataSourceNames && !slaveDataSourceNames.isEmpty(), "SlaveDataSourceNames is required.");

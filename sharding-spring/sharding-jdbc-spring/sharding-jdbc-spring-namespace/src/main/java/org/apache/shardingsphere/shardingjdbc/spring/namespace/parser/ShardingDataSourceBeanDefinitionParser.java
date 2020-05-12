@@ -197,13 +197,13 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
         if (null == masterSlaveRulesElement) {
             return Optional.empty();
         }
-        List<Element> masterSlaveGroupElements = DomUtils.getChildElementsByTagName(masterSlaveRulesElement, ShardingDataSourceBeanDefinitionParserTag.MASTER_SLAVE_RULE_TAG);
-        List<BeanDefinition> masterSlaveGroups = new ManagedList<>(masterSlaveGroupElements.size());
-        for (Element each : masterSlaveGroupElements) {
-            masterSlaveGroups.add(new MasterSlaveGroupConfigurationBeanDefinition(each).getBeanDefinition());
+        List<Element> masterSlaveDataSourceElements = DomUtils.getChildElementsByTagName(masterSlaveRulesElement, ShardingDataSourceBeanDefinitionParserTag.MASTER_SLAVE_RULE_TAG);
+        List<BeanDefinition> masterSlaveDataSources = new ManagedList<>(masterSlaveDataSourceElements.size());
+        for (Element each : masterSlaveDataSourceElements) {
+            masterSlaveDataSources.add(new MasterSlaveDataSourceConfigurationBeanDefinition(each).getBeanDefinition());
         }
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(MasterSlaveRuleConfiguration.class);
-        factory.addConstructorArgValue(masterSlaveGroups);
+        factory.addConstructorArgValue(masterSlaveDataSources);
         return Optional.of(factory.getBeanDefinition());
     }
     

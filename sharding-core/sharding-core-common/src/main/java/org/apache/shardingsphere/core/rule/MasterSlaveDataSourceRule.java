@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.rule;
 
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveGroupConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveDataSourceConfiguration;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.masterslave.MasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.spi.type.TypedSPIRegistry;
@@ -52,7 +52,7 @@ public final class MasterSlaveDataSourceRule {
     
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
-    public MasterSlaveDataSourceRule(final MasterSlaveGroupConfiguration configuration) {
+    public MasterSlaveDataSourceRule(final MasterSlaveDataSourceConfiguration configuration) {
         name = configuration.getName();
         masterDataSourceName = configuration.getMasterDataSourceName();
         slaveDataSourceNames = configuration.getSlaveDataSourceNames();

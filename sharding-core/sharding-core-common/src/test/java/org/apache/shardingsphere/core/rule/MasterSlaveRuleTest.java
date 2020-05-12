@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.rule;
 
 import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveGroupConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveDataSourceConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.junit.Test;
 
@@ -50,7 +50,7 @@ public final class MasterSlaveRuleTest {
     }
     
     private MasterSlaveRule createMasterSlaveRule() {
-        MasterSlaveGroupConfiguration configuration = new MasterSlaveGroupConfiguration(
+        MasterSlaveDataSourceConfiguration configuration = new MasterSlaveDataSourceConfiguration(
                 "test_ms", "master_db", Arrays.asList("slave_db_0", "slave_db_1"), new LoadBalanceStrategyConfiguration("RANDOM"));
         return new MasterSlaveRule(new MasterSlaveRuleConfiguration(Collections.singleton(configuration)));
     }

@@ -25,31 +25,32 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
-public final class MasterSlaveGroupConfigurationTest {
+public final class MasterSlaveDataSourceConfigurationTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertConstructorWithoutName() {
-        new MasterSlaveGroupConfiguration("", "master_ds", Collections.singletonList("slave_ds"));
+        new MasterSlaveDataSourceConfiguration("", "master_ds", Collections.singletonList("slave_ds"));
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertConstructorWithoutMasterDataSourceName() {
-        new MasterSlaveGroupConfiguration("ds", "", Collections.singletonList("slave_ds"));
+        new MasterSlaveDataSourceConfiguration("ds", "", Collections.singletonList("slave_ds"));
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertConstructorWithoutSlaveDataSourceNames() {
-        new MasterSlaveGroupConfiguration("ds", "master_ds", null);
+        new MasterSlaveDataSourceConfiguration("ds", "master_ds", null);
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertConstructorWithEmptySlaveDataSourceNames() {
-        new MasterSlaveGroupConfiguration("ds", "master_ds", Collections.emptyList());
+        new MasterSlaveDataSourceConfiguration("ds", "master_ds", Collections.emptyList());
     }
     
     @Test
     public void assertConstructorWithMinArguments() {
-        MasterSlaveGroupConfiguration actual = new MasterSlaveGroupConfiguration("ds", "master_ds", Collections.singletonList("slave_ds"));
+        MasterSlaveDataSourceConfiguration actual = new MasterSlaveDataSourceConfiguration(
+                "ds", "master_ds", Collections.singletonList("slave_ds"));
         assertThat(actual.getName(), is("ds"));
         assertThat(actual.getMasterDataSourceName(), is("master_ds"));
         assertThat(actual.getSlaveDataSourceNames(), is(Collections.singletonList("slave_ds")));
@@ -58,7 +59,8 @@ public final class MasterSlaveGroupConfigurationTest {
     
     @Test
     public void assertConstructorWithMaxArguments() {
-        MasterSlaveGroupConfiguration actual = new MasterSlaveGroupConfiguration("ds", "master_ds", Collections.singletonList("slave_ds"), new LoadBalanceStrategyConfiguration("ROUND_ROBIN"));
+        MasterSlaveDataSourceConfiguration actual = new MasterSlaveDataSourceConfiguration(
+                "ds", "master_ds", Collections.singletonList("slave_ds"), new LoadBalanceStrategyConfiguration("ROUND_ROBIN"));
         assertThat(actual.getName(), is("ds"));
         assertThat(actual.getMasterDataSourceName(), is("master_ds"));
         assertThat(actual.getSlaveDataSourceNames(), is(Collections.singletonList("slave_ds")));

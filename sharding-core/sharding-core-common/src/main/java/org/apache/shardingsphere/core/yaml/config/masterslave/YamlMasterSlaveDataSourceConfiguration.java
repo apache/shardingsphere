@@ -25,11 +25,11 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Master-slave group configuration for YAML.
+ * Master-slave data source configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlMasterSlaveGroupConfiguration {
+public final class YamlMasterSlaveDataSourceConfiguration {
     
     private String name;
     

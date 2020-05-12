@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.rule;
 
 import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveGroupConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveDataSourceConfiguration;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -30,7 +30,7 @@ import static org.junit.Assert.assertThat;
 public final class MasterSlaveDataSourceRuleTest {
     
     private final MasterSlaveDataSourceRule masterSlaveDataSourceRule = new MasterSlaveDataSourceRule(
-            new MasterSlaveGroupConfiguration("test_ms", "master_db", Arrays.asList("slave_db_0", "slave_db_1"), new LoadBalanceStrategyConfiguration("RANDOM")));
+            new MasterSlaveDataSourceConfiguration("test_ms", "master_db", Arrays.asList("slave_db_0", "slave_db_1"), new LoadBalanceStrategyConfiguration("RANDOM")));
     
     @Test
     public void assertGetSlaveDataSourceNamesWithoutDisabledDataSourceNames() {

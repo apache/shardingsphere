@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.log;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveGroupConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveDataSourceConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
@@ -91,7 +91,7 @@ public final class ConfigurationLoggerTest {
     }
     
     private MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() {
-        return new MasterSlaveRuleConfiguration(Collections.singleton(new MasterSlaveGroupConfiguration("ms_ds", "master_ds", Arrays.asList("slave_ds_0", "slave_ds_1"))));
+        return new MasterSlaveRuleConfiguration(Collections.singleton(new MasterSlaveDataSourceConfiguration("ms_ds", "master_ds", Arrays.asList("slave_ds_0", "slave_ds_1"))));
     }
     
     @Test

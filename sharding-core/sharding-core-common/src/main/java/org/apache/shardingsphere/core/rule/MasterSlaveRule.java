@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.rule;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveGroupConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveDataSourceConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.rule.DataSourceRoutedRule;
 
@@ -38,7 +38,7 @@ public final class MasterSlaveRule implements DataSourceRoutedRule {
     public MasterSlaveRule(final MasterSlaveRuleConfiguration configuration) {
         Preconditions.checkArgument(!configuration.getDataSources().isEmpty(), "Master-slave data source rules can not be empty.");
         dataSourceRules = new HashMap<>(configuration.getDataSources().size(), 1);
-        for (MasterSlaveGroupConfiguration each : configuration.getDataSources()) {
+        for (MasterSlaveDataSourceConfiguration each : configuration.getDataSources()) {
             dataSourceRules.put(each.getName(), new MasterSlaveDataSourceRule(each));
         }
     }
