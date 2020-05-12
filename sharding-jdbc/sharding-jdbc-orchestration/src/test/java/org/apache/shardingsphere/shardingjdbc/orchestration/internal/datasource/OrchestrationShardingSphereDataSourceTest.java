@@ -165,7 +165,7 @@ public final class OrchestrationShardingSphereDataSourceTest {
         Optional<MasterSlaveRule> masterSlaveRule = orchestrationDataSource.getDataSource().getRuntimeContext().getRules().stream().filter(
             each -> each instanceof MasterSlaveRule).findFirst().map(rule -> (MasterSlaveRule) rule);
         assertTrue(masterSlaveRule.isPresent());
-        assertThat(masterSlaveRule.get().getSlaveDataSourceNames("ds_ms").size(), is(0));
+        assertThat(masterSlaveRule.get().getDataSourceRules().get("ds_ms").getSlaveDataSourceNames().size(), is(0));
     }
     
     private DisabledStateChangedEvent getDisabledStateChangedEvent() {

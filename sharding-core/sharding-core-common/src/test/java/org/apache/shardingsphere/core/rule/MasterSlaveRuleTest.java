@@ -41,13 +41,11 @@ public final class MasterSlaveRuleTest {
     }
     
     @Test
-    public void assertGetSlaveDataSourceNamesWithoutDisabledDataSourceNames() {
-        assertThat(masterSlaveRule.getSlaveDataSourceNames("test_ms"), is(Arrays.asList("slave_db_0", "slave_db_1")));
-    }
-    
-    @Test
-    public void assertGetSlaveDataSourceNamesWithDisabledDataSourceNames() {
-        masterSlaveRule.updateDisabledDataSourceNames("slave_db_0", true);
-        assertThat(masterSlaveRule.getSlaveDataSourceNames("test_ms"), is(Collections.singletonList("slave_db_1")));
+    public void assertGetDataSourceRules() {
+        assertThat(masterSlaveRule.getDataSourceRules().size(), is(1));
+        assertThat(masterSlaveRule.getDataSourceRules().get("test_ms").getName(), is("test_ms"));
+        assertThat(masterSlaveRule.getDataSourceRules().get("test_ms").getMasterDataSourceName(), is("master_db"));
+        assertThat(masterSlaveRule.getDataSourceRules().get("test_ms").getSlaveDataSourceNames(), is(Arrays.asList("slave_db_0", "slave_db_1")));
+        assertThat(masterSlaveRule.getDataSourceRules().get("test_ms").getLoadBalanceAlgorithm().getType(), is("RANDOM"));
     }
 }

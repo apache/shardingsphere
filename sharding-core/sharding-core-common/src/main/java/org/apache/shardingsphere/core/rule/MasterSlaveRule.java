@@ -23,9 +23,7 @@ import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfigura
 import org.apache.shardingsphere.underlying.common.rule.DataSourceRoutedRule;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -42,16 +40,6 @@ public final class MasterSlaveRule implements DataSourceRoutedRule {
         for (MasterSlaveGroupConfiguration each : configuration.getDataSources()) {
             dataSourceRules.put(each.getName(), new MasterSlaveDataSourceRule(each));
         }
-    }
-    
-    /**
-     * Get slave data source names.
-     *
-     * @param groupName master-slave group name
-     * @return available slave data source names
-     */
-    public List<String> getSlaveDataSourceNames(final String groupName) {
-        return dataSourceRules.containsKey(groupName) ? dataSourceRules.get(groupName).getSlaveDataSourceNames() : Collections.emptyList();
     }
     
     /**

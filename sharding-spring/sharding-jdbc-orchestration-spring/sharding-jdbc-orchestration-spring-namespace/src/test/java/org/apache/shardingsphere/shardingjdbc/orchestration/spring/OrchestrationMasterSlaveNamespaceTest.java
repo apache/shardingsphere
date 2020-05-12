@@ -55,8 +55,8 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
     public void assertDefaultMaserSlaveDataSource() {
         MasterSlaveRule masterSlaveRule = getMasterSlaveRule("defaultMasterSlaveDataSourceOrchestration");
         assertThat(masterSlaveRule.getDataSourceRules().get("defaultMasterSlaveDataSource").getMasterDataSourceName(), is("dbtbl_0_master"));
-        assertTrue(masterSlaveRule.getSlaveDataSourceNames("defaultMasterSlaveDataSource").contains("dbtbl_0_slave_0"));
-        assertTrue(masterSlaveRule.getSlaveDataSourceNames("defaultMasterSlaveDataSource").contains("dbtbl_0_slave_1"));
+        assertTrue(masterSlaveRule.getDataSourceRules().get("defaultMasterSlaveDataSource").getSlaveDataSourceNames().contains("dbtbl_0_slave_0"));
+        assertTrue(masterSlaveRule.getDataSourceRules().get("defaultMasterSlaveDataSource").getSlaveDataSourceNames().contains("dbtbl_0_slave_1"));
     }
     
     @Test
