@@ -59,9 +59,9 @@ public final class ShadowRouteDecorator implements RouteDecorator<ShadowRule> {
             return new RouteContext(sqlStatementContext, parameters, routeResult);
         }
         if (isShadowSQL(routeContext, shadowRule)) {
-            shadowRule.getShadowMappings().keySet().forEach(each -> routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList())));
-        } else {
             shadowRule.getShadowMappings().values().forEach(each -> routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList())));
+        } else {
+            shadowRule.getShadowMappings().keySet().forEach(each -> routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList())));
         }
         return new RouteContext(sqlStatementContext, parameters, routeResult);
     }
@@ -90,7 +90,7 @@ public final class ShadowRouteDecorator implements RouteDecorator<ShadowRule> {
     private boolean isShadowSQL(final RouteContext routeContext, final ShadowRule shadowRule) {
         List<Object> parameters = routeContext.getParameters();
         SQLStatementContext sqlStatementContext = routeContext.getSqlStatementContext();
-        ShadowDataSourceRouter shadowDataSourceRouter = parameters == null ? new SimpleShadowDataSourceRouter(shadowRule, sqlStatementContext)
+        ShadowDataSourceRouter shadowDataSourceRouter = parameters.size() == 0 ? new SimpleShadowDataSourceRouter(shadowRule, sqlStatementContext)
                 : new PreparedShadowDataSourceRouter(shadowRule, sqlStatementContext, parameters);
         return shadowDataSourceRouter.isShadowSQL();
     }
