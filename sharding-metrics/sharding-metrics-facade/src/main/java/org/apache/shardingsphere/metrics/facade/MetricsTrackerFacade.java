@@ -137,7 +137,9 @@ public final class MetricsTrackerFacade {
      * @param delegate histogram metrics tracker delegate
      */
     public void histogramObserveDuration(final HistogramMetricsTrackerDelegate delegate) {
-        MetricsTrackerHandler.getInstance().histogramObserveDuration(delegate);
+        if (enabled) {
+            MetricsTrackerHandler.getInstance().histogramObserveDuration(delegate);
+        }
     }
     
     /**
@@ -160,7 +162,9 @@ public final class MetricsTrackerFacade {
      * @param delegate summary metrics tracker delegate
      */
     public void summaryObserveDuration(final SummaryMetricsTrackerDelegate delegate) {
-        MetricsTrackerHandler.getInstance().summaryObserveDuration(delegate);
+        if (enabled) {
+            MetricsTrackerHandler.getInstance().summaryObserveDuration(delegate);
+        }
     }
     
     private void loadMetricsManager() {

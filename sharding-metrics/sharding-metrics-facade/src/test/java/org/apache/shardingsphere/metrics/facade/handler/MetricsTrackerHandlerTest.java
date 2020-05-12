@@ -71,11 +71,15 @@ public final class MetricsTrackerHandlerTest {
         histogramDelegate.ifPresent(delegate -> {
             handler.histogramObserveDuration(delegate);
             assertThat(delegate.getClass().getName(), is(NoneHistogramMetricsTrackerDelegate.class.getName()));
+            handler.histogramObserveDuration(delegate);
         });
         FieldUtil.setField(handler, "async", false);
         Optional<HistogramMetricsTrackerDelegate> syncHistogram = handler.histogramStartTimer(METRICS_LABEL);
         assertThat(syncHistogram.isPresent(), is(true));
-        syncHistogram.ifPresent(delegate -> assertThat(delegate.getClass().getName(), is(NoneHistogramMetricsTrackerDelegate.class.getName())));
+        syncHistogram.ifPresent(delegate -> {
+            assertThat(delegate.getClass().getName(), is(NoneHistogramMetricsTrackerDelegate.class.getName()));
+            handler.histogramObserveDuration(delegate);
+        });
     }
     
     @Test
@@ -85,12 +89,16 @@ public final class MetricsTrackerHandlerTest {
         summaryDelegate.ifPresent(delegate -> {
             handler.summaryObserveDuration(delegate);
             assertThat(delegate.getClass().getName(), is(NoneSummaryMetricsTrackerDelegate.class.getName()));
+            handler.summaryObserveDuration(delegate);
         });
         
         FieldUtil.setField(handler, "async", false);
         Optional<SummaryMetricsTrackerDelegate> syncSummary = handler.summaryStartTimer(METRICS_LABEL);
         assertThat(syncSummary.isPresent(), is(true));
-        syncSummary.ifPresent(delegate -> assertThat(delegate.getClass().getName(), is(NoneSummaryMetricsTrackerDelegate.class.getName())));
+        syncSummary.ifPresent(delegate -> {
+            assertThat(delegate.getClass().getName(), is(NoneSummaryMetricsTrackerDelegate.class.getName()));
+            handler.summaryObserveDuration(delegate);
+        });
     }
     
     @After

@@ -150,7 +150,11 @@ public final class MetricsTrackerHandler {
      * @param delegate histogram metrics tracker delegate
      */
     public void histogramObserveDuration(final HistogramMetricsTrackerDelegate delegate) {
-        delegate.observeDuration();
+        if (async) {
+            executorService.execute(delegate::observeDuration);
+        } else {
+            delegate.observeDuration();
+        }
     }
     
     /**
@@ -178,7 +182,11 @@ public final class MetricsTrackerHandler {
      * @param delegate summary metrics tracker delegate
      */
     public void summaryObserveDuration(final SummaryMetricsTrackerDelegate delegate) {
-        delegate.observeDuration();
+        if (async) {
+            executorService.execute(delegate::observeDuration);
+        } else {
+            delegate.observeDuration();
+        }
     }
     
     /**
