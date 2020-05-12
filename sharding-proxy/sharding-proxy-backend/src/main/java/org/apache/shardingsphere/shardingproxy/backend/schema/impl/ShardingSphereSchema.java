@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.schema.impl;
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.core.log.ConfigurationLogger;
-import org.apache.shardingsphere.core.rule.event.DataSourceNameDisabledEvent;
+import org.apache.shardingsphere.underlying.common.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.ShardingRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;

@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rule.event;
+package org.apache.shardingsphere.underlying.common.rule.event.impl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.rule.RuleChangedEvent;
+import org.apache.shardingsphere.underlying.common.rule.event.RuleChangedEvent;
 
 /**
  * Data source name disabled event.
