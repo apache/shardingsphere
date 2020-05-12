@@ -25,7 +25,6 @@ import org.apache.shardingsphere.underlying.common.rule.DataSourceRoutedRule;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,9 +37,9 @@ public final class MasterSlaveRule implements DataSourceRoutedRule {
     
     private final Map<String, MasterSlaveDataSourceRule> dataSourceRules;
     
-    public MasterSlaveRule(final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration) {
-        dataSourceRules = new HashMap<>(masterSlaveRuleConfiguration.getDataSources().size(), 1);
-        for (MasterSlaveGroupConfiguration each : masterSlaveRuleConfiguration.getDataSources()) {
+    public MasterSlaveRule(final MasterSlaveRuleConfiguration configuration) {
+        dataSourceRules = new HashMap<>(configuration.getDataSources().size(), 1);
+        for (MasterSlaveGroupConfiguration each : configuration.getDataSources()) {
             dataSourceRules.put(each.getName(), new MasterSlaveDataSourceRule(each));
         }
     }
@@ -65,19 +64,6 @@ public final class MasterSlaveRule implements DataSourceRoutedRule {
         for (Entry<String, MasterSlaveDataSourceRule> entry : dataSourceRules.entrySet()) {
             entry.getValue().updateDisabledDataSourceNames(dataSourceName, isDisabled);
         }
-    }
-    
-    /**
-     * Get disabled data source names.
-     * 
-     * @return disabled data source names
-     */
-    public Collection<String> getDisabledDataSourceNames() {
-        Collection<String> result = new HashSet<>();
-        for (Entry<String, MasterSlaveDataSourceRule> entry : dataSourceRules.entrySet()) {
-            result.addAll(entry.getValue().getDisabledDataSourceNames());
-        }
-        return result;
     }
     
     @Override

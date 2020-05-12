@@ -52,16 +52,16 @@ public final class MasterSlaveDataSourceRule {
     
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
-    public MasterSlaveDataSourceRule(final MasterSlaveGroupConfiguration masterSlaveGroupConfiguration) {
-        name = masterSlaveGroupConfiguration.getName();
-        masterDataSourceName = masterSlaveGroupConfiguration.getMasterDataSourceName();
-        slaveDataSourceNames = masterSlaveGroupConfiguration.getSlaveDataSourceNames();
-        loadBalanceAlgorithm = createMasterSlaveLoadBalanceAlgorithm(masterSlaveGroupConfiguration.getLoadBalanceStrategyConfiguration());
+    public MasterSlaveDataSourceRule(final MasterSlaveGroupConfiguration configuration) {
+        name = configuration.getName();
+        masterDataSourceName = configuration.getMasterDataSourceName();
+        slaveDataSourceNames = configuration.getSlaveDataSourceNames();
+        loadBalanceAlgorithm = createLoadBalanceAlgorithm(configuration.getLoadBalanceStrategyConfiguration());
     }
     
-    private MasterSlaveLoadBalanceAlgorithm createMasterSlaveLoadBalanceAlgorithm(final LoadBalanceStrategyConfiguration loadBalanceStrategyConfiguration) {
-        return null == loadBalanceStrategyConfiguration ? TypedSPIRegistry.getRegisteredService(MasterSlaveLoadBalanceAlgorithm.class)
-                : TypedSPIRegistry.getRegisteredService(MasterSlaveLoadBalanceAlgorithm.class, loadBalanceStrategyConfiguration.getType(), loadBalanceStrategyConfiguration.getProperties());
+    private MasterSlaveLoadBalanceAlgorithm createLoadBalanceAlgorithm(final LoadBalanceStrategyConfiguration configuration) {
+        return null == configuration ? TypedSPIRegistry.getRegisteredService(MasterSlaveLoadBalanceAlgorithm.class)
+                : TypedSPIRegistry.getRegisteredService(MasterSlaveLoadBalanceAlgorithm.class, configuration.getType(), configuration.getProperties());
     }
     
     /**
