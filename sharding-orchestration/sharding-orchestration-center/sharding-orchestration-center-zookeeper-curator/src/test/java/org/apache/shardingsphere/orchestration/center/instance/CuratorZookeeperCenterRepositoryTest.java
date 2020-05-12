@@ -20,8 +20,10 @@ package org.apache.shardingsphere.orchestration.center.instance;
 import com.google.common.util.concurrent.SettableFuture;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.center.exception.OrchestrationException;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.util.EmbedTestingServer;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -35,6 +37,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 public final class CuratorZookeeperCenterRepositoryTest {
     
@@ -128,7 +131,7 @@ public final class CuratorZookeeperCenterRepositoryTest {
         Properties properties = new Properties();
         properties.setProperty(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS.getKey(), "1000");
         properties.setProperty(ZookeeperPropertyKey.MAX_RETRIES.getKey(), "1");
-        properties.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "100");
+        properties.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "1000");
         properties.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "1000");
         CenterConfiguration configuration = new CenterConfiguration(customCenterRepository.getType(), new Properties());
         configuration.setServerLists(serverLists);
@@ -136,7 +139,7 @@ public final class CuratorZookeeperCenterRepositoryTest {
         customCenterRepository.init(configuration);
         assertThat(customCenterRepository.getProperties().getProperty(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS.getKey()), is("1000"));
         assertThat(customCenterRepository.getProperties().getProperty(ZookeeperPropertyKey.MAX_RETRIES.getKey()), is("1"));
-        assertThat(customCenterRepository.getProperties().getProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey()), is("100"));
+        assertThat(customCenterRepository.getProperties().getProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey()), is("1000"));
         assertThat(customCenterRepository.getProperties().getProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey()), is("1000"));
         customCenterRepository.persist("/test/children/1", "value1");
         assertThat(customCenterRepository.get("/test/children/1"), is("value1"));
@@ -193,5 +196,63 @@ public final class CuratorZookeeperCenterRepositoryTest {
         REPOSITORY.delete("/test/children");
         assertNull(REPOSITORY.get("/test/children/1"));
         assertNull(REPOSITORY.get("/test/children/2"));
+    }
+
+    @Test
+    public void assertZKCloseAndException() {
+        final CuratorZookeeperCenterRepository customCenterRepository = new CuratorZookeeperCenterRepository();
+        CenterConfiguration configuration = new CenterConfiguration(customCenterRepository.getType(), new Properties());
+        Properties properties = new Properties();
+        properties.setProperty(ZookeeperPropertyKey.DIGEST.getKey(), "digest");
+        configuration.setServerLists(serverLists);
+        customCenterRepository.setProperties(properties);
+        customCenterRepository.init(configuration);
+
+        customCenterRepository.close();
+
+        try {
+            customCenterRepository.get("/test/children/1");
+            fail("must be failed after close.");
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            Assert.assertTrue(ex instanceof OrchestrationException);
+        }
+
+        try {
+            customCenterRepository.persist("/test/children/01", "value1");
+            fail("must be failed after close.");
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            Assert.assertTrue(ex instanceof OrchestrationException);
+        }
+
+        try {
+            customCenterRepository.delete("/test/children/02");
+            fail("must be failed after close.");
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            Assert.assertTrue(ex instanceof OrchestrationException);
+        }
+
+        try {
+            customCenterRepository.persistEphemeral("/test/children/03", "value1");
+            fail("must be failed after close.");
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            Assert.assertTrue(ex instanceof OrchestrationException);
+        }
+
+        try {
+            customCenterRepository.getChildrenKeys("/test/children");
+            fail("must be failed after close.");
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            Assert.assertTrue(ex instanceof OrchestrationException);
+        }
     }
 }
