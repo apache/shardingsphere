@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring;
 
-import org.apache.shardingsphere.core.rule.MasterSlaveDataSourceRule;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
+import org.apache.shardingsphere.masterslave.core.rule.MasterSlaveDataSourceRule;
+import org.apache.shardingsphere.masterslave.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.strategy.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.core.strategy.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
