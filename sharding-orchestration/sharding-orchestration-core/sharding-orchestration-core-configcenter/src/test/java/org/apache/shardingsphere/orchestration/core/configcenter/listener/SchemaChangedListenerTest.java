@@ -61,8 +61,8 @@ public final class SchemaChangedListenerTest {
             + "          shardingAlgorithm: \n" + "            type: INLINE\n" + "            props:\n" + "              algorithm.expression: t_order_${order_id % 2}\n" 
             + "          shardingColumn: order_id";
     
-    private static final String MASTER_SLAVE_RULE_YAML = "masterSlaveRules:\n  ms_ds:\n    masterDataSourceName: master_ds\n" 
-            + "    name: ms_ds\n" + "    slaveDataSourceNames:\n" + "    - slave_ds_0\n" + "    - slave_ds_1\n";
+    private static final String MASTER_SLAVE_RULE_YAML = "masterSlaveRule:\n  dataSources:\n    ms_ds:\n      masterDataSourceName: master_ds\n" 
+            + "      name: ms_ds\n" + "      slaveDataSourceNames:\n" + "      - slave_ds_0\n" + "      - slave_ds_1\n";
     
     private static final String ENCRYPT_RULE_YAML = "encryptRule:\n  tables:\n" + "    t_order:\n" + "      columns:\n" + "        order_id:\n" 
             + "          cipherColumn: order_id\n" + "          encryptor: order_encryptor\n" + "  encryptors:\n" + "    order_encryptor:\n" 
@@ -111,7 +111,7 @@ public final class SchemaChangedListenerTest {
         ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(MasterSlaveRuleChangedEvent.class));
         assertThat(((MasterSlaveRuleChangedEvent) actual).getShardingSchemaName(), is("masterslave_db"));
-        assertThat(((MasterSlaveRuleChangedEvent) actual).getMasterSlaveRuleConfiguration().getMasterDataSourceName(), is("master_ds"));
+        assertThat(((MasterSlaveRuleChangedEvent) actual).getMasterSlaveRuleConfiguration().getDataSources().iterator().next().getMasterDataSourceName(), is("master_ds"));
     }
     
     @Test

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Variabl
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AnalyzeTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CacheIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChecksumTableContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DescContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExplainContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FlushContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromTableContext;
@@ -212,7 +212,7 @@ public final class MySQLDALVisitor extends MySQLVisitor implements DALVisitor {
     }
     
     @Override
-    public ASTNode visitDesc(final DescContext ctx) {
+    public ASTNode visitExplain(final ExplainContext ctx) {
         DescribeStatement result = new DescribeStatement();
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         return result;

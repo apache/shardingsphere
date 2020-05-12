@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.example.sharding.raw.jdbc.config;
 
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveDataSourceConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
@@ -34,7 +35,9 @@ public final class MasterSlaveConfiguration implements ExampleConfiguration {
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration("demo_ds_master_slave", "demo_ds_master", Arrays.asList("demo_ds_slave_0", "demo_ds_slave_1"));
+        MasterSlaveDataSourceConfiguration dataSourceConfiguration = new MasterSlaveDataSourceConfiguration(
+                "demo_ds_master_slave", "demo_ds_master", Arrays.asList("demo_ds_slave_0", "demo_ds_slave_1"));
+        MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration(Collections.singleton(dataSourceConfiguration));
         return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singleton(masterSlaveRuleConfig), new Properties());
     }
     

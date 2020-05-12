@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring;
 
+import org.apache.shardingsphere.core.rule.MasterSlaveDataSourceRule;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.strategy.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.core.strategy.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
@@ -32,6 +33,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -54,26 +57,34 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
     @Test
     public void assertDefaultMaserSlaveDataSource() {
         MasterSlaveRule masterSlaveRule = getMasterSlaveRule("defaultMasterSlaveDataSourceOrchestration");
-        assertThat(masterSlaveRule.getMasterDataSourceName(), is("dbtbl_0_master"));
-        assertTrue(masterSlaveRule.getSlaveDataSourceNames().contains("dbtbl_0_slave_0"));
-        assertTrue(masterSlaveRule.getSlaveDataSourceNames().contains("dbtbl_0_slave_1"));
+        Optional<MasterSlaveDataSourceRule> masterSlaveDataSourceRule = masterSlaveRule.findDataSourceRule("defaultMasterSlaveDataSource");
+        assertTrue(masterSlaveDataSourceRule.isPresent());
+        assertThat(masterSlaveDataSourceRule.get().getMasterDataSourceName(), is("dbtbl_0_master"));
+        assertTrue(masterSlaveDataSourceRule.get().getSlaveDataSourceNames().contains("dbtbl_0_slave_0"));
+        assertTrue(masterSlaveDataSourceRule.get().getSlaveDataSourceNames().contains("dbtbl_0_slave_1"));
     }
     
     @Test
     public void assertTypeMasterSlaveDataSource() {
         MasterSlaveRule randomSlaveRule = getMasterSlaveRule("randomMasterSlaveDataSourceOrchestration");
+        Optional<MasterSlaveDataSourceRule> randomMasterSlaveDataSourceRule = randomSlaveRule.findDataSourceRule("randomMasterSlaveDataSource");
+        assertTrue(randomMasterSlaveDataSourceRule.isPresent());
+        assertTrue(randomMasterSlaveDataSourceRule.get().getLoadBalanceAlgorithm() instanceof RandomMasterSlaveLoadBalanceAlgorithm);
         MasterSlaveRule roundRobinSlaveRule = getMasterSlaveRule("roundRobinMasterSlaveDataSourceOrchestration");
-        assertTrue(randomSlaveRule.getLoadBalanceAlgorithm() instanceof RandomMasterSlaveLoadBalanceAlgorithm);
-        assertTrue(roundRobinSlaveRule.getLoadBalanceAlgorithm() instanceof RoundRobinMasterSlaveLoadBalanceAlgorithm);
+        Optional<MasterSlaveDataSourceRule> roundRobinMasterSlaveDataSourceRule = roundRobinSlaveRule.findDataSourceRule("roundRobinMasterSlaveDataSource");
+        assertTrue(roundRobinMasterSlaveDataSourceRule.isPresent());
+        assertTrue(roundRobinMasterSlaveDataSourceRule.get().getLoadBalanceAlgorithm() instanceof RoundRobinMasterSlaveLoadBalanceAlgorithm);
     }
     
     @Test
     @Ignore
-    // TODO TODO load balance algorithm have been construct twice for SpringMasterDatasource extends MasterSlaveDatasource.
+    // TODO load balance algorithm have been construct twice for SpringMasterDatasource extends MasterSlaveDatasource.
     public void assertRefMasterSlaveDataSource() {
         MasterSlaveLoadBalanceAlgorithm randomLoadBalanceAlgorithm = applicationContext.getBean("randomLoadBalanceAlgorithm", MasterSlaveLoadBalanceAlgorithm.class);
         MasterSlaveRule masterSlaveRule = getMasterSlaveRule("refMasterSlaveDataSourceOrchestration");
-        assertThat(masterSlaveRule.getLoadBalanceAlgorithm(), is(randomLoadBalanceAlgorithm));
+        Optional<MasterSlaveDataSourceRule> masterSlaveDataSourceRule = masterSlaveRule.findDataSourceRule("randomLoadBalanceAlgorithm");
+        assertTrue(masterSlaveDataSourceRule.isPresent());
+        assertThat(masterSlaveDataSourceRule.get().getLoadBalanceAlgorithm(), is(randomLoadBalanceAlgorithm));
     }
     
     private MasterSlaveRule getMasterSlaveRule(final String masterSlaveDataSourceName) {

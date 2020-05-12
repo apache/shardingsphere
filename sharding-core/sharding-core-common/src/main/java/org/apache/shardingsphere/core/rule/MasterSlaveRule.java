@@ -17,71 +17,49 @@
 
 package org.apache.shardingsphere.core.rule;
 
-import lombok.Getter;
-import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
+import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveDataSourceConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.masterslave.MasterSlaveLoadBalanceAlgorithm;
-import org.apache.shardingsphere.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.underlying.common.rule.DataSourceRoutedRule;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
- * Databases and tables master-slave rule.
+ * Master-slave rule.
  */
-@Getter
 public final class MasterSlaveRule implements DataSourceRoutedRule {
     
-    static {
-        ShardingSphereServiceLoader.register(MasterSlaveLoadBalanceAlgorithm.class);
-    }
+    private final Map<String, MasterSlaveDataSourceRule> dataSourceRules;
     
-    private final String name;
-    
-    private final String masterDataSourceName;
-    
-    private final List<String> slaveDataSourceNames;
-    
-    private final MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm;
-    
-    private final Collection<String> disabledDataSourceNames = new HashSet<>();
-    
-    public MasterSlaveRule(final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration) {
-        name = masterSlaveRuleConfiguration.getName();
-        masterDataSourceName = masterSlaveRuleConfiguration.getMasterDataSourceName();
-        slaveDataSourceNames = masterSlaveRuleConfiguration.getSlaveDataSourceNames();
-        loadBalanceAlgorithm = createMasterSlaveLoadBalanceAlgorithm(masterSlaveRuleConfiguration.getLoadBalanceStrategyConfiguration());
-    }
-    
-    private MasterSlaveLoadBalanceAlgorithm createMasterSlaveLoadBalanceAlgorithm(final LoadBalanceStrategyConfiguration loadBalanceStrategyConfiguration) {
-        return null == loadBalanceStrategyConfiguration ? TypedSPIRegistry.getRegisteredService(MasterSlaveLoadBalanceAlgorithm.class)
-                : TypedSPIRegistry.getRegisteredService(MasterSlaveLoadBalanceAlgorithm.class, loadBalanceStrategyConfiguration.getType(), loadBalanceStrategyConfiguration.getProperties());
+    public MasterSlaveRule(final MasterSlaveRuleConfiguration configuration) {
+        Preconditions.checkArgument(!configuration.getDataSources().isEmpty(), "Master-slave data source rules can not be empty.");
+        dataSourceRules = new HashMap<>(configuration.getDataSources().size(), 1);
+        for (MasterSlaveDataSourceConfiguration each : configuration.getDataSources()) {
+            dataSourceRules.put(each.getName(), new MasterSlaveDataSourceRule(each));
+        }
     }
     
     /**
-     * Judge whether contain data source name.
+     * Get single data source rule.
      *
+     * @return master-slave data source rule
+     */
+    public MasterSlaveDataSourceRule getSingleDataSourceRule() {
+        return dataSourceRules.values().iterator().next();
+    }
+    
+    /**
+     * Find data source rule.
+     * 
      * @param dataSourceName data source name
-     * @return contain or not.
+     * @return master-slave data source rule
      */
-    public boolean containDataSourceName(final String dataSourceName) {
-        return masterDataSourceName.equals(dataSourceName) || slaveDataSourceNames.contains(dataSourceName);
-    }
-    
-    /**
-     * Get slave data source names.
-     *
-     * @return available slave data source names
-     */
-    public List<String> getSlaveDataSourceNames() {
-        return slaveDataSourceNames.stream().filter(each -> !disabledDataSourceNames.contains(each)).collect(Collectors.toList());
+    public Optional<MasterSlaveDataSourceRule> findDataSourceRule(final String dataSourceName) {
+        return Optional.ofNullable(dataSourceRules.get(dataSourceName));
     }
     
     /**
@@ -91,20 +69,17 @@ public final class MasterSlaveRule implements DataSourceRoutedRule {
      * @param isDisabled is disabled
      */
     public void updateDisabledDataSourceNames(final String dataSourceName, final boolean isDisabled) {
-        if (isDisabled) {
-            disabledDataSourceNames.add(dataSourceName);
-        } else {
-            disabledDataSourceNames.remove(dataSourceName);
+        for (Entry<String, MasterSlaveDataSourceRule> entry : dataSourceRules.entrySet()) {
+            entry.getValue().updateDisabledDataSourceNames(dataSourceName, isDisabled);
         }
     }
     
     @Override
     public Map<String, Collection<String>> getDataSourceMapper() {
         Map<String, Collection<String>> result = new HashMap<>();
-        Collection<String> actualDataSourceNames = new LinkedList<>();
-        actualDataSourceNames.add(masterDataSourceName);
-        actualDataSourceNames.addAll(slaveDataSourceNames);
-        result.put(name, actualDataSourceNames);
+        for (Entry<String, MasterSlaveDataSourceRule> entry : dataSourceRules.entrySet()) {
+            result.putAll(entry.getValue().getDataSourceMapper());
+        }
         return result;
     }
 }

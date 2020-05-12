@@ -34,7 +34,7 @@ public final class ShadowRuleBuilder implements ShardingSphereRuleBuilder<Shadow
     
     @Override
     public int getOrder() {
-        return -5;
+        return 20;
     }
     
     @Override

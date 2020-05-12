@@ -119,7 +119,8 @@ public final class ConfigCenter {
                 configurations.add(each);
             } else if (each instanceof MasterSlaveRuleConfiguration) {
                 MasterSlaveRuleConfiguration config = (MasterSlaveRuleConfiguration) each;
-                Preconditions.checkState(!config.getMasterDataSourceName().isEmpty(), "No available master-slave rule configuration in `%s` for orchestration.", shardingSchemaName);
+                config.getDataSources().forEach(group -> Preconditions.checkState(
+                        !group.getMasterDataSourceName().isEmpty(), "No available master-slave rule configuration in `%s` for orchestration.", shardingSchemaName));
                 configurations.add(each);
             } else if (each instanceof EncryptRuleConfiguration) {
                 EncryptRuleConfiguration config = (EncryptRuleConfiguration) each;

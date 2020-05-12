@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.orchestration.raw.jdbc.config.local;
 
-import com.google.common.collect.Lists;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveDataSourceConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
@@ -40,7 +40,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -54,6 +53,14 @@ public final class LocalShardingMasterSlaveConfiguration implements ExampleConfi
     
     @Override
     public DataSource getDataSource() throws SQLException {
+        OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(centerConfigurationMap);
+        Collection<RuleConfiguration> configurations = new LinkedList<>();
+        configurations.add(getShardingRuleConfiguration());
+        configurations.add(getMasterSlaveRuleConfiguration());
+        return OrchestrationShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), configurations, new Properties(), orchestrationConfig);
+    }
+    
+    private ShardingRuleConfiguration getShardingRuleConfiguration() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
@@ -61,11 +68,7 @@ public final class LocalShardingMasterSlaveConfiguration implements ExampleConfi
         shardingRuleConfig.getBroadcastTables().add("t_address");
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", new StandardModuloShardingDatabaseAlgorithm()));
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new StandardModuloShardingTableAlgorithm()));
-        OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(centerConfigurationMap);
-        Collection<RuleConfiguration> configurations = new LinkedList<>();
-        configurations.add(shardingRuleConfig);
-        configurations.addAll(getMasterSlaveRuleConfigurations());
-        return OrchestrationShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), configurations, new Properties(), orchestrationConfig);
+        return shardingRuleConfig;
     }
     
     private TableRuleConfiguration getOrderTableRuleConfiguration() {
@@ -78,23 +81,6 @@ public final class LocalShardingMasterSlaveConfiguration implements ExampleConfi
         return new TableRuleConfiguration("t_order_item", "ds_${0..1}.t_order_item_${[0, 1]}");
     }
     
-    private List<MasterSlaveRuleConfiguration> getMasterSlaveRuleConfigurations() {
-        MasterSlaveRuleConfiguration masterSlaveRuleConfig1 = new MasterSlaveRuleConfiguration("ds_0", "demo_ds_master_0", Arrays.asList("demo_ds_master_0_slave_0", "demo_ds_master_0_slave_1"));
-        MasterSlaveRuleConfiguration masterSlaveRuleConfig2 = new MasterSlaveRuleConfiguration("ds_1", "demo_ds_master_1", Arrays.asList("demo_ds_master_1_slave_0", "demo_ds_master_1_slave_1"));
-        return Lists.newArrayList(masterSlaveRuleConfig1, masterSlaveRuleConfig2);
-    }
-    
-    private Map<String, DataSource> createDataSourceMap() {
-        final Map<String, DataSource> result = new HashMap<>();
-        result.put("demo_ds_master_0", DataSourceUtil.createDataSource("demo_ds_master_0"));
-        result.put("demo_ds_master_0_slave_0", DataSourceUtil.createDataSource("demo_ds_master_0_slave_0"));
-        result.put("demo_ds_master_0_slave_1", DataSourceUtil.createDataSource("demo_ds_master_0_slave_1"));
-        result.put("demo_ds_master_1", DataSourceUtil.createDataSource("demo_ds_master_1"));
-        result.put("demo_ds_master_1_slave_0", DataSourceUtil.createDataSource("demo_ds_master_1_slave_0"));
-        result.put("demo_ds_master_1_slave_1", DataSourceUtil.createDataSource("demo_ds_master_1_slave_1"));
-        return result;
-    }
-    
     private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
         return new KeyGeneratorConfiguration("order_id", getSnowflakeKeyGenerateAlgorithm());
     }
@@ -105,9 +91,28 @@ public final class LocalShardingMasterSlaveConfiguration implements ExampleConfi
         return result;
     }
     
+    private MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() {
+        MasterSlaveDataSourceConfiguration dataSourceConfiguration1 = new MasterSlaveDataSourceConfiguration(
+                "ds_0", "demo_ds_master_0", Arrays.asList("demo_ds_master_0_slave_0", "demo_ds_master_0_slave_1"));
+        MasterSlaveDataSourceConfiguration dataSourceConfiguration2 = new MasterSlaveDataSourceConfiguration(
+                "ds_1", "demo_ds_master_1", Arrays.asList("demo_ds_master_1_slave_0", "demo_ds_master_1_slave_1"));
+        return new MasterSlaveRuleConfiguration(Arrays.asList(dataSourceConfiguration1, dataSourceConfiguration2));
+    }
+    
     private static Properties getProperties() {
         Properties result = new Properties();
         result.setProperty("worker.id", "123");
+        return result;
+    }
+    
+    private Map<String, DataSource> createDataSourceMap() {
+        final Map<String, DataSource> result = new HashMap<>();
+        result.put("demo_ds_master_0", DataSourceUtil.createDataSource("demo_ds_master_0"));
+        result.put("demo_ds_master_0_slave_0", DataSourceUtil.createDataSource("demo_ds_master_0_slave_0"));
+        result.put("demo_ds_master_0_slave_1", DataSourceUtil.createDataSource("demo_ds_master_0_slave_1"));
+        result.put("demo_ds_master_1", DataSourceUtil.createDataSource("demo_ds_master_1"));
+        result.put("demo_ds_master_1_slave_0", DataSourceUtil.createDataSource("demo_ds_master_1_slave_0"));
+        result.put("demo_ds_master_1_slave_1", DataSourceUtil.createDataSource("demo_ds_master_1_slave_1"));
         return result;
     }
 }

@@ -32,7 +32,7 @@ public final class BatchExecutionUnitTest {
     
     private static final String DATA_SOURCE_NAME = "ds";
     
-    private static final String SQL = "select * from table where id = ?";
+    private static final String SQL = "SELECT * FROM table WHERE id = ?";
     
     @Test
     public void assertGetParameterSets() {

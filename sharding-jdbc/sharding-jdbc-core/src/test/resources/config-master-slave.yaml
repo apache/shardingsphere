@@ -15,10 +15,11 @@
 # limitations under the License.
 #
 
-masterSlaveRules:
-  test_ds:
-    name: test_ds
-    masterDataSourceName: test_ds_master
-    slaveDataSourceNames:
-      - test_ds_slave
-    loadBalanceAlgorithmType: ROUND_ROBIN
+masterSlaveRule:
+  dataSources:
+    test_ds:
+      name: test_ds
+      masterDataSourceName: test_ds_master
+      slaveDataSourceNames:
+        - test_ds_slave
+      loadBalanceAlgorithmType: ROUND_ROBIN

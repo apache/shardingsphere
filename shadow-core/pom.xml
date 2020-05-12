@@ -31,5 +31,7 @@
     
     <modules>
         <module>shadow-core-rewrite</module>
+        <module>shadow-core-common</module>
+        <module>shadow-core-route</module>
     </modules>
 </project>

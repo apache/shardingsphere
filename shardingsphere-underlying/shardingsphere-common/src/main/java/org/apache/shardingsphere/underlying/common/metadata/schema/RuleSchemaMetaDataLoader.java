@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDat
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.datanode.DataNodes;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
@@ -101,7 +102,7 @@ public final class RuleSchemaMetaDataLoader {
     public RuleSchemaMetaData load(final DatabaseType databaseType, final DataSource dataSource, final ConfigurationProperties properties,
                                    final ListeningExecutorService executorService) throws SQLException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put("ds", dataSource);
+        dataSourceMap.put(DefaultSchema.LOGIC_NAME, dataSource);
         return load(databaseType, dataSourceMap, properties, executorService);
     }
     
@@ -140,7 +141,7 @@ public final class RuleSchemaMetaDataLoader {
     public Optional<TableMetaData> load(final DatabaseType databaseType,
                                         final DataSource dataSource, final String tableName, final ConfigurationProperties properties) throws SQLException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put("ds", dataSource);
+        dataSourceMap.put(DefaultSchema.LOGIC_NAME, dataSource);
         return load(databaseType, dataSourceMap, tableName, properties);
     }
     

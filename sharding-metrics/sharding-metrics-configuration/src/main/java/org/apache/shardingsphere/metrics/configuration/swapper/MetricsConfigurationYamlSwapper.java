@@ -32,6 +32,8 @@ public final class MetricsConfigurationYamlSwapper implements YamlSwapper<YamlMe
         configuration.setHost(metricsConfiguration.getHost());
         configuration.setName(metricsConfiguration.getMetricsName());
         configuration.setPort(metricsConfiguration.getPort());
+        configuration.setAsync(metricsConfiguration.getAsync());
+        configuration.setThreadCount(metricsConfiguration.getThreadCount());
         configuration.setProps(metricsConfiguration.getProps());
         return configuration;
     }
@@ -39,7 +41,10 @@ public final class MetricsConfigurationYamlSwapper implements YamlSwapper<YamlMe
     @Override
     public MetricsConfiguration swap(final YamlMetricsConfiguration metricsConfiguration) {
         return new MetricsConfiguration(metricsConfiguration.getName(), metricsConfiguration.getHost(),
-                null == metricsConfiguration.getPort() ? 9190 : metricsConfiguration.getPort(), metricsConfiguration.getProps());
+                null == metricsConfiguration.getPort() ? 9190 : metricsConfiguration.getPort(),
+                null == metricsConfiguration.getAsync(),
+                null == metricsConfiguration.getThreadCount() ? Runtime.getRuntime().availableProcessors() << 1 : metricsConfiguration.getThreadCount(),
+                metricsConfiguration.getProps());
     }
 }
 

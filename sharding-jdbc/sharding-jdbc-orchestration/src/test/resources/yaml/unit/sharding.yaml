@@ -76,11 +76,12 @@ shardingRule:
   defaultTableStrategy:
     none:
 
-masterSlaveRules:
-  ds_ms:
-    masterDataSourceName: ds_m
-    slaveDataSourceNames:
-      - ds_s
+masterSlaveRule:
+  dataSources:
+    ds_ms:
+      masterDataSourceName: ds_m
+      slaveDataSourceNames:
+        - ds_s
 
 props:
   sql.show: false

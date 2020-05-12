@@ -52,7 +52,7 @@ execute
     | setRole
     | setPassword
     | use
-    | desc
+    | explain
     | showDatabases
     | showTables
     | showTableStatus

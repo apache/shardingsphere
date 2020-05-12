@@ -74,13 +74,7 @@ public final class ApolloCenterRepository implements ConfigCenterRepository {
     
     @Override
     public void persist(final String key, final String value) {
-        try {
-            openApiWrapper.persist(ConfigKeyUtils.pathToKey(key), value);
-            // CHECKSTYLE:OFF
-        } catch (Exception ex) {
-            // CHECKSTYLE:ON
-            log.error("Apollo persist key '{}' throw exception: {}", key, ex);
-        }
+        openApiWrapper.persist(ConfigKeyUtils.pathToKey(key), value);
     }
     
     @Override

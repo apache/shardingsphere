@@ -18,58 +18,47 @@
 package org.apache.shardingsphere.core.rule;
 
 import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveDataSourceConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class MasterSlaveRuleTest {
     
-    private final MasterSlaveRule masterSlaveRule = new MasterSlaveRule(
-            new MasterSlaveRuleConfiguration("test_ms", "master_db", Arrays.asList("slave_db_0", "slave_db_1"), new LoadBalanceStrategyConfiguration("RANDOM")));
-    
-    @Test
-    public void assertContainDataSourceNameWithMasterDataSourceName() {
-        assertTrue(masterSlaveRule.containDataSourceName("master_db"));
+    @Test(expected = IllegalArgumentException.class)
+    public void assertNewWithEmptyDataSourceRule() {
+        new MasterSlaveRule(new MasterSlaveRuleConfiguration(Collections.emptyList()));
     }
     
     @Test
-    public void assertContainDataSourceNameWithSlaveDataSourceName() {
-        assertTrue(masterSlaveRule.containDataSourceName("slave_db_0"));
+    public void assertFindDataSourceRule() {
+        Optional<MasterSlaveDataSourceRule> actual = createMasterSlaveRule().findDataSourceRule("test_ms");
+        assertTrue(actual.isPresent());
+        assertDataSourceRule(actual.get());
     }
     
     @Test
-    public void assertNotContainDataSourceName() {
-        assertFalse(masterSlaveRule.containDataSourceName("master_slave"));
+    public void assertGetSingleDataSourceRule() {
+        assertDataSourceRule(createMasterSlaveRule().getSingleDataSourceRule());
     }
     
-    @Test
-    public void assertGetSlaveDataSourceNamesWithoutDisabledDataSourceNames() {
-        assertThat(masterSlaveRule.getSlaveDataSourceNames(), is(Arrays.asList("slave_db_0", "slave_db_1")));
+    private MasterSlaveRule createMasterSlaveRule() {
+        MasterSlaveDataSourceConfiguration configuration = new MasterSlaveDataSourceConfiguration(
+                "test_ms", "master_db", Arrays.asList("slave_db_0", "slave_db_1"), new LoadBalanceStrategyConfiguration("RANDOM"));
+        return new MasterSlaveRule(new MasterSlaveRuleConfiguration(Collections.singleton(configuration)));
     }
     
-    @Test
-    public void assertGetSlaveDataSourceNamesWithDisabledDataSourceNames() {
-        masterSlaveRule.updateDisabledDataSourceNames("slave_db_0", true);
-        assertThat(masterSlaveRule.getSlaveDataSourceNames(), is(Collections.singletonList("slave_db_1")));
-    }
-    
-    @Test
-    public void assertUpdateDisabledDataSourceNamesForDisabled() {
-        masterSlaveRule.updateDisabledDataSourceNames("slave_db_0", true);
-        assertThat(masterSlaveRule.getDisabledDataSourceNames(), is(Collections.singleton("slave_db_0")));
-    }
-    
-    @Test
-    public void assertUpdateDisabledDataSourceNamesForEnabled() {
-        masterSlaveRule.updateDisabledDataSourceNames("slave_db_0", true);
-        masterSlaveRule.updateDisabledDataSourceNames("slave_db_0", false);
-        assertThat(masterSlaveRule.getDisabledDataSourceNames(), is(Collections.emptySet()));
+    private void assertDataSourceRule(final MasterSlaveDataSourceRule actual) {
+        assertThat(actual.getName(), is("test_ms"));
+        assertThat(actual.getMasterDataSourceName(), is("master_db"));
+        assertThat(actual.getSlaveDataSourceNames(), is(Arrays.asList("slave_db_0", "slave_db_1")));
+        assertThat(actual.getLoadBalanceAlgorithm().getType(), is("RANDOM"));
     }
 }

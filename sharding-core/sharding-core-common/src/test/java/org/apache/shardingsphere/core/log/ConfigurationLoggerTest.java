@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.log;
 
 import com.google.common.collect.ImmutableMap;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveDataSourceConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
@@ -84,13 +85,13 @@ public final class ConfigurationLoggerTest {
     
     @Test
     public void assertLogMasterSlaveRuleConfiguration() {
-        String yaml = "masterDataSourceName: master_ds\n" + "name: ms_ds\n" + "slaveDataSourceNames:\n" + "- slave_ds_0\n" + "- slave_ds_1\n";
+        String yaml = "dataSources:\n" + "  ms_ds:\n" + "    masterDataSourceName: master_ds\n" + "    name: ms_ds\n" + "    slaveDataSourceNames:\n" + "    - slave_ds_0\n" + "    - slave_ds_1\n";
         assertLogInfo(MasterSlaveRuleConfiguration.class.getSimpleName(), yaml);
         ConfigurationLogger.log(getMasterSlaveRuleConfiguration());
     }
     
     private MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() {
-        return new MasterSlaveRuleConfiguration("ms_ds", "master_ds", Arrays.asList("slave_ds_0", "slave_ds_1"));
+        return new MasterSlaveRuleConfiguration(Collections.singleton(new MasterSlaveDataSourceConfiguration("ms_ds", "master_ds", Arrays.asList("slave_ds_0", "slave_ds_1"))));
     }
     
     @Test
@@ -129,7 +130,7 @@ public final class ConfigurationLoggerTest {
     
     @Test
     public void assertLogRuleConfigurationWithMasterSlaveRuleConfiguration() {
-        String yaml = "masterDataSourceName: master_ds\n" + "name: ms_ds\n" + "slaveDataSourceNames:\n" + "- slave_ds_0\n" + "- slave_ds_1\n";
+        String yaml = "dataSources:\n" + "  ms_ds:\n" + "    masterDataSourceName: master_ds\n" + "    name: ms_ds\n" + "    slaveDataSourceNames:\n" + "    - slave_ds_0\n" + "    - slave_ds_1\n";
         assertLogInfo(MasterSlaveRuleConfiguration.class.getSimpleName(), yaml);
         ConfigurationLogger.log(getMasterSlaveRuleConfiguration());
     }

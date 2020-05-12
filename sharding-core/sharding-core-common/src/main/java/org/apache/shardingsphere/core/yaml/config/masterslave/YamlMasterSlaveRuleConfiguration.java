@@ -21,24 +21,15 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Master-slave rule configuration for YAML.
  */
 @Getter
 @Setter
-public class YamlMasterSlaveRuleConfiguration implements YamlConfiguration {
+public final class YamlMasterSlaveRuleConfiguration implements YamlConfiguration {
     
-    private String name;
-    
-    private String masterDataSourceName;
-    
-    private List<String> slaveDataSourceNames = new ArrayList<>();
-    
-    private String loadBalanceAlgorithmType;
-    
-    private Properties props = new Properties();
+    private Map<String, YamlMasterSlaveDataSourceConfiguration> dataSources = new LinkedHashMap<>();
 }

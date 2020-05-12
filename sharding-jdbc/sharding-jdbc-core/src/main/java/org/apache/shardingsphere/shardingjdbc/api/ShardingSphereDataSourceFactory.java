@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
+import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -59,7 +60,7 @@ public final class ShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final DataSource dataSource, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put("unique_ds", dataSource);
+        dataSourceMap.put(DefaultSchema.LOGIC_NAME, dataSource);
         return createDataSource(dataSourceMap, configurations, props);
     }
 }

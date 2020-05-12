@@ -45,7 +45,7 @@ public enum CenterType {
     public static CenterType findByValue(final String value) {
         return Arrays.stream(CenterType.values())
                 .filter(each -> each.getValue().equals(value)).findFirst()
-                .orElseThrow(() -> new OrchestrationException("now only support :{},{}",
+                .orElseThrow(() -> new OrchestrationException("now only support :{}, {}, {}",
                         CenterType.CONFIG_CENTER.getValue(), CenterType.REGISTRY_CENTER.getValue(), CenterType.METADATA_CENTER));
     }
 }

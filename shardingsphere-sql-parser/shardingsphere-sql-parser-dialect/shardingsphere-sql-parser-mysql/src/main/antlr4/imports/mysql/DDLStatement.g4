@@ -20,20 +20,56 @@ grammar DDLStatement;
 import Symbol, Keyword, MySQLKeyword, Literals, BaseRule, DMLStatement;
 
 createTable
-    : CREATE createTableSpecification_? TABLE tableNotExistClause_ tableName (createDefinitionClause | createLikeClause)
+    : CREATE createTableSpecification_? TABLE notExistClause_ tableName (createDefinitionClause tableOptions_? partitionOptions? (AS? select)? | createLikeClause)
     ;
 
 alterTable
-    : ALTER TABLE tableName alterDefinitionClause?
+    : ALTER TABLE tableName alterDefinitionClause? partitionOption?
+    ;
+
+partitionOptions
+    :partitionOption partitionOption*
+    ;
+
+partitionOption
+    : ADD PARTITION LP_ partitionDefinition_ RP_
+    | DROP PARTITION partitionNames
+    | DISCARD PARTITION (partitionNames | ALL) TABLESPACE
+    | IMPORT PARTITION (partitionNames | ALL) TABLESPACE
+    | TRUNCATE PARTITION (partitionNames | ALL)
+    | COALESCE PARTITION NUMBER_
+    | REORGANIZE PARTITION partitionNames INTO LP_ partitionDefinitions_ RP_
+    | EXCHANGE PARTITION partitionName WITH TABLE tableName ((WITH | WITHOUT) VALIDATION)
+    | ANALYZE PARTITION (partitionNames | ALL)
+    | CHECK PARTITION (partitionNames | ALL)
+    | OPTIMIZE PARTITION (partitionNames | ALL)
+    | REBUILD PARTITION (partitionNames | ALL)
+    | REPAIR PARTITION (partitionNames | ALL)
+    | REMOVE PARTITIONING
+    | PARTITION BY (LINEAR? HASH LP_ expr RP_ | LINEAR? KEY (ALGORITHM EQ_ NUMBER_)? LP_ columnNames RP_ | RANGE (LP_ expr RP_ | COLUMNS LP_ columnNames RP_) |
+     LIST (LP_ expr RP_ | COLUMNS LP_ columnNames RP_)) (PARTITIONS NUMBER_)?
+     (SUBPARTITION BY (LINEAR? HASH LP_ expr RP_ | LINEAR? KEY (ALGORITHM EQ_ NUMBER_ LP_ columnNames RP_)) (SUBPARTITIONS NUMBER_)?)?  partitionDefinitions_?
+    ;
+
+partitionNames
+    : partitionName (COMMA_ partitionName)*
     ;
 
 dropTable
-    : DROP dropTableSpecification_ TABLE tableExistClause_ tableNames
+    : DROP dropTableSpecification_ TABLE existClause_ tableNames (RESTRICT | CASCADE)?
     ;
 
 dropIndex
-    : DROP INDEX dropIndexSpecification_? indexName (ON tableName)?
-    ( ALGORITHM EQ_? (DEFAULT | INPLACE | COPY) | LOCK EQ_? (DEFAULT | NONE | SHARED | EXCLUSIVE) )*
+    : DROP INDEX indexName (ON tableName)?
+    (algorithmOption | lockOption)*
+    ;
+
+algorithmOption
+    : ALGORITHM EQ_? (DEFAULT | INPLACE | COPY)
+    ;
+
+lockOption
+    : LOCK EQ_? (DEFAULT | NONE | SHARED | EXCLUSIVE)
     ;
 
 truncateTable
@@ -42,14 +78,11 @@ truncateTable
 
 createIndex
     : CREATE createIndexSpecification_ INDEX indexName indexType_? ON tableName keyParts_ indexOption_? 
-    (
-        ALGORITHM EQ_? (DEFAULT | INPLACE | COPY) 
-        | LOCK EQ_? (DEFAULT | NONE | SHARED | EXCLUSIVE)
-    )*
+    (algorithmOption | lockOption)*
     ;
 
 createDatabase
-    : CREATE (DATABASE | SCHEMA) (IF NOT EXISTS)? schemaName createDatabaseSpecification_*
+    : CREATE (DATABASE | SCHEMA) notExistClause_? schemaName createDatabaseSpecification_*
     ;
 
 alterDatabase
@@ -63,7 +96,7 @@ createDatabaseSpecification_
     ;
 
 dropDatabase
-    : DROP (DATABASE | SCHEMA) (IF EXISTS)? schemaName
+    : DROP (DATABASE | SCHEMA) existClause_ schemaName
     ;
 
 alterInstance
@@ -72,11 +105,15 @@ alterInstance
     ;
 
 instanceAction
-    : ROTATE INNODB_ MASTER KEY | ROTATE BINLOG MASTER KEY | RELOAD TLS_ (NO ROLLBACK ON ERROR)?
+    : ROTATE INNODB_ MASTER KEY | ROTATE BINLOG MASTER KEY | RELOAD TLS_ (FOR CHANNEL channel)? (NO ROLLBACK ON ERROR)?
+    ;
+
+channel
+    : 'mysql_admin' | 'mysql_main'
     ;
 
 createEvent
-    : CREATE ownerStatement? EVENT (IF NOT EXISTS)? eventName
+    : CREATE ownerStatement? EVENT notExistClause_? eventName
       ON SCHEDULE scheduleExpression_
       (ON COMPLETION NOT? PRESERVE)? 
       (ENABLE | DISABLE | DISABLE ON SLAVE)?
@@ -94,7 +131,7 @@ alterEvent
     ;
 
 dropEvent
-    :  DROP EVENT (IF EXISTS)? eventName
+    :  DROP EVENT existClause_ eventName
     ;
 
 createFunction
@@ -110,7 +147,7 @@ alterFunction
     ;
 
 dropFunction
-    : DROP FUNCTION (IF EXISTS) functionName
+    : DROP FUNCTION existClause_ functionName
     ;
 
 createProcedure
@@ -125,7 +162,7 @@ alterProcedure
     ;
 
 dropProcedure
-    : DROP PROCEDURE (IF EXISTS)? functionName
+    : DROP PROCEDURE existClause_ functionName
     ;
 
 createServer
@@ -140,32 +177,30 @@ alterServer
     ;
 
 dropServer
-    : DROP SERVER (IF EXISTS)? serverName
+    : DROP SERVER existClause_ serverName
     ;
 
 createView
     : CREATE (OR REPLACE)?
-      ( ALGORITHM EQ_ (UNDEFINED | MERGE | TEMPTABLE) )?
+      (ALGORITHM EQ_ (UNDEFINED | MERGE | TEMPTABLE))?
       ownerStatement?
       (SQL SECURITY (DEFINER | INVOKER))?
-      VIEW viewName (LP_ identifier (COMMA_ identifier)* RP_)? 
+      VIEW viewName (LP_ columnNames RP_)?
       AS select
       (WITH (CASCADED | LOCAL)? CHECK OPTION)?
     ;
 
 alterView
-    : ALTER
-      ( ALGORITHM EQ_ (UNDEFINED | MERGE | TEMPTABLE) )?
+    : ALTER (ALGORITHM EQ_ (UNDEFINED | MERGE | TEMPTABLE))?
       ownerStatement?
       (SQL SECURITY (DEFINER | INVOKER))?
-      VIEW viewName (LP_ identifier (COMMA_ identifier)* RP_)? 
+      VIEW viewName (LP_ columnNames RP_)?
       AS select
       (WITH (CASCADED | LOCAL)? CHECK OPTION)?
     ;
 
 dropView
-    : DROP VIEW (IF EXISTS)?
-      viewName (COMMA_ viewName)* (RESTRICT | CASCADE)?
+    : DROP VIEW existClause_ viewName (COMMA_ viewName)* (RESTRICT | CASCADE)?
     ;
 
 createTablespaceInnodb
@@ -187,19 +222,26 @@ createTablespaceNdb
       (NODEGROUP EQ_? identifier)?
       WAIT?
       (COMMENT EQ_? STRING_)?
-      ENGINE EQ_? identifier
+      (ENGINE EQ_? identifier)?
     ;
 
-alterTablespace
-    : ALTER TABLESPACE identifier
+alterTablespaceNdb
+    : ALTER UNDO? TABLESPACE identifier
       (ADD | DROP) DATAFILE STRING_
       (INITIAL_SIZE EQ_ fileSizeLiteral_)?
-      WAIT?
-      ENGINE EQ_? identifier
+      WAIT? (RENAME TO identifier)?
+      (ENGINE EQ_? identifier)?
+    ;
+
+alterTablespaceInnodb
+    : ALTER UNDO? TABLESPACE identifier
+      (SET (ACTIVE | INACTIVE))? (ENCRYPTION EQ_? Y_N_)
+      (RENAME TO identifier)?
+      (ENGINE EQ_? identifier)?
     ;
 
 dropTablespace
-    : DROP TABLESPACE identifier (ENGINE EQ_? identifier)?
+    : DROP UNDO? TABLESPACE identifier (ENGINE EQ_? identifier)?
     ;
 
 createLogfileGroup
@@ -222,19 +264,23 @@ alterLogfileGroup
     ;
 
 dropLogfileGroup
-    : DROP LOGFILE GROUP identifier ENGINE EQ_ identifier
+    : DROP LOGFILE GROUP identifier ENGINE EQ_? identifier
     ;
 
 createTrigger
     :  CREATE ownerStatement? TRIGGER triggerName triggerTime triggerEvent ON tableName FOR EACH ROW triggerOrder? routineBody
     ;
 
-createTableSpecification_
-    : TEMPORARY
+dropTrigger
+    : DROP TRIGGER existClause_ (schemaName DOT_)? triggerName
     ;
 
-tableNotExistClause_
-    : (IF NOT EXISTS)?
+renameTable
+    : RENAME TABLE tableName TO tableName (tableName TO tableName)*
+    ;
+
+createTableSpecification_
+    : TEMPORARY
     ;
 
 createDefinitionClause
@@ -268,7 +314,7 @@ dataTypeGenericOption
     ;
 
 checkConstraintDefinition
-    : (CONSTRAINT ignoredIdentifier_?)? CHECK expr (NOT? ENFORCED)?
+    : (CONSTRAINT ignoredIdentifier_?)? CHECK LP_ expr RP_ (NOT? ENFORCED)?
     ;
 
 referenceDefinition
@@ -308,7 +354,7 @@ constraintDefinition
     ;
 
 primaryKeyOption
-    : primaryKey indexType_? columnNames indexOption_*
+    : primaryKey indexType_? keyParts_ indexOption_*
     ;
 
 primaryKey
@@ -344,7 +390,7 @@ alterSpecification
     | DROP CHECK ignoredIdentifier_
     | ALTER CHECK ignoredIdentifier_ NOT? ENFORCED
     | ALGORITHM EQ_? (DEFAULT | INSTANT | INPLACE | COPY)
-    | ALTER COLUMN? columnName (SET DEFAULT literals | DROP DEFAULT)
+    | ALTER COLUMN? columnName (SET DEFAULT (literals | LP_ expr RP_) | DROP DEFAULT)
     | ALTER INDEX indexName (VISIBLE | INVISIBLE)
     | changeColumnSpecification
     | modifyColumnSpecification
@@ -357,7 +403,7 @@ alterSpecification
     | dropPrimaryKeySpecification
     | DROP FOREIGN KEY ignoredIdentifier_
     | FORCE
-    | LOCK EQ_? (DEFAULT | NONE | SHARED | EXCLUSIVE)
+    | lockOption
     // TODO investigate ORDER BY col_name [, col_name] ...
     | ORDER BY columnNames
     | renameColumnSpecification
@@ -465,7 +511,7 @@ partitionDefinitions_
     ;
 
 partitionDefinition_
-    : PARTITION identifier 
+    : PARTITION partitionName
     (VALUES (LESS THAN partitionLessThanValue_ | IN LP_ partitionValueList_ RP_))?
     partitionDefinitionOption_* 
     (LP_ subpartitionDefinition_ (COMMA_ subpartitionDefinition_)* RP_)?
@@ -495,14 +541,6 @@ subpartitionDefinition_
 
 dropTableSpecification_
     : TEMPORARY?
-    ;
-
-tableExistClause_
-    : (IF EXISTS)?
-    ;
-
-dropIndexSpecification_
-    : ONLINE | OFFLINE
     ;
 
 ownerStatement
@@ -538,7 +576,7 @@ routineOption_
     : COMMENT STRING_                                       
     | LANGUAGE SQL                                              
     | NOT? DETERMINISTIC                                          
-    | ( CONTAINS SQL | NO SQL | READS SQL DATA | MODIFIES SQL DATA)                                                           
+    | (CONTAINS SQL | NO SQL | READS SQL DATA | MODIFIES SQL DATA)
     | SQL SECURITY (DEFINER | INVOKER)                    
     ;
 

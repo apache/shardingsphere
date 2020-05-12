@@ -124,21 +124,21 @@ public final class YamlEngineRootConfigurationsTest {
     }
     
     private void assertMasterSlaveRules(final YamlRootRuleConfigurations actual) {
-        assertThat(actual.getMasterSlaveRules().size(), is(2));
+        assertThat(actual.getMasterSlaveRule().getDataSources().size(), is(2));
         assertMasterSlaveRuleForDs0(actual);
         assertMasterSlaveRuleForDs1(actual);
     }
     
     private void assertMasterSlaveRuleForDs0(final YamlRootRuleConfigurations actual) {
-        assertThat(actual.getMasterSlaveRules().get("ds_0").getMasterDataSourceName(), is("master_ds_0"));
-        assertThat(actual.getMasterSlaveRules().get("ds_0").getSlaveDataSourceNames(), is(Arrays.asList("master_ds_0_slave_0", "master_ds_0_slave_1")));
-        assertThat(actual.getMasterSlaveRules().get("ds_0").getLoadBalanceAlgorithmType(), is("ROUND_ROBIN"));
+        assertThat(actual.getMasterSlaveRule().getDataSources().get("ds_0").getMasterDataSourceName(), is("master_ds_0"));
+        assertThat(actual.getMasterSlaveRule().getDataSources().get("ds_0").getSlaveDataSourceNames(), is(Arrays.asList("master_ds_0_slave_0", "master_ds_0_slave_1")));
+        assertThat(actual.getMasterSlaveRule().getDataSources().get("ds_0").getLoadBalanceAlgorithmType(), is("ROUND_ROBIN"));
     }
     
     private void assertMasterSlaveRuleForDs1(final YamlRootRuleConfigurations actual) {
-        assertThat(actual.getMasterSlaveRules().get("ds_1").getMasterDataSourceName(), is("master_ds_1"));
-        assertThat(actual.getMasterSlaveRules().get("ds_1").getSlaveDataSourceNames(), is(Arrays.asList("master_ds_1_slave_0", "master_ds_1_slave_1")));
-        assertThat(actual.getMasterSlaveRules().get("ds_1").getLoadBalanceAlgorithmType(), is("RANDOM"));
+        assertThat(actual.getMasterSlaveRule().getDataSources().get("ds_1").getMasterDataSourceName(), is("master_ds_1"));
+        assertThat(actual.getMasterSlaveRule().getDataSources().get("ds_1").getSlaveDataSourceNames(), is(Arrays.asList("master_ds_1_slave_0", "master_ds_1_slave_1")));
+        assertThat(actual.getMasterSlaveRule().getDataSources().get("ds_1").getLoadBalanceAlgorithmType(), is("RANDOM"));
     }
     
     private void assertProps(final YamlRootRuleConfigurations actual) {

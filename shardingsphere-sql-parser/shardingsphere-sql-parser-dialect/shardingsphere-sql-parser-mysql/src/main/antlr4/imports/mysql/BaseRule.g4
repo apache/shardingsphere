@@ -579,3 +579,19 @@ ignoredIdentifiers_
 fieldOrVarSpec
     : LP_ (identifier (COMMA_ identifier)*)? RP_
     ;
+
+notExistClause_
+    : (IF NOT EXISTS)?
+    ;
+
+existClause_
+    : (IF EXISTS)?
+    ;
+
+pattern
+    : STRING_
+    ;
+
+connectionId_
+    : NUMBER_
+    ;
