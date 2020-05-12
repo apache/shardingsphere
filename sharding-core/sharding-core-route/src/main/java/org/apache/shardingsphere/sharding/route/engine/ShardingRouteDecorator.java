@@ -19,12 +19,12 @@ package org.apache.shardingsphere.sharding.route.engine;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.sharding.api.hint.HintManager;
-import org.apache.shardingsphere.core.rule.BindingTableRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.rule.TableRule;
-import org.apache.shardingsphere.core.strategy.route.hint.HintShardingStrategy;
-import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
-import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
+import org.apache.shardingsphere.sharding.core.rule.BindingTableRule;
+import org.apache.shardingsphere.sharding.core.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.core.rule.TableRule;
+import org.apache.shardingsphere.sharding.core.strategy.route.hint.HintShardingStrategy;
+import org.apache.shardingsphere.sharding.core.strategy.route.value.ListRouteValue;
+import org.apache.shardingsphere.sharding.core.strategy.route.value.RouteValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.InsertClauseShardingConditionEngine;

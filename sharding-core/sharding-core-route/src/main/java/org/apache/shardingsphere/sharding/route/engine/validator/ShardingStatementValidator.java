@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.validator;
 
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.core.rule.ShardingRule;
 
 import java.util.List;
 

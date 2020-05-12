@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shardingjdbc.common.base;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.core.yaml.config.YamlRootRuleConfigurations;
-import org.apache.shardingsphere.core.yaml.swapper.root.RuleRootConfigurationsYamlSwapper;
+import org.apache.shardingsphere.sharding.core.yaml.config.YamlRootRuleConfigurations;
+import org.apache.shardingsphere.sharding.core.yaml.swapper.root.RuleRootConfigurationsYamlSwapper;
 import org.apache.shardingsphere.shardingjdbc.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingSphereConnection;

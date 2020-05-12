@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.core.rule.Authentication;
+import org.apache.shardingsphere.sharding.core.rule.Authentication;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
