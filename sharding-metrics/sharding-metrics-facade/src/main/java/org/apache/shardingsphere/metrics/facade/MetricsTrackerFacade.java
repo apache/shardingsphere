@@ -39,8 +39,6 @@ public final class MetricsTrackerFacade {
     
     private static final Map<String, MetricsTrackerManager> METRICS_MAP = new HashMap<>();
     
-    private static final MetricsTrackerFacade INSTANCE = new MetricsTrackerFacade();
-    
     @Getter
     private MetricsTrackerManager metricsTrackerManager;
     
@@ -52,12 +50,12 @@ public final class MetricsTrackerFacade {
     }
     
     /**
-     * Get metrics tracker facade.
+     * Get metrics tracker facade of singleton.
      *
      * @return metrics tracker facade
      */
     public static MetricsTrackerFacade getInstance() {
-        return INSTANCE;
+        return MetricsTrackerFacadeHolder.INSTANCE;
     }
     
     /**
@@ -174,6 +172,14 @@ public final class MetricsTrackerFacade {
             }
             METRICS_MAP.put(each.getType(), each);
         }
+    }
+    
+    /**
+     * Metrics tracker facade holder.
+     */
+    private static class MetricsTrackerFacadeHolder {
+        
+        private static final MetricsTrackerFacade INSTANCE = new MetricsTrackerFacade();
     }
 }
 
