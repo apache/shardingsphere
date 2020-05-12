@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.masterslave;
+package org.apache.shardingsphere.masterslave.spi;
 
 import org.apache.shardingsphere.spi.type.TypedSPI;
 
