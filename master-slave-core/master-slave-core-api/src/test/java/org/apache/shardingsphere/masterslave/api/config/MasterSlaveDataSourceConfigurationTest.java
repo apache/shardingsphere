@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.config.masterslave;
+package org.apache.shardingsphere.masterslave.api.config;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
@@ -49,11 +49,10 @@ public final class MasterSlaveDataSourceConfigurationTest {
     
     @Test
     public void assertConstructorWithMinArguments() {
-        MasterSlaveDataSourceConfiguration actual = new MasterSlaveDataSourceConfiguration(
-                "ds", "master_ds", Collections.singletonList("slave_ds"));
-        assertThat(actual.getName(), is("ds"));
-        assertThat(actual.getMasterDataSourceName(), is("master_ds"));
-        assertThat(actual.getSlaveDataSourceNames(), is(Collections.singletonList("slave_ds")));
+        MasterSlaveDataSourceConfiguration actual = new MasterSlaveDataSourceConfiguration("ds", "master_ds", Collections.singletonList("slave_ds"));
+        assertThat(actual.getName(), CoreMatchers.is("ds"));
+        assertThat(actual.getMasterDataSourceName(), CoreMatchers.is("master_ds"));
+        assertThat(actual.getSlaveDataSourceNames(), CoreMatchers.is(Collections.singletonList("slave_ds")));
         assertNull(actual.getLoadBalanceStrategyConfiguration());
     }
     
@@ -61,9 +60,9 @@ public final class MasterSlaveDataSourceConfigurationTest {
     public void assertConstructorWithMaxArguments() {
         MasterSlaveDataSourceConfiguration actual = new MasterSlaveDataSourceConfiguration(
                 "ds", "master_ds", Collections.singletonList("slave_ds"), new LoadBalanceStrategyConfiguration("ROUND_ROBIN"));
-        assertThat(actual.getName(), is("ds"));
-        assertThat(actual.getMasterDataSourceName(), is("master_ds"));
-        assertThat(actual.getSlaveDataSourceNames(), is(Collections.singletonList("slave_ds")));
-        assertThat(actual.getLoadBalanceStrategyConfiguration().getType(), is("ROUND_ROBIN"));
+        assertThat(actual.getName(), CoreMatchers.is("ds"));
+        assertThat(actual.getMasterDataSourceName(), CoreMatchers.is("master_ds"));
+        assertThat(actual.getSlaveDataSourceNames(), CoreMatchers.is(Collections.singletonList("slave_ds")));
+        assertThat(actual.getLoadBalanceStrategyConfiguration().getType(), CoreMatchers.is("ROUND_ROBIN"));
     }
 }

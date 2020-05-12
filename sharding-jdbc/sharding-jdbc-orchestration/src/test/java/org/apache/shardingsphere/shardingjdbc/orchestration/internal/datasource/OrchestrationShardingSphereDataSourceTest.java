@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveDataSourceConfiguration;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.LoadBalanceStrategyConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.core.rule.ShardingRule;

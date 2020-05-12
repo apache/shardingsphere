@@ -21,18 +21,13 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.constructor.YamlRootRuleConfigurationsConstructor;
 import org.apache.shardingsphere.core.yaml.swapper.AuthenticationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.root.RuleRootConfigurationsYamlSwapper;
-import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.orchestration.core.configuration.DataSourceConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
@@ -41,6 +36,7 @@ import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -80,7 +76,10 @@ public final class ConfigurationYamlConverter {
      */
     public static MasterSlaveRuleConfiguration loadMasterSlaveRuleConfiguration(final String data) {
         Collection<RuleConfiguration> ruleConfigurations = loadRuleConfigurations(data);
-        return (MasterSlaveRuleConfiguration) ruleConfigurations.stream().filter(each->each instanceof MasterSlaveRuleConfiguration).findFirst().get();
+        Optional<MasterSlaveRuleConfiguration> result = ruleConfigurations.stream().filter(
+            each -> each instanceof MasterSlaveRuleConfiguration).map(ruleConfiguration -> (MasterSlaveRuleConfiguration) ruleConfiguration).findFirst();
+        Preconditions.checkState(result.isPresent());
+        return result.get();
     }
     
     /**

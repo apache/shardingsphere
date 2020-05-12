@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.core.rule;
 
-import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveDataSourceConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.LoadBalanceStrategyConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceConfiguration;
 import org.junit.Test;
 
 import java.util.Arrays;

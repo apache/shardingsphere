@@ -19,7 +19,7 @@ package org.apache.shardingsphere.orchestration.core.common.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 
 /**
  * Master slave rule changed event.

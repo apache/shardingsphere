@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring;
 
-import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.core.rule.MasterSlaveDataSourceRule;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.strategy.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;

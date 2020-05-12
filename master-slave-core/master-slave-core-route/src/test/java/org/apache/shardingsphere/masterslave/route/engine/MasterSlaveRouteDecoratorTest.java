@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.masterslave.route.engine;
 
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveDataSourceConfiguration;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;

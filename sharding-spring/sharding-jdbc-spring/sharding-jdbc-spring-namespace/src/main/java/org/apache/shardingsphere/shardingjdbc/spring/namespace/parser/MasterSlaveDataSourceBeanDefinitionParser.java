@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.spring.namespace.parser;
 
 import com.google.common.base.Splitter;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
 import org.springframework.beans.factory.config.BeanDefinition;

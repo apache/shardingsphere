@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.example.sharding.raw.jdbc.config;
 
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveDataSourceConfiguration;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;

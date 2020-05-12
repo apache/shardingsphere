@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.rule;
 
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRuleBuilder;
 
 import java.util.Collection;
