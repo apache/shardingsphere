@@ -20,7 +20,7 @@ package org.apache.shardingsphere.example.shadow.table.raw.jdbc.config;
 import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
-import org.apache.shardingsphere.shardingjdbc.api.ShadowDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.api.ShardingSphereDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -39,7 +39,7 @@ public class ShadowDatabasesConfiguration implements ExampleConfiguration {
         dataSourceMap.put("ds", DataSourceUtil.createDataSource("demo_ds"));
         dataSourceMap.put("ds_0", DataSourceUtil.createDataSource("shadow_demo_ds"));
         try {
-            return ShadowDataSourceFactory.createDataSource(dataSourceMap, shadowRuleConfiguration, null);
+            return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Collections.singleton(shadowRuleConfiguration), null);
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
