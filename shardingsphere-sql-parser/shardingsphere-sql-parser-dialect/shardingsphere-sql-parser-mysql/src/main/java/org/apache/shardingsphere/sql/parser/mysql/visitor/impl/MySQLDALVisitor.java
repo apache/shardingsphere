@@ -309,9 +309,6 @@ public final class MySQLDALVisitor extends MySQLVisitor implements DALVisitor {
             String assignValue = (null != ctx.DEFAULT()) ? ctx.DEFAULT().getText() : ctx.characterSetName_().getText();
             characterSet.setAssignValue(assignValue);
         }
-        if (null != ctx.DEFAULT()) {
-        
-        }
         if (null != ctx.collationName_()) {
             VariableAssignSegment collation = new VariableAssignSegment();
             VariableSegment variable = new VariableSegment();
