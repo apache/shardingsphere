@@ -22,7 +22,7 @@ import com.google.common.eventbus.Subscribe;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
+import org.apache.shardingsphere.core.rule.event.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
@@ -39,6 +39,7 @@ import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
+import org.apache.shardingsphere.underlying.common.rule.StatusContainedRule;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -142,8 +143,8 @@ public class OrchestrationShardingSphereDataSource extends AbstractOrchestration
         OrchestrationSchema orchestrationSchema = disabledStateChangedEvent.getOrchestrationSchema();
         if (DefaultSchema.LOGIC_NAME.equals(orchestrationSchema.getSchemaName())) {
             for (ShardingSphereRule each : dataSource.getRuntimeContext().getRules()) {
-                if (each instanceof MasterSlaveRule) {
-                    ((MasterSlaveRule) each).updateDisabledDataSourceNames(orchestrationSchema.getDataSourceName(), disabledStateChangedEvent.isDisabled());
+                if (each instanceof StatusContainedRule) {
+                    ((StatusContainedRule) each).updateRuleStatus(new DataSourceNameDisabledEvent(orchestrationSchema.getDataSourceName(), disabledStateChangedEvent.isDisabled()));
                 }
             }
         }

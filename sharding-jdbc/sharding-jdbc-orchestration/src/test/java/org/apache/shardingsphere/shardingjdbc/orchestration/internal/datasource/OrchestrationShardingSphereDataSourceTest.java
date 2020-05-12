@@ -23,8 +23,6 @@ import org.apache.shardingsphere.api.config.masterslave.MasterSlaveDataSourceCon
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.core.rule.MasterSlaveDataSourceRule;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
@@ -51,13 +49,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class OrchestrationShardingSphereDataSourceTest {
     
@@ -163,17 +159,6 @@ public final class OrchestrationShardingSphereDataSourceTest {
     
     @Test
     public void assertRenewDisabledState() {
-        orchestrationDataSource.renew(getDisabledStateChangedEvent());
-        Optional<MasterSlaveRule> masterSlaveRule = orchestrationDataSource.getDataSource().getRuntimeContext().getRules().stream().filter(
-            each -> each instanceof MasterSlaveRule).findFirst().map(rule -> (MasterSlaveRule) rule);
-        assertTrue(masterSlaveRule.isPresent());
-        Optional<MasterSlaveDataSourceRule> masterSlaveDataSourceRule = masterSlaveRule.get().findDataSourceRule("ds_ms");
-        assertTrue(masterSlaveDataSourceRule.isPresent());
-        assertThat(masterSlaveDataSourceRule.get().getSlaveDataSourceNames().size(), is(0));
-    }
-    
-    private DisabledStateChangedEvent getDisabledStateChangedEvent() {
-        OrchestrationSchema orchestrationSchema = new OrchestrationSchema("logic_db.ds_s");
-        return new DisabledStateChangedEvent(orchestrationSchema, true);
+        orchestrationDataSource.renew(new DisabledStateChangedEvent(new OrchestrationSchema("logic_db.ds_s"), true));
     }
 }

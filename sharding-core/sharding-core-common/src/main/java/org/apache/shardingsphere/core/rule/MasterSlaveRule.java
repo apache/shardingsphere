@@ -20,7 +20,10 @@ package org.apache.shardingsphere.core.rule;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveDataSourceConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.core.rule.event.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.underlying.common.rule.DataSourceRoutedRule;
+import org.apache.shardingsphere.underlying.common.rule.RuleChangedEvent;
+import org.apache.shardingsphere.underlying.common.rule.StatusContainedRule;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,7 +34,7 @@ import java.util.Optional;
 /**
  * Master-slave rule.
  */
-public final class MasterSlaveRule implements DataSourceRoutedRule {
+public final class MasterSlaveRule implements DataSourceRoutedRule, StatusContainedRule {
     
     private final Map<String, MasterSlaveDataSourceRule> dataSourceRules;
     
@@ -62,18 +65,6 @@ public final class MasterSlaveRule implements DataSourceRoutedRule {
         return Optional.ofNullable(dataSourceRules.get(dataSourceName));
     }
     
-    /**
-     * Update disabled data source names.
-     *
-     * @param dataSourceName data source name
-     * @param isDisabled is disabled
-     */
-    public void updateDisabledDataSourceNames(final String dataSourceName, final boolean isDisabled) {
-        for (Entry<String, MasterSlaveDataSourceRule> entry : dataSourceRules.entrySet()) {
-            entry.getValue().updateDisabledDataSourceNames(dataSourceName, isDisabled);
-        }
-    }
-    
     @Override
     public Map<String, Collection<String>> getDataSourceMapper() {
         Map<String, Collection<String>> result = new HashMap<>();
@@ -81,5 +72,14 @@ public final class MasterSlaveRule implements DataSourceRoutedRule {
             result.putAll(entry.getValue().getDataSourceMapper());
         }
         return result;
+    }
+    
+    @Override
+    public void updateRuleStatus(final RuleChangedEvent event) {
+        if (event instanceof DataSourceNameDisabledEvent) {
+            for (Entry<String, MasterSlaveDataSourceRule> entry : dataSourceRules.entrySet()) {
+                entry.getValue().updateDisabledDataSourceNames(((DataSourceNameDisabledEvent) event).getDataSourceName(), ((DataSourceNameDisabledEvent) event).isDisabled());
+            }
+        }
     }
 }

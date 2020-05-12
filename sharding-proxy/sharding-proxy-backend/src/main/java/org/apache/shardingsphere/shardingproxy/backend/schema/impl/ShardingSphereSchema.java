@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.schema.impl;
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.core.log.ConfigurationLogger;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
+import org.apache.shardingsphere.core.rule.event.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.ShardingRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
@@ -35,6 +35,7 @@ import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefr
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
+import org.apache.shardingsphere.underlying.common.rule.StatusContainedRule;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -73,8 +74,8 @@ public final class ShardingSphereSchema extends LogicSchema {
         OrchestrationSchema orchestrationSchema = disabledStateChangedEvent.getOrchestrationSchema();
         if (getName().equals(orchestrationSchema.getSchemaName())) {
             for (ShardingSphereRule each : getRules()) {
-                if (each instanceof MasterSlaveRule) {
-                    ((MasterSlaveRule) each).updateDisabledDataSourceNames(orchestrationSchema.getDataSourceName(), disabledStateChangedEvent.isDisabled());
+                if (each instanceof StatusContainedRule) {
+                    ((StatusContainedRule) each).updateRuleStatus(new DataSourceNameDisabledEvent(orchestrationSchema.getDataSourceName(), disabledStateChangedEvent.isDisabled()));
                 }
             }
         }
