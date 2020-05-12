@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.rule;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveDataSourceConfiguration;
@@ -50,6 +51,7 @@ public final class MasterSlaveDataSourceRule {
     
     private final MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm;
     
+    @Getter(AccessLevel.NONE)
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
     public MasterSlaveDataSourceRule(final MasterSlaveDataSourceConfiguration configuration) {

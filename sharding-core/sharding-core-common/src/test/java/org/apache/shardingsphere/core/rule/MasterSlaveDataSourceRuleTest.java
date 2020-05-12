@@ -46,13 +46,13 @@ public final class MasterSlaveDataSourceRuleTest {
     @Test
     public void assertUpdateDisabledDataSourceNamesForDisabled() {
         masterSlaveDataSourceRule.updateDisabledDataSourceNames("slave_db_0", true);
-        assertThat(masterSlaveDataSourceRule.getDisabledDataSourceNames(), is(Collections.singleton("slave_db_0")));
+        assertThat(masterSlaveDataSourceRule.getSlaveDataSourceNames(), is(Collections.singletonList("slave_db_1")));
     }
     
     @Test
     public void assertUpdateDisabledDataSourceNamesForEnabled() {
         masterSlaveDataSourceRule.updateDisabledDataSourceNames("slave_db_0", true);
         masterSlaveDataSourceRule.updateDisabledDataSourceNames("slave_db_0", false);
-        assertThat(masterSlaveDataSourceRule.getDisabledDataSourceNames(), is(Collections.emptySet()));
+        assertThat(masterSlaveDataSourceRule.getSlaveDataSourceNames(), is(Arrays.asList("slave_db_0", "slave_db_1")));
     }
 }
