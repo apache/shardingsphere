@@ -45,7 +45,17 @@ public enum MetricsLabelEnum {
     /**
      * Request latency metrics label.
      */
-    REQUEST_LATENCY("request_latency");
+    REQUEST_LATENCY("request_latency"),
+    
+    /**
+     * Sharding metrics label.
+     */
+    SHARDING("sharding"),
+    
+    /**
+     * Transaction metrics label.
+     */
+    TRANSACTION("transaction");
     
     private final String name;
 }
