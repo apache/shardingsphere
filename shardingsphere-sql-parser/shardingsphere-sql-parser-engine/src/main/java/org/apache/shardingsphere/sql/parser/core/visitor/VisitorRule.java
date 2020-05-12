@@ -122,6 +122,8 @@ public enum VisitorRule {
     
     SET("Set", SQLStatementType.DAL),
     
+    SETNAME("SetName", SQLStatementType.DAL),
+    
     RESET_PARAMETER("ResetParameter", SQLStatementType.DAL),
     
     CALL("Call", SQLStatementType.DML),

@@ -61,6 +61,7 @@ execute
     | showCreateTable
     | showOther
     | setVariable
+    | setName
     | call
     | changeMasterTo
     | startSlave
