@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Databases and tables master-slave rule.
+ * Master-slave rule.
  */
 @Getter
 public final class MasterSlaveRule implements DataSourceRoutedRule {
