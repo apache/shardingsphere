@@ -39,10 +39,14 @@
             <artifactId>sharding-core-common</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-route</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>master-slave-core-common</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

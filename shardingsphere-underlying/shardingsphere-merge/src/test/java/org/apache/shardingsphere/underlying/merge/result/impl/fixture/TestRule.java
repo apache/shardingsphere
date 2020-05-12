@@ -17,16 +17,10 @@
 
 package org.apache.shardingsphere.underlying.merge.result.impl.fixture;
 
-import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 
 /**
  * Rule for test.
  */
-public final class TestRule implements BaseRule {
-    
-    @Override
-    public RuleConfiguration getRuleConfiguration() {
-        return null;
-    }
+public final class TestRule implements ShardingSphereRule {
 }

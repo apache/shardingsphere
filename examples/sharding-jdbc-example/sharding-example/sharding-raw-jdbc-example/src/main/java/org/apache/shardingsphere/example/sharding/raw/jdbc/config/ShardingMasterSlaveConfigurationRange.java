@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.example.sharding.raw.jdbc.config;
 
-import com.google.common.collect.Lists;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
@@ -28,14 +28,13 @@ import org.apache.shardingsphere.example.algorithm.StandardModuloShardingDatabas
 import org.apache.shardingsphere.example.algorithm.StandardModuloShardingTableAlgorithm;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
-import org.apache.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -43,35 +42,7 @@ public final class ShardingMasterSlaveConfigurationRange implements ExampleConfi
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
-        shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
-        shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
-        shardingRuleConfig.getBroadcastTables().add("t_address");
-        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(
-                new StandardShardingStrategyConfiguration("user_id", new StandardModuloShardingDatabaseAlgorithm()));
-        shardingRuleConfig.setDefaultTableShardingStrategyConfig(
-                new StandardShardingStrategyConfiguration("order_id", new StandardModuloShardingTableAlgorithm()));
-        shardingRuleConfig.setMasterSlaveRuleConfigs(getMasterSlaveRuleConfigurations());
-        return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new Properties());
-    }
-    
-    private static TableRuleConfiguration getOrderTableRuleConfiguration() {
-        TableRuleConfiguration result = new TableRuleConfiguration("t_order", "ds_${0..1}.t_order_${[0, 1]}");
-        result.setKeyGeneratorConfig(new KeyGeneratorConfiguration("order_id", getSnowflakeKeyGenerateAlgorithm()));
-        return result;
-    }
-    
-    private static TableRuleConfiguration getOrderItemTableRuleConfiguration() {
-        TableRuleConfiguration result = new TableRuleConfiguration("t_order_item", "ds_${0..1}.t_order_item_${[0, 1]}");
-        result.setKeyGeneratorConfig(new KeyGeneratorConfiguration("order_item_id", getSnowflakeKeyGenerateAlgorithm()));
-        return result;
-    }
-    
-    private static List<MasterSlaveRuleConfiguration> getMasterSlaveRuleConfigurations() {
-        MasterSlaveRuleConfiguration masterSlaveRuleConfig1 = new MasterSlaveRuleConfiguration("ds_0", "demo_ds_master_0", Arrays.asList("demo_ds_master_0_slave_0", "demo_ds_master_0_slave_1"));
-        MasterSlaveRuleConfiguration masterSlaveRuleConfig2 = new MasterSlaveRuleConfiguration("ds_1", "demo_ds_master_1", Arrays.asList("demo_ds_master_1_slave_0", "demo_ds_master_1_slave_1"));
-        return Lists.newArrayList(masterSlaveRuleConfig1, masterSlaveRuleConfig2);
+        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Arrays.asList(createShardingRuleConfiguration(), createMasterSlaveRuleConfiguration()), new Properties());
     }
     
     private static Map<String, DataSource> createDataSourceMap() {
@@ -85,13 +56,44 @@ public final class ShardingMasterSlaveConfigurationRange implements ExampleConfi
         return result;
     }
     
-    private static KeyGenerateAlgorithm getSnowflakeKeyGenerateAlgorithm() {
-        KeyGenerateAlgorithm result = new SnowflakeKeyGenerateAlgorithm();
-        result.setProperties(getProperties());
+    private ShardingRuleConfiguration createShardingRuleConfiguration() {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        result.getTableRuleConfigs().add(createOrderTableRuleConfiguration());
+        result.getTableRuleConfigs().add(createOrderItemTableRuleConfiguration());
+        result.getBindingTableGroups().add("t_order, t_order_item");
+        result.getBroadcastTables().add("t_address");
+        result.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", new StandardModuloShardingDatabaseAlgorithm()));
+        result.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new StandardModuloShardingTableAlgorithm()));
         return result;
     }
     
-    private static Properties getProperties() {
+    private static TableRuleConfiguration createOrderTableRuleConfiguration() {
+        TableRuleConfiguration result = new TableRuleConfiguration("t_order", "ds_${0..1}.t_order_${[0, 1]}");
+        result.setKeyGeneratorConfig(new KeyGeneratorConfiguration("order_id", createSnowflakeKeyGenerateAlgorithm()));
+        return result;
+    }
+    
+    private static TableRuleConfiguration createOrderItemTableRuleConfiguration() {
+        TableRuleConfiguration result = new TableRuleConfiguration("t_order_item", "ds_${0..1}.t_order_item_${[0, 1]}");
+        result.setKeyGeneratorConfig(new KeyGeneratorConfiguration("order_item_id", createSnowflakeKeyGenerateAlgorithm()));
+        return result;
+    }
+    
+    private static KeyGenerateAlgorithm createSnowflakeKeyGenerateAlgorithm() {
+        KeyGenerateAlgorithm result = new SnowflakeKeyGenerateAlgorithm();
+        result.setProperties(createProperties());
+        return result;
+    }
+    
+    private static MasterSlaveRuleConfiguration createMasterSlaveRuleConfiguration() {
+        MasterSlaveDataSourceConfiguration dataSourceConfiguration1 = new MasterSlaveDataSourceConfiguration(
+                "ds_0", "demo_ds_master_0", Arrays.asList("demo_ds_master_0_slave_0", "demo_ds_master_0_slave_1"));
+        MasterSlaveDataSourceConfiguration dataSourceConfiguration2 = new MasterSlaveDataSourceConfiguration(
+                "ds_1", "demo_ds_master_1", Arrays.asList("demo_ds_master_1_slave_0", "demo_ds_master_1_slave_1"));
+        return new MasterSlaveRuleConfiguration(Arrays.asList(dataSourceConfiguration1, dataSourceConfiguration2));
+    }
+    
+    private static Properties createProperties() {
         Properties result = new Properties();
         result.setProperty("worker.id", "123");
         return result;

@@ -17,11 +17,36 @@
   -->
 
 <sql-parser-test-cases>
-    <set-variable sql-case-id="set_parameter_equal" variable="configuration_parameter" />
-    <set-variable sql-case-id="set_parameter_to" variable="configuration_parameter" />
-    <set-variable sql-case-id="set_parameter_for_session_scope" variable="configuration_parameter" />
-    <set-variable sql-case-id="set_parameter_for_local_scope" variable="configuration_parameter" />
-    <set-variable sql-case-id="set_parameter_for_default_scope" variable="configuration_parameter" />
+    <set-variable sql-case-id="set_parameter_equal" >
+        <variable-assign value="'value'" >
+            <variable name="configuration_parameter" />
+        </variable-assign>
+    </set-variable>
+    <set-variable sql-case-id="set_parameter_equal_session_mysql" >
+        <variable-assign value="'value'" >
+            <variable name="configuration_parameter" scope="SESSION"/>
+        </variable-assign>
+    </set-variable>
+    <set-variable sql-case-id="set_parameter_to" >
+        <variable-assign value="'value'" >
+            <variable name="configuration_parameter" />
+        </variable-assign>
+    </set-variable>
+    <set-variable sql-case-id="set_parameter_for_session_scope" >
+        <variable-assign value="'value'" >
+            <variable name="configuration_parameter" scope="SESSION"/>
+        </variable-assign>
+    </set-variable>
+    <set-variable sql-case-id="set_parameter_for_local_scope" >
+        <variable-assign value="'value'" >
+            <variable name="configuration_parameter" scope="LOCAL"/>
+        </variable-assign>
+    </set-variable>
+    <set-variable sql-case-id="set_parameter_for_default_scope" >
+        <variable-assign value="DEFAULT" >
+            <variable name="configuration_parameter"/>
+        </variable-assign>
+    </set-variable>
     <set-variable sql-case-id="set_timezone_with_zero_value" />
     <set-variable sql-case-id="set_timezone_with_positive_value" />
     <set-variable sql-case-id="set_timezone_with_negative_value" />

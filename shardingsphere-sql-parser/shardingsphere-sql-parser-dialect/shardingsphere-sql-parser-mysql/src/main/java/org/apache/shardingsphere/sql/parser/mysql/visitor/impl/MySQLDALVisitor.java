@@ -19,10 +19,11 @@ package org.apache.shardingsphere.sql.parser.mysql.visitor.impl;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.DALVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.VariableAssignContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AnalyzeTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CacheIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChecksumTableContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DescContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExplainContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FlushContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromTableContext;
@@ -58,6 +59,7 @@ import org.apache.shardingsphere.sql.parser.mysql.visitor.MySQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.FromSchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.FromTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.ShowLikeSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
@@ -93,6 +95,9 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.Unin
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.StringLiteralValue;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * DAL visitor for MySQL.
@@ -207,7 +212,7 @@ public final class MySQLDALVisitor extends MySQLVisitor implements DALVisitor {
     }
     
     @Override
-    public ASTNode visitDesc(final DescContext ctx) {
+    public ASTNode visitExplain(final ExplainContext ctx) {
         DescribeStatement result = new DescribeStatement();
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         return result;
@@ -284,15 +289,34 @@ public final class MySQLDALVisitor extends MySQLVisitor implements DALVisitor {
     @Override
     public ASTNode visitSetVariable(final SetVariableContext ctx) {
         SetStatement result = new SetStatement();
-        if (null != ctx.variable()) {
-            result.setVariable((VariableSegment) visit(ctx.variable()));
+        Collection<VariableAssignSegment> variableAssigns = new LinkedList<>();
+        for (VariableAssignContext each : ctx.variableAssign()) {
+            variableAssigns.add((VariableAssignSegment) visit(each));
         }
+        result.getVariableAssigns().addAll(variableAssigns);
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitVariableAssign(final VariableAssignContext ctx) {
+        VariableAssignSegment result = new VariableAssignSegment();
+        result.setStartIndex(ctx.start.getStartIndex());
+        result.setStopIndex(ctx.stop.getStopIndex());
+        result.setVariable((VariableSegment) visit(ctx.variable()));
+        result.setAssignValue(ctx.expr().getText());
         return result;
     }
     
     @Override
     public ASTNode visitVariable(final VariableContext ctx) {
-        return new VariableSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        VariableSegment result = new VariableSegment();
+        result.setStartIndex(ctx.start.getStartIndex());
+        result.setStopIndex(ctx.stop.getStopIndex());
+        if (null != ctx.scope()) {
+            result.setScope(ctx.scope().getText());
+        }
+        result.setVariable(ctx.identifier().getText());
+        return result;
     }
     
     @Override

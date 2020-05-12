@@ -17,31 +17,50 @@
 
 package org.apache.shardingsphere.core.rule;
 
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.LoadBalanceStrategyConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.masterslave.core.rule.MasterSlaveDataSourceRule;
+import org.apache.shardingsphere.masterslave.core.rule.MasterSlaveRule;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 
-import static org.junit.Assert.assertFalse;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class MasterSlaveRuleTest {
     
-    @Test
-    public void assertContainDataSourceNameWithMasterDataSourceName() {
-        MasterSlaveRule actual = new MasterSlaveRule(new MasterSlaveRuleConfiguration("master_slave", "master_ds", Collections.singletonList("slave_ds")));
-        assertTrue(actual.containDataSourceName("master_ds"));
+    @Test(expected = IllegalArgumentException.class)
+    public void assertNewWithEmptyDataSourceRule() {
+        new MasterSlaveRule(new MasterSlaveRuleConfiguration(Collections.emptyList()));
     }
     
     @Test
-    public void assertContainDataSourceNameWithSlaveDataSourceName() {
-        MasterSlaveRule actual = new MasterSlaveRule(new MasterSlaveRuleConfiguration("master_slave", "master_ds", Collections.singletonList("slave_ds")));
-        assertTrue(actual.containDataSourceName("slave_ds"));
+    public void assertFindDataSourceRule() {
+        Optional<MasterSlaveDataSourceRule> actual = createMasterSlaveRule().findDataSourceRule("test_ms");
+        assertTrue(actual.isPresent());
+        assertDataSourceRule(actual.get());
     }
     
     @Test
-    public void assertNotContainDataSourceName() {
-        MasterSlaveRule actual = new MasterSlaveRule(new MasterSlaveRuleConfiguration("master_slave", "master_ds", Collections.singletonList("slave_ds")));
-        assertFalse(actual.containDataSourceName("master_slave"));
+    public void assertGetSingleDataSourceRule() {
+        assertDataSourceRule(createMasterSlaveRule().getSingleDataSourceRule());
+    }
+    
+    private MasterSlaveRule createMasterSlaveRule() {
+        MasterSlaveDataSourceConfiguration configuration = new MasterSlaveDataSourceConfiguration(
+                "test_ms", "master_db", Arrays.asList("slave_db_0", "slave_db_1"), new LoadBalanceStrategyConfiguration("RANDOM"));
+        return new MasterSlaveRule(new MasterSlaveRuleConfiguration(Collections.singleton(configuration)));
+    }
+    
+    private void assertDataSourceRule(final MasterSlaveDataSourceRule actual) {
+        assertThat(actual.getName(), is("test_ms"));
+        assertThat(actual.getMasterDataSourceName(), is("master_db"));
+        assertThat(actual.getSlaveDataSourceNames(), is(Arrays.asList("slave_db_0", "slave_db_1")));
+        assertThat(actual.getLoadBalanceAlgorithm().getType(), is("RANDOM"));
     }
 }

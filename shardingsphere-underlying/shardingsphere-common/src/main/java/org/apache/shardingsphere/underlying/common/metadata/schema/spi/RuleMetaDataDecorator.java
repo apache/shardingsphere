@@ -19,12 +19,12 @@ package org.apache.shardingsphere.underlying.common.metadata.schema.spi;
 
 import org.apache.shardingsphere.spi.order.OrderedSPI;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 
 /**
  * Rule meta data decorator.
  */
-public interface RuleMetaDataDecorator<T extends BaseRule> extends OrderedSPI<T> {
+public interface RuleMetaDataDecorator<T extends ShardingSphereRule> extends OrderedSPI<T> {
     
     /**
      * Decorate table meta data.

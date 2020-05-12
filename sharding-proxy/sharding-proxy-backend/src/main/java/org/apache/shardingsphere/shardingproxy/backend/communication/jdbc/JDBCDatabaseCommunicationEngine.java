@@ -31,7 +31,7 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryRespo
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
-import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSphereSchema;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
@@ -39,7 +39,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.underlying.common.rule.TablesAggregationRule;
+import org.apache.shardingsphere.underlying.common.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.underlying.executor.sql.QueryResult;
 import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.sql.log.SQLLogger;
@@ -90,7 +90,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         }
         response = executeEngine.execute(executionContext);
         // TODO refresh non-sharding table meta data
-        if (logicSchema instanceof ShardingSchema) {
+        if (logicSchema instanceof ShardingSphereSchema) {
             logicSchema.refreshTableMetaData(executionContext.getSqlStatementContext());
         }
         return merge(executionContext.getSqlStatementContext());
@@ -127,9 +127,8 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private boolean isNeedAccumulate(final SQLStatementContext sqlStatementContext) {
-        Optional<TablesAggregationRule> tablesAggregationRule = logicSchema.getRules().stream().filter(
-            each -> each instanceof TablesAggregationRule).findFirst().map(rule -> (TablesAggregationRule) rule);
-        return tablesAggregationRule.isPresent() && tablesAggregationRule.get().isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames());
+        Optional<DataNodeRoutedRule> dataNodeRoutedRule = logicSchema.getRules().stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
+        return dataNodeRoutedRule.isPresent() && dataNodeRoutedRule.get().isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames());
     }
     
     private MergedResult mergeQuery(final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {

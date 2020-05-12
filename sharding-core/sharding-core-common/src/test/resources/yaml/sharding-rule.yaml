@@ -110,7 +110,9 @@ shardingRule:
           algorithm.expression: ds_${order_id % 2}
   defaultTableStrategy: 
     none:
-  masterSlaveRules:
+
+masterSlaveRule:
+  dataSources:
     ds_0:
       masterDataSourceName: master_ds_0
       slaveDataSourceNames:

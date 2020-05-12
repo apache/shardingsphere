@@ -19,7 +19,7 @@ package org.apache.shardingsphere.masterslave.route.engine.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
+import org.apache.shardingsphere.masterslave.core.rule.MasterSlaveDataSourceRule;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 
@@ -31,7 +31,7 @@ import java.util.ArrayList;
 @RequiredArgsConstructor
 public final class MasterSlaveDataSourceRouter {
     
-    private final MasterSlaveRule masterSlaveRule;
+    private final MasterSlaveDataSourceRule masterSlaveDataSourceRule;
     
     /**
      * Route.
@@ -42,10 +42,10 @@ public final class MasterSlaveDataSourceRouter {
     public String route(final SQLStatement sqlStatement) {
         if (isMasterRoute(sqlStatement)) {
             MasterVisitedManager.setMasterVisited();
-            return masterSlaveRule.getMasterDataSourceName();
+            return masterSlaveDataSourceRule.getMasterDataSourceName();
         }
-        return masterSlaveRule.getLoadBalanceAlgorithm().getDataSource(
-                masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), new ArrayList<>(masterSlaveRule.getSlaveDataSourceNames()));
+        return masterSlaveDataSourceRule.getLoadBalanceAlgorithm().getDataSource(
+                masterSlaveDataSourceRule.getName(), masterSlaveDataSourceRule.getMasterDataSourceName(), new ArrayList<>(masterSlaveDataSourceRule.getSlaveDataSourceNames()));
     }
     
     private boolean isMasterRoute(final SQLStatement sqlStatement) {

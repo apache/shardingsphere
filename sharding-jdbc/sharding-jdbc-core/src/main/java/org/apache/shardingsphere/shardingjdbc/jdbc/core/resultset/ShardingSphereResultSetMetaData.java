@@ -25,8 +25,8 @@ import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.imp
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
-import org.apache.shardingsphere.underlying.common.rule.TablesAggregationRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
+import org.apache.shardingsphere.underlying.common.rule.DataNodeRoutedRule;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -42,7 +42,7 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     private final ResultSetMetaData resultSetMetaData;
     
-    private final Collection<BaseRule> rules;
+    private final Collection<ShardingSphereRule> rules;
     
     private final SQLStatementContext sqlStatementContext;
     
@@ -124,8 +124,8 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     @Override
     public String getTableName(final int column) throws SQLException {
         String actualTableName = resultSetMetaData.getTableName(column);
-        Optional<BaseRule> rule = rules.stream().filter(each -> each instanceof TablesAggregationRule).findFirst();
-        return rule.isPresent() ? ((TablesAggregationRule) rule.get()).findLogicTableByActualTable(actualTableName).orElse(actualTableName) : actualTableName;
+        Optional<ShardingSphereRule> rule = rules.stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst();
+        return rule.isPresent() ? ((DataNodeRoutedRule) rule.get()).findLogicTableByActualTable(actualTableName).orElse(actualTableName) : actualTableName;
     }
     
     @Override

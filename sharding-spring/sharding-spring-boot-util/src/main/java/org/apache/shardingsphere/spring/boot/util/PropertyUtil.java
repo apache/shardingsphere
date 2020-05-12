@@ -82,7 +82,7 @@ public final class PropertyUtil {
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private static Object v1(final Environment environment, final String prefix, final boolean handlePlaceholder) {
         Class<?> resolverClass = Class.forName("org.springframework.boot.bind.RelaxedPropertyResolver");
         Constructor<?> resolverConstructor = resolverClass.getDeclaredConstructor(PropertyResolver.class);
@@ -105,7 +105,7 @@ public final class PropertyUtil {
         return Collections.unmodifiableMap(propertiesWithPlaceholderResolved);
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private static Object v2(final Environment environment, final String prefix, final Class<?> targetClass) {
         Class<?> binderClass = Class.forName("org.springframework.boot.context.properties.bind.Binder");
         Method getMethod = binderClass.getDeclaredMethod("get", Environment.class);

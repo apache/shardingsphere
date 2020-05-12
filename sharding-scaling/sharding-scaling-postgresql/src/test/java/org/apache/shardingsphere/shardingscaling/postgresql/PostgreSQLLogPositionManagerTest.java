@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingscaling.postgresql;
 
-import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +29,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -65,8 +65,7 @@ public final class PostgreSQLLogPositionManagerTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetCurrentPositionOnPostgreSQL96() {
+    public void assertGetCurrentPositionOnPostgreSQL96() throws SQLException {
         PostgreSQLLogPositionManager postgreSQLLogManager = new PostgreSQLLogPositionManager(dataSource);
         when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(9);
         when(databaseMetaData.getDatabaseMinorVersion()).thenReturn(6);
@@ -75,8 +74,7 @@ public final class PostgreSQLLogPositionManagerTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetCurrentPositionOnPostgreSQL10() {
+    public void assertGetCurrentPositionOnPostgreSQL10() throws SQLException {
         PostgreSQLLogPositionManager postgreSQLLogManager = new PostgreSQLLogPositionManager(dataSource);
         when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(10);
         WalPosition actual = postgreSQLLogManager.getCurrentPosition();
@@ -84,12 +82,11 @@ public final class PostgreSQLLogPositionManagerTest {
     }
     
     @Test(expected = RuntimeException.class)
-    @SneakyThrows
-    public void assertGetCurrentPositionThrowException() {
+    public void assertGetCurrentPositionThrowException() throws SQLException {
         PostgreSQLLogPositionManager postgreSQLLogManager = new PostgreSQLLogPositionManager(dataSource);
         when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(9);
         when(databaseMetaData.getDatabaseMinorVersion()).thenReturn(4);
-        WalPosition actual = postgreSQLLogManager.getCurrentPosition();
+        postgreSQLLogManager.getCurrentPosition();
     }
     
     @Test
@@ -100,8 +97,7 @@ public final class PostgreSQLLogPositionManagerTest {
         assertThat(postgreSQLLogManager.getCurrentPosition(), is(expected));
     }
     
-    @SneakyThrows
-    private PreparedStatement mockPostgreSQL96Lsn() {
+    private PreparedStatement mockPostgreSQL96Lsn() throws SQLException {
         PreparedStatement result = mock(PreparedStatement.class);
         ResultSet resultSet = mock(ResultSet.class);
         when(result.executeQuery()).thenReturn(resultSet);
@@ -110,8 +106,7 @@ public final class PostgreSQLLogPositionManagerTest {
         return result;
     }
     
-    @SneakyThrows
-    private PreparedStatement mockPostgreSQL10Lsn() {
+    private PreparedStatement mockPostgreSQL10Lsn() throws SQLException {
         PreparedStatement result = mock(PreparedStatement.class);
         ResultSet resultSet = mock(ResultSet.class);
         when(result.executeQuery()).thenReturn(resultSet);

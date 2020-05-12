@@ -25,10 +25,10 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class IncrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
-    
+
     @Getter
     private final String type = "INCREMENT";
-    
+
     private final AtomicInteger count = new AtomicInteger();
     
     @Getter

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.orchestration.core.common.listener.PostSharding
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registrycenter.RegistryCenterNode;
 import org.apache.shardingsphere.orchestration.core.registrycenter.RegistryCenterNodeStatus;
-import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationShardingSchema;
+import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationSchema;
 
 import java.util.Collections;
 
@@ -33,11 +33,11 @@ import java.util.Collections;
  */
 public final class DataSourceStateChangedListener extends PostShardingCenterRepositoryEventListener {
     
-    private final RegistryCenterNode stateNode;
+    private final RegistryCenterNode registryCenterNode;
     
     public DataSourceStateChangedListener(final String name, final RegistryCenterRepository registryCenterRepository) {
         super(registryCenterRepository, Collections.singleton(new RegistryCenterNode(name).getDataSourcesNodeFullRootPath()));
-        stateNode = new RegistryCenterNode(name);
+        registryCenterNode = new RegistryCenterNode(name);
     }
     
     @Override
@@ -45,8 +45,8 @@ public final class DataSourceStateChangedListener extends PostShardingCenterRepo
         return new DisabledStateChangedEvent(getShardingSchema(event.getKey()), isDataSourceDisabled(event));
     }
     
-    private OrchestrationShardingSchema getShardingSchema(final String dataSourceNodeFullPath) {
-        return stateNode.getOrchestrationShardingSchema(dataSourceNodeFullPath);
+    private OrchestrationSchema getShardingSchema(final String dataSourceNodeFullPath) {
+        return registryCenterNode.getOrchestrationShardingSchema(dataSourceNodeFullPath);
     }
     
     private boolean isDataSourceDisabled(final DataChangedEvent event) {

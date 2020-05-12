@@ -19,20 +19,22 @@ package org.apache.shardingsphere.core.rule;
 
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
+
+import java.util.Map;
 
 /**
  * Databases shadow rule.
  */
 @Getter
-public final class ShadowRule implements BaseRule {
+public final class ShadowRule implements ShardingSphereRule {
     
-    private ShadowRuleConfiguration ruleConfiguration;
+    private Map<String, String> shadowMappings;
     
     private String column;
     
     public ShadowRule(final ShadowRuleConfiguration shadowRuleConfiguration) {
         column = shadowRuleConfiguration.getColumn();
-        ruleConfiguration = shadowRuleConfiguration;
+        shadowMappings = shadowRuleConfiguration.getShadowMappings();
     }
 }

@@ -38,7 +38,7 @@ public final class MemoryChannel implements Channel {
     
     private final AckCallback ackCallback;
     
-    private List<Record> toBeAcknowledgeRecords = new LinkedList<>();
+    private final List<Record> toBeAcknowledgeRecords = new LinkedList<>();
     
     public MemoryChannel(final AckCallback ackCallback) {
         this.ackCallback = ackCallback;

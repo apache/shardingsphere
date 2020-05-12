@@ -40,8 +40,8 @@ public final class JoinSpecificationAssert {
      * @param expected expected JoinSpecification
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final JoinSpecificationSegment actual, final ExpectedJoinSpecification expected) {
-        assertThat(assertContext.getText("startindex assert error"), actual.getStartIndex(), is(expected.getStartIndex()));
-        assertThat(assertContext.getText("stopindex assert error"), actual.getStopIndex(), is(expected.getStopIndex()));
+        assertThat(assertContext.getText("Start index assert error"), actual.getStartIndex(), is(expected.getStartIndex()));
+        assertThat(assertContext.getText("Stop index assert error"), actual.getStopIndex(), is(expected.getStopIndex()));
         PredicatesAssert.assertIs(assertContext, actual.getAndPredicates(), expected.getAndPredicates());
     }
 }

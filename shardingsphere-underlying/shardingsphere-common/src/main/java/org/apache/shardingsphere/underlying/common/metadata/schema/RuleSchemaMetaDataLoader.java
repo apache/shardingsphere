@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.underlying.common.metadata.schema;
 
+import com.google.common.util.concurrent.ListeningExecutorService;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
@@ -25,11 +26,14 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDat
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.datanode.DataNodes;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleMetaDataDecorator;
 import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleMetaDataLoader;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
-import org.apache.shardingsphere.underlying.common.rule.TablesAggregationRule;
+import org.apache.shardingsphere.underlying.common.rule.DataNodeRoutedRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -39,6 +43,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Rule schema meta data loader.
@@ -51,7 +57,7 @@ public final class RuleSchemaMetaDataLoader {
         ShardingSphereServiceLoader.register(RuleMetaDataDecorator.class);
     }
     
-    private final Collection<BaseRule> rules;
+    private final Collection<ShardingSphereRule> rules;
     
     /**
      * Load rule schema meta data.
@@ -59,31 +65,27 @@ public final class RuleSchemaMetaDataLoader {
      * @param databaseType database type
      * @param dataSourceMap data source map
      * @param properties configuration properties
+     * @param executorService executor service
      * @return rule schema meta data
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("unchecked")
-    public RuleSchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final ConfigurationProperties properties) throws SQLException {
+    public RuleSchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final ConfigurationProperties properties,
+                                   final ListeningExecutorService executorService) throws SQLException {
         Collection<String> excludedTableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         SchemaMetaData configuredSchemaMetaData = new SchemaMetaData(new HashMap<>());
-        for (Entry<BaseRule, RuleMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataLoader.class).entrySet()) {
-            SchemaMetaData schemaMetaData = entry.getValue().load(databaseType, dataSourceMap, entry.getKey(), properties, excludedTableNames);
+        for (Entry<ShardingSphereRule, RuleMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataLoader.class).entrySet()) {
+            SchemaMetaData schemaMetaData = entry.getValue().load(databaseType, dataSourceMap, new DataNodes(rules), entry.getKey(), properties, excludedTableNames);
             excludedTableNames.addAll(schemaMetaData.getAllTableNames());
-            if (entry.getKey() instanceof TablesAggregationRule) {
-                excludedTableNames.addAll(((TablesAggregationRule) entry.getKey()).getAllActualTables());
+            if (entry.getKey() instanceof DataNodeRoutedRule) {
+                excludedTableNames.addAll(((DataNodeRoutedRule) entry.getKey()).getAllActualTables());
             }
             configuredSchemaMetaData.merge(schemaMetaData);
         }
         configuredSchemaMetaData = decorate(configuredSchemaMetaData);
-        Map<String, SchemaMetaData> unconfiguredSchemaMetaDataMap = new HashMap<>(dataSourceMap.size(), 1);
         int maxConnectionCount = properties.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        // TODO use multiple threads for different data sources
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            SchemaMetaData schemaMetaData = SchemaMetaDataLoader.load(entry.getValue(), maxConnectionCount, databaseType.getName(), excludedTableNames);
-            if (!schemaMetaData.getAllTableNames().isEmpty()) {
-                unconfiguredSchemaMetaDataMap.put(entry.getKey(), schemaMetaData);
-            }
-        }
+        Map<String, SchemaMetaData> unconfiguredSchemaMetaDataMap = executorService == null ? syncLoad(databaseType, dataSourceMap, maxConnectionCount, excludedTableNames)
+                : asyncLoad(databaseType, dataSourceMap, executorService, maxConnectionCount, excludedTableNames);
         return new RuleSchemaMetaData(configuredSchemaMetaData, unconfiguredSchemaMetaDataMap);
     }
     
@@ -93,13 +95,15 @@ public final class RuleSchemaMetaDataLoader {
      * @param databaseType database type
      * @param dataSource data source
      * @param properties configuration properties
+     * @param executorService executor service
      * @return rule schema meta data
      * @throws SQLException SQL exception
      */
-    public RuleSchemaMetaData load(final DatabaseType databaseType, final DataSource dataSource, final ConfigurationProperties properties) throws SQLException {
+    public RuleSchemaMetaData load(final DatabaseType databaseType, final DataSource dataSource, final ConfigurationProperties properties,
+                                   final ListeningExecutorService executorService) throws SQLException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put("ds", dataSource);
-        return load(databaseType, dataSourceMap, properties);
+        dataSourceMap.put(DefaultSchema.LOGIC_NAME, dataSource);
+        return load(databaseType, dataSourceMap, properties, executorService);
     }
     
     /**
@@ -115,8 +119,8 @@ public final class RuleSchemaMetaDataLoader {
     @SuppressWarnings("unchecked")
     public Optional<TableMetaData> load(final DatabaseType databaseType, 
                                         final Map<String, DataSource> dataSourceMap, final String tableName, final ConfigurationProperties properties) throws SQLException {
-        for (Entry<BaseRule, RuleMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataLoader.class).entrySet()) {
-            Optional<TableMetaData> result = entry.getValue().load(databaseType, dataSourceMap, tableName, entry.getKey(), properties);
+        for (Entry<ShardingSphereRule, RuleMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataLoader.class).entrySet()) {
+            Optional<TableMetaData> result = entry.getValue().load(databaseType, dataSourceMap, new DataNodes(rules), tableName, entry.getKey(), properties);
             if (result.isPresent()) {
                 return Optional.of(decorate(tableName, result.get()));
             }
@@ -137,16 +141,50 @@ public final class RuleSchemaMetaDataLoader {
     public Optional<TableMetaData> load(final DatabaseType databaseType,
                                         final DataSource dataSource, final String tableName, final ConfigurationProperties properties) throws SQLException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
-        dataSourceMap.put("ds", dataSource);
+        dataSourceMap.put(DefaultSchema.LOGIC_NAME, dataSource);
         return load(databaseType, dataSourceMap, tableName, properties);
+    }
+    
+    private Map<String, SchemaMetaData> asyncLoad(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final ListeningExecutorService executorService,
+                                                  final int maxConnectionCount, final Collection<String> excludedTableNames) {
+        Map<String, SchemaMetaData> result = new ConcurrentHashMap<>(dataSourceMap.size(), 1);
+        dataSourceMap.entrySet().stream().map(each -> executorService.submit(() -> {
+            try {
+                SchemaMetaData schemaMetaData = SchemaMetaDataLoader.load(each.getValue(), maxConnectionCount, databaseType.getName(), excludedTableNames);
+                if (!schemaMetaData.getAllTableNames().isEmpty()) {
+                    result.put(each.getKey(), schemaMetaData);
+                }
+            } catch (final SQLException ex) {
+                throw new ShardingSphereException("RuleSchemaMetaData load failed", ex);
+            }
+        })).forEach(listenableFuture -> {
+            try {
+                listenableFuture.get();
+            } catch (final InterruptedException | ExecutionException ex) {
+                throw new ShardingSphereException("RuleSchemaMetaData load failed", ex);
+            }
+        });
+        return result;
+    }
+    
+    private Map<String, SchemaMetaData> syncLoad(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+                                                 final int maxConnectionCount, final Collection<String> excludedTableNames) throws SQLException {
+        Map<String, SchemaMetaData> result = new HashMap<>(dataSourceMap.size(), 1);
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            SchemaMetaData schemaMetaData = SchemaMetaDataLoader.load(entry.getValue(), maxConnectionCount, databaseType.getName(), excludedTableNames);
+            if (!schemaMetaData.getAllTableNames().isEmpty()) {
+                result.put(entry.getKey(), schemaMetaData);
+            }
+        }
+        return result;
     }
     
     @SuppressWarnings("unchecked")
     private SchemaMetaData decorate(final SchemaMetaData schemaMetaData) {
         Map<String, TableMetaData> result = new HashMap<>(schemaMetaData.getAllTableNames().size(), 1);
-        Map<BaseRule, RuleMetaDataDecorator> decorators = OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataDecorator.class);
+        Map<ShardingSphereRule, RuleMetaDataDecorator> decorators = OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataDecorator.class);
         for (String each : schemaMetaData.getAllTableNames()) {
-            for (Entry<BaseRule, RuleMetaDataDecorator> entry : decorators.entrySet()) {
+            for (Entry<ShardingSphereRule, RuleMetaDataDecorator> entry : decorators.entrySet()) {
                 result.put(each, entry.getValue().decorate(each, result.getOrDefault(each, schemaMetaData.get(each)), entry.getKey()));
             }
         }
@@ -155,10 +193,7 @@ public final class RuleSchemaMetaDataLoader {
     
     @SuppressWarnings("unchecked")
     private TableMetaData decorate(final String tableName, final TableMetaData tableMetaData) {
-        TableMetaData result = tableMetaData;
-        for (Entry<BaseRule, RuleMetaDataDecorator> entry : OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataDecorator.class).entrySet()) {
-            result = entry.getValue().decorate(tableName, tableMetaData, entry.getKey());
-        }
-        return result;
+        return OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataDecorator.class).entrySet().stream()
+                .map(entry -> entry.getValue().decorate(tableName, tableMetaData, entry.getKey())).reduce((first, second) -> second).orElse(tableMetaData);
     }
 }

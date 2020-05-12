@@ -33,8 +33,6 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public final class SQLCaseAssertContext {
     
-    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-    
     private static final SQLCasesLoader SQL_CASES_LOADER = SQLCasesRegistry.getInstance().getSqlCasesLoader();
     
     private static final SQLParserTestCasesRegistry SQL_PARSER_TEST_CASES_REGISTRY = SQLParserTestCasesRegistryFactory.getInstance().getRegistry();
@@ -51,7 +49,7 @@ public final class SQLCaseAssertContext {
      * @return message text
      */
     public String getText(final String failureMessage) {
-        StringBuilder result = new StringBuilder(LINE_SEPARATOR);
+        StringBuilder result = new StringBuilder(System.lineSeparator());
         appendSQLCaseId(result);
         appendSQL(result);
         appendFailureMessage(failureMessage, result);
@@ -61,25 +59,25 @@ public final class SQLCaseAssertContext {
     private void appendSQLCaseId(final StringBuilder builder) {
         builder.append("SQL Case ID : ");
         builder.append(sqlCaseId);
-        builder.append(LINE_SEPARATOR);
+        builder.append(System.lineSeparator());
     }
     
     private void appendSQL(final StringBuilder builder) {
         builder.append("SQL         : ");
         if (SQLCaseType.Placeholder == sqlCaseType) {
             builder.append(SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, Collections.emptyList()));
-            builder.append(LINE_SEPARATOR);
+            builder.append(System.lineSeparator());
             builder.append("SQL Params  : ");
             builder.append(SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
-            builder.append(LINE_SEPARATOR);
+            builder.append(System.lineSeparator());
         } else {
             builder.append(SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters()));
         }
     }
     
     private void appendFailureMessage(final String failureMessage, final StringBuilder builder) {
-        builder.append(LINE_SEPARATOR);
+        builder.append(System.lineSeparator());
         builder.append(failureMessage);
-        builder.append(LINE_SEPARATOR);
+        builder.append(System.lineSeparator());
     }
 }

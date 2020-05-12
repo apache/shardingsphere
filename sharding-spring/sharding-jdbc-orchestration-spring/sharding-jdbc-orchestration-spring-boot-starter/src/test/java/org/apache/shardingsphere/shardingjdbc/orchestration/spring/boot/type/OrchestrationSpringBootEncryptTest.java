@@ -20,9 +20,8 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.type;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.util.EmbedTestingServer;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -55,20 +54,20 @@ public class OrchestrationSpringBootEncryptTest {
     }
     
     @Test
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     public void assertWithEncryptDataSource() {
-        assertTrue(dataSource instanceof OrchestrationEncryptDataSource);
-        Field field = OrchestrationEncryptDataSource.class.getDeclaredField("dataSource");
+        assertTrue(dataSource instanceof OrchestrationShardingSphereDataSource);
+        Field field = OrchestrationShardingSphereDataSource.class.getDeclaredField("dataSource");
         field.setAccessible(true);
-        EncryptDataSource encryptDataSource = (EncryptDataSource) field.get(dataSource);
-        BasicDataSource embedDataSource = (BasicDataSource) encryptDataSource.getDataSource();
+        ShardingSphereDataSource shardingSphereDataSource = (ShardingSphereDataSource) field.get(dataSource);
+        BasicDataSource embedDataSource = (BasicDataSource) shardingSphereDataSource.getDataSourceMap().values().iterator().next();
         assertThat(embedDataSource.getMaxTotal(), is(100));
         assertThat(embedDataSource.getUsername(), is("sa"));
-        EncryptRuleConfiguration encryptRuleConfig = ((EncryptRule) encryptDataSource.getRuntimeContext().getRules().iterator().next()).getRuleConfiguration();
-        assertThat(encryptRuleConfig.getEncryptors().size(), is(1));
-        assertTrue(encryptRuleConfig.getEncryptors().containsKey("order_encrypt"));
-        assertThat(encryptRuleConfig.getEncryptors().get("order_encrypt").getType(), is("aes"));
-        assertThat(encryptRuleConfig.getTables().size(), is(1));
-        assertThat(encryptRuleConfig.getTables().get("t_order").getColumns().get("order_id").getCipherColumn(), is("cipher_order_id"));
+        EncryptRuleConfiguration configuration = (EncryptRuleConfiguration) shardingSphereDataSource.getRuntimeContext().getConfigurations().iterator().next();
+        assertThat(configuration.getEncryptors().size(), is(1));
+        assertTrue(configuration.getEncryptors().containsKey("order_encrypt"));
+        assertThat(configuration.getEncryptors().get("order_encrypt").getType(), is("aes"));
+        assertThat(configuration.getTables().size(), is(1));
+        assertThat(configuration.getTables().get("t_order").getColumns().get("order_id").getCipherColumn(), is("cipher_order_id"));
     }
 }

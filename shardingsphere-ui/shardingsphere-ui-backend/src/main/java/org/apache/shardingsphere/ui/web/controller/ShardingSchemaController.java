@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.ui.web.controller;
 
-import org.apache.shardingsphere.ui.common.dto.ShardingSchemaDTO;
+import org.apache.shardingsphere.ui.common.dto.ShardingSphereSchemaDTO;
 import org.apache.shardingsphere.ui.servcie.ShardingSchemaService;
 import org.apache.shardingsphere.ui.web.response.ResponseResult;
 import org.apache.shardingsphere.ui.web.response.ResponseResultUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import java.util.Collection;
 import java.util.Map;
 
@@ -38,7 +38,7 @@ import java.util.Map;
 @RequestMapping("/api/schema")
 public final class ShardingSchemaController {
     
-    @Autowired
+    @Resource
     private ShardingSchemaService shardingSchemaService;
     
     /**
@@ -54,19 +54,20 @@ public final class ShardingSchemaController {
     /**
      * Add schema configuration.
      *
-     * @param shardingSchema sharding schema DTO.
+     * @param schemaDTO schema DTO
      * @return response result
      */
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public ResponseResult addSchema(final @RequestBody ShardingSchemaDTO shardingSchema) {
-        shardingSchemaService.addSchemaConfiguration(shardingSchema.getName(), shardingSchema.getRuleConfiguration(), shardingSchema.getDataSourceConfiguration());
+    public ResponseResult addSchema(final @RequestBody ShardingSphereSchemaDTO schemaDTO) {
+        shardingSchemaService.addSchemaConfiguration(schemaDTO.getName(), schemaDTO.getRuleConfiguration(), schemaDTO.getDataSourceConfiguration());
         return ResponseResultUtil.success();
     }
     
     /**
-     * Delete schema configuration
+     * Delete schema configuration.
+     * 
      * @param schemaName schema name
-     * @return
+     * @return response result
      */
     @RequestMapping(value = "/{schemaName}", method = RequestMethod.DELETE)
     public ResponseResult deleteSchema(@PathVariable("schemaName") final String schemaName) {

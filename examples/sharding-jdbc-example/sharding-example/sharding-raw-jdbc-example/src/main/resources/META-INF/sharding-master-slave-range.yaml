@@ -60,7 +60,7 @@ shardingRule:
         type: SNOWFLAKE
         column: order_id
         props:
-          worker.id: 123        
+          worker.id: 123
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item_${0..1}
       tableStrategy:
@@ -72,7 +72,7 @@ shardingRule:
         type: SNOWFLAKE
         column: order_item_id
         props:
-          worker.id: 123        
+          worker.id: 123
   bindingTables:
     - t_order,t_order_item
   broadcastTables:
@@ -82,7 +82,9 @@ shardingRule:
       shardingColumn: user_id
       shardingAlgorithm:
         type: STANDARD_TEST_DB
-  masterSlaveRules:
+
+masterSlaveRule:
+  dataSources:
     ds_0:
       masterDataSourceName: ds_master_0
       slaveDataSourceNames: [ds_master_0_slave_0, ds_master_0_slave_1]

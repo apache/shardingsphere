@@ -20,7 +20,7 @@ package org.apache.shardingsphere.underlying.executor.sql.group;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.sql.ExecutionConnection;
@@ -53,9 +53,9 @@ public abstract class ExecuteGroupEngine<U extends StorageResourceExecuteUnit, E
     
     private final int maxConnectionsSizePerQuery;
     
-    private final Map<BaseRule, ExecuteGroupDecorator> decorators;
+    private final Map<ShardingSphereRule, ExecuteGroupDecorator> decorators;
     
-    public ExecuteGroupEngine(final int maxConnectionsSizePerQuery, final Collection<BaseRule> rules) {
+    public ExecuteGroupEngine(final int maxConnectionsSizePerQuery, final Collection<ShardingSphereRule> rules) {
         this.maxConnectionsSizePerQuery = maxConnectionsSizePerQuery;
         decorators = OrderedSPIRegistry.getRegisteredServices(rules, ExecuteGroupDecorator.class);
     }
@@ -80,7 +80,7 @@ public abstract class ExecuteGroupEngine<U extends StorageResourceExecuteUnit, E
     @SuppressWarnings("unchecked")
     private Collection<InputGroup<U>> decorate(final Collection<InputGroup<U>> inputGroups) {
         Collection<InputGroup<U>> result = inputGroups;
-        for (Entry<BaseRule, ExecuteGroupDecorator> each : decorators.entrySet()) {
+        for (Entry<ShardingSphereRule, ExecuteGroupDecorator> each : decorators.entrySet()) {
             result = each.getValue().decorate(result);
         }
         return result;

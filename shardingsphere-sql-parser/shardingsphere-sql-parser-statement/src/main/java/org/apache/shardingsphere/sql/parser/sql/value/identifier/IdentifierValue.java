@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.value.identifier;
 
 import lombok.Getter;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.util.SQLUtil;
 import org.apache.shardingsphere.sql.parser.sql.value.ValueASTNode;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.value.ValueASTNode;
  * Identifier value.
  */
 @Getter
+@ToString
 public final class IdentifierValue implements ValueASTNode<String> {
     
     private final String value;
@@ -35,5 +37,14 @@ public final class IdentifierValue implements ValueASTNode<String> {
     public IdentifierValue(final String text) {
         value = SQLUtil.getExactlyValue(text);
         quoteCharacter = QuoteCharacter.getQuoteCharacter(text);
+    }
+
+    /**
+     * Get value with quote characters, i.e. `table1` or `field1`
+     *
+     * @return value with quote characters
+     */
+    public String getValueWithQuoteCharacters() {
+        return null == value ? "" : quoteCharacter.getStartDelimiter() + value + quoteCharacter.getEndDelimiter();
     }
 }

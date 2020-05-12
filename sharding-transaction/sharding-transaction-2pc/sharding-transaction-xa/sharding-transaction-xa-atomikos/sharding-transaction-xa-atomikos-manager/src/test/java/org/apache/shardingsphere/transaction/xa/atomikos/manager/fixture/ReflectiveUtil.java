@@ -54,7 +54,7 @@ public final class ReflectiveUtil {
      * @param fieldName field name
      * @param value value
      */
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     public static void setProperty(final Object target, final String fieldName, final Object value) {
         Field field = getField(target, fieldName);
         Preconditions.checkNotNull(field);

@@ -17,7 +17,10 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
+import org.apache.shardingsphere.metrics.enums.MetricsLabelEnum;
+import org.apache.shardingsphere.metrics.facade.MetricsTrackerFacade;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.callback.ProxySQLExecutorCallback;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.callback.RuleProxySQLExecutorCallback;
@@ -35,7 +38,7 @@ import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.StatementExecuteUnit;
@@ -88,6 +91,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
                 getSQLExecutorCallback(new ProxySQLExecutorCallback(sqlStatementContext, backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, false)));
         ExecuteResponse executeResponse = executeResponses.iterator().next();
         if (executeResponse instanceof ExecuteQueryResponse) {
+            MetricsTrackerFacade.getInstance().counterInc(MetricsLabelEnum.SQL_STATEMENT_COUNT.getName(), "SELECT");
             return getExecuteQueryResponse(((ExecuteQueryResponse) executeResponse).getQueryHeaders(), executeResponses);
         } else {
             UpdateResponse updateResponse = new UpdateResponse(executeResponses);
@@ -98,12 +102,15 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
             } else if (sqlStatementContext.getSqlStatement() instanceof UpdateStatement) {
                 updateResponse.setType("UPDATE");
             }
+            if (!Strings.isNullOrEmpty(updateResponse.getType())) {
+                MetricsTrackerFacade.getInstance().counterInc(MetricsLabelEnum.SQL_STATEMENT_COUNT.getName(), updateResponse.getType());
+            }
             return updateResponse;
         }
     }
     
     private SQLExecutorCallback<ExecuteResponse> getSQLExecutorCallback(final ProxySQLExecutorCallback callback) {
-        Map<BaseRule, RuleProxySQLExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(backendConnection.getLogicSchema().getRules(), RuleProxySQLExecutorCallback.class);
+        Map<ShardingSphereRule, RuleProxySQLExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(backendConnection.getLogicSchema().getRules(), RuleProxySQLExecutorCallback.class);
         return callbackMap.isEmpty() ? callback : callbackMap.values().iterator().next();
     }
     

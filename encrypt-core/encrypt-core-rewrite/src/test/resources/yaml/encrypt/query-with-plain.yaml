@@ -15,11 +15,12 @@
 # limitations under the License.
 #
 
-dataSource: !!com.zaxxer.hikari.HikariDataSource
-  driverClassName: org.h2.Driver
-  jdbcUrl: jdbc:h2:mem:ds_encrypt;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-  username: sa
-  password: 
+dataSources:
+  encrypt_ds: !!com.zaxxer.hikari.HikariDataSource
+    driverClassName: org.h2.Driver
+    jdbcUrl: jdbc:h2:mem:ds_encrypt;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    username: sa
+    password: 
 
 encryptRule:
   tables:

@@ -22,8 +22,8 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractConnectionAda
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.DatabaseMetaDataResultSet;
 import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
-import org.apache.shardingsphere.underlying.common.rule.TablesAggregationRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
+import org.apache.shardingsphere.underlying.common.rule.DataNodeRoutedRule;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -42,11 +42,13 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     
     private final AbstractConnectionAdapter connection;
     
-    private final Collection<BaseRule> rules;
+    private final Collection<ShardingSphereRule> rules;
     
     private final Collection<String> datasourceNames;
     
     private final ShardingSphereMetaData shardingSphereMetaData;
+    
+    private final Random random = new Random();
     
     private String currentDataSourceName;
     
@@ -204,9 +206,9 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
         if (null == tableNamePattern) {
             return null;
         }
-        Optional<TablesAggregationRule> tablesAggregationRule = findTablesAggregationRule();
-        if (tablesAggregationRule.isPresent()) {
-            return tablesAggregationRule.get().findFirstActualTable(tableNamePattern).isPresent() ? "%" + tableNamePattern + "%" : tableNamePattern;
+        Optional<DataNodeRoutedRule> dataNodeRoutedRule = findDataNodeRoutedRule();
+        if (dataNodeRoutedRule.isPresent()) {
+            return dataNodeRoutedRule.get().findFirstActualTable(tableNamePattern).isPresent() ? "%" + tableNamePattern + "%" : tableNamePattern;
         }
         return tableNamePattern;
     }
@@ -215,12 +217,12 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
         if (null == table) {
             return null;
         }
-        Optional<TablesAggregationRule> tablesAggregationRule = findTablesAggregationRule();
-        return tablesAggregationRule.isPresent() ? tablesAggregationRule.get().findFirstActualTable(table).orElse(table) : table;
+        Optional<DataNodeRoutedRule> dataNodeRoutedRule = findDataNodeRoutedRule();
+        return dataNodeRoutedRule.isPresent() ? dataNodeRoutedRule.get().findFirstActualTable(table).orElse(table) : table;
     }
     
-    private Optional<TablesAggregationRule> findTablesAggregationRule() {
-        return rules.stream().filter(each -> each instanceof TablesAggregationRule).findFirst().map(rule -> (TablesAggregationRule) rule);
+    private Optional<DataNodeRoutedRule> findDataNodeRoutedRule() {
+        return rules.stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
     }
     
     private ResultSet createDatabaseMetaDataResultSet(final ResultSet resultSet) throws SQLException {
@@ -242,7 +244,7 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     
     private String getRandomDataSourceName() {
         Collection<String> datasourceNames = connection.getCachedConnections().isEmpty() ? this.datasourceNames : connection.getCachedConnections().keySet();
-        return new ArrayList<>(datasourceNames).get(new Random().nextInt(datasourceNames.size()));
+        return new ArrayList<>(datasourceNames).get(random.nextInt(datasourceNames.size()));
     }
     
     private DatabaseMetaData getDatabaseMetaData() throws SQLException {

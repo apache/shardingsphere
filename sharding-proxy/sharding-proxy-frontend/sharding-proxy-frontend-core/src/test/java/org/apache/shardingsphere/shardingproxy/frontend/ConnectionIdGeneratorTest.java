@@ -46,7 +46,7 @@ public final class ConnectionIdGeneratorTest {
         assertThat(ConnectionIdGenerator.getInstance().nextId(), is(1));
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setCurrentConnectionId(final int connectionId) {
         Field field = ConnectionIdGenerator.class.getDeclaredField("currentId");
         field.setAccessible(true);

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.underlying.rewrite.engine.GenericSQLRewriteEngine;
@@ -47,9 +47,9 @@ public final class SQLRewriteEntry {
     
     private final ConfigurationProperties properties;
     
-    private final Map<BaseRule, SQLRewriteContextDecorator> decorators;
+    private final Map<ShardingSphereRule, SQLRewriteContextDecorator> decorators;
     
-    public SQLRewriteEntry(final SchemaMetaData schemaMetaData, final ConfigurationProperties properties, final Collection<BaseRule> rules) {
+    public SQLRewriteEntry(final SchemaMetaData schemaMetaData, final ConfigurationProperties properties, final Collection<ShardingSphereRule> rules) {
         this.schemaMetaData = schemaMetaData;
         this.properties = properties;
         decorators = OrderedSPIRegistry.getRegisteredServices(rules, SQLRewriteContextDecorator.class);
@@ -77,7 +77,7 @@ public final class SQLRewriteEntry {
     }
     
     @SuppressWarnings("unchecked")
-    private void decorate(final Map<BaseRule, SQLRewriteContextDecorator> decorators, final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
+    private void decorate(final Map<ShardingSphereRule, SQLRewriteContextDecorator> decorators, final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
         decorators.forEach((key, value) -> value.decorate(key, properties, sqlRewriteContext, routeContext));
     }
 }

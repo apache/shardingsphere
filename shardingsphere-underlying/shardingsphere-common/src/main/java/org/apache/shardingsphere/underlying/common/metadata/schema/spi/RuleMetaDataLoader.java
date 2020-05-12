@@ -22,7 +22,8 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDat
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
+import org.apache.shardingsphere.underlying.common.datanode.DataNodes;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -35,31 +36,35 @@ import java.util.Optional;
  * 
  * @param <T> type of base rule
  */
-public interface RuleMetaDataLoader<T extends BaseRule> extends OrderedSPI<T> {
+public interface RuleMetaDataLoader<T extends ShardingSphereRule> extends OrderedSPI<T> {
     
     /**
      * Load schema meta data.
      * 
      * @param databaseType database type
      * @param dataSourceMap data source map
+     * @param dataNodes data nodes
      * @param rule rule
      * @param properties configuration properties
      * @param excludedTableNames excluded table names
      * @return table name and meta data map
      * @throws SQLException SQL exception
      */
-    SchemaMetaData load(DatabaseType databaseType, Map<String, DataSource> dataSourceMap, T rule, ConfigurationProperties properties, Collection<String> excludedTableNames) throws SQLException;
+    SchemaMetaData load(DatabaseType databaseType, Map<String, DataSource> dataSourceMap, DataNodes dataNodes, 
+                        T rule, ConfigurationProperties properties, Collection<String> excludedTableNames) throws SQLException;
     
     /**
      * Load table meta data.
      *
      * @param databaseType database type
      * @param dataSourceMap data source map
+     * @param dataNodes data nodes
      * @param tableName table name
      * @param rule rule
      * @param properties configuration properties
      * @return meta data
      * @throws SQLException SQL exception
      */
-    Optional<TableMetaData> load(DatabaseType databaseType, Map<String, DataSource> dataSourceMap, String tableName, T rule, ConfigurationProperties properties) throws SQLException;
+    Optional<TableMetaData> load(DatabaseType databaseType, Map<String, DataSource> dataSourceMap, DataNodes dataNodes, 
+                                 String tableName, T rule, ConfigurationProperties properties) throws SQLException;
 }

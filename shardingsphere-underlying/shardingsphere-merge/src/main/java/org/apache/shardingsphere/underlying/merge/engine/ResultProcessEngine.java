@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.underlying.merge.engine;
 
 import org.apache.shardingsphere.spi.order.OrderedSPI;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 
 /**
  * Result process engine.
  * 
  * @param <T> type of rule
  */
-public interface ResultProcessEngine<T extends BaseRule> extends OrderedSPI<T> {
+public interface ResultProcessEngine<T extends ShardingSphereRule> extends OrderedSPI<T> {
 }

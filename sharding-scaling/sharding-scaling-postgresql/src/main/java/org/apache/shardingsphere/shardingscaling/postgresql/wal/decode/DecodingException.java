@@ -22,6 +22,8 @@ package org.apache.shardingsphere.shardingscaling.postgresql.wal.decode;
  */
 public final class DecodingException extends RuntimeException {
     
+    private static final long serialVersionUID = -2864367374002473380L;
+    
     public DecodingException(final Throwable cause) {
         super(cause);
     }

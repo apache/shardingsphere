@@ -26,7 +26,7 @@ dataSources:
     url: jdbc:h2:mem:ds_s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password:
-    
+
 shardingRule:
   tables:
     t_order:
@@ -49,7 +49,7 @@ shardingRule:
         type: SNOWFLAKE
         column: order_id
         props:
-          worker.id: 123        
+          worker.id: 123
     t_order_item:
       actualDataNodes: ds_ms.t_order_item_${0..1}
       tableStrategy:
@@ -63,14 +63,9 @@ shardingRule:
         type: SNOWFLAKE
         column: order_item_id
         props:
-          worker.id: 123        
+          worker.id: 123
   bindingTables:
     - t_order,t_order_item
-  masterSlaveRules:
-    ds_ms:
-      masterDataSourceName: ds_m
-      slaveDataSourceNames:
-        - ds_s
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
@@ -80,5 +75,13 @@ shardingRule:
           algorithm.expression: ds_ms_${user_id % 2}
   defaultTableStrategy:
     none:
+
+masterSlaveRule:
+  dataSources:
+    ds_ms:
+      masterDataSourceName: ds_m
+      slaveDataSourceNames:
+        - ds_s
+
 props:
   sql.show: false

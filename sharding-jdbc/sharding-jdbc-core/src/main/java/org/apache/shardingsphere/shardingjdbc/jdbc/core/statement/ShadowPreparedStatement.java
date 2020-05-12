@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.rewrite.judgement.ShadowJudgementEngine;
 import org.apache.shardingsphere.shadow.rewrite.judgement.impl.PreparedJudgementEngine;
-import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractShardingPreparedStatementAdapter;
+import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractPreparedStatementAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShadowConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.metadata.ShardingSphereParameterMetaData;
 import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
@@ -53,7 +53,7 @@ import java.util.List;
  * Shadow prepared statement.
  */
 @Slf4j
-public final class ShadowPreparedStatement extends AbstractShardingPreparedStatementAdapter {
+public final class ShadowPreparedStatement extends AbstractPreparedStatementAdapter {
     
     @Getter
     private final ShadowConnection connection;
@@ -195,7 +195,7 @@ public final class ShadowPreparedStatement extends AbstractShardingPreparedState
     
     @SuppressWarnings("unchecked")
     private SQLUnit getSQLUnit(final String sql) {
-        SchemaMetaData schemaMetaData = connection.getRuntimeContext().getMetaData().getSchema().getConfiguredSchemaMetaData();
+        SchemaMetaData schemaMetaData = connection.getRuntimeContext().getMetaData().getSchema().getSchemaMetaData();
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, sql, getParameters(), sqlStatement);
         ShadowJudgementEngine shadowJudgementEngine = new PreparedJudgementEngine((ShadowRule) connection.getRuntimeContext().getRules().iterator().next(), sqlStatementContext, getParameters());
         isShadowSQL = shadowJudgementEngine.isShadowSQL();

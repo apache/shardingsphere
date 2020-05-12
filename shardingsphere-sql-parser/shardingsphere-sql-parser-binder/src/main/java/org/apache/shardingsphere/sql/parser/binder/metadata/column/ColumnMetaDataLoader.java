@@ -58,7 +58,7 @@ public final class ColumnMetaDataLoader {
         List<String> columnTypeNames = new ArrayList<>();
         List<Boolean> isPrimaryKeys = new ArrayList<>();
         List<Boolean> isCaseSensitives = new ArrayList<>();
-        try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), null, table, "%")) {
+        try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), connection.getSchema(), table, "%")) {
             while (resultSet.next()) {
                 String columnName = resultSet.getString(COLUMN_NAME);
                 columnTypes.add(resultSet.getInt(DATA_TYPE));
@@ -96,12 +96,12 @@ public final class ColumnMetaDataLoader {
             delimiterLeft = "";
             delimiterRight = "";
         }
-        return "SELECT * FROM " + delimiterLeft + table + delimiterRight + " WHERE 1 != 1;";
+        return "SELECT * FROM " + delimiterLeft + table + delimiterRight + " WHERE 1 != 1";
     }
     
     private static Collection<String> loadPrimaryKeys(final Connection connection, final String table) throws SQLException {
         Collection<String> result = new HashSet<>();
-        try (ResultSet resultSet = connection.getMetaData().getPrimaryKeys(connection.getCatalog(), null, table)) {
+        try (ResultSet resultSet = connection.getMetaData().getPrimaryKeys(connection.getCatalog(), connection.getSchema(), table)) {
             while (resultSet.next()) {
                 result.add(resultSet.getString(COLUMN_NAME));
             }

@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shadow.rewrite.judgement.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rule.ShadowRule;
-import org.apache.shardingsphere.shadow.rewrite.condition.ShadowCondition;
-import org.apache.shardingsphere.shadow.rewrite.condition.ShadowConditionEngine;
+import org.apache.shardingsphere.shadow.common.condition.ShadowCondition;
+import org.apache.shardingsphere.shadow.common.condition.ShadowConditionEngine;
 import org.apache.shardingsphere.shadow.rewrite.judgement.ShadowJudgementEngine;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
@@ -35,6 +35,7 @@ import java.util.Optional;
 /**
  * Simple shadow judgement engine.
  */
+//TODO need to remove
 @RequiredArgsConstructor
 public final class SimpleJudgementEngine implements ShadowJudgementEngine {
     

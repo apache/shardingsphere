@@ -24,8 +24,8 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
-import org.apache.shardingsphere.underlying.common.rule.TablesAggregationRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
+import org.apache.shardingsphere.underlying.common.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionUnit;
@@ -103,11 +103,7 @@ public final class BatchPreparedStatementExecutor {
     }
     
     private void reviseBatchExecutionUnits(final BatchExecutionUnit batchExecutionUnit) {
-        for (BatchExecutionUnit each : batchExecutionUnits) {
-            if (each.equals(batchExecutionUnit)) {
-                reviseBatchExecutionUnit(each, batchExecutionUnit);
-            }
-        }
+        batchExecutionUnits.stream().filter(each -> each.equals(batchExecutionUnit)).forEach(each -> reviseBatchExecutionUnit(each, batchExecutionUnit));
     }
     
     private void reviseBatchExecutionUnit(final BatchExecutionUnit oldBatchExecutionUnit, final BatchExecutionUnit newBatchExecutionUnit) {
@@ -117,15 +113,13 @@ public final class BatchPreparedStatementExecutor {
     
     private void handleNewBatchExecutionUnits(final Collection<BatchExecutionUnit> newExecutionUnits) {
         newExecutionUnits.removeAll(batchExecutionUnits);
-        for (BatchExecutionUnit each : newExecutionUnits) {
-            each.mapAddBatchCount(batchCount);
-        }
+        newExecutionUnits.forEach(each -> each.mapAddBatchCount(batchCount));
         batchExecutionUnits.addAll(newExecutionUnits);
     }
     
     /**
      * Execute batch.
-     * 
+     *
      * @param sqlStatementContext SQL statement context
      * @return execute results
      * @throws SQLException SQL exception
@@ -140,17 +134,17 @@ public final class BatchPreparedStatementExecutor {
             }
         });
         List<int[]> results = sqlExecutor.execute(inputGroups, callback);
-        return isNeedAccumulate(runtimeContext.getRules().stream().filter(rule -> rule instanceof TablesAggregationRule).collect(Collectors.toList()), sqlStatementContext)
+        return isNeedAccumulate(runtimeContext.getRules().stream().filter(rule -> rule instanceof DataNodeRoutedRule).collect(Collectors.toList()), sqlStatementContext)
                 ? accumulate(results) : results.get(0);
     }
     
     private SQLExecutorCallback<int[]> getExecuteBatchExecutorCallback(final DefaultSQLExecutorCallback callback) {
-        Map<BaseRule, RuleExecuteBatchExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(runtimeContext.getRules(), RuleExecuteBatchExecutorCallback.class);
+        Map<ShardingSphereRule, RuleExecuteBatchExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(runtimeContext.getRules(), RuleExecuteBatchExecutorCallback.class);
         return callbackMap.isEmpty() ? callback : callbackMap.values().iterator().next();
     }
     
-    private boolean isNeedAccumulate(final Collection<BaseRule> rules, final SQLStatementContext sqlStatementContext) {
-        return rules.stream().anyMatch(each -> ((TablesAggregationRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames()));
+    private boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext sqlStatementContext) {
+        return rules.stream().anyMatch(each -> ((DataNodeRoutedRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames()));
     }
     
     private int[] accumulate(final List<int[]> results) {
@@ -200,15 +194,8 @@ public final class BatchPreparedStatementExecutor {
      * @return parameter sets
      */
     public List<List<Object>> getParameterSet(final Statement statement) {
-        List<List<Object>> result = new LinkedList<>();
-        for (InputGroup<StatementExecuteUnit> each : inputGroups) {
-            Optional<StatementExecuteUnit> target = findStatementExecuteUnit(statement, each);
-            if (target.isPresent()) {
-                result = getParameterSets(target.get());
-                break;
-            }
-        }
-        return result;
+        return inputGroups.stream().map(each -> findStatementExecuteUnit(statement, each)).filter(Optional::isPresent).findFirst().map(Optional::get)
+                .map(this::getParameterSets).orElse(Collections.emptyList());
     }
     
     private Optional<StatementExecuteUnit> findStatementExecuteUnit(final Statement statement, final InputGroup<StatementExecuteUnit> executeGroup) {

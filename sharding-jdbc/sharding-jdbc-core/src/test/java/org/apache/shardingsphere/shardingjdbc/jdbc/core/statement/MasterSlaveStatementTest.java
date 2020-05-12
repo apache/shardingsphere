@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
-import org.apache.shardingsphere.shardingjdbc.common.base.AbstractMasterSlaveJDBCDatabaseAndTableTest;
+import org.apache.shardingsphere.shardingjdbc.common.base.AbstractMasterSlaveJDBCTest;
 import org.junit.Test;
 
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public final class MasterSlaveStatementTest extends AbstractMasterSlaveJDBCDatabaseAndTableTest {
+public final class MasterSlaveStatementTest extends AbstractMasterSlaveJDBCTest {
     
     @Test(expected = SQLException.class)
     public void assertQueryWithNull() throws SQLException {

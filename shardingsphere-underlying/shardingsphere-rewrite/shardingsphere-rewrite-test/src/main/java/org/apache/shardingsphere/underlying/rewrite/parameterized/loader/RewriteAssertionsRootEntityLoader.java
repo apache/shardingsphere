@@ -21,6 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.underlying.rewrite.parameterized.entity.RewriteAssertionsRootEntity;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import java.io.InputStream;
 
 /**
@@ -34,7 +35,7 @@ public final class RewriteAssertionsRootEntityLoader {
      * @param file rewrite assertions file
      * @return rewrite assertions entity for JAXB
      */
-    @SneakyThrows
+    @SneakyThrows(JAXBException.class)
     public RewriteAssertionsRootEntity load(final String file) {
         InputStream inputStream = RewriteAssertionsRootEntityLoader.class.getClassLoader().getResourceAsStream(file);
         return null == inputStream ? new RewriteAssertionsRootEntity()

@@ -33,6 +33,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.concurrent.Promise;
 
+import java.security.NoSuchAlgorithmException;
+
 /**
  * MySQL Negotiate Handler.
  */
@@ -81,7 +83,7 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
             MySQLCapabilityFlag.CLIENT_SECURE_CONNECTION, MySQLCapabilityFlag.CLIENT_MULTI_STATEMENTS, MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH);
     }
     
-    @SneakyThrows
+    @SneakyThrows(NoSuchAlgorithmException.class)
     private byte[] generateAuthResponse(final byte[] authPluginData) {
         return (null == password || 0 == password.length()) ? new byte[0] : MySQLPasswordEncryptor.encryptWithMySQL41(password.getBytes(), authPluginData);
     }

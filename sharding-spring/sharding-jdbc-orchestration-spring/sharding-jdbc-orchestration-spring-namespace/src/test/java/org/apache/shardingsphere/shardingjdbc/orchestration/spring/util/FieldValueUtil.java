@@ -43,7 +43,7 @@ public final class FieldValueUtil {
         return getFieldValue(clazz, obj, fieldName);
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private static Object getFieldValue(final Class<?> clazz, final Object obj, final String fieldName) {
         Field field = clazz.getDeclaredField(fieldName);
         field.setAccessible(true);

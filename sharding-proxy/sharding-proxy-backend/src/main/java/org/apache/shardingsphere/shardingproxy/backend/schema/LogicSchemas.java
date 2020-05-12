@@ -70,25 +70,24 @@ public final class LogicSchemas {
      * @param localSchemaNames local schema names
      * @param schemaDataSources data source map
      * @param schemaRules schema rule map
-     * @param isUsingRegistry is using registry or not
      * @throws SQLException SQL exception
      */
-    public void init(final Collection<String> localSchemaNames, final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources,
-                     final Map<String, RuleConfiguration> schemaRules, final boolean isUsingRegistry) throws SQLException {
+    public void init(final Collection<String> localSchemaNames, 
+                     final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources, final Map<String, Collection<RuleConfiguration>> schemaRules) throws SQLException {
         databaseType = DatabaseTypes.getActualDatabaseType(
                 JDBCDriverURLRecognizerEngine.getJDBCDriverURLRecognizer(schemaDataSources.values().iterator().next().values().iterator().next().getUrl()).getDatabaseType());
-        initSchemas(localSchemaNames, schemaDataSources, schemaRules, isUsingRegistry);
+        initSchemas(localSchemaNames, schemaDataSources, schemaRules);
     }
     
     private void initSchemas(final Collection<String> localSchemaNames, final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources, 
-                             final Map<String, RuleConfiguration> schemaRules, final boolean isUsingRegistry) throws SQLException {
+                             final Map<String, Collection<RuleConfiguration>> schemaRules) throws SQLException {
         if (schemaRules.isEmpty()) {
             String schema = schemaDataSources.keySet().iterator().next();
-            logicSchemas.put(schema, LogicSchemaFactory.newInstance(schema, schemaDataSources, null, isUsingRegistry));
+            logicSchemas.put(schema, LogicSchemaFactory.newInstance(schema, schemaDataSources, null));
         }
-        for (Entry<String, RuleConfiguration> entry : schemaRules.entrySet()) {
+        for (Entry<String, Collection<RuleConfiguration>> entry : schemaRules.entrySet()) {
             if (localSchemaNames.isEmpty() || localSchemaNames.contains(entry.getKey())) {
-                logicSchemas.put(entry.getKey(), LogicSchemaFactory.newInstance(entry.getKey(), schemaDataSources, entry.getValue(), isUsingRegistry));
+                logicSchemas.put(entry.getKey(), LogicSchemaFactory.newInstance(entry.getKey(), schemaDataSources, entry.getValue()));
             }
         }
     }
@@ -132,7 +131,7 @@ public final class LogicSchemas {
     public synchronized void renew(final SchemaAddedEvent schemaAddedEvent) throws SQLException {
         logicSchemas.put(schemaAddedEvent.getShardingSchemaName(), LogicSchemaFactory.newInstance(schemaAddedEvent.getShardingSchemaName(), 
                 Collections.singletonMap(schemaAddedEvent.getShardingSchemaName(), DataSourceConverter.getDataSourceParameterMap(schemaAddedEvent.getDataSourceConfigurations())), 
-                schemaAddedEvent.getRuleConfiguration(), true));
+                schemaAddedEvent.getRuleConfigurations()));
     }
     
     /**

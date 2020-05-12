@@ -70,9 +70,9 @@ public final class DefaultSQLExecutorCallbackTest {
     }
     
     @Test
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("unchecked")
-    public void execute() {
+    public void execute() throws SQLException {
         SQLExecutorCallback sqlExecutorCallback = new DefaultSQLExecutorCallback<Integer>(DatabaseTypes.getActualDatabaseType("MySQL"), true) {
             
             @Override

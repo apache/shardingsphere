@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.group;
 
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.StatementExecuteUnit;
@@ -34,7 +34,7 @@ import java.util.Collection;
  */
 public final class StatementExecuteGroupEngine extends ExecuteGroupEngine<StatementExecuteUnit, JDBCExecutionConnection, Connection, StatementOption> {
     
-    public StatementExecuteGroupEngine(final int maxConnectionsSizePerQuery, final Collection<BaseRule> rules) {
+    public StatementExecuteGroupEngine(final int maxConnectionsSizePerQuery, final Collection<ShardingSphereRule> rules) {
         super(maxConnectionsSizePerQuery, rules);
     }
     

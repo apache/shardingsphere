@@ -51,7 +51,7 @@
         <module>sharding-spring</module>
         
         <module>sharding-distribution</module>
-        <module>sharding-integration-test</module>
+        <module>shardingsphere-integration-test</module>
         <module>shadow-core</module>
         <module>master-slave-core</module>
     </modules>
@@ -107,6 +107,7 @@
         <postgresql.version>42.2.5</postgresql.version>
         <mssql.version>6.1.7.jre8-preview</mssql.version>
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
+        <prometheus-java-client.version>0.6.0</prometheus-java-client.version>
 
         <!-- Plugin versions -->
         <apache-rat-plugin.version>0.12</apache-rat-plugin.version>
@@ -135,7 +136,7 @@
         <jdepend-maven-plugin.version>2.0</jdepend-maven-plugin.version>
         <taglist-maven-plugin.version>2.4</taglist-maven-plugin.version>
         <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
-        <docker-maven-plugin.version>0.4.14</docker-maven-plugin.version>
+        <dockerfile-maven.version>1.4.6</dockerfile-maven.version>
         
         <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
         <maven.deploy.skip>false</maven.deploy.skip>
@@ -207,6 +208,17 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-collections4</artifactId>
                 <version>${commons-collections4.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.prometheus</groupId>
+                <artifactId>simpleclient</artifactId>
+                <version>${prometheus-java-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.prometheus</groupId>
+                <artifactId>simpleclient_httpserver</artifactId>
+                <version>${prometheus-java-client.version}</version>
             </dependency>
             
             <dependency>
@@ -638,6 +650,11 @@
                     <artifactId>antlr4-maven-plugin</artifactId>
                     <version>${antlr4.version}</version>
                 </plugin>
+                <plugin>
+                    <groupId>com.spotify</groupId>
+                    <artifactId>dockerfile-maven-plugin</artifactId>
+                    <version>${dockerfile-maven.version}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -770,11 +787,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>com.spotify</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <version>${docker-maven-plugin.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.rat</groupId>

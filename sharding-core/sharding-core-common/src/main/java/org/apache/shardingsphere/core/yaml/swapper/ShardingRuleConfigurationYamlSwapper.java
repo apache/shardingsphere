@@ -17,17 +17,12 @@
 
 package org.apache.shardingsphere.core.yaml.swapper;
 
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
 
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map.Entry;
 
 /**
@@ -40,10 +35,6 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlSwapper<Y
     private final ShardingStrategyConfigurationYamlSwapper shardingStrategyConfigurationYamlSwapper = new ShardingStrategyConfigurationYamlSwapper();
     
     private final KeyGeneratorConfigurationYamlSwapper keyGeneratorConfigurationYamlSwapper = new KeyGeneratorConfigurationYamlSwapper();
-    
-    private final MasterSlaveRuleConfigurationYamlSwapper masterSlaveRuleConfigurationYamlSwapper = new MasterSlaveRuleConfigurationYamlSwapper();
-    
-    private final EncryptRuleConfigurationYamlSwapper encryptRuleConfigurationYamlSwapper = new EncryptRuleConfigurationYamlSwapper();
     
     @Override
     public YamlShardingRuleConfiguration swap(final ShardingRuleConfiguration data) {
@@ -61,12 +52,6 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlSwapper<Y
         }
         if (null != data.getDefaultKeyGeneratorConfig()) {
             result.setDefaultKeyGenerator(keyGeneratorConfigurationYamlSwapper.swap(data.getDefaultKeyGeneratorConfig()));
-        }
-        for (MasterSlaveRuleConfiguration each : data.getMasterSlaveRuleConfigs()) {
-            result.getMasterSlaveRules().put(each.getName(), masterSlaveRuleConfigurationYamlSwapper.swap(each));
-        }
-        if (null != data.getEncryptRuleConfig()) {
-            result.setEncryptRule(encryptRuleConfigurationYamlSwapper.swap(data.getEncryptRuleConfig()));
         }
         return result;
     }
@@ -89,16 +74,6 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlSwapper<Y
         }
         if (null != yamlConfiguration.getDefaultKeyGenerator()) {
             result.setDefaultKeyGeneratorConfig(keyGeneratorConfigurationYamlSwapper.swap(yamlConfiguration.getDefaultKeyGenerator()));
-        }
-        Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigs = new LinkedList<>();
-        for (Entry<String, YamlMasterSlaveRuleConfiguration> entry : yamlConfiguration.getMasterSlaveRules().entrySet()) {
-            YamlMasterSlaveRuleConfiguration each = entry.getValue();
-            each.setName(entry.getKey());
-            masterSlaveRuleConfigs.add(masterSlaveRuleConfigurationYamlSwapper.swap(entry.getValue()));
-        }
-        result.setMasterSlaveRuleConfigs(masterSlaveRuleConfigs);
-        if (null != yamlConfiguration.getEncryptRule()) {
-            result.setEncryptRuleConfig(encryptRuleConfigurationYamlSwapper.swap(yamlConfiguration.getEncryptRule()));
         }
         return result;
     }

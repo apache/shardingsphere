@@ -24,7 +24,7 @@ import org.apache.shardingsphere.orchestration.core.configcenter.listener.Config
 import org.apache.shardingsphere.orchestration.core.facade.listener.ShardingOrchestrationListenerManager;
 import org.apache.shardingsphere.orchestration.core.facade.util.FieldUtil;
 import org.apache.shardingsphere.orchestration.core.metadatacenter.listener.MetaDataListenerManager;
-import org.apache.shardingsphere.orchestration.core.registrycenter.listener.StateChangedListenerManager;
+import org.apache.shardingsphere.orchestration.core.registrycenter.listener.RegistryListenerManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -50,7 +50,7 @@ public final class ShardingOrchestrationListenerManagerTest {
     private MetaDataListenerManager metaDataListenerManager;
 
     @Mock
-    private StateChangedListenerManager stateChangedListenerManager;
+    private RegistryListenerManager registryListenerManager;
     
     @Test
     public void assertInitListeners() {
@@ -58,11 +58,11 @@ public final class ShardingOrchestrationListenerManagerTest {
                                                      "FirstTestConfigCenter", configCenterRepository,
                                                      "FirstTestConfigCenter", configCenterRepository, Collections.emptyList());
         FieldUtil.setField(actual, "configurationChangedListenerManager", configurationChangedListenerManager);
-        FieldUtil.setField(actual, "stateChangedListenerManager", stateChangedListenerManager);
+        FieldUtil.setField(actual, "registryListenerManager", registryListenerManager);
         FieldUtil.setField(actual, "metaDataListenerManager", metaDataListenerManager);
         actual.initListeners();
         verify(configurationChangedListenerManager).initListeners();
-        verify(stateChangedListenerManager).initListeners();
+        verify(registryListenerManager).initListeners();
         verify(metaDataListenerManager).initListeners();
     }
 }

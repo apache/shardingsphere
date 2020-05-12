@@ -20,12 +20,12 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteTemplate;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.ShardingSphereResultSetMetaData;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingPreparedStatement;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingSpherePreparedStatement;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionContext;
 
 import java.sql.ResultSet;
@@ -66,8 +66,9 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
         return new ShardingSphereResultSetMetaData(resultSets.get(0).getMetaData(), getRules(), executionContext.getSqlStatementContext());
     }
     
-    private Collection<BaseRule> getRules() {
-        ShardingConnection connection = statement instanceof ShardingPreparedStatement ? ((ShardingPreparedStatement) statement).getConnection() : ((ShardingStatement) statement).getConnection();
+    private Collection<ShardingSphereRule> getRules() {
+        ShardingSphereConnection connection = statement instanceof ShardingSpherePreparedStatement
+                ? ((ShardingSpherePreparedStatement) statement).getConnection() : ((ShardingSphereStatement) statement).getConnection();
         return connection.getRuntimeContext().getRules();
     }
     

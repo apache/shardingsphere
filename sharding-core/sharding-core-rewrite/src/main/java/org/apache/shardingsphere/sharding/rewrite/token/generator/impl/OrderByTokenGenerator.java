@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.IgnoreForSingleRoute;
@@ -46,8 +45,7 @@ public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator<Se
         for (OrderByItem each : selectStatementContext.getOrderByContext().getItems()) {
             if (each.getSegment() instanceof ColumnOrderByItemSegment) {
                 ColumnOrderByItemSegment columnOrderByItemSegment = (ColumnOrderByItemSegment) each.getSegment();
-                QuoteCharacter quoteCharacter = columnOrderByItemSegment.getColumn().getIdentifier().getQuoteCharacter();
-                columnLabel = quoteCharacter.getStartDelimiter() + columnOrderByItemSegment.getText() + quoteCharacter.getEndDelimiter();
+                columnLabel = columnOrderByItemSegment.getText();
             } else if (each.getSegment() instanceof ExpressionOrderByItemSegment) {
                 columnLabel = ((ExpressionOrderByItemSegment) each.getSegment()).getText();
             } else {

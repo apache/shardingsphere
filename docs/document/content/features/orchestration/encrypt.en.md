@@ -25,18 +25,18 @@ The demand for data encryption is generally divided into two situations in real 
 1. When the new business start to launch, and the security department stipulates that the sensitive information related to users, such as banks and mobile phone numbers, should be encrypted and stored in the database, and then decrypted when used. Because it is a brand new system, there is no inventory data cleaning problem, so the implementation is relatively simple.
 
 2. For the service has been launched, and plaintext has been stored in the database before. The relevant department suddenly needs to encrypt the data from the on-line business. This scenario generally needs to deal with three issues as followings:
-__
-   a) How to encrypt the historical data, a.k.a.s wash number.
+
+   a) How to encrypt the historical data, a.k.a.s clean data.
 
    b) How to encrypt the newly added data and store it in the database without changing the business SQL and logic; then decrypt the taken out data when use it.
 
-   c) How to securely, seamlessly and transparently migrate business systems between plaintext and ciphertext data
+   c) How to securely, seamlessly and transparently migrate plaintext and ciphertext data between business systems
 
 ## Detailed Process
 
 ### Overall Architecture
 
-Encrypt-JDBC provided by ShardingSphere are deployed with business code. Business parties need to perform JDBC programming for Encrypt-JDBC. Since Encrypt-JDBC implements all JDBC standard interfaces, business codes can be used without additional modification. At this time, Encrypt-JDBC is responsible for all interactions between the business code and the database. Business only needs to provide encryption rules. ** As a bridge between the business code and the underlying database, Encrypt-JDBC can intercept user behavior and interact with the database after transforming the user behavior. **
+Encrypt-JDBC provided by ShardingSphere are deployed with business codes. Business parties need to perform JDBC programming for Encrypt-JDBC. Since Encrypt-JDBC implements all JDBC standard interfaces, business codes can be used without additional modification. At this time, Encrypt-JDBC is responsible for all interactions between the business code and the database. Business only needs to provide encryption rules. ** As a bridge between the business code and the underlying database, Encrypt-JDBC can intercept user behavior and interact with the database after transforming the user behavior. **
 ![1](https://shardingsphere.apache.org/document/current/img/encrypt/1_en.png)
 
 Encrypt-JDBC intercepts SQL initiated by user, analyzes and understands SQL behavior through the SQL syntax parser.According to the encryption rules passed by the user, find out the fields that need to be encrypted/decrypt and the encryptor/decryptor  used to encrypt/decrypt the target fields, and then interact with the underlying database.ShardingSphere will encrypt the plaintext requested by the user and store it in the underlying database; and when the user queries, the ciphertext will be taken out of the database for decryption and returned to the end user.ShardingSphere shields the encryption of data, so that users do not need to perceive the process of parsing SQL, data encryption, and data decryption, just like using ordinary data.

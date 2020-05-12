@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.spring;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.fixture.DecrementKeyGenerateAlgorithm;
 import org.apache.shardingsphere.shardingjdbc.spring.fixture.IncrementKeyGenerateAlgorithm;
 import org.apache.shardingsphere.shardingjdbc.spring.util.FieldValueUtil;
@@ -45,11 +45,11 @@ import static org.junit.Assert.assertTrue;
 public class GenerateKeyJUnitTest extends AbstractSpringJUnitTest {
     
     @Resource
-    private ShardingDataSource shardingDataSource;
+    private ShardingSphereDataSource shardingSphereDataSource;
     
     @Test
     public void assertGenerateKey() throws SQLException {
-        try (Connection connection = getShardingDataSource().getConnection();
+        try (Connection connection = getShardingSphereDataSource().getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute("INSERT INTO t_order (user_id, status) VALUES (1, 'init')", Statement.RETURN_GENERATED_KEYS);
             ResultSet generateKeyResultSet = statement.getGeneratedKeys();
@@ -65,7 +65,7 @@ public class GenerateKeyJUnitTest extends AbstractSpringJUnitTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateKeyColumn() {
-        RuntimeContext runtimeContext = shardingDataSource.getRuntimeContext();
+        RuntimeContext runtimeContext = shardingSphereDataSource.getRuntimeContext();
         assertNotNull(runtimeContext);
         ShardingRule shardingRule = (ShardingRule) runtimeContext.getRules().iterator().next();
         assertNotNull(shardingRule);

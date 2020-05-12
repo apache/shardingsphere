@@ -89,8 +89,9 @@ public final class DataSourceConfigurationTest {
         assertThat(actual.getProperties().get("username"), is(actual.getProperties().get("user")));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
-    public void assertGetDataSourceConfigurationWithConnectionInitSqls() throws SQLException {
+    public void assertGetDataSourceConfigurationWithConnectionInitSqls() {
         BasicDataSource actualDataSource = new BasicDataSource();
         actualDataSource.setDriverClassName("org.h2.Driver");
         actualDataSource.setUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");

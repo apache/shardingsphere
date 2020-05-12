@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.strategy.algorithm.masterslave;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.spi.masterslave.MasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
 
 import java.util.List;
 import java.util.Properties;

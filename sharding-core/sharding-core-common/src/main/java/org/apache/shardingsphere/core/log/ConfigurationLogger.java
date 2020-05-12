@@ -20,7 +20,7 @@ package org.apache.shardingsphere.core.log;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.rule.Authentication;
@@ -34,6 +34,7 @@ import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYa
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
+import java.util.Collection;
 import java.util.Properties;
 
 /**
@@ -42,6 +43,17 @@ import java.util.Properties;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class ConfigurationLogger {
+    
+    /**
+     * Log rule configuration.
+     *
+     * @param ruleConfigurations rule configurations
+     */
+    public static void log(final Collection<RuleConfiguration> ruleConfigurations) {
+        for (RuleConfiguration each : ruleConfigurations) {
+            log(each);
+        }
+    }
     
     /**
      * Log rule configuration.

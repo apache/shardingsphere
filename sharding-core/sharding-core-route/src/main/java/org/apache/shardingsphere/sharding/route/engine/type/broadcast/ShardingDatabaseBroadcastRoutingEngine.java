@@ -33,7 +33,7 @@ public final class ShardingDatabaseBroadcastRoutingEngine implements ShardingRou
     @Override
     public RouteResult route(final ShardingRule shardingRule) {
         RouteResult result = new RouteResult();
-        for (String each : shardingRule.getShardingDataSourceNames().getDataSourceNames()) {
+        for (String each : shardingRule.getDataSourceNames()) {
             result.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
         }
         return result;

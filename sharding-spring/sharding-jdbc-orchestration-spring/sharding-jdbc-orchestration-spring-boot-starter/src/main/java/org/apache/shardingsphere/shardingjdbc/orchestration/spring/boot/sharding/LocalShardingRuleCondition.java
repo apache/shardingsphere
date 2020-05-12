@@ -28,7 +28,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  */
 public final class LocalShardingRuleCondition extends SpringBootCondition {
     
-    private static final String SHARDING_PREFIX = "spring.shardingsphere.sharding";
+    private static final String SHARDING_PREFIX = "spring.shardingsphere.rules";
     
     @Override
     public ConditionOutcome getMatchOutcome(final ConditionContext conditionContext, final AnnotatedTypeMetadata annotatedTypeMetadata) {

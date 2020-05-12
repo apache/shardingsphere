@@ -119,7 +119,11 @@ unreservedWord
     ;
 
 variable
-    : (AT_? AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT_? identifier
+    : (AT_? AT_)? scope? DOT_? identifier
+    ;
+
+scope
+    : GLOBAL | PERSIST | PERSIST_ONLY | SESSION
     ;
 
 schemaName
@@ -570,4 +574,24 @@ ignoredIdentifier_
 
 ignoredIdentifiers_
     : ignoredIdentifier_ (COMMA_ ignoredIdentifier_)*
+    ;
+
+fieldOrVarSpec
+    : LP_ (identifier (COMMA_ identifier)*)? RP_
+    ;
+
+notExistClause_
+    : (IF NOT EXISTS)?
+    ;
+
+existClause_
+    : (IF EXISTS)?
+    ;
+
+pattern
+    : STRING_
+    ;
+
+connectionId_
+    : NUMBER_
     ;

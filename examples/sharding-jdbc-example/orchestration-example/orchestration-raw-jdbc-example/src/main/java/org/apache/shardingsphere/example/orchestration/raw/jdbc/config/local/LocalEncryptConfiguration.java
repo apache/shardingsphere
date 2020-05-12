@@ -25,10 +25,11 @@ import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
-import org.apache.shardingsphere.shardingjdbc.orchestration.api.OrchestrationEncryptDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingSphereDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -43,7 +44,8 @@ public class LocalEncryptConfiguration implements ExampleConfiguration {
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        return OrchestrationEncryptDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), getEncryptRuleConfiguration(), new Properties(), getOrchestrationConfiguration());
+        return OrchestrationShardingSphereDataSourceFactory.createDataSource(
+                DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(getEncryptRuleConfiguration()), new Properties(), getOrchestrationConfiguration());
     }
     
     private OrchestrationConfiguration getOrchestrationConfiguration() {
@@ -51,7 +53,6 @@ public class LocalEncryptConfiguration implements ExampleConfiguration {
     }
     
     private EncryptRuleConfiguration getEncryptRuleConfiguration() {
-        EncryptRuleConfiguration result = new EncryptRuleConfiguration();
         Properties properties = new Properties();
         properties.setProperty("aes.key.value", "123456");
         EncryptorRuleConfiguration aesRuleConfiguration = new EncryptorRuleConfiguration("aes", properties);
@@ -60,8 +61,10 @@ public class LocalEncryptConfiguration implements ExampleConfiguration {
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration(columns);
         columns.put("status", columnConfigAes);
         tableConfig.getColumns().putAll(columns);
-        result.getEncryptors().put("status_encryptor", aesRuleConfiguration);
-        result.getTables().put("t_order", tableConfig);
-        return result;
+        Map<String, EncryptorRuleConfiguration> encryptors = new HashMap<>();
+        encryptors.put("status_encryptor", aesRuleConfiguration);
+        Map<String, EncryptTableRuleConfiguration> tables = new HashMap<>();
+        tables.put("t_order", tableConfig);
+        return new EncryptRuleConfiguration(encryptors, tables);
     }
 }

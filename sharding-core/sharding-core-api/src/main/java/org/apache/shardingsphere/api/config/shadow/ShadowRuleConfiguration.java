@@ -19,9 +19,6 @@ package org.apache.shardingsphere.api.config.shadow;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 
 import java.util.Map;
@@ -35,38 +32,5 @@ public final class ShadowRuleConfiguration implements RuleConfiguration {
     
     private String column;
     
-    private ShardingRuleConfiguration shardingRuleConfig;
-    
-    private MasterSlaveRuleConfiguration masterSlaveRuleConfig;
-    
-    private EncryptRuleConfiguration encryptRuleConfig;
-    
     private Map<String, String> shadowMappings;
-    
-    /**
-     * Raw datasource is encrypt.
-     *
-     * @return is the encrypt datasource
-     */
-    public boolean isEncrypt() {
-        return null != encryptRuleConfig;
-    }
-    
-    /**
-     * Raw datasource is sharding.
-     *
-     * @return is the sharding
-     */
-    public boolean isSharding() {
-        return null != shardingRuleConfig;
-    }
-    
-    /**
-     * Raw datasource is master slave.
-     *
-     * @return is the master slave
-     */
-    public boolean isMasterSlave() {
-        return null != masterSlaveRuleConfig;
-    }
 }
