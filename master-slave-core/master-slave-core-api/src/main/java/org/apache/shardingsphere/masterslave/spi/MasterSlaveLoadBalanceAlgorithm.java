@@ -15,20 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rule.event;
+package org.apache.shardingsphere.masterslave.spi;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.rule.RuleChangedEvent;
+import org.apache.shardingsphere.spi.type.TypedSPI;
+
+import java.util.List;
 
 /**
- * Data source name disabled event.
+ * Master-slave database load-balance algorithm.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DataSourceNameDisabledEvent implements RuleChangedEvent {
+public interface MasterSlaveLoadBalanceAlgorithm extends TypedSPI {
     
-    private final String dataSourceName;
-    
-    private final boolean isDisabled;
+    /**
+     * Get data source.
+     * 
+     * @param name master-slave logic data source name
+     * @param masterDataSourceName name of master data sources
+     * @param slaveDataSourceNames names of slave data sources
+     * @return name of selected data source
+     */
+    String getDataSource(String name, String masterDataSourceName, List<String> slaveDataSourceNames);
 }

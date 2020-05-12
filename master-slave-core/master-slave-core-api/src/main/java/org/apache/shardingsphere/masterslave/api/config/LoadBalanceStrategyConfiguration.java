@@ -15,30 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rule;
+package org.apache.shardingsphere.masterslave.api.config;
 
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRuleBuilder;
+import lombok.Getter;
+import org.apache.shardingsphere.underlying.common.config.TypedSPIConfiguration;
 
-import java.util.Collection;
+import java.util.Properties;
 
 /**
- * Master-slave rule builder.
+ * Master-slave load balance strategy configuration.
  */
-public final class MasterSlaveRuleBuilder implements ShardingSphereRuleBuilder<MasterSlaveRule, MasterSlaveRuleConfiguration> {
+@Getter
+public final class LoadBalanceStrategyConfiguration extends TypedSPIConfiguration {
     
-    @Override
-    public MasterSlaveRule build(final MasterSlaveRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
-        return new MasterSlaveRule(ruleConfiguration);
+    public LoadBalanceStrategyConfiguration(final String type) {
+        super(type);
     }
     
-    @Override
-    public int getOrder() {
-        return 5;
-    }
-    
-    @Override
-    public Class<MasterSlaveRuleConfiguration> getTypeClass() {
-        return MasterSlaveRuleConfiguration.class;
+    public LoadBalanceStrategyConfiguration(final String type, final Properties properties) {
+        super(type, properties);
     }
 }

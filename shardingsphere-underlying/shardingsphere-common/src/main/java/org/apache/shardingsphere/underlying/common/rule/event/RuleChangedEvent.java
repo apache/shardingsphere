@@ -15,24 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.config.masterslave;
-
-import lombok.Getter;
-import org.apache.shardingsphere.underlying.common.config.TypedSPIConfiguration;
-
-import java.util.Properties;
+package org.apache.shardingsphere.underlying.common.rule.event;
 
 /**
- * Master-slave load balance strategy configuration.
+ * Rule changed event.
  */
-@Getter
-public final class LoadBalanceStrategyConfiguration extends TypedSPIConfiguration {
-    
-    public LoadBalanceStrategyConfiguration(final String type) {
-        super(type);
-    }
-    
-    public LoadBalanceStrategyConfiguration(final String type, final Properties properties) {
-        super(type, properties);
-    }
+public interface RuleChangedEvent {
 }

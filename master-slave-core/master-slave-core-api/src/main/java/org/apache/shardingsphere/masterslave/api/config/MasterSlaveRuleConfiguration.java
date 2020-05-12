@@ -15,10 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.rule;
+package org.apache.shardingsphere.masterslave.api.config;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
+
+import java.util.Collection;
 
 /**
- * Rule changed event.
+ * Master-slave rule configuration.
  */
-public interface RuleChangedEvent {
+@RequiredArgsConstructor
+@Getter
+public final class MasterSlaveRuleConfiguration implements RuleConfiguration {
+    
+    private final Collection<MasterSlaveDataSourceConfiguration> dataSources;
 }

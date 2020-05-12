@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.config.masterslave;
+package org.apache.shardingsphere.underlying.common.rule.event.impl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-
-import java.util.Collection;
+import org.apache.shardingsphere.underlying.common.rule.event.RuleChangedEvent;
 
 /**
- * Master-slave rule configuration.
+ * Data source name disabled event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MasterSlaveRuleConfiguration implements RuleConfiguration {
+public final class DataSourceNameDisabledEvent implements RuleChangedEvent {
     
-    private final Collection<MasterSlaveDataSourceConfiguration> dataSources;
+    private final String dataSourceName;
+    
+    private final boolean isDisabled;
 }

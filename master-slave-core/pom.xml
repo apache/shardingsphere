@@ -30,6 +30,8 @@
     <packaging>pom</packaging>
     
     <modules>
+        <module>master-slave-core-api</module>
+        <module>master-slave-core-common</module>
         <module>master-slave-core-route</module>
     </modules>
 </project>

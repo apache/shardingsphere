@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rule;
+package org.apache.shardingsphere.masterslave.core.rule;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveDataSourceConfiguration;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.core.rule.event.DataSourceNameDisabledEvent;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.underlying.common.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.underlying.common.rule.DataSourceRoutedRule;
-import org.apache.shardingsphere.underlying.common.rule.RuleChangedEvent;
+import org.apache.shardingsphere.underlying.common.rule.event.RuleChangedEvent;
 import org.apache.shardingsphere.underlying.common.rule.StatusContainedRule;
 
 import java.util.Collection;

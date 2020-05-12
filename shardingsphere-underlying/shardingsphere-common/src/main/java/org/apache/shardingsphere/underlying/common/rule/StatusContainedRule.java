@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.underlying.common.rule;
 
+import org.apache.shardingsphere.underlying.common.rule.event.RuleChangedEvent;
+
 /**
  * Status contained rule.
  */

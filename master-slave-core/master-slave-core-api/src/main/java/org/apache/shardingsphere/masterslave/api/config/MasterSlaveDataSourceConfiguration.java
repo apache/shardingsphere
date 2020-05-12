@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.config.masterslave;
+package org.apache.shardingsphere.masterslave.api.config;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
