@@ -57,6 +57,8 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public final class EtcdCenterRepositoryTest {
     
+    private static final String CENTER_TYPE = "etcd";
+    
     @Mock
     private Client client;
     
@@ -85,8 +87,6 @@ public final class EtcdCenterRepositoryTest {
     private CompletableFuture putFuture;
     
     private final EtcdCenterRepository centerRepository = new EtcdCenterRepository();
-    
-    private static final String CENTER_TYPE = "etcd";
     
     @Before
     public void setUp() {
