@@ -32,6 +32,7 @@ import io.etcd.jetcd.options.PutOption;
 import io.grpc.stub.StreamObserver;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -187,12 +188,11 @@ public final class EtcdCenterRepositoryTest {
     }
     
     @Test
-    public void assertInit() {
+    public void assertProperties() {
         CenterConfiguration configuration = new CenterConfiguration(CENTER_TYPE);
         configuration.setServerLists("127.0.0.1");
         Properties properties = new Properties();
         centerRepository.setProperties(properties);
-        centerRepository.init(configuration);
         assertThat(centerRepository.getProperties(), is(properties));
     }
     
@@ -205,7 +205,7 @@ public final class EtcdCenterRepositoryTest {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            assertThat(ex instanceof InterruptedException, is(true));
+            Assert.assertTrue(ex instanceof InterruptedException);
         }
     }
     
@@ -218,7 +218,7 @@ public final class EtcdCenterRepositoryTest {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            assertThat(ex instanceof ExecutionException, is(true));
+            Assert.assertTrue(ex instanceof ExecutionException);
         }
     }
     
@@ -231,7 +231,7 @@ public final class EtcdCenterRepositoryTest {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            assertThat(ex instanceof InterruptedException, is(true));
+            Assert.assertTrue(ex instanceof InterruptedException);
         }
     }
     
@@ -244,7 +244,7 @@ public final class EtcdCenterRepositoryTest {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            assertThat(ex instanceof ExecutionException, is(true));
+            Assert.assertTrue(ex instanceof ExecutionException);
         }
     }
 }
