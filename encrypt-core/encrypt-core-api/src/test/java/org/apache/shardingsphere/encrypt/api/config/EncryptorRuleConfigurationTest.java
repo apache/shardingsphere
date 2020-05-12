@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.api;
+package org.apache.shardingsphere.encrypt.api.config;
 
 import org.junit.Test;
 

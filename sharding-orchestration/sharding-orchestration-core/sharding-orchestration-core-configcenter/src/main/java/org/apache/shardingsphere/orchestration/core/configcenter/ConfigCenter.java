@@ -30,7 +30,7 @@ import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfi
 import org.apache.shardingsphere.core.yaml.constructor.YamlRootRuleConfigurationsConstructor;
 import org.apache.shardingsphere.core.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.root.RuleRootConfigurationsYamlSwapper;
-import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.core.configuration.DataSourceConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration;

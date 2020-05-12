@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.api;
+package org.apache.shardingsphere.encrypt.api.config;
 
 import lombok.Getter;
 import org.apache.shardingsphere.underlying.common.config.TypedSPIConfiguration;

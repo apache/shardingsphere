@@ -29,7 +29,7 @@ import org.apache.shardingsphere.core.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.ShadowRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
