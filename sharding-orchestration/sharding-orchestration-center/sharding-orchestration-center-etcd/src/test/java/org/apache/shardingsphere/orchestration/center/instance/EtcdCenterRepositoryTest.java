@@ -50,8 +50,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class EtcdCenterRepositoryTest {
@@ -193,5 +194,57 @@ public final class EtcdCenterRepositoryTest {
         centerRepository.setProperties(properties);
         centerRepository.init(configuration);
         assertThat(centerRepository.getProperties(), is(properties));
+    }
+    
+    @Test
+    @SneakyThrows
+    public void assertGetKeyWhenThrowInterruptedException() {
+        doThrow(InterruptedException.class).when(getFuture).get();
+        try {
+            centerRepository.get("key");
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            assertThat(ex instanceof InterruptedException, is(true));
+        }
+    }
+    
+    @Test
+    @SneakyThrows
+    public void assertGetKeyWhenThrowExecutionException() {
+        doThrow(ExecutionException.class).when(getFuture).get();
+        try {
+            centerRepository.get("key");
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            assertThat(ex instanceof ExecutionException, is(true));
+        }
+    }
+    
+    @Test
+    @SneakyThrows
+    public void assertGetChildrenKeysWhenThrowInterruptedException() {
+        doThrow(InterruptedException.class).when(getFuture).get();
+        try {
+            centerRepository.getChildrenKeys("/key/key1");
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            assertThat(ex instanceof InterruptedException, is(true));
+        }
+    }
+    
+    @Test
+    @SneakyThrows
+    public void assertGetChildrenKeysWhenThrowExecutionException() {
+        doThrow(ExecutionException.class).when(getFuture).get();
+        try {
+            centerRepository.getChildrenKeys("/key/key1");
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            assertThat(ex instanceof ExecutionException, is(true));
+        }
     }
 }
