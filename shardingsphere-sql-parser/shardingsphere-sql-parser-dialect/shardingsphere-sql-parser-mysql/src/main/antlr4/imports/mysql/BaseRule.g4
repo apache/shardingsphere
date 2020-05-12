@@ -587,3 +587,11 @@ notExistClause_
 existClause_
     : (IF EXISTS)?
     ;
+
+pattern
+    : STRING_
+    ;
+
+connectionId_
+    : NUMBER_
+    ;
