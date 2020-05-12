@@ -60,7 +60,7 @@ public final class MetricsTrackerHandler {
     private volatile boolean async;
     
     /**
-     * Get metrics tracker handler of singleton.
+     * Get metrics tracker handler of lazy load singleton.
      *
      * @return Metrics tracker handler
      */

@@ -50,7 +50,7 @@ public final class MetricsTrackerFacade {
     }
     
     /**
-     * Get metrics tracker facade of singleton.
+     * Get metrics tracker facade of lazy load singleton.
      *
      * @return metrics tracker facade
      */
