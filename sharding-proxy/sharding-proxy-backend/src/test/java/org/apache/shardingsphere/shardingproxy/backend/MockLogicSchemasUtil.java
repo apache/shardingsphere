@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.backend;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 
 import java.lang.reflect.Field;
@@ -41,10 +41,10 @@ public final class MockLogicSchemasUtil {
         field.set(LogicSchemas.getInstance(), mockLogicSchemas(prefix, size));
     }
     
-    private static Map<String, LogicSchema> mockLogicSchemas(final String prefix, final int size) {
-        Map<String, LogicSchema> result = new HashMap<>(size);
+    private static Map<String, ShardingSphereSchema> mockLogicSchemas(final String prefix, final int size) {
+        Map<String, ShardingSphereSchema> result = new HashMap<>(size);
         for (int i = 0; i < size; i++) {
-            result.put(prefix + "_" + i, mock(LogicSchema.class));
+            result.put(prefix + "_" + i, mock(ShardingSphereSchema.class));
         }
         return result;
     }

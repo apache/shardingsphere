@@ -47,7 +47,7 @@ public final class LogicSchemas {
     
     private static final LogicSchemas INSTANCE = new LogicSchemas();
     
-    private final Map<String, LogicSchema> logicSchemas = new ConcurrentHashMap<>();
+    private final Map<String, ShardingSphereSchema> logicSchemas = new ConcurrentHashMap<>();
     
     private DatabaseType databaseType;
     
@@ -108,7 +108,7 @@ public final class LogicSchemas {
      * @param schemaName schema name
      * @return sharding schema
      */
-    public LogicSchema getLogicSchema(final String schemaName) {
+    public ShardingSphereSchema getLogicSchema(final String schemaName) {
         return Strings.isNullOrEmpty(schemaName) ? null : logicSchemas.get(schemaName);
     }
     

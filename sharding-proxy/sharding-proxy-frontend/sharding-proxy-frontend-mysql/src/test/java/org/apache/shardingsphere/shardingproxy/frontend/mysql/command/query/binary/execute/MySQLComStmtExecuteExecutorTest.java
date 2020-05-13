@@ -25,7 +25,7 @@ import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorRespo
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchema;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,7 +53,7 @@ public class MySQLComStmtExecuteExecutorTest {
     @SneakyThrows
     public void assertIsErrorResponse() {
         BackendConnection backendConnection = mock(BackendConnection.class);
-        LogicSchema logicSchema = mock(LogicSchema.class);
+        ShardingSphereSchema logicSchema = mock(ShardingSphereSchema.class);
         when(logicSchema.getRules()).thenReturn(Collections.emptyList());
         when(backendConnection.getLogicSchema()).thenReturn(logicSchema);
         MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(mock(MySQLComStmtExecutePacket.class), backendConnection);
@@ -68,7 +68,7 @@ public class MySQLComStmtExecuteExecutorTest {
     @SneakyThrows
     public void assertIsUpdateResponse() {
         BackendConnection backendConnection = mock(BackendConnection.class);
-        LogicSchema logicSchema = mock(LogicSchema.class);
+        ShardingSphereSchema logicSchema = mock(ShardingSphereSchema.class);
         when(logicSchema.getRules()).thenReturn(Collections.emptyList());
         when(backendConnection.getLogicSchema()).thenReturn(logicSchema);
         MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(mock(MySQLComStmtExecutePacket.class), backendConnection);
@@ -82,7 +82,7 @@ public class MySQLComStmtExecuteExecutorTest {
     @SneakyThrows
     public void assertIsQuery() {
         BackendConnection backendConnection = mock(BackendConnection.class);
-        LogicSchema logicSchema = mock(LogicSchema.class);
+        ShardingSphereSchema logicSchema = mock(ShardingSphereSchema.class);
         when(logicSchema.getRules()).thenReturn(Collections.emptyList());
         when(backendConnection.getLogicSchema()).thenReturn(logicSchema);
         MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(mock(MySQLComStmtExecutePacket.class), backendConnection);

@@ -42,8 +42,8 @@ public final class LogicSchemaFactory {
      * @return new instance of logic schema
      * @throws SQLException SQL exception
      */
-    public static LogicSchema newInstance(final String schemaName, final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources,
-                                          final Collection<RuleConfiguration> ruleConfigurations) throws SQLException {
+    public static ShardingSphereSchema newInstance(final String schemaName, final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources,
+                                                   final Collection<RuleConfiguration> ruleConfigurations) throws SQLException {
         return new ShardingSphereSchema(schemaName, schemaDataSources.get(schemaName), ruleConfigurations);
     }
 }

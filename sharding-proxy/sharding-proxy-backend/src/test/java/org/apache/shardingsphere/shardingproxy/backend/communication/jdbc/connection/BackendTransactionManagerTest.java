@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.conne
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
 public final class BackendTransactionManagerTest {
     
     @Mock
-    private LogicSchema logicSchema;
+    private ShardingSphereSchema logicSchema;
     
     @Mock
     private BackendConnection backendConnection;

@@ -28,7 +28,7 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKP
 import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.junit.Before;
 import org.junit.Test;
@@ -101,7 +101,7 @@ public final class MySQLAuthenticationEngineTest {
     public void assertAuthWithLoginFail() throws NoSuchFieldException, IllegalAccessException {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
         ChannelHandlerContext context = getContext();
-        setLogicSchemas(Collections.singletonMap("sharding_db", mock(LogicSchema.class)));
+        setLogicSchemas(Collections.singletonMap("sharding_db", mock(ShardingSphereSchema.class)));
         when(authenticationHandler.login(anyString(), any(), anyString())).thenReturn(Optional.of(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR));
         authenticationEngine.auth(context, getPayload("root", "sharding_db", authResponse), mock(BackendConnection.class));
         verify(context).writeAndFlush(any(MySQLErrPacket.class));
@@ -110,7 +110,7 @@ public final class MySQLAuthenticationEngineTest {
     @Test
     public void assertAuthWithAbsentDatabase() throws NoSuchFieldException, IllegalAccessException {
         ChannelHandlerContext context = getContext();
-        setLogicSchemas(Collections.singletonMap("sharding_db", mock(LogicSchema.class)));
+        setLogicSchemas(Collections.singletonMap("sharding_db", mock(ShardingSphereSchema.class)));
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
         authenticationEngine.auth(context, getPayload("root", "ABSENT DATABASE", authResponse), mock(BackendConnection.class));
         verify(context).writeAndFlush(any(MySQLErrPacket.class));
@@ -121,12 +121,12 @@ public final class MySQLAuthenticationEngineTest {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
         ChannelHandlerContext context = getContext();
         when(authenticationHandler.login(anyString(), any(), anyString())).thenReturn(Optional.empty());
-        setLogicSchemas(Collections.singletonMap("sharding_db", mock(LogicSchema.class)));
+        setLogicSchemas(Collections.singletonMap("sharding_db", mock(ShardingSphereSchema.class)));
         authenticationEngine.auth(context, getPayload("root", "sharding_db", authResponse), mock(BackendConnection.class));
         verify(context).writeAndFlush(any(MySQLOKPacket.class));
     }
     
-    private void setLogicSchemas(final Map<String, LogicSchema> logicSchemas) throws NoSuchFieldException, IllegalAccessException {
+    private void setLogicSchemas(final Map<String, ShardingSphereSchema> logicSchemas) throws NoSuchFieldException, IllegalAccessException {
         Field field = LogicSchemas.class.getDeclaredField("logicSchemas");
         field.setAccessible(true);
         field.set(LogicSchemas.getInstance(), logicSchemas);
