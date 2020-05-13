@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shardingproxy.backend.schema;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSphereSchema;
-import org.apache.shardingsphere.shardingproxy.backend.schema.impl.TransparentSchema;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 
@@ -45,9 +44,6 @@ public final class LogicSchemaFactory {
      */
     public static LogicSchema newInstance(final String schemaName, final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources,
                                           final Collection<RuleConfiguration> ruleConfigurations) throws SQLException {
-        if (ruleConfigurations.isEmpty()) {
-            return new TransparentSchema(schemaName, schemaDataSources.get(schemaName));
-        }
         return new ShardingSphereSchema(schemaName, schemaDataSources.get(schemaName), ruleConfigurations);
     }
 }
