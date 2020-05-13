@@ -21,7 +21,7 @@ cd %~dp0
 
 set SERVER_NAME=Sharding-Proxy
 
-set CLASS_PATH=".;..;..\lib\*;..\ext-lib\*"
+set CLASS_PATH="..;..\lib\*;..\ext-lib\*"
 
 set PORT=%1
 
@@ -32,12 +32,10 @@ set MAIN_CLASS=org.apache.shardingsphere.shardingproxy.Bootstrap
 ) else ( if "%CONFIG%"=="" (
     set MAIN_CLASS=org.apache.shardingsphere.shardingproxy.Bootstrap %PORT%
     echo The port is configured as %PORT%
-    set CLASS_PATH=../conf;%CLASS_PATH%
     ) else (
     set MAIN_CLASS=org.apache.shardingsphere.shardingproxy.Bootstrap %PORT% %CONFIG%
     echo The port is configured as %PORT%
     echo The configuration path is %CONFIG%
-    set CLASS_PATH=../%CONFIG%;%CLASS_PATH%
     )
     echo The classpath is %CLASS_PATH%
 )
