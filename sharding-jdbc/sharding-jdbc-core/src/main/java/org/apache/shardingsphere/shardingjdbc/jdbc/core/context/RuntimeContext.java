@@ -127,7 +127,7 @@ public final class RuntimeContext implements AutoCloseable {
     }
     
     private void log(final Collection<RuleConfiguration> configurations, final Properties props) {
-        configurations.forEach(ConfigurationLogger::log);
+        ConfigurationLogger.log(configurations);
         ConfigurationLogger.log(props);
     }
     
