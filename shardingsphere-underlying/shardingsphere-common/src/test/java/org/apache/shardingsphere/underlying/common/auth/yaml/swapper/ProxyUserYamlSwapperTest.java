@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.core.yaml.swapper;
+package org.apache.shardingsphere.underlying.common.auth.yaml.swapper;
 
 import org.apache.shardingsphere.underlying.common.auth.ProxyUser;
-import org.apache.shardingsphere.sharding.core.yaml.config.common.YamlProxyUserConfiguration;
+import org.apache.shardingsphere.underlying.common.auth.yaml.config.YamlProxyUserConfiguration;
 import org.junit.Test;
 
 import java.util.Collections;

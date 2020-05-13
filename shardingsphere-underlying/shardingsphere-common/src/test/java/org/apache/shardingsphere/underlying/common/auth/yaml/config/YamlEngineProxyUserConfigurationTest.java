@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.core.yaml.engine;
+package org.apache.shardingsphere.underlying.common.auth.yaml.config;
 
-import org.apache.shardingsphere.sharding.core.yaml.config.common.YamlProxyUserConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 import org.junit.Test;
 

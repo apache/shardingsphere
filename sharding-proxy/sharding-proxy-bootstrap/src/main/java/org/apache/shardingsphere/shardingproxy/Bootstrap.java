@@ -31,8 +31,8 @@ import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestration
 import org.apache.shardingsphere.sharding.core.log.ConfigurationLogger;
 import org.apache.shardingsphere.underlying.common.auth.Authentication;
 import org.apache.shardingsphere.sharding.core.yaml.config.YamlRootRuleConfigurations;
-import org.apache.shardingsphere.sharding.core.yaml.config.common.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.sharding.core.yaml.swapper.AuthenticationYamlSwapper;
+import org.apache.shardingsphere.underlying.common.auth.yaml.config.YamlAuthenticationConfiguration;
+import org.apache.shardingsphere.underlying.common.auth.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.sharding.core.yaml.swapper.ShadowRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.core.yaml.swapper.root.RuleRootConfigurationsYamlSwapper;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchemas;
