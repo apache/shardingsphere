@@ -26,7 +26,7 @@ import org.apache.shardingsphere.underlying.common.rule.event.impl.DataSourceNam
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.ShardingRuleChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenter;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.orchestration.core.metadatacenter.event.MetaDataChangedEvent;
@@ -97,12 +97,12 @@ public class OrchestrationShardingSphereDataSource extends AbstractOrchestration
     /**
      * Renew sharding rule.
      *
-     * @param shardingRuleChangedEvent sharding rule changed event
+     * @param ruleConfigurationsChangedEvent rule configurations changed event
      */
     @Subscribe
     @SneakyThrows
-    public final synchronized void renew(final ShardingRuleChangedEvent shardingRuleChangedEvent) {
-        dataSource = new ShardingSphereDataSource(dataSource.getDataSourceMap(), shardingRuleChangedEvent.getRuleConfigurations(), dataSource.getRuntimeContext().getProperties().getProps());
+    public final synchronized void renew(final RuleConfigurationsChangedEvent ruleConfigurationsChangedEvent) {
+        dataSource = new ShardingSphereDataSource(dataSource.getDataSourceMap(), ruleConfigurationsChangedEvent.getRuleConfigurations(), dataSource.getRuntimeContext().getProperties().getProps());
     }
     
     /**

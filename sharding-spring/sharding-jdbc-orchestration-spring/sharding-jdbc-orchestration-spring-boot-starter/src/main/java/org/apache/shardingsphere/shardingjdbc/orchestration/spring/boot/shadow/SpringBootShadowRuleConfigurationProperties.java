@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.shadow;
 
-import org.apache.shardingsphere.core.yaml.config.shadow.YamlShadowRuleConfiguration;
+import org.apache.shardingsphere.sharding.core.yaml.config.shadow.YamlShadowRuleConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**

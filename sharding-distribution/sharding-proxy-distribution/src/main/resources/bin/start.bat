@@ -21,7 +21,7 @@ cd %~dp0
 
 set SERVER_NAME=Sharding-Proxy
 
-set CLASS_PATH=".;..;..\lib\*;..\ext-lib\*"
+set CLASS_PATH="..;..\lib\*;..\ext-lib\*"
 
 set PORT=%1
 

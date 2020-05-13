@@ -21,6 +21,7 @@ import org.apache.shardingsphere.metrics.api.MetricsTracker;
 import org.apache.shardingsphere.metrics.api.MetricsTrackerFactory;
 import org.apache.shardingsphere.metrics.prometheus.impl.counter.RequestTotalCounterMetricsTracker;
 import org.apache.shardingsphere.metrics.prometheus.impl.counter.SQLStatementCounterMetricsTracker;
+import org.apache.shardingsphere.metrics.prometheus.impl.counter.ShadowHitTotalCounterMetricsTracker;
 import org.apache.shardingsphere.metrics.prometheus.impl.counter.ShardingCounterMetricsTracker;
 import org.apache.shardingsphere.metrics.prometheus.impl.counter.TransactionCounterMetricsTracker;
 import org.apache.shardingsphere.metrics.prometheus.impl.gauge.ChannelCountGaugeMetricsTracker;
@@ -46,6 +47,7 @@ public final class PrometheusMetricsTrackerFactory implements MetricsTrackerFact
         REGISTER.add(new RequestLatencySummaryMetricsTracker());
         REGISTER.add(new ShardingCounterMetricsTracker());
         REGISTER.add(new TransactionCounterMetricsTracker());
+        REGISTER.add(new ShadowHitTotalCounterMetricsTracker());
     }
     
     @Override

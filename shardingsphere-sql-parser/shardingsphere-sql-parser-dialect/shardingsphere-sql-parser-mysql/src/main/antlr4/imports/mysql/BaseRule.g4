@@ -123,7 +123,7 @@ variable
     ;
 
 scope
-    : GLOBAL | PERSIST | PERSIST_ONLY | SESSION
+    : GLOBAL | PERSIST | PERSIST_ONLY | SESSION | LOCAL
     ;
 
 schemaName

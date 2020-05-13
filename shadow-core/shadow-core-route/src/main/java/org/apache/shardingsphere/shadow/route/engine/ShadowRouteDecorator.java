@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.route.engine;
 
-import org.apache.shardingsphere.core.rule.ShadowRule;
+import org.apache.shardingsphere.shadow.core.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.route.engine.impl.PreparedShadowDataSourceRouter;
 import org.apache.shardingsphere.shadow.route.engine.impl.SimpleShadowDataSourceRouter;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;

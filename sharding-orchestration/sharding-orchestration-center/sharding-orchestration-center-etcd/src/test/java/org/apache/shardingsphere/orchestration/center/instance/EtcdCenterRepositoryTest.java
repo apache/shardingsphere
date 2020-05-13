@@ -29,8 +29,12 @@ import io.etcd.jetcd.kv.GetResponse;
 import io.etcd.jetcd.lease.LeaseGrantResponse;
 import io.etcd.jetcd.options.GetOption;
 import io.etcd.jetcd.options.PutOption;
+import io.etcd.jetcd.watch.WatchEvent;
+import io.etcd.jetcd.watch.WatchResponse;
 import io.grpc.stub.StreamObserver;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,10 +42,11 @@ import org.mockito.Mock;
 import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -49,11 +54,16 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.doThrow;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class EtcdCenterRepositoryTest {
+    
+    private static final String CENTER_TYPE = "etcd";
     
     @Mock
     private Client client;
@@ -107,6 +117,7 @@ public final class EtcdCenterRepositoryTest {
         when(client.getKVClient()).thenReturn(kv);
         when(kv.get(any(ByteSequence.class))).thenReturn(getFuture);
         when(kv.get(any(ByteSequence.class), any(GetOption.class))).thenReturn(getFuture);
+        when(kv.put(any(ByteSequence.class), any(ByteSequence.class))).thenReturn(putFuture);
         when(kv.put(any(ByteSequence.class), any(ByteSequence.class), any(PutOption.class))).thenReturn(putFuture);
         when(getFuture.get()).thenReturn(getResponse);
         when(client.getLeaseClient()).thenReturn(lease);
@@ -152,7 +163,36 @@ public final class EtcdCenterRepositoryTest {
     }
     
     @Test
-    public void assertWatch() {
+    public void assertWatchUpdate() {
+        doAnswer(invocationOnMock -> {
+            Watch.Listener listener = (Watch.Listener) invocationOnMock.getArguments()[1];
+            listener.onNext(buildWatchResponse(WatchEvent.EventType.PUT));
+            return mock(Watch.Watcher.class);
+        }).when(watch).watch(any(ByteSequence.class), any(Watch.Listener.class));
+        centerRepository.watch("key1", dataChangedEvent -> {
+        });
+        verify(watch).watch(any(ByteSequence.class), any(Watch.Listener.class));
+    }
+    
+    @Test
+    public void assertWatchDelete() {
+        doAnswer(invocationOnMock -> {
+            Watch.Listener listener = (Watch.Listener) invocationOnMock.getArguments()[1];
+            listener.onNext(buildWatchResponse(WatchEvent.EventType.DELETE));
+            return mock(Watch.Watcher.class);
+        }).when(watch).watch(any(ByteSequence.class), any(Watch.Listener.class));
+        centerRepository.watch("key1", dataChangedEvent -> {
+        });
+        verify(watch).watch(any(ByteSequence.class), any(Watch.Listener.class));
+    }
+    
+    @Test
+    public void assertWatchIgnored() {
+        doAnswer(invocationOnMock -> {
+            Watch.Listener listener = (Watch.Listener) invocationOnMock.getArguments()[1];
+            listener.onNext(buildWatchResponse(WatchEvent.EventType.UNRECOGNIZED));
+            return mock(Watch.Watcher.class);
+        }).when(watch).watch(any(ByteSequence.class), any(Watch.Listener.class));
         centerRepository.watch("key1", dataChangedEvent -> {
         });
         verify(watch).watch(any(ByteSequence.class), any(Watch.Listener.class));
@@ -162,5 +202,96 @@ public final class EtcdCenterRepositoryTest {
     public void assertDelete() {
         centerRepository.delete("key");
         verify(kv).delete(ByteSequence.from("key", Charsets.UTF_8));
+    }
+    
+    @Test
+    public void assertPersist() {
+        centerRepository.persist("key1", "value1");
+        verify(kv).put(any(ByteSequence.class), any(ByteSequence.class));
+    }
+    
+    @Test
+    public void assertClose() {
+        centerRepository.close();
+        verify(client).close();
+    }
+    
+    @Test
+    public void assertGetType() {
+        assertThat(centerRepository.getType(), is(CENTER_TYPE));
+    }
+    
+    @Test
+    public void assertProperties() {
+        CenterConfiguration configuration = new CenterConfiguration(CENTER_TYPE);
+        configuration.setServerLists("127.0.0.1");
+        Properties properties = new Properties();
+        centerRepository.setProperties(properties);
+        assertThat(centerRepository.getProperties(), is(properties));
+    }
+    
+    @Test
+    @SneakyThrows
+    public void assertGetKeyWhenThrowInterruptedException() {
+        doThrow(InterruptedException.class).when(getFuture).get();
+        try {
+            centerRepository.get("key");
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            Assert.assertTrue(ex instanceof InterruptedException);
+        }
+    }
+    
+    @Test
+    @SneakyThrows
+    public void assertGetKeyWhenThrowExecutionException() {
+        doThrow(ExecutionException.class).when(getFuture).get();
+        try {
+            centerRepository.get("key");
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            Assert.assertTrue(ex instanceof ExecutionException);
+        }
+    }
+    
+    @Test
+    @SneakyThrows
+    public void assertGetChildrenKeysWhenThrowInterruptedException() {
+        doThrow(InterruptedException.class).when(getFuture).get();
+        try {
+            centerRepository.getChildrenKeys("/key/key1");
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            Assert.assertTrue(ex instanceof InterruptedException);
+        }
+    }
+    
+    @Test
+    @SneakyThrows
+    public void assertGetChildrenKeysWhenThrowExecutionException() {
+        doThrow(ExecutionException.class).when(getFuture).get();
+        try {
+            centerRepository.getChildrenKeys("/key/key1");
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            Assert.assertTrue(ex instanceof ExecutionException);
+        }
+    }
+    
+    @SneakyThrows({NoSuchFieldException.class, SecurityException.class})
+    private WatchResponse buildWatchResponse(final WatchEvent.EventType eventType) {
+        WatchResponse watchResponse = new WatchResponse(mock(io.etcd.jetcd.api.WatchResponse.class), ByteSequence.EMPTY);
+        List<WatchEvent> events = new ArrayList<>();
+        io.etcd.jetcd.api.KeyValue keyValue1 = io.etcd.jetcd.api.KeyValue.newBuilder()
+                .setKey(ByteString.copyFromUtf8("key1"))
+                .setValue(ByteString.copyFromUtf8("value1")).build();
+        KeyValue keyValue = new KeyValue(keyValue1, ByteSequence.EMPTY);
+        events.add(new WatchEvent(keyValue, mock(KeyValue.class), eventType));
+        FieldSetter.setField(watchResponse, watchResponse.getClass().getDeclaredField("events"), events);
+        return watchResponse;
     }
 }

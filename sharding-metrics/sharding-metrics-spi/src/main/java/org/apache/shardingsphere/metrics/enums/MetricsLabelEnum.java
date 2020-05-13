@@ -55,7 +55,12 @@ public enum MetricsLabelEnum {
     /**
      * Transaction metrics label.
      */
-    TRANSACTION("transaction");
+    TRANSACTION("transaction"),
+    
+    /**
+     * Shadow hit total label.
+     */
+    SHADOW_HIT_TOTAL("shadow_hit_total");
     
     private final String name;
 }

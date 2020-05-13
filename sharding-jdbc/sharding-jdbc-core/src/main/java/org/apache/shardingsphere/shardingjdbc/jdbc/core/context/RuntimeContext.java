@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.core.log.ConfigurationLogger;
+import org.apache.shardingsphere.sharding.core.log.ConfigurationLogger;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
@@ -127,7 +127,7 @@ public final class RuntimeContext implements AutoCloseable {
     }
     
     private void log(final Collection<RuleConfiguration> configurations, final Properties props) {
-        configurations.forEach(ConfigurationLogger::log);
+        ConfigurationLogger.log(configurations);
         ConfigurationLogger.log(props);
     }
     

@@ -38,22 +38,23 @@
         
         <module>sharding-core</module>
         <module>encrypt-core</module>
+        <module>shadow-core</module>
+        <module>master-slave-core</module>
         
         <module>sharding-jdbc</module>
         <module>sharding-proxy</module>
-        <module>sharding-scaling</module>
+        <module>sharding-spring</module>
         
+        <module>sharding-scaling</module>
         <module>sharding-transaction</module>
+        
         <module>sharding-orchestration</module> 
         <module>sharding-opentracing</module>
         <module>sharding-metrics</module>
-        
-        <module>sharding-spring</module>
+        <module>control-panel</module>
         
         <module>sharding-distribution</module>
         <module>shardingsphere-integration-test</module>
-        <module>shadow-core</module>
-        <module>master-slave-core</module>
     </modules>
     
     <properties>

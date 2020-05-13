@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.spring.boot.datasource;
 
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.sharding.spi.ShardingSphereServiceLoader;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.conne
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
-import org.apache.shardingsphere.shardingproxy.backend.MockLogicSchemasUtil;
+import org.apache.shardingsphere.shardingproxy.backend.MockShardingSphereSchemasUtil;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -62,9 +62,9 @@ public final class BackendConnectionTest {
     
     @Before
     public void setUp() {
-        MockLogicSchemasUtil.setLogicSchemas("schema", 2);
+        MockShardingSphereSchemasUtil.setSchemas("schema", 2);
         backendConnection.setCurrentSchema("schema_0");
-        when(backendConnection.getLogicSchema().getBackendDataSource()).thenReturn(backendDataSource);
+        when(backendConnection.getSchema().getBackendDataSource()).thenReturn(backendDataSource);
         when(backendDataSource.getShardingTransactionManagerEngine()).thenReturn(mock(ShardingTransactionManagerEngine.class));
     }
     
@@ -226,7 +226,7 @@ public final class BackendConnectionTest {
     }
     
     @Test(expected = ShardingSphereException.class)
-    public void assertFailedSwitchLogicSchemaWhileBegin() {
+    public void assertFailedSwitchSchemaWhileBegin() {
         BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
         transactionManager.begin();
         backendConnection.setCurrentSchema("newSchema");

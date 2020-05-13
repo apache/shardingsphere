@@ -27,11 +27,7 @@ import lombok.NoArgsConstructor;
 public final class DefaultSchema {
     
     /**
-     * Logic schema name.
-     * 
-     * <p>
-     * ShardingSphere just have one logic database table.
-     * </p>
+     * Schema name.
      */
     public static final String LOGIC_NAME = "logic_db";
 }
