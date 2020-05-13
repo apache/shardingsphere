@@ -23,9 +23,9 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * Sharding rule condition.
+ * ShardingSphere rule condition.
  */
-public final class ShardingRuleCondition extends SpringBootCondition {
+public final class ShardingSphereRuleCondition extends SpringBootCondition {
     
     @Override
     public ConditionOutcome getMatchOutcome(final ConditionContext conditionContext, final AnnotatedTypeMetadata annotatedTypeMetadata) {

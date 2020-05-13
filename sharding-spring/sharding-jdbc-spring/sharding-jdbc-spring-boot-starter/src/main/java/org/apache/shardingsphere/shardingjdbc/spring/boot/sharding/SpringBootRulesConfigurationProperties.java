@@ -17,12 +17,28 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring.boot.sharding;
 
-import org.apache.shardingsphere.sharding.core.yaml.config.YamlRootRuleConfigurations;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
+import org.apache.shardingsphere.sharding.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.sharding.core.yaml.config.shadow.YamlShadowRuleConfiguration;
+import org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlShardingRuleConfiguration;
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Spring boot rules configuration properties.
  */
 @ConfigurationProperties(prefix = "spring.shardingsphere.rules")
-public class SpringBootRulesConfigurationProperties extends YamlRootRuleConfigurations {
+@Getter
+@Setter
+public class SpringBootRulesConfigurationProperties implements YamlConfiguration {
+    
+    private YamlShardingRuleConfiguration shardingRule;
+    
+    private YamlMasterSlaveRuleConfiguration masterSlaveRule;
+    
+    private YamlEncryptRuleConfiguration encryptRule;
+    
+    private YamlShadowRuleConfiguration shadowRule;
 }
