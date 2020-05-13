@@ -15,22 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.config.shadow;
+package org.apache.shardingsphere.shadow.core.rule;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRuleBuilder;
 
-import java.util.Map;
+import java.util.Collection;
 
 /**
- * Shadow rule configuration.
+ * Shadow rule builder.
  */
-@Getter
-@Setter
-public final class ShadowRuleConfiguration implements RuleConfiguration {
+public final class ShadowRuleBuilder implements ShardingSphereRuleBuilder<ShadowRule, ShadowRuleConfiguration> {
     
-    private String column;
+    @Override
+    public ShadowRule build(final ShadowRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
+        return new ShadowRule(ruleConfiguration);
+    }
     
-    private Map<String, String> shadowMappings;
+    @Override
+    public int getOrder() {
+        return 20;
+    }
+    
+    @Override
+    public Class<ShadowRuleConfiguration> getTypeClass() {
+        return ShadowRuleConfiguration.class;
+    }
 }
