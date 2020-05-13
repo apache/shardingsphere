@@ -35,13 +35,13 @@ import java.util.stream.Collectors;
 @ToString
 public class OnDuplicateUpdateContext {
     private final int parametersCount;
-
+    
     private final List<ExpressionSegment> valueExpressions;
-
+    
     private final List<Object> parameters;
-
+    
     private final List<ColumnSegment> columns;
-
+    
     public OnDuplicateUpdateContext(final Collection<AssignmentSegment> assignments, final List<Object> parameters, final int parametersOffset) {
         List<ExpressionSegment> expressionSegments = assignments.stream().map(AssignmentSegment::getValue).collect(Collectors.toList());
         parametersCount = calculateParametersCount(expressionSegments);
@@ -49,7 +49,7 @@ public class OnDuplicateUpdateContext {
         this.parameters = getParameters(parameters, parametersOffset);
         columns = assignments.stream().map(AssignmentSegment::getColumn).collect(Collectors.toList());
     }
-
+    
     private int calculateParametersCount(final Collection<ExpressionSegment> assignments) {
         int result = 0;
         for (ExpressionSegment each : assignments) {
@@ -59,13 +59,13 @@ public class OnDuplicateUpdateContext {
         }
         return result;
     }
-
+    
     private List<ExpressionSegment> getValueExpressions(final Collection<ExpressionSegment> assignments) {
         List<ExpressionSegment> result = new ArrayList<>(assignments.size());
         result.addAll(assignments);
         return result;
     }
-
+    
     private List<Object> getParameters(final List<Object> parameters, final int parametersOffset) {
         if (0 == parametersCount) {
             return Collections.emptyList();
@@ -74,7 +74,7 @@ public class OnDuplicateUpdateContext {
         result.addAll(parameters.subList(parametersOffset, parametersOffset + parametersCount));
         return result;
     }
-
+    
     /**
      * Get value.
      *
@@ -85,7 +85,7 @@ public class OnDuplicateUpdateContext {
         ExpressionSegment valueExpression = valueExpressions.get(index);
         return valueExpression instanceof ParameterMarkerExpressionSegment ? parameters.get(getParameterIndex(valueExpression)) : ((LiteralExpressionSegment) valueExpression).getLiterals();
     }
-
+    
     private int getParameterIndex(final ExpressionSegment valueExpression) {
         int result = 0;
         for (ExpressionSegment each : valueExpressions) {
@@ -98,7 +98,7 @@ public class OnDuplicateUpdateContext {
         }
         throw new IllegalArgumentException("Can not get parameter index.");
     }
-
+    
     /**
      * get on duplicate key update column by index of this clause.
      * @param index index.

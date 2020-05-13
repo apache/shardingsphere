@@ -55,20 +55,30 @@ public final class RouteSQLRewriteEngine {
     }
     
     private List<Object> getParameters(final ParameterBuilder parameterBuilder, final RouteResult routeResult, final RouteUnit routeUnit) {
-        if (parameterBuilder instanceof StandardParameterBuilder || routeResult.getOriginalDataNodes().isEmpty() || parameterBuilder.getParameters().isEmpty()) {
+        if (parameterBuilder instanceof StandardParameterBuilder) {
             return parameterBuilder.getParameters();
+        } else if (routeResult.getOriginalDataNodes().isEmpty()) {
+            List<Object> onDuplicateKeyUpdateParameters = ((GroupedParameterBuilder) parameterBuilder).getOnDuplicateKeyUpdateParametersBuilder().getParameters();
+            if (onDuplicateKeyUpdateParameters.isEmpty()) {
+                return parameterBuilder.getParameters();
+            } else {
+                List<Object> result = new LinkedList<>();
+                result.addAll(parameterBuilder.getParameters());
+                result.addAll(onDuplicateKeyUpdateParameters);
+                return result;
+            }
         }
+    
         List<Object> result = new LinkedList<>();
         int count = 0;
         for (Collection<DataNode> each : routeResult.getOriginalDataNodes()) {
             if (isInSameDataNode(each, routeUnit)) {
-                GroupedParameterBuilder groupedParameterBuilder = (GroupedParameterBuilder) parameterBuilder;
-
-                result.addAll(groupedParameterBuilder.getParameters(count));
-                result.addAll(groupedParameterBuilder.getOriginalOnDuplicateKeyParameters());
+                result.addAll(((GroupedParameterBuilder) parameterBuilder).getParameters(count));
             }
             count++;
         }
+        result.addAll(((GroupedParameterBuilder) parameterBuilder).getOnDuplicateKeyUpdateParametersBuilder().getParameters());
+    
         return result;
     }
     

@@ -25,8 +25,6 @@ import org.apache.shardingsphere.encrypt.strategy.spi.QueryAssistedEncryptor;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.OnDuplicateUpdateContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 
@@ -41,8 +39,6 @@ import java.util.Optional;
 @Setter
 public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter extends EncryptParameterRewriter<InsertStatementContext> {
     
-    private boolean queryWithCipherColumn;
-    
     @Override
     protected boolean isNeedRewriteForEncrypt(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof InsertStatementContext && ((InsertStatementContext) sqlStatementContext).getSqlStatement().getOnDuplicateKeyColumns().isPresent();
@@ -51,9 +47,6 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter exten
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext, final List<Object> parameters) {
         String tableName = insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
-        Preconditions.checkState(insertStatementContext.getSqlStatement().getOnDuplicateKeyColumns().isPresent());
-        OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment = insertStatementContext.getSqlStatement().getOnDuplicateKeyColumns().get();
-        Collection<AssignmentSegment> onDuplicateKeyColumnsSegments = onDuplicateKeyColumnsSegment.getColumns();
 
         GroupedParameterBuilder groupedParameterBuilder = (GroupedParameterBuilder) parameterBuilder;
         OnDuplicateUpdateContext onDuplicateKeyUpdateValueContext = insertStatementContext.getOnDuplicateKeyUpdateValueContext();
@@ -64,7 +57,7 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter exten
             encryptorOptional.ifPresent(encryptor -> {
                 Object plainColumnValue = onDuplicateKeyUpdateValueContext.getValue(columnIndex);
                 Object cipherColumnValue = encryptorOptional.get().encrypt(plainColumnValue);
-                groupedParameterBuilder.addReplacedIndexAndOnDuplicateKeyUpdateParameters(columnIndex, cipherColumnValue);
+                groupedParameterBuilder.getOnDuplicateKeyUpdateParametersBuilder().addReplacedParameters(columnIndex, cipherColumnValue);
                 Collection<Object> addedParameters = new LinkedList<>();
                 if (encryptor instanceof QueryAssistedEncryptor) {
                     Optional<String> assistedColumnName = getEncryptRule().findAssistedQueryColumn(tableName, encryptLogicColumnName);
@@ -77,14 +70,13 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter exten
                 }
 
                 if (!addedParameters.isEmpty()) {
-                    if (!groupedParameterBuilder.getAddedIndexAndOnDuplicateKeyParameters().containsKey(columnIndex + 1)) {
-                        groupedParameterBuilder.getAddedIndexAndOnDuplicateKeyParameters().put(columnIndex + 1, new LinkedList<>());
+                    if (!groupedParameterBuilder.getOnDuplicateKeyUpdateParametersBuilder().getAddedIndexAndParameters().containsKey(columnIndex + 1)) {
+                        groupedParameterBuilder.getOnDuplicateKeyUpdateParametersBuilder().getAddedIndexAndParameters().put(columnIndex + 1, new LinkedList<>());
                     }
-                    groupedParameterBuilder.getAddedIndexAndOnDuplicateKeyParameters().get(columnIndex + 1).addAll(addedParameters);
+                    groupedParameterBuilder.getOnDuplicateKeyUpdateParametersBuilder().getAddedIndexAndParameters().get(columnIndex + 1).addAll(addedParameters);
                 }
             });
 
         }
-
     }
 }

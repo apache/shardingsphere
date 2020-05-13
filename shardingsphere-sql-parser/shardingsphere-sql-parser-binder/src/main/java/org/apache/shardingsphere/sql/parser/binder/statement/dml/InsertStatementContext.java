@@ -47,17 +47,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Getter
 @ToString(callSuper = true)
 public final class InsertStatementContext extends CommonSQLStatementContext<InsertStatement> implements TableAvailable {
-
+    
     private final TablesContext tablesContext;
-
+    
     private final List<String> columnNames;
-
+    
     private final List<InsertValueContext> insertValueContexts;
-
+    
     private final OnDuplicateUpdateContext onDuplicateKeyUpdateValueContext;
-
+    
     private final GeneratedKeyContext generatedKeyContext;
-
+    
     public InsertStatementContext(final SchemaMetaData schemaMetaData, final List<Object> parameters, final InsertStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTable());
@@ -69,7 +69,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
 
         generatedKeyContext = new GeneratedKeyContextEngine(schemaMetaData).createGenerateKeyContext(parameters, sqlStatement).orElse(null);
     }
-
+    
     private List<InsertValueContext> getInsertValueContexts(final List<Object> parameters, final AtomicInteger parametersOffset) {
         List<InsertValueContext> result = new LinkedList<>();
         for (Collection<ExpressionSegment> each : getSqlStatement().getAllValueExpressions()) {
@@ -79,7 +79,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         }
         return result;
     }
-
+    
     private Optional<OnDuplicateUpdateContext> getOnDuplicateKeyUpdateValueContext(final List<Object> parameters, final AtomicInteger parametersOffset) {
 
         if (!getSqlStatement().getOnDuplicateKeyColumns().isPresent()) {
@@ -91,7 +91,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         return Optional.of(onDuplicateUpdateContext);
 
     }
-
+    
     /**
      * Get column names for descending order.
      *
@@ -100,7 +100,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     public Iterator<String> getDescendingColumnNames() {
         return new LinkedList<>(columnNames).descendingIterator();
     }
-
+    
     /**
      * Get grouped parameters.
      *
@@ -113,7 +113,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         }
         return result;
     }
-
+    
     /**
      * Get OnDuplicateKeyUpdateParameters.
      * @return OnDuplicateKeyUpdateParameters
@@ -125,8 +125,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
 
         return onDuplicateKeyUpdateValueContext.getParameters();
     }
-
-
+    
     /**
      * Get generated key context.
      *
@@ -135,10 +134,9 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     public Optional<GeneratedKeyContext> getGeneratedKeyContext() {
         return Optional.ofNullable(generatedKeyContext);
     }
-
+    
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
         return Collections.singletonList(getSqlStatement().getTable());
     }
-
 }

@@ -39,7 +39,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class OnDuplicateUpdateContextTest {
-
+    
     @SuppressWarnings("unchecked")
     @Test
     public void assertInstanceConstructedOk() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
@@ -64,7 +64,7 @@ public final class OnDuplicateUpdateContextTest {
         List<Object> getParametersResult = (List<Object>) getParametersMethod.invoke(onDuplicateUpdateContext, new Object[]{parameters, parametersOffset});
         assertThat(onDuplicateUpdateContext.getParameters(), is(getParametersResult));
     }
-
+    
     @Test
     public void assertGetValueWhenParameterMarker() {
         Collection<AssignmentSegment> assignments = makeParameterMarkerExpressionAssignmentSegment();
@@ -79,7 +79,7 @@ public final class OnDuplicateUpdateContextTest {
         Object valueFromInsertValueContext2 = onDuplicateUpdateContext.getValue(1);
         assertThat(valueFromInsertValueContext2, is(parameterValue2));
     }
-
+    
     private Collection<AssignmentSegment> makeParameterMarkerExpressionAssignmentSegment() {
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment = new ParameterMarkerExpressionSegment(0, 10, 5);
         AssignmentSegment assignmentSegment1 = makeAssignmentSegment(parameterMarkerExpressionSegment);
@@ -88,7 +88,7 @@ public final class OnDuplicateUpdateContextTest {
         AssignmentSegment assignmentSegment2 = makeAssignmentSegment(parameterMarkerExpressionSegment2);
         return Lists.newArrayList(assignmentSegment1, assignmentSegment2);
     }
-
+    
     @Test
     public void assertGetValueWhenLiteralExpressionSegment() {
         Object literalObject = new Object();
@@ -98,13 +98,13 @@ public final class OnDuplicateUpdateContextTest {
         Object valueFromInsertValueContext = onDuplicateUpdateContext.getValue(0);
         assertThat(valueFromInsertValueContext, is(literalObject));
     }
-
+    
     private Collection<AssignmentSegment> makeLiteralExpressionSegment(final Object literalObject) {
         LiteralExpressionSegment parameterLiteralExpression = new LiteralExpressionSegment(0, 10, literalObject);
         AssignmentSegment assignmentSegment = makeAssignmentSegment(parameterLiteralExpression);
         return Collections.singleton(assignmentSegment);
     }
-
+    
     private AssignmentSegment makeAssignmentSegment(final SimpleExpressionSegment expressionSegment) {
         int doesNotMatterLexicalIndex = 0;
         String doesNotMatterColumnName = "columnNameStr";
@@ -112,7 +112,7 @@ public final class OnDuplicateUpdateContextTest {
         ColumnSegment column = new ColumnSegment(doesNotMatterLexicalIndex, doesNotMatterLexicalIndex, new IdentifierValue(doesNotMatterColumnName));
         return new AssignmentSegment(doesNotMatterLexicalIndex, doesNotMatterLexicalIndex, column, expressionSegment);
     }
-
+    
     @Test
     public void assertGetParameterIndex() throws NoSuchMethodException, IllegalAccessException {
         Collection<AssignmentSegment> assignments = Lists.newArrayList();
@@ -133,7 +133,7 @@ public final class OnDuplicateUpdateContextTest {
         }
         assertTrue("expected throw IllegalArgumentException", targetException instanceof IllegalArgumentException);
     }
-
+    
     @Test
     public void assertGetColumn() {
         Object literalObject = new Object();
