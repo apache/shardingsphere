@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata;
+package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.WrapperAdapter;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 
 import java.sql.DatabaseMetaData;
 import java.sql.RowIdLifetime;
