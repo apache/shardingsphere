@@ -81,7 +81,7 @@ public final class ShardingSphereSchema {
         this.name = name;
         this.configurations = configurations;
         this.rules = ShardingSphereRulesBuilder.build(configurations, dataSources.keySet());
-        sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(LogicSchemas.getInstance().getDatabaseType()));
+        sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(ShardingSphereSchemas.getInstance().getDatabaseType()));
         backendDataSource = new JDBCBackendDataSource(dataSources);
         metaData = loadOrCreateMetaData(name, rules);
         ShardingOrchestrationEventBus.getInstance().register(this);
@@ -89,7 +89,7 @@ public final class ShardingSphereSchema {
     
     private ShardingSphereMetaData loadOrCreateMetaData(final String name, final Collection<ShardingSphereRule> rules) throws SQLException {
         boolean isOverwrite = null != ShardingOrchestrationFacade.getInstance() && ShardingOrchestrationFacade.getInstance().isOverwrite();
-        DatabaseType databaseType = LogicSchemas.getInstance().getDatabaseType();
+        DatabaseType databaseType = ShardingSphereSchemas.getInstance().getDatabaseType();
         DataSourceMetas dataSourceMetas = new DataSourceMetas(databaseType, getDatabaseAccessConfigurationMap());
         RuleSchemaMetaData ruleSchemaMetaData;
         if (null == ShardingOrchestrationFacade.getInstance()) {
@@ -204,7 +204,8 @@ public final class ShardingSphereSchema {
         }
         Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
         if (refreshStrategy.isPresent()) {
-            refreshStrategy.get().refreshMetaData(getMetaData(), LogicSchemas.getInstance().getDatabaseType(), getBackendDataSource().getDataSources(), sqlStatementContext, this::loadTableMetaData);
+            refreshStrategy.get().refreshMetaData(
+                    getMetaData(), ShardingSphereSchemas.getInstance().getDatabaseType(), getBackendDataSource().getDataSources(), sqlStatementContext, this::loadTableMetaData);
             if (null != ShardingOrchestrationFacade.getInstance()) {
                 ShardingOrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(getName(), getMetaData().getSchema());
             }
@@ -213,6 +214,6 @@ public final class ShardingSphereSchema {
     
     private Optional<TableMetaData> loadTableMetaData(final String tableName) throws SQLException {
         RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(getRules());
-        return loader.load(LogicSchemas.getInstance().getDatabaseType(), getBackendDataSource().getDataSources(), tableName, ShardingProxyContext.getInstance().getProperties());
+        return loader.load(ShardingSphereSchemas.getInstance().getDatabaseType(), getBackendDataSource().getDataSources(), tableName, ShardingProxyContext.getInstance().getProperties());
     }
 }
