@@ -83,11 +83,11 @@ public final class ShardingSphereSchemas {
                              final Map<String, Collection<RuleConfiguration>> schemaRules) throws SQLException {
         if (schemaRules.isEmpty()) {
             String schema = schemaDataSources.keySet().iterator().next();
-            schemas.put(schema, LogicSchemaFactory.newInstance(schema, schemaDataSources, null));
+            schemas.put(schema, new ShardingSphereSchema(schema, schemaDataSources.get(schema), Collections.emptyList()));
         }
         for (Entry<String, Collection<RuleConfiguration>> entry : schemaRules.entrySet()) {
             if (localSchemaNames.isEmpty() || localSchemaNames.contains(entry.getKey())) {
-                schemas.put(entry.getKey(), LogicSchemaFactory.newInstance(entry.getKey(), schemaDataSources, entry.getValue()));
+                schemas.put(entry.getKey(), new ShardingSphereSchema(entry.getKey(), schemaDataSources.get(entry.getKey()), entry.getValue()));
             }
         }
     }
@@ -129,9 +129,8 @@ public final class ShardingSphereSchemas {
      */
     @Subscribe
     public synchronized void renew(final SchemaAddedEvent schemaAddedEvent) throws SQLException {
-        schemas.put(schemaAddedEvent.getShardingSchemaName(), LogicSchemaFactory.newInstance(schemaAddedEvent.getShardingSchemaName(), 
-                Collections.singletonMap(schemaAddedEvent.getShardingSchemaName(), DataSourceConverter.getDataSourceParameterMap(schemaAddedEvent.getDataSourceConfigurations())), 
-                schemaAddedEvent.getRuleConfigurations()));
+        schemas.put(schemaAddedEvent.getShardingSchemaName(), new ShardingSphereSchema(schemaAddedEvent.getShardingSchemaName(), 
+                DataSourceConverter.getDataSourceParameterMap(schemaAddedEvent.getDataSourceConfigurations()), schemaAddedEvent.getRuleConfigurations()));
     }
     
     /**
