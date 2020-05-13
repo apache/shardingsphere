@@ -30,8 +30,8 @@ public final class OrchestrationShardingSchemaGroupTest {
     @Test
     public void assertAddWithExistedSchemaName() {
         OrchestrationShardingSchemaGroup actual = new OrchestrationShardingSchemaGroup();
-        actual.add(new OrchestrationShardingSchema("test_0.ds_0"));
-        actual.add(new OrchestrationShardingSchema("test_0.ds_1"));
+        actual.add(new OrchestrationSchema("test_0.ds_0"));
+        actual.add(new OrchestrationSchema("test_0.ds_1"));
         assertThat(actual.getDataSourceNames("test_0").size(), is(2));
         assertTrue(actual.getDataSourceNames("test_0").contains("ds_0"));
         assertTrue(actual.getDataSourceNames("test_0").contains("ds_1"));
@@ -40,8 +40,8 @@ public final class OrchestrationShardingSchemaGroupTest {
     @Test
     public void assertAddWithoutExistedSchemaName() {
         OrchestrationShardingSchemaGroup actual = new OrchestrationShardingSchemaGroup();
-        actual.add(new OrchestrationShardingSchema("test_0.ds_0"));
-        actual.add(new OrchestrationShardingSchema("test_1.ds_1"));
+        actual.add(new OrchestrationSchema("test_0.ds_0"));
+        actual.add(new OrchestrationSchema("test_1.ds_1"));
         assertThat(actual.getDataSourceNames("test_0").size(), is(1));
         assertTrue(actual.getDataSourceNames("test_0").contains("ds_0"));
         assertThat(actual.getDataSourceNames("test_1").size(), is(1));

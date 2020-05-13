@@ -19,10 +19,10 @@ package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
-import org.apache.shardingsphere.core.strategy.route.value.RangeRouteValue;
-import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
+import org.apache.shardingsphere.sharding.core.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.core.strategy.route.value.ListRouteValue;
+import org.apache.shardingsphere.sharding.core.strategy.route.value.RangeRouteValue;
+import org.apache.shardingsphere.sharding.core.strategy.route.value.RouteValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.AlwaysFalseRouteValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.AlwaysFalseShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;

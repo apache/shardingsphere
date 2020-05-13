@@ -23,7 +23,7 @@ import org.apache.shardingsphere.database.protocol.postgresql.packet.command.que
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.binary.parse.PostgreSQLComParsePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.binary.parse.PostgreSQLParseCompletePacket;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
@@ -37,20 +37,20 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
     
     private final PostgreSQLComParsePacket packet;
     
-    private final LogicSchema logicSchema;
+    private final ShardingSphereSchema schema;
     
     private final ConnectionScopeBinaryStatementRegistry binaryStatementRegistry;
     
     public PostgreSQLComParseExecutor(final PostgreSQLComParsePacket packet, final BackendConnection backendConnection) {
         this.packet = packet;
-        logicSchema = backendConnection.getLogicSchema();
+        schema = backendConnection.getSchema();
         binaryStatementRegistry = BinaryStatementRegistry.getInstance().get(backendConnection.getConnectionId());
     }
     
     @Override
     public Collection<DatabasePacket> execute() {
         if (!packet.getSql().isEmpty()) {
-            SQLStatement sqlStatement = logicSchema.getSqlParserEngine().parse(packet.getSql(), true);
+            SQLStatement sqlStatement = schema.getSqlParserEngine().parse(packet.getSql(), true);
             binaryStatementRegistry.register(packet.getStatementId(), packet.getSql(), sqlStatement.getParameterCount(), packet.getBinaryStatementParameterTypes());
         }
         return Collections.singletonList(new PostgreSQLParseCompletePacket());

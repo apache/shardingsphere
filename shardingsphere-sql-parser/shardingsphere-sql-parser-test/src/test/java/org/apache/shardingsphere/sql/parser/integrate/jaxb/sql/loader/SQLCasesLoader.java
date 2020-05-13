@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
@@ -53,7 +54,7 @@ public final class SQLCasesLoader {
         sqlCases = loadSQLCases(rootDirection);
     }
     
-    @SneakyThrows
+    @SneakyThrows({JAXBException.class, IOException.class})
     private static Map<String, SQLCase> loadSQLCases(final String path) {
         File file = new File(SQLCasesLoader.class.getProtectionDomain().getCodeSource().getLocation().getPath());
         return file.isFile() ? loadSQLCasesFromJar(path, file) : loadSQLCasesFromTargetDirectory(path);
@@ -73,7 +74,7 @@ public final class SQLCasesLoader {
         return result;
     }
     
-    @SneakyThrows
+    @SneakyThrows(URISyntaxException.class)
     private static Map<String, SQLCase> loadSQLCasesFromTargetDirectory(final String path) {
         Map<String, SQLCase> result = new TreeMap<>();
         URL url = SQLCasesLoader.class.getClassLoader().getResource(path);
@@ -94,7 +95,7 @@ public final class SQLCasesLoader {
         return result;
     }
     
-    @SneakyThrows
+    @SneakyThrows({JAXBException.class, IOException.class})
     private static void loadSQLCasesFromDirectory(final Map<String, SQLCase> sqlStatementMap, final File file) {
         if (file.isDirectory()) {
             File[] files = file.listFiles();

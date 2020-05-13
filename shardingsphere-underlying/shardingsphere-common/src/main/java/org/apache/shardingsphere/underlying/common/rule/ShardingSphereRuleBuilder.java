@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.underlying.common.rule;
 
-import org.apache.shardingsphere.spi.order.OrderedSPI;
+import org.apache.shardingsphere.sharding.spi.order.OrderedSPI;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 
 import java.util.Collection;

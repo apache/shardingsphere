@@ -35,7 +35,7 @@ public final class OrchestrationShardingSchemaGroup {
      * 
      * @param orchestrationShardingSchema orchestration sharding schema
      */
-    public void add(final OrchestrationShardingSchema orchestrationShardingSchema) {
+    public void add(final OrchestrationSchema orchestrationShardingSchema) {
         String schemaName = orchestrationShardingSchema.getSchemaName();
         if (!schemaGroup.containsKey(schemaName)) {
             schemaGroup.put(schemaName, new LinkedList<>());

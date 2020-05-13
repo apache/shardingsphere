@@ -28,6 +28,7 @@ import org.apache.shardingsphere.metrics.api.MetricsTrackerFactory;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.metrics.spi.MetricsTrackerManager;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Properties;
 
@@ -50,7 +51,7 @@ public final class PrometheusMetricsTrackerManager implements MetricsTrackerMana
         return "prometheus";
     }
     
-    @SneakyThrows
+    @SneakyThrows(IOException.class)
     @Override
     public void start(final MetricsConfiguration metricsConfiguration) {
         InetSocketAddress inetSocketAddress;

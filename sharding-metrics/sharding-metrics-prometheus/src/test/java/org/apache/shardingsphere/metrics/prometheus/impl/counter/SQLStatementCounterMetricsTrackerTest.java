@@ -23,7 +23,6 @@ import org.apache.shardingsphere.metrics.prometheus.impl.AbstractPrometheusColle
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public final class SQLStatementCounterMetricsTrackerTest extends AbstractPrometheusCollectorRegistry {
@@ -31,8 +30,8 @@ public final class SQLStatementCounterMetricsTrackerTest extends AbstractPrometh
     @Test
     public void counterSQLStatement() {
         SQLStatementCounterMetricsTracker tracker = new SQLStatementCounterMetricsTracker();
-        assertEquals(tracker.metricsLabel(), MetricsLabelEnum.SQL_STATEMENT_COUNT.getName());
-        assertEquals(tracker.metricsType(), MetricsTypeEnum.COUNTER.name());
+        assertThat(tracker.metricsLabel(), is(MetricsLabelEnum.SQL_STATEMENT_COUNT.getName()));
+        assertThat(tracker.metricsType(), is(MetricsTypeEnum.COUNTER.name()));
         
         tracker.inc(1.0, "select");
         tracker.inc(2.0, "update");

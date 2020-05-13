@@ -40,7 +40,7 @@ public final class RequestLatencySummaryMetricsTracker implements SummaryMetrics
     
     @Override
     public SummaryMetricsTrackerDelegate startTimer(final String... labelValues) {
-        Summary.Timer timer = REQUEST_LATENCY.labels(labelValues).startTimer();
+        Summary.Timer timer = REQUEST_LATENCY.startTimer();
         return new PrometheusSummaryMetricsTrackerDelegate(timer);
     }
     

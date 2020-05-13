@@ -23,7 +23,6 @@ import org.apache.shardingsphere.metrics.prometheus.impl.AbstractPrometheusColle
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public final class RequestTotalCounterMetricsTrackerTest extends AbstractPrometheusCollectorRegistry {
@@ -31,8 +30,8 @@ public final class RequestTotalCounterMetricsTrackerTest extends AbstractPrometh
     @Test
     public void counterRequestTotal() {
         RequestTotalCounterMetricsTracker tracker = new RequestTotalCounterMetricsTracker();
-        assertEquals(tracker.metricsLabel(), MetricsLabelEnum.REQUEST_TOTAL.getName());
-        assertEquals(tracker.metricsType(), MetricsTypeEnum.COUNTER.name());
+        assertThat(tracker.metricsLabel(), is(MetricsLabelEnum.REQUEST_TOTAL.getName()));
+        assertThat(tracker.metricsType(), is(MetricsTypeEnum.COUNTER.name()));
         tracker.inc(1.0);
         Double total = getCollectorRegistry().getSampleValue("request_total");
         assertThat(total, is(1.0));

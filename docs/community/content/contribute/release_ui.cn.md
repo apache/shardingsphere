@@ -203,7 +203,8 @@ gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.
 #### 对比源码包与Github上tag的内容差异
 
 ```
-curl -Lo tag-shardingsphere-ui-${RELEASE.VERSION}.zip https://github.com/apache/shardingsphere/archive/shardingsphere-ui-${RELEASE.VERSION}.zip | unzip
+curl -Lo tag-shardingsphere-ui-${RELEASE.VERSION}.zip https://github.com/apache/shardingsphere/archive/shardingsphere-ui-${RELEASE.VERSION}.zip
+unzip tag-shardingsphere-ui-${RELEASE.VERSION}.zip
 unzip apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src.zip
 diff -r apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src/ shardingsphere-shardingsphere-ui-${RELEASE.VERSION}/shardingsphere-ui/
 ```
@@ -377,7 +378,9 @@ https://shardingsphere.apache.org/document/current/en/downloads/
 
 https://shardingsphere.apache.org/document/current/cn/downloads/
 
-`最新版本`中保留两个最新的版本。Incubator阶段历史版本会自动归档到[Archive repository](https://archive.apache.org/dist/incubator/shardingsphere/)
+GPG签名文件和哈希校验文件的下载连接应该使用这个前缀： `https://downloads.apache.org/shardingsphere/`
+
+`最新版本`中保留一个最新的版本。Incubator阶段历史版本会自动归档到[Archive repository](https://archive.apache.org/dist/incubator/shardingsphere/)
 
 ### GitHub版本发布
 

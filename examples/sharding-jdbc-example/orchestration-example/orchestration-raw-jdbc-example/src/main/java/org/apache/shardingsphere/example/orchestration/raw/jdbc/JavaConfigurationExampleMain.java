@@ -31,7 +31,7 @@ import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.local.Loc
 import org.apache.shardingsphere.example.type.RegistryCenterType;
 import org.apache.shardingsphere.example.type.ShardingType;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
-import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -83,9 +83,9 @@ public class JavaConfigurationExampleMain {
         return configuration.getDataSource();
     }
     
-    private static Map<String, CenterConfiguration> getRegistryCenterConfiguration(final RegistryCenterType registryCenterType, ShardingType shardingType) {
-        return RegistryCenterType.ZOOKEEPER == registryCenterType ? RegistryCenterConfigurationUtil.getZooKeeperConfiguration(String.valueOf(!loadConfigFromRegCenter), shardingType) :
-            RegistryCenterConfigurationUtil.getNacosConfiguration(String.valueOf(!loadConfigFromRegCenter), shardingType);
+    private static Map<String, CenterConfiguration> getRegistryCenterConfiguration(final RegistryCenterType registryCenterType, final ShardingType shardingType) {
+        return RegistryCenterType.ZOOKEEPER == registryCenterType ? RegistryCenterConfigurationUtil.getZooKeeperConfiguration(String.valueOf(!loadConfigFromRegCenter), shardingType)
+                : RegistryCenterConfigurationUtil.getNacosConfiguration(String.valueOf(!loadConfigFromRegCenter), shardingType);
     }
     
     private static ExampleService getExampleService(final DataSource dataSource) {
@@ -93,8 +93,8 @@ public class JavaConfigurationExampleMain {
     }
     
     private static void closeDataSource(final DataSource dataSource) throws Exception {
-        if (dataSource instanceof AbstractDataSourceAdapter) {
-            ((AbstractDataSourceAdapter) dataSource).close();
+        if (dataSource instanceof ShardingSphereDataSource) {
+            ((ShardingSphereDataSource) dataSource).close();
         }
     }
 }

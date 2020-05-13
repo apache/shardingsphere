@@ -33,6 +33,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class BinlogPosition implements LogPosition<BinlogPosition> {
     
+    private static final long serialVersionUID = -4917415481787093677L;
+    
     private final String filename;
     
     private final long position;
@@ -46,13 +48,7 @@ public class BinlogPosition implements LogPosition<BinlogPosition> {
         }
         long o1 = toLong();
         long o2 = binlogPosition.toLong();
-        if (o1 == o2) {
-            return 0;
-        } else if (o1 > o2) {
-            return 1;
-        } else {
-            return -1;
-        }
+        return Long.compare(o1, o2);
     }
     
     private long toLong() {

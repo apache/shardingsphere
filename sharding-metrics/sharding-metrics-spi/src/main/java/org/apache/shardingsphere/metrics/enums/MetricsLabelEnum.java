@@ -45,7 +45,22 @@ public enum MetricsLabelEnum {
     /**
      * Request latency metrics label.
      */
-    REQUEST_LATENCY("request_latency");
+    REQUEST_LATENCY("request_latency"),
+    
+    /**
+     * Sharding metrics label.
+     */
+    SHARDING("sharding"),
+    
+    /**
+     * Transaction metrics label.
+     */
+    TRANSACTION("transaction"),
+    
+    /**
+     * Shadow hit total label.
+     */
+    SHADOW_HIT_TOTAL("shadow_hit_total");
     
     private final String name;
 }

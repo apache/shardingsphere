@@ -60,16 +60,17 @@ shardingRule:
       shardingAlgorithm:
         type: COMPLEX_TEST
 
-masterSlaveRules:
-  db_ms_0:
-    masterDataSourceName: db0_master
-    slaveDataSourceNames:
-      - db0_slave
-    loadBalanceAlgorithmType: ROUND_ROBIN
-  db_ms_1:
-    masterDataSourceName: db1_master
-    slaveDataSourceNames:
-      - db1_slave
+masterSlaveRule:
+  dataSources:
+    db_ms_0:
+      masterDataSourceName: db0_master
+      slaveDataSourceNames:
+        - db0_slave
+      loadBalanceAlgorithmType: ROUND_ROBIN
+    db_ms_1:
+      masterDataSourceName: db1_master
+      slaveDataSourceNames:
+        - db1_slave
 
 orchestration:
   test_sharding_ms_registry_name:

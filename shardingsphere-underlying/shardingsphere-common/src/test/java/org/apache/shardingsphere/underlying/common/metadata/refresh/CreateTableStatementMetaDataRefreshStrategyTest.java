@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.underlying.common.metadata.refresh;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
@@ -26,24 +25,26 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTabl
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.impl.CreateTableStatementMetaDataRefreshStrategy;
 import org.junit.Test;
 
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class CreateTableStatementMetaDataRefreshStrategyTest extends AbstractMetaDataRefreshStrategyTest {
     
-    @SneakyThrows
     @Test
-    public void refreshMetaData() {
+    public void refreshMetaData() throws SQLException {
         MetaDataRefreshStrategy<CreateTableStatementContext> metaDataRefreshStrategy = new CreateTableStatementMetaDataRefreshStrategy();
         CreateTableStatement createTableStatement = new CreateTableStatement(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_0"))));
         CreateTableStatementContext createTableStatementContext = new CreateTableStatementContext(createTableStatement);
-        metaDataRefreshStrategy.refreshMetaData(getMetaData(), createTableStatementContext, tableName -> Optional.of(new TableMetaData(
+        metaDataRefreshStrategy.refreshMetaData(getMetaData(), mock(DatabaseType.class), Collections.emptyMap(), createTableStatementContext, tableName -> Optional.of(new TableMetaData(
                 Collections.singletonList(new ColumnMetaData("order_id", 1, "String", true, false, false)),
                 Collections.singletonList(new IndexMetaData("index")))));
         assertThat(getMetaData().getSchema().getConfiguredSchemaMetaData().containsTable("t_order_0"), is(true));

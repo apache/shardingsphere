@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.orchestration.core.configcenter.listener;
 
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.ChangedType;
@@ -31,7 +31,7 @@ import org.apache.shardingsphere.orchestration.core.common.event.MasterSlaveRule
 import org.apache.shardingsphere.orchestration.core.common.event.SchemaAddedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.ShardingOrchestrationEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.ShardingRuleChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.junit.Before;
@@ -61,8 +61,8 @@ public final class SchemaChangedListenerTest {
             + "          shardingAlgorithm: \n" + "            type: INLINE\n" + "            props:\n" + "              algorithm.expression: t_order_${order_id % 2}\n" 
             + "          shardingColumn: order_id";
     
-    private static final String MASTER_SLAVE_RULE_YAML = "masterSlaveRules:\n  ms_ds:\n    masterDataSourceName: master_ds\n" 
-            + "    name: ms_ds\n" + "    slaveDataSourceNames:\n" + "    - slave_ds_0\n" + "    - slave_ds_1\n";
+    private static final String MASTER_SLAVE_RULE_YAML = "masterSlaveRule:\n  dataSources:\n    ms_ds:\n      masterDataSourceName: master_ds\n" 
+            + "      name: ms_ds\n" + "      slaveDataSourceNames:\n" + "      - slave_ds_0\n" + "      - slave_ds_1\n";
     
     private static final String ENCRYPT_RULE_YAML = "encryptRule:\n  tables:\n" + "    t_order:\n" + "      columns:\n" + "        order_id:\n" 
             + "          cipherColumn: order_id\n" + "          encryptor: order_encryptor\n" + "  encryptors:\n" + "    order_encryptor:\n" 
@@ -95,12 +95,12 @@ public final class SchemaChangedListenerTest {
     }
     
     @Test
-    public void assertCreateShardingRuleChangedEventForExistedSchema() {
+    public void assertCreateRuleConfigurationsChangedEventForExistedSchema() {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/sharding_db/rule", SHARDING_RULE_YAML, ChangedType.UPDATED);
         ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
-        assertThat(actual, instanceOf(ShardingRuleChangedEvent.class));
-        assertThat(((ShardingRuleChangedEvent) actual).getShardingSchemaName(), is("sharding_db"));
-        Collection<RuleConfiguration> ruleConfigurations = ((ShardingRuleChangedEvent) actual).getRuleConfigurations();
+        assertThat(actual, instanceOf(RuleConfigurationsChangedEvent.class));
+        assertThat(((RuleConfigurationsChangedEvent) actual).getShardingSchemaName(), is("sharding_db"));
+        Collection<RuleConfiguration> ruleConfigurations = ((RuleConfigurationsChangedEvent) actual).getRuleConfigurations();
         assertThat(ruleConfigurations.size(), is(1));
         assertThat(((ShardingRuleConfiguration) ruleConfigurations.iterator().next()).getTableRuleConfigs().size(), is(1));
     }
@@ -111,7 +111,7 @@ public final class SchemaChangedListenerTest {
         ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(MasterSlaveRuleChangedEvent.class));
         assertThat(((MasterSlaveRuleChangedEvent) actual).getShardingSchemaName(), is("masterslave_db"));
-        assertThat(((MasterSlaveRuleChangedEvent) actual).getMasterSlaveRuleConfiguration().getMasterDataSourceName(), is("master_ds"));
+        assertThat(((MasterSlaveRuleChangedEvent) actual).getMasterSlaveRuleConfiguration().getDataSources().iterator().next().getMasterDataSourceName(), is("master_ds"));
     }
     
     @Test

@@ -32,11 +32,12 @@ dataSources:
     username: root
     password:
 
-masterSlaveRules:
-  ms_ds:
-    name: ds_ms
-    masterDataSourceName: ds_master
-    slaveDataSourceNames: [ds_slave_0, ds_slave_1]
+masterSlaveRule:
+  dataSources:
+    ms_ds:
+      name: ds_ms
+      masterDataSourceName: ds_master
+      slaveDataSourceNames: [ds_slave_0, ds_slave_1]
 
 props:
   sql.show: true

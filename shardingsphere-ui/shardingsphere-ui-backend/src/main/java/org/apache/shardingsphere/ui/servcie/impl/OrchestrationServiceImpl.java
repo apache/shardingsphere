@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.ui.servcie.impl;
 
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.orchestration.core.registrycenter.RegistryCenterNodeStatus;
 import org.apache.shardingsphere.ui.common.dto.InstanceDTO;
 import org.apache.shardingsphere.ui.common.dto.SlaveDataSourceDTO;
@@ -26,11 +27,12 @@ import org.apache.shardingsphere.ui.servcie.RegistryCenterService;
 import org.apache.shardingsphere.ui.servcie.ShardingSchemaService;
 import org.apache.shardingsphere.ui.util.ConfigurationYamlConverter;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,10 +42,10 @@ import java.util.stream.Collectors;
 @Service
 public final class OrchestrationServiceImpl implements OrchestrationService {
     
-    @Autowired
+    @Resource
     private RegistryCenterService registryCenterService;
     
-    @Autowired
+    @Resource
     private ShardingSchemaService shardingSchemaService;
     
     @Override
@@ -106,10 +108,17 @@ public final class OrchestrationServiceImpl implements OrchestrationService {
     
     private void addSlaveDataSource(final Collection<SlaveDataSourceDTO> slaveDataSourceDTOS, final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration, final String schemaName) {
         Collection<String> disabledSchemaDataSourceNames = getDisabledSchemaDataSourceNames();
-        for (String slaveDateSourceName : masterSlaveRuleConfiguration.getSlaveDataSourceNames()) {
-            slaveDataSourceDTOS.add(new SlaveDataSourceDTO(schemaName, masterSlaveRuleConfiguration.getMasterDataSourceName(),
-                    slaveDateSourceName, !disabledSchemaDataSourceNames.contains(schemaName + "." + slaveDateSourceName)));
+        for (MasterSlaveDataSourceConfiguration each : masterSlaveRuleConfiguration.getDataSources()) {
+            slaveDataSourceDTOS.addAll(getSlaveDataSourceDTOS(schemaName, disabledSchemaDataSourceNames, each));
         }
+    }
+    
+    private Collection<SlaveDataSourceDTO> getSlaveDataSourceDTOS(final String schemaName, final Collection<String> disabledSchemaDataSourceNames, final MasterSlaveDataSourceConfiguration group) {
+        Collection<SlaveDataSourceDTO> result = new LinkedList<>();
+        for (String each : group.getSlaveDataSourceNames()) {
+            result.add(new SlaveDataSourceDTO(schemaName, group.getMasterDataSourceName(), each, !disabledSchemaDataSourceNames.contains(schemaName + "." + each)));
+        }
+        return result;
     }
     
     private Collection<String> getDisabledSchemaDataSourceNames() {

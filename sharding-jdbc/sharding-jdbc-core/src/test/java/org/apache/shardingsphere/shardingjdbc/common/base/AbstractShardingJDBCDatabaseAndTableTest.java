@@ -19,9 +19,9 @@ package org.apache.shardingsphere.shardingjdbc.common.base;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingSphereConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.h2.tools.RunScript;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -35,25 +35,24 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractSQLTest {
     
-    private static ShardingDataSource shardingDataSource;
+    private static ShardingSphereDataSource shardingSphereDataSource;
     
     private static final List<String> SHARDING_DB_NAMES = Arrays.asList("jdbc_0", "jdbc_1");
     
     private static final String CONFIG_SHARDING = "config-sharding.yaml";
     
     @BeforeClass
-    public static void initShardingDataSources() throws SQLException, IOException {
-        if (null != shardingDataSource) {
+    public static void initShardingSphereDataSource() throws SQLException, IOException {
+        if (null != shardingSphereDataSource) {
             return;
         }
-        shardingDataSource = (ShardingDataSource) YamlShardingDataSourceFactory.createDataSource(getDataSources(), getFile(CONFIG_SHARDING));
+        shardingSphereDataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSourceMap(), getFile(CONFIG_SHARDING));
     }
     
-    private static Map<String, DataSource> getDataSources() {
+    private static Map<String, DataSource> getDataSourceMap() {
         return Maps.filterKeys(getDatabaseTypeMap().values().iterator().next(), SHARDING_DB_NAMES::contains);
     }
     
@@ -64,24 +63,24 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
     @Before
     public void initTable() {
         try {
-            ShardingConnection conn = shardingDataSource.getConnection();
-            RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("jdbc_data.sql"))));
+            ShardingSphereConnection conn = shardingSphereDataSource.getConnection();
+            RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("jdbc_data.sql")));
             conn.close();
         } catch (final SQLException ex) {
             ex.printStackTrace();
         }
     }
     
-    protected final ShardingDataSource getShardingDataSource() {
-        return shardingDataSource;
+    protected final ShardingSphereDataSource getShardingSphereDataSource() {
+        return shardingSphereDataSource;
     }
     
     @AfterClass
     public static void clear() throws Exception {
-        if (null == shardingDataSource) {
+        if (null == shardingSphereDataSource) {
             return;
         }
-        shardingDataSource.close();
-        shardingDataSource = null;
+        shardingSphereDataSource.close();
+        shardingSphereDataSource = null;
     }
 }

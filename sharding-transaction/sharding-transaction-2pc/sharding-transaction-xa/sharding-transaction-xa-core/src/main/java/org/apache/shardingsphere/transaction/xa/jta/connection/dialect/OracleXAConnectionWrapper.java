@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.connection.dialect;
 
-import java.lang.reflect.Constructor;
-import java.sql.Connection;
-import javax.sql.XAConnection;
-import javax.sql.XADataSource;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapper;
+
+import javax.sql.XAConnection;
+import javax.sql.XADataSource;
+import java.lang.reflect.Constructor;
+import java.sql.Connection;
 
 /**
  * XA connection wrapper for Oracle.
@@ -31,13 +32,13 @@ import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapp
 @RequiredArgsConstructor
 public final class OracleXAConnectionWrapper implements XAConnectionWrapper {
     
+    @SuppressWarnings("unchecked")
     @SneakyThrows
     @Override
     public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) {
         Connection physicalConnection = (Connection) connection.unwrap(Class.forName("oracle.jdbc.internal.OracleConnection"));
         Class clazz = Class.forName("oracle.jdbc.xa.client.OracleXAConnection");
         Constructor constructor = clazz.getConstructor(Connection.class);
-        XAConnection oracleXAConnection = (XAConnection) constructor.newInstance(physicalConnection);
-        return oracleXAConnection;
+        return (XAConnection) constructor.newInstance(physicalConnection);
     }
 }

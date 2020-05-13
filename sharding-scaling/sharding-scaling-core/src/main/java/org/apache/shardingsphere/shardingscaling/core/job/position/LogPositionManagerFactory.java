@@ -38,7 +38,7 @@ public final class LogPositionManagerFactory {
      * @param dataSource data source
      * @return log manager
      */
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     public static LogPositionManager newInstanceLogManager(final String databaseType, final DataSource dataSource) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
         return scalingEntry.getLogPositionManager().getConstructor(DataSource.class).newInstance(dataSource);

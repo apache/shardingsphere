@@ -206,7 +206,8 @@ gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-bin.tar.
 #### compare release source with github tag
 
 ```
-curl -Lo tag-shardingsphere-ui-${RELEASE.VERSION}.zip https://github.com/apache/shardingsphere/archive/shardingsphere-ui-${RELEASE.VERSION}.zip | unzip
+curl -Lo tag-shardingsphere-ui-${RELEASE.VERSION}.zip https://github.com/apache/shardingsphere/archive/shardingsphere-ui-${RELEASE.VERSION}.zip
+unzip tag-shardingsphere-ui-${RELEASE.VERSION}.zip
 unzip apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src.zip
 diff -r apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-ui-src/ shardingsphere-shardingsphere-ui-${RELEASE.VERSION}/shardingsphere-ui/
 ```
@@ -385,7 +386,9 @@ https://shardingsphere.apache.org/document/current/en/downloads/
 
 https://shardingsphere.apache.org/document/current/cn/downloads/
 
-Keep two latest versions in `Latest releases`. Incubating stage versions will be archived automatically in [Archive repository](https://archive.apache.org/dist/incubator/shardingsphere/)
+GPG signatures and hashes (SHA* etc) should use URL start with `https://downloads.apache.org/shardingsphere/`
+
+Keep one latest versions in `Latest releases`. Incubating stage versions will be archived automatically in [Archive repository](https://archive.apache.org/dist/incubator/shardingsphere/)
 
 ### Publish release in GitHub
 

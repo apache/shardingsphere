@@ -19,7 +19,7 @@ package org.apache.shardingsphere.orchestration.core.registrycenter;
 
 import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationShardingSchema;
+import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationSchema;
 
 /**
  * RegistryCenter node.
@@ -70,7 +70,7 @@ public final class RegistryCenterNode {
      * @param dataSourceNodeFullPath data source node full path
      * @return orchestration sharding schema
      */
-    public OrchestrationShardingSchema getOrchestrationShardingSchema(final String dataSourceNodeFullPath) {
-        return new OrchestrationShardingSchema(dataSourceNodeFullPath.replace(getDataSourcesNodeFullRootPath() + '/', ""));
+    public OrchestrationSchema getOrchestrationShardingSchema(final String dataSourceNodeFullPath) {
+        return new OrchestrationSchema(dataSourceNodeFullPath.replace(getDataSourcesNodeFullRootPath() + '/', ""));
     }
 }

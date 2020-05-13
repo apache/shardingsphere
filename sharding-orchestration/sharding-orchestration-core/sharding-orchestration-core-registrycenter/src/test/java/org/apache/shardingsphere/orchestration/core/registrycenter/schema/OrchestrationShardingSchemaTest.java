@@ -27,14 +27,14 @@ public final class OrchestrationShardingSchemaTest {
     
     @Test
     public void assertNewOrchestrationSchemaWithDataSourceNameOnly() {
-        OrchestrationShardingSchema actual = new OrchestrationShardingSchema("test_ds");
+        OrchestrationSchema actual = new OrchestrationSchema("test_ds");
         assertThat(actual.getSchemaName(), is(DefaultSchema.LOGIC_NAME));
         assertThat(actual.getDataSourceName(), is("test_ds"));
     }
     
     @Test
     public void assertNewOrchestrationSchemaWithSchemaNameAndDataSourceName() {
-        OrchestrationShardingSchema actual = new OrchestrationShardingSchema("test_schema.test_ds");
+        OrchestrationSchema actual = new OrchestrationSchema("test_schema.test_ds");
         assertThat(actual.getSchemaName(), is("test_schema"));
         assertThat(actual.getDataSourceName(), is("test_ds"));
     }

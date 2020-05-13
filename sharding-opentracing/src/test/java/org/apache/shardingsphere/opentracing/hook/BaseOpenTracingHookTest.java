@@ -47,7 +47,7 @@ public abstract class BaseOpenTracingHookTest {
     }
     
     @AfterClass
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     public static void releaseTracer() {
         Field field = GlobalTracer.class.getDeclaredField("tracer");
         field.setAccessible(true);

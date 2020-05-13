@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.type;
 
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry.TestCenterRepository;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.util.EmbedTestingServer;
 import org.junit.BeforeClass;
@@ -74,25 +74,27 @@ public class OrchestrationSpringBootRegistryMasterSlaveTest {
             + "    maxTotal: 16\n"
             + "    password: ''\n"
             + "    username: root\n");
-        testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/rule", "masterSlaveRules:\n  ds_ms:\n"
-            + "    loadBalanceAlgorithmType: ROUND_ROBIN\n"
-            + "    masterDataSourceName: ds_master\n"
-            + "    name: ds_ms\n"
-            + "    slaveDataSourceNames: \n"
-            + "      - ds_slave_0\n"
-            + "      - ds_slave_1\n");
+        testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/rule", "masterSlaveRule:\n"
+            + "  dataSources:\n"
+            + "    ds_ms:\n"
+            + "      loadBalanceAlgorithmType: ROUND_ROBIN\n"
+            + "      masterDataSourceName: ds_master\n"
+            + "      name: ds_ms\n"
+            + "      slaveDataSourceNames: \n"
+            + "        - ds_slave_0\n"
+            + "        - ds_slave_1\n");
         testCenter.persist("/demo_spring_boot_ds_center/config/props", "{}\n");
         testCenter.persist("/demo_spring_boot_ds_center/registry/datasources", "");
     }
     
     @Test
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     public void assertWithMasterSlaveDataSource() {
-        assertTrue(dataSource instanceof OrchestrationMasterSlaveDataSource);
-        Field field = OrchestrationMasterSlaveDataSource.class.getDeclaredField("dataSource");
+        assertTrue(dataSource instanceof OrchestrationShardingSphereDataSource);
+        Field field = OrchestrationShardingSphereDataSource.class.getDeclaredField("dataSource");
         field.setAccessible(true);
-        MasterSlaveDataSource masterSlaveDataSource = (MasterSlaveDataSource) field.get(dataSource);
-        for (DataSource each : masterSlaveDataSource.getDataSourceMap().values()) {
+        ShardingSphereDataSource shardingSphereDataSource = (ShardingSphereDataSource) field.get(dataSource);
+        for (DataSource each : shardingSphereDataSource.getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
             assertThat(((BasicDataSource) each).getUsername(), is("root"));
         }

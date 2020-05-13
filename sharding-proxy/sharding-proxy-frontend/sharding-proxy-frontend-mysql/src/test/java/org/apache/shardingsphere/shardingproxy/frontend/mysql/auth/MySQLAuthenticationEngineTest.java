@@ -28,8 +28,8 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKP
 import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchemas;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -101,7 +101,7 @@ public final class MySQLAuthenticationEngineTest {
     public void assertAuthWithLoginFail() throws NoSuchFieldException, IllegalAccessException {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
         ChannelHandlerContext context = getContext();
-        setLogicSchemas(Collections.singletonMap("sharding_db", mock(LogicSchema.class)));
+        setSchemas(Collections.singletonMap("sharding_db", mock(ShardingSphereSchema.class)));
         when(authenticationHandler.login(anyString(), any(), anyString())).thenReturn(Optional.of(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR));
         authenticationEngine.auth(context, getPayload("root", "sharding_db", authResponse), mock(BackendConnection.class));
         verify(context).writeAndFlush(any(MySQLErrPacket.class));
@@ -110,7 +110,7 @@ public final class MySQLAuthenticationEngineTest {
     @Test
     public void assertAuthWithAbsentDatabase() throws NoSuchFieldException, IllegalAccessException {
         ChannelHandlerContext context = getContext();
-        setLogicSchemas(Collections.singletonMap("sharding_db", mock(LogicSchema.class)));
+        setSchemas(Collections.singletonMap("sharding_db", mock(ShardingSphereSchema.class)));
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
         authenticationEngine.auth(context, getPayload("root", "ABSENT DATABASE", authResponse), mock(BackendConnection.class));
         verify(context).writeAndFlush(any(MySQLErrPacket.class));
@@ -121,15 +121,15 @@ public final class MySQLAuthenticationEngineTest {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
         ChannelHandlerContext context = getContext();
         when(authenticationHandler.login(anyString(), any(), anyString())).thenReturn(Optional.empty());
-        setLogicSchemas(Collections.singletonMap("sharding_db", mock(LogicSchema.class)));
+        setSchemas(Collections.singletonMap("sharding_db", mock(ShardingSphereSchema.class)));
         authenticationEngine.auth(context, getPayload("root", "sharding_db", authResponse), mock(BackendConnection.class));
         verify(context).writeAndFlush(any(MySQLOKPacket.class));
     }
     
-    private void setLogicSchemas(final Map<String, LogicSchema> logicSchemas) throws NoSuchFieldException, IllegalAccessException {
-        Field field = LogicSchemas.class.getDeclaredField("logicSchemas");
+    private void setSchemas(final Map<String, ShardingSphereSchema> schemas) throws NoSuchFieldException, IllegalAccessException {
+        Field field = ShardingSphereSchemas.class.getDeclaredField("schemas");
         field.setAccessible(true);
-        field.set(LogicSchemas.getInstance(), logicSchemas);
+        field.set(ShardingSphereSchemas.getInstance(), schemas);
     }
 
     private MySQLPacketPayload getPayload(final String userName, final String database, final byte[] authResponse) {
@@ -158,21 +158,21 @@ public final class MySQLAuthenticationEngineTest {
         return result;
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setConnectionPhase(final MySQLConnectionPhase connectionPhase) {
         Field field = MySQLAuthenticationEngine.class.getDeclaredField("connectionPhase");
         field.setAccessible(true);
         field.set(authenticationEngine, connectionPhase);
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private MySQLConnectionPhase getConnectionPhase() {
         Field field = MySQLAuthenticationEngine.class.getDeclaredField("connectionPhase");
         field.setAccessible(true);
         return (MySQLConnectionPhase) field.get(authenticationEngine);
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private byte[] getAuthResponse() {
         Field field = MySQLAuthenticationEngine.class.getDeclaredField("authResponse");
         field.setAccessible(true);

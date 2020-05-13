@@ -42,7 +42,7 @@
 #      password: sharding 
 #      authorizedSchemas: sharding_db
 #
-#metrics :
+#metrics:
 #   name: prometheus
 #   host:  127.0.0.1
 #   port:  9190

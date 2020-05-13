@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.spring.boot.type;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,7 +30,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
-
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -48,19 +47,19 @@ public class SpringBootEncryptTest {
     
     @Test
     public void assertSqlShow() {
-        assertTrue(((EncryptDataSource) dataSource).getRuntimeContext().getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
+        assertTrue(((ShardingSphereDataSource) dataSource).getRuntimeContext().getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
     }
     
     @Test
     public void assertWithEncryptDataSource() {
-        assertTrue(dataSource instanceof EncryptDataSource);
-        BasicDataSource basicDataSource = (BasicDataSource) ((EncryptDataSource) dataSource).getDataSource();
+        assertTrue(dataSource instanceof ShardingSphereDataSource);
+        BasicDataSource basicDataSource = (BasicDataSource) ((ShardingSphereDataSource) dataSource).getDataSourceMap().values().iterator().next();
         assertThat(basicDataSource.getMaxTotal(), is(100));
     }
     
     @Test
     public void assertWithEncryptRule() {
-        EncryptRule encryptRule = (EncryptRule) ((EncryptDataSource) dataSource).getRuntimeContext().getRules().iterator().next();
+        EncryptRule encryptRule = (EncryptRule) ((ShardingSphereDataSource) dataSource).getRuntimeContext().getRules().iterator().next();
         assertThat(encryptRule.getEncryptTableNames().size(), is(1));
         assertTrue(encryptRule.findEncryptor("t_order", "user_id").isPresent());
         assertThat(encryptRule.getCipherColumn("t_order", "user_id"), is("user_encrypt"));

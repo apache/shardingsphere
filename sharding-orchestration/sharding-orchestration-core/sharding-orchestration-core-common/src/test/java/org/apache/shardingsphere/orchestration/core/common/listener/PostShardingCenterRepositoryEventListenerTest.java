@@ -27,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -40,7 +41,7 @@ public final class PostShardingCenterRepositoryEventListenerTest {
     
     @Test
     public void assertWatch() {
-        PostShardingCenterRepositoryEventListener postShardingCenterRepositoryEventListener = new PostShardingCenterRepositoryEventListener(centerRepository, Arrays.asList("test")) {
+        PostShardingCenterRepositoryEventListener postShardingCenterRepositoryEventListener = new PostShardingCenterRepositoryEventListener(centerRepository, Collections.singletonList("test")) {
             
             @Override
             protected ShardingOrchestrationEvent createShardingOrchestrationEvent(final DataChangedEvent event) {

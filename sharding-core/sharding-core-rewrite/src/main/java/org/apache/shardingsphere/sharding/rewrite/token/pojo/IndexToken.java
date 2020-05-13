@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.core.rule.ShardingRule;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.RouteUnitAware;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;

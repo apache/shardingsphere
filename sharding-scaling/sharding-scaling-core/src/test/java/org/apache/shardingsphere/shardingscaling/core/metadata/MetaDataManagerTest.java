@@ -88,9 +88,9 @@ public final class MetaDataManagerTest {
         when(connection.getSchema()).thenReturn("");
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(connection.createStatement()).thenReturn(statement);
-        when(databaseMetaData.getColumns("", null, TEST_TABLE, "%")).thenReturn(columnMetaDataResultSet);
-        when(databaseMetaData.getPrimaryKeys("", null, TEST_TABLE)).thenReturn(primaryKeyResultSet);
-        when(databaseMetaData.getTables("", null, TEST_TABLE, null)).thenReturn(tableResultSet);
+        when(databaseMetaData.getColumns("", "", TEST_TABLE, "%")).thenReturn(columnMetaDataResultSet);
+        when(databaseMetaData.getPrimaryKeys("", "", TEST_TABLE)).thenReturn(primaryKeyResultSet);
+        when(databaseMetaData.getTables("", "", TEST_TABLE, null)).thenReturn(tableResultSet);
         when(databaseMetaData.getIndexInfo("", "", TEST_TABLE, false, false)).thenReturn(indexMetaDataResultSet);
         when(tableResultSet.next()).thenReturn(true);
         when(primaryKeyResultSet.next()).thenReturn(true, false);

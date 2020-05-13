@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.spi.keygen.KeyGenerateAlgorithm;
 
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -30,7 +30,7 @@ public final class ResetIncrementKeyGenerateAlgorithm implements KeyGenerateAlgo
     private static final AtomicInteger COUNT = new AtomicInteger();
     
     @Getter
-    private final String type = "RESETINCREMENT";
+    private final String type = "RESET_INCREMENT";
 
     @Getter
     @Setter

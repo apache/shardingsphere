@@ -18,19 +18,19 @@
 package org.apache.shardingsphere.orchestration.core.configcenter;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
-import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.core.rule.Authentication;
-import org.apache.shardingsphere.core.yaml.config.YamlRootRuleConfigurations;
-import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.core.yaml.constructor.YamlRootRuleConfigurationsConstructor;
-import org.apache.shardingsphere.core.yaml.swapper.AuthenticationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.root.RuleRootConfigurationsYamlSwapper;
-import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.underlying.common.auth.Authentication;
+import org.apache.shardingsphere.sharding.core.yaml.config.YamlRootRuleConfigurations;
+import org.apache.shardingsphere.underlying.common.auth.yaml.config.YamlAuthenticationConfiguration;
+import org.apache.shardingsphere.sharding.core.yaml.constructor.YamlRootRuleConfigurationsConstructor;
+import org.apache.shardingsphere.underlying.common.auth.yaml.swapper.AuthenticationYamlSwapper;
+import org.apache.shardingsphere.sharding.core.yaml.swapper.root.RuleRootConfigurationsYamlSwapper;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
@@ -45,6 +45,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -81,8 +82,8 @@ public final class ConfigCenterTest {
             + "      tableStrategy:\n" + "        standard:\n" + "          shardingAlgorithm:\n" + "            props:\n" 
             + "              algorithm.expression: t_order_${order_id % 2}\n" + "            type: INLINE\n" + "          shardingColumn: order_id\n";
     
-    private static final String MASTER_SLAVE_RULE_YAML = "masterSlaveRules:\n  ms_ds:\n    masterDataSourceName: master_ds\n"
-            + "    name: ms_ds\n" + "    slaveDataSourceNames:\n" + "    - slave_ds_0\n" + "    - slave_ds_1\n";
+    private static final String MASTER_SLAVE_RULE_YAML = "masterSlaveRule:\n  dataSources:\n    ms_ds:\n      masterDataSourceName: master_ds\n"
+            + "      name: ms_ds\n" + "      slaveDataSourceNames:\n" + "      - slave_ds_0\n" + "      - slave_ds_1\n";
     
     private static final String ENCRYPT_RULE_YAML = "encryptRule:\n  encryptors:\n" + "    order_encryptor:\n"
             + "      props:\n" + "        aes.key.value: 123456\n" + "      type: aes\n" + "  tables:\n" + "    t_order:\n" + "      columns:\n" 
@@ -120,6 +121,28 @@ public final class ConfigCenterTest {
         verify(configCenterRepository, times(0)).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
         verify(configCenterRepository, times(0)).persist("/test/config/schema/sharding_db/rule", SHARDING_RULE_YAML);
         verify(configCenterRepository, times(0)).persist("/test/config/props", PROPS_YAML);
+    }
+    
+    @Test
+    public void assertMoreShardingSchema() {
+        when(configCenterRepository.get("/test/config/schema/sharding_db/datasource")).thenReturn(DATA_SOURCE_YAML);
+        when(configCenterRepository.get("/test/config/schema/sharding_db/rule")).thenReturn(SHARDING_RULE_YAML);
+        when(configCenterRepository.get("/test/config/props")).thenReturn(PROPS_YAML);
+        when(configCenterRepository.get("/test/config/schema")).thenReturn("myTest1,myTest2");
+        ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
+        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), null, createProperties(), false);
+        verify(configCenterRepository, times(1)).persist("/test/config/schema", "myTest1,myTest2,sharding_db");
+    }
+    
+    @Test
+    public void assertMoreAndContainsShardingSchema() {
+        when(configCenterRepository.get("/test/config/schema/sharding_db/datasource")).thenReturn(DATA_SOURCE_YAML);
+        when(configCenterRepository.get("/test/config/schema/sharding_db/rule")).thenReturn(SHARDING_RULE_YAML);
+        when(configCenterRepository.get("/test/config/props")).thenReturn(PROPS_YAML);
+        when(configCenterRepository.get("/test/config/schema")).thenReturn("myTest1,sharding_db");
+        ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
+        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), null, createProperties(), false);
+        verify(configCenterRepository, times(0)).persist("/test/config/schema", "myTest1,sharding_db");
     }
     
     @Test
@@ -248,8 +271,13 @@ public final class ConfigCenterTest {
     }
     
     @Test
+    public void assertNullRuleConfiguration() {
+        ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
+        configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), Collections.emptyList(), null, createProperties(), true);
+    }
+    
+    @Test
     @Ignore
-    // TODO process shadow
     public void assertPersistConfigurationForShadow() {
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
         configurationService.persistConfigurations("sharding_db", createDataSourceConfigurations(), createShadowRuleConfiguration(), null, createProperties(), true);
@@ -375,7 +403,7 @@ public final class ConfigCenterTest {
         when(configCenterRepository.get("/test/config/schema/sharding_db/rule")).thenReturn(MASTER_SLAVE_RULE_YAML);
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
         MasterSlaveRuleConfiguration actual = configurationService.loadMasterSlaveRuleConfiguration("sharding_db");
-        assertThat(actual.getName(), is("ms_ds"));
+        assertThat(actual.getDataSources().iterator().next().getName(), is("ms_ds"));
     }
     
     @Test

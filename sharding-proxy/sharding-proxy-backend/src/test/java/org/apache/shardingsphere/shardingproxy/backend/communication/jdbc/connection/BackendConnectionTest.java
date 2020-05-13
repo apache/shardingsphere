@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.conne
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
-import org.apache.shardingsphere.shardingproxy.backend.MockLogicSchemasUtil;
+import org.apache.shardingsphere.shardingproxy.backend.MockShardingSphereSchemasUtil;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -61,11 +61,10 @@ public final class BackendConnectionTest {
     private final BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
     
     @Before
-    @SneakyThrows
     public void setUp() {
-        MockLogicSchemasUtil.setLogicSchemas("schema", 2);
+        MockShardingSphereSchemasUtil.setSchemas("schema", 2);
         backendConnection.setCurrentSchema("schema_0");
-        when(backendConnection.getLogicSchema().getBackendDataSource()).thenReturn(backendDataSource);
+        when(backendConnection.getSchema().getBackendDataSource()).thenReturn(backendDataSource);
         when(backendDataSource.getShardingTransactionManagerEngine()).thenReturn(mock(ShardingTransactionManagerEngine.class));
     }
     
@@ -111,7 +110,7 @@ public final class BackendConnectionTest {
         assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TRANSACTION));
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setMethodInvocation() {
         MethodInvocation invocation = mock(MethodInvocation.class);
         Collection<MethodInvocation> methodInvocations = new ArrayList<>();
@@ -122,8 +121,7 @@ public final class BackendConnectionTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertMultiThreadGetConnection() {
+    public void assertMultiThreadGetConnection() throws SQLException, InterruptedException {
         MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
         when(backendDataSource.getConnections(anyString(), eq(2), any(), eq(TransactionType.LOCAL))).thenReturn(MockConnectionUtil.mockNewConnections(2));
         Thread thread1 = new Thread(this::assertOneThreadResult);
@@ -228,7 +226,7 @@ public final class BackendConnectionTest {
     }
     
     @Test(expected = ShardingSphereException.class)
-    public void assertFailedSwitchLogicSchemaWhileBegin() {
+    public void assertFailedSwitchSchemaWhileBegin() {
         BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
         transactionManager.begin();
         backendConnection.setCurrentSchema("newSchema");

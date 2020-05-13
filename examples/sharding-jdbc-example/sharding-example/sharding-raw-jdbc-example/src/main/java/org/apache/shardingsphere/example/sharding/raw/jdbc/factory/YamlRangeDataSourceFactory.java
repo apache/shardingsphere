@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.example.sharding.raw.jdbc.factory;
 
 import org.apache.shardingsphere.example.type.ShardingType;
-import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingSphereDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -30,15 +30,15 @@ public class YamlRangeDataSourceFactory {
     public static DataSource newInstance(final ShardingType shardingType) throws SQLException, IOException {
         switch (shardingType) {
             case SHARDING_DATABASES:
-                return YamlShardingDataSourceFactory.createDataSource(getFile("/META-INF/sharding-databases-range.yaml"));
+                return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/sharding-databases-range.yaml"));
             case SHARDING_TABLES:
-                return YamlShardingDataSourceFactory.createDataSource(getFile("/META-INF/sharding-tables-range.yaml"));
+                return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/sharding-tables-range.yaml"));
             case SHARDING_DATABASES_AND_TABLES:
-                return YamlShardingDataSourceFactory.createDataSource(getFile("/META-INF/sharding-databases-tables-range.yaml"));
+                return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/sharding-databases-tables-range.yaml"));
             case MASTER_SLAVE:
-                return YamlShardingDataSourceFactory.createDataSource(getFile("/META-INF/master-slave.yaml"));
+                return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/master-slave.yaml"));
             case SHARDING_MASTER_SLAVE:
-                return YamlShardingDataSourceFactory.createDataSource(getFile("/META-INF/sharding-master-slave-range.yaml"));
+                return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/sharding-master-slave-range.yaml"));
             default:
                 throw new UnsupportedOperationException(shardingType.name());
         }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.spring.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.spi.keygen.KeyGenerateAlgorithm;
 
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;

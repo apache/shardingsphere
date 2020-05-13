@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.masterslave.route.engine;
 
-import com.google.common.collect.Lists;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
-import org.apache.shardingsphere.core.strategy.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.masterslave.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.LockSegment;
@@ -29,9 +29,9 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
+import org.apache.shardingsphere.underlying.route.context.RouteMapper;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
-import org.apache.shardingsphere.underlying.route.context.RouteMapper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,7 +60,6 @@ public final class MasterSlaveRouteDecoratorTest {
     
     private static final String SLAVE_DATASOURCE = "query";
     
-    @Mock
     private MasterSlaveRule masterSlaveRule;
     
     @Mock
@@ -77,10 +76,8 @@ public final class MasterSlaveRouteDecoratorTest {
     @Before
     public void setUp() {
         routeDecorator = new MasterSlaveRouteDecorator();
-        when(masterSlaveRule.getName()).thenReturn(DATASOURCE_NAME);
-        when(masterSlaveRule.getMasterDataSourceName()).thenReturn(MASTER_DATASOURCE);
-        when(masterSlaveRule.getSlaveDataSourceNames()).thenReturn(Lists.newArrayList(SLAVE_DATASOURCE));
-        when(masterSlaveRule.getLoadBalanceAlgorithm()).thenReturn(new RandomMasterSlaveLoadBalanceAlgorithm());
+        masterSlaveRule = new MasterSlaveRule(
+                new MasterSlaveRuleConfiguration(Collections.singleton(new MasterSlaveDataSourceConfiguration(DATASOURCE_NAME, MASTER_DATASOURCE, Collections.singletonList(SLAVE_DATASOURCE)))));
     }
     
     @After
