@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection;
 
+import org.apache.shardingsphere.shardingproxy.backend.metrics.MetricsUtils;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
 
@@ -54,6 +55,7 @@ public final class BackendTransactionManager implements TransactionManager {
         } else {
             shardingTransactionManager.begin();
         }
+        MetricsUtils.buriedTransactionMetric("begin");
     }
     
     @Override
@@ -65,6 +67,7 @@ public final class BackendTransactionManager implements TransactionManager {
                 } else {
                     shardingTransactionManager.commit();
                 }
+                MetricsUtils.buriedTransactionMetric("commit");
             } finally {
                 connection.getStateHandler().setStatus(ConnectionStatus.TERMINATED);
             }
@@ -80,6 +83,7 @@ public final class BackendTransactionManager implements TransactionManager {
                 } else {
                     shardingTransactionManager.rollback();
                 }
+                MetricsUtils.buriedTransactionMetric("rollback");
             } finally {
                 connection.getStateHandler().setStatus(ConnectionStatus.TERMINATED);
             }
