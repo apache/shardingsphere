@@ -30,17 +30,6 @@
     <name>${project.artifactId}</name>
 
     <dependencies>
-<!--        <dependency>-->
-<!--            <groupId>org.apache.shardingsphere</groupId>-->
-<!--            <artifactId>sharding-core-common</artifactId>-->
-<!--            <version>${project.version}</version>-->
-<!--        </dependency>-->
-
-<!--        <dependency>-->
-<!--            <groupId>org.apache.shardingsphere</groupId>-->
-<!--            <artifactId>shardingsphere-route</artifactId>-->
-<!--            <version>${project.version}</version>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shadow-core-api</artifactId>
