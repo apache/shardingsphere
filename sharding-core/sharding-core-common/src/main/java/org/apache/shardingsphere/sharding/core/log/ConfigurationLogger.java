@@ -56,9 +56,6 @@ public final class ConfigurationLogger {
     }
     
     private static void log(final RuleConfiguration ruleConfiguration) {
-        if (null == ruleConfiguration) {
-            return;
-        }
         if (ruleConfiguration instanceof ShardingRuleConfiguration) {
             log((ShardingRuleConfiguration) ruleConfiguration);
         } else if (ruleConfiguration instanceof MasterSlaveRuleConfiguration) {
@@ -71,28 +68,20 @@ public final class ConfigurationLogger {
     }
     
     private static void log(final ShardingRuleConfiguration shardingRuleConfiguration) {
-        if (null != shardingRuleConfiguration) {
-            log(shardingRuleConfiguration.getClass().getSimpleName(),
+        log(shardingRuleConfiguration.getClass().getSimpleName(),
                 YamlEngine.marshal(new ShardingRuleConfigurationYamlSwapper().swap(shardingRuleConfiguration), ShardingTupleProcessorFactory.newInstance()));
-        }
     }
     
     private static void log(final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration) {
-        if (null != masterSlaveRuleConfiguration) {
-            log(masterSlaveRuleConfiguration.getClass().getSimpleName(), YamlEngine.marshal(new MasterSlaveRuleConfigurationYamlSwapper().swap(masterSlaveRuleConfiguration)));
-        }
+        log(masterSlaveRuleConfiguration.getClass().getSimpleName(), YamlEngine.marshal(new MasterSlaveRuleConfigurationYamlSwapper().swap(masterSlaveRuleConfiguration)));
     }
     
     private static void log(final EncryptRuleConfiguration encryptRuleConfiguration) {
-        if (null != encryptRuleConfiguration) {
-            log(encryptRuleConfiguration.getClass().getSimpleName(), YamlEngine.marshal(new EncryptRuleConfigurationYamlSwapper().swap(encryptRuleConfiguration)));
-        }
+        log(encryptRuleConfiguration.getClass().getSimpleName(), YamlEngine.marshal(new EncryptRuleConfigurationYamlSwapper().swap(encryptRuleConfiguration)));
     }
 
     private static void log(final ShadowRuleConfiguration shadowRuleConfiguration) {
-        if (null != shadowRuleConfiguration) {
-            log(shadowRuleConfiguration.getClass().getSimpleName(), YamlEngine.marshal(new ShadowRuleConfigurationYamlSwapper().swap(shadowRuleConfiguration)));
-        }
+        log(shadowRuleConfiguration.getClass().getSimpleName(), YamlEngine.marshal(new ShadowRuleConfigurationYamlSwapper().swap(shadowRuleConfiguration)));
     }
     
     /**
