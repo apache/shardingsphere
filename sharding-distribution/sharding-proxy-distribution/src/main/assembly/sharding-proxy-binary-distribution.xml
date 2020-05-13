@@ -44,12 +44,6 @@
             <fileMode>0644</fileMode>
         </fileSet>
         <fileSet>
-            <directory>../../</directory>
-            <includes>
-                <include>DISCLAIMER</include>
-            </includes>
-        </fileSet>
-        <fileSet>
             <directory>src/main/release-docs</directory>
             <includes>
                 <include>**/*</include>
