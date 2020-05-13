@@ -15,25 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.core.yaml.config.common;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
-
-import javax.sql.DataSource;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+package org.apache.shardingsphere.underlying.common.yaml.config;
 
 /**
- * Root rule configuration for YAML.
+ * YAML rule configuration.
  */
-@Getter
-@Setter
-public abstract class YamlRootRuleConfiguration implements YamlConfiguration {
-    
-    private Map<String, DataSource> dataSources = new HashMap<>();
-    
-    private Properties props = new Properties();
+public interface YamlRuleConfiguration extends YamlConfiguration {
 }

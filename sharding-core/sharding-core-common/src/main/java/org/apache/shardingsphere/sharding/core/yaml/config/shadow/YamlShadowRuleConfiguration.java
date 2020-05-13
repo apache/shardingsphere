@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.core.yaml.config.shadow;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlRuleConfiguration;
 
 import java.util.Map;
 
@@ -28,7 +28,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public class YamlShadowRuleConfiguration implements YamlConfiguration {
+public class YamlShadowRuleConfiguration implements YamlRuleConfiguration {
     
     private String column;
     

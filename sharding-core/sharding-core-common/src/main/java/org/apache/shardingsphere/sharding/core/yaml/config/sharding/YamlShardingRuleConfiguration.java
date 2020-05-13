@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.core.yaml.config.sharding;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlRuleConfiguration;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,7 +31,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public final class YamlShardingRuleConfiguration implements YamlConfiguration {
+public final class YamlShardingRuleConfiguration implements YamlRuleConfiguration {
     
     private Map<String, YamlTableRuleConfiguration> tables = new LinkedHashMap<>();
     

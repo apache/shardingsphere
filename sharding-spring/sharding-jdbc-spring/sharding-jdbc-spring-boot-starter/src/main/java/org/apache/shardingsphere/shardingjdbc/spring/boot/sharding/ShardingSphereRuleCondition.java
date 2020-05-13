@@ -15,18 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.core.yaml.config.shadow;
+package org.apache.shardingsphere.shardingjdbc.spring.boot.sharding;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sharding.core.yaml.config.common.YamlRootRuleConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
+import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * Root shadow configuration for YAML.
+ * ShardingSphere rule condition.
  */
-@Getter
-@Setter
-public final class YamlRootShadowConfiguration extends YamlRootRuleConfiguration {
+public final class ShardingSphereRuleCondition extends SpringBootCondition {
     
-    private YamlShadowRuleConfiguration shadowRule;
+    @Override
+    public ConditionOutcome getMatchOutcome(final ConditionContext conditionContext, final AnnotatedTypeMetadata annotatedTypeMetadata) {
+        return ConditionOutcome.match();
+    }
 }

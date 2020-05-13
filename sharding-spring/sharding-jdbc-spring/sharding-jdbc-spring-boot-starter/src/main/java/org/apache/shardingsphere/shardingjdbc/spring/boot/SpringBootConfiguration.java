@@ -20,10 +20,10 @@ package org.apache.shardingsphere.shardingjdbc.spring.boot;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sharding.core.strategy.algorithm.sharding.inline.InlineExpressionParser;
-import org.apache.shardingsphere.sharding.core.yaml.swapper.root.RuleRootConfigurationsYamlSwapper;
 import org.apache.shardingsphere.shardingjdbc.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.common.SpringBootPropertiesConfigurationProperties;
-import org.apache.shardingsphere.shardingjdbc.spring.boot.sharding.ShardingRuleCondition;
+import org.apache.shardingsphere.shardingjdbc.spring.boot.sharding.ShardingSphereRuleCondition;
+import org.apache.shardingsphere.shardingjdbc.spring.boot.sharding.SpringBootRuleConfigurationsYamlSwapper;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.sharding.SpringBootRulesConfigurationProperties;
 import org.apache.shardingsphere.spring.boot.datasource.DataSourcePropertiesSetterHolder;
 import org.apache.shardingsphere.spring.boot.util.DataSourceUtil;
@@ -77,9 +77,9 @@ public class SpringBootConfiguration implements EnvironmentAware {
      * @throws SQLException SQL exception
      */
     @Bean
-    @Conditional(ShardingRuleCondition.class)
+    @Conditional(ShardingSphereRuleCondition.class)
     public DataSource shardingSphereDataSource() throws SQLException {
-        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new RuleRootConfigurationsYamlSwapper().swap(rules), props.getProps());
+        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new SpringBootRuleConfigurationsYamlSwapper().swap(rules), props.getProps());
     }
     
     /**

@@ -31,7 +31,8 @@ dataSources:
     username: root
     password:
 
-masterSlaveRule:
+rules:
+- !!org.apache.shardingsphere.sharding.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration
   dataSources:
     ms_ds:
       name: ds_ms

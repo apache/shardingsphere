@@ -29,11 +29,7 @@ import org.apache.shardingsphere.orchestration.center.yaml.config.YamlOrchestrat
 import org.apache.shardingsphere.orchestration.center.yaml.swapper.OrchestrationConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.sharding.core.log.ConfigurationLogger;
-import org.apache.shardingsphere.underlying.common.auth.Authentication;
 import org.apache.shardingsphere.sharding.core.yaml.config.YamlRootRuleConfigurations;
-import org.apache.shardingsphere.underlying.common.auth.yaml.config.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.underlying.common.auth.yaml.swapper.AuthenticationYamlSwapper;
-import org.apache.shardingsphere.sharding.core.yaml.swapper.ShadowRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.core.yaml.swapper.root.RuleRootConfigurationsYamlSwapper;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchemas;
 import org.apache.shardingsphere.shardingproxy.config.ShardingConfiguration;
@@ -44,9 +40,13 @@ import org.apache.shardingsphere.shardingproxy.config.yaml.YamlProxyServerConfig
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.shardingproxy.frontend.bootstrap.ShardingProxy;
 import org.apache.shardingsphere.shardingproxy.util.DataSourceConverter;
+import org.apache.shardingsphere.underlying.common.auth.Authentication;
+import org.apache.shardingsphere.underlying.common.auth.yaml.config.YamlAuthenticationConfiguration;
+import org.apache.shardingsphere.underlying.common.auth.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlRuleConfiguration;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -210,17 +210,11 @@ public final class Bootstrap {
     private static Map<String, Collection<RuleConfiguration>> getRuleConfigurations(final Map<String, YamlProxyRuleConfiguration> localRuleConfigs) {
         Map<String, Collection<RuleConfiguration>> result = new HashMap<>();
         for (Entry<String, YamlProxyRuleConfiguration> entry : localRuleConfigs.entrySet()) {
-            if (null != entry.getValue().getShadowRule()) {
-                result.put(entry.getKey(), Collections.singleton(new ShadowRuleConfigurationYamlSwapper().swap(entry.getValue().getShadowRule())));
-            } else {
-                YamlRootRuleConfigurations configurations = new YamlRootRuleConfigurations();
-                configurations.setShardingRule(entry.getValue().getShardingRule());
-                if (null != entry.getValue().getMasterSlaveRule()) {
-                    configurations.getMasterSlaveRule().getDataSources().putAll(entry.getValue().getMasterSlaveRule().getDataSources());
-                }
-                configurations.setEncryptRule(entry.getValue().getEncryptRule());
-                result.put(entry.getKey(), new RuleRootConfigurationsYamlSwapper().swap(configurations));
+            YamlRootRuleConfigurations configurations = new YamlRootRuleConfigurations();
+            for (YamlRuleConfiguration each : entry.getValue().getRules()) {
+                configurations.getRules().add(each);
             }
+            result.put(entry.getKey(), new RuleRootConfigurationsYamlSwapper().swap(configurations));
         }
         return result;
     }

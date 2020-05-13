@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.sharding.core.yaml.engine;
 
 import org.apache.shardingsphere.sharding.core.yaml.config.YamlRootRuleConfigurations;
+import org.apache.shardingsphere.sharding.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.core.yaml.constructor.YamlRootRuleConfigurationsConstructor;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 import org.junit.Test;
@@ -28,6 +30,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -61,14 +64,20 @@ public final class YamlEngineRootConfigurationsTest {
     
     private void assertYamlShardingConfig(final YamlRootRuleConfigurations actual) {
         assertDataSourceMap(actual);
-        assertThat(actual.getShardingRule().getTables().size(), is(4));
-        assertTUser(actual);
-        assertTStock(actual);
-        assertTOrder(actual);
-        assertTOrderItem(actual);
-        assertBindingTable(actual);
-        assertBroadcastTable(actual);
-        assertMasterSlaveRules(actual);
+        Optional<YamlShardingRuleConfiguration> shardingRuleConfiguration = actual.getRules().stream().filter(
+            each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(configuration -> (YamlShardingRuleConfiguration) configuration);
+        assertTrue(shardingRuleConfiguration.isPresent());
+        assertThat(shardingRuleConfiguration.get().getTables().size(), is(4));
+        assertTUser(shardingRuleConfiguration.get());
+        assertTStock(shardingRuleConfiguration.get());
+        assertTOrder(shardingRuleConfiguration.get());
+        assertTOrderItem(shardingRuleConfiguration.get());
+        assertBindingTable(shardingRuleConfiguration.get());
+        assertBroadcastTable(shardingRuleConfiguration.get());
+        Optional<YamlMasterSlaveRuleConfiguration> masterSlaveRuleConfiguration = actual.getRules().stream().filter(
+            each -> each instanceof YamlMasterSlaveRuleConfiguration).findFirst().map(configuration -> (YamlMasterSlaveRuleConfiguration) configuration);
+        assertTrue(masterSlaveRuleConfiguration.isPresent());
+        assertMasterSlaveRules(masterSlaveRuleConfiguration.get());
         assertProps(actual);
     }
     
@@ -83,62 +92,62 @@ public final class YamlEngineRootConfigurationsTest {
         assertTrue(actual.getDataSources().containsKey("default_ds"));
     }
     
-    private void assertTUser(final YamlRootRuleConfigurations actual) {
-        assertThat(actual.getShardingRule().getTables().get("t_user").getActualDataNodes(), is("ds_${0..1}.t_user_${0..15}"));
-        assertThat(actual.getShardingRule().getTables().get("t_user").getDatabaseStrategy().getComplex().getShardingColumns(), is("region_id, user_id"));
-        assertThat(actual.getShardingRule().getTables().get("t_user").getDatabaseStrategy().getComplex().getShardingAlgorithm().getType(), is("COMPLEX_TEST"));
-        assertThat(actual.getShardingRule().getTables().get("t_user").getTableStrategy().getComplex().getShardingColumns(), is("region_id, user_id"));
-        assertThat(actual.getShardingRule().getTables().get("t_user").getTableStrategy().getComplex().getShardingAlgorithm().getType(), is("COMPLEX_TEST"));
+    private void assertTUser(final YamlShardingRuleConfiguration actual) {
+        assertThat(actual.getTables().get("t_user").getActualDataNodes(), is("ds_${0..1}.t_user_${0..15}"));
+        assertThat(actual.getTables().get("t_user").getDatabaseStrategy().getComplex().getShardingColumns(), is("region_id, user_id"));
+        assertThat(actual.getTables().get("t_user").getDatabaseStrategy().getComplex().getShardingAlgorithm().getType(), is("COMPLEX_TEST"));
+        assertThat(actual.getTables().get("t_user").getTableStrategy().getComplex().getShardingColumns(), is("region_id, user_id"));
+        assertThat(actual.getTables().get("t_user").getTableStrategy().getComplex().getShardingAlgorithm().getType(), is("COMPLEX_TEST"));
     }
     
-    private void assertTStock(final YamlRootRuleConfigurations actual) {
-        assertThat(actual.getShardingRule().getTables().get("t_stock").getActualDataNodes(), is("ds_${0..1}.t_stock{0..8}"));
-        assertThat(actual.getShardingRule().getTables().get("t_stock").getDatabaseStrategy().getHint().getShardingAlgorithm().getType(), is("HINT_TEST"));
-        assertThat(actual.getShardingRule().getTables().get("t_stock").getTableStrategy().getHint().getShardingAlgorithm().getType(), is("HINT_TEST"));
+    private void assertTStock(final YamlShardingRuleConfiguration actual) {
+        assertThat(actual.getTables().get("t_stock").getActualDataNodes(), is("ds_${0..1}.t_stock{0..8}"));
+        assertThat(actual.getTables().get("t_stock").getDatabaseStrategy().getHint().getShardingAlgorithm().getType(), is("HINT_TEST"));
+        assertThat(actual.getTables().get("t_stock").getTableStrategy().getHint().getShardingAlgorithm().getType(), is("HINT_TEST"));
     }
     
-    private void assertTOrder(final YamlRootRuleConfigurations actual) {
-        assertThat(actual.getShardingRule().getTables().get("t_order").getActualDataNodes(), is("ds_${0..1}.t_order_${0..1}"));
-        assertThat(actual.getShardingRule().getTables().get("t_order").getTableStrategy().getStandard().getShardingColumn(), is("order_id"));
-        assertThat(actual.getShardingRule().getTables().get("t_order").getTableStrategy().getStandard().getShardingAlgorithm().getProps().getProperty("algorithm.expression"), 
+    private void assertTOrder(final YamlShardingRuleConfiguration actual) {
+        assertThat(actual.getTables().get("t_order").getActualDataNodes(), is("ds_${0..1}.t_order_${0..1}"));
+        assertThat(actual.getTables().get("t_order").getTableStrategy().getStandard().getShardingColumn(), is("order_id"));
+        assertThat(actual.getTables().get("t_order").getTableStrategy().getStandard().getShardingAlgorithm().getProps().getProperty("algorithm.expression"), 
                 is("t_order_${order_id % 2}"));
-        assertThat(actual.getShardingRule().getTables().get("t_order").getKeyGenerator().getColumn(), is("order_id"));
-        assertThat(actual.getShardingRule().getTables().get("t_order").getKeyGenerator().getType(), is("SNOWFLAKE"));
+        assertThat(actual.getTables().get("t_order").getKeyGenerator().getColumn(), is("order_id"));
+        assertThat(actual.getTables().get("t_order").getKeyGenerator().getType(), is("SNOWFLAKE"));
     }
     
-    private void assertTOrderItem(final YamlRootRuleConfigurations actual) {
-        assertThat(actual.getShardingRule().getTables().get("t_order_item").getActualDataNodes(), is("ds_${0..1}.t_order_item_${0..1}"));
-        assertThat(actual.getShardingRule().getTables().get("t_order_item").getTableStrategy().getStandard().getShardingColumn(), is("order_id"));
-        assertThat(actual.getShardingRule().getTables().get("t_order_item").getTableStrategy().getStandard().getShardingAlgorithm().getType(), is("STANDARD_TEST"));
-        assertThat(actual.getShardingRule().getTables().get("t_order_item").getTableStrategy().getStandard().getShardingAlgorithm().getType(), is("STANDARD_TEST"));
+    private void assertTOrderItem(final YamlShardingRuleConfiguration actual) {
+        assertThat(actual.getTables().get("t_order_item").getActualDataNodes(), is("ds_${0..1}.t_order_item_${0..1}"));
+        assertThat(actual.getTables().get("t_order_item").getTableStrategy().getStandard().getShardingColumn(), is("order_id"));
+        assertThat(actual.getTables().get("t_order_item").getTableStrategy().getStandard().getShardingAlgorithm().getType(), is("STANDARD_TEST"));
+        assertThat(actual.getTables().get("t_order_item").getTableStrategy().getStandard().getShardingAlgorithm().getType(), is("STANDARD_TEST"));
     }
     
-    private void assertBindingTable(final YamlRootRuleConfigurations actual) {
-        assertThat(actual.getShardingRule().getBindingTables().size(), is(1));
-        assertThat(actual.getShardingRule().getBindingTables().iterator().next(), is("t_order, t_order_item"));
+    private void assertBindingTable(final YamlShardingRuleConfiguration actual) {
+        assertThat(actual.getBindingTables().size(), is(1));
+        assertThat(actual.getBindingTables().iterator().next(), is("t_order, t_order_item"));
     }
     
-    private void assertBroadcastTable(final YamlRootRuleConfigurations actual) {
-        assertThat(actual.getShardingRule().getBroadcastTables().size(), is(1));
-        assertThat(actual.getShardingRule().getBroadcastTables().iterator().next(), is("t_config"));
+    private void assertBroadcastTable(final YamlShardingRuleConfiguration actual) {
+        assertThat(actual.getBroadcastTables().size(), is(1));
+        assertThat(actual.getBroadcastTables().iterator().next(), is("t_config"));
     }
     
-    private void assertMasterSlaveRules(final YamlRootRuleConfigurations actual) {
-        assertThat(actual.getMasterSlaveRule().getDataSources().size(), is(2));
+    private void assertMasterSlaveRules(final YamlMasterSlaveRuleConfiguration actual) {
+        assertThat(actual.getDataSources().size(), is(2));
         assertMasterSlaveRuleForDs0(actual);
         assertMasterSlaveRuleForDs1(actual);
     }
     
-    private void assertMasterSlaveRuleForDs0(final YamlRootRuleConfigurations actual) {
-        assertThat(actual.getMasterSlaveRule().getDataSources().get("ds_0").getMasterDataSourceName(), is("master_ds_0"));
-        assertThat(actual.getMasterSlaveRule().getDataSources().get("ds_0").getSlaveDataSourceNames(), is(Arrays.asList("master_ds_0_slave_0", "master_ds_0_slave_1")));
-        assertThat(actual.getMasterSlaveRule().getDataSources().get("ds_0").getLoadBalanceAlgorithmType(), is("ROUND_ROBIN"));
+    private void assertMasterSlaveRuleForDs0(final YamlMasterSlaveRuleConfiguration actual) {
+        assertThat(actual.getDataSources().get("ds_0").getMasterDataSourceName(), is("master_ds_0"));
+        assertThat(actual.getDataSources().get("ds_0").getSlaveDataSourceNames(), is(Arrays.asList("master_ds_0_slave_0", "master_ds_0_slave_1")));
+        assertThat(actual.getDataSources().get("ds_0").getLoadBalanceAlgorithmType(), is("ROUND_ROBIN"));
     }
     
-    private void assertMasterSlaveRuleForDs1(final YamlRootRuleConfigurations actual) {
-        assertThat(actual.getMasterSlaveRule().getDataSources().get("ds_1").getMasterDataSourceName(), is("master_ds_1"));
-        assertThat(actual.getMasterSlaveRule().getDataSources().get("ds_1").getSlaveDataSourceNames(), is(Arrays.asList("master_ds_1_slave_0", "master_ds_1_slave_1")));
-        assertThat(actual.getMasterSlaveRule().getDataSources().get("ds_1").getLoadBalanceAlgorithmType(), is("RANDOM"));
+    private void assertMasterSlaveRuleForDs1(final YamlMasterSlaveRuleConfiguration actual) {
+        assertThat(actual.getDataSources().get("ds_1").getMasterDataSourceName(), is("master_ds_1"));
+        assertThat(actual.getDataSources().get("ds_1").getSlaveDataSourceNames(), is(Arrays.asList("master_ds_1_slave_0", "master_ds_1_slave_1")));
+        assertThat(actual.getDataSources().get("ds_1").getLoadBalanceAlgorithmType(), is("RANDOM"));
     }
     
     private void assertProps(final YamlRootRuleConfigurations actual) {

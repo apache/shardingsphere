@@ -22,7 +22,8 @@ dataSources:
     username: root
     password:
 
-encryptRule:
+rules:
+- !!org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration
   encryptors:
     name_encryptror:
       type: aes

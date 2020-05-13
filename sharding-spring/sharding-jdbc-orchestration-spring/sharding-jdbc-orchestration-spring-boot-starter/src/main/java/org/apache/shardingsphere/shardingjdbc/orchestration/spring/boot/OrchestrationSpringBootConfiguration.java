@@ -25,11 +25,11 @@ import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfig
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.swapper.CenterRepositoryConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.core.strategy.algorithm.sharding.inline.InlineExpressionParser;
-import org.apache.shardingsphere.sharding.core.yaml.swapper.root.RuleRootConfigurationsYamlSwapper;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.common.SpringBootRootConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding.LocalShardingRuleCondition;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding.OrchestrationSpringBootRuleConfigurationsYamlSwapper;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding.OrchestrationSpringBootRulesConfigurationProperties;
 import org.apache.shardingsphere.spring.boot.datasource.DataSourcePropertiesSetterHolder;
 import org.apache.shardingsphere.spring.boot.util.DataSourceUtil;
@@ -107,7 +107,7 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @Conditional(LocalShardingRuleCondition.class)
     public DataSource shardingSphereDataSourceByLocal(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
         return new OrchestrationShardingSphereDataSource(
-                new ShardingSphereDataSource(dataSourceMap, new RuleRootConfigurationsYamlSwapper().swap(rules), root.getProps()), orchestrationConfiguration);
+                new ShardingSphereDataSource(dataSourceMap, new OrchestrationSpringBootRuleConfigurationsYamlSwapper().swap(rules), root.getProps()), orchestrationConfiguration);
     }
     
     /**

@@ -19,14 +19,13 @@ package org.apache.shardingsphere.sharding.core.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.sharding.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.sharding.core.yaml.config.shadow.YamlShadowRuleConfiguration;
-import org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlRuleConfiguration;
 
 import javax.sql.DataSource;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
@@ -39,13 +38,7 @@ public class YamlRootRuleConfigurations implements YamlConfiguration {
     
     private Map<String, DataSource> dataSources = new HashMap<>();
     
-    private YamlShardingRuleConfiguration shardingRule;
-    
-    private YamlMasterSlaveRuleConfiguration masterSlaveRule;
-    
-    private YamlEncryptRuleConfiguration encryptRule;
-    
-    private YamlShadowRuleConfiguration shadowRule;
+    private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
     
     private Properties props = new Properties();
 }
