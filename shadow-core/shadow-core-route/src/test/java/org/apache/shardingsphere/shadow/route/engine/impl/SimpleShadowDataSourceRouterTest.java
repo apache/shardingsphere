@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shadow.route.engine.impl;
 
-import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
-import org.apache.shardingsphere.sharding.core.rule.ShadowRule;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.core.rule.ShadowRule;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
@@ -56,8 +56,7 @@ public class SimpleShadowDataSourceRouterTest {
     public void setUp() {
         schemaMetaData = mock(SchemaMetaData.class);
         when(schemaMetaData.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "shadow"));
-        ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration();
-        shadowRuleConfiguration.setColumn("shadow");
+        ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration("shadow", Collections.singletonMap("ds", "shadow_ds"));
         shadowRule = new ShadowRule(shadowRuleConfiguration);
     }
     

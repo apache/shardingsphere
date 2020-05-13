@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.api;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShadowDataSource;
 
 import javax.sql.DataSource;

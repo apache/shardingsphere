@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sharding.api.hint.HintManager;
+import org.apache.shardingsphere.underlying.common.hint.HintManager;
 
 /**
  * Holder for {@code HintManager}.

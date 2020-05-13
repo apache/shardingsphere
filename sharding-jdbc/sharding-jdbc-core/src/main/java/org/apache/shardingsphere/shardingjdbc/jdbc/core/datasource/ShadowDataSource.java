@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
-import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShadowConnection;
 
