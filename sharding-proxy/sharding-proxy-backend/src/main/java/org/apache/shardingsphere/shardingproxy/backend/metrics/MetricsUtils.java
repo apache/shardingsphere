@@ -19,6 +19,9 @@ package org.apache.shardingsphere.shardingproxy.backend.metrics;
 
 import org.apache.shardingsphere.metrics.enums.MetricsLabelEnum;
 import org.apache.shardingsphere.metrics.facade.MetricsTrackerFacade;
+import org.apache.shardingsphere.shadow.core.rule.ShadowRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteMapper;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 
@@ -53,6 +56,20 @@ public final class MetricsUtils {
      */
     public static void buriedTransactionMetric(final String labelValue) {
         MetricsTrackerFacade.getInstance().counterInc(MetricsLabelEnum.TRANSACTION.getName(), labelValue);
+    }
+    
+    /**
+     * Buried sharding rule metrics.
+     *
+     * @param routeContext route context
+     * @param rules rules
+     */
+    public static void buriedShardingRuleMetrics(final RouteContext routeContext, final Collection<ShardingSphereRule> rules) {
+        routeContext.getRouteResult().getActualDataSourceNames().forEach(dataSourceName -> rules.forEach(each -> {
+            if (each instanceof ShadowRule && ((ShadowRule) each).getShadowMappings().containsValue(dataSourceName)) {
+                MetricsTrackerFacade.getInstance().counterInc(MetricsLabelEnum.SHADOW_HIT_TOTAL.getName());
+            }
+        }));
     }
 }
 
