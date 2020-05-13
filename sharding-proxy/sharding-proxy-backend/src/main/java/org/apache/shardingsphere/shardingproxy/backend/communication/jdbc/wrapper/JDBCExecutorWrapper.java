@@ -17,11 +17,17 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper;
 
+import org.apache.shardingsphere.metrics.enums.MetricsLabelEnum;
+import org.apache.shardingsphere.metrics.facade.MetricsTrackerFacade;
+import org.apache.shardingsphere.sharding.core.rule.ShadowRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.sql.group.ExecuteGroupEngine;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 
 /**
  * JDBC executor wrapper.
@@ -54,4 +60,18 @@ public interface JDBCExecutorWrapper {
      * @throws SQLException SQL exception
      */
     boolean executeSQL(Statement statement, String sql, boolean isReturnGeneratedKeys) throws SQLException;
+    
+    /**
+     * Route metrics collect.
+     *
+     * @param routeContext routeContext
+     * @param rules rules
+     */
+    default void routeMetricsCollect(final RouteContext routeContext, final Collection<ShardingSphereRule> rules) {
+        routeContext.getRouteResult().getActualDataSourceNames().forEach(s -> rules.forEach(each -> {
+            if (each instanceof ShadowRule && ((ShadowRule) each).getShadowMappings().values().contains(s)) {
+                MetricsTrackerFacade.getInstance().counterInc(MetricsLabelEnum.SHADOW_HIT_TOTAL.getName());
+            }
+        }));
+    }
 }
