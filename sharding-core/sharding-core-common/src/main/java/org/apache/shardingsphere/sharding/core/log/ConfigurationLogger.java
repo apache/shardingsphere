@@ -55,12 +55,7 @@ public final class ConfigurationLogger {
         }
     }
     
-    /**
-     * Log rule configuration.
-     *
-     * @param ruleConfiguration rule configuration
-     */
-    public static void log(final RuleConfiguration ruleConfiguration) {
+    private static void log(final RuleConfiguration ruleConfiguration) {
         if (null == ruleConfiguration) {
             return;
         }
