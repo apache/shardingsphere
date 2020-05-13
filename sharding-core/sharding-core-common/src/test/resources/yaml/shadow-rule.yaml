@@ -47,7 +47,8 @@ dataSources:
     username: sa
     password:
 
-shadowRule:
+rules:
+- !!org.apache.shardingsphere.sharding.core.yaml.config.shadow.YamlShadowRuleConfiguration
   column: is_shadow
   shadowMappings:
     master_ds: shadow_master_ds

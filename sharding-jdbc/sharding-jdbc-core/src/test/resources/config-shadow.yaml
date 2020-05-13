@@ -15,7 +15,8 @@
 # limitations under the License.
 #
 
-shadowRule:
+rules:
+- !!org.apache.shardingsphere.sharding.core.yaml.config.shadow.YamlShadowRuleConfiguration
   column: shadow
   shadowMappings:
     jdbc_0: jdbc_1

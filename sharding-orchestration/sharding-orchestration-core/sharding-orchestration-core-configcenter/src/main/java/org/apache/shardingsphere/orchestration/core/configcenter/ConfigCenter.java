@@ -187,7 +187,7 @@ public final class ConfigCenter {
      * @return is sharding rule or not
      */
     public boolean isShardingRule(final String shardingSchemaName) {
-        return repository.get(node.getRulePath(shardingSchemaName)).contains("shardingRule:\n");
+        return repository.get(node.getRulePath(shardingSchemaName)).contains("- !!org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlShardingRuleConfiguration\n");
     }
     
     /**
@@ -196,7 +196,7 @@ public final class ConfigCenter {
      * @return is encrypt rule or not
      */
     public boolean isEncryptRule(final String shardingSchemaName) {
-        return repository.get(node.getRulePath(shardingSchemaName)).contains("encryptRule:\n");
+        return repository.get(node.getRulePath(shardingSchemaName)).contains("- !!org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration\n");
     }
     
     /**
@@ -205,7 +205,7 @@ public final class ConfigCenter {
      * @return is shadow rule or not
      */
     public boolean isShadowRule(final String shardingSchemaName) {
-        return repository.get(node.getRulePath(shardingSchemaName)).contains("shadowRule:\n");
+        return repository.get(node.getRulePath(shardingSchemaName)).contains("- !!org.apache.shardingsphere.sharding.core.yaml.config.shadow.YamlShadowRuleConfiguration\n");
     }
     
     /**

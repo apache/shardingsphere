@@ -65,48 +65,117 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class ConfigCenterTest {
     
-    private static final String DATA_SOURCE_YAML =
-            "ds_0: !!" + YamlDataSourceConfiguration.class.getName() + "\n"
-            + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n" + "  properties:\n"
-            + "    driverClassName: com.mysql.jdbc.Driver\n" + "    url: jdbc:mysql://localhost:3306/ds_0\n" + "    username: root\n" + "    password: root\n"
-            + "ds_1: !!" + YamlDataSourceConfiguration.class.getName() + "\n"
-            + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n" + "  properties:\n"
-            + "    driverClassName: com.mysql.jdbc.Driver\n" + "    url: jdbc:mysql://localhost:3306/ds_1\n" + "    username: root\n" + "    password: root\n";
+    private static final String DATA_SOURCE_YAML = "" 
+            + "ds_0: !!" + YamlDataSourceConfiguration.class.getName() + "\n" 
+            + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
+            + "  properties:\n"
+            + "    driverClassName: com.mysql.jdbc.Driver\n"
+            + "    url: jdbc:mysql://localhost:3306/ds_0\n"
+            + "    username: root\n" + "    password: root\n" 
+            + "ds_1: !!" + YamlDataSourceConfiguration.class.getName() + "\n" 
+            + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
+            + "  properties:\n" 
+            + "    driverClassName: com.mysql.jdbc.Driver\n"
+            + "    url: jdbc:mysql://localhost:3306/ds_1\n"
+            + "    username: root\n"
+            + "    password: root\n";
     
-    private static final String DATA_SOURCE_PARAMETER_YAML = "ds_0: !!org.apache.shardingsphere.core.rule.DataSourceParameter\n"
-            + "  url: jdbc:mysql://localhost:3306/ds_0\n" + "  username: root\n" + "  password: root\n"
+    private static final String DATA_SOURCE_PARAMETER_YAML = ""
+            + "ds_0: !!org.apache.shardingsphere.core.rule.DataSourceParameter\n"
+            + "  url: jdbc:mysql://localhost:3306/ds_0\n"
+            + "  username: root\n"
+            + "  password: root\n"
             + "ds_1: !!org.apache.shardingsphere.core.rule.DataSourceParameter\n"
-            + "  url: jdbc:mysql://localhost:3306/ds_1\n" + "  username: root\n" + "  password: root\n";
+            + "  url: jdbc:mysql://localhost:3306/ds_1\n"
+            + "  username: root\n"
+            + "  password: root\n";
     
-    private static final String SHARDING_RULE_YAML = "shardingRule:\n  tables:\n" + "    t_order:\n" + "      actualDataNodes: ds_${0..1}.t_order_${0..1}\n" + "      logicTable: t_order\n" 
-            + "      tableStrategy:\n" + "        standard:\n" + "          shardingAlgorithm:\n" + "            props:\n" 
-            + "              algorithm.expression: t_order_${order_id % 2}\n" + "            type: INLINE\n" + "          shardingColumn: order_id\n";
+    private static final String SHARDING_RULE_YAML = ""
+            + "rules:\n"
+            + "- !!org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlShardingRuleConfiguration\n"
+            + "  tables:\n"
+            + "    t_order:\n"
+            + "      actualDataNodes: ds_${0..1}.t_order_${0..1}\n"
+            + "      logicTable: t_order\n" 
+            + "      tableStrategy:\n"
+            + "        standard:\n"
+            + "          shardingAlgorithm:\n"
+            + "            props:\n" 
+            + "              algorithm.expression: t_order_${order_id % 2}\n"
+            + "            type: INLINE\n"
+            + "          shardingColumn: order_id\n";
     
-    private static final String MASTER_SLAVE_RULE_YAML = "masterSlaveRule:\n  dataSources:\n    ms_ds:\n      masterDataSourceName: master_ds\n"
-            + "      name: ms_ds\n" + "      slaveDataSourceNames:\n" + "      - slave_ds_0\n" + "      - slave_ds_1\n";
+    private static final String MASTER_SLAVE_RULE_YAML = ""
+            + "rules:\n"
+            + "- !!org.apache.shardingsphere.sharding.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration\n"
+            + "  dataSources:\n"
+            + "    ms_ds:\n"
+            + "      masterDataSourceName: master_ds\n"
+            + "      name: ms_ds\n"
+            + "      slaveDataSourceNames:\n"
+            + "      - slave_ds_0\n"
+            + "      - slave_ds_1\n";
     
-    private static final String ENCRYPT_RULE_YAML = "encryptRule:\n  encryptors:\n" + "    order_encryptor:\n"
-            + "      props:\n" + "        aes.key.value: 123456\n" + "      type: aes\n" + "  tables:\n" + "    t_order:\n" + "      columns:\n" 
-            + "        order_id:\n" + "          cipherColumn: order_id\n" + "          encryptor: order_encryptor\n";
+    private static final String ENCRYPT_RULE_YAML = ""
+            + "rules:\n"
+            + "- !!org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration\n"
+            + "  encryptors:\n"
+            + "    order_encryptor:\n"
+            + "      props:\n"
+            + "        aes.key.value: 123456\n"
+            + "      type: aes\n"
+            + "  tables:\n"
+            + "    t_order:\n"
+            + "      columns:\n" 
+            + "        order_id:\n"
+            + "          cipherColumn: order_id\n"
+            + "          encryptor: order_encryptor\n";
     
-    private static final String SHADOW_RULE_YAML = "shadowRule:\n  column: shadow\n" + "  shadowMappings:\n" + "    ds: shadow_ds\n";
+    private static final String SHADOW_RULE_YAML = ""
+            + "rules:\n"
+            + "- !!org.apache.shardingsphere.sharding.core.yaml.config.shadow.YamlShadowRuleConfiguration\n"
+            + "  column: shadow\n"
+            + "  shadowMappings:\n"
+            + "    ds: shadow_ds\n";
     
-    private static final String AUTHENTICATION_YAML = "users:\n" + "  root1:\n" + "    authorizedSchemas: sharding_db\n" + "    password: root1\n" 
-            + "  root2:\n" + "    authorizedSchemas: sharding_db,ms_db\n" + "    password: root2\n";
+    private static final String AUTHENTICATION_YAML = ""
+            + "users:\n"
+            + "  root1:\n"
+            + "    authorizedSchemas: sharding_db\n"
+            + "    password: root1\n" 
+            + "  root2:\n"
+            + "    authorizedSchemas: sharding_db,ms_db\n"
+            + "    password: root2\n";
     
     private static final String PROPS_YAML = "sql.show: false\n";
     
-    private static final String SHARDING_RULE_YAML_DEFAULT_TABLE_STRATEGY_NONE = "shardingRule:\n  defaultTableStrategy:\n" + "    none: ''\n";
+    private static final String SHARDING_RULE_YAML_DEFAULT_TABLE_STRATEGY_NONE = ""
+            + "rules:\n"
+            + "- !!org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlShardingRuleConfiguration\n"
+            + "  defaultTableStrategy:\n"
+            + "    none: ''\n";
     
-    private static final String DATA_SOURCE_YAML_WITH_CONNECTION_INIT_SQLS =
-            "ds_0: !!" + YamlDataSourceConfiguration.class.getName() + "\n"
-                    + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n" + "  properties:\n"
-                    + "    driverClassName: com.mysql.jdbc.Driver\n" + "    url: jdbc:mysql://localhost:3306/ds_0\n" + "    username: root\n" + "    password: root\n"
-                    + "    connectionInitSqls:\n" + "        - set names utf8mb4;\n" + "        - set names utf8;\n"
-                    + "ds_1: !!" + YamlDataSourceConfiguration.class.getName() + "\n"
-                    + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n" + "  properties:\n"
-                    + "    driverClassName: com.mysql.jdbc.Driver\n" + "    url: jdbc:mysql://localhost:3306/ds_1\n" + "    username: root\n" + "    password: root\n"
-                    + "    connectionInitSqls:\n" + "        - set names utf8mb4;\n" + "        - set names utf8;\n";
+    private static final String DATA_SOURCE_YAML_WITH_CONNECTION_INIT_SQLS = ""
+            + "ds_0: !!" + YamlDataSourceConfiguration.class.getName() + "\n"
+            + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
+            + "  properties:\n"
+            + "    driverClassName: com.mysql.jdbc.Driver\n"
+            + "    url: jdbc:mysql://localhost:3306/ds_0\n"
+            + "    username: root\n"
+            + "    password: root\n"
+            + "    connectionInitSqls:\n"
+            + "        - set names utf8mb4;\n"
+            + "        - set names utf8;\n"
+            + "ds_1: !!" + YamlDataSourceConfiguration.class.getName() + "\n"
+            + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
+            + "  properties:\n"
+            + "    driverClassName: com.mysql.jdbc.Driver\n"
+            + "    url: jdbc:mysql://localhost:3306/ds_1\n"
+            + "    username: root\n"
+            + "    password: root\n"
+            + "    connectionInitSqls:\n"
+            + "        - set names utf8mb4;\n"
+            + "        - set names utf8;\n";
     
     @Mock
     private ConfigCenterRepository configCenterRepository;

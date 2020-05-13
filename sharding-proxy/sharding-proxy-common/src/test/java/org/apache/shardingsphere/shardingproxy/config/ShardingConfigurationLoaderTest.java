@@ -21,6 +21,7 @@ import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguratio
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptorRuleConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
 import org.apache.shardingsphere.sharding.core.yaml.config.masterslave.YamlMasterSlaveDataSourceConfiguration;
+import org.apache.shardingsphere.sharding.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlProxyRuleConfiguration;
@@ -29,8 +30,10 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -61,8 +64,12 @@ public final class ShardingConfigurationLoaderTest {
         assertNull(actual.getDataSource());
         assertDataSourceParameter(actual.getDataSources().get("ds_0"), "jdbc:mysql://127.0.0.1:3306/ds_0");
         assertDataSourceParameter(actual.getDataSources().get("ds_1"), "jdbc:mysql://127.0.0.1:3306/ds_1");
-        assertShardingRuleConfiguration(actual.getShardingRule());
-        assertNull(actual.getEncryptRule());
+        Optional<YamlShardingRuleConfiguration> shardingRuleConfiguration = actual.getRules().stream().filter(
+            each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(configuration -> (YamlShardingRuleConfiguration) configuration);
+        assertTrue(shardingRuleConfiguration.isPresent());
+        assertShardingRuleConfiguration(shardingRuleConfiguration.get());
+        assertFalse(actual.getRules().stream().filter(
+            each -> each instanceof YamlEncryptRuleConfiguration).findFirst().map(configuration -> (YamlEncryptRuleConfiguration) configuration).isPresent());
     }
     
     private void assertShardingRuleConfiguration(final YamlShardingRuleConfiguration actual) {
@@ -82,9 +89,14 @@ public final class ShardingConfigurationLoaderTest {
         assertDataSourceParameter(actual.getDataSources().get("master_ds"), "jdbc:mysql://127.0.0.1:3306/master_ds");
         assertDataSourceParameter(actual.getDataSources().get("slave_ds_0"), "jdbc:mysql://127.0.0.1:3306/slave_ds_0");
         assertDataSourceParameter(actual.getDataSources().get("slave_ds_1"), "jdbc:mysql://127.0.0.1:3306/slave_ds_1");
-        assertNull(actual.getShardingRule());
-        assertNull(actual.getEncryptRule());
-        for (YamlMasterSlaveDataSourceConfiguration each : actual.getMasterSlaveRule().getDataSources().values()) {
+        assertFalse(actual.getRules().stream().filter(
+            each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(configuration -> (YamlShardingRuleConfiguration) configuration).isPresent());
+        assertFalse(actual.getRules().stream().filter(
+            each -> each instanceof YamlEncryptRuleConfiguration).findFirst().map(configuration -> (YamlEncryptRuleConfiguration) configuration).isPresent());
+        Optional<YamlMasterSlaveRuleConfiguration> masterSlaveRuleConfiguration = actual.getRules().stream().filter(
+            each -> each instanceof YamlMasterSlaveRuleConfiguration).findFirst().map(configuration -> (YamlMasterSlaveRuleConfiguration) configuration);
+        assertTrue(masterSlaveRuleConfiguration.isPresent());
+        for (YamlMasterSlaveDataSourceConfiguration each : masterSlaveRuleConfiguration.get().getDataSources().values()) {
             assertMasterSlaveRuleConfiguration(each);
         }
     }
@@ -103,8 +115,12 @@ public final class ShardingConfigurationLoaderTest {
         assertThat(actual.getDataSources().size(), is(1));
         assertNotNull(actual.getDataSource());
         assertDataSourceParameter(actual.getDataSources().get("dataSource"), "jdbc:mysql://127.0.0.1:3306/encrypt_ds");
-        assertNull(actual.getShardingRule());
-        assertEncryptRuleConfiguration(actual.getEncryptRule());
+        assertFalse(actual.getRules().stream().filter(
+            each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(configuration -> (YamlShardingRuleConfiguration) configuration).isPresent());
+        Optional<YamlEncryptRuleConfiguration> encryptRuleConfiguration = actual.getRules().stream().filter(
+            each -> each instanceof YamlEncryptRuleConfiguration).findFirst().map(configuration -> (YamlEncryptRuleConfiguration) configuration);
+        assertTrue(encryptRuleConfiguration.isPresent());
+        assertEncryptRuleConfiguration(encryptRuleConfiguration.get());
     }
     
     private void assertEncryptRuleConfiguration(final YamlEncryptRuleConfiguration actual) {

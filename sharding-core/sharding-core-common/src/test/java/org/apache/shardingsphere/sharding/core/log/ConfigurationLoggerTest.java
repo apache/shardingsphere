@@ -70,7 +70,8 @@ public final class ConfigurationLoggerTest {
     
     @Test
     public void assertLogShardingRuleConfiguration() {
-        String yaml = "shardingRule:\n"
+        String yaml = "rules:\n"
+                + "- !!org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlShardingRuleConfiguration\n"
                 + "  tables:\n"
                 + "    user:\n"
                 + "      actualDataNodes: ds_${0}.user_${0..1}\n"
@@ -91,7 +92,8 @@ public final class ConfigurationLoggerTest {
     
     @Test
     public void assertLogMasterSlaveRuleConfiguration() {
-        String yaml = "masterSlaveRule:\n"
+        String yaml = "rules:\n"
+                + "- !!org.apache.shardingsphere.sharding.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration\n"
                 + "  dataSources:\n"
                 + "    ms_ds:\n"
                 + "      masterDataSourceName: master_ds\n"
@@ -109,7 +111,8 @@ public final class ConfigurationLoggerTest {
     
     @Test
     public void assertLogEncryptRuleConfiguration() {
-        String yaml = "encryptRule:\n"
+        String yaml = "rules:\n"
+                + "- !!org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration\n"
                 + "  encryptors:\n"
                 + "    encryptor_aes:\n"
                 + "      props:\n"
@@ -138,7 +141,8 @@ public final class ConfigurationLoggerTest {
     
     @Test
     public void assertLogRuleConfigurationWithEncryptRuleConfiguration() {
-        String yaml = "encryptRule:\n"
+        String yaml = "rules:\n"
+                + "- !!org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration\n"
                 + "  encryptors:\n"
                 + "    encryptor_aes:\n"
                 + "      props:\n"
@@ -158,7 +162,8 @@ public final class ConfigurationLoggerTest {
     
     @Test
     public void assertLogRuleConfigurationWithShardingRuleConfiguration() {
-        String yaml = "shardingRule:\n"
+        String yaml = "rules:\n"
+                + "- !!org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlShardingRuleConfiguration\n"
                 + "  tables:\n"
                 + "    user:\n"
                 + "      actualDataNodes: ds_${0}.user_${0..1}\n"
@@ -171,7 +176,8 @@ public final class ConfigurationLoggerTest {
     
     @Test
     public void assertLogRuleConfigurationWithMasterSlaveRuleConfiguration() {
-        String yaml = "masterSlaveRule:\n"
+        String yaml = "rules:\n"
+                + "- !!org.apache.shardingsphere.sharding.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration\n"
                 + "  dataSources:\n"
                 + "    ms_ds:\n"
                 + "      masterDataSourceName: master_ds\n"

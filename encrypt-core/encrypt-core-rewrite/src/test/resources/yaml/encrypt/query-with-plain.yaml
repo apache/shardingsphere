@@ -22,7 +22,8 @@ dataSources:
     username: sa
     password: 
 
-encryptRule:
+rules:
+- !!org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration
   tables:
     t_account:
       columns:

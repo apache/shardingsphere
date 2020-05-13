@@ -27,7 +27,8 @@ dataSources:
     username: root
     password:
 
-shardingRule:
+rules:
+- !!org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlShardingRuleConfiguration
   tables:
     t_order: 
       actualDataNodes: ds_${0..1}.t_order_${0..1}
