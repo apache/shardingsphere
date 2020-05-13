@@ -30,7 +30,7 @@ fi
 STDOUT_FILE=${LOGS_DIR}/stdout.log
 EXT_LIB=${DEPLOY_DIR}/ext-lib
 
-CLASS_PATH=.:${DEPLOY_DIR}/lib/*:${DEPLOY_DIR}/lib/*:${EXT_LIB}/*
+CLASS_PATH=.:${DEPLOY_DIR}/lib/*:${EXT_LIB}/*
 
 JAVA_OPTS=" -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true "
 
