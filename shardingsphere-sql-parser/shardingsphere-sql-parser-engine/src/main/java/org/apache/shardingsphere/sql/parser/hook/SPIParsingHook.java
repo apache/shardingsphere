@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.hook;
 
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.sharding.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
 

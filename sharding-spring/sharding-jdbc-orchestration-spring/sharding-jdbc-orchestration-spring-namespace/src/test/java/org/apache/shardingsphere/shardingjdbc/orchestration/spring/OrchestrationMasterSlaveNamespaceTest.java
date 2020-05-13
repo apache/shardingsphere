@@ -19,13 +19,13 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.spring;
 
 import org.apache.shardingsphere.masterslave.core.rule.MasterSlaveDataSourceRule;
 import org.apache.shardingsphere.masterslave.core.rule.MasterSlaveRule;
-import org.apache.shardingsphere.core.strategy.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
-import org.apache.shardingsphere.core.strategy.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.sharding.core.strategy.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.sharding.core.strategy.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.util.EmbedTestingServer;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.util.FieldValueUtil;
-import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.junit.BeforeClass;

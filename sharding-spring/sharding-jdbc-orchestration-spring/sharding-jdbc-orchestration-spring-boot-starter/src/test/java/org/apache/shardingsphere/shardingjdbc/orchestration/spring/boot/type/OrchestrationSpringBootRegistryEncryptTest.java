@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.type;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry.TestCenterRepository;

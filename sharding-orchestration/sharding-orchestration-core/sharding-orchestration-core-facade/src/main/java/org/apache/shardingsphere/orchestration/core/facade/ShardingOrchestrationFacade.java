@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.core.rule.Authentication;
+import org.apache.shardingsphere.sharding.core.rule.Authentication;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
@@ -33,8 +33,8 @@ import org.apache.shardingsphere.orchestration.core.facade.properties.Orchestrat
 import org.apache.shardingsphere.orchestration.core.facade.properties.OrchestrationPropertyKey;
 import org.apache.shardingsphere.orchestration.core.metadatacenter.MetaDataCenter;
 import org.apache.shardingsphere.orchestration.core.registrycenter.RegistryCenter;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.TypedSPIRegistry;
+import org.apache.shardingsphere.sharding.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.sharding.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 

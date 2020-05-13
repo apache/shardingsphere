@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring;
 
-import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.util.EmbedTestingServer;

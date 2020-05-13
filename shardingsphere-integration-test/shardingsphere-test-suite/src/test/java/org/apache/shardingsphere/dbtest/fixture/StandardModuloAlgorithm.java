@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.dbtest.fixture;
 
-import org.apache.shardingsphere.api.sharding.standard.PreciseShardingValue;
-import org.apache.shardingsphere.api.sharding.standard.RangeShardingValue;
-import org.apache.shardingsphere.api.sharding.standard.StandardShardingAlgorithm;
+import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
+import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
+import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
 import java.math.BigInteger;
 import java.util.Collection;

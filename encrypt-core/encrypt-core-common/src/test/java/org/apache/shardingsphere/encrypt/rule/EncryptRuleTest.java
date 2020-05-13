@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.encrypt.rule;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.shardingsphere.encrypt.api.EncryptColumnRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptorRuleConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 

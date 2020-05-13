@@ -21,8 +21,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.metrics.configuration.yaml.YamlMetricsConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
+import org.apache.shardingsphere.sharding.core.yaml.config.common.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
-import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
 
 import java.util.Map;
 import java.util.Properties;

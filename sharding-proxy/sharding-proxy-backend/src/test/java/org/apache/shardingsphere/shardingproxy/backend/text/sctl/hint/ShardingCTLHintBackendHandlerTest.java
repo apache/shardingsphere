@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.shardingsphere.api.hint.HintManager;
+import org.apache.shardingsphere.sharding.api.hint.HintManager;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;

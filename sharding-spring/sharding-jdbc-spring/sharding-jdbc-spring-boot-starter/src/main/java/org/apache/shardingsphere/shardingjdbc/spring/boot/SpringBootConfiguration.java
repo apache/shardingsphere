@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shardingjdbc.spring.boot;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.strategy.algorithm.sharding.inline.InlineExpressionParser;
-import org.apache.shardingsphere.core.yaml.swapper.root.RuleRootConfigurationsYamlSwapper;
+import org.apache.shardingsphere.sharding.core.strategy.algorithm.sharding.inline.InlineExpressionParser;
+import org.apache.shardingsphere.sharding.core.yaml.swapper.root.RuleRootConfigurationsYamlSwapper;
 import org.apache.shardingsphere.shardingjdbc.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.common.SpringBootPropertiesConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.sharding.ShardingRuleCondition;

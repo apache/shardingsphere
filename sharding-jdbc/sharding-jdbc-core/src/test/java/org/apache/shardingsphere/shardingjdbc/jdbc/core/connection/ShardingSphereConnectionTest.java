@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.connection;
 
-import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
 import org.apache.shardingsphere.shardingjdbc.fixture.TestDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.fixture.BASEShardingTransactionManagerFixture;

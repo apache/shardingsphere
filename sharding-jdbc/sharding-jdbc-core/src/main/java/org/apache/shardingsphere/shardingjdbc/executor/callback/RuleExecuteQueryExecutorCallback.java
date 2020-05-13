@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.executor.callback;
 
-import org.apache.shardingsphere.spi.order.OrderedSPI;
+import org.apache.shardingsphere.sharding.spi.order.OrderedSPI;
 import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 import org.apache.shardingsphere.underlying.executor.sql.QueryResult;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutorCallback;

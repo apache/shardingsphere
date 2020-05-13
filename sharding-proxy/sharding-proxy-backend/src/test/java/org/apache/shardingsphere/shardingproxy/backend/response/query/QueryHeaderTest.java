@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.response.query;
 
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;

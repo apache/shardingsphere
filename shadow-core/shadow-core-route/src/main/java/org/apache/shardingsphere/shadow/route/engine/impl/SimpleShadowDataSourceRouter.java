@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.route.engine.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.rule.ShadowRule;
+import org.apache.shardingsphere.sharding.core.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.common.condition.ShadowCondition;
 import org.apache.shardingsphere.shadow.common.condition.ShadowConditionEngine;
 import org.apache.shardingsphere.shadow.route.engine.ShadowDataSourceRouter;

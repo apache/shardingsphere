@@ -20,8 +20,8 @@ package org.apache.shardingsphere.shardingjdbc.api.yaml;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.config.shadow.YamlRootShadowConfiguration;
-import org.apache.shardingsphere.core.yaml.swapper.ShadowRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.sharding.core.yaml.config.shadow.YamlRootShadowConfiguration;
+import org.apache.shardingsphere.sharding.core.yaml.swapper.ShadowRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.shardingjdbc.api.ShadowDataSourceFactory;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sharding.rewrite.parameter;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.rule.aware.ShardingRuleAware;
+import org.apache.shardingsphere.sharding.core.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.core.rule.aware.ShardingRuleAware;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.RouteContextAware;
 import org.apache.shardingsphere.sharding.rewrite.parameter.impl.ShardingGeneratedKeyInsertValueParameterRewriter;
 import org.apache.shardingsphere.sharding.rewrite.parameter.impl.ShardingPaginationParameterRewriter;

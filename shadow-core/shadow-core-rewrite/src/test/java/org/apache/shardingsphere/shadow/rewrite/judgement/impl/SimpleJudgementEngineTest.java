@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.rewrite.judgement.impl;
 
 import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
-import org.apache.shardingsphere.core.rule.ShadowRule;
+import org.apache.shardingsphere.sharding.core.rule.ShadowRule;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;

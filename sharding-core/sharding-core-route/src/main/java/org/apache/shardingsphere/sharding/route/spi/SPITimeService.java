@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.spi;
 
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.sharding.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
 import java.util.Date;

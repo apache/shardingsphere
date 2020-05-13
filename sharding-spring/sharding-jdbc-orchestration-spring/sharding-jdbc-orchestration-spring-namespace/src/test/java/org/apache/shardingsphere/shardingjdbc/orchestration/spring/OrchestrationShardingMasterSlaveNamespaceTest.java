@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring;
 
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.util.EmbedTestingServer;

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.generator.impl;
 
-import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
-import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
+import org.apache.shardingsphere.sharding.core.strategy.route.value.ListRouteValue;
+import org.apache.shardingsphere.sharding.core.strategy.route.value.RouteValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValue;

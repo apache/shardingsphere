@@ -19,7 +19,7 @@ package org.apache.shardingsphere.metrics.spi;
 
 import org.apache.shardingsphere.metrics.api.MetricsTrackerFactory;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
-import org.apache.shardingsphere.spi.type.TypedSPI;
+import org.apache.shardingsphere.sharding.spi.type.TypedSPI;
 
 /**
  * Metrics tracker manager.

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
+import org.apache.shardingsphere.sharding.core.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.shardin
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.yaml.config.YamlRootRuleConfigurations;
+import org.apache.shardingsphere.sharding.core.yaml.config.YamlRootRuleConfigurations;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**

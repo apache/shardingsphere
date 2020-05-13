@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring.boot.sharding;
 
-import org.apache.shardingsphere.core.yaml.config.YamlRootRuleConfigurations;
+import org.apache.shardingsphere.sharding.core.yaml.config.YamlRootRuleConfigurations;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**

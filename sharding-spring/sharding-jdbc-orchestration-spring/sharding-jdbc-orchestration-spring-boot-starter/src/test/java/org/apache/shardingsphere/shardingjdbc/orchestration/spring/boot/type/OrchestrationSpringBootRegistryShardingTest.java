@@ -19,9 +19,9 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.type;
 
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.rule.TableRule;
-import org.apache.shardingsphere.core.strategy.route.standard.StandardShardingStrategy;
+import org.apache.shardingsphere.sharding.core.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.core.rule.TableRule;
+import org.apache.shardingsphere.sharding.core.strategy.route.standard.StandardShardingStrategy;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
@@ -181,7 +181,6 @@ public class OrchestrationSpringBootRegistryShardingTest {
         assertThat(itemRule.getGenerateKeyColumn().get(), is("order_item_id"));
         assertThat(itemRule.getTableShardingStrategy(), instanceOf(StandardShardingStrategy.class));
         assertThat(itemRule.getTableShardingStrategy().getShardingColumns().iterator().next(), is("order_id"));
-        
     }
     
     @Test

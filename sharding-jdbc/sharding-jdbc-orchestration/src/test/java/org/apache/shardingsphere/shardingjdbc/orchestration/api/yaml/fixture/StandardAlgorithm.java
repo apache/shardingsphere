@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture;
 
-import org.apache.shardingsphere.api.sharding.standard.PreciseShardingValue;
-import org.apache.shardingsphere.api.sharding.standard.RangeShardingValue;
-import org.apache.shardingsphere.api.sharding.standard.StandardShardingAlgorithm;
+import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
+import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
+import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
 import java.util.Collection;
 import java.util.Properties;
