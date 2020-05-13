@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.core.yaml.config.common;
+package org.apache.shardingsphere.underlying.common.auth;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
+import lombok.RequiredArgsConstructor;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Authentication configuration for YAML.
- */
+ * Authentication.
+*/
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class YamlAuthenticationConfiguration implements YamlConfiguration {
+public final class Authentication {
     
-    private Map<String, YamlProxyUserConfiguration> users = new LinkedHashMap<>();
+    private Map<String, ProxyUser> users = new LinkedHashMap<>();
 }

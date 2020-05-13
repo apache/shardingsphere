@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.core.rule;
+package org.apache.shardingsphere.masterslave.core.rule;
 
 import org.apache.shardingsphere.masterslave.api.config.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceConfiguration;
-import org.apache.shardingsphere.masterslave.core.rule.MasterSlaveDataSourceRule;
 import org.junit.Test;
 
 import java.util.Arrays;

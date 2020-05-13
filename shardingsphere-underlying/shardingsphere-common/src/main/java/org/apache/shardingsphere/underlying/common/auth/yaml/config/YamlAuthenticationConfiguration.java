@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.core.rule;
+package org.apache.shardingsphere.underlying.common.auth.yaml.config;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
 
-import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * Proxy user.
+ * Authentication configuration for YAML.
  */
-@RequiredArgsConstructor
 @Getter
-public final class ProxyUser {
+@Setter
+public final class YamlAuthenticationConfiguration implements YamlConfiguration {
     
-    private final String password;
-    
-    private final Collection<String> authorizedSchemas;
+    private Map<String, YamlProxyUserConfiguration> users = new LinkedHashMap<>();
 }

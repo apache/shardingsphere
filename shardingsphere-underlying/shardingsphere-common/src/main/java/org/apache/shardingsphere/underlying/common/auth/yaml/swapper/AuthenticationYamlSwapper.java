@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.core.yaml.swapper;
+package org.apache.shardingsphere.underlying.common.auth.yaml.swapper;
 
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.sharding.core.rule.Authentication;
-import org.apache.shardingsphere.sharding.core.yaml.config.common.YamlAuthenticationConfiguration;
+import org.apache.shardingsphere.underlying.common.auth.Authentication;
+import org.apache.shardingsphere.underlying.common.auth.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
 
 /**
