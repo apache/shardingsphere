@@ -30,9 +30,9 @@ import java.util.Map;
 @Getter
 public final class ShadowRuleConfiguration implements RuleConfiguration {
     
-    private String column;
+    private final String column;
     
-    private Map<String, String> shadowMappings;
+    private final Map<String, String> shadowMappings;
     
     public ShadowRuleConfiguration(final String column, final Map<String, String> shadowMappings) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(column), "Column is required.");

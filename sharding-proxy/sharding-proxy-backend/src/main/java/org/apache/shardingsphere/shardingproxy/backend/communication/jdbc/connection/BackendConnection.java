@@ -61,7 +61,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     private volatile String schemaName;
     
-    private ShardingSphereSchema logicSchema;
+    private ShardingSphereSchema schema;
     
     private TransactionType transactionType;
     
@@ -112,7 +112,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     }
     
     /**
-     * Change logic schema of current channel.
+     * Change schema of current channel.
      *
      * @param schemaName schema name
      */
@@ -121,7 +121,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
             throw new ShardingSphereException("Failed to switch schema, please terminate current transaction.");
         }
         this.schemaName = schemaName;
-        this.logicSchema = ShardingSphereSchemas.getInstance().getSchema(schemaName);
+        this.schema = ShardingSphereSchemas.getInstance().getSchema(schemaName);
     }
     
     @SneakyThrows(InterruptedException.class)
@@ -171,7 +171,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     }
     
     private List<Connection> getConnectionsWithoutTransaction(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        Preconditions.checkNotNull(logicSchema, "current logic schema is null");
+        Preconditions.checkNotNull(schema, "current schema is null");
         List<Connection> result = getConnectionFromUnderlying(dataSourceName, connectionSize, connectionMode);
         synchronized (cachedConnections) {
             cachedConnections.putAll(dataSourceName, result);
@@ -180,7 +180,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     }
     
     private List<Connection> createNewConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        Preconditions.checkNotNull(logicSchema, "current logic schema is null");
+        Preconditions.checkNotNull(schema, "current schema is null");
         List<Connection> result = getConnectionFromUnderlying(dataSourceName, connectionSize, connectionMode);
         for (Connection each : result) {
             replayMethodsInvocation(each);
@@ -189,7 +189,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     }
     
     private List<Connection> getConnectionFromUnderlying(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        return logicSchema.getBackendDataSource().getConnections(dataSourceName, connectionSize, connectionMode, transactionType);
+        return schema.getBackendDataSource().getConnections(dataSourceName, connectionSize, connectionMode, transactionType);
     }
     
     @Override

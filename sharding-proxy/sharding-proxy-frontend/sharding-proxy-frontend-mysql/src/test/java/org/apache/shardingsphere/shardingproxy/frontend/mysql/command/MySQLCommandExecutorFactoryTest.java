@@ -49,7 +49,7 @@ public final class MySQLCommandExecutorFactoryTest {
     @Test
     public void assertNewInstance() {
         BackendConnection backendConnection = mock(BackendConnection.class);
-        when(backendConnection.getLogicSchema()).thenReturn(mock(ShardingSphereSchema.class));
+        when(backendConnection.getSchema()).thenReturn(mock(ShardingSphereSchema.class));
         assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_QUIT,
             mock(CommandPacket.class), backendConnection), instanceOf(MySQLComQuitExecutor.class));
         assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_INIT_DB,

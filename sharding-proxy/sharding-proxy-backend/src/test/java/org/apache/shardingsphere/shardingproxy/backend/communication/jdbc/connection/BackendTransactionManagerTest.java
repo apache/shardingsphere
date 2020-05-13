@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
 public final class BackendTransactionManagerTest {
     
     @Mock
-    private ShardingSphereSchema logicSchema;
+    private ShardingSphereSchema schema;
     
     @Mock
     private BackendConnection backendConnection;
@@ -63,8 +63,8 @@ public final class BackendTransactionManagerTest {
         when(shardingTransactionManagerEngine.getTransactionManager(TransactionType.XA)).thenReturn(shardingTransactionManager);
         JDBCBackendDataSource backendDataSource = mock(JDBCBackendDataSource.class);
         when(backendDataSource.getShardingTransactionManagerEngine()).thenReturn(shardingTransactionManagerEngine);
-        when(logicSchema.getBackendDataSource()).thenReturn(backendDataSource);
-        when(backendConnection.getLogicSchema()).thenReturn(logicSchema);
+        when(schema.getBackendDataSource()).thenReturn(backendDataSource);
+        when(backendConnection.getSchema()).thenReturn(schema);
         when(backendConnection.getStateHandler()).thenReturn(stateHandler);
     }
     

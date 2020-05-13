@@ -30,7 +30,7 @@ import static org.mockito.Mockito.mock;
 public final class MockShardingSphereSchemasUtil {
     
     /**
-     * Set logic schemas for global registry.
+     * Set schemas for global registry.
      * 
      * @param prefix prefix of schema
      * @param size size of schemas

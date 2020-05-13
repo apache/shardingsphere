@@ -64,7 +64,7 @@ public final class BackendConnectionTest {
     public void setUp() {
         MockShardingSphereSchemasUtil.setSchemas("schema", 2);
         backendConnection.setCurrentSchema("schema_0");
-        when(backendConnection.getLogicSchema().getBackendDataSource()).thenReturn(backendDataSource);
+        when(backendConnection.getSchema().getBackendDataSource()).thenReturn(backendDataSource);
         when(backendDataSource.getShardingTransactionManagerEngine()).thenReturn(mock(ShardingTransactionManagerEngine.class));
     }
     
@@ -226,7 +226,7 @@ public final class BackendConnectionTest {
     }
     
     @Test(expected = ShardingSphereException.class)
-    public void assertFailedSwitchLogicSchemaWhileBegin() {
+    public void assertFailedSwitchSchemaWhileBegin() {
         BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
         transactionManager.begin();
         backendConnection.setCurrentSchema("newSchema");

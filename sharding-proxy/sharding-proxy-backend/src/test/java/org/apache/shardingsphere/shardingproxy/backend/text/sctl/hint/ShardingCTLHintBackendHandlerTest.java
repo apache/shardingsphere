@@ -160,10 +160,10 @@ public final class ShardingCTLHintBackendHandlerTest {
     @Test
     public void assertShowTableStatus() throws SQLException {
         clearThreadLocal();
-        ShardingSphereSchema logicSchema = mock(ShardingSphereSchema.class);
-        when(logicSchema.getMetaData()).thenReturn(
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(schema.getMetaData()).thenReturn(
                 new ShardingSphereMetaData(mock(DataSourceMetas.class), new RuleSchemaMetaData(new SchemaMetaData(ImmutableMap.of("user", mock(TableMetaData.class))), Collections.emptyMap())));
-        when(backendConnection.getLogicSchema()).thenReturn(logicSchema);
+        when(backendConnection.getSchema()).thenReturn(schema);
         String sql = "sctl:hint show table status";
         ShardingCTLHintBackendHandler defaultShardingCTLHintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
         BackendResponse backendResponse = defaultShardingCTLHintBackendHandler.execute();

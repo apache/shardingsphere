@@ -55,7 +55,7 @@ public final class HintShowTableStatusExecutor extends AbstractHintQueryExecutor
     @Override
     protected MergedResult createMergedResult() {
         Map<String, HintShowTableStatusResult> results = new HashMap<>();
-        for (String each : backendConnection.getLogicSchema().getMetaData().getSchema().getConfiguredSchemaMetaData().getAllTableNames()) {
+        for (String each : backendConnection.getSchema().getMetaData().getSchema().getConfiguredSchemaMetaData().getAllTableNames()) {
             if (HintManager.isDatabaseShardingOnly()) {
                 fillShardingValues(results, each, HintManager.getDatabaseShardingValues(), Collections.emptyList());
             } else {
