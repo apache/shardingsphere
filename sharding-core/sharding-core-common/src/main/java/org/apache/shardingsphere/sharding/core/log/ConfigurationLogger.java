@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.core.log;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.sharding.core.rule.Authentication;
+import org.apache.shardingsphere.underlying.common.auth.Authentication;
 import org.apache.shardingsphere.sharding.core.yaml.representer.processor.ShardingTupleProcessorFactory;
 import org.apache.shardingsphere.sharding.core.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.sharding.core.yaml.swapper.root.RuleRootConfigurationsYamlSwapper;

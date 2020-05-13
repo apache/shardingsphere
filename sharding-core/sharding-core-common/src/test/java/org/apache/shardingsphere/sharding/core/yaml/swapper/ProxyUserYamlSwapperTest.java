@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.core.yaml.swapper;
 
-import org.apache.shardingsphere.sharding.core.rule.ProxyUser;
+import org.apache.shardingsphere.underlying.common.auth.ProxyUser;
 import org.apache.shardingsphere.sharding.core.yaml.config.common.YamlProxyUserConfiguration;
 import org.junit.Test;
 

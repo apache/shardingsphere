@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.core.rule;
+package org.apache.shardingsphere.underlying.common.auth;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

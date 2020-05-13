@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.core.yaml.swapper;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.sharding.core.rule.ProxyUser;
+import org.apache.shardingsphere.underlying.common.auth.ProxyUser;
 import org.apache.shardingsphere.sharding.core.yaml.config.common.YamlProxyUserConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
 

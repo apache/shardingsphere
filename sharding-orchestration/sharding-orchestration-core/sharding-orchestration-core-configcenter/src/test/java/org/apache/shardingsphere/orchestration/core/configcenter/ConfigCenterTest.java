@@ -25,7 +25,7 @@ import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.core.rule.Authentication;
+import org.apache.shardingsphere.underlying.common.auth.Authentication;
 import org.apache.shardingsphere.sharding.core.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.sharding.core.yaml.config.common.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.sharding.core.yaml.constructor.YamlRootRuleConfigurationsConstructor;

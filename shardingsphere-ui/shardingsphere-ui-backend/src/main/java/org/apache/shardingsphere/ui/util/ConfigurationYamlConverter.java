@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.orchestration.core.configuration.DataSourceConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration;
-import org.apache.shardingsphere.sharding.core.rule.Authentication;
+import org.apache.shardingsphere.underlying.common.auth.Authentication;
 import org.apache.shardingsphere.sharding.core.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.sharding.core.yaml.config.common.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.sharding.core.yaml.constructor.YamlRootRuleConfigurationsConstructor;
