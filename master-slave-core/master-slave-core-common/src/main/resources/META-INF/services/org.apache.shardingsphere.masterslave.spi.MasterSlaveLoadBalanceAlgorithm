@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sharding.core.strategy.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm
-org.apache.shardingsphere.sharding.core.strategy.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm
+org.apache.shardingsphere.masterslave.core.strategy.RoundRobinMasterSlaveLoadBalanceAlgorithm
+org.apache.shardingsphere.masterslave.core.strategy.RandomMasterSlaveLoadBalanceAlgorithm

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.api.hint;
+package org.apache.shardingsphere.underlying.common.hint;
 
 import org.junit.Test;
 

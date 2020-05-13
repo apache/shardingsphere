@@ -21,8 +21,8 @@ import org.apache.shardingsphere.masterslave.api.config.LoadBalanceStrategyConfi
 import org.apache.shardingsphere.masterslave.core.rule.MasterSlaveDataSourceRule;
 import org.apache.shardingsphere.masterslave.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
-import org.apache.shardingsphere.sharding.core.strategy.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
-import org.apache.shardingsphere.sharding.core.strategy.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.masterslave.core.strategy.RandomMasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.masterslave.core.strategy.RoundRobinMasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;

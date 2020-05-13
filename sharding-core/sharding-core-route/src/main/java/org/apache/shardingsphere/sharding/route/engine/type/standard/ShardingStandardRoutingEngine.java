@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sharding.api.hint.HintManager;
+import org.apache.shardingsphere.underlying.common.hint.HintManager;
 import org.apache.shardingsphere.sharding.core.rule.BindingTableRule;
 import org.apache.shardingsphere.sharding.core.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.core.rule.TableRule;
