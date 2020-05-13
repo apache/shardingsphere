@@ -40,11 +40,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.internal.util.reflection.FieldSetter;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -52,7 +54,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.doThrow;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class EtcdCenterRepositoryTest {
@@ -157,23 +163,11 @@ public final class EtcdCenterRepositoryTest {
     }
     
     @Test
-    @SneakyThrows(ReflectiveOperationException.class)
     public void assertWatchUpdate() {
-        WatchResponse watchResponse = new WatchResponse(mock(io.etcd.jetcd.api.WatchResponse.class), ByteSequence.from("key".getBytes()));
-        List<WatchEvent> events = new ArrayList<>();
-        io.etcd.jetcd.api.KeyValue keyValue1 = io.etcd.jetcd.api.KeyValue.newBuilder()
-                .setKey(ByteString.copyFromUtf8("/key"))
-                .setValue(ByteString.copyFromUtf8("value1")).build();
-        KeyValue keyValue = new KeyValue(keyValue1, ByteSequence.EMPTY);
-        events.add(new WatchEvent(keyValue, mock(KeyValue.class), WatchEvent.EventType.PUT));
-        FieldSetter.setField(watchResponse, watchResponse.getClass().getDeclaredField("events"), events);
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
-                Watch.Listener listener = (Watch.Listener) invocationOnMock.getArguments()[1];
-                listener.onNext(watchResponse);
-                return mock(Watch.Watcher.class);
-            }
+        doAnswer(invocationOnMock -> {
+            Watch.Listener listener = (Watch.Listener) invocationOnMock.getArguments()[1];
+            listener.onNext(buildWatchResponse(WatchEvent.EventType.PUT));
+            return mock(Watch.Watcher.class);
         }).when(watch).watch(any(ByteSequence.class), any(Watch.Listener.class));
         centerRepository.watch("key1", dataChangedEvent -> {
         });
@@ -181,23 +175,11 @@ public final class EtcdCenterRepositoryTest {
     }
     
     @Test
-    @SneakyThrows(ReflectiveOperationException.class)
     public void assertWatchDelete() {
-        WatchResponse watchResponse = new WatchResponse(mock(io.etcd.jetcd.api.WatchResponse.class), ByteSequence.from("key".getBytes()));
-        List<WatchEvent> events = new ArrayList<>();
-        io.etcd.jetcd.api.KeyValue keyValue1 = io.etcd.jetcd.api.KeyValue.newBuilder()
-                .setKey(ByteString.copyFromUtf8("/key"))
-                .setValue(ByteString.copyFromUtf8("value1")).build();
-        KeyValue keyValue = new KeyValue(keyValue1, ByteSequence.EMPTY);
-        events.add(new WatchEvent(keyValue, mock(KeyValue.class), WatchEvent.EventType.DELETE));
-        FieldSetter.setField(watchResponse, watchResponse.getClass().getDeclaredField("events"), events);
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
-                Watch.Listener listener = (Watch.Listener) invocationOnMock.getArguments()[1];
-                listener.onNext(watchResponse);
-                return mock(Watch.Watcher.class);
-            }
+        doAnswer(invocationOnMock -> {
+            Watch.Listener listener = (Watch.Listener) invocationOnMock.getArguments()[1];
+            listener.onNext(buildWatchResponse(WatchEvent.EventType.DELETE));
+            return mock(Watch.Watcher.class);
         }).when(watch).watch(any(ByteSequence.class), any(Watch.Listener.class));
         centerRepository.watch("key1", dataChangedEvent -> {
         });
@@ -205,23 +187,11 @@ public final class EtcdCenterRepositoryTest {
     }
     
     @Test
-    @SneakyThrows(ReflectiveOperationException.class)
     public void assertWatchIgnored() {
-        WatchResponse watchResponse = new WatchResponse(mock(io.etcd.jetcd.api.WatchResponse.class), ByteSequence.from("key".getBytes()));
-        List<WatchEvent> events = new ArrayList<>();
-        io.etcd.jetcd.api.KeyValue keyValue1 = io.etcd.jetcd.api.KeyValue.newBuilder()
-                .setKey(ByteString.copyFromUtf8("/key"))
-                .setValue(ByteString.copyFromUtf8("value1")).build();
-        KeyValue keyValue = new KeyValue(keyValue1, ByteSequence.EMPTY);
-        events.add(new WatchEvent(keyValue, mock(KeyValue.class), WatchEvent.EventType.UNRECOGNIZED));
-        FieldSetter.setField(watchResponse, watchResponse.getClass().getDeclaredField("events"), events);
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
-                Watch.Listener listener = (Watch.Listener) invocationOnMock.getArguments()[1];
-                listener.onNext(watchResponse);
-                return mock(Watch.Watcher.class);
-            }
+        doAnswer(invocationOnMock -> {
+            Watch.Listener listener = (Watch.Listener) invocationOnMock.getArguments()[1];
+            listener.onNext(buildWatchResponse(WatchEvent.EventType.UNRECOGNIZED));
+            return mock(Watch.Watcher.class);
         }).when(watch).watch(any(ByteSequence.class), any(Watch.Listener.class));
         centerRepository.watch("key1", dataChangedEvent -> {
         });
@@ -310,5 +280,18 @@ public final class EtcdCenterRepositoryTest {
             // CHECKSTYLE:ON
             Assert.assertTrue(ex instanceof ExecutionException);
         }
+    }
+    
+    @SneakyThrows({NoSuchFieldException.class, SecurityException.class})
+    private WatchResponse buildWatchResponse(final WatchEvent.EventType eventType) {
+        WatchResponse watchResponse = new WatchResponse(mock(io.etcd.jetcd.api.WatchResponse.class), ByteSequence.EMPTY);
+        List<WatchEvent> events = new ArrayList<>();
+        io.etcd.jetcd.api.KeyValue keyValue1 = io.etcd.jetcd.api.KeyValue.newBuilder()
+                .setKey(ByteString.copyFromUtf8("key1"))
+                .setValue(ByteString.copyFromUtf8("value1")).build();
+        KeyValue keyValue = new KeyValue(keyValue1, ByteSequence.EMPTY);
+        events.add(new WatchEvent(keyValue, mock(KeyValue.class), eventType));
+        FieldSetter.setField(watchResponse, watchResponse.getClass().getDeclaredField("events"), events);
+        return watchResponse;
     }
 }
