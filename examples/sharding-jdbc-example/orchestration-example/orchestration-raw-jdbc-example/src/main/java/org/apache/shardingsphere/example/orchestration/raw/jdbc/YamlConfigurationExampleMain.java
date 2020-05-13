@@ -22,7 +22,7 @@ import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
 import org.apache.shardingsphere.example.type.RegistryCenterType;
 import org.apache.shardingsphere.example.type.ShardingType;
-import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationShardingSphereDataSourceFactory;
 
 import javax.sql.DataSource;
@@ -82,8 +82,8 @@ public class YamlConfigurationExampleMain {
     }
     
     private static void closeDataSource(final DataSource dataSource) throws Exception {
-        if (dataSource instanceof AbstractDataSourceAdapter) {
-            ((AbstractDataSourceAdapter) dataSource).close();
+        if (dataSource instanceof ShardingSphereDataSource) {
+            ((ShardingSphereDataSource) dataSource).close();
         }
     }
     
