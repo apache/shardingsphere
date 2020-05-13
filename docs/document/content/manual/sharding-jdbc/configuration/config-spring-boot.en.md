@@ -365,7 +365,7 @@ spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.en
 ```properties
 #Omit data source, data sharding, read-write split and data masking configurations
 
-spring.shardingsphere.orchestration.spring_boot_ds_sharding.orchestration-type= The type of orchestration center: config_center or registry_center
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.orchestration-type= #The type of orchestration center: config_center or registry_center
 spring.shardingsphere.orchestration.spring_boot_ds_sharding.instance-type= #Center type. Example:zookeeper#Registry center type. Example:zookeeper
 spring.shardingsphere.orchestration.spring_boot_ds_sharding.server-lists= #The list of servers that connect to registry center, including IP and port number; use commas to separate
 spring.shardingsphere.orchestration.spring_boot_ds_sharding.namespace= #Center namespace
