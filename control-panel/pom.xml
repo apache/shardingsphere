@@ -25,14 +25,11 @@
         <artifactId>shardingsphere</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shadow-core</artifactId>
+    <artifactId>control-panel</artifactId>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
     
     <modules>
-        <module>shadow-core-common</module>
-        <module>shadow-core-route</module>
-        <module>shadow-core-api</module>
-        <module>shadow-core-rewrite</module>
+        <module>control-panel-core</module>
     </modules>
 </project>
