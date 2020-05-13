@@ -43,7 +43,7 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
     
     public PostgreSQLComParseExecutor(final PostgreSQLComParsePacket packet, final BackendConnection backendConnection) {
         this.packet = packet;
-        logicSchema = backendConnection.getLogicSchema();
+        logicSchema = backendConnection.getSchema();
         binaryStatementRegistry = BinaryStatementRegistry.getInstance().get(backendConnection.getConnectionId());
     }
     

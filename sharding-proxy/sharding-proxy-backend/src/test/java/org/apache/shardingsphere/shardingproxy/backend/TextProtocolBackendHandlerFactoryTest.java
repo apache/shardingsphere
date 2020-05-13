@@ -63,7 +63,7 @@ public final class TextProtocolBackendHandlerFactoryTest {
         JDBCBackendDataSource backendDataSource = mock(JDBCBackendDataSource.class);
         when(backendDataSource.getShardingTransactionManagerEngine()).thenReturn(mock(ShardingTransactionManagerEngine.class));
         when(logicSchema.getBackendDataSource()).thenReturn(backendDataSource);
-        when(backendConnection.getLogicSchema()).thenReturn(logicSchema);
+        when(backendConnection.getSchema()).thenReturn(logicSchema);
     }
     
     @Test

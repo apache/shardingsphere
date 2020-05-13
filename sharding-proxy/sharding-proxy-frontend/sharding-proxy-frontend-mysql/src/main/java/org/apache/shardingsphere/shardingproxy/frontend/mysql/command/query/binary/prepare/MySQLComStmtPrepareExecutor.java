@@ -48,7 +48,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     
     public MySQLComStmtPrepareExecutor(final MySQLComStmtPreparePacket packet, final BackendConnection backendConnection) {
         this.packet = packet;
-        logicSchema = backendConnection.getLogicSchema();
+        logicSchema = backendConnection.getSchema();
     }
     
     private int getColumnsCount(final SQLStatement sqlStatement) {

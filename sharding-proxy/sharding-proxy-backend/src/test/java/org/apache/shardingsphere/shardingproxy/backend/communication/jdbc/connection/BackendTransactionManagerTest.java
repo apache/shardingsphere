@@ -64,7 +64,7 @@ public final class BackendTransactionManagerTest {
         JDBCBackendDataSource backendDataSource = mock(JDBCBackendDataSource.class);
         when(backendDataSource.getShardingTransactionManagerEngine()).thenReturn(shardingTransactionManagerEngine);
         when(logicSchema.getBackendDataSource()).thenReturn(backendDataSource);
-        when(backendConnection.getLogicSchema()).thenReturn(logicSchema);
+        when(backendConnection.getSchema()).thenReturn(logicSchema);
         when(backendConnection.getStateHandler()).thenReturn(stateHandler);
     }
     
