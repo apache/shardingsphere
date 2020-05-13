@@ -24,11 +24,11 @@ import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import java.util.Collection;
 
 /**
- * Sharding rule changed event.
+ * Rule configurations changed event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShardingRuleChangedEvent implements ShardingOrchestrationEvent {
+public final class RuleConfigurationsChangedEvent implements ShardingOrchestrationEvent {
     
     private final String shardingSchemaName;
     

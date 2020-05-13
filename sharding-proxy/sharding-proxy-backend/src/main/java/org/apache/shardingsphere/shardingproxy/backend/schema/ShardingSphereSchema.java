@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.backend.schema;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.ShardingRuleChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.orchestration.core.metadatacenter.event.MetaDataChangedEvent;
@@ -120,7 +120,7 @@ public final class ShardingSphereSchema {
      * 
      * @param configurations rule configurations
      */
-    public final void setConfigurations(final Collection<RuleConfiguration> configurations) {
+    public void setConfigurations(final Collection<RuleConfiguration> configurations) {
         this.configurations = configurations;
         rules = ShardingSphereRulesBuilder.build(configurations, backendDataSource.getDataSourceParameters().keySet());
     }
@@ -162,15 +162,15 @@ public final class ShardingSphereSchema {
     }
     
     /**
-     * Renew sharding rule.
+     * Renew rule configurations.
      *
-     * @param shardingRuleChangedEvent sharding rule changed event.
+     * @param ruleConfigurationsChangedEvent rule configurations changed event.
      */
     @Subscribe
-    public synchronized void renew(final ShardingRuleChangedEvent shardingRuleChangedEvent) {
-        if (getName().equals(shardingRuleChangedEvent.getShardingSchemaName())) {
-            ConfigurationLogger.log(shardingRuleChangedEvent.getRuleConfigurations());
-            setConfigurations(shardingRuleChangedEvent.getRuleConfigurations());
+    public synchronized void renew(final RuleConfigurationsChangedEvent ruleConfigurationsChangedEvent) {
+        if (getName().equals(ruleConfigurationsChangedEvent.getShardingSchemaName())) {
+            ConfigurationLogger.log(ruleConfigurationsChangedEvent.getRuleConfigurations());
+            setConfigurations(ruleConfigurationsChangedEvent.getRuleConfigurations());
         }
     }
     
