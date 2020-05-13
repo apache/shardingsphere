@@ -44,8 +44,7 @@ Using orchestration requires designating a config center and registry center, in
 
     // Get data source
     OrchestrationShardingDataSourceFactory.createDataSource(
-                    createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
-                    new OrchestrationConfiguration(instanceConfigurationMap));
+                    createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), new OrchestrationConfiguration(instanceConfigurationMap));
 ```
 
 ### Rule Configuration Based on Yaml

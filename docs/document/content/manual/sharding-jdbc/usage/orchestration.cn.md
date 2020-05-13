@@ -45,8 +45,7 @@ weight = 4
 
     // 获取数据源对象
     OrchestrationShardingDataSourceFactory.createDataSource(
-                        createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), 
-                        new OrchestrationConfiguration(instanceConfigurationMap));
+                        createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), new OrchestrationConfiguration(instanceConfigurationMap));
 ```
 
 ### 基于Yaml的规则配置
