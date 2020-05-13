@@ -16,9 +16,9 @@ weight = 3
 Seata管理的分布式事务的典型生命周期：
 
 1. TM要求TC开始一个全新的全局事务。 TC生成一个代表该全局事务的XID。
-2. XID 通过微服务贯穿整个调用链。
+2. XID 贯穿于微服务的整个调用链。
 3. 作为该XID对应到的TC下的全局事务的一部分，RM注册了本地事务。
 4. TM要求TC提交或回退XID对应的全局事务。
-5. TC驱动XID对应的全局事务下的所有分支事务完成提交或回滚。
+5. TC驱动XID对应的全局事务下的所有分支事务完成提交或回退。
 
 ![Seata AT事务模型](https://shardingsphere.apache.org/document/current/img/transaction/seata-at-transaction.png)
