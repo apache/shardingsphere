@@ -25,25 +25,14 @@
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
-    <artifactId>shadow-core-common</artifactId>
     <name>${project.artifactId}</name>
 
-    <dependencies>
-<!--        <dependency>-->
-<!--            <groupId>org.apache.shardingsphere</groupId>-->
-<!--            <artifactId>sharding-core-common</artifactId>-->
-<!--            <version>${project.version}</version>-->
-<!--        </dependency>-->
+    <artifactId>shadow-core-api</artifactId>
 
-<!--        <dependency>-->
-<!--            <groupId>org.apache.shardingsphere</groupId>-->
-<!--            <artifactId>shardingsphere-route</artifactId>-->
-<!--            <version>${project.version}</version>-->
-<!--        </dependency>-->
+    <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shadow-core-api</artifactId>
+            <artifactId>shardingsphere-common</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

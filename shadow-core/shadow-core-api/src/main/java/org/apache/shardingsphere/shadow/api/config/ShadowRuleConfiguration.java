@@ -15,30 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.core.rule;
+package org.apache.shardingsphere.shadow.api.config;
 
-import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRuleBuilder;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import lombok.Getter;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 
-import java.util.Collection;
+import java.util.Map;
 
 /**
- * Shadow rule builder.
+ * Shadow rule configuration.
  */
-public final class ShadowRuleBuilder implements ShardingSphereRuleBuilder<ShadowRule, ShadowRuleConfiguration> {
+@Getter
+public final class ShadowRuleConfiguration implements RuleConfiguration {
     
-    @Override
-    public ShadowRule build(final ShadowRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
-        return new ShadowRule(ruleConfiguration);
-    }
+    private String column;
     
-    @Override
-    public int getOrder() {
-        return 20;
-    }
+    private Map<String, String> shadowMappings;
     
-    @Override
-    public Class<ShadowRuleConfiguration> getTypeClass() {
-        return ShadowRuleConfiguration.class;
+    public ShadowRuleConfiguration(final String column, final Map<String, String> shadowMappings) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(column), "Column is required.");
+        Preconditions.checkArgument(!shadowMappings.isEmpty(), "ShadowMappings is required.");
+        this.column = column;
+        this.shadowMappings = shadowMappings;
     }
 }
