@@ -25,7 +25,7 @@ import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorRespo
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintManagerHolder;
@@ -160,10 +160,10 @@ public final class ShardingCTLHintBackendHandlerTest {
     @Test
     public void assertShowTableStatus() throws SQLException {
         clearThreadLocal();
-        LogicSchema logicSchema = mock(LogicSchema.class);
-        when(logicSchema.getMetaData()).thenReturn(
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(schema.getMetaData()).thenReturn(
                 new ShardingSphereMetaData(mock(DataSourceMetas.class), new RuleSchemaMetaData(new SchemaMetaData(ImmutableMap.of("user", mock(TableMetaData.class))), Collections.emptyMap())));
-        when(backendConnection.getLogicSchema()).thenReturn(logicSchema);
+        when(backendConnection.getSchema()).thenReturn(schema);
         String sql = "sctl:hint show table status";
         ShardingCTLHintBackendHandler defaultShardingCTLHintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
         BackendResponse backendResponse = defaultShardingCTLHintBackendHandler.execute();

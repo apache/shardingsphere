@@ -110,7 +110,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     }
     
     private SQLExecutorCallback<ExecuteResponse> getSQLExecutorCallback(final ProxySQLExecutorCallback callback) {
-        Map<ShardingSphereRule, RuleProxySQLExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(backendConnection.getLogicSchema().getRules(), RuleProxySQLExecutorCallback.class);
+        Map<ShardingSphereRule, RuleProxySQLExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(backendConnection.getSchema().getRules(), RuleProxySQLExecutorCallback.class);
         return callbackMap.isEmpty() ? callback : callbackMap.values().iterator().next();
     }
     

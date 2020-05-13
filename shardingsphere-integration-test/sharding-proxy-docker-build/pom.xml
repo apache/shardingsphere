@@ -63,7 +63,7 @@
     
     <profiles>
         <profile>
-            <id>docker</id>
+            <id>test</id>
             <build>
                 <finalName>sharding-proxy-${project.version}</finalName>
                 <plugins>

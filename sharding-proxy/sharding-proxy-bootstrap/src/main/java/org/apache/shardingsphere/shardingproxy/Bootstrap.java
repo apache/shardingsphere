@@ -35,7 +35,7 @@ import org.apache.shardingsphere.sharding.core.yaml.config.common.YamlAuthentica
 import org.apache.shardingsphere.sharding.core.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.sharding.core.yaml.swapper.ShadowRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.core.yaml.swapper.root.RuleRootConfigurationsYamlSwapper;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchemas;
 import org.apache.shardingsphere.shardingproxy.config.ShardingConfiguration;
 import org.apache.shardingsphere.shardingproxy.config.ShardingConfigurationLoader;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
@@ -140,7 +140,7 @@ public final class Bootstrap {
 
     private static void startProxy(final Collection<String> shardingSchemaNames, final int port, final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources,
                                    final Map<String, Collection<RuleConfiguration>> schemaRules) throws SQLException {
-        LogicSchemas.getInstance().init(shardingSchemaNames, schemaDataSources, schemaRules);
+        ShardingSphereSchemas.getInstance().init(shardingSchemaNames, schemaDataSources, schemaRules);
         initOpenTracing();
         ShardingProxy.getInstance().start(port);
     }

@@ -38,7 +38,6 @@
             <directory>src/main/resources</directory>
             <includes>
                 <include>logback.xml</include>
-                <include>jta.properties</include>
             </includes>
             <outputDirectory>conf</outputDirectory>
             <fileMode>0644</fileMode>

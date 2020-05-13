@@ -20,9 +20,13 @@ package org.apache.shardingsphere.shardingproxy.backend.schema;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.orchestration.core.metadatacenter.event.MetaDataChangedEvent;
+import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
+import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationSchema;
+import org.apache.shardingsphere.sharding.core.log.ConfigurationLogger;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.shardingproxy.backend.executor.BackendExecutorContext;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
@@ -30,6 +34,7 @@ import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.shardingproxy.util.DataSourceConverter;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
@@ -37,23 +42,28 @@ import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategy;
+import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRulesBuilder;
+import org.apache.shardingsphere.underlying.common.rule.StatusContainedRule;
+import org.apache.shardingsphere.underlying.common.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.underlying.executor.kernel.ExecutorKernel;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Logic schema.
+ * ShardingSphere schema.
  */
 @Getter
-public abstract class LogicSchema {
+public final class ShardingSphereSchema {
     
     private final String name;
     
@@ -67,11 +77,11 @@ public abstract class LogicSchema {
     
     private ShardingSphereMetaData metaData;
     
-    public LogicSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final Collection<RuleConfiguration> configurations) throws SQLException {
+    public ShardingSphereSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final Collection<RuleConfiguration> configurations) throws SQLException {
         this.name = name;
         this.configurations = configurations;
         this.rules = ShardingSphereRulesBuilder.build(configurations, dataSources.keySet());
-        sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(LogicSchemas.getInstance().getDatabaseType()));
+        sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(ShardingSphereSchemas.getInstance().getDatabaseType()));
         backendDataSource = new JDBCBackendDataSource(dataSources);
         metaData = loadOrCreateMetaData(name, rules);
         ShardingOrchestrationEventBus.getInstance().register(this);
@@ -79,7 +89,7 @@ public abstract class LogicSchema {
     
     private ShardingSphereMetaData loadOrCreateMetaData(final String name, final Collection<ShardingSphereRule> rules) throws SQLException {
         boolean isOverwrite = null != ShardingOrchestrationFacade.getInstance() && ShardingOrchestrationFacade.getInstance().isOverwrite();
-        DatabaseType databaseType = LogicSchemas.getInstance().getDatabaseType();
+        DatabaseType databaseType = ShardingSphereSchemas.getInstance().getDatabaseType();
         DataSourceMetas dataSourceMetas = new DataSourceMetas(databaseType, getDatabaseAccessConfigurationMap());
         RuleSchemaMetaData ruleSchemaMetaData;
         if (null == ShardingOrchestrationFacade.getInstance()) {
@@ -110,7 +120,7 @@ public abstract class LogicSchema {
      * 
      * @param configurations rule configurations
      */
-    public final void setConfigurations(final Collection<RuleConfiguration> configurations) {
+    public void setConfigurations(final Collection<RuleConfiguration> configurations) {
         this.configurations = configurations;
         rules = ShardingSphereRulesBuilder.build(configurations, backendDataSource.getDataSourceParameters().keySet());
     }
@@ -130,7 +140,7 @@ public abstract class LogicSchema {
      * @param event meta data changed event.
      */
     @Subscribe
-    public final synchronized void renew(final MetaDataChangedEvent event) {
+    public synchronized void renew(final MetaDataChangedEvent event) {
         for (String each : event.getSchemaNames()) {
             if (name.equals(each)) {
                 metaData = new ShardingSphereMetaData(metaData.getDataSources(), event.getRuleSchemaMetaData());
@@ -145,9 +155,39 @@ public abstract class LogicSchema {
      * @throws Exception exception
      */
     @Subscribe
-    public final synchronized void renew(final DataSourceChangedEvent dataSourceChangedEvent) throws Exception {
+    public synchronized void renew(final DataSourceChangedEvent dataSourceChangedEvent) throws Exception {
         if (name.equals(dataSourceChangedEvent.getShardingSchemaName())) {
             backendDataSource.renew(DataSourceConverter.getDataSourceParameterMap(dataSourceChangedEvent.getDataSourceConfigurations()));
+        }
+    }
+    
+    /**
+     * Renew rule configurations.
+     *
+     * @param ruleConfigurationsChangedEvent rule configurations changed event.
+     */
+    @Subscribe
+    public synchronized void renew(final RuleConfigurationsChangedEvent ruleConfigurationsChangedEvent) {
+        if (getName().equals(ruleConfigurationsChangedEvent.getShardingSchemaName())) {
+            ConfigurationLogger.log(ruleConfigurationsChangedEvent.getRuleConfigurations());
+            setConfigurations(ruleConfigurationsChangedEvent.getRuleConfigurations());
+        }
+    }
+    
+    /**
+     * Renew disabled data source names.
+     *
+     * @param disabledStateChangedEvent disabled state changed event
+     */
+    @Subscribe
+    public synchronized void renew(final DisabledStateChangedEvent disabledStateChangedEvent) {
+        OrchestrationSchema orchestrationSchema = disabledStateChangedEvent.getOrchestrationSchema();
+        if (getName().equals(orchestrationSchema.getSchemaName())) {
+            for (ShardingSphereRule each : getRules()) {
+                if (each instanceof StatusContainedRule) {
+                    ((StatusContainedRule) each).updateRuleStatus(new DataSourceNameDisabledEvent(orchestrationSchema.getDataSourceName(), disabledStateChangedEvent.isDisabled()));
+                }
+            }
         }
     }
     
@@ -157,6 +197,23 @@ public abstract class LogicSchema {
      * @param sqlStatementContext SQL statement context
      * @throws SQLException SQL exception
      */
+    @SuppressWarnings("unchecked")
     public void refreshTableMetaData(final SQLStatementContext sqlStatementContext) throws SQLException {
+        if (null == sqlStatementContext) {
+            return;
+        }
+        Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
+        if (refreshStrategy.isPresent()) {
+            refreshStrategy.get().refreshMetaData(
+                    getMetaData(), ShardingSphereSchemas.getInstance().getDatabaseType(), getBackendDataSource().getDataSources(), sqlStatementContext, this::loadTableMetaData);
+            if (null != ShardingOrchestrationFacade.getInstance()) {
+                ShardingOrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(getName(), getMetaData().getSchema());
+            }
+        }
+    }
+    
+    private Optional<TableMetaData> loadTableMetaData(final String tableName) throws SQLException {
+        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(getRules());
+        return loader.load(ShardingSphereSchemas.getInstance().getDatabaseType(), getBackendDataSource().getDataSources(), tableName, ShardingProxyContext.getInstance().getProperties());
     }
 }

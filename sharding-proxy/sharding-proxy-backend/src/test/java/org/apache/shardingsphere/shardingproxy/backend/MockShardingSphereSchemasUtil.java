@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shardingproxy.backend;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchemas;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -27,24 +27,25 @@ import java.util.Map;
 
 import static org.mockito.Mockito.mock;
 
-public final class MockLogicSchemasUtil {
+public final class MockShardingSphereSchemasUtil {
     
     /**
-     * set logic schemas for global registry.
+     * Set schemas for global registry.
+     * 
      * @param prefix prefix of schema
      * @param size size of schemas
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public static void setLogicSchemas(final String prefix, final int size) {
-        Field field = LogicSchemas.getInstance().getClass().getDeclaredField("logicSchemas");
+    public static void setSchemas(final String prefix, final int size) {
+        Field field = ShardingSphereSchemas.getInstance().getClass().getDeclaredField("schemas");
         field.setAccessible(true);
-        field.set(LogicSchemas.getInstance(), mockLogicSchemas(prefix, size));
+        field.set(ShardingSphereSchemas.getInstance(), mockSchemas(prefix, size));
     }
     
-    private static Map<String, LogicSchema> mockLogicSchemas(final String prefix, final int size) {
-        Map<String, LogicSchema> result = new HashMap<>(size);
+    private static Map<String, ShardingSphereSchema> mockSchemas(final String prefix, final int size) {
+        Map<String, ShardingSphereSchema> result = new HashMap<>(size);
         for (int i = 0; i < size; i++) {
-            result.put(prefix + "_" + i, mock(LogicSchema.class));
+            result.put(prefix + "_" + i, mock(ShardingSphereSchema.class));
         }
         return result;
     }
