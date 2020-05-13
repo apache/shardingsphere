@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.schema.impl;
+package org.apache.shardingsphere.orchestration.core.common.event;
 
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
-import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.Map;
+import java.util.Collection;
 
 /**
- * Transparent schema.
+ * Rule configurations changed event.
  */
-public final class TransparentSchema extends LogicSchema {
+@RequiredArgsConstructor
+@Getter
+public final class RuleConfigurationsChangedEvent implements ShardingOrchestrationEvent {
     
-    public TransparentSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources) throws SQLException {
-        super(name, dataSources, Collections.emptyList());
-    }
+    private final String shardingSchemaName;
+    
+    private final Collection<RuleConfiguration> ruleConfigurations;
 }

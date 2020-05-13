@@ -26,7 +26,7 @@ import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 
@@ -45,7 +45,7 @@ public final class UseDatabaseBackendHandler implements TextProtocolBackendHandl
     @Override
     public BackendResponse execute() {
         String schema = SQLUtil.getExactlyValue(useStatement.getSchema());
-        if (LogicSchemas.getInstance().schemaExists(schema) && isAuthorizedSchema(schema)) {
+        if (ShardingSphereSchemas.getInstance().schemaExists(schema) && isAuthorizedSchema(schema)) {
             backendConnection.setCurrentSchema(schema);
             return new UpdateResponse();
         }

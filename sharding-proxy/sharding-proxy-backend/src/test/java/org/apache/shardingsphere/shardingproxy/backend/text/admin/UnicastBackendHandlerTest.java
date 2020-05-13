@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.shardingproxy.backend.MockLogicSchemasUtil;
+import org.apache.shardingsphere.shardingproxy.backend.MockShardingSphereSchemasUtil;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
@@ -53,7 +53,7 @@ public final class UnicastBackendHandlerTest {
     
     @Before
     public void setUp() {
-        MockLogicSchemasUtil.setLogicSchemas("schema", 10);
+        MockShardingSphereSchemasUtil.setSchemas("schema", 10);
         setUnderlyingHandler(new UpdateResponse());
     }
     

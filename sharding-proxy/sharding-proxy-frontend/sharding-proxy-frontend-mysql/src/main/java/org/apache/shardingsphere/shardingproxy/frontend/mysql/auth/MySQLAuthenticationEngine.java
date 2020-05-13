@@ -32,7 +32,7 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLH
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchemas;
 import org.apache.shardingsphere.shardingproxy.frontend.ConnectionIdGenerator;
 import org.apache.shardingsphere.shardingproxy.frontend.engine.AuthenticationEngine;
 
@@ -73,7 +73,7 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
             authResponse = response41.getAuthResponse();
             database = response41.getDatabase();
             sequenceId = response41.getSequenceId();
-            if (!Strings.isNullOrEmpty(database) && !LogicSchemas.getInstance().schemaExists(database)) {
+            if (!Strings.isNullOrEmpty(database) && !ShardingSphereSchemas.getInstance().schemaExists(database)) {
                 context.writeAndFlush(new MySQLErrPacket(++sequenceId, MySQLServerErrorCode.ER_BAD_DB_ERROR, database));
                 return false;
             }

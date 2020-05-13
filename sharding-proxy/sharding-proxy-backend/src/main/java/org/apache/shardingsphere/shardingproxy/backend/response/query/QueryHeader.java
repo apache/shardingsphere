@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.response.query;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
@@ -59,15 +59,15 @@ public final class QueryHeader {
 
     private final boolean autoIncrement;
     
-    public QueryHeader(final ResultSetMetaData resultSetMetaData, final LogicSchema logicSchema, final int columnIndex) throws SQLException {
+    public QueryHeader(final ResultSetMetaData resultSetMetaData, final ShardingSphereSchema logicSchema, final int columnIndex) throws SQLException {
         this(resultSetMetaData, logicSchema, resultSetMetaData.getColumnName(columnIndex), columnIndex);
     }
     
-    public QueryHeader(final ProjectionsContext projectionsContext, final ResultSetMetaData resultSetMetaData, final LogicSchema logicSchema, final int columnIndex) throws SQLException {
+    public QueryHeader(final ProjectionsContext projectionsContext, final ResultSetMetaData resultSetMetaData, final ShardingSphereSchema logicSchema, final int columnIndex) throws SQLException {
         this(resultSetMetaData, logicSchema, getColumnName(projectionsContext, resultSetMetaData, columnIndex), columnIndex);
     }
     
-    private QueryHeader(final ResultSetMetaData resultSetMetaData, final LogicSchema logicSchema, final String columnName, final int columnIndex) throws SQLException {
+    private QueryHeader(final ResultSetMetaData resultSetMetaData, final ShardingSphereSchema logicSchema, final String columnName, final int columnIndex) throws SQLException {
         this.columnName = columnName;
         schema = logicSchema.getName();
         columnLabel = resultSetMetaData.getColumnLabel(columnIndex);

@@ -25,8 +25,8 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchemas;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.underlying.common.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.underlying.common.database.type.dialect.PostgreSQLDatabaseType;
@@ -61,7 +61,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     private volatile String schemaName;
     
-    private LogicSchema logicSchema;
+    private ShardingSphereSchema logicSchema;
     
     private TransactionType transactionType;
     
@@ -121,7 +121,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
             throw new ShardingSphereException("Failed to switch schema, please terminate current transaction.");
         }
         this.schemaName = schemaName;
-        this.logicSchema = LogicSchemas.getInstance().getLogicSchema(schemaName);
+        this.logicSchema = ShardingSphereSchemas.getInstance().getSchema(schemaName);
     }
     
     @SneakyThrows(InterruptedException.class)
@@ -216,9 +216,9 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     }
     
     private void setFetchSize(final Statement statement) throws SQLException {
-        if (LogicSchemas.getInstance().getDatabaseType() instanceof MySQLDatabaseType) {
+        if (ShardingSphereSchemas.getInstance().getDatabaseType() instanceof MySQLDatabaseType) {
             statement.setFetchSize(MYSQL_MEMORY_FETCH_ONE_ROW_A_TIME);
-        } else if (LogicSchemas.getInstance().getDatabaseType() instanceof PostgreSQLDatabaseType) {
+        } else if (ShardingSphereSchemas.getInstance().getDatabaseType() instanceof PostgreSQLDatabaseType) {
             statement.setFetchSize(POSTGRESQL_MEMORY_FETCH_ONE_ROW_A_TIME);
         }
     }

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.JDBCExecuteEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.PreparedStatementExecutorWrapper;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.StatementExecutorWrapper;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchema;
 
 import java.util.List;
 
@@ -53,7 +53,7 @@ public final class DatabaseCommunicationEngineFactory {
      * @param backendConnection backend connection
      * @return instance of text protocol backend handler
      */
-    public DatabaseCommunicationEngine newTextProtocolInstance(final LogicSchema logicSchema, final String sql, final BackendConnection backendConnection) {
+    public DatabaseCommunicationEngine newTextProtocolInstance(final ShardingSphereSchema logicSchema, final String sql, final BackendConnection backendConnection) {
         return new JDBCDatabaseCommunicationEngine(logicSchema, sql, new JDBCExecuteEngine(backendConnection, new StatementExecutorWrapper(logicSchema)));
     }
     
@@ -66,7 +66,7 @@ public final class DatabaseCommunicationEngineFactory {
      * @param backendConnection backend connection
      * @return instance of text protocol backend handler
      */
-    public DatabaseCommunicationEngine newBinaryProtocolInstance(final LogicSchema logicSchema, final String sql, final List<Object> parameters, final BackendConnection backendConnection) {
+    public DatabaseCommunicationEngine newBinaryProtocolInstance(final ShardingSphereSchema logicSchema, final String sql, final List<Object> parameters, final BackendConnection backendConnection) {
         return new JDBCDatabaseCommunicationEngine(logicSchema, sql, new JDBCExecuteEngine(backendConnection, new PreparedStatementExecutorWrapper(logicSchema, parameters)));
     }
 }

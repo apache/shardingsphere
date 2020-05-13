@@ -40,34 +40,34 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Logic schemas.
+ * ShardingSphere schemas.
  */
 @Getter
-public final class LogicSchemas {
+public final class ShardingSphereSchemas {
     
-    private static final LogicSchemas INSTANCE = new LogicSchemas();
+    private static final ShardingSphereSchemas INSTANCE = new ShardingSphereSchemas();
     
-    private final Map<String, LogicSchema> logicSchemas = new ConcurrentHashMap<>();
+    private final Map<String, ShardingSphereSchema> schemas = new ConcurrentHashMap<>();
     
     private DatabaseType databaseType;
     
-    private LogicSchemas() {
+    private ShardingSphereSchemas() {
         ShardingOrchestrationEventBus.getInstance().register(this);
     }
     
     /**
-     * Get instance of logic schemas.
+     * Get instance of ShardingSphere schemas.
      *
-     * @return instance of logic schemas.
+     * @return instance of ShardingSphere schemas.
      */
-    public static LogicSchemas getInstance() {
+    public static ShardingSphereSchemas getInstance() {
         return INSTANCE;
     }
     
     /**
      * Initialize proxy context.
      *
-     * @param localSchemaNames local schema names
+     * @param localSchemaNames schema names
      * @param schemaDataSources data source map
      * @param schemaRules schema rule map
      * @throws SQLException SQL exception
@@ -83,11 +83,11 @@ public final class LogicSchemas {
                              final Map<String, Collection<RuleConfiguration>> schemaRules) throws SQLException {
         if (schemaRules.isEmpty()) {
             String schema = schemaDataSources.keySet().iterator().next();
-            logicSchemas.put(schema, LogicSchemaFactory.newInstance(schema, schemaDataSources, null));
+            schemas.put(schema, new ShardingSphereSchema(schema, schemaDataSources.get(schema), Collections.emptyList()));
         }
         for (Entry<String, Collection<RuleConfiguration>> entry : schemaRules.entrySet()) {
             if (localSchemaNames.isEmpty() || localSchemaNames.contains(entry.getKey())) {
-                logicSchemas.put(entry.getKey(), LogicSchemaFactory.newInstance(entry.getKey(), schemaDataSources, entry.getValue()));
+                schemas.put(entry.getKey(), new ShardingSphereSchema(entry.getKey(), schemaDataSources.get(entry.getKey()), entry.getValue()));
             }
         }
     }
@@ -99,17 +99,17 @@ public final class LogicSchemas {
      * @return schema exists or not
      */
     public boolean schemaExists(final String schema) {
-        return logicSchemas.containsKey(schema);
+        return schemas.containsKey(schema);
     }
     
     /**
-     * Get logic schema.
+     * Get ShardingSphere schema.
      *
      * @param schemaName schema name
-     * @return sharding schema
+     * @return ShardingSphere schema
      */
-    public LogicSchema getLogicSchema(final String schemaName) {
-        return Strings.isNullOrEmpty(schemaName) ? null : logicSchemas.get(schemaName);
+    public ShardingSphereSchema getSchema(final String schemaName) {
+        return Strings.isNullOrEmpty(schemaName) ? null : schemas.get(schemaName);
     }
     
     /**
@@ -118,7 +118,7 @@ public final class LogicSchemas {
      * @return schema names
      */
     public List<String> getSchemaNames() {
-        return new LinkedList<>(logicSchemas.keySet());
+        return new LinkedList<>(schemas.keySet());
     }
     
     /**
@@ -129,9 +129,8 @@ public final class LogicSchemas {
      */
     @Subscribe
     public synchronized void renew(final SchemaAddedEvent schemaAddedEvent) throws SQLException {
-        logicSchemas.put(schemaAddedEvent.getShardingSchemaName(), LogicSchemaFactory.newInstance(schemaAddedEvent.getShardingSchemaName(), 
-                Collections.singletonMap(schemaAddedEvent.getShardingSchemaName(), DataSourceConverter.getDataSourceParameterMap(schemaAddedEvent.getDataSourceConfigurations())), 
-                schemaAddedEvent.getRuleConfigurations()));
+        schemas.put(schemaAddedEvent.getShardingSchemaName(), new ShardingSphereSchema(schemaAddedEvent.getShardingSchemaName(), 
+                DataSourceConverter.getDataSourceParameterMap(schemaAddedEvent.getDataSourceConfigurations()), schemaAddedEvent.getRuleConfigurations()));
     }
     
     /**
@@ -141,6 +140,6 @@ public final class LogicSchemas {
      */
     @Subscribe
     public synchronized void renew(final SchemaDeletedEvent schemaDeletedEvent) {
-        logicSchemas.remove(schemaDeletedEvent.getShardingSchemaName());
+        schemas.remove(schemaDeletedEvent.getShardingSchemaName());
     }
 }
