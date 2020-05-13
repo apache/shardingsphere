@@ -32,7 +32,7 @@ import org.apache.shardingsphere.orchestration.core.common.event.MasterSlaveRule
 import org.apache.shardingsphere.orchestration.core.common.event.SchemaAddedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.ShardingOrchestrationEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.ShardingRuleChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.listener.PostShardingCenterRepositoryEventListener;
 import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenter;
 import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenterNode;
@@ -125,7 +125,7 @@ public final class SchemaChangedListener extends PostShardingCenterRepositoryEve
     private ShardingOrchestrationEvent createRuleChangedEvent(final String shardingSchemaName, final DataChangedEvent event) {
         return isEncryptRule(event)
                 ? createEncryptRuleChangedEvent(shardingSchemaName, event.getValue()) : isShardingRule(event)
-                    ? createShardingRuleChangedEvent(shardingSchemaName, event.getValue()) : createMasterSlaveRuleChangedEvent(shardingSchemaName, event.getValue());
+                    ? createRuleConfigurationsChangedEvent(shardingSchemaName, event.getValue()) : createMasterSlaveRuleChangedEvent(shardingSchemaName, event.getValue());
     }
     
     private boolean isShardingRule(final DataChangedEvent event) {
@@ -136,8 +136,8 @@ public final class SchemaChangedListener extends PostShardingCenterRepositoryEve
         return event.getValue().contains("encryptors:\n");
     }
     
-    private ShardingRuleChangedEvent createShardingRuleChangedEvent(final String shardingSchemaName, final String ruleValue) {
-        return new ShardingRuleChangedEvent(shardingSchemaName, new RuleRootConfigurationsYamlSwapper().swap(
+    private RuleConfigurationsChangedEvent createRuleConfigurationsChangedEvent(final String shardingSchemaName, final String ruleValue) {
+        return new RuleConfigurationsChangedEvent(shardingSchemaName, new RuleRootConfigurationsYamlSwapper().swap(
                 YamlEngine.unmarshal(ruleValue, YamlRootRuleConfigurations.class, new YamlRootRuleConfigurationsConstructor())));
     }
     

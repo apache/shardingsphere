@@ -23,8 +23,8 @@ import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfigura
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.NoneShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.core.rule.Authentication;
-import org.apache.shardingsphere.sharding.core.rule.ProxyUser;
+import org.apache.shardingsphere.underlying.common.auth.Authentication;
+import org.apache.shardingsphere.underlying.common.auth.ProxyUser;
 import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
@@ -70,9 +70,15 @@ public final class ConfigurationLoggerTest {
     
     @Test
     public void assertLogShardingRuleConfiguration() {
-        String yaml = "tables:\n  user:\n    actualDataNodes: ds_${0}.user_${0..1}\n    logicTable: user\n    tableStrategy:\n      none: ''\n";
-        assertLogInfo(ShardingRuleConfiguration.class.getSimpleName(), yaml);
-        ConfigurationLogger.log(getShardingRuleConfiguration());
+        String yaml = "shardingRule:\n"
+                + "  tables:\n"
+                + "    user:\n"
+                + "      actualDataNodes: ds_${0}.user_${0..1}\n"
+                + "      logicTable: user\n"
+                + "      tableStrategy:\n"
+                + "        none: ''\n";
+        assertLogInfo("Rule configurations: ", yaml);
+        ConfigurationLogger.log(Collections.singletonList(getShardingRuleConfiguration()));
     }
     
     private ShardingRuleConfiguration getShardingRuleConfiguration() {
@@ -85,9 +91,16 @@ public final class ConfigurationLoggerTest {
     
     @Test
     public void assertLogMasterSlaveRuleConfiguration() {
-        String yaml = "dataSources:\n" + "  ms_ds:\n" + "    masterDataSourceName: master_ds\n" + "    name: ms_ds\n" + "    slaveDataSourceNames:\n" + "    - slave_ds_0\n" + "    - slave_ds_1\n";
-        assertLogInfo(MasterSlaveRuleConfiguration.class.getSimpleName(), yaml);
-        ConfigurationLogger.log(getMasterSlaveRuleConfiguration());
+        String yaml = "masterSlaveRule:\n"
+                + "  dataSources:\n"
+                + "    ms_ds:\n"
+                + "      masterDataSourceName: master_ds\n"
+                + "      name: ms_ds\n"
+                + "      slaveDataSourceNames:\n"
+                + "      - slave_ds_0\n"
+                + "      - slave_ds_1\n";
+        assertLogInfo("Rule configurations: ", yaml);
+        ConfigurationLogger.log(Collections.singletonList(getMasterSlaveRuleConfiguration()));
     }
     
     private MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() {
@@ -96,11 +109,22 @@ public final class ConfigurationLoggerTest {
     
     @Test
     public void assertLogEncryptRuleConfiguration() {
-        String yaml = "encryptors:\n" + "  encryptor_aes:\n" + "    props:\n" + "      aes.key.value: 123456abc\n" + "    type: aes\n"
-                + "tables:\n" + "  t_encrypt:\n" + "    columns:\n" + "      user_id:\n" + "        assistedQueryColumn: user_assisted\n"
-                + "        cipherColumn: user_encrypt\n" + "        encryptor: encryptor_aes\n" + "        plainColumn: user_decrypt\n";
-        assertLogInfo(EncryptRuleConfiguration.class.getSimpleName(), yaml);
-        ConfigurationLogger.log(getEncryptRuleConfiguration());
+        String yaml = "encryptRule:\n"
+                + "  encryptors:\n"
+                + "    encryptor_aes:\n"
+                + "      props:\n"
+                + "        aes.key.value: 123456abc\n"
+                + "      type: aes\n"
+                + "  tables:\n"
+                + "    t_encrypt:\n"
+                + "      columns:\n"
+                + "        user_id:\n"
+                + "          assistedQueryColumn: user_assisted\n"
+                + "          cipherColumn: user_encrypt\n"
+                + "          encryptor: encryptor_aes\n"
+                + "          plainColumn: user_decrypt\n";
+        assertLogInfo("Rule configurations: ", yaml);
+        ConfigurationLogger.log(Collections.singletonList(getEncryptRuleConfiguration()));
     }
     
     private EncryptRuleConfiguration getEncryptRuleConfiguration() {
@@ -114,25 +138,49 @@ public final class ConfigurationLoggerTest {
     
     @Test
     public void assertLogRuleConfigurationWithEncryptRuleConfiguration() {
-        String yaml = "encryptors:\n" + "  encryptor_aes:\n" + "    props:\n" + "      aes.key.value: 123456abc\n" + "    type: aes\n"
-            + "tables:\n" + "  t_encrypt:\n" + "    columns:\n" + "      user_id:\n" + "        assistedQueryColumn: user_assisted\n"
-            + "        cipherColumn: user_encrypt\n" + "        encryptor: encryptor_aes\n" + "        plainColumn: user_decrypt\n";
-        assertLogInfo(EncryptRuleConfiguration.class.getSimpleName(), yaml);
-        ConfigurationLogger.log(getEncryptRuleConfiguration());
+        String yaml = "encryptRule:\n"
+                + "  encryptors:\n"
+                + "    encryptor_aes:\n"
+                + "      props:\n"
+                + "        aes.key.value: 123456abc\n"
+                + "      type: aes\n"
+                + "  tables:\n"
+                + "    t_encrypt:\n"
+                + "      columns:\n"
+                + "        user_id:\n"
+                + "          assistedQueryColumn: user_assisted\n"
+                + "          cipherColumn: user_encrypt\n"
+                + "          encryptor: encryptor_aes\n"
+                + "          plainColumn: user_decrypt\n";
+        assertLogInfo("Rule configurations: ", yaml);
+        ConfigurationLogger.log(Collections.singletonList(getEncryptRuleConfiguration()));
     }
     
     @Test
     public void assertLogRuleConfigurationWithShardingRuleConfiguration() {
-        String yaml = "tables:\n  user:\n    actualDataNodes: ds_${0}.user_${0..1}\n    logicTable: user\n    tableStrategy:\n      none: ''\n";
-        assertLogInfo(ShardingRuleConfiguration.class.getSimpleName(), yaml);
-        ConfigurationLogger.log(getShardingRuleConfiguration());
+        String yaml = "shardingRule:\n"
+                + "  tables:\n"
+                + "    user:\n"
+                + "      actualDataNodes: ds_${0}.user_${0..1}\n"
+                + "      logicTable: user\n"
+                + "      tableStrategy:\n"
+                + "        none: ''\n";
+        assertLogInfo("Rule configurations: ", yaml);
+        ConfigurationLogger.log(Collections.singletonList(getShardingRuleConfiguration()));
     }
     
     @Test
     public void assertLogRuleConfigurationWithMasterSlaveRuleConfiguration() {
-        String yaml = "dataSources:\n" + "  ms_ds:\n" + "    masterDataSourceName: master_ds\n" + "    name: ms_ds\n" + "    slaveDataSourceNames:\n" + "    - slave_ds_0\n" + "    - slave_ds_1\n";
-        assertLogInfo(MasterSlaveRuleConfiguration.class.getSimpleName(), yaml);
-        ConfigurationLogger.log(getMasterSlaveRuleConfiguration());
+        String yaml = "masterSlaveRule:\n"
+                + "  dataSources:\n"
+                + "    ms_ds:\n"
+                + "      masterDataSourceName: master_ds\n"
+                + "      name: ms_ds\n"
+                + "      slaveDataSourceNames:\n"
+                + "      - slave_ds_0\n"
+                + "      - slave_ds_1\n";
+        assertLogInfo("Rule configurations: ", yaml);
+        ConfigurationLogger.log(Collections.singletonList(getMasterSlaveRuleConfiguration()));
     }
     
     @Test

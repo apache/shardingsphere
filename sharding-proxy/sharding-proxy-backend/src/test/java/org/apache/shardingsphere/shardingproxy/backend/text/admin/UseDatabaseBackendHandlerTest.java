@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseStatement;
-import org.apache.shardingsphere.sharding.core.rule.Authentication;
-import org.apache.shardingsphere.sharding.core.rule.ProxyUser;
-import org.apache.shardingsphere.shardingproxy.backend.MockLogicSchemasUtil;
+import org.apache.shardingsphere.underlying.common.auth.Authentication;
+import org.apache.shardingsphere.underlying.common.auth.ProxyUser;
+import org.apache.shardingsphere.shardingproxy.backend.MockShardingSphereSchemasUtil;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
@@ -49,7 +49,7 @@ public final class UseDatabaseBackendHandlerTest {
     
     @Before
     public void setUp() {
-        MockLogicSchemasUtil.setLogicSchemas("schema", 10);
+        MockShardingSphereSchemasUtil.setSchemas("schema", 10);
         backendConnection = mock(BackendConnection.class);
         when(backendConnection.getUserName()).thenReturn("root");
         ShardingProxyContext.getInstance().init(getAuthentication(), new Properties());

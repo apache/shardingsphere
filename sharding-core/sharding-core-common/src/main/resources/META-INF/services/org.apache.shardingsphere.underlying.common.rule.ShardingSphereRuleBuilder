@@ -16,4 +16,4 @@
 #
 
 org.apache.shardingsphere.sharding.core.rule.ShardingRuleBuilder
-org.apache.shardingsphere.sharding.core.rule.ShadowRuleBuilder
+org.apache.shardingsphere.shadow.core.rule.ShadowRuleBuilder

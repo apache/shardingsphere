@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.shardingproxy.backend.MockLogicSchemasUtil;
+import org.apache.shardingsphere.shardingproxy.backend.MockShardingSphereSchemasUtil;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
@@ -56,7 +56,7 @@ public final class BroadcastBackendHandlerTest {
     
     @Test
     public void assertExecuteSuccess() {
-        MockLogicSchemasUtil.setLogicSchemas("schema", 10);
+        MockShardingSphereSchemasUtil.setSchemas("schema", 10);
         mockDatabaseCommunicationEngine(new UpdateResponse());
         BroadcastBackendHandler broadcastBackendHandler = new BroadcastBackendHandler("SET timeout = 1000", backendConnection);
         setBackendHandlerFactory(broadcastBackendHandler);
@@ -69,7 +69,7 @@ public final class BroadcastBackendHandlerTest {
     
     @Test
     public void assertExecuteFailure() {
-        MockLogicSchemasUtil.setLogicSchemas("schema", 10);
+        MockShardingSphereSchemasUtil.setSchemas("schema", 10);
         ErrorResponse errorResponse = new ErrorResponse(new SQLException("no reason", "X999", -1));
         mockDatabaseCommunicationEngine(errorResponse);
         BroadcastBackendHandler broadcastBackendHandler = new BroadcastBackendHandler("SET timeout = 1000", backendConnection);
