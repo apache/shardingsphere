@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.shadow.route.engine;
 
-import org.apache.shardingsphere.metrics.enums.MetricsLabelEnum;
-import org.apache.shardingsphere.metrics.facade.MetricsTrackerFacade;
 import org.apache.shardingsphere.sharding.core.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.route.engine.impl.PreparedShadowDataSourceRouter;
 import org.apache.shardingsphere.shadow.route.engine.impl.SimpleShadowDataSourceRouter;
@@ -62,7 +60,6 @@ public final class ShadowRouteDecorator implements RouteDecorator<ShadowRule> {
         }
         if (isShadowSQL(routeContext, shadowRule)) {
             shadowRule.getShadowMappings().values().forEach(each -> routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList())));
-            metricsCollect();
         } else {
             shadowRule.getShadowMappings().keySet().forEach(each -> routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList())));
         }
@@ -86,7 +83,6 @@ public final class ShadowRouteDecorator implements RouteDecorator<ShadowRule> {
                 String shadowDataSourceName = shadowRule.getShadowMappings().get(each.getDataSourceMapper().getActualName());
                 routeContext.getRouteResult().getRouteUnits().add(new RouteUnit(new RouteMapper(each.getDataSourceMapper().getLogicName(), shadowDataSourceName), Collections.emptyList()));
             }
-            metricsCollect();
         }
         return routeContext;
     }
@@ -97,10 +93,6 @@ public final class ShadowRouteDecorator implements RouteDecorator<ShadowRule> {
         ShadowDataSourceRouter shadowDataSourceRouter = parameters.size() == 0 ? new SimpleShadowDataSourceRouter(shadowRule, sqlStatementContext)
                 : new PreparedShadowDataSourceRouter(shadowRule, sqlStatementContext, parameters);
         return shadowDataSourceRouter.isShadowSQL();
-    }
-    
-    private void metricsCollect() {
-        MetricsTrackerFacade.getInstance().counterInc(MetricsLabelEnum.SHADOW_HIT_TOTAL.getName());
     }
     
     @Override
