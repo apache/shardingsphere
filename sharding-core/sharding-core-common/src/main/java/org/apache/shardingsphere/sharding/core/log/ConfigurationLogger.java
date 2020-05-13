@@ -20,14 +20,15 @@ package org.apache.shardingsphere.sharding.core.log;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.underlying.common.auth.Authentication;
-import org.apache.shardingsphere.sharding.core.yaml.representer.processor.ShardingTupleProcessorFactory;
-import org.apache.shardingsphere.underlying.common.auth.yaml.swapper.AuthenticationYamlSwapper;
+import org.apache.shardingsphere.underlying.common.yaml.representer.processor.NoneTupleProcessor;
 import org.apache.shardingsphere.sharding.core.yaml.swapper.root.RuleRootConfigurationsYamlSwapper;
+import org.apache.shardingsphere.underlying.common.auth.Authentication;
+import org.apache.shardingsphere.underlying.common.auth.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Properties;
 
 /**
@@ -43,7 +44,7 @@ public final class ConfigurationLogger {
      * @param ruleConfigurations rule configurations
      */
     public static void log(final Collection<RuleConfiguration> ruleConfigurations) {
-        log("Rule configurations: ", YamlEngine.marshal(new RuleRootConfigurationsYamlSwapper().swap(ruleConfigurations), ShardingTupleProcessorFactory.newInstance()));
+        log("Rule configurations: ", YamlEngine.marshal(new RuleRootConfigurationsYamlSwapper().swap(ruleConfigurations), Collections.singleton(new NoneTupleProcessor())));
     }
     
     /**

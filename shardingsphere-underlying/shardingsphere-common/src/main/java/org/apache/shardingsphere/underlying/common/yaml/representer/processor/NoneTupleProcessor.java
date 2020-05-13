@@ -15,18 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.core.yaml.representer.processor;
+package org.apache.shardingsphere.underlying.common.yaml.representer.processor;
 
-import org.apache.shardingsphere.underlying.common.yaml.representer.processor.TupleProcessor;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.ScalarNode;
 import org.yaml.snakeyaml.nodes.Tag;
 
 /**
- * NoneShardingStrategy YAML tuple processor.
+ * None YAML tuple processor.
  */
-public final class NoneShardingStrategyTupleProcessor implements TupleProcessor {
+public final class NoneTupleProcessor implements TupleProcessor {
     
     @Override
     public String getProcessedTupleName() {
@@ -35,15 +34,14 @@ public final class NoneShardingStrategyTupleProcessor implements TupleProcessor 
     
     @Override
     public NodeTuple process(final NodeTuple nodeTuple) {
-        return isNullNode(nodeTuple.getValueNode()) ? null : processNoneShardingStrategyTuple(nodeTuple);
+        return isNullNode(nodeTuple.getValueNode()) ? null : processNoneTuple(nodeTuple);
     }
     
     private boolean isNullNode(final Node valueNode) {
         return Tag.NULL.equals(valueNode.getTag());
     }
     
-    private NodeTuple processNoneShardingStrategyTuple(final NodeTuple noneShardingStrategyTuple) {
-        Node newValueNode = new ScalarNode(Tag.STR, "", null, null, null);
-        return new NodeTuple(noneShardingStrategyTuple.getKeyNode(), newValueNode);
+    private NodeTuple processNoneTuple(final NodeTuple noneTuple) {
+        return new NodeTuple(noneTuple.getKeyNode(), new ScalarNode(Tag.STR, "", null, null, null));
     }
 }
