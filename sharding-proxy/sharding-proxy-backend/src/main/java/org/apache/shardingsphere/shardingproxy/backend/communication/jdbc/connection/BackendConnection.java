@@ -112,7 +112,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     }
     
     /**
-     * Change logic schema of current channel.
+     * Change schema of current channel.
      *
      * @param schemaName schema name
      */
@@ -171,7 +171,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     }
     
     private List<Connection> getConnectionsWithoutTransaction(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        Preconditions.checkNotNull(schema, "current logic schema is null");
+        Preconditions.checkNotNull(schema, "current schema is null");
         List<Connection> result = getConnectionFromUnderlying(dataSourceName, connectionSize, connectionMode);
         synchronized (cachedConnections) {
             cachedConnections.putAll(dataSourceName, result);
@@ -180,7 +180,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     }
     
     private List<Connection> createNewConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        Preconditions.checkNotNull(schema, "current logic schema is null");
+        Preconditions.checkNotNull(schema, "current schema is null");
         List<Connection> result = getConnectionFromUnderlying(dataSourceName, connectionSize, connectionMode);
         for (Connection each : result) {
             replayMethodsInvocation(each);

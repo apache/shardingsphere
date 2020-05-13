@@ -56,7 +56,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicationEngine {
     
-    private final ShardingSphereSchema logicSchema;
+    private final ShardingSphereSchema schema;
     
     private final String sql;
     
@@ -88,10 +88,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             return new ErrorResponse(new TableModifyInTransactionException(getTableName(sqlStatementContext)));
         }
         response = executeEngine.execute(executionContext);
-        // TODO refresh non-sharding table meta data
-        if (logicSchema instanceof ShardingSphereSchema) {
-            logicSchema.refreshTableMetaData(executionContext.getSqlStatementContext());
-        }
+        schema.refreshTableMetaData(executionContext.getSqlStatementContext());
         return merge(executionContext.getSqlStatementContext());
     }
     
@@ -126,13 +123,13 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private boolean isNeedAccumulate(final SQLStatementContext sqlStatementContext) {
-        Optional<DataNodeRoutedRule> dataNodeRoutedRule = logicSchema.getRules().stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
+        Optional<DataNodeRoutedRule> dataNodeRoutedRule = schema.getRules().stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
         return dataNodeRoutedRule.isPresent() && dataNodeRoutedRule.get().isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames());
     }
     
     private MergedResult mergeQuery(final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         MergeEngine mergeEngine = new MergeEngine(ShardingSphereSchemas.getInstance().getDatabaseType(), 
-                logicSchema.getMetaData().getSchema().getConfiguredSchemaMetaData(), ShardingProxyContext.getInstance().getProperties(), logicSchema.getRules());
+                schema.getMetaData().getSchema().getConfiguredSchemaMetaData(), ShardingProxyContext.getInstance().getProperties(), schema.getRules());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     

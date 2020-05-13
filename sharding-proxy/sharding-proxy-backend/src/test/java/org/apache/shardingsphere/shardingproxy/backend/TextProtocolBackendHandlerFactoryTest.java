@@ -59,11 +59,11 @@ public final class TextProtocolBackendHandlerFactoryTest {
     @Before
     public void setUp() {
         when(backendConnection.getTransactionType()).thenReturn(TransactionType.LOCAL);
-        ShardingSphereSchema logicSchema = mock(ShardingSphereSchema.class);
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         JDBCBackendDataSource backendDataSource = mock(JDBCBackendDataSource.class);
         when(backendDataSource.getShardingTransactionManagerEngine()).thenReturn(mock(ShardingTransactionManagerEngine.class));
-        when(logicSchema.getBackendDataSource()).thenReturn(backendDataSource);
-        when(backendConnection.getSchema()).thenReturn(logicSchema);
+        when(schema.getBackendDataSource()).thenReturn(backendDataSource);
+        when(backendConnection.getSchema()).thenReturn(schema);
     }
     
     @Test

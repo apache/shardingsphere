@@ -51,29 +51,29 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     
     private static final ShardingProxyContext SHARDING_PROXY_CONTEXT = ShardingProxyContext.getInstance();
     
-    private final ShardingSphereSchema logicSchema;
+    private final ShardingSphereSchema schema;
     
     private final List<Object> parameters;
     
     @SuppressWarnings("unchecked")
     @Override
     public ExecutionContext route(final String sql) {
-        SQLStatement sqlStatement = logicSchema.getSqlParserEngine().parse(sql, true);
-        Collection<ShardingSphereRule> rules = logicSchema.getRules();
+        SQLStatement sqlStatement = schema.getSqlParserEngine().parse(sql, true);
+        Collection<ShardingSphereRule> rules = schema.getRules();
         if (rules.isEmpty()) {
             return new ExecutionContext(
-                    new CommonSQLStatementContext(sqlStatement), new ExecutionUnit(logicSchema.getDataSources().keySet().iterator().next(), new SQLUnit(sql, Collections.emptyList())));
+                    new CommonSQLStatementContext(sqlStatement), new ExecutionUnit(schema.getDataSources().keySet().iterator().next(), new SQLUnit(sql, Collections.emptyList())));
         }
-        RouteContext routeContext = new DataNodeRouter(logicSchema.getMetaData(), SHARDING_PROXY_CONTEXT.getProperties(), rules).route(sqlStatement, sql, parameters);
-        SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(logicSchema.getMetaData().getSchema().getConfiguredSchemaMetaData(),
+        RouteContext routeContext = new DataNodeRouter(schema.getMetaData(), SHARDING_PROXY_CONTEXT.getProperties(), rules).route(sqlStatement, sql, parameters);
+        SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(schema.getMetaData().getSchema().getConfiguredSchemaMetaData(),
                 SHARDING_PROXY_CONTEXT.getProperties(), rules).rewrite(sql, new ArrayList<>(parameters), routeContext);
-        return new ExecutionContext(routeContext.getSqlStatementContext(), ExecutionContextBuilder.build(logicSchema.getMetaData(), sqlRewriteResult));
+        return new ExecutionContext(routeContext.getSqlStatementContext(), ExecutionContextBuilder.build(schema.getMetaData(), sqlRewriteResult));
     }
     
     @Override
     public ExecuteGroupEngine getExecuteGroupEngine() {
         int maxConnectionsSizePerQuery = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery, logicSchema.getRules());
+        return new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery, schema.getRules());
     }
     
     @Override
