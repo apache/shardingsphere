@@ -3,7 +3,7 @@ title = "编排治理"
 weight = 4
 +++
 
-使用治理功能需要指定一个注册中心。配置将全部存入注册中心，可以在每次启动时使用本地配置覆盖注册中心配置，也可以只通过注册中心读取配置。
+使用治理功能需要指定配置中心、注册中心和元数据中心。配置将全部存入配置中心，可以在每次启动时使用本地配置覆盖配置中心配置，也可以只通过配置中心读取配置。
 
 ## 不使用Spring
 
@@ -30,16 +30,21 @@ weight = 4
     // 省略配置dataSourceMap以及shardingRuleConfig
     // ...
 
-    // 配置注册中心
-    RegistryCenterConfiguration regConfig = new RegistryCenterConfiguration("zookeeper");
-    regConfig.setServerLists("localhost:2181");
-    regConfig.setNamespace("sharding-sphere-orchestration");
+    // 配置配置/注册/元数据中心
+    Properties properties = new Properties();
+    properties.setProperty("overwrite", overwrite);
+    CenterConfiguration centerConfiguration = new CenterConfiguration("zookeeper", properties);
+    centerConfiguration.setServerLists("localhost:2181");
+    centerConfiguration.setNamespace("sharding-sphere-orchestration");
+    centerConfiguration.setOrchestrationType("registry_center,config_center,metadata_center");
 
     // 配置治理
-    OrchestrationConfiguration orchConfig = new OrchestrationConfiguration("orchestration-sharding-data-source", regConfig, false);
+    Map<String, CenterConfiguration> instanceConfigurationMap = new HashMap<String, CenterConfiguration>();
+    instanceConfigurationMap.put("orchestration-sharding-data-source", centerConfiguration);
 
     // 获取数据源对象
-    DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new Properties(), orchConfig);
+    OrchestrationShardingDataSourceFactory.createDataSource(
+                        createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), new OrchestrationConfiguration(instanceConfigurationMap));
 ```
 
 ### 基于Yaml的规则配置
@@ -48,12 +53,13 @@ weight = 4
 
 ```yaml
 orchestration:
-  name: orchestration-sharding-data-source
-  overwrite: false
-  registry:
-    type: zookeeper
-    serverLists: localhost:2181
-    namespace: sharding-sphere-orchestration
+  orchestration_ds:
+      orchestrationType: registry_center,config_center,metadata_center
+      instanceType: zookeeper
+      serverLists: localhost:2181
+      namespace: orchestration
+      props:
+        overwrite: true
 ```
 
 ```java
@@ -99,11 +105,11 @@ orchestration:
 ### 基于Spring boot的规则配置
 
 ```properties
-spring.shardingsphere.orchestration.name=orchestration-sharding-data-source
-spring.shardingsphere.orchestration.overwrite=false
-spring.shardingsphere.orchestration.registry.type=zookeeper
-spring.shardingsphere.orchestration.registry.server-lists=localhost:2181
-spring.shardingsphere.orchestration.registry.namespace=sharding-jdbc-orchestration
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.orchestration-type=registry_center,config_center,metadata_center
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.instance-type=zookeeper
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.server-lists=localhost:2181
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.namespace=orchestration-spring-boot-sharding-test
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.props.overwrite=true
 ```
 
 ### 基于Spring命名空间的规则配置
@@ -118,8 +124,15 @@ spring.shardingsphere.orchestration.registry.namespace=sharding-jdbc-orchestrati
                            http://shardingsphere.apache.org/schema/shardingsphere/orchestration
                            http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd">
      <import resource="namespace/shardingDataSourceNamespace.xml" />
-     <orchestraion:registry-center id="regCenter" type="zookeeper" server-lists="localhost:3181" namespace="orchestration-spring-namespace-test" operation-timeout-milliseconds="1000" max-retries="3" />
-     <orchestraion:sharding-data-source id="simpleShardingOrchestration" data-source-ref="simpleShardingDataSource" registry-center-ref="regCenter" />
+     <util:properties id="instance-props">
+               <prop key="max-retries">3</prop>
+               <prop key="operation-timeout-milliseconds">3000</prop>
+         </util:properties>
+         <orchestraion:instance id="regCenter" orchestration-type="registry_center,config_center,metadata_center" instance-type="zookeeper" server-lists="localhost:2181" namespace="orchestration-spring-namespace-demo"
+                                    props-ref="instance-props" />
+         <orchestraion:sharding-data-source id="shardingDatabasesTablesDataSource" data-source-ref="realShardingDatabasesTablesDataSource" instance-ref="regCenter" overwrite="true" />
+         <orchestraion:master-slave-data-source id="masterSlaveDataSource" data-source-ref="realMasterSlaveDataSource" instance-ref="regCenter" overwrite="true" />
+         <orchestraion:encrypt-data-source id="encryptDataSource" data-source-ref="realEncryptDataSource" instance-ref="regCenter" overwrite="true" />
 </beans>
 ```
 
