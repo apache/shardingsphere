@@ -107,7 +107,6 @@ public final class InsertStatementContextTest {
                 new ColumnSegment(0, 0, new IdentifierValue("on_duplicate_key_update_column_2")),
                 new LiteralExpressionSegment(0, 0, 5)
         );
-
         OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment = new OnDuplicateKeyColumnsSegment(0, 0, Arrays.asList(
                 parameterMarkerExpressionAssignment, literalExpressionAssignment
         ));
