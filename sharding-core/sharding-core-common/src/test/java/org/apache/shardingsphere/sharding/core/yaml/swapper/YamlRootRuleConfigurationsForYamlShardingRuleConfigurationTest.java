@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.core.yaml.engine;
+package org.apache.shardingsphere.sharding.core.yaml.swapper;
 
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlRootRuleConfigurations;
-import org.apache.shardingsphere.masterslave.core.yaml.config.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.sharding.core.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.core.yaml.constructor.YamlRootRuleConfigurationsConstructor;
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 import org.junit.Test;
 
@@ -29,7 +28,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -37,13 +35,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class YamlEngineRootConfigurationsTest {
+public final class YamlRootRuleConfigurationsForYamlShardingRuleConfigurationTest {
     
     @Test
     public void assertUnmarshalWithYamlFile() throws IOException {
         URL url = getClass().getClassLoader().getResource("yaml/sharding-rule.yaml");
         assertNotNull(url);
-        assertYamlShardingConfig(YamlEngine.unmarshal(new File(url.getFile()), YamlRootRuleConfigurations.class, new YamlRootRuleConfigurationsConstructor()));
+        assertYamlShardingConfiguration(YamlEngine.unmarshal(new File(url.getFile()), YamlRootRuleConfigurations.class, new YamlRootRuleConfigurationsConstructor()));
     }
     
     @Test
@@ -59,10 +57,17 @@ public final class YamlEngineRootConfigurationsTest {
                 yamlContent.append(line).append("\n");
             }
         }
-        assertYamlShardingConfig(YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlRootRuleConfigurations.class, new YamlRootRuleConfigurationsConstructor()));
+        assertYamlShardingConfiguration(YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlRootRuleConfigurations.class, new YamlRootRuleConfigurationsConstructor()));
     }
     
-    private void assertYamlShardingConfig(final YamlRootRuleConfigurations actual) {
+    private void assertDataSourceMap(final YamlRootRuleConfigurations actual) {
+        assertThat(actual.getDataSources().size(), is(3));
+        assertTrue(actual.getDataSources().containsKey("ds_0"));
+        assertTrue(actual.getDataSources().containsKey("ds_1"));
+        assertTrue(actual.getDataSources().containsKey("default_ds"));
+    }
+    
+    private void assertYamlShardingConfiguration(final YamlRootRuleConfigurations actual) {
         assertDataSourceMap(actual);
         Optional<YamlShardingRuleConfiguration> shardingRuleConfiguration = actual.getRules().stream().filter(
             each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(configuration -> (YamlShardingRuleConfiguration) configuration);
@@ -74,22 +79,7 @@ public final class YamlEngineRootConfigurationsTest {
         assertTOrderItem(shardingRuleConfiguration.get());
         assertBindingTable(shardingRuleConfiguration.get());
         assertBroadcastTable(shardingRuleConfiguration.get());
-        Optional<YamlMasterSlaveRuleConfiguration> masterSlaveRuleConfiguration = actual.getRules().stream().filter(
-            each -> each instanceof YamlMasterSlaveRuleConfiguration).findFirst().map(configuration -> (YamlMasterSlaveRuleConfiguration) configuration);
-        assertTrue(masterSlaveRuleConfiguration.isPresent());
-        assertMasterSlaveRules(masterSlaveRuleConfiguration.get());
         assertProps(actual);
-    }
-    
-    private void assertDataSourceMap(final YamlRootRuleConfigurations actual) {
-        assertThat(actual.getDataSources().size(), is(7));
-        assertTrue(actual.getDataSources().containsKey("master_ds_0"));
-        assertTrue(actual.getDataSources().containsKey("master_ds_0_slave_0"));
-        assertTrue(actual.getDataSources().containsKey("master_ds_0_slave_1"));
-        assertTrue(actual.getDataSources().containsKey("master_ds_1"));
-        assertTrue(actual.getDataSources().containsKey("master_ds_1_slave_0"));
-        assertTrue(actual.getDataSources().containsKey("master_ds_1_slave_1"));
-        assertTrue(actual.getDataSources().containsKey("default_ds"));
     }
     
     private void assertTUser(final YamlShardingRuleConfiguration actual) {
@@ -130,24 +120,6 @@ public final class YamlEngineRootConfigurationsTest {
     private void assertBroadcastTable(final YamlShardingRuleConfiguration actual) {
         assertThat(actual.getBroadcastTables().size(), is(1));
         assertThat(actual.getBroadcastTables().iterator().next(), is("t_config"));
-    }
-    
-    private void assertMasterSlaveRules(final YamlMasterSlaveRuleConfiguration actual) {
-        assertThat(actual.getDataSources().size(), is(2));
-        assertMasterSlaveRuleForDs0(actual);
-        assertMasterSlaveRuleForDs1(actual);
-    }
-    
-    private void assertMasterSlaveRuleForDs0(final YamlMasterSlaveRuleConfiguration actual) {
-        assertThat(actual.getDataSources().get("ds_0").getMasterDataSourceName(), is("master_ds_0"));
-        assertThat(actual.getDataSources().get("ds_0").getSlaveDataSourceNames(), is(Arrays.asList("master_ds_0_slave_0", "master_ds_0_slave_1")));
-        assertThat(actual.getDataSources().get("ds_0").getLoadBalanceAlgorithmType(), is("ROUND_ROBIN"));
-    }
-    
-    private void assertMasterSlaveRuleForDs1(final YamlMasterSlaveRuleConfiguration actual) {
-        assertThat(actual.getDataSources().get("ds_1").getMasterDataSourceName(), is("master_ds_1"));
-        assertThat(actual.getDataSources().get("ds_1").getSlaveDataSourceNames(), is(Arrays.asList("master_ds_1_slave_0", "master_ds_1_slave_1")));
-        assertThat(actual.getDataSources().get("ds_1").getLoadBalanceAlgorithmType(), is("RANDOM"));
     }
     
     private void assertProps(final YamlRootRuleConfigurations actual) {
