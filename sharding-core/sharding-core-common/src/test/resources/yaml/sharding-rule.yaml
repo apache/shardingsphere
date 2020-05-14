@@ -33,7 +33,7 @@ dataSources:
     password: 
 
 rules:
-- !!org.apache.shardingsphere.sharding.core.yaml.config.YamlShardingRuleConfiguration
+- !!org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration
   tables:
     t_user:
       actualDataNodes: ds_${0..1}.t_user_${0..15}

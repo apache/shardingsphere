@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring;
 
-import org.apache.shardingsphere.sharding.core.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.core.rule.TableRule;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.fixture.DecrementKeyGenerateAlgorithm;

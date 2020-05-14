@@ -46,7 +46,7 @@ dataSources:
     maxPoolSize: 50
 
 rules:
-- !!org.apache.shardingsphere.sharding.core.yaml.config.YamlShardingRuleConfiguration
+- !!org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration
   tables:
     t_order:
       actualDataNodes: ds_${0..1}.t_order_${0..1}

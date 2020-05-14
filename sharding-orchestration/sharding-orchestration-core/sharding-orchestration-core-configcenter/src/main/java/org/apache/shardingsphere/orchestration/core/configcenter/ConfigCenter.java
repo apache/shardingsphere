@@ -31,7 +31,7 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.auth.Authentication;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.underlying.common.auth.yaml.config.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.sharding.core.yaml.constructor.YamlRootRuleConfigurationsConstructor;
+import org.apache.shardingsphere.sharding.yaml.constructor.YamlRootRuleConfigurationsConstructor;
 import org.apache.shardingsphere.underlying.common.auth.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.underlying.common.yaml.swapper.RuleRootConfigurationsYamlSwapper;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
@@ -187,7 +187,7 @@ public final class ConfigCenter {
      * @return is sharding rule or not
      */
     public boolean isShardingRule(final String shardingSchemaName) {
-        return repository.get(node.getRulePath(shardingSchemaName)).contains("- !!org.apache.shardingsphere.sharding.core.yaml.config.YamlShardingRuleConfiguration\n");
+        return repository.get(node.getRulePath(shardingSchemaName)).contains("- !!org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration\n");
     }
     
     /**

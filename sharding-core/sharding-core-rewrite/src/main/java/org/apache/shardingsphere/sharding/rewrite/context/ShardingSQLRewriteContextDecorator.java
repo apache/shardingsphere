@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.context;
 
 import lombok.Setter;
-import org.apache.shardingsphere.sharding.core.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rewrite.parameter.ShardingParameterRewriterBuilder;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.ShardingTokenGenerateBuilder;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
