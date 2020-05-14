@@ -42,7 +42,6 @@ public final class YamlRootRuleConfigurationsForYamlMasterSlaveRuleConfiguration
         YamlRootRuleConfigurations rootRuleConfigurations = YamlEngine.unmarshal(new File(url.getFile()), YamlRootRuleConfigurations.class);
         assertThat(rootRuleConfigurations.getRules().size(), is(1));
         assertMasterSlaveRule((YamlMasterSlaveRuleConfiguration) rootRuleConfigurations.getRules().iterator().next());
-        assertProps(rootRuleConfigurations);
     }
     
     @Test
@@ -79,10 +78,5 @@ public final class YamlRootRuleConfigurationsForYamlMasterSlaveRuleConfiguration
         assertThat(actual.getDataSources().get("ds_1").getMasterDataSourceName(), is("master_ds_1"));
         assertThat(actual.getDataSources().get("ds_1").getSlaveDataSourceNames(), is(Arrays.asList("master_ds_1_slave_0", "master_ds_1_slave_1")));
         assertThat(actual.getDataSources().get("ds_1").getLoadBalanceAlgorithmType(), is("RANDOM"));
-    }
-    
-    private void assertProps(final YamlRootRuleConfigurations actual) {
-        assertThat(actual.getProps().size(), is(1));
-        assertThat(actual.getProps().get("sql.show"), is(true));
     }
 }
