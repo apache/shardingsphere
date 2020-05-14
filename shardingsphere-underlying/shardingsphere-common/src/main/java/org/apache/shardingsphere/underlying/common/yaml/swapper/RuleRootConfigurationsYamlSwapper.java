@@ -15,12 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.core.yaml.swapper.root;
+package org.apache.shardingsphere.underlying.common.yaml.swapper;
 
-import org.apache.shardingsphere.sharding.core.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlRootRuleConfigurations;
 
 import java.util.Collection;
 

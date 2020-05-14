@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.yaml.config;
+package org.apache.shardingsphere.underlying.common.yaml.swapper;
 
 import org.apache.shardingsphere.sharding.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sharding.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlRuleConfiguration;
 
 import java.util.Collection;
 import java.util.LinkedList;

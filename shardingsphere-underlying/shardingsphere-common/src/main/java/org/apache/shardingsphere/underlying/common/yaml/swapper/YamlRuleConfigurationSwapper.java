@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.yaml.config;
+package org.apache.shardingsphere.underlying.common.yaml.swapper;
 
 import org.apache.shardingsphere.sharding.spi.order.OrderedSPI;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlRuleConfiguration;
 
 /**
  * YAML rule configuration swapper.

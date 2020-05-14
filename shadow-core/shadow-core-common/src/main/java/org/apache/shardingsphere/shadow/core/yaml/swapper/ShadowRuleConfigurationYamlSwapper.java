@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shadow.core.yaml.swapper;
 
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.core.yaml.config.YamlShadowRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlRuleConfigurationSwapper;
 
 /**
  * Shadow rule configuration yaml swapper.
