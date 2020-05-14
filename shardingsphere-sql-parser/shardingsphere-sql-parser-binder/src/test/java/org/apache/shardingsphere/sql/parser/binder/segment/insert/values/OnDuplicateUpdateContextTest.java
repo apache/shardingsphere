@@ -46,7 +46,6 @@ public final class OnDuplicateUpdateContextTest {
         Collection<AssignmentSegment> assignments = Lists.newArrayList();
         List<Object> parameters = Collections.emptyList();
         int parametersOffset = 0;
-
         OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, parameters, parametersOffset);
 
         Method calculateParametersCountMethod = OnDuplicateUpdateContext.class.getDeclaredMethod("calculateParametersCount", Collection.class);
@@ -83,7 +82,6 @@ public final class OnDuplicateUpdateContextTest {
     private Collection<AssignmentSegment> makeParameterMarkerExpressionAssignmentSegment() {
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment = new ParameterMarkerExpressionSegment(0, 10, 5);
         AssignmentSegment assignmentSegment1 = makeAssignmentSegment(parameterMarkerExpressionSegment);
-
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment2 = new ParameterMarkerExpressionSegment(0, 10, 6);
         AssignmentSegment assignmentSegment2 = makeAssignmentSegment(parameterMarkerExpressionSegment2);
         return Lists.newArrayList(assignmentSegment1, assignmentSegment2);
@@ -108,7 +106,6 @@ public final class OnDuplicateUpdateContextTest {
     private AssignmentSegment makeAssignmentSegment(final SimpleExpressionSegment expressionSegment) {
         int doesNotMatterLexicalIndex = 0;
         String doesNotMatterColumnName = "columnNameStr";
-
         ColumnSegment column = new ColumnSegment(doesNotMatterLexicalIndex, doesNotMatterLexicalIndex, new IdentifierValue(doesNotMatterColumnName));
         return new AssignmentSegment(doesNotMatterLexicalIndex, doesNotMatterLexicalIndex, column, expressionSegment);
     }
@@ -118,13 +115,10 @@ public final class OnDuplicateUpdateContextTest {
         Collection<AssignmentSegment> assignments = Lists.newArrayList();
         List<Object> parameters = Collections.emptyList();
         int parametersOffset = 0;
-
         OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, parameters, parametersOffset);
-
         Method getParameterIndexMethod = OnDuplicateUpdateContext.class.getDeclaredMethod("getParameterIndex", ExpressionSegment.class);
         getParameterIndexMethod.setAccessible(true);
         ParameterMarkerExpressionSegment notExistsExpressionSegment = new ParameterMarkerExpressionSegment(0, 0, 0);
-
         Throwable targetException = null;
         try {
             getParameterIndexMethod.invoke(onDuplicateUpdateContext, notExistsExpressionSegment);

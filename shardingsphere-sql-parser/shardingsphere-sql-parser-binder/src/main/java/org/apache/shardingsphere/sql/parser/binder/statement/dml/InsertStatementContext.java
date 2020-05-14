@@ -62,7 +62,6 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTable());
         columnNames = sqlStatement.useDefaultColumns() ? schemaMetaData.getAllColumnNames(sqlStatement.getTable().getTableName().getIdentifier().getValue()) : sqlStatement.getColumnNames();
-
         AtomicInteger parametersOffset = new AtomicInteger(0);
         insertValueContexts = getInsertValueContexts(parameters, parametersOffset);
         onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null);
@@ -80,7 +79,6 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     }
     
     private Optional<OnDuplicateUpdateContext> getOnDuplicateKeyUpdateValueContext(final List<Object> parameters, final AtomicInteger parametersOffset) {
-
         if (!getSqlStatement().getOnDuplicateKeyColumns().isPresent()) {
             return Optional.empty();
         }
@@ -120,7 +118,6 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         if (null == onDuplicateKeyUpdateValueContext) {
             return new ArrayList<>(0);
         }
-
         return onDuplicateKeyUpdateValueContext.getParameters();
     }
     
