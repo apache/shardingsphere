@@ -31,5 +31,6 @@
     
     <modules>
         <module>control-panel-core</module>
+        <module>control-panel-cluster</module>
     </modules>
 </project>
