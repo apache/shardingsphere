@@ -20,12 +20,12 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml.const
 import org.apache.shardingsphere.sharding.yaml.config.strategy.YamlNoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.constructor.construct.YamlNoneShardingStrategyConfigurationConstruct;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml.YamlOrchestrationRootRuleConfigurations;
-import org.apache.shardingsphere.underlying.common.yaml.constructor.AbstractTypeConstructor;
+import org.apache.shardingsphere.underlying.common.yaml.constructor.ShardingSphereYAMLConstructor;
 
 /**
  * YAML orchestration sharding rule configuration constructor.
  */
-public class YamlOrchestrationShardingRuleConfigurationConstructor extends AbstractTypeConstructor {
+public class YamlOrchestrationShardingRuleConfigurationConstructor extends ShardingSphereYAMLConstructor {
     
     public YamlOrchestrationShardingRuleConfigurationConstructor() {
         super(YamlOrchestrationRootRuleConfigurations.class);

@@ -20,12 +20,12 @@ package org.apache.shardingsphere.shardingproxy.config.yaml.constructor;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.YamlNoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.constructor.construct.YamlNoneShardingStrategyConfigurationConstruct;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlProxyRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.constructor.AbstractTypeConstructor;
+import org.apache.shardingsphere.underlying.common.yaml.constructor.ShardingSphereYAMLConstructor;
 
 /**
  * YAML proxy rule configuration constructor.
  */
-public final class YamlProxyRuleConfigurationConstructor extends AbstractTypeConstructor {
+public final class YamlProxyRuleConfigurationConstructor extends ShardingSphereYAMLConstructor {
     
     public YamlProxyRuleConfigurationConstructor() {
         super(YamlProxyRuleConfiguration.class);

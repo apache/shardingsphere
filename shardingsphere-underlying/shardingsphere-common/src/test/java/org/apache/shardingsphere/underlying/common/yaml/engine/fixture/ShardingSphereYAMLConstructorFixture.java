@@ -17,21 +17,21 @@
 
 package org.apache.shardingsphere.underlying.common.yaml.engine.fixture;
 
-import org.apache.shardingsphere.underlying.common.yaml.constructor.AbstractTypeConstructor;
+import org.apache.shardingsphere.underlying.common.yaml.constructor.ShardingSphereYAMLConstructor;
 import org.yaml.snakeyaml.constructor.Construct;
 import org.yaml.snakeyaml.nodes.Node;
 
-public final class FixtureTypeConstructor extends AbstractTypeConstructor {
+public final class ShardingSphereYAMLConstructorFixture extends ShardingSphereYAMLConstructor {
     
-    public FixtureTypeConstructor() {
+    public ShardingSphereYAMLConstructorFixture() {
         super(DefaultYamlRepresenterFixture.class);
         registerConstruct(FixtureCustomClass.class, new Construct() {
-
+            
             @Override
             public Object construct(final Node node) {
                 return new FixtureCustomClass();
             }
-
+            
             @Override
             public void construct2ndStep(final Node node, final Object newInstance) {
             }

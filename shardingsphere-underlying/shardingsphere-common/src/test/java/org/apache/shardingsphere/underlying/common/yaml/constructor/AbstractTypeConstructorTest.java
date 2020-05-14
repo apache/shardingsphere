@@ -17,23 +17,23 @@
 
 package org.apache.shardingsphere.underlying.common.yaml.constructor;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import org.apache.shardingsphere.underlying.common.yaml.engine.fixture.DefaultYamlRepresenterFixture;
+import org.apache.shardingsphere.underlying.common.yaml.engine.fixture.ShardingSphereYAMLConstructorFixture;
+import org.junit.Test;
+import org.yaml.snakeyaml.Yaml;
 
 import java.util.Iterator;
 
-import org.apache.shardingsphere.underlying.common.yaml.engine.fixture.DefaultYamlRepresenterFixture;
-import org.apache.shardingsphere.underlying.common.yaml.engine.fixture.FixtureTypeConstructor;
-import org.junit.Test;
-import org.yaml.snakeyaml.Yaml;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 public final class AbstractTypeConstructorTest {
     
     @Test
     public void assertToObject() {
         String yamlString = "collection:\n- value1\n- value2\nmap:\n  key1: value1\n  key2: value2\nvalue: value\ncustomClass:";
-        DefaultYamlRepresenterFixture actual = new Yaml(new FixtureTypeConstructor()).loadAs(yamlString, DefaultYamlRepresenterFixture.class);
+        DefaultYamlRepresenterFixture actual = new Yaml(new ShardingSphereYAMLConstructorFixture()).loadAs(yamlString, DefaultYamlRepresenterFixture.class);
         assertThat(actual.getValue(), is("value"));
         assertThat(actual.getCollection().size(), is(2));
         Iterator<String> iterator = actual.getCollection().iterator();

@@ -25,31 +25,28 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Abstract type constructor.
+ * ShardingSphere YAML constructor.
  */
-public abstract class AbstractTypeConstructor extends Constructor {
+public abstract class ShardingSphereYAMLConstructor extends Constructor {
     
     private final Map<Class, Construct> typeConstructs = new HashMap<>();
     
-    protected AbstractTypeConstructor(final Class<?> rootClass) {
+    public ShardingSphereYAMLConstructor(final Class<?> rootClass) {
         super(rootClass);
     }
     
     /**
-     * register construct for class.
+     * Register construct.
      *
-     * @param typeClass type class
-     * @param classConstruct class construct
+     * @param type class type
+     * @param construct class construct
      */
-    protected final void registerConstruct(final Class typeClass, final Construct classConstruct) {
-        typeConstructs.put(typeClass, classConstruct);
+    protected final void registerConstruct(final Class type, final Construct construct) {
+        typeConstructs.put(type, construct);
     }
     
     @Override
     protected final Construct getConstructor(final Node node) {
-        if (typeConstructs.containsKey(node.getType())) {
-            return typeConstructs.get(node.getType());
-        }
-        return super.getConstructor(node);
+        return typeConstructs.getOrDefault(node.getType(), super.getConstructor(node));
     }
 }

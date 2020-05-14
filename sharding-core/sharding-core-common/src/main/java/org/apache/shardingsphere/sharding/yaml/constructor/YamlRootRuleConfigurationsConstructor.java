@@ -20,12 +20,12 @@ package org.apache.shardingsphere.sharding.yaml.constructor;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.YamlNoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.sharding.yaml.constructor.construct.YamlNoneShardingStrategyConfigurationConstruct;
-import org.apache.shardingsphere.underlying.common.yaml.constructor.AbstractTypeConstructor;
+import org.apache.shardingsphere.underlying.common.yaml.constructor.ShardingSphereYAMLConstructor;
 
 /**
  * YAML root configurations constructor.
  */
-public final class YamlRootRuleConfigurationsConstructor extends AbstractTypeConstructor {
+public final class YamlRootRuleConfigurationsConstructor extends ShardingSphereYAMLConstructor {
     
     public YamlRootRuleConfigurationsConstructor() {
         super(YamlRootRuleConfigurations.class);
