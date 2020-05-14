@@ -17,5 +17,5 @@
 
 package org.apache.shardingsphere.underlying.common.context.runtime;
 
-public interface RuntimeExecutorKernel {
+public interface RuntimeExecutorKernel extends AutoCloseable {
 }

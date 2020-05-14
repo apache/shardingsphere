@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.underlying.common.context;
 
+import lombok.Getter;
 import org.apache.shardingsphere.underlying.common.context.runtime.RuntimeContext;
 
+@Getter
 public final class SchemaContext {
     
     private final ShardingSphereSchema schema;

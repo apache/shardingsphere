@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.underlying.common.context.runtime;
 
+import lombok.Getter;
+
+@Getter
 public final class RuntimeContext {
     
     private final SQLParseResultCache cache = new SQLParseResultCache();
