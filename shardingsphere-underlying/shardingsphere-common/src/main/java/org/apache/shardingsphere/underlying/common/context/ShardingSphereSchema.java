@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.underlying.common.context;
 
+import lombok.Getter;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
@@ -28,6 +29,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+@Getter
 public final class ShardingSphereSchema {
     
     private final DatabaseType databaseType;

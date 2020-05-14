@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.underlying.common.context;
 
+import lombok.Getter;
 import org.apache.shardingsphere.underlying.common.auth.Authentication;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
+@Getter
 public final class SchemaContexts {
     
     private final Collection<SchemaContext> schemaContexts = new LinkedList<>();
@@ -35,5 +37,16 @@ public final class SchemaContexts {
         this.schemaContexts.addAll(schemaContexts);
         this.properties = properties;
         this.authentication = authentication;
+    }
+    
+    /**
+     * Close.
+     * 
+     * @throws Exception exception
+     */
+    public void close() throws Exception {
+        for (SchemaContext each : schemaContexts) {
+            each.getRuntimeContext().getExecutorKernel().close();
+        }
     }
 }

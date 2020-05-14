@@ -36,7 +36,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * Executor kernel.
  */
-public final class ExecutorKernel implements AutoCloseable, RuntimeExecutorKernel {
+public final class ExecutorKernel implements RuntimeExecutorKernel {
     
     @Getter
     private final ShardingSphereExecutorService executorService;
