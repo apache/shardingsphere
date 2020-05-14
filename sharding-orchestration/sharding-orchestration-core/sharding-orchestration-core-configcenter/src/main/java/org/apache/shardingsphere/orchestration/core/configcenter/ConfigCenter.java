@@ -29,11 +29,11 @@ import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSource
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.auth.Authentication;
-import org.apache.shardingsphere.sharding.core.yaml.config.YamlRootRuleConfigurations;
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.underlying.common.auth.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.sharding.core.yaml.constructor.YamlRootRuleConfigurationsConstructor;
 import org.apache.shardingsphere.underlying.common.auth.yaml.swapper.AuthenticationYamlSwapper;
-import org.apache.shardingsphere.sharding.core.yaml.swapper.root.RuleRootConfigurationsYamlSwapper;
+import org.apache.shardingsphere.underlying.common.yaml.swapper.RuleRootConfigurationsYamlSwapper;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
@@ -129,7 +129,7 @@ public final class ConfigCenter {
             } else if (each instanceof ShadowRuleConfiguration) {
                 ShadowRuleConfiguration config = (ShadowRuleConfiguration) each;
                 Preconditions.checkState(!config.getColumn().isEmpty() && null != config.getShadowMappings(), "No available shadow rule configuration in `%s` for orchestration.", shardingSchemaName);
-                // TODO process shadow
+                configurations.add(each);
             }
         }
         repository.persist(node.getRulePath(shardingSchemaName), YamlEngine.marshal(new RuleRootConfigurationsYamlSwapper().swap(configurations)));
@@ -187,7 +187,7 @@ public final class ConfigCenter {
      * @return is sharding rule or not
      */
     public boolean isShardingRule(final String shardingSchemaName) {
-        return repository.get(node.getRulePath(shardingSchemaName)).contains("- !!org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlShardingRuleConfiguration\n");
+        return repository.get(node.getRulePath(shardingSchemaName)).contains("- !!org.apache.shardingsphere.sharding.core.yaml.config.YamlShardingRuleConfiguration\n");
     }
     
     /**
@@ -205,7 +205,7 @@ public final class ConfigCenter {
      * @return is shadow rule or not
      */
     public boolean isShadowRule(final String shardingSchemaName) {
-        return repository.get(node.getRulePath(shardingSchemaName)).contains("- !!org.apache.shardingsphere.sharding.core.yaml.config.shadow.YamlShadowRuleConfiguration\n");
+        return repository.get(node.getRulePath(shardingSchemaName)).contains("- !!org.apache.shardingsphere.shadow.core.yaml.config.YamlShadowRuleConfiguration\n");
     }
     
     /**

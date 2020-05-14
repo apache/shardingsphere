@@ -26,11 +26,11 @@ import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSource
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.auth.Authentication;
-import org.apache.shardingsphere.sharding.core.yaml.config.YamlRootRuleConfigurations;
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.underlying.common.auth.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.sharding.core.yaml.constructor.YamlRootRuleConfigurationsConstructor;
 import org.apache.shardingsphere.underlying.common.auth.yaml.swapper.AuthenticationYamlSwapper;
-import org.apache.shardingsphere.sharding.core.yaml.swapper.root.RuleRootConfigurationsYamlSwapper;
+import org.apache.shardingsphere.underlying.common.yaml.swapper.RuleRootConfigurationsYamlSwapper;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
@@ -92,7 +92,7 @@ public final class ConfigCenterTest {
     
     private static final String SHARDING_RULE_YAML = ""
             + "rules:\n"
-            + "- !!org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlShardingRuleConfiguration\n"
+            + "- !!org.apache.shardingsphere.sharding.core.yaml.config.YamlShardingRuleConfiguration\n"
             + "  tables:\n"
             + "    t_order:\n"
             + "      actualDataNodes: ds_${0..1}.t_order_${0..1}\n"
@@ -107,7 +107,7 @@ public final class ConfigCenterTest {
     
     private static final String MASTER_SLAVE_RULE_YAML = ""
             + "rules:\n"
-            + "- !!org.apache.shardingsphere.sharding.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration\n"
+            + "- !!org.apache.shardingsphere.masterslave.core.yaml.config.YamlMasterSlaveRuleConfiguration\n"
             + "  dataSources:\n"
             + "    ms_ds:\n"
             + "      masterDataSourceName: master_ds\n"
@@ -133,7 +133,7 @@ public final class ConfigCenterTest {
     
     private static final String SHADOW_RULE_YAML = ""
             + "rules:\n"
-            + "- !!org.apache.shardingsphere.sharding.core.yaml.config.shadow.YamlShadowRuleConfiguration\n"
+            + "- !!org.apache.shardingsphere.shadow.core.yaml.config.YamlShadowRuleConfiguration\n"
             + "  column: shadow\n"
             + "  shadowMappings:\n"
             + "    ds: shadow_ds\n";
@@ -151,7 +151,7 @@ public final class ConfigCenterTest {
     
     private static final String SHARDING_RULE_YAML_DEFAULT_TABLE_STRATEGY_NONE = ""
             + "rules:\n"
-            + "- !!org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlShardingRuleConfiguration\n"
+            + "- !!org.apache.shardingsphere.sharding.core.yaml.config.YamlShardingRuleConfiguration\n"
             + "  defaultTableStrategy:\n"
             + "    none: ''\n";
     

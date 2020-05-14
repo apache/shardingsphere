@@ -282,11 +282,13 @@ props:
 #Omit data sharding, read-write split and encrypt configurations
 
 orchestration:
-  name: orchestration_ds
-  overwrite: true
-  registry:
-    namespace: orchestration
+  orchestration_ds:
+    orchestrationType: config_center,registry_center,metadata_center
+    instanceType: zookeeper
     serverLists: localhost:2181
+    namespace: orchestration
+    props:
+      overwrite: true
 ```
 
 ## Configuration Item Explanation
@@ -411,17 +413,18 @@ masterSlaveRule: #Omit read-write split rule configurations
 encryptRule: #Omit encrypt rule configurations
 
 orchestration:
-  name: #Orchestration instance name
-  overwrite: #Whether to overwrite local configurations with registry center configurations; if it can, each initialization should refer to local configurations
-  registry: #Registry center configuration
-    type: #Registry center type. Example:zookeeper
+  orchestration_ds: #Orchestration instance name
+    orchestrationType: #The type of orchestration center: config_center or registry_center or metadata_center
+    instanceType: #Center instance type. Example:zookeeper
     serverLists: #The list of servers that connect to registry center, including IP and port number; use commas to seperate addresses, such as: host1:2181,host2:2181
-    namespace: #Registry center namespace
-    digest: #The token that connects to the registry center; default means there is no need for authentication
-    operationTimeoutMilliseconds: #Default value: 500 milliseconds
-    maxRetries: #Maximum retry time after failing; default value: 3 times
-    retryIntervalMilliseconds: #Interval time to retry; default value: 500 milliseconds
-    timeToLiveSeconds: #Living time of temporary nodes; default value: 60 seconds
+    namespace: #Center namespace
+    props: #Other properties
+      overwrite: #Whether to overwrite local configurations with config center configurations; if it can, each initialization should refer to local configurations
+      digest: #The token that connects to the center; default means there is no need for authentication
+      operationTimeoutMilliseconds: #Default value: 500 milliseconds
+      maxRetries: #Maximum retry time after failing; default value: 3 times
+      retryIntervalMilliseconds: #Interval time to retry; default value: 500 milliseconds
+      timeToLiveSeconds: #Living time of temporary nodes; default value: 60 seconds
 ```
 
 ## Yaml Syntax Explanation

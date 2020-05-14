@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.core.yaml.swapper;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
-import org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.core.yaml.config.YamlTableRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
 
 /**

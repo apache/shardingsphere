@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.spring.boot.converter;
 
-import org.apache.shardingsphere.sharding.core.yaml.config.sharding.strategy.YamlNoneShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.core.yaml.config.strategy.YamlNoneShardingStrategyConfiguration;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
