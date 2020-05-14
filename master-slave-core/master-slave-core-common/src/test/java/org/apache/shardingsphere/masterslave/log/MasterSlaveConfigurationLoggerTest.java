@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.core.log;
+package org.apache.shardingsphere.masterslave.log;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceConfiguration;
@@ -62,7 +62,7 @@ public final class MasterSlaveConfigurationLoggerTest {
     @Test
     public void assertLogMasterSlaveRuleConfiguration() {
         String yaml = "rules:\n"
-                + "- !!org.apache.shardingsphere.masterslave.core.yaml.config.YamlMasterSlaveRuleConfiguration\n"
+                + "- !!org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration\n"
                 + "  dataSources:\n"
                 + "    ms_ds:\n"
                 + "      masterDataSourceName: master_ds\n"

@@ -15,32 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.core.strategy;
+package org.apache.shardingsphere.masterslave.rule;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRuleBuilder;
 
-import java.util.List;
-import java.util.Properties;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Collection;
 
 /**
- * Random slave database load-balance algorithm.
+ * Master-slave rule builder.
  */
-@Getter
-@Setter
-public final class RandomMasterSlaveLoadBalanceAlgorithm implements MasterSlaveLoadBalanceAlgorithm {
-    
-    private Properties properties = new Properties();
+public final class MasterSlaveRuleBuilder implements ShardingSphereRuleBuilder<MasterSlaveRule, MasterSlaveRuleConfiguration> {
     
     @Override
-    public String getType() {
-        return "RANDOM";
+    public MasterSlaveRule build(final MasterSlaveRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
+        return new MasterSlaveRule(ruleConfiguration);
     }
     
     @Override
-    public String getDataSource(final String name, final String masterDataSourceName, final List<String> slaveDataSourceNames) {
-        return slaveDataSourceNames.get(ThreadLocalRandom.current().nextInt(slaveDataSourceNames.size()));
+    public int getOrder() {
+        return 5;
+    }
+    
+    @Override
+    public Class<MasterSlaveRuleConfiguration> getTypeClass() {
+        return MasterSlaveRuleConfiguration.class;
     }
 }

@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.core.yaml.swapper;
+package org.apache.shardingsphere.masterslave.yaml.swapper;
 
-import org.apache.shardingsphere.masterslave.core.yaml.config.YamlMasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 import org.junit.Test;

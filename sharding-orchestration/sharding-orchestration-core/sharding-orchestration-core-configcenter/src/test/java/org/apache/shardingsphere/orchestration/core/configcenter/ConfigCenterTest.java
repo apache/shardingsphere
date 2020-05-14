@@ -107,7 +107,7 @@ public final class ConfigCenterTest {
     
     private static final String MASTER_SLAVE_RULE_YAML = ""
             + "rules:\n"
-            + "- !!org.apache.shardingsphere.masterslave.core.yaml.config.YamlMasterSlaveRuleConfiguration\n"
+            + "- !!org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration\n"
             + "  dataSources:\n"
             + "    ms_ds:\n"
             + "      masterDataSourceName: master_ds\n"

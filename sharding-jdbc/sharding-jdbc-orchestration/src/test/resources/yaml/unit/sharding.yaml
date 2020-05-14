@@ -77,7 +77,7 @@ rules:
   defaultTableStrategy:
     none:
 
-- !!org.apache.shardingsphere.masterslave.core.yaml.config.YamlMasterSlaveRuleConfiguration
+- !!org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration
   dataSources:
     ds_ms:
       masterDataSourceName: ds_m

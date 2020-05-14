@@ -15,27 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.core.yaml.config;
+package org.apache.shardingsphere.masterslave.strategy;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlRuleConfiguration;
+import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.Properties;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Master-slave rule configuration for YAML.
+ * Random slave database load-balance algorithm.
  */
 @Getter
 @Setter
-public final class YamlMasterSlaveRuleConfiguration implements YamlRuleConfiguration {
+public final class RandomMasterSlaveLoadBalanceAlgorithm implements MasterSlaveLoadBalanceAlgorithm {
     
-    private Map<String, YamlMasterSlaveDataSourceConfiguration> dataSources = new LinkedHashMap<>();
+    private Properties properties = new Properties();
     
     @Override
-    public Class<MasterSlaveRuleConfiguration> getRuleConfigurationType() {
-        return MasterSlaveRuleConfiguration.class;
+    public String getType() {
+        return "RANDOM";
+    }
+    
+    @Override
+    public String getDataSource(final String name, final String masterDataSourceName, final List<String> slaveDataSourceNames) {
+        return slaveDataSourceNames.get(ThreadLocalRandom.current().nextInt(slaveDataSourceNames.size()));
     }
 }

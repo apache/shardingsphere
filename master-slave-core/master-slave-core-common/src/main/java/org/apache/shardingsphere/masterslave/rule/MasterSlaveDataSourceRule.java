@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.core.rule;
+package org.apache.shardingsphere.masterslave.rule;
 
 import lombok.AccessLevel;
 import lombok.Getter;

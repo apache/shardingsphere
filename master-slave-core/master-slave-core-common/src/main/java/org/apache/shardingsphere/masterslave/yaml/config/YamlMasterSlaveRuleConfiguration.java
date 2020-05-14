@@ -15,30 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.core.rule;
+package org.apache.shardingsphere.masterslave.yaml.config;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRuleBuilder;
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlRuleConfiguration;
 
-import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * Master-slave rule builder.
+ * Master-slave rule configuration for YAML.
  */
-public final class MasterSlaveRuleBuilder implements ShardingSphereRuleBuilder<MasterSlaveRule, MasterSlaveRuleConfiguration> {
+@Getter
+@Setter
+public final class YamlMasterSlaveRuleConfiguration implements YamlRuleConfiguration {
+    
+    private Map<String, YamlMasterSlaveDataSourceConfiguration> dataSources = new LinkedHashMap<>();
     
     @Override
-    public MasterSlaveRule build(final MasterSlaveRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
-        return new MasterSlaveRule(ruleConfiguration);
-    }
-    
-    @Override
-    public int getOrder() {
-        return 5;
-    }
-    
-    @Override
-    public Class<MasterSlaveRuleConfiguration> getTypeClass() {
+    public Class<MasterSlaveRuleConfiguration> getRuleConfigurationType() {
         return MasterSlaveRuleConfiguration.class;
     }
 }

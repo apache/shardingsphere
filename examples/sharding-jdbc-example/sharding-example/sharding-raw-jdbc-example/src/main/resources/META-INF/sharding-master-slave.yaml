@@ -90,7 +90,7 @@ rules:
         props:
           algorithm.expression: ds_${user_id % 2}
 
-- !!org.apache.shardingsphere.masterslave.core.yaml.config.YamlMasterSlaveRuleConfiguration
+- !!org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration
   dataSources:
     ds_0:
       masterDataSourceName: ds_master_0

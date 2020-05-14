@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.spring.boot.rule;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.masterslave.core.yaml.config.YamlMasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.shadow.core.yaml.config.YamlShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;

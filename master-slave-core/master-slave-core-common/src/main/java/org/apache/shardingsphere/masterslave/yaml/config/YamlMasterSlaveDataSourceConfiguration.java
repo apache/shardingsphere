@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.core.yaml.config;
+package org.apache.shardingsphere.masterslave.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;
