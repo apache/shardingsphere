@@ -468,7 +468,7 @@ public final class ConfigCenterTest {
 
     private static String readYamlFileIntoString(final String fileName) {
         try {
-            return new String(Files.readAllBytes(Paths.get(ClassLoader.getSystemResource(fileName).toURI())));
+            return (new String(Files.readAllBytes(Paths.get(ClassLoader.getSystemResource(fileName).toURI())))).replaceAll("#.*\n", "");
         } catch (IOException | URISyntaxException ex) {
             log.error("Unable to open file {}", fileName);
             return null;
