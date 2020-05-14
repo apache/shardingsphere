@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.core.log;
+package org.apache.shardingsphere.underlying.common.log;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -48,13 +48,13 @@ public final class ConfigurationLogger {
     }
     
     /**
-     * Log authentication configuration.
+     * Log authentication.
      *
-     * @param authenticationConfiguration authentication configuration
+     * @param authentication authentication
      */
-    public static void log(final Authentication authenticationConfiguration) {
-        if (null != authenticationConfiguration) {
-            log(authenticationConfiguration.getClass().getSimpleName(), YamlEngine.marshal(new AuthenticationYamlSwapper().swap(authenticationConfiguration)));
+    public static void log(final Authentication authentication) {
+        if (null != authentication) {
+            log(authentication.getClass().getSimpleName(), YamlEngine.marshal(new AuthenticationYamlSwapper().swap(authentication)));
         }
     }
     
