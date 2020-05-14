@@ -17,14 +17,5 @@
 
 package org.apache.shardingsphere.underlying.common.context.runtime;
 
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
-
 public interface RuntimeExecutorKernel {
-    
-    /**
-     * Refresh executor kernel.
-     *
-     * @param properties properties
-     */
-    void refresh(ConfigurationProperties properties);
 }
