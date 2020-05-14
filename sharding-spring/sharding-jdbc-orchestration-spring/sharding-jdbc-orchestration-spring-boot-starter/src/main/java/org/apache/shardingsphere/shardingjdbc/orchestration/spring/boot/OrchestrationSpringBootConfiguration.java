@@ -28,9 +28,9 @@ import org.apache.shardingsphere.sharding.core.strategy.algorithm.sharding.inlin
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.common.SpringBootRootConfigurationProperties;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding.LocalRulesCondition;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding.OrchestrationSpringBootRuleConfigurationsYamlSwapper;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding.OrchestrationSpringBootRulesConfigurationProperties;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.rule.LocalRulesCondition;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.rule.OrchestrationSpringBootRuleConfigurationsYamlSwapper;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.rule.OrchestrationSpringBootRulesConfigurationProperties;
 import org.apache.shardingsphere.spring.boot.datasource.DataSourcePropertiesSetterHolder;
 import org.apache.shardingsphere.spring.boot.util.DataSourceUtil;
 import org.apache.shardingsphere.spring.boot.util.PropertyUtil;

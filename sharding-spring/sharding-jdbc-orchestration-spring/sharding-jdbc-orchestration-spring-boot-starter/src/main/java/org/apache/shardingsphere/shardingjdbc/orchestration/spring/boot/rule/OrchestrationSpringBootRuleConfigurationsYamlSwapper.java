@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding;
+package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.rule;
 
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;

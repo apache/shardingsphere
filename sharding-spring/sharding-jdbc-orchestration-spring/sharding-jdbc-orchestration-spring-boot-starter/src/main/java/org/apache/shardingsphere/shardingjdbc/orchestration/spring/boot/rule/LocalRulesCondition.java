@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding;
+package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.rule;
 
 import org.apache.shardingsphere.spring.boot.util.PropertyUtil;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
