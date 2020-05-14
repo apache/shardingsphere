@@ -76,7 +76,7 @@ public class OrchestrationSpringBootRegistryMasterSlaveTest {
                 + "    username: root\n");
         testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/rule", ""
                 + "rules:\n"
-                + "- !!org.apache.shardingsphere.masterslave.core.yaml.config.YamlMasterSlaveRuleConfiguration\n"
+                + "- !!org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration\n"
                 + "  dataSources:\n" 
                 + "    ds_ms:\n" 
                 + "      loadBalanceAlgorithmType: ROUND_ROBIN\n" 

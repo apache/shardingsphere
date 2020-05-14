@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.sharding.core.log.ConfigurationLogger;
 import org.apache.shardingsphere.underlying.common.auth.Authentication;
 import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
@@ -30,6 +29,7 @@ import org.apache.shardingsphere.underlying.common.context.ShardingSphereSchema;
 import org.apache.shardingsphere.underlying.common.context.runtime.CachedDatabaseMetaData;
 import org.apache.shardingsphere.underlying.common.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.log.ConfigurationLogger;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;

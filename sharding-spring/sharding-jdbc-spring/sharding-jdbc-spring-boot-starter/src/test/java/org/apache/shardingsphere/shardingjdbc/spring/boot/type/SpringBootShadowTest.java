@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring.boot.type;
 
-import org.apache.shardingsphere.shadow.core.rule.ShadowRule;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.junit.Test;

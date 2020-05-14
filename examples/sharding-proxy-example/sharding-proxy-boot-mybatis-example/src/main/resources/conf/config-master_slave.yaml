@@ -55,7 +55,7 @@ dataSources:
     maxPoolSize: 50
 
 rules:
-- !!org.apache.shardingsphere.masterslave.core.yaml.config.YamlMasterSlaveRuleConfiguration
+- !!org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration
   dataSources:
     ms_ds:
       name: ms_ds

@@ -87,7 +87,7 @@ rules:
       shardingAlgorithm:
         type: COMPLEX_TEST
 
-- !!org.apache.shardingsphere.masterslave.core.yaml.config.YamlMasterSlaveRuleConfiguration
+- !!org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration
   dataSources:
     db_ms_0:
       masterDataSourceName: db0_master

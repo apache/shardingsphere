@@ -22,8 +22,8 @@ import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYa
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.masterslave.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.shadow.core.yaml.swapper.ShadowRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.masterslave.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.shadow.yaml.swapper.ShadowRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
