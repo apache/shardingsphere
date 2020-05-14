@@ -15,20 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.yaml.constructor;
+package org.apache.shardingsphere.sharding.yaml.construct;
 
 import org.apache.shardingsphere.sharding.yaml.config.strategy.YamlNoneShardingStrategyConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlRootRuleConfigurations;
-import org.apache.shardingsphere.sharding.yaml.constructor.construct.YamlNoneShardingStrategyConfigurationConstruct;
-import org.apache.shardingsphere.underlying.common.yaml.constructor.ShardingSphereYAMLConstructor;
+import org.apache.shardingsphere.underlying.common.yaml.constructor.ShardingSphereYAMLConstruct;
+import org.yaml.snakeyaml.nodes.Node;
 
 /**
- * YAML root configurations constructor.
+ * YAML none sharding strategy configuration YAML construct.
  */
-public final class YamlRootRuleConfigurationsConstructor extends ShardingSphereYAMLConstructor {
+public final class NoneShardingStrategyConfigurationYAMLConstruct implements ShardingSphereYAMLConstruct {
     
-    public YamlRootRuleConfigurationsConstructor() {
-        super(YamlRootRuleConfigurations.class);
-        registerConstruct(YamlNoneShardingStrategyConfiguration.class, new YamlNoneShardingStrategyConfigurationConstruct());
+    @Override
+    public Object construct(final Node node) {
+        return new YamlNoneShardingStrategyConfiguration();
+    }
+    
+    @Override
+    public void construct2ndStep(final Node node, final Object newInstance) {
+    }
+    
+    @Override
+    public Class<?> getType() {
+        return YamlNoneShardingStrategyConfiguration.class;
     }
 }

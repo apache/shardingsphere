@@ -15,26 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.yaml.engine.fixture;
+package org.apache.shardingsphere.underlying.common.yaml.constructor;
 
-import org.apache.shardingsphere.underlying.common.yaml.constructor.ShardingSphereYAMLConstructor;
 import org.yaml.snakeyaml.constructor.Construct;
-import org.yaml.snakeyaml.nodes.Node;
 
-public final class ShardingSphereYAMLConstructorFixture extends ShardingSphereYAMLConstructor {
+/**
+ * ShardingSphere YAML construct.
+ */
+public interface ShardingSphereYAMLConstruct extends Construct {
     
-    public ShardingSphereYAMLConstructorFixture() {
-        super(DefaultYamlRepresenterFixture.class);
-        registerConstruct(FixtureCustomClass.class, new Construct() {
-            
-            @Override
-            public Object construct(final Node node) {
-                return new FixtureCustomClass();
-            }
-            
-            @Override
-            public void construct2ndStep(final Node node, final Object newInstance) {
-            }
-        });
-    }
+    /**
+     * Get type.
+     * 
+     * @return type
+     */
+    Class<?> getType();
 }

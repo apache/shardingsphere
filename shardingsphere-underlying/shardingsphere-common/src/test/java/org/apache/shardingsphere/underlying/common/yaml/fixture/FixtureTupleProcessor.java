@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.yaml.engine.fixture;
+package org.apache.shardingsphere.underlying.common.yaml.fixture;
 
 import org.apache.shardingsphere.underlying.common.yaml.representer.processor.TupleProcessor;
 import org.yaml.snakeyaml.nodes.NodeTuple;

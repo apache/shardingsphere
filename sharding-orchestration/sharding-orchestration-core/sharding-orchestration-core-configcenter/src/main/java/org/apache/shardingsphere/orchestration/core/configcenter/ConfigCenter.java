@@ -29,14 +29,13 @@ import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSource
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.auth.Authentication;
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.underlying.common.auth.yaml.config.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.sharding.yaml.constructor.YamlRootRuleConfigurationsConstructor;
 import org.apache.shardingsphere.underlying.common.auth.yaml.swapper.AuthenticationYamlSwapper;
-import org.apache.shardingsphere.underlying.common.yaml.swapper.RuleRootConfigurationsYamlSwapper;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.underlying.common.yaml.swapper.RuleRootConfigurationsYamlSwapper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -228,8 +227,7 @@ public final class ConfigCenter {
      * @return rule configurations
      */
     public Collection<RuleConfiguration> loadRuleConfigurations(final String shardingSchemaName) {
-        return new RuleRootConfigurationsYamlSwapper().swap(YamlEngine.unmarshal(
-                repository.get(node.getRulePath(shardingSchemaName)), YamlRootRuleConfigurations.class, new YamlRootRuleConfigurationsConstructor()));
+        return new RuleRootConfigurationsYamlSwapper().swap(YamlEngine.unmarshal(repository.get(node.getRulePath(shardingSchemaName)), YamlRootRuleConfigurations.class));
     }
     
     /**

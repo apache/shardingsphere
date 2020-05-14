@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.underlying.common.yaml.representer;
 
-import org.apache.shardingsphere.underlying.common.yaml.engine.fixture.DefaultYamlRepresenterFixture;
-import org.apache.shardingsphere.underlying.common.yaml.engine.fixture.FixtureTupleProcessor;
+import org.apache.shardingsphere.underlying.common.yaml.fixture.DefaultYamlRepresenterFixture;
+import org.apache.shardingsphere.underlying.common.yaml.fixture.FixtureTupleProcessor;
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
 

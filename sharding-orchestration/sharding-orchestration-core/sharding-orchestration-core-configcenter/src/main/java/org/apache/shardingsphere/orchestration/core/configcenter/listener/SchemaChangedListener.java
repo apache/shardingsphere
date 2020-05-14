@@ -29,20 +29,19 @@ import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChang
 import org.apache.shardingsphere.orchestration.core.common.event.EncryptRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.IgnoredShardingOrchestrationEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.MasterSlaveRuleChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.SchemaAddedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.ShardingOrchestrationEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.listener.PostShardingCenterRepositoryEventListener;
 import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenter;
 import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenterNode;
 import org.apache.shardingsphere.orchestration.core.configuration.DataSourceConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlRootRuleConfigurations;
-import org.apache.shardingsphere.sharding.yaml.constructor.YamlRootRuleConfigurationsConstructor;
-import org.apache.shardingsphere.underlying.common.yaml.swapper.RuleRootConfigurationsYamlSwapper;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.underlying.common.yaml.swapper.RuleRootConfigurationsYamlSwapper;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -137,19 +136,16 @@ public final class SchemaChangedListener extends PostShardingCenterRepositoryEve
     }
     
     private RuleConfigurationsChangedEvent createRuleConfigurationsChangedEvent(final String shardingSchemaName, final String ruleValue) {
-        return new RuleConfigurationsChangedEvent(shardingSchemaName, new RuleRootConfigurationsYamlSwapper().swap(
-                YamlEngine.unmarshal(ruleValue, YamlRootRuleConfigurations.class, new YamlRootRuleConfigurationsConstructor())));
+        return new RuleConfigurationsChangedEvent(shardingSchemaName, new RuleRootConfigurationsYamlSwapper().swap(YamlEngine.unmarshal(ruleValue, YamlRootRuleConfigurations.class)));
     }
     
     private EncryptRuleChangedEvent createEncryptRuleChangedEvent(final String shardingSchemaName, final String ruleValue) {
-        Collection<RuleConfiguration> ruleConfigurations = new RuleRootConfigurationsYamlSwapper().swap(
-                YamlEngine.unmarshal(ruleValue, YamlRootRuleConfigurations.class, new YamlRootRuleConfigurationsConstructor()));
+        Collection<RuleConfiguration> ruleConfigurations = new RuleRootConfigurationsYamlSwapper().swap(YamlEngine.unmarshal(ruleValue, YamlRootRuleConfigurations.class));
         return new EncryptRuleChangedEvent(shardingSchemaName, (EncryptRuleConfiguration) ruleConfigurations.iterator().next());
     }
     
     private MasterSlaveRuleChangedEvent createMasterSlaveRuleChangedEvent(final String shardingSchemaName, final String ruleValue) {
-        Collection<RuleConfiguration> ruleConfigurations = new RuleRootConfigurationsYamlSwapper().swap(
-                YamlEngine.unmarshal(ruleValue, YamlRootRuleConfigurations.class, new YamlRootRuleConfigurationsConstructor()));
+        Collection<RuleConfiguration> ruleConfigurations = new RuleRootConfigurationsYamlSwapper().swap(YamlEngine.unmarshal(ruleValue, YamlRootRuleConfigurations.class));
         return new MasterSlaveRuleChangedEvent(shardingSchemaName, (MasterSlaveRuleConfiguration) ruleConfigurations.iterator().next());
     }
     
