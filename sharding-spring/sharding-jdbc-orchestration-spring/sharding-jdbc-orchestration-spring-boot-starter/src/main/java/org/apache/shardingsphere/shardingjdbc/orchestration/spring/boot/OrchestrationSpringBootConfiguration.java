@@ -29,7 +29,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSpher
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.common.SpringBootRootConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.rule.LocalRulesCondition;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.rule.OrchestrationSpringBootRuleConfigurationsYamlSwapper;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.rule.OrchestrationSpringBootRulesConfigurationYamlSwapper;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.rule.OrchestrationSpringBootRulesConfigurationProperties;
 import org.apache.shardingsphere.spring.boot.datasource.DataSourcePropertiesSetterHolder;
 import org.apache.shardingsphere.spring.boot.util.DataSourceUtil;
@@ -107,7 +107,7 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @Conditional(LocalRulesCondition.class)
     public DataSource localShardingSphereDataSource(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
         return new OrchestrationShardingSphereDataSource(
-                new ShardingSphereDataSource(dataSourceMap, new OrchestrationSpringBootRuleConfigurationsYamlSwapper().swap(rules), root.getProps()), orchestrationConfiguration);
+                new ShardingSphereDataSource(dataSourceMap, new OrchestrationSpringBootRulesConfigurationYamlSwapper().swap(rules), root.getProps()), orchestrationConfiguration);
     }
     
     /**

@@ -34,7 +34,7 @@ import java.util.LinkedList;
 /**
  * Orchestration Spring boot root configurations YAML swapper.
  */
-public final class OrchestrationSpringBootRuleConfigurationsYamlSwapper implements YamlSwapper<OrchestrationSpringBootRulesConfigurationProperties, Collection<RuleConfiguration>> {
+public final class OrchestrationSpringBootRulesConfigurationYamlSwapper implements YamlSwapper<OrchestrationSpringBootRulesConfigurationProperties, Collection<RuleConfiguration>> {
     
     private final ShardingRuleConfigurationYamlSwapper shardingRuleConfigurationYamlSwapper = new ShardingRuleConfigurationYamlSwapper();
     
