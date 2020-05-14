@@ -1,0 +1,7 @@
+users:
+  root1:
+    authorizedSchemas: sharding_db
+    password: root1
+  root2:
+    authorizedSchemas: sharding_db,ms_db
+    password: root2

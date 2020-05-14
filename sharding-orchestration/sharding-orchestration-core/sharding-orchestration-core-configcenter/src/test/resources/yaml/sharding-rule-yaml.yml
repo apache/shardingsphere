@@ -1,0 +1,12 @@
+shardingRule:
+  tables:
+    t_order:
+      actualDataNodes: ds_${0..1}.t_order_${0..1}
+      logicTable: t_order
+      tableStrategy:
+        standard:
+          shardingAlgorithm:
+            props:
+              algorithm.expression: t_order_${order_id % 2}
+            type: INLINE
+          shardingColumn: order_id

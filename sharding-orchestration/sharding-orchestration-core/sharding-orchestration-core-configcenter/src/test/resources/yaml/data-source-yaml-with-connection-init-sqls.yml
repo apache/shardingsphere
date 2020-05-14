@@ -1,0 +1,20 @@
+ds_0: !!org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration
+  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
+  properties:
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ds_0
+    username: root
+    password: root
+    connectionInitSqls:
+      - set names utf8mb4;
+      - set names utf8;
+ds_1: !!org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration
+  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
+  properties:
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ds_1
+    username: root
+    password: root
+    connectionInitSqls:
+      - set names utf8mb4;
+      - set names utf8;

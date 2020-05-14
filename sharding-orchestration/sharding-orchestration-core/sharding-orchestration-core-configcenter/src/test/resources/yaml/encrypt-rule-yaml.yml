@@ -1,0 +1,12 @@
+encryptRule:
+  encryptors:
+    order_encryptor:
+      props:
+        aes.key.value: 123456
+      type: aes
+  tables:
+    t_order:
+      columns:
+        order_id:
+          cipherColumn: order_id
+          encryptor: order_encryptor

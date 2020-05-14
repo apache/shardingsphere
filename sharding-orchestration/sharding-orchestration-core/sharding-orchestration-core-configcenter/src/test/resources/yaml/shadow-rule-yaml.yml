@@ -1,0 +1,4 @@
+shadowRule:
+  column: shadow
+  shadowMappings:
+    ds: shadow_ds

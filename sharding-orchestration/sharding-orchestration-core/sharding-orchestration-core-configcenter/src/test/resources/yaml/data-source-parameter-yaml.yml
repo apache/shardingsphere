@@ -1,0 +1,8 @@
+ds_0: !!org.apache.shardingsphere.core.rule.DataSourceParameter
+  url: jdbc:mysql://localhost:3306/ds_0
+  username: root
+  password: root
+ds_1: !!org.apache.shardingsphere.core.rule.DataSourceParameter
+  url: jdbc:mysql://localhost:3306/ds_1
+  username: root
+  password: root
