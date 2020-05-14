@@ -52,6 +52,9 @@ public class RegistryCenterConfigurationUtil {
             case ENCRYPT:
                 instanceConfigurationMap.put("orchestration-encrypt-data-source", result);
                 break;
+            case SHADOW:
+                instanceConfigurationMap.put("orchestration-shadow-data-source", result);
+                break;
         }
         return instanceConfigurationMap;
     }
@@ -84,6 +87,10 @@ public class RegistryCenterConfigurationUtil {
             case ENCRYPT:
                 instanceConfigurationMap.put("orchestration-encrypt-data-source", nacosResult);
                 instanceConfigurationMap.put("orchestration-zookeeper-encrypt-data-source", zookeeperResult);
+                break;
+            case SHADOW:
+                instanceConfigurationMap.put("orchestration-shadow-data-source", nacosResult);
+                instanceConfigurationMap.put("orchestration-zookeeper-shadow-data-source", zookeeperResult);
                 break;
         }
         return instanceConfigurationMap;

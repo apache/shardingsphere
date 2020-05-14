@@ -40,6 +40,7 @@ public class YamlConfigurationExampleMain {
     private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
 //    private static ShardingType shardingType = ShardingType.MASTER_SLAVE;
 //    private static ShardingType shardingType = ShardingType.ENCRYPT;
+//    private static ShardingType shardingType = ShardingType.SHADOW;
     
     private static boolean loadConfigFromRegCenter = false;
 //    private static boolean loadConfigFromRegCenter = true;
@@ -67,6 +68,9 @@ public class YamlConfigurationExampleMain {
                 return YamlOrchestrationShardingSphereDataSourceFactory.createDataSource(getFile(yamlFilePath));
             case ENCRYPT:
                 yamlFilePath = String.format("/META-INF/%s/%s/encrypt.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
+                return YamlOrchestrationShardingSphereDataSourceFactory.createDataSource(getFile(yamlFilePath));
+            case SHADOW:
+                yamlFilePath = String.format("/META-INF/%s/%s/shadow.yaml", registryCenterType.name().toLowerCase(), loadConfigFromRegCenter ? "cloud" : "local");
                 return YamlOrchestrationShardingSphereDataSourceFactory.createDataSource(getFile(yamlFilePath));
             default:
                 throw new UnsupportedOperationException(shardingType.name());

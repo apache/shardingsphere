@@ -24,9 +24,11 @@ import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
 import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.RegistryCenterConfigurationUtil;
 import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.cloud.CloudEncryptConfiguration;
 import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.cloud.CloudMasterSlaveConfiguration;
+import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.cloud.CloudShadowConfiguration;
 import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.cloud.CloudShardingDatabasesAndTablesConfiguration;
 import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.local.LocalEncryptConfiguration;
 import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.local.LocalMasterSlaveConfiguration;
+import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.local.LocalShadowConfiguration;
 import org.apache.shardingsphere.example.orchestration.raw.jdbc.config.local.LocalShardingDatabasesAndTablesConfiguration;
 import org.apache.shardingsphere.example.type.RegistryCenterType;
 import org.apache.shardingsphere.example.type.ShardingType;
@@ -47,6 +49,7 @@ public class JavaConfigurationExampleMain {
     private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
 //    private static ShardingType shardingType = ShardingType.MASTER_SLAVE;
 //    private static ShardingType shardingType = ShardingType.ENCRYPT;
+//    private static ShardingType shardingType = ShardingType.SHADOW;
     
     private static boolean loadConfigFromRegCenter = false;
 //    private static boolean loadConfigFromRegCenter = true;
@@ -76,6 +79,9 @@ public class JavaConfigurationExampleMain {
                 break;
             case ENCRYPT:
                 configuration = loadConfigFromRegCenter ? new CloudEncryptConfiguration(centerConfigurationMap) : new LocalEncryptConfiguration(centerConfigurationMap);
+                break;
+            case SHADOW:
+                configuration = loadConfigFromRegCenter ? new CloudShadowConfiguration(centerConfigurationMap) : new LocalShadowConfiguration(centerConfigurationMap);
                 break;
             default:
                 throw new UnsupportedOperationException(shardingType.name());

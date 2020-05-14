@@ -129,7 +129,7 @@ public final class ConfigCenter {
             } else if (each instanceof ShadowRuleConfiguration) {
                 ShadowRuleConfiguration config = (ShadowRuleConfiguration) each;
                 Preconditions.checkState(!config.getColumn().isEmpty() && null != config.getShadowMappings(), "No available shadow rule configuration in `%s` for orchestration.", shardingSchemaName);
-                // TODO process shadow
+                configurations.add(each);
             }
         }
         repository.persist(node.getRulePath(shardingSchemaName), YamlEngine.marshal(new RuleRootConfigurationsYamlSwapper().swap(configurations)));
