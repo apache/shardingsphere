@@ -36,7 +36,7 @@ dataSources:
     maxPoolSize: 50
 
 rules:
-- !!org.apache.shardingsphere.sharding.core.yaml.config.YamlShardingRuleConfiguration
+- !!org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration
   defaultDatabaseStrategy:
     none:
   tables:

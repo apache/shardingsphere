@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring;
 
 import org.apache.shardingsphere.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.core.rule.BindingTableRule;
-import org.apache.shardingsphere.sharding.core.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.core.rule.TableRule;
+import org.apache.shardingsphere.sharding.rule.BindingTableRule;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.fixture.IncrementKeyGenerateAlgorithm;

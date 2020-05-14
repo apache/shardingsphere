@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.rewrite.parameterized;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlRootRuleConfigurations;
-import org.apache.shardingsphere.sharding.core.yaml.constructor.YamlRootRuleConfigurationsConstructor;
+import org.apache.shardingsphere.sharding.yaml.constructor.YamlRootRuleConfigurationsConstructor;
 import org.apache.shardingsphere.underlying.common.yaml.swapper.RuleRootConfigurationsYamlSwapper;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;

@@ -34,11 +34,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>encrypt-core-rewrite</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-rewrite-engine</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -46,6 +41,12 @@
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-rewrite-test</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>encrypt-core-rewrite</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

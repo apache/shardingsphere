@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
 import org.apache.shardingsphere.underlying.common.hint.HintManager;
-import org.apache.shardingsphere.sharding.core.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.fixture.AbstractRoutingEngineTest;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.groupby.GroupByContext;

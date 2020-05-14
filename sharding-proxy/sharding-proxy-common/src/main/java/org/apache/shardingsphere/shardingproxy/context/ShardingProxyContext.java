@@ -25,7 +25,7 @@ import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrch
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.CircuitStateChangedEvent;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.auth.Authentication;
-import org.apache.shardingsphere.sharding.core.log.ConfigurationLogger;
+import org.apache.shardingsphere.underlying.common.log.ConfigurationLogger;
 
 import java.util.Properties;
 
