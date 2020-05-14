@@ -25,20 +25,20 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class ShardingCounterMetricsTrackerTest extends AbstractPrometheusCollectorRegistry {
+public final class ShardingTableCounterMetricsTrackerTest extends AbstractPrometheusCollectorRegistry {
     
     @Test
     public void assertShardingCounter() {
-        ShardingCounterMetricsTracker tracker = new ShardingCounterMetricsTracker();
-        assertThat(tracker.metricsLabel(), is(MetricsLabelEnum.SHARDING.getName()));
+        ShardingTableCounterMetricsTracker tracker = new ShardingTableCounterMetricsTracker();
+        assertThat(tracker.metricsLabel(), is(MetricsLabelEnum.SHARDING_TABLE.getName()));
         assertThat(tracker.metricsType(), is(MetricsTypeEnum.COUNTER.name()));
-        String name = "sharding";
-        String[] labelNames = {"datasource", "table"};
-        String[] labelValues0 = {"ds0", "t_order_0"};
+        String name = "sharding_table";
+        String[] labelNames = {"table"};
+        String[] labelValues0 = {"t_order_0"};
         tracker.inc(1.0, labelValues0);
         Double ds0 = getCollectorRegistry().getSampleValue(name, labelNames, labelValues0);
         assertThat(ds0, is(1.0));
-        String[] labelValues1 = {"ds1", "t_order_1"};
+        String[] labelValues1 = {"t_order_1"};
         tracker.inc(2.0, labelValues1);
         Double ds1 = getCollectorRegistry().getSampleValue(name, labelNames, labelValues1);
         assertThat(ds1, is(2.0));
@@ -46,14 +46,14 @@ public final class ShardingCounterMetricsTrackerTest extends AbstractPrometheusC
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNoLabels() {
-        ShardingCounterMetricsTracker tracker = new ShardingCounterMetricsTracker();
+        ShardingTableCounterMetricsTracker tracker = new ShardingTableCounterMetricsTracker();
         tracker.inc(1.0);
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertMoreLabels() {
-        ShardingCounterMetricsTracker tracker = new ShardingCounterMetricsTracker();
-        tracker.inc(1.0, "ds0", "t_order_0", " t_order_1");
+        ShardingTableCounterMetricsTracker tracker = new ShardingTableCounterMetricsTracker();
+        tracker.inc(1.0, "t_order_0", " t_order_1");
     }
 }
 

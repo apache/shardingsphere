@@ -42,8 +42,9 @@ public final class MetricsUtils {
             for (RouteUnit each : routeUnits) {
                 Collection<RouteMapper> tableMappers = each.getTableMappers();
                 RouteMapper dataSourceMapper = each.getDataSourceMapper();
+                MetricsTrackerFacade.getInstance().counterInc(MetricsLabelEnum.SHARDING_DATASOURCE.getName(), dataSourceMapper.getActualName());
                 for (RouteMapper table : tableMappers) {
-                    MetricsTrackerFacade.getInstance().counterInc(MetricsLabelEnum.SHARDING.getName(), dataSourceMapper.getActualName(), table.getActualName());
+                    MetricsTrackerFacade.getInstance().counterInc(MetricsLabelEnum.SHARDING_TABLE.getName(), table.getActualName());
                 }
             }
         }

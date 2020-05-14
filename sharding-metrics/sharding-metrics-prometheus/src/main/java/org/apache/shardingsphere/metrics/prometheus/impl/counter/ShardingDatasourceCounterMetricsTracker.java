@@ -22,23 +22,19 @@ import org.apache.shardingsphere.metrics.api.CounterMetricsTracker;
 import org.apache.shardingsphere.metrics.enums.MetricsLabelEnum;
 
 /**
- * Sharding counter metrics tracker.
+ * Sharding datasource counter metrics tracker.
  */
-public final class ShardingCounterMetricsTracker implements CounterMetricsTracker {
+public final class ShardingDatasourceCounterMetricsTracker implements CounterMetricsTracker {
     
-    private static final Counter SHARDING = Counter.build()
-            .name("sharding")
-            .labelNames("datasource", "table")
-            .help("collect sharding datasource and table count")
-            .register();
+    private static final Counter SHARDING_DATASOURCE = Counter.build().name("sharding_datasource").labelNames("datasource") .help("collect sharding datasource count").register();
     
     @Override
     public void inc(final double amount, final String... labelValues) {
-        SHARDING.labels(labelValues).inc(amount);
+        SHARDING_DATASOURCE.labels(labelValues).inc(amount);
     }
     
     @Override
     public String metricsLabel() {
-        return MetricsLabelEnum.SHARDING.getName();
+        return MetricsLabelEnum.SHARDING_DATASOURCE.getName();
     }
 }
