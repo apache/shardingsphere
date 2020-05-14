@@ -100,7 +100,7 @@ public final class YamlOrchestrationShardingSphereDataSourceFactory {
     
     private static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final YamlOrchestrationRootRuleConfigurations configurations, 
                                                final Properties props, final Map<String, YamlCenterRepositoryConfiguration> yamlInstanceConfigurationMap) throws SQLException {
-        if (configurations.getRules().size() == 0 || dataSourceMap.size() == 0) {
+        if (configurations.getRules().isEmpty() || dataSourceMap.isEmpty()) {
             return new OrchestrationShardingSphereDataSource(new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
         } else {
             ShardingSphereDataSource shardingSphereDataSource = new ShardingSphereDataSource(dataSourceMap, SWAPPER.swap(configurations), props);
