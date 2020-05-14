@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.spring.boot.common;
+package org.apache.shardingsphere.shardingjdbc.spring.boot.prop;
 
 import lombok.Getter;
 import lombok.Setter;
