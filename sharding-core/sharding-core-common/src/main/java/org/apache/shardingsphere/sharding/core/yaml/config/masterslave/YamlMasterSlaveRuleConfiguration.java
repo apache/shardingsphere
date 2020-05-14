@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.core.yaml.config.masterslave;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlRuleConfiguration;
 
 import java.util.LinkedHashMap;
@@ -32,4 +33,9 @@ import java.util.Map;
 public final class YamlMasterSlaveRuleConfiguration implements YamlRuleConfiguration {
     
     private Map<String, YamlMasterSlaveDataSourceConfiguration> dataSources = new LinkedHashMap<>();
+    
+    @Override
+    public Class<MasterSlaveRuleConfiguration> getRuleConfigurationType() {
+        return MasterSlaveRuleConfiguration.class;
+    }
 }

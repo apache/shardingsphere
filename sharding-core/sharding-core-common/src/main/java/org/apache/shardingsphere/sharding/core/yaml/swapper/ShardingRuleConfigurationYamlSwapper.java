@@ -21,14 +21,14 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
 import org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlTableRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlRuleConfigurationSwapper;
 
 import java.util.Map.Entry;
 
 /**
  * Sharding rule configuration YAML swapper.
  */
-public final class ShardingRuleConfigurationYamlSwapper implements YamlSwapper<YamlShardingRuleConfiguration, ShardingRuleConfiguration> {
+public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfigurationSwapper<YamlShardingRuleConfiguration, ShardingRuleConfiguration> {
     
     private final TableRuleConfigurationYamlSwapper tableRuleConfigurationYamlSwapper = new TableRuleConfigurationYamlSwapper();
     
@@ -76,5 +76,15 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlSwapper<Y
             result.setDefaultKeyGeneratorConfig(keyGeneratorConfigurationYamlSwapper.swap(yamlConfiguration.getDefaultKeyGenerator()));
         }
         return result;
+    }
+    
+    @Override
+    public int getOrder() {
+        return 0;
+    }
+    
+    @Override
+    public Class<ShardingRuleConfiguration> getTypeClass() {
+        return ShardingRuleConfiguration.class;
     }
 }

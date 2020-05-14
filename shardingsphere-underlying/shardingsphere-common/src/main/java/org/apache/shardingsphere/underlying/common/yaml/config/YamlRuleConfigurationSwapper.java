@@ -15,28 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.core.yaml.config.shadow;
+package org.apache.shardingsphere.underlying.common.yaml.config;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlRuleConfiguration;
-
-import java.util.Map;
+import org.apache.shardingsphere.sharding.spi.order.OrderedSPI;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
+import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
 
 /**
- * Shadow rule configuration.
+ * YAML rule configuration swapper.
+ * 
+ * @param <Y> type of YAML rule configuration
+ * @param <T> type of rule configuration
  */
-@Getter
-@Setter
-public final class YamlShadowRuleConfiguration implements YamlRuleConfiguration {
-    
-    private String column;
-    
-    private Map<String, String> shadowMappings;
-    
-    @Override
-    public Class<ShadowRuleConfiguration> getRuleConfigurationType() {
-        return ShadowRuleConfiguration.class;
-    }
+public interface YamlRuleConfigurationSwapper<Y extends YamlRuleConfiguration, T extends RuleConfiguration> extends YamlSwapper<Y, T>, OrderedSPI<T> {
 }

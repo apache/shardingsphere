@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.core.yaml.config.sharding;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlRuleConfiguration;
 
 import java.util.ArrayList;
@@ -44,4 +45,9 @@ public final class YamlShardingRuleConfiguration implements YamlRuleConfiguratio
     private YamlShardingStrategyConfiguration defaultTableStrategy;
     
     private YamlKeyGeneratorConfiguration defaultKeyGenerator;
+    
+    @Override
+    public Class<ShardingRuleConfiguration> getRuleConfigurationType() {
+        return ShardingRuleConfiguration.class;
+    }
 }
