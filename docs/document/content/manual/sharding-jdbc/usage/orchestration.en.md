@@ -3,7 +3,7 @@ title = "Orchestration"
 weight = 4
 +++
 
-Using orchestration requires designating a registry center, in which all the configurations are saved. Users can either use local configurations to cover registry center configurations or read configurations from registry center.
+Using orchestration requires designating a config center, registry center & metadata center, in which all the configurations are saved. Users can either use local configurations to cover config center configurations or read configurations from config center.
 
 ## Not Use Spring
 
@@ -29,16 +29,21 @@ Using orchestration requires designating a registry center, in which all the con
     // Configure dataSourceMap and shardingRuleConfig
     // ...
 
-    // Configure registry center
-    RegistryCenterConfiguration regConfig = new RegistryCenterConfiguration("zookeeper");
-    regConfig.setServerLists("localhost:2181");
-    regConfig.setNamespace("sharding-sphere-orchestration");
+    // Configure config/registry/metadata center
+    Properties properties = new Properties();
+    properties.setProperty("overwrite", overwrite);
+    CenterConfiguration centerConfiguration = new CenterConfiguration("zookeeper", properties);
+    centerConfiguration.setServerLists("localhost:2181");
+    centerConfiguration.setNamespace("sharding-sphere-orchestration");
+    centerConfiguration.setOrchestrationType("registry_center,config_center,metadata_center");
 
     // Configure orchestration
-    OrchestrationConfiguration orchConfig = new OrchestrationConfiguration("orchestration-sharding-data-source", regConfig, false);
+    Map<String, CenterConfiguration> instanceConfigurationMap = new HashMap<String, CenterConfiguration>();
+    instanceConfigurationMap.put("orchestration-sharding-data-source", centerConfiguration);
 
     // Get data source
-    DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new Properties(), orchConfig);
+    OrchestrationShardingDataSourceFactory.createDataSource(
+                    createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), new OrchestrationConfiguration(instanceConfigurationMap));
 ```
 
 ### Rule Configuration Based on Yaml
@@ -47,12 +52,13 @@ Or use Yaml to configure, similar as above configurations:
 
 ```yaml
 orchestration:
-  name: orchestration-sharding-data-source
-  overwrite: false
-  registry:
-    type: zookeeper
-    serverLists: localhost:2181
-    namespace: sharding-sphere-orchestration
+  orchestration_ds:
+      orchestrationType: registry_center,config_center,metadata_center
+      instanceType: zookeeper
+      serverLists: localhost:2181
+      namespace: orchestration
+      props:
+        overwrite: true
 ```
 
 ```java
@@ -98,11 +104,11 @@ orchestration:
 ### Rule Configuration Based on Spring Boot
 
 ```properties
-spring.shardingsphere.orchestration.name=orchestration-sharding-data-source
-spring.shardingsphere.orchestration.overwrite=false
-spring.shardingsphere.orchestration.registry.type=zookeeper
-spring.shardingsphere.orchestration.registry.server-lists=localhost:2181
-spring.shardingsphere.orchestration.registry.namespace=sharding-jdbc-orchestration
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.orchestration-type=registry_center,config_center,metadata_center
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.instance-type=zookeeper
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.server-lists=localhost:2181
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.namespace=orchestration-spring-boot-sharding-test
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.props.overwrite=true
 ```
 
 ### Rule Configuration Based on Spring Name Space
@@ -117,8 +123,15 @@ spring.shardingsphere.orchestration.registry.namespace=sharding-jdbc-orchestrati
                            http://shardingsphere.apache.org/schema/shardingsphere/orchestration
                            http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd">
      <import resource="namespace/shardingDataSourceNamespace.xml" />
-     <orchestraion:registry-center id="regCenter" type="zookeeper" server-lists="localhost:3181" namespace="orchestration-spring-namespace-test" operation-timeout-milliseconds="1000" max-retries="3" />
-     <orchestraion:sharding-data-source id="simpleShardingOrchestration" data-source-ref="simpleShardingDataSource" registry-center-ref="regCenter" />
+     <util:properties id="instance-props">
+               <prop key="max-retries">3</prop>
+               <prop key="operation-timeout-milliseconds">3000</prop>
+         </util:properties>
+         <orchestraion:instance id="regCenter" orchestration-type="registry_center,config_center,metadata_center" instance-type="zookeeper" server-lists="localhost:2181" namespace="orchestration-spring-namespace-demo"
+                                    props-ref="instance-props" />
+         <orchestraion:sharding-data-source id="shardingDatabasesTablesDataSource" data-source-ref="realShardingDatabasesTablesDataSource" instance-ref="regCenter" overwrite="true" />
+         <orchestraion:master-slave-data-source id="masterSlaveDataSource" data-source-ref="realMasterSlaveDataSource" instance-ref="regCenter" overwrite="true" />
+         <orchestraion:encrypt-data-source id="encryptDataSource" data-source-ref="realEncryptDataSource" instance-ref="regCenter" overwrite="true" />
 </beans>
 ```
 

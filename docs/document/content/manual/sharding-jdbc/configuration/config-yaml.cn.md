@@ -281,12 +281,13 @@ props:
 #省略数据分片、读写分离和数据脱敏配置
 
 orchestration:
-  name: orchestration_ds
-  overwrite: true
-  registry:
-    type: zookeeper
-    namespace: orchestration
+  orchestration_ds:
+    orchestrationType: config_center,registry_center,metadata_center
+    instanceType: zookeeper
     serverLists: localhost:2181
+    namespace: orchestration
+    props:
+      overwrite: true
 ```
 
 ## 配置项说明
@@ -407,17 +408,18 @@ masterSlaveRule: #省略读写分离规则配置
 encryptRule: #省略数据脱敏规则配置
 
 orchestration:
-  name: #治理实例名称
-  overwrite: #本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准
-  registry: #注册中心配置
-    type: #配置中心类型。如：zookeeper
-    serverLists: #连接注册中心服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181
-    namespace: #注册中心的命名空间
-    digest: #连接注册中心的权限令牌。缺省为不需要权限验证
-    operationTimeoutMilliseconds: #操作超时的毫秒数，默认500毫秒
-    maxRetries: #连接失败后的最大重试次数，默认3次
-    retryIntervalMilliseconds: #重试间隔毫秒数，默认500毫秒
-    timeToLiveSeconds: #临时节点存活秒数，默认60秒
+  orchestration_ds: #治理实例名称
+    orchestrationType: #治理类型，例如config_center/registry_center/metadata_center
+    instanceType: #配置/注册/元数据中心类型。如：zookeeper
+    serverLists: #连接配置/注册/元数据中心服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181
+    namespace: #配置/注册/元数据中心的命名空间
+    props: #其它配置
+      overwrite: #本地配置是否覆盖配置中心配置。如果可覆盖，每次启动都以本地配置为准
+      digest: #连接注册中心的权限令牌。缺省为不需要权限验证
+      operationTimeoutMilliseconds: #操作超时的毫秒数，默认500毫秒
+      maxRetries: #连接失败后的最大重试次数，默认3次
+      retryIntervalMilliseconds: #重试间隔毫秒数，默认500毫秒
+      timeToLiveSeconds: #临时节点存活秒数，默认60秒
 ```
 
 ## Yaml语法说明
