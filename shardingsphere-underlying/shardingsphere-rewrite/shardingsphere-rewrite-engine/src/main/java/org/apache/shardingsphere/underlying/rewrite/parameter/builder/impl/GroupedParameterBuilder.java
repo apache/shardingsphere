@@ -55,7 +55,6 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
         for (int i = 0; i < parameterBuilders.size(); i++) {
             result.addAll(getParameters(i));
         }
-
         return result;
     }
     

@@ -66,7 +66,6 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         AtomicInteger parametersOffset = new AtomicInteger(0);
         insertValueContexts = getInsertValueContexts(parameters, parametersOffset);
         onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null);
-
         generatedKeyContext = new GeneratedKeyContextEngine(schemaMetaData).createGenerateKeyContext(parameters, sqlStatement).orElse(null);
     }
     
@@ -89,7 +88,6 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(onDuplicateKeyColumns, parameters, parametersOffset.get());
         parametersOffset.addAndGet(onDuplicateUpdateContext.getParametersCount());
         return Optional.of(onDuplicateUpdateContext);
-
     }
     
     /**
