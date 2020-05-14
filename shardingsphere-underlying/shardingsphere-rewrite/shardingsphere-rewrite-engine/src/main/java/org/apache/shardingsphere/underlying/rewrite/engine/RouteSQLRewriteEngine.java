@@ -63,12 +63,12 @@ public final class RouteSQLRewriteEngine {
             List<Object> onDuplicateKeyUpdateParameters = ((GroupedParameterBuilder) parameterBuilder).getOnDuplicateKeyUpdateParametersBuilder().getParameters();
             if (onDuplicateKeyUpdateParameters.isEmpty()) {
                 return parameterBuilder.getParameters();
-            } else {
-                List<Object> result = new LinkedList<>();
-                result.addAll(parameterBuilder.getParameters());
-                result.addAll(onDuplicateKeyUpdateParameters);
-                return result;
             }
+            
+            List<Object> result = new LinkedList<>();
+            result.addAll(parameterBuilder.getParameters());
+            result.addAll(onDuplicateKeyUpdateParameters);
+            return result;
         }
     
         List<Object> result = new LinkedList<>();
