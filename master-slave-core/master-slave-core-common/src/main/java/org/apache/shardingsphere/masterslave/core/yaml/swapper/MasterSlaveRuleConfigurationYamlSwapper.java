@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.core.yaml.swapper;
+package org.apache.shardingsphere.masterslave.core.yaml.swapper;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.masterslave.api.config.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.sharding.core.yaml.config.masterslave.YamlMasterSlaveDataSourceConfiguration;
-import org.apache.shardingsphere.sharding.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.masterslave.core.yaml.config.YamlMasterSlaveDataSourceConfiguration;
+import org.apache.shardingsphere.masterslave.core.yaml.config.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlRuleConfigurationSwapper;
 
 import java.util.Collection;
