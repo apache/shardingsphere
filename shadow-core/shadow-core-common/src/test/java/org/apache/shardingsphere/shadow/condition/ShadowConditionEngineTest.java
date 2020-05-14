@@ -15,28 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.core.yaml.config;
+package org.apache.shardingsphere.shadow.condition;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlRuleConfiguration;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.junit.Test;
 
-import java.util.Map;
+import java.util.Collections;
+import java.util.List;
 
-/**
- * Shadow rule configuration.
- */
-@Getter
-@Setter
-public final class YamlShadowRuleConfiguration implements YamlRuleConfiguration {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class ShadowConditionEngineTest {
     
-    private String column;
-    
-    private Map<String, String> shadowMappings;
-    
-    @Override
-    public Class<ShadowRuleConfiguration> getRuleConfigurationType() {
-        return ShadowRuleConfiguration.class;
+    @Test
+    public void assertGetConditionValues() {
+        List<Object> actual = new ShadowCondition("col", 0, 0, new LiteralExpressionSegment(0, 0, 1)).getValues(Collections.emptyList());
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0), is(1));
     }
 }

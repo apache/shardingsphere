@@ -133,7 +133,7 @@ public final class ConfigCenterTest {
     
     private static final String SHADOW_RULE_YAML = ""
             + "rules:\n"
-            + "- !!org.apache.shardingsphere.shadow.core.yaml.config.YamlShadowRuleConfiguration\n"
+            + "- !!org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration\n"
             + "  column: shadow\n"
             + "  shadowMappings:\n"
             + "    ds: shadow_ds\n";

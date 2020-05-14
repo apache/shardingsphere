@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.shadow.route.engine.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shadow.core.rule.ShadowRule;
-import org.apache.shardingsphere.shadow.core.condition.ShadowCondition;
-import org.apache.shardingsphere.shadow.core.condition.ShadowConditionEngine;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
+import org.apache.shardingsphere.shadow.condition.ShadowCondition;
+import org.apache.shardingsphere.shadow.condition.ShadowConditionEngine;
 import org.apache.shardingsphere.shadow.route.engine.ShadowDataSourceRouter;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;

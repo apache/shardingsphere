@@ -15,33 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.core.yaml.swapper;
+package org.apache.shardingsphere.shadow.rule;
 
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.core.yaml.config.YamlShadowRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRuleBuilder;
+
+import java.util.Collection;
 
 /**
- * Shadow rule configuration yaml swapper.
+ * Shadow rule builder.
  */
-public final class ShadowRuleConfigurationYamlSwapper implements YamlRuleConfigurationSwapper<YamlShadowRuleConfiguration, ShadowRuleConfiguration> {
+public final class ShadowRuleBuilder implements ShardingSphereRuleBuilder<ShadowRule, ShadowRuleConfiguration> {
     
     @Override
-    public YamlShadowRuleConfiguration swap(final ShadowRuleConfiguration data) {
-        YamlShadowRuleConfiguration result = new YamlShadowRuleConfiguration();
-        result.setColumn(data.getColumn());
-        result.setShadowMappings(data.getShadowMappings());
-        return result;
-    }
-    
-    @Override
-    public ShadowRuleConfiguration swap(final YamlShadowRuleConfiguration yamlConfiguration) {
-        return new ShadowRuleConfiguration(yamlConfiguration.getColumn(), yamlConfiguration.getShadowMappings());
+    public ShadowRule build(final ShadowRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
+        return new ShadowRule(ruleConfiguration);
     }
     
     @Override
     public int getOrder() {
-        return -5;
+        return 20;
     }
     
     @Override

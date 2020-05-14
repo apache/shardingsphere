@@ -47,7 +47,7 @@
 #    maxPoolSize: 50
 #
 #rules:
-#- !!org.apache.shardingsphere.shadow.core.yaml.config.YamlShadowRuleConfiguration
+#- !!org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration
 #  column: shadow
 #  shadowMappings:
 #    ds: shadow_ds
@@ -80,7 +80,7 @@
 #    maxPoolSize: 50
 #
 #rules:
-#- !!org.apache.shardingsphere.shadow.core.yaml.config.YamlShadowRuleConfiguration
+#- !!org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration
 #  column: shadow
 #  shadowMappings:
 #    ds: shadow_ds

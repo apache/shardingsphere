@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.route.engine;
 
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.core.rule.ShadowRule;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
