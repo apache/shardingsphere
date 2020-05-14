@@ -93,7 +93,7 @@ public final class ConfigurationLoggerTest {
     @Test
     public void assertLogMasterSlaveRuleConfiguration() {
         String yaml = "rules:\n"
-                + "- !!org.apache.shardingsphere.sharding.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration\n"
+                + "- !!org.apache.shardingsphere.masterslave.core.yaml.config.YamlMasterSlaveRuleConfiguration\n"
                 + "  dataSources:\n"
                 + "    ms_ds:\n"
                 + "      masterDataSourceName: master_ds\n"
@@ -177,7 +177,7 @@ public final class ConfigurationLoggerTest {
     @Test
     public void assertLogRuleConfigurationWithMasterSlaveRuleConfiguration() {
         String yaml = "rules:\n"
-                + "- !!org.apache.shardingsphere.sharding.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration\n"
+                + "- !!org.apache.shardingsphere.masterslave.core.yaml.config.YamlMasterSlaveRuleConfiguration\n"
                 + "  dataSources:\n"
                 + "    ms_ds:\n"
                 + "      masterDataSourceName: master_ds\n"

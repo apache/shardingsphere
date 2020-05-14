@@ -50,7 +50,7 @@ rules:
   bindingTables:
     - t_order,t_order_item
 
-- !!org.apache.shardingsphere.sharding.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration
+- !!org.apache.shardingsphere.masterslave.core.yaml.config.YamlMasterSlaveRuleConfiguration
   dataSources:
     db_ms_0:
       masterDataSourceName: master_db_0

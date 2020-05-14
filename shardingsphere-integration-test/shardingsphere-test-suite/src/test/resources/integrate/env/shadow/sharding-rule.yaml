@@ -16,7 +16,7 @@
 #
 
 rules:
-- !!org.apache.shardingsphere.sharding.core.yaml.config.shadow.YamlShadowRuleConfiguration
+- !!org.apache.shardingsphere.shadow.core.yaml.config.YamlShadowRuleConfiguration
   column: shadow
   shadowMappings:
     db: shadow_db

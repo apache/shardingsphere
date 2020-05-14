@@ -84,7 +84,7 @@ rules:
       shardingAlgorithm:
         type: STANDARD_TEST_DB
 
-- !!org.apache.shardingsphere.sharding.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration
+- !!org.apache.shardingsphere.masterslave.core.yaml.config.YamlMasterSlaveRuleConfiguration
   dataSources:
     ds_0:
       masterDataSourceName: ds_master_0
