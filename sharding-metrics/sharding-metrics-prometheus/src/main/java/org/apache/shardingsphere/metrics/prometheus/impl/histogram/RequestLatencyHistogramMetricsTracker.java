@@ -28,13 +28,12 @@ import org.apache.shardingsphere.metrics.enums.MetricsLabelEnum;
 public final class RequestLatencyHistogramMetricsTracker implements HistogramMetricsTracker {
     
     private static final Histogram REQUEST_LATENCY = Histogram.build()
-            .name("requests_latency_Histogram_millis").help("Requests Latency Histogram Millis (ms)")
-            .exponentialBuckets(1.0, 2, 10)
+            .name("requests_latency_histogram_millis").help("Requests Latency Histogram Millis (ms)")
             .register();
     
     @Override
     public HistogramMetricsTrackerDelegate startTimer(final String... labelValues) {
-        Histogram.Timer timer = REQUEST_LATENCY.labels(labelValues).startTimer();
+        Histogram.Timer timer = REQUEST_LATENCY.startTimer();
         return new PrometheusHistogramMetricsTrackerDelegate(timer);
     }
     

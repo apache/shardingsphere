@@ -35,11 +35,7 @@ import static org.junit.Assert.assertThat;
 
 public final class ShadowPreparedStatementTest extends AbstractShadowJDBCDatabaseAndTableTest {
     
-    private static final String INIT_INSERT_SQL = "INSERT INTO t_encrypt (id, cipher_pwd, plain_pwd) VALUES (99, 'cipher', 'plain')";
-    
-    private static final String INSERT_SQL = "INSERT INTO t_encrypt (id, cipher_pwd, plain_pwd) VALUES (?, ?, ?)";
-    
-    private static final String SHADOW_INSERT_SQL = "INSERT INTO t_encrypt (id, cipher_pwd, plain_pwd, shadow) VALUES (?, ?, ?, ?)";
+    private static final String INSERT_SQL = "INSERT INTO t_encrypt (id, cipher_pwd, plain_pwd, shadow) VALUES (?, ?, ?, ?)";
     
     private static final String DELETE_SQL = "DELETE FROM t_encrypt WHERE plain_pwd = ?";
     
@@ -49,7 +45,7 @@ public final class ShadowPreparedStatementTest extends AbstractShadowJDBCDatabas
     
     private static final String SELECT_SQL_BY_ID = "SELECT id, cipher_pwd, plain_pwd FROM t_encrypt WHERE id = ?";
     
-    private static final String CLEAN_SQL = "DELETE FROM t_encrypt";
+    private static final String CLEAN_SQL = "DELETE FROM t_encrypt WHERE shadow = ?";
     
     private static final String UPDATE_SQL = "UPDATE t_encrypt SET cipher_pwd = ? WHERE id = ?";
     
@@ -57,10 +53,11 @@ public final class ShadowPreparedStatementTest extends AbstractShadowJDBCDatabas
     
     @Test
     public void assertInsertWithExecute() throws SQLException {
-        try (PreparedStatement statement = getConnection().prepareStatement(INSERT_SQL)) {
+        try (PreparedStatement statement = getShadowDataSource().getConnection().prepareStatement(INSERT_SQL)) {
             statement.setObject(1, 2);
             statement.setString(2, "cipher");
             statement.setString(3, "plain");
+            statement.setBoolean(4, false);
             statement.execute();
         }
         assertResultSet(false, 2, "cipher");
@@ -69,7 +66,7 @@ public final class ShadowPreparedStatementTest extends AbstractShadowJDBCDatabas
     
     @Test
     public void assertShadowInsertWithExecute() throws SQLException {
-        try (PreparedStatement statement = getConnection().prepareStatement(SHADOW_INSERT_SQL)) {
+        try (PreparedStatement statement = getShadowDataSource().getConnection().prepareStatement(INSERT_SQL)) {
             statement.setObject(1, 1);
             statement.setString(2, "cipher");
             statement.setString(3, "plain");
@@ -82,7 +79,7 @@ public final class ShadowPreparedStatementTest extends AbstractShadowJDBCDatabas
     
     @Test
     public void assertDeleteWithExecute() throws SQLException {
-        try (PreparedStatement statement = getConnection().prepareStatement(DELETE_SQL)) {
+        try (PreparedStatement statement = getShadowDataSource().getConnection().prepareStatement(DELETE_SQL)) {
             statement.setObject(1, "plain");
             statement.executeUpdate();
         }
@@ -91,7 +88,7 @@ public final class ShadowPreparedStatementTest extends AbstractShadowJDBCDatabas
     
     @Test
     public void assertShadowDeleteWithExecute() throws SQLException {
-        try (PreparedStatement statement = getConnection().prepareStatement(SHADOW_DELETE_SQL)) {
+        try (PreparedStatement statement = getShadowDataSource().getConnection().prepareStatement(SHADOW_DELETE_SQL)) {
             statement.setObject(1, "plain");
             statement.setBoolean(2, true);
             statement.executeUpdate();
@@ -102,12 +99,11 @@ public final class ShadowPreparedStatementTest extends AbstractShadowJDBCDatabas
     @Test
     public void assertUpdateWithExecuteUpdate() throws SQLException {
         int result;
-        try (PreparedStatement statement = getConnection().prepareStatement(UPDATE_SQL)) {
+        try (PreparedStatement statement = getShadowDataSource().getConnection().prepareStatement(UPDATE_SQL)) {
             statement.setString(1, "cipher_pwd");
             statement.setInt(2, 99);
             result = statement.executeUpdate();
         }
-        
         assertThat(result, is(1));
         assertResultSet(false, 99, 1, "cipher_pwd");
     }
@@ -115,13 +111,12 @@ public final class ShadowPreparedStatementTest extends AbstractShadowJDBCDatabas
     @Test
     public void assertShadowUpdateWithExecuteUpdate() throws SQLException {
         int result;
-        try (PreparedStatement statement = getConnection().prepareStatement(SHADOW_UPDATE_SQL)) {
+        try (PreparedStatement statement = getShadowDataSource().getConnection().prepareStatement(SHADOW_UPDATE_SQL)) {
             statement.setString(1, "cipher_pwd");
             statement.setInt(2, 99);
             statement.setBoolean(3, true);
             result = statement.executeUpdate();
         }
-        
         assertThat(result, is(1));
         assertResultSet(true, 99, 1, "cipher_pwd");
     }
@@ -157,22 +152,31 @@ public final class ShadowPreparedStatementTest extends AbstractShadowJDBCDatabas
     
     @Before
     public void init() throws SQLException {
-        try (Statement statement = getActualConnection().createStatement()) {
-            statement.execute(INIT_INSERT_SQL);
+        try (PreparedStatement statement = getShadowDataSource().getConnection().prepareStatement(INSERT_SQL)) {
+            statement.setObject(1, 99);
+            statement.setString(2, "cipher");
+            statement.setString(3, "plain");
+            statement.setBoolean(4, false);
+            statement.execute();
         }
-        try (Statement statement = getShadowConnection().createStatement()) {
-            statement.execute(INIT_INSERT_SQL);
+        try (PreparedStatement statement = getShadowDataSource().getConnection().prepareStatement(INSERT_SQL)) {
+            statement.setObject(1, 99);
+            statement.setString(2, "cipher");
+            statement.setString(3, "plain");
+            statement.setBoolean(4, true);
+            statement.execute();
         }
     }
     
     @After
     public void clean() throws SQLException {
-        try (Statement statement = getActualConnection().createStatement()) {
-            statement.execute(CLEAN_SQL);
-            
+        try (PreparedStatement statement = getShadowDataSource().getConnection().prepareStatement(CLEAN_SQL)) {
+            statement.setBoolean(1, false);
+            statement.execute();
         }
-        try (Statement statement = getShadowConnection().createStatement()) {
-            statement.execute(CLEAN_SQL);
+        try (PreparedStatement statement = getShadowDataSource().getConnection().prepareStatement(CLEAN_SQL)) {
+            statement.setBoolean(1, true);
+            statement.execute();
         }
     }
 }

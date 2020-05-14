@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 
 import org.apache.shardingsphere.shardingjdbc.common.base.AbstractShardingJDBCDatabaseAndTableTest;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingSphereConnection;
 import org.junit.Test;
 
 import java.io.PrintWriter;
@@ -39,51 +39,51 @@ public final class DataSourceAdapterTest extends AbstractShardingJDBCDatabaseAnd
     
     @Test
     public void assertUnwrapSuccess() throws SQLException {
-        assertThat(getShardingDataSource().unwrap(Object.class), is(getShardingDataSource()));
+        assertThat(getShardingSphereDataSource().unwrap(Object.class), is(getShardingSphereDataSource()));
     }
     
     @Test(expected = SQLException.class)
     public void assertUnwrapFailure() throws SQLException {
-        getShardingDataSource().unwrap(String.class);
+        getShardingSphereDataSource().unwrap(String.class);
     }
     
     @Test
     public void assertIsWrapperFor() {
-        assertTrue(getShardingDataSource().isWrapperFor(Object.class));
+        assertTrue(getShardingSphereDataSource().isWrapperFor(Object.class));
     }
     
     @Test
     public void assertIsNotWrapperFor() {
-        assertFalse(getShardingDataSource().isWrapperFor(String.class));
+        assertFalse(getShardingSphereDataSource().isWrapperFor(String.class));
     }
     
     @Test
     public void assertRecordMethodInvocationSuccess() {
         List<?> list = mock(List.class);
         when(list.isEmpty()).thenReturn(true);
-        getShardingDataSource().recordMethodInvocation(List.class, "isEmpty", new Class[]{}, new Object[]{});
-        getShardingDataSource().replayMethodsInvocation(list);
+        getShardingSphereDataSource().recordMethodInvocation(List.class, "isEmpty", new Class[]{}, new Object[]{});
+        getShardingSphereDataSource().replayMethodsInvocation(list);
     }
     
     @Test(expected = NoSuchMethodException.class)
     public void assertRecordMethodInvocationFailure() {
-        getShardingDataSource().recordMethodInvocation(String.class, "none", new Class[]{}, new Object[]{});
+        getShardingSphereDataSource().recordMethodInvocation(String.class, "none", new Class[]{}, new Object[]{});
     }
     
     @Test
     public void assertSetLogWriter() {
-        assertThat(getShardingDataSource().getLogWriter(), instanceOf(PrintWriter.class));
-        getShardingDataSource().setLogWriter(null);
-        assertNull(getShardingDataSource().getLogWriter());
+        assertThat(getShardingSphereDataSource().getLogWriter(), instanceOf(PrintWriter.class));
+        getShardingSphereDataSource().setLogWriter(null);
+        assertNull(getShardingSphereDataSource().getLogWriter());
     }
     
     @Test
     public void assertGetParentLogger() {
-        assertThat(getShardingDataSource().getParentLogger().getName(), is(Logger.GLOBAL_LOGGER_NAME));
+        assertThat(getShardingSphereDataSource().getParentLogger().getName(), is(Logger.GLOBAL_LOGGER_NAME));
     }
     
     @Test
     public void assertGetConnectionWithUsername() throws SQLException {
-        assertThat(getShardingDataSource().getConnection("username", "password"), instanceOf(ShardingConnection.class));
+        assertThat(getShardingSphereDataSource().getConnection("username", "password"), instanceOf(ShardingSphereConnection.class));
     }
 }

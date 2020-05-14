@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata;
 
 import lombok.Getter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractConnectionAdapter;
+import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AdaptedDatabaseMetaData;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.DatabaseMetaDataResultSet;
 import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
@@ -47,6 +48,8 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     private final Collection<String> datasourceNames;
     
     private final ShardingSphereMetaData shardingSphereMetaData;
+    
+    private final Random random = new Random();
     
     private String currentDataSourceName;
     
@@ -242,7 +245,7 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     
     private String getRandomDataSourceName() {
         Collection<String> datasourceNames = connection.getCachedConnections().isEmpty() ? this.datasourceNames : connection.getCachedConnections().keySet();
-        return new ArrayList<>(datasourceNames).get(new Random().nextInt(datasourceNames.size()));
+        return new ArrayList<>(datasourceNames).get(random.nextInt(datasourceNames.size()));
     }
     
     private DatabaseMetaData getDatabaseMetaData() throws SQLException {

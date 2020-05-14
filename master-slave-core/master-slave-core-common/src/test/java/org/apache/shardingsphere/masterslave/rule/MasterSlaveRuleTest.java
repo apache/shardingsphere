@@ -1,0 +1,64 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.masterslave.rule;
+
+import org.apache.shardingsphere.masterslave.api.config.LoadBalanceStrategyConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
+import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Optional;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+public final class MasterSlaveRuleTest {
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void assertNewWithEmptyDataSourceRule() {
+        new MasterSlaveRule(new MasterSlaveRuleConfiguration(Collections.emptyList()));
+    }
+    
+    @Test
+    public void assertFindDataSourceRule() {
+        Optional<MasterSlaveDataSourceRule> actual = createMasterSlaveRule().findDataSourceRule("test_ms");
+        assertTrue(actual.isPresent());
+        assertDataSourceRule(actual.get());
+    }
+    
+    @Test
+    public void assertGetSingleDataSourceRule() {
+        assertDataSourceRule(createMasterSlaveRule().getSingleDataSourceRule());
+    }
+    
+    private MasterSlaveRule createMasterSlaveRule() {
+        MasterSlaveDataSourceConfiguration configuration = new MasterSlaveDataSourceConfiguration(
+                "test_ms", "master_db", Arrays.asList("slave_db_0", "slave_db_1"), new LoadBalanceStrategyConfiguration("RANDOM"));
+        return new MasterSlaveRule(new MasterSlaveRuleConfiguration(Collections.singleton(configuration)));
+    }
+    
+    private void assertDataSourceRule(final MasterSlaveDataSourceRule actual) {
+        assertThat(actual.getName(), is("test_ms"));
+        assertThat(actual.getMasterDataSourceName(), is("master_db"));
+        assertThat(actual.getSlaveDataSourceNames(), is(Arrays.asList("slave_db_0", "slave_db_1")));
+        assertThat(actual.getLoadBalanceAlgorithm().getType(), is("RANDOM"));
+    }
+}

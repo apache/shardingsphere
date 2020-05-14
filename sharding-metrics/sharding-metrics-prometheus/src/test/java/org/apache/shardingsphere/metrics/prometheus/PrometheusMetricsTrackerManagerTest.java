@@ -23,20 +23,33 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class PrometheusMetricsTrackerManagerTest {
     
     @Test
-    public void start() {
+    public void startNoHost() {
         PrometheusMetricsTrackerManager manager = new PrometheusMetricsTrackerManager();
-        MetricsConfiguration metricsConfiguration = new MetricsConfiguration("metricsName", "", 9190, null);
+        MetricsConfiguration metricsConfiguration = new MetricsConfiguration("metricsName", "", 9191, false, 8, null);
         manager.start(metricsConfiguration);
         HTTPServer server = manager.getServer();
         assertNotNull(server);
-        assertEquals(manager.getType(), "prometheus");
+        assertThat(manager.getType(), is("prometheus"));
+        manager.stop();
+    }
+    
+    @Test
+    public void startHost() {
+        PrometheusMetricsTrackerManager manager = new PrometheusMetricsTrackerManager();
+        MetricsConfiguration metricsConfiguration = new MetricsConfiguration("metricsName", "127.0.0.1", 9195, false, 8, null);
+        manager.start(metricsConfiguration);
+        HTTPServer server = manager.getServer();
+        assertThat(server.getPort(), is(9195));
+        assertNotNull(server);
+        assertThat(manager.getType(), is("prometheus"));
         manager.stop();
     }
 }

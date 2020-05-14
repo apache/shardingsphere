@@ -25,7 +25,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.CircuitStateChangedEvent;
-import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
@@ -89,7 +89,7 @@ public abstract class AbstractOrchestrationDataSource extends AbstractUnsupporte
     
     @Override
     public final void close() throws Exception {
-        ((AbstractDataSourceAdapter) getDataSource()).close();
+        ((ShardingSphereDataSource) getDataSource()).close();
         shardingOrchestrationFacade.close();
     }
     

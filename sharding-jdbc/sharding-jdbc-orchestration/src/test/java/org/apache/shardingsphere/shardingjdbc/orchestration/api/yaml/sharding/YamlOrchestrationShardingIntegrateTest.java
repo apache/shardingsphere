@@ -21,8 +21,8 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.AbstractYamlDataSourceTest;
-import org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationShardingDataSourceFactory;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -58,9 +58,9 @@ public class YamlOrchestrationShardingIntegrateTest extends AbstractYamlDataSour
         File yamlFile = new File(YamlOrchestrationShardingIntegrateTest.class.getResource(filePath).toURI());
         DataSource dataSource;
         if (hasDataSource) {
-            dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(yamlFile);
+            dataSource = YamlOrchestrationShardingSphereDataSourceFactory.createDataSource(yamlFile);
         } else {
-            dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(Maps.asMap(Sets.newHashSet("db0", "db1"), AbstractYamlDataSourceTest::createDataSource), yamlFile);
+            dataSource = YamlOrchestrationShardingSphereDataSourceFactory.createDataSource(Maps.asMap(Sets.newHashSet("db0", "db1"), AbstractYamlDataSourceTest::createDataSource), yamlFile);
         }
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
@@ -69,6 +69,6 @@ public class YamlOrchestrationShardingIntegrateTest extends AbstractYamlDataSour
             statement.executeQuery("SELECT * FROM t_order_item");
             statement.executeQuery("SELECT * FROM config");
         }
-        ((OrchestrationShardingDataSource) dataSource).close();
+        ((OrchestrationShardingSphereDataSource) dataSource).close();
     }
 }

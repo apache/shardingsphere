@@ -27,5 +27,4 @@ import lombok.NoArgsConstructor;
 public final class EncryptDataSourceBeanDefinitionParserTag {
     
     public static final String ROOT_TAG = "encrypt-data-source";
-    
 }

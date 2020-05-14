@@ -1,7 +1,7 @@
 +++
-pre = "<b>3.3.5. </b>"
+pre = "<b>3.3.6. </b>"
 title = "Data Masking"
-weight = 5
+weight = 6
 +++
 
 ## Background

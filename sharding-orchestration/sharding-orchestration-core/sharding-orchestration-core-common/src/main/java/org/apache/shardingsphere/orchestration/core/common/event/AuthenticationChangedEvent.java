@@ -19,7 +19,7 @@ package org.apache.shardingsphere.orchestration.core.common.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.rule.Authentication;
+import org.apache.shardingsphere.underlying.common.auth.Authentication;
 
 /**
  * Authentication changed event.

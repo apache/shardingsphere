@@ -53,9 +53,9 @@ public final class DistributionChannel implements Channel {
     
     private final AckCallback ackCallback;
     
-    private Queue<Record> toBeAcknowledgeRecords = new ConcurrentLinkedQueue<>();
+    private final Queue<Record> toBeAcknowledgeRecords = new ConcurrentLinkedQueue<>();
     
-    private Map<LogPosition, Record> pendingAcknowledgeRecords = new ConcurrentHashMap<>();
+    private final Map<LogPosition, Record> pendingAcknowledgeRecords = new ConcurrentHashMap<>();
     
     private ScheduledExecutorService scheduleAckRecordsExecutor;
     

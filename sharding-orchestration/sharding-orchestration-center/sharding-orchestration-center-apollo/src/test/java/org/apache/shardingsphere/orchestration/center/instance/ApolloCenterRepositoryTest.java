@@ -33,7 +33,9 @@ import org.mockito.internal.util.reflection.FieldSetter;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
@@ -51,85 +53,106 @@ public final class ApolloCenterRepositoryTest {
     @ClassRule
     public static EmbeddedApollo embeddedApollo = new EmbeddedApollo();
     
-    private static ConfigCenterRepository configCenterRepository = new ApolloCenterRepository();
+    private static final ConfigCenterRepository REPOSITORY = new ApolloCenterRepository();
     
-    private static ApolloOpenApiWrapper openApiWrapper = mock(ApolloOpenApiWrapper.class);
+    private static final ApolloOpenApiWrapper OPEN_API_WRAPPER = mock(ApolloOpenApiWrapper.class);
     
+    private static final String PORTAL_URL = "http://127.0.0.1";
+    
+    private static final String TOKEN = "testToken";
+    
+    @SneakyThrows(ReflectiveOperationException.class)
     @BeforeClass
-    @SneakyThrows
     public static void init() {
         CenterConfiguration configuration = new CenterConfiguration("apollo");
         configuration.setServerLists("http://config-service-url");
         configuration.setNamespace("orchestration");
         Properties properties = new Properties();
-        configCenterRepository.setProperties(properties);
+        properties.setProperty(ApolloPropertyKey.PORTAL_URL.getKey(), PORTAL_URL);
+        properties.setProperty(ApolloPropertyKey.TOKEN.getKey(), TOKEN);
+        REPOSITORY.setProperties(properties);
+        REPOSITORY.init(configuration);
         ApolloConfigWrapper configWrapper = new ApolloConfigWrapper(configuration, new ApolloProperties(properties));
-        FieldSetter.setField(configCenterRepository, ApolloCenterRepository.class.getDeclaredField("configWrapper"), configWrapper);
-        FieldSetter.setField(configCenterRepository, ApolloCenterRepository.class.getDeclaredField("openApiWrapper"), openApiWrapper);
+        FieldSetter.setField(REPOSITORY, ApolloCenterRepository.class.getDeclaredField("configWrapper"), configWrapper);
+        FieldSetter.setField(REPOSITORY, ApolloCenterRepository.class.getDeclaredField("openApiWrapper"), OPEN_API_WRAPPER);
     }
     
     @Test
     public void assertGet() {
-        assertThat(configCenterRepository.get("/test/children/0"), is("value0"));
+        assertThat(REPOSITORY.get("/test/children/0"), is("value0"));
     }
     
     @Test
-    @SneakyThrows
-    public void assertWatch() {
+    public void assertGetByOpenApi() {
+        assertNull(REPOSITORY.get("/test/children/6"));
+    }
+    
+    @Test
+    public void assertWatch() throws InterruptedException, ExecutionException, TimeoutException {
         assertWatchUpdateChangedType("/test/children/1", "newValue");
     }
     
     @Test
-    @SneakyThrows
     public void assertGetWithNonExistentKey() {
-        assertNull(configCenterRepository.get("/test/nonExistentKey"));
+        assertNull(REPOSITORY.get("/test/nonExistentKey"));
     }
     
     @Test
-    @SneakyThrows
-    public void assertWatchUpdateChangedTypeWithExistedKey() {
+    public void assertWatchUpdateChangedTypeWithExistedKey() throws InterruptedException, ExecutionException, TimeoutException {
         assertWatchUpdateChangedType("/test/children/4", "newValue4");
-        assertThat(configCenterRepository.get("/test/children/4"), is("newValue4"));
+        assertThat(REPOSITORY.get("/test/children/4"), is("newValue4"));
     }
     
     @Test
-    @SneakyThrows
-    public void assertWatchDeletedChangedTypeWithExistedKey() {
+    public void assertWatchDeletedChangedTypeWithExistedKey() throws InterruptedException, ExecutionException, TimeoutException {
         assertWatchDeletedChangedType("/test/children/3");
     }
-
-    @SneakyThrows
-    private void assertWatchDeletedChangedType(final String key) {
+    
+    private void assertWatchDeletedChangedType(final String key) throws InterruptedException, ExecutionException, TimeoutException {
         final SettableFuture<DataChangedEvent> future = SettableFuture.create();
-        configCenterRepository.watch(key, future::set);
+        REPOSITORY.watch(key, future::set);
         embeddedApollo.deleteProperty("orchestration", ConfigKeyUtils.pathToKey(key));
         DataChangedEvent changeEvent = future.get(5, TimeUnit.SECONDS);
         assertThat(changeEvent.getKey(), is(key));
         assertNull(changeEvent.getValue());
         assertThat(changeEvent.getChangedType(), is(DataChangedEvent.ChangedType.DELETED));
-        assertNull(configCenterRepository.get(key));
-    }
-
-    @Test
-    @SneakyThrows
-    public void assertWatchUpdateChangedTypeWithNotExistedKey() {
-        assertWatchUpdateChangedType("/test/children/newKey", "newVaule");
+        assertNull(REPOSITORY.get(key));
     }
     
-    @SneakyThrows
-    private void assertWatchUpdateChangedType(final String key, final String newVaule) {
+    @Test
+    public void assertWatchUpdateChangedTypeWithNotExistedKey() throws InterruptedException, ExecutionException, TimeoutException {
+        assertWatchUpdateChangedType("/test/children/newKey", "newValue");
+    }
+    
+    private void assertWatchUpdateChangedType(final String key, final String newValue) throws InterruptedException, ExecutionException, TimeoutException {
         final SettableFuture<DataChangedEvent> future = SettableFuture.create();
-        configCenterRepository.watch(key, future::set);
-        embeddedApollo.addOrModifyProperty("orchestration", ConfigKeyUtils.pathToKey(key), newVaule);
+        REPOSITORY.watch(key, future::set);
+        embeddedApollo.addOrModifyProperty("orchestration", ConfigKeyUtils.pathToKey(key), newValue);
         DataChangedEvent changeEvent = future.get(5, TimeUnit.SECONDS);
         assertThat(changeEvent.getKey(), is(key));
-        assertThat(changeEvent.getValue(), is(newVaule));
+        assertThat(changeEvent.getValue(), is(newValue));
         assertThat(changeEvent.getChangedType(), is(DataChangedEvent.ChangedType.UPDATED));
     }
     
     @Test
     public void assertDelete() {
-        configCenterRepository.delete("/test/children/2");
-        verify(openApiWrapper).remove(ConfigKeyUtils.pathToKey("/test/children/2"));
+        REPOSITORY.delete("/test/children/2");
+        verify(OPEN_API_WRAPPER).remove(ConfigKeyUtils.pathToKey("/test/children/2"));
+    }
+    
+    @Test
+    public void assertGetChildrenKeys() {
+        assertNull(REPOSITORY.getChildrenKeys("/test/children"));
+    }
+    
+    @Test
+    public void assertPersist() {
+        REPOSITORY.persist("/test/children/6", "value6");
+        verify(OPEN_API_WRAPPER).persist(ConfigKeyUtils.pathToKey("/test/children/6"), "value6");
+    }
+    
+    @Test
+    public void assertGetType() {
+        assertThat(REPOSITORY.getType(), is("apollo"));
     }
 }

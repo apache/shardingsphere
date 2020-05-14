@@ -24,7 +24,7 @@ import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 
 import java.util.Collection;
@@ -46,9 +46,9 @@ public final class BroadcastBackendHandler implements TextProtocolBackendHandler
     public BackendResponse execute() {
         Collection<BackendResponse> responses = new LinkedList<>();
         String originalSchema = backendConnection.getSchemaName();
-        for (String each : LogicSchemas.getInstance().getSchemaNames()) {
+        for (String each : ShardingSphereSchemas.getInstance().getSchemaNames()) {
             backendConnection.setCurrentSchema(each);
-            responses.add(databaseCommunicationEngineFactory.newTextProtocolInstance(LogicSchemas.getInstance().getLogicSchema(each), sql, backendConnection).execute());
+            responses.add(databaseCommunicationEngineFactory.newTextProtocolInstance(ShardingSphereSchemas.getInstance().getSchema(each), sql, backendConnection).execute());
         }
         backendConnection.setCurrentSchema(originalSchema);
         for (BackendResponse each : responses) {

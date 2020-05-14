@@ -29,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -61,7 +62,11 @@ public final class MetaDataCenterTest {
     @Test
     public void assertLoadRuleSchemaMetaData() {
         when(repository.get("/test/metadata/schema")).thenReturn(MetaDataTest.META_DATA);
-        RuleSchemaMetaData ruleSchemaMetaData = metaDataCenter.loadRuleSchemaMetaData("schema").get();
+        Optional<RuleSchemaMetaData> optionalRuleSchemaMetaData = metaDataCenter.loadRuleSchemaMetaData("schema");
+        assertThat(optionalRuleSchemaMetaData.isPresent(), is(true));
+        Optional<RuleSchemaMetaData> empty = metaDataCenter.loadRuleSchemaMetaData("test");
+        assertThat(empty, is(Optional.empty()));
+        RuleSchemaMetaData ruleSchemaMetaData = optionalRuleSchemaMetaData.get();
         verify(repository).get(eq("/test/metadata/schema"));
         assertNotNull(ruleSchemaMetaData);
         assertNotNull(ruleSchemaMetaData.getConfiguredSchemaMetaData());

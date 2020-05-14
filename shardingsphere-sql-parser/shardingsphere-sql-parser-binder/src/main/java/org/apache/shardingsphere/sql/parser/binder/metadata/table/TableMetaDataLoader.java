@@ -21,6 +21,7 @@ import java.sql.ResultSet;
 import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.binder.metadata.MetaDataConnection;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaDataLoader;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaDataLoader;
 
@@ -44,16 +45,16 @@ public final class TableMetaDataLoader {
      * @throws SQLException SQL exception
      */
     public static Optional<TableMetaData> load(final DataSource dataSource, final String table, final String databaseType) throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
-            if (!isTableExist(connection, connection.getCatalog(), table)) {
+        try (MetaDataConnection connection = new MetaDataConnection(dataSource.getConnection())) {
+            if (!isTableExist(connection, table)) {
                 return Optional.empty();
             }
             return Optional.of(new TableMetaData(ColumnMetaDataLoader.load(connection, table, databaseType), IndexMetaDataLoader.load(connection, table)));
         }
     }
     
-    private static boolean isTableExist(final Connection connection, final String catalog, final String table) throws SQLException {
-        try (ResultSet resultSet = connection.getMetaData().getTables(catalog, null, table, null)) {
+    private static boolean isTableExist(final Connection connection, final String table) throws SQLException {
+        try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), connection.getSchema(), table, null)) {
             return resultSet.next();
         }
     }

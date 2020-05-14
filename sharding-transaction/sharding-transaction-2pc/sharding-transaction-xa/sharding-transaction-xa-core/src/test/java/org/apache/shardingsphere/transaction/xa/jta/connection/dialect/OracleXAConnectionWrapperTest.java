@@ -17,24 +17,9 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.connection.dialect;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import com.zaxxer.hikari.HikariDataSource;
-import java.lang.reflect.Method;
-import java.sql.Connection;
-import java.sql.SQLException;
-import javax.sql.DataSource;
-import javax.sql.XAConnection;
-import javax.sql.XADataSource;
-import javax.transaction.xa.XAResource;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
-
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.junit.Before;
@@ -43,6 +28,21 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import javax.sql.DataSource;
+import javax.sql.XAConnection;
+import javax.sql.XADataSource;
+import javax.transaction.xa.XAResource;
+import java.lang.reflect.Method;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class OracleXAConnectionWrapperTest {
@@ -54,11 +54,11 @@ public final class OracleXAConnectionWrapperTest {
     
     private final short minimumVersionOfXaSupported = 8171;
     
+    @SneakyThrows(ReflectiveOperationException.class)
     @Before
-    @SneakyThrows
     @Ignore("oracle jdbc driver is not import because of the limitations of license")
     @SuppressWarnings("unchecked")
-    public void setUp() {
+    public void setUp() throws SQLException {
         Connection connection = (Connection) mock(Class.forName("oracle.jdbc.internal.OracleConnection"));
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, DatabaseTypes.getActualDatabaseType("Oracle"), "ds1");
         xaDataSource = XADataSourceFactory.build(DatabaseTypes.getActualDatabaseType("Oracle"), dataSource);

@@ -231,11 +231,11 @@ spring.shardingsphere.sharding.tables.t_order_item.key-generator.column=order_it
 spring.shardingsphere.sharding.binding-tables=t_order,t_order_item
 spring.shardingsphere.sharding.broadcast-tables=t_config
 
-spring.shardingsphere.orchestration.name=spring_boot_ds_sharding
-spring.shardingsphere.orchestration.overwrite=true
-spring.shardingsphere.orchestration.registry.type=zookeeper
-spring.shardingsphere.orchestration.registry.namespace=orchestration-spring-boot-sharding-test
-spring.shardingsphere.orchestration.registry.server-lists=localhost:2181
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.orchestration-type=registry_center,config_center,metadata_center
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.instance-type=zookeeper
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.server-lists=localhost:2181
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.namespace=orchestration-spring-boot-sharding-test
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.props.overwrite=true
 ```
 
 ### JNDI
@@ -364,15 +364,14 @@ spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.en
 ```properties
 #Omit data source, data sharding, read-write split and data masking configurations
 
-spring.shardingsphere.orchestration.name= #Orchestration instance name
-spring.shardingsphere.orchestration.overwrite= #Whether to overwrite local configurations with registry center configurations; if it can, each initialization should refer to local configurations
-spring.shardingsphere.orchestration.registry.type= #Registry center type. Example:zookeeper
-spring.shardingsphere.orchestration.registry.server-lists= #The list of servers that connect to registry center, including IP and port number; use commas to separate
-spring.shardingsphere.orchestration.registry.namespace= #Registry center namespace
-spring.shardingsphere.orchestration.registry.digest= #The token that connects to the registry center; default means there is no need for authentication
-spring.shardingsphere.orchestration.registry.operation-timeout-milliseconds= #The millisecond number for operation timeout; default value: 500 milliseconds
-spring.shardingsphere.orchestration.registry.max-retries= #Maximum retry time after failing; default value: 3 times
-spring.shardingsphere.orchestration.registry.retry-interval-milliseconds= #Interval time to retry; default value: 500 milliseconds
-spring.shardingsphere.orchestration.registry.time-to-live-seconds= #Living time of temporary nodes; default value: 60 seconds
-spring.shardingsphere.orchestration.registry.props= #Customize registry center props.
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.orchestration-type= The type of orchestration center: config_center or registry_center or metadata_center
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.instance-type= #Center instance type. Example:zookeeper#Registry center type. Example:zookeeper
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.server-lists= #The list of servers that connect to registry center, including IP and port number; use commas to separate
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.namespace= #Center namespace
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.props.overwrite= #Whether to overwrite local configurations with config center configurations; if it can, each initialization should refer to local configurations
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.props.digest= #The token that connects to the center; default means there is no need for authentication
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.props.operation-timeout-milliseconds= #The millisecond number for operation timeout; default value: 500 milliseconds
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.props.max-retries= #Maximum retry time after failing; default value: 3 times
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.props.retry-interval-milliseconds= #Interval time to retry; default value: 500 milliseconds
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.props.time-to-live-seconds= #Living time of temporary nodes; default value: 60 seconds
 ```

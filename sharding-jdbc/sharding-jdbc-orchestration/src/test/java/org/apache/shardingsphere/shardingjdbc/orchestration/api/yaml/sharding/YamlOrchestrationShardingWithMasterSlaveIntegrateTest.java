@@ -21,8 +21,8 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.AbstractYamlDataSourceTest;
-import org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationShardingDataSourceFactory;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -61,14 +61,14 @@ public final class YamlOrchestrationShardingWithMasterSlaveIntegrateTest extends
         File yamlFile = new File(YamlOrchestrationShardingWithMasterSlaveIntegrateTest.class.getResource(filePath).toURI());
         DataSource dataSource;
         if (hasDataSource) {
-            dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(yamlFile);
+            dataSource = YamlOrchestrationShardingSphereDataSourceFactory.createDataSource(yamlFile);
         } else {
             Map<String, DataSource> dataSourceMap = Maps.asMap(Sets.newHashSet("db0_master", "db0_slave", "db1_master", "db1_slave"), AbstractYamlDataSourceTest::createDataSource);
             Map<String, DataSource> result = new HashMap<>();
             for (Entry<String, DataSource> each : dataSourceMap.entrySet()) {
                 result.put(each.getKey(), each.getValue());
             }
-            dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(result, yamlFile);
+            dataSource = YamlOrchestrationShardingSphereDataSourceFactory.createDataSource(result, yamlFile);
         }
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
@@ -77,6 +77,6 @@ public final class YamlOrchestrationShardingWithMasterSlaveIntegrateTest extends
             statement.executeQuery("SELECT * FROM t_order_item");
             statement.executeQuery("SELECT * FROM config");
         }
-        ((OrchestrationShardingDataSource) dataSource).close();
+        ((OrchestrationShardingSphereDataSource) dataSource).close();
     }
 }

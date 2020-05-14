@@ -19,24 +19,11 @@ package org.apache.shardingsphere.shardingjdbc.spring.boot;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.strategy.algorithm.sharding.inline.InlineExpressionParser;
-import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.ShadowRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.root.RuleRootConfigurationsYamlSwapper;
-import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.shardingjdbc.api.EncryptDataSourceFactory;
-import org.apache.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
-import org.apache.shardingsphere.shardingjdbc.api.ShadowDataSourceFactory;
-import org.apache.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
-import org.apache.shardingsphere.shardingjdbc.spring.boot.common.SpringBootPropertiesConfigurationProperties;
-import org.apache.shardingsphere.shardingjdbc.spring.boot.encrypt.EncryptRuleCondition;
-import org.apache.shardingsphere.shardingjdbc.spring.boot.encrypt.SpringBootEncryptRuleConfigurationProperties;
-import org.apache.shardingsphere.shardingjdbc.spring.boot.masterslave.MasterSlaveRuleCondition;
-import org.apache.shardingsphere.shardingjdbc.spring.boot.masterslave.SpringBootMasterSlaveRuleConfigurationProperties;
-import org.apache.shardingsphere.shardingjdbc.spring.boot.shadow.ShadowRuleCondition;
-import org.apache.shardingsphere.shardingjdbc.spring.boot.shadow.SpringBootShadowRuleConfigurationProperties;
-import org.apache.shardingsphere.shardingjdbc.spring.boot.sharding.ShardingRuleCondition;
-import org.apache.shardingsphere.shardingjdbc.spring.boot.sharding.SpringBootRulesConfigurationProperties;
+import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.InlineExpressionParser;
+import org.apache.shardingsphere.shardingjdbc.api.ShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.spring.boot.prop.SpringBootPropertiesConfigurationProperties;
+import org.apache.shardingsphere.shardingjdbc.spring.boot.rule.SpringBootRulesConfigurationProperties;
+import org.apache.shardingsphere.shardingjdbc.spring.boot.rule.SpringBootRulesConfigurationYamlSwapper;
 import org.apache.shardingsphere.spring.boot.datasource.DataSourcePropertiesSetterHolder;
 import org.apache.shardingsphere.spring.boot.util.DataSourceUtil;
 import org.apache.shardingsphere.spring.boot.util.PropertyUtil;
@@ -49,7 +36,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.StandardEnvironment;
@@ -68,81 +54,37 @@ import java.util.Map;
  */
 @Configuration
 @ComponentScan("org.apache.shardingsphere.spring.boot.converter")
-@EnableConfigurationProperties({
-        SpringBootRulesConfigurationProperties.class,
-        SpringBootMasterSlaveRuleConfigurationProperties.class, SpringBootEncryptRuleConfigurationProperties.class,
-        SpringBootPropertiesConfigurationProperties.class, SpringBootShadowRuleConfigurationProperties.class})
+@EnableConfigurationProperties({SpringBootRulesConfigurationProperties.class, SpringBootPropertiesConfigurationProperties.class})
 @ConditionalOnProperty(prefix = "spring.shardingsphere", name = "enabled", havingValue = "true", matchIfMissing = true)
 @AutoConfigureBefore(DataSourceAutoConfiguration.class)
 @RequiredArgsConstructor
 public class SpringBootConfiguration implements EnvironmentAware {
     
+    private static final String JNDI_NAME = "jndi-name";
+    
     private final SpringBootRulesConfigurationProperties rules;
-    
-    private final SpringBootMasterSlaveRuleConfigurationProperties masterSlaveRule;
-    
-    private final SpringBootEncryptRuleConfigurationProperties encryptRule;
-    
-    private final SpringBootShadowRuleConfigurationProperties shadowRule;
     
     private final SpringBootPropertiesConfigurationProperties props;
     
     private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
     
-    private final String jndiName = "jndi-name";
+    private final SpringBootRulesConfigurationYamlSwapper swapper = new SpringBootRulesConfigurationYamlSwapper();
     
     /**
-     * Get sharding data source bean.
+     * Get ShardingSphere data source bean.
      *
      * @return data source bean
      * @throws SQLException SQL exception
      */
     @Bean
-    @Conditional(ShardingRuleCondition.class)
-    public DataSource shardingDataSource() throws SQLException {
-        return ShardingDataSourceFactory.createDataSource(dataSourceMap, new RuleRootConfigurationsYamlSwapper().swap(rules), props.getProps());
+    public DataSource shardingSphereDataSource() throws SQLException {
+        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, swapper.swap(rules), props.getProps());
     }
     
     /**
-     * Get master-slave data source bean.
+     * Create transaction type scanner.
      *
-     * @return data source bean
-     * @throws SQLException SQL exception
-     */
-    @Bean
-    @Conditional(MasterSlaveRuleCondition.class)
-    public DataSource masterSlaveDataSource() throws SQLException {
-        return MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new MasterSlaveRuleConfigurationYamlSwapper().swap(masterSlaveRule), props.getProps());
-    }
-    
-    /**
-     * Get encrypt data source bean.
-     *
-     * @return data source bean
-     * @throws SQLException SQL exception
-     */
-    @Bean
-    @Conditional(EncryptRuleCondition.class)
-    public DataSource encryptDataSource() throws SQLException {
-        return EncryptDataSourceFactory.createDataSource(dataSourceMap.values().iterator().next(), new EncryptRuleConfigurationYamlSwapper().swap(encryptRule), props.getProps());
-    }
-    
-    /**
-     * Get shadow data source bean.
-     *
-     * @return data source bean
-     * @throws SQLException SQL exception
-     */
-    @Bean
-    @Conditional(ShadowRuleCondition.class)
-    public DataSource shadowDataSource() throws SQLException {
-        return ShadowDataSourceFactory.createDataSource(dataSourceMap, new ShadowRuleConfigurationYamlSwapper().swap(shadowRule), props.getProps());
-    }
-    
-    /**
-     * Create sharding transaction type scanner.
-     *
-     * @return sharding transaction type scanner
+     * @return transaction type scanner
      */
     @Bean
     public ShardingTransactionTypeScanner shardingTransactionTypeScanner() {
@@ -156,9 +98,9 @@ public class SpringBootConfiguration implements EnvironmentAware {
             try {
                 dataSourceMap.put(each, getDataSource(environment, prefix, each));
             } catch (final ReflectiveOperationException ex) {
-                throw new ShardingSphereException("Can't find datasource type!", ex);
-            } catch (final NamingException namingEx) {
-                throw new ShardingSphereException("Can't find JNDI datasource!", namingEx);
+                throw new ShardingSphereException("Can't find data source type.", ex);
+            } catch (final NamingException ex) {
+                throw new ShardingSphereException("Can't find JNDI data source.", ex);
             }
         }
     }
@@ -173,9 +115,9 @@ public class SpringBootConfiguration implements EnvironmentAware {
     @SuppressWarnings("unchecked")
     private DataSource getDataSource(final Environment environment, final String prefix, final String dataSourceName) throws ReflectiveOperationException, NamingException {
         Map<String, Object> dataSourceProps = PropertyUtil.handle(environment, prefix + dataSourceName.trim(), Map.class);
-        Preconditions.checkState(!dataSourceProps.isEmpty(), "Wrong datasource properties!");
-        if (dataSourceProps.containsKey(jndiName)) {
-            return getJndiDataSource(dataSourceProps.get(jndiName).toString());
+        Preconditions.checkState(!dataSourceProps.isEmpty(), "Wrong data source properties.");
+        if (dataSourceProps.containsKey(JNDI_NAME)) {
+            return getJndiDataSource(dataSourceProps.get(JNDI_NAME).toString());
         }
         DataSource result = DataSourceUtil.getDataSource(dataSourceProps.get("type").toString(), dataSourceProps);
         DataSourcePropertiesSetterHolder.getDataSourcePropertiesSetterByType(dataSourceProps.get("type").toString()).ifPresent(

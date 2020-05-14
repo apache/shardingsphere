@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.connection;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.h2.jdbcx.JdbcXAConnection;
 import org.junit.Ignore;
@@ -65,9 +64,8 @@ public final class XAConnectionFactoryTest {
     }
     
     @Test
-    @SneakyThrows
     @Ignore("oracle jdbc driver is not import because of the limitations of license")
-    public void assertCreateOracleXAConnection() {
+    public void assertCreateOracleXAConnection() throws ClassNotFoundException {
         Class clazz = Class.forName("oracle.jdbc.xa.client.OracleXAConnection");
         assertThat(XAConnectionFactory.createXAConnection(DatabaseTypes.getActualDatabaseType("Oracle"), xaDataSource, connection), instanceOf(clazz));
     }

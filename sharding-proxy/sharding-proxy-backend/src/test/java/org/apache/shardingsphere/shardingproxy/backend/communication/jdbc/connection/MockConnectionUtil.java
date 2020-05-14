@@ -23,12 +23,9 @@ import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -43,7 +40,7 @@ final class MockConnectionUtil {
      * @param dsName datasource name
      * @param connectionSize connection size
      */
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     static void setCachedConnections(final BackendConnection backendConnection, final String dsName, final int connectionSize) {
         Multimap<String, Connection> cachedConnections = HashMultimap.create();
         cachedConnections.putAll(dsName, mockNewConnections(connectionSize));
@@ -64,13 +61,5 @@ final class MockConnectionUtil {
             result.add(mock(Connection.class));
         }
         return result;
-    }
-    
-    static void mockThrowException(final Collection<Connection> connections) throws SQLException {
-        for (Connection each : connections) {
-            doThrow(SQLException.class).when(each).commit();
-            doThrow(SQLException.class).when(each).rollback();
-            doThrow(SQLException.class).when(each).close();
-        }
     }
 }

@@ -47,7 +47,8 @@ dataSources:
     username: root
     password:
     
-shardingRule:
+rules:
+- !!org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration
   tables:
     t_order: 
       actualDataNodes: ds_${0..1}.t_order_${0..1}
@@ -89,15 +90,16 @@ shardingRule:
         props:
           algorithm.expression: ds_${user_id % 2}
 
-masterSlaveRules:
-  ds_0:
-    masterDataSourceName: ds_master_0
-    slaveDataSourceNames: [ds_master_0_slave_0, ds_master_0_slave_1]
-    loadBalanceAlgorithmType: ROUND_ROBIN
-  ds_1:
-    masterDataSourceName: ds_master_1
-    slaveDataSourceNames: [ds_master_1_slave_0, ds_master_1_slave_1]
-    loadBalanceAlgorithmType: ROUND_ROBIN
+- !!org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration
+  dataSources:
+    ds_0:
+      masterDataSourceName: ds_master_0
+      slaveDataSourceNames: [ds_master_0_slave_0, ds_master_0_slave_1]
+      loadBalanceAlgorithmType: ROUND_ROBIN
+    ds_1:
+      masterDataSourceName: ds_master_1
+      slaveDataSourceNames: [ds_master_1_slave_0, ds_master_1_slave_1]
+      loadBalanceAlgorithmType: ROUND_ROBIN
 
 props:
   sql.show: false

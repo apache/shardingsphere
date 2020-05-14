@@ -30,7 +30,7 @@ fi
 STDOUT_FILE=${LOGS_DIR}/stdout.log
 EXT_LIB=${DEPLOY_DIR}/ext-lib
 
-CLASS_PATH=.:..:${DEPLOY_DIR}/lib/*:${DEPLOY_DIR}/lib/*:${EXT_LIB}/*
+CLASS_PATH=.:${DEPLOY_DIR}/lib/*:${EXT_LIB}/*
 
 JAVA_OPTS=" -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true "
 
@@ -43,7 +43,7 @@ echo "Starting the $SERVER_NAME ..."
 if [ $# == 1 ]; then
     MAIN_CLASS=${MAIN_CLASS}" "$1
     echo "The port is $1"
-    CLASS_PATH=${DEPLOY_DIR}/conf:${CLASS_PATH}
+    set CLASS_PATH=../conf;%CLASS_PATH%
 fi
 
 if [ $# == 2 ]; then

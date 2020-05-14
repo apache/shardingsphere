@@ -20,7 +20,7 @@ package org.apache.shardingsphere.orchestration.core.registrycenter.listener;
 import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.ChangedType;
-import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationShardingSchema;
+import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationSchema;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,8 +45,8 @@ public final class DataSourceStateChangedListenerTest {
     
     @Test
     public void assertCreateShardingOrchestrationEvent() {
-        OrchestrationShardingSchema expected = new OrchestrationShardingSchema("master_slave_db", "slave_ds_0");
+        OrchestrationSchema expected = new OrchestrationSchema("master_slave_db", "slave_ds_0");
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/registry/datasources/master_slave_db.slave_ds_0", "disabled", ChangedType.UPDATED);
-        assertThat(dataSourceStateChangedListener.createShardingOrchestrationEvent(dataChangedEvent).getShardingSchema().getSchemaName(), is(expected.getSchemaName()));
+        assertThat(dataSourceStateChangedListener.createShardingOrchestrationEvent(dataChangedEvent).getOrchestrationSchema().getSchemaName(), is(expected.getSchemaName()));
     }
 }

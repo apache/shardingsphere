@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.rewrite.aware;
 
-import org.apache.shardingsphere.core.rule.ShadowRule;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 /**
  * Shadow rule aware.

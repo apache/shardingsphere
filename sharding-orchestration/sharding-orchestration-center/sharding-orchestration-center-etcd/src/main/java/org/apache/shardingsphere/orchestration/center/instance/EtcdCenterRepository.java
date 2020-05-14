@@ -39,6 +39,7 @@ import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventL
 
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 /**
@@ -60,15 +61,15 @@ public final class EtcdCenterRepository implements ConfigCenterRepository, Regis
         client = Client.builder().endpoints(Util.toURIs(Splitter.on(",").trimResults().splitToList(config.getServerLists()))).build();
     }
     
+    @SneakyThrows({InterruptedException.class, ExecutionException.class})
     @Override
-    @SneakyThrows
     public String get(final String key) {
         List<KeyValue> keyValues = client.getKVClient().get(ByteSequence.from(key, Charsets.UTF_8)).get().getKvs();
         return keyValues.isEmpty() ? null : keyValues.iterator().next().getValue().toString(Charsets.UTF_8);
     }
     
+    @SneakyThrows({InterruptedException.class, ExecutionException.class})
     @Override
-    @SneakyThrows
     public List<String> getChildrenKeys(final String key) {
         String prefix = key + "/";
         ByteSequence prefixByteSequence = ByteSequence.from(prefix, Charsets.UTF_8);
@@ -82,14 +83,14 @@ public final class EtcdCenterRepository implements ConfigCenterRepository, Regis
         return pathWithoutPrefix.contains("/") ? pathWithoutPrefix.substring(0, pathWithoutPrefix.indexOf("/")) : pathWithoutPrefix;
     }
     
+    @SneakyThrows({InterruptedException.class, ExecutionException.class})
     @Override
-    @SneakyThrows
     public void persist(final String key, final String value) {
         client.getKVClient().put(ByteSequence.from(key, Charsets.UTF_8), ByteSequence.from(value, Charsets.UTF_8)).get();
     }
     
+    @SneakyThrows({InterruptedException.class, ExecutionException.class})
     @Override
-    @SneakyThrows
     public void persistEphemeral(final String key, final String value) {
         long leaseId = client.getLeaseClient().grant(this.etcdProperties.getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS)).get().getID();
         client.getLeaseClient().keepAlive(leaseId, Observers.observer(response -> { }));

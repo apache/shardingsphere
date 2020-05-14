@@ -21,14 +21,16 @@ import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.core.log.ConfigurationLogger;
+import org.apache.shardingsphere.underlying.common.log.ConfigurationLogger;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
@@ -36,6 +38,7 @@ import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourc
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.underlying.executor.kernel.ExecutorKernel;
 
 import javax.sql.DataSource;
@@ -59,6 +62,8 @@ public final class RuntimeContext implements AutoCloseable {
     
     private final DatabaseType databaseType;
     
+    private final Collection<RuleConfiguration> configurations;
+    
     private final Collection<ShardingSphereRule> rules;
     
     private final ConfigurationProperties properties;
@@ -74,10 +79,12 @@ public final class RuntimeContext implements AutoCloseable {
     @Setter
     private ShardingSphereMetaData metaData;
     
-    public RuntimeContext(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final Collection<ShardingSphereRule> rules, final Properties props) throws SQLException {
+    public RuntimeContext(final Map<String, DataSource> dataSourceMap, 
+                          final DatabaseType databaseType, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
         this.dataSourceMap = dataSourceMap;
         this.databaseType = databaseType;
-        this.rules = rules;
+        this.configurations = configurations;
+        rules = ShardingSphereRulesBuilder.build(configurations, dataSourceMap.keySet());
         properties = new ConfigurationProperties(null == props ? new Properties() : props);
         executorKernel = new ExecutorKernel(properties.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
         sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(databaseType));
@@ -85,15 +92,11 @@ public final class RuntimeContext implements AutoCloseable {
         shardingTransactionManagerEngine = new ShardingTransactionManagerEngine();
         shardingTransactionManagerEngine.init(databaseType, dataSourceMap);
         metaData = createMetaData(dataSourceMap, databaseType);
-        // TODO log multiple rules
-        if (!rules.isEmpty()) {
-            ConfigurationLogger.log(rules.iterator().next().getRuleConfiguration());
-        }
-        ConfigurationLogger.log(props);
+        log(configurations, props);
     }
     
-    public RuntimeContext(final DataSource dataSource, final DatabaseType databaseType, final Collection<ShardingSphereRule> rules, final Properties props) throws SQLException {
-        this(ImmutableMap.of("ds", dataSource), databaseType, rules, props);
+    public RuntimeContext(final DataSource dataSource, final DatabaseType databaseType, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
+        this(ImmutableMap.of(DefaultSchema.LOGIC_NAME, dataSource), databaseType, configurations, props);
     }
     
     private CachedDatabaseMetaData createCachedDatabaseMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {
@@ -105,7 +108,7 @@ public final class RuntimeContext implements AutoCloseable {
     private ShardingSphereMetaData createMetaData(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) throws SQLException {
         long start = System.currentTimeMillis();
         DataSourceMetas dataSourceMetas = new DataSourceMetas(databaseType, getDatabaseAccessConfigurationMap(dataSourceMap));
-        RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataLoader(rules).load(getDatabaseType(), dataSourceMap, getProperties());
+        RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataLoader(rules).load(getDatabaseType(), dataSourceMap, getProperties(), executorKernel.getExecutorService().getExecutorService());
         ShardingSphereMetaData result = new ShardingSphereMetaData(dataSourceMetas, ruleSchemaMetaData);
         log.info("Meta data load finished, cost {} milliseconds.", System.currentTimeMillis() - start);
         return result;
@@ -121,6 +124,11 @@ public final class RuntimeContext implements AutoCloseable {
             }
         }
         return result;
+    }
+    
+    private void log(final Collection<RuleConfiguration> configurations, final Properties props) {
+        ConfigurationLogger.log(configurations);
+        ConfigurationLogger.log(props);
     }
     
     @Override

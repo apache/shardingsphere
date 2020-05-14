@@ -15,7 +15,8 @@
 # limitations under the License.
 #
 
-shardingRule:
+rules:
+- !!org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration
   tables:
     config:
       actualDataNodes: db_ms_${0..1}.t_config
@@ -60,15 +61,16 @@ shardingRule:
       shardingAlgorithm:
         type: COMPLEX_TEST
 
-masterSlaveRules:
-  db_ms_0:
-    masterDataSourceName: db0_master
-    slaveDataSourceNames:
-      - db0_slave
-  db_ms_1:
-    masterDataSourceName: db1_master
-    slaveDataSourceNames:
-      - db1_slave
+- !!org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration
+  dataSources:
+    db_ms_0:
+      masterDataSourceName: db0_master
+      slaveDataSourceNames:
+        - db0_slave
+    db_ms_1:
+      masterDataSourceName: db1_master
+      slaveDataSourceNames:
+        - db1_slave
 
 orchestration:
   test_sharding_ms_registry_name:

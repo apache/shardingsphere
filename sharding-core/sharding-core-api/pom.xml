@@ -34,7 +34,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>encrypt-core-api</artifactId>
+            <artifactId>master-slave-core-api</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

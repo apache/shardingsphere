@@ -22,7 +22,7 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.codec.PacketCodec;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchemas;
 import org.apache.shardingsphere.shardingproxy.frontend.DatabaseProtocolFrontendEngineFactory;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseProtocolFrontendEngine;
 
@@ -34,7 +34,7 @@ public final class ServerHandlerInitializer extends ChannelInitializer<SocketCha
     
     @Override
     protected void initChannel(final SocketChannel socketChannel) {
-        DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine = DatabaseProtocolFrontendEngineFactory.newInstance(LogicSchemas.getInstance().getDatabaseType());
+        DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine = DatabaseProtocolFrontendEngineFactory.newInstance(ShardingSphereSchemas.getInstance().getDatabaseType());
         ChannelPipeline pipeline = socketChannel.pipeline();
         pipeline.addLast(new PacketCodec(databaseProtocolFrontendEngine.getCodecEngine()));
         pipeline.addLast(new FrontendChannelInboundHandler(databaseProtocolFrontendEngine));

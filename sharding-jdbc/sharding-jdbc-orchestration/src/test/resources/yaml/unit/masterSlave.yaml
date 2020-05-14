@@ -27,7 +27,8 @@ dataSources:
     username: sa
     password:
 
-masterSlaveRule:
+rules:
+- !!org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration
   name: ms_ds
   masterDataSourceName: ds_m
   slaveDataSourceNames:

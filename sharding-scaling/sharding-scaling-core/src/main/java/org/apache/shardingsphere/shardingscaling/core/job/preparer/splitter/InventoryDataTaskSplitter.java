@@ -120,9 +120,9 @@ public final class InventoryDataTaskSplitter {
             PreparedStatement ps = connection.prepareStatement(String.format("SELECT MIN(%s),MAX(%s) FROM %s LIMIT 1", primaryKey, primaryKey, dumperConfiguration.getTableName()));
             ResultSet rs = ps.executeQuery();
             rs.next();
-            int min = rs.getInt(1);
-            int max = rs.getInt(2);
-            int step = (max - min) / concurrency;
+            long min = rs.getLong(1);
+            long max = rs.getLong(2);
+            long step = (max - min) / concurrency;
             for (int i = 0; i < concurrency; i++) {
                 RdbmsConfiguration splitDumperConfig = RdbmsConfiguration.clone(dumperConfiguration);
                 if (i < concurrency - 1) {

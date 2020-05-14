@@ -72,7 +72,7 @@
     {
       "name": "spring.shardingsphere.props",
       "type": "java.util.Properties",
-      "sourceType": "org.apache.shardingsphere.shardingjdbc.spring.boot.common.SpringBootPropertiesConfigurationProperties",
+      "sourceType": "org.apache.shardingsphere.shardingjdbc.spring.boot.prop.SpringBootPropertiesConfigurationProperties",
       "description": "Customize shardingsphere properties."
     },
     {
