@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding;
+package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.rule;
 
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
@@ -34,7 +34,7 @@ import java.util.LinkedList;
 /**
  * Orchestration Spring boot root configurations YAML swapper.
  */
-public final class OrchestrationSpringBootRuleConfigurationsYamlSwapper implements YamlSwapper<OrchestrationSpringBootRulesConfigurationProperties, Collection<RuleConfiguration>> {
+public final class OrchestrationSpringBootRulesConfigurationYamlSwapper implements YamlSwapper<OrchestrationSpringBootRulesConfigurationProperties, Collection<RuleConfiguration>> {
     
     private final ShardingRuleConfigurationYamlSwapper shardingRuleConfigurationYamlSwapper = new ShardingRuleConfigurationYamlSwapper();
     

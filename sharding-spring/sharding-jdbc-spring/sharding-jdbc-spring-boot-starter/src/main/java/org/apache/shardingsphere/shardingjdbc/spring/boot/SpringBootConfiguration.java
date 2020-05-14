@@ -21,10 +21,9 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sharding.core.strategy.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.shardingjdbc.api.ShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.shardingjdbc.spring.boot.common.SpringBootPropertiesConfigurationProperties;
-import org.apache.shardingsphere.shardingjdbc.spring.boot.sharding.ShardingSphereRuleCondition;
-import org.apache.shardingsphere.shardingjdbc.spring.boot.sharding.SpringBootRuleConfigurationsYamlSwapper;
-import org.apache.shardingsphere.shardingjdbc.spring.boot.sharding.SpringBootRulesConfigurationProperties;
+import org.apache.shardingsphere.shardingjdbc.spring.boot.prop.SpringBootPropertiesConfigurationProperties;
+import org.apache.shardingsphere.shardingjdbc.spring.boot.rule.SpringBootRulesConfigurationProperties;
+import org.apache.shardingsphere.shardingjdbc.spring.boot.rule.SpringBootRulesConfigurationYamlSwapper;
 import org.apache.shardingsphere.spring.boot.datasource.DataSourcePropertiesSetterHolder;
 import org.apache.shardingsphere.spring.boot.util.DataSourceUtil;
 import org.apache.shardingsphere.spring.boot.util.PropertyUtil;
@@ -37,7 +36,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.StandardEnvironment;
@@ -62,13 +60,15 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class SpringBootConfiguration implements EnvironmentAware {
     
+    private static final String JNDI_NAME = "jndi-name";
+    
     private final SpringBootRulesConfigurationProperties rules;
     
     private final SpringBootPropertiesConfigurationProperties props;
     
     private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
     
-    private final String jndiName = "jndi-name";
+    private final SpringBootRulesConfigurationYamlSwapper swapper = new SpringBootRulesConfigurationYamlSwapper();
     
     /**
      * Get ShardingSphere data source bean.
@@ -77,15 +77,14 @@ public class SpringBootConfiguration implements EnvironmentAware {
      * @throws SQLException SQL exception
      */
     @Bean
-    @Conditional(ShardingSphereRuleCondition.class)
     public DataSource shardingSphereDataSource() throws SQLException {
-        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new SpringBootRuleConfigurationsYamlSwapper().swap(rules), props.getProps());
+        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, swapper.swap(rules), props.getProps());
     }
     
     /**
-     * Create sharding transaction type scanner.
+     * Create transaction type scanner.
      *
-     * @return sharding transaction type scanner
+     * @return transaction type scanner
      */
     @Bean
     public ShardingTransactionTypeScanner shardingTransactionTypeScanner() {
@@ -99,9 +98,9 @@ public class SpringBootConfiguration implements EnvironmentAware {
             try {
                 dataSourceMap.put(each, getDataSource(environment, prefix, each));
             } catch (final ReflectiveOperationException ex) {
-                throw new ShardingSphereException("Can't find datasource type!", ex);
-            } catch (final NamingException namingEx) {
-                throw new ShardingSphereException("Can't find JNDI datasource!", namingEx);
+                throw new ShardingSphereException("Can't find data source type.", ex);
+            } catch (final NamingException ex) {
+                throw new ShardingSphereException("Can't find JNDI data source.", ex);
             }
         }
     }
@@ -116,9 +115,9 @@ public class SpringBootConfiguration implements EnvironmentAware {
     @SuppressWarnings("unchecked")
     private DataSource getDataSource(final Environment environment, final String prefix, final String dataSourceName) throws ReflectiveOperationException, NamingException {
         Map<String, Object> dataSourceProps = PropertyUtil.handle(environment, prefix + dataSourceName.trim(), Map.class);
-        Preconditions.checkState(!dataSourceProps.isEmpty(), "Wrong datasource properties!");
-        if (dataSourceProps.containsKey(jndiName)) {
-            return getJndiDataSource(dataSourceProps.get(jndiName).toString());
+        Preconditions.checkState(!dataSourceProps.isEmpty(), "Wrong data source properties.");
+        if (dataSourceProps.containsKey(JNDI_NAME)) {
+            return getJndiDataSource(dataSourceProps.get(JNDI_NAME).toString());
         }
         DataSource result = DataSourceUtil.getDataSource(dataSourceProps.get("type").toString(), dataSourceProps);
         DataSourcePropertiesSetterHolder.getDataSourcePropertiesSetterByType(dataSourceProps.get("type").toString()).ifPresent(
