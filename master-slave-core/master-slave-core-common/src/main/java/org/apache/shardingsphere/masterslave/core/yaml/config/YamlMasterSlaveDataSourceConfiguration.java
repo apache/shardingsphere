@@ -15,10 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.core.yaml.config.sharding.strategy;
+package org.apache.shardingsphere.masterslave.core.yaml.config;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 /**
- * None sharding strategy configuration for YAML.
+ * Master-slave data source configuration for YAML.
  */
-public final class YamlNoneShardingStrategyConfiguration implements YamlBaseShardingStrategyConfiguration {
+@Getter
+@Setter
+public final class YamlMasterSlaveDataSourceConfiguration {
+    
+    private String name;
+    
+    private String masterDataSourceName;
+    
+    private List<String> slaveDataSourceNames = new ArrayList<>();
+    
+    private String loadBalanceAlgorithmType;
+    
+    private Properties props = new Properties();
 }

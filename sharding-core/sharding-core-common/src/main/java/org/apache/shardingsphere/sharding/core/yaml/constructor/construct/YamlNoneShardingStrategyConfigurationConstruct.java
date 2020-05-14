@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.core.yaml.constructor.construct;
 
-import org.apache.shardingsphere.sharding.core.yaml.config.sharding.strategy.YamlNoneShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.core.yaml.config.strategy.YamlNoneShardingStrategyConfiguration;
 import org.yaml.snakeyaml.constructor.Construct;
 import org.yaml.snakeyaml.nodes.Node;
 

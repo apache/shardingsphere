@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.core.yaml.swapper;
+package org.apache.shardingsphere.shadow.core.yaml.swapper;
 
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.sharding.core.yaml.config.shadow.YamlShadowRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
+import org.apache.shardingsphere.shadow.core.yaml.config.YamlShadowRuleConfiguration;
+import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlRuleConfigurationSwapper;
 
 /**
  * Shadow rule configuration yaml swapper.
  */
-public final class ShadowRuleConfigurationYamlSwapper implements YamlSwapper<YamlShadowRuleConfiguration, ShadowRuleConfiguration> {
+public final class ShadowRuleConfigurationYamlSwapper implements YamlRuleConfigurationSwapper<YamlShadowRuleConfiguration, ShadowRuleConfiguration> {
     
     @Override
     public YamlShadowRuleConfiguration swap(final ShadowRuleConfiguration data) {
@@ -37,5 +37,15 @@ public final class ShadowRuleConfigurationYamlSwapper implements YamlSwapper<Yam
     @Override
     public ShadowRuleConfiguration swap(final YamlShadowRuleConfiguration yamlConfiguration) {
         return new ShadowRuleConfiguration(yamlConfiguration.getColumn(), yamlConfiguration.getShadowMappings());
+    }
+    
+    @Override
+    public int getOrder() {
+        return -5;
+    }
+    
+    @Override
+    public Class<ShadowRuleConfiguration> getTypeClass() {
+        return ShadowRuleConfiguration.class;
     }
 }

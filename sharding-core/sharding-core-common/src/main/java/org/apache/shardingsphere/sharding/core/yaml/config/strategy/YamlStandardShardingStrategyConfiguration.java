@@ -15,22 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.core.yaml.config.shadow;
+package org.apache.shardingsphere.sharding.core.yaml.config.strategy;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlRuleConfiguration;
-
-import java.util.Map;
 
 /**
- * Shadow rule configuration.
+ * Standard strategy configuration for YAML.
  */
 @Getter
 @Setter
-public class YamlShadowRuleConfiguration implements YamlRuleConfiguration {
+public final class YamlStandardShardingStrategyConfiguration implements YamlBaseShardingStrategyConfiguration {
     
-    private String column;
+    private String shardingColumn;
     
-    private Map<String, String> shadowMappings;
+    private YamlShardingAlgorithmConfiguration shardingAlgorithm;
 }

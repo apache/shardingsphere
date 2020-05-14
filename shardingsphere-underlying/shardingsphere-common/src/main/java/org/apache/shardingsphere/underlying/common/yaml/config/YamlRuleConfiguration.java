@@ -17,8 +17,17 @@
 
 package org.apache.shardingsphere.underlying.common.yaml.config;
 
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
+
 /**
  * YAML rule configuration.
  */
 public interface YamlRuleConfiguration extends YamlConfiguration {
+    
+    /**
+     * Get rule configuration type.
+     * 
+     * @return rule configuration type
+     */
+    Class<? extends RuleConfiguration> getRuleConfigurationType();
 }

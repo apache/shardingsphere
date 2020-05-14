@@ -48,7 +48,7 @@ dataSources:
     password:
     
 rules:
-- !!org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlShardingRuleConfiguration
+- !!org.apache.shardingsphere.sharding.core.yaml.config.YamlShardingRuleConfiguration
   tables:
     t_order: 
       actualDataNodes: ds_${0..1}.t_order_${0..1}
@@ -90,7 +90,7 @@ rules:
         props:
           algorithm.expression: ds_${user_id % 2}
 
-- !!org.apache.shardingsphere.sharding.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration
+- !!org.apache.shardingsphere.masterslave.core.yaml.config.YamlMasterSlaveRuleConfiguration
   dataSources:
     ds_0:
       masterDataSourceName: ds_master_0

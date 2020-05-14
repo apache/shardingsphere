@@ -71,7 +71,7 @@ public final class ConfigurationLoggerTest {
     @Test
     public void assertLogShardingRuleConfiguration() {
         String yaml = "rules:\n"
-                + "- !!org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlShardingRuleConfiguration\n"
+                + "- !!org.apache.shardingsphere.sharding.core.yaml.config.YamlShardingRuleConfiguration\n"
                 + "  tables:\n"
                 + "    user:\n"
                 + "      actualDataNodes: ds_${0}.user_${0..1}\n"
@@ -93,7 +93,7 @@ public final class ConfigurationLoggerTest {
     @Test
     public void assertLogMasterSlaveRuleConfiguration() {
         String yaml = "rules:\n"
-                + "- !!org.apache.shardingsphere.sharding.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration\n"
+                + "- !!org.apache.shardingsphere.masterslave.core.yaml.config.YamlMasterSlaveRuleConfiguration\n"
                 + "  dataSources:\n"
                 + "    ms_ds:\n"
                 + "      masterDataSourceName: master_ds\n"
@@ -163,7 +163,7 @@ public final class ConfigurationLoggerTest {
     @Test
     public void assertLogRuleConfigurationWithShardingRuleConfiguration() {
         String yaml = "rules:\n"
-                + "- !!org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlShardingRuleConfiguration\n"
+                + "- !!org.apache.shardingsphere.sharding.core.yaml.config.YamlShardingRuleConfiguration\n"
                 + "  tables:\n"
                 + "    user:\n"
                 + "      actualDataNodes: ds_${0}.user_${0..1}\n"
@@ -177,7 +177,7 @@ public final class ConfigurationLoggerTest {
     @Test
     public void assertLogRuleConfigurationWithMasterSlaveRuleConfiguration() {
         String yaml = "rules:\n"
-                + "- !!org.apache.shardingsphere.sharding.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration\n"
+                + "- !!org.apache.shardingsphere.masterslave.core.yaml.config.YamlMasterSlaveRuleConfiguration\n"
                 + "  dataSources:\n"
                 + "    ms_ds:\n"
                 + "      masterDataSourceName: master_ds\n"

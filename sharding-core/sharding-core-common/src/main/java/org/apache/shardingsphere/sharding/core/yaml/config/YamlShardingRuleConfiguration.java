@@ -19,26 +19,35 @@ package org.apache.shardingsphere.sharding.core.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlRuleConfiguration;
 
-import javax.sql.DataSource;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Properties;
 
 /**
- * YAML root rule configurations.
+ * Sharding rule configuration for YAML.
  */
 @Getter
 @Setter
-public class YamlRootRuleConfigurations implements YamlConfiguration {
+public final class YamlShardingRuleConfiguration implements YamlRuleConfiguration {
     
-    private Map<String, DataSource> dataSources = new HashMap<>();
+    private Map<String, YamlTableRuleConfiguration> tables = new LinkedHashMap<>();
     
-    private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
+    private Collection<String> bindingTables = new ArrayList<>();
     
-    private Properties props = new Properties();
+    private Collection<String> broadcastTables = new ArrayList<>();
+    
+    private YamlShardingStrategyConfiguration defaultDatabaseStrategy;
+    
+    private YamlShardingStrategyConfiguration defaultTableStrategy;
+    
+    private YamlKeyGeneratorConfiguration defaultKeyGenerator;
+    
+    @Override
+    public Class<ShardingRuleConfiguration> getRuleConfigurationType() {
+        return ShardingRuleConfiguration.class;
+    }
 }

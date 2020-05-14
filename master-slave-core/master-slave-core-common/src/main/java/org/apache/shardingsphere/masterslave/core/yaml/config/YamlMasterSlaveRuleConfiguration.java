@@ -15,19 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.core.yaml.config.sharding.strategy;
+package org.apache.shardingsphere.masterslave.core.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlRuleConfiguration;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * Complex sharding strategy configuration for YAML.
+ * Master-slave rule configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlComplexShardingStrategyConfiguration implements YamlBaseShardingStrategyConfiguration {
+public final class YamlMasterSlaveRuleConfiguration implements YamlRuleConfiguration {
     
-    private String shardingColumns;
+    private Map<String, YamlMasterSlaveDataSourceConfiguration> dataSources = new LinkedHashMap<>();
     
-    private YamlShardingAlgorithmConfiguration shardingAlgorithm;
+    @Override
+    public Class<MasterSlaveRuleConfiguration> getRuleConfigurationType() {
+        return MasterSlaveRuleConfiguration.class;
+    }
 }

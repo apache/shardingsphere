@@ -23,7 +23,7 @@ dataSources:
     password:
 
 rules:
-- !!org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlShardingRuleConfiguration
+- !!org.apache.shardingsphere.sharding.core.yaml.config.YamlShardingRuleConfiguration
   tables:
     t_account:
       actualDataNodes: db.t_account_${0..1}

@@ -15,24 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.core.yaml.config.sharding;
+package org.apache.shardingsphere.shadow.core.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlRuleConfiguration;
 
-import java.util.Properties;
+import java.util.Map;
 
 /**
- * Key generator configuration for YAML.
+ * Shadow rule configuration.
  */
 @Getter
 @Setter
-public final class YamlKeyGeneratorConfiguration implements YamlConfiguration {
-    
-    private String type;
+public final class YamlShadowRuleConfiguration implements YamlRuleConfiguration {
     
     private String column;
     
-    private Properties props = new Properties();
+    private Map<String, String> shadowMappings;
+    
+    @Override
+    public Class<ShadowRuleConfiguration> getRuleConfigurationType() {
+        return ShadowRuleConfiguration.class;
+    }
 }

@@ -27,12 +27,12 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.StandardSharding
 import org.apache.shardingsphere.sharding.core.fixture.ComplexKeysShardingAlgorithmFixture;
 import org.apache.shardingsphere.sharding.core.fixture.HintShardingAlgorithmFixture;
 import org.apache.shardingsphere.sharding.core.fixture.StandardShardingAlgorithmFixture;
-import org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.core.yaml.config.sharding.strategy.YamlComplexShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.core.yaml.config.sharding.strategy.YamlHintShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.core.yaml.config.sharding.strategy.YamlNoneShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.core.yaml.config.sharding.strategy.YamlShardingAlgorithmConfiguration;
-import org.apache.shardingsphere.sharding.core.yaml.config.sharding.strategy.YamlStandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.core.yaml.config.YamlShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.core.yaml.config.strategy.YamlComplexShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.core.yaml.config.strategy.YamlHintShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.core.yaml.config.strategy.YamlNoneShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.core.yaml.config.strategy.YamlShardingAlgorithmConfiguration;
+import org.apache.shardingsphere.sharding.core.yaml.config.strategy.YamlStandardShardingStrategyConfiguration;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;

@@ -84,7 +84,7 @@ public class OrchestrationSpringBootRegistryShardingTest {
                 + "    username: sa\n");
         testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/rule", ""
                 + "rules:\n"
-                + "- !!org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlShardingRuleConfiguration\n"
+                + "- !!org.apache.shardingsphere.sharding.core.yaml.config.YamlShardingRuleConfiguration\n"
                 + "  bindingTables:\n"
                 + "  - t_order\n"
                 + "  - t_order_item\n"

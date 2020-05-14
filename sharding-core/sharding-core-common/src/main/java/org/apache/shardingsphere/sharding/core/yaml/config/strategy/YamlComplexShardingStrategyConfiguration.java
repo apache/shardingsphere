@@ -15,33 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.core.yaml.config.sharding;
+package org.apache.shardingsphere.sharding.core.yaml.config.strategy;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlRuleConfiguration;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
- * Sharding rule configuration for YAML.
+ * Complex sharding strategy configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlShardingRuleConfiguration implements YamlRuleConfiguration {
+public final class YamlComplexShardingStrategyConfiguration implements YamlBaseShardingStrategyConfiguration {
     
-    private Map<String, YamlTableRuleConfiguration> tables = new LinkedHashMap<>();
+    private String shardingColumns;
     
-    private Collection<String> bindingTables = new ArrayList<>();
-    
-    private Collection<String> broadcastTables = new ArrayList<>();
-    
-    private YamlShardingStrategyConfiguration defaultDatabaseStrategy;
-    
-    private YamlShardingStrategyConfiguration defaultTableStrategy;
-    
-    private YamlKeyGeneratorConfiguration defaultKeyGenerator;
+    private YamlShardingAlgorithmConfiguration shardingAlgorithm;
 }

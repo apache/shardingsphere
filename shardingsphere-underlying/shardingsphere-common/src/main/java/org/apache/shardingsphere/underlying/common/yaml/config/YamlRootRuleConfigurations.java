@@ -15,21 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.core.yaml.config.masterslave;
+package org.apache.shardingsphere.underlying.common.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlRuleConfiguration;
 
-import java.util.LinkedHashMap;
+import javax.sql.DataSource;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Properties;
 
 /**
- * Master-slave rule configuration for YAML.
+ * YAML root rule configurations.
  */
 @Getter
 @Setter
-public final class YamlMasterSlaveRuleConfiguration implements YamlRuleConfiguration {
+public class YamlRootRuleConfigurations implements YamlConfiguration {
     
-    private Map<String, YamlMasterSlaveDataSourceConfiguration> dataSources = new LinkedHashMap<>();
+    private Map<String, DataSource> dataSources = new HashMap<>();
+    
+    private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
+    
+    private Properties props = new Properties();
 }
