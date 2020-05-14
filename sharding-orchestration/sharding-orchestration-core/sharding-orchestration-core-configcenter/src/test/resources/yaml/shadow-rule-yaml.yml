@@ -1,4 +1,5 @@
-shadowRule:
+rules:
+- !!org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration
   column: shadow
   shadowMappings:
     ds: shadow_ds

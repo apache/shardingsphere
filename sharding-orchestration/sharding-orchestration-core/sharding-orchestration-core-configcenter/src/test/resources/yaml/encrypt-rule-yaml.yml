@@ -1,4 +1,5 @@
-encryptRule:
+rules:
+- !!org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration
   encryptors:
     order_encryptor:
       props:
