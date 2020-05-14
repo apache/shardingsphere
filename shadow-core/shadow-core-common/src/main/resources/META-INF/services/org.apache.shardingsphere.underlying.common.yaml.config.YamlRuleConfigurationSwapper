@@ -15,5 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sharding.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper
-org.apache.shardingsphere.sharding.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper
+org.apache.shardingsphere.shadow.core.yaml.swapper.ShadowRuleConfigurationYamlSwapper

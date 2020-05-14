@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.core.yaml.swapper;
+package org.apache.shardingsphere.shadow.core.yaml.swapper;
 
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.sharding.core.yaml.config.shadow.YamlShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.core.yaml.config.YamlShadowRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlRuleConfigurationSwapper;
 
 /**
