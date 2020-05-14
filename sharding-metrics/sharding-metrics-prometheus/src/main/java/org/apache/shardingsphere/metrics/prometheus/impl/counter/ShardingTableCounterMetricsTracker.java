@@ -15,14 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.shadow;
+package org.apache.shardingsphere.metrics.prometheus.impl.counter;
 
-import org.apache.shardingsphere.sharding.core.yaml.config.shadow.YamlShadowRuleConfiguration;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import io.prometheus.client.Counter;
+import org.apache.shardingsphere.metrics.api.CounterMetricsTracker;
+import org.apache.shardingsphere.metrics.enums.MetricsLabelEnum;
 
 /**
- * Shadow rule configuration properties.
+ * Sharding table counter metrics tracker.
  */
-@ConfigurationProperties(prefix = "spring.shardingsphere.shadow")
-public final class SpringBootShadowRuleConfigurationProperties extends YamlShadowRuleConfiguration {
+public final class ShardingTableCounterMetricsTracker implements CounterMetricsTracker {
+    
+    private static final Counter SHARDING_TABLE = Counter.build().name("sharding_table").labelNames("table") .help("collect sharding table count").register();
+    
+    @Override
+    public void inc(final double amount, final String... labelValues) {
+        SHARDING_TABLE.labels(labelValues).inc(amount);
+    }
+    
+    @Override
+    public String metricsLabel() {
+        return MetricsLabelEnum.SHARDING_TABLE.getName();
+    }
 }

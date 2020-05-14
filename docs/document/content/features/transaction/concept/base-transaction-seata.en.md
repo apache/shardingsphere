@@ -15,4 +15,12 @@ deployed together with business applications in the form of jar packages. They e
 The initiator of global transaction is TM, and the participant of global transaction is RM; TM is in charge of begin and commit/rollback of global transaction, RM is in charge of reporting the 
 execution results of branch transaction, and commit/rollback is executed through TC coordination.
 
+A typical lifecycle of Seata managed distributed transaction:
+
+1. TM asks TC to begin a new global transaction. TC generates an XID representing the global transaction.
+2. XID is propagated through microservices' invoke chain.
+3. RM register local transaction as a branch of the corresponding global transaction of XID to TC.
+4. TM asks TC for committing or rollbacking the corresponding global transaction of XID.
+5. TC drives all branch transactions under the corresponding global transaction of XID to finish branch committing or rollbacking.
+
 ![Seata AT transaction model](https://shardingsphere.apache.org/document/current/img/transaction/seata-at-transaction.png)

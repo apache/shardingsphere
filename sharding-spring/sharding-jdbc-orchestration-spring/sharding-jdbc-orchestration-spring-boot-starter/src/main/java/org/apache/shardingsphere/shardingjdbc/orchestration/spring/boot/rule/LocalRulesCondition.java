@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.shadow;
+package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.rule;
 
 import org.apache.shardingsphere.spring.boot.util.PropertyUtil;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
@@ -24,15 +24,15 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * Local shadow rule condition.
+ * Local rules condition.
  */
-public final class LocalShadowRuleCondition extends SpringBootCondition {
+public final class LocalRulesCondition extends SpringBootCondition {
     
-    private static final String SHADOW_PREFIX = "spring.shardingsphere.shadow";
+    private static final String SHARDING_PREFIX = "spring.shardingsphere.rules";
     
     @Override
     public ConditionOutcome getMatchOutcome(final ConditionContext conditionContext, final AnnotatedTypeMetadata annotatedTypeMetadata) {
-        boolean isEncrypt = PropertyUtil.containPropertyPrefix(conditionContext.getEnvironment(), SHADOW_PREFIX);
-        return isEncrypt ? ConditionOutcome.match() : ConditionOutcome.noMatch("Can't find ShardingSphere shadow rule configuration in environment.");
+        return PropertyUtil.containPropertyPrefix(conditionContext.getEnvironment(), SHARDING_PREFIX)
+            ? ConditionOutcome.match() : ConditionOutcome.noMatch("Can't find ShardingSphere rule configuration in local file.");
     }
 }

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
@@ -28,9 +27,9 @@ import org.apache.shardingsphere.sharding.core.strategy.algorithm.sharding.inlin
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.common.SpringBootRootConfigurationProperties;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding.LocalShardingRuleCondition;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding.OrchestrationSpringBootRuleConfigurationsYamlSwapper;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding.OrchestrationSpringBootRulesConfigurationProperties;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.rule.LocalRulesCondition;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.rule.OrchestrationSpringBootRulesConfigurationProperties;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.rule.OrchestrationSpringBootRulesConfigurationYamlSwapper;
 import org.apache.shardingsphere.spring.boot.datasource.DataSourcePropertiesSetterHolder;
 import org.apache.shardingsphere.spring.boot.util.DataSourceUtil;
 import org.apache.shardingsphere.spring.boot.util.PropertyUtil;
@@ -53,6 +52,7 @@ import org.springframework.util.StringUtils;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,7 +75,9 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     
     private final SpringBootRootConfigurationProperties root;
     
-    private final CenterRepositoryConfigurationYamlSwapper configurationYamlSwapper = new CenterRepositoryConfigurationYamlSwapper();
+    private final CenterRepositoryConfigurationYamlSwapper centerRepositorySwapper = new CenterRepositoryConfigurationYamlSwapper();
+    
+    private final OrchestrationSpringBootRulesConfigurationYamlSwapper configurationSwapper = new OrchestrationSpringBootRulesConfigurationYamlSwapper();
     
     /**
      * Get orchestration configuration.
@@ -85,9 +87,9 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @Bean
     public OrchestrationConfiguration orchestrationConfiguration() {
         Preconditions.checkState(isValidOrchestrationConfiguration(), "The orchestration configuration is invalid, please configure orchestration");
-        Map<String, CenterConfiguration> instanceConfigurationMap = Maps.newHashMapWithExpectedSize(root.getOrchestration().size());
+        Map<String, CenterConfiguration> instanceConfigurationMap = new HashMap<>(root.getOrchestration().size(), 1);
         for (Entry<String, YamlCenterRepositoryConfiguration> entry : root.getOrchestration().entrySet()) {
-            instanceConfigurationMap.put(entry.getKey(), configurationYamlSwapper.swap(entry.getValue()));
+            instanceConfigurationMap.put(entry.getKey(), centerRepositorySwapper.swap(entry.getValue()));
         }
         return new OrchestrationConfiguration(instanceConfigurationMap);
     }
@@ -97,17 +99,16 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     }
     
     /**
-     * Get orchestration sharding data source bean by local configuration.
+     * Get orchestration ShardingSphere data source bean by local configuration.
      *
      * @param orchestrationConfiguration orchestration configuration
      * @return orchestration sharding data source bean
      * @throws SQLException SQL exception
      */
     @Bean
-    @Conditional(LocalShardingRuleCondition.class)
-    public DataSource shardingSphereDataSourceByLocal(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
-        return new OrchestrationShardingSphereDataSource(
-                new ShardingSphereDataSource(dataSourceMap, new OrchestrationSpringBootRuleConfigurationsYamlSwapper().swap(rules), root.getProps()), orchestrationConfiguration);
+    @Conditional(LocalRulesCondition.class)
+    public DataSource localShardingSphereDataSource(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
+        return new OrchestrationShardingSphereDataSource(new ShardingSphereDataSource(dataSourceMap, configurationSwapper.swap(rules), root.getProps()), orchestrationConfiguration);
     }
     
     /**
@@ -130,7 +131,7 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
             try {
                 dataSourceMap.put(each, getDataSource(environment, prefix, each));
             } catch (final ReflectiveOperationException ex) {
-                throw new ShardingSphereException("Can't find datasource type!", ex);
+                throw new ShardingSphereException("Can't find data source type.", ex);
             }
         }
     }
