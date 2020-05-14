@@ -327,9 +327,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingJ
         int userId2 = 102;
         int orderId = 200;
         String status = "init";
-        
         String updatedStatus = "updated on duplicate key";
-        
         try (Connection connection = getShardingSphereDataSource().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(INSERT_ON_DUPLICATE_KEY_SQL);
              PreparedStatement queryStatement = connection.prepareStatement(SELECT_SQL_WITH_PARAMETER_MARKER_RETURN_STATUS)) {

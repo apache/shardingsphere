@@ -57,7 +57,9 @@ public final class RouteSQLRewriteEngine {
     private List<Object> getParameters(final ParameterBuilder parameterBuilder, final RouteResult routeResult, final RouteUnit routeUnit) {
         if (parameterBuilder instanceof StandardParameterBuilder) {
             return parameterBuilder.getParameters();
-        } else if (routeResult.getOriginalDataNodes().isEmpty()) {
+        }
+        
+        if (routeResult.getOriginalDataNodes().isEmpty()) {
             List<Object> onDuplicateKeyUpdateParameters = ((GroupedParameterBuilder) parameterBuilder).getOnDuplicateKeyUpdateParametersBuilder().getParameters();
             if (onDuplicateKeyUpdateParameters.isEmpty()) {
                 return parameterBuilder.getParameters();
@@ -78,7 +80,6 @@ public final class RouteSQLRewriteEngine {
             count++;
         }
         result.addAll(((GroupedParameterBuilder) parameterBuilder).getOnDuplicateKeyUpdateParametersBuilder().getParameters());
-    
         return result;
     }
     
