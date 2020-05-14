@@ -93,11 +93,6 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
         return getConnection();
     }
     
-    @Override
-    public void close() throws Exception {
-        close(getDataSourceMap().keySet());
-    }
-    
     /**
      * Get data sources.
      * 
@@ -105,6 +100,11 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
      */
     public Map<String, DataSource> getDataSourceMap() {
         return schemaContexts.getSchemaContexts().iterator().next().getSchema().getDataSources();
+    }
+    
+    @Override
+    public void close() throws Exception {
+        close(getDataSourceMap().keySet());
     }
     
     /**
