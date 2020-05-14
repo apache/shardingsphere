@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.core.yaml.config.sharding;
+package org.apache.shardingsphere.sharding.core.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sharding.core.yaml.config.sharding.strategy.YamlComplexShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.core.yaml.config.sharding.strategy.YamlHintShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.core.yaml.config.sharding.strategy.YamlNoneShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.core.yaml.config.sharding.strategy.YamlStandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.core.yaml.config.strategy.YamlComplexShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.core.yaml.config.strategy.YamlHintShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.core.yaml.config.strategy.YamlNoneShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.core.yaml.config.strategy.YamlStandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
 
 /**

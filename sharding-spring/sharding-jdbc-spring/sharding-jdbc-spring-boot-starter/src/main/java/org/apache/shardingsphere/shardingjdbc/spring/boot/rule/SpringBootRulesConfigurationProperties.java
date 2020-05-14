@@ -22,7 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.masterslave.core.yaml.config.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.shadow.core.yaml.config.YamlShadowRuleConfiguration;
-import org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.core.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

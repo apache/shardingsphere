@@ -15,12 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.core.yaml.config.sharding.strategy;
+package org.apache.shardingsphere.sharding.core.yaml.config.strategy;
 
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Sharding base strategy configuration for YAML.
+ * Complex sharding strategy configuration for YAML.
  */
-public interface YamlBaseShardingStrategyConfiguration extends YamlConfiguration {
+@Getter
+@Setter
+public final class YamlComplexShardingStrategyConfiguration implements YamlBaseShardingStrategyConfiguration {
+    
+    private String shardingColumns;
+    
+    private YamlShardingAlgorithmConfiguration shardingAlgorithm;
 }

@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.core.yaml.config.sharding.strategy;
+package org.apache.shardingsphere.sharding.core.yaml.config.strategy;
+
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
 
 /**
- * None sharding strategy configuration for YAML.
+ * Sharding base strategy configuration for YAML.
  */
-public final class YamlNoneShardingStrategyConfiguration implements YamlBaseShardingStrategyConfiguration {
+public interface YamlBaseShardingStrategyConfiguration extends YamlConfiguration {
 }

@@ -15,17 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.core.yaml.config.sharding.strategy;
-
-import lombok.Getter;
-import lombok.Setter;
+package org.apache.shardingsphere.sharding.core.yaml.config.strategy;
 
 /**
- * Hint sharding strategy configuration for YAML.
+ * None sharding strategy configuration for YAML.
  */
-@Getter
-@Setter
-public final class YamlHintShardingStrategyConfiguration implements YamlBaseShardingStrategyConfiguration {
-    
-    private YamlShardingAlgorithmConfiguration shardingAlgorithm;
+public final class YamlNoneShardingStrategyConfiguration implements YamlBaseShardingStrategyConfiguration {
 }

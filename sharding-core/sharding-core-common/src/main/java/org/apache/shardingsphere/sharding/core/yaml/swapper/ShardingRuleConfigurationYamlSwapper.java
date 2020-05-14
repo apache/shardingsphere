@@ -19,8 +19,8 @@ package org.apache.shardingsphere.sharding.core.yaml.swapper;
 
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
-import org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.core.yaml.config.YamlShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.core.yaml.config.YamlTableRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlRuleConfigurationSwapper;
 
 import java.util.Map.Entry;

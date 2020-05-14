@@ -42,7 +42,7 @@ dataSources:
     maxTotal: 100
 
 rules:
-- !!org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlShardingRuleConfiguration
+- !!org.apache.shardingsphere.sharding.core.yaml.config.YamlShardingRuleConfiguration
   tables:
     config:
       actualDataNodes: db_ms_${0..1}.t_config

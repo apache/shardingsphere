@@ -92,7 +92,7 @@ public final class ConfigCenterTest {
     
     private static final String SHARDING_RULE_YAML = ""
             + "rules:\n"
-            + "- !!org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlShardingRuleConfiguration\n"
+            + "- !!org.apache.shardingsphere.sharding.core.yaml.config.YamlShardingRuleConfiguration\n"
             + "  tables:\n"
             + "    t_order:\n"
             + "      actualDataNodes: ds_${0..1}.t_order_${0..1}\n"
@@ -151,7 +151,7 @@ public final class ConfigCenterTest {
     
     private static final String SHARDING_RULE_YAML_DEFAULT_TABLE_STRATEGY_NONE = ""
             + "rules:\n"
-            + "- !!org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlShardingRuleConfiguration\n"
+            + "- !!org.apache.shardingsphere.sharding.core.yaml.config.YamlShardingRuleConfiguration\n"
             + "  defaultTableStrategy:\n"
             + "    none: ''\n";
     

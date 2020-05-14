@@ -22,7 +22,7 @@ import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptorRuleConfigurat
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
 import org.apache.shardingsphere.masterslave.core.yaml.config.YamlMasterSlaveDataSourceConfiguration;
 import org.apache.shardingsphere.masterslave.core.yaml.config.YamlMasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.core.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlProxyRuleConfiguration;
 import org.junit.Test;

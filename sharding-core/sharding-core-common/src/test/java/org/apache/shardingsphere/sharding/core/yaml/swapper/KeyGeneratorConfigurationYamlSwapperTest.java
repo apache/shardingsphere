@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.core.yaml.swapper;
 
 import org.apache.shardingsphere.sharding.api.config.KeyGeneratorConfiguration;
-import org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlKeyGeneratorConfiguration;
+import org.apache.shardingsphere.sharding.core.yaml.config.YamlKeyGeneratorConfiguration;
 import org.apache.shardingsphere.sharding.spi.keygen.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.type.TypedSPIRegistry;
 import org.junit.Test;

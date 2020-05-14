@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.core.yaml.config.sharding;
+package org.apache.shardingsphere.sharding.core.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;

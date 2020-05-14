@@ -187,7 +187,7 @@ public final class ConfigCenter {
      * @return is sharding rule or not
      */
     public boolean isShardingRule(final String shardingSchemaName) {
-        return repository.get(node.getRulePath(shardingSchemaName)).contains("- !!org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlShardingRuleConfiguration\n");
+        return repository.get(node.getRulePath(shardingSchemaName)).contains("- !!org.apache.shardingsphere.sharding.core.yaml.config.YamlShardingRuleConfiguration\n");
     }
     
     /**

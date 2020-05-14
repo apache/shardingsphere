@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.core.yaml.constructor;
 
 import org.apache.shardingsphere.sharding.core.yaml.config.YamlRootRuleConfigurations;
-import org.apache.shardingsphere.sharding.core.yaml.config.sharding.strategy.YamlNoneShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.core.yaml.config.strategy.YamlNoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.core.yaml.constructor.construct.YamlNoneShardingStrategyConfigurationConstruct;
 import org.apache.shardingsphere.underlying.common.yaml.constructor.AbstractTypeConstructor;
 
