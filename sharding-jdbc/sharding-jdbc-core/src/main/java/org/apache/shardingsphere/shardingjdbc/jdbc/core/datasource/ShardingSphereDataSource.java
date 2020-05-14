@@ -22,9 +22,11 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.SchemaContextsBuilder;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
+import org.apache.shardingsphere.underlying.common.context.SchemaContexts;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 
@@ -50,6 +52,8 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     private final RuntimeContext runtimeContext;
     
+    private final SchemaContexts schemaContexts;
+    
     @Setter
     private PrintWriter logWriter = new PrintWriter(System.out);
     
@@ -57,6 +61,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
         this.dataSourceMap = dataSourceMap;
         databaseType = createDatabaseType();
         runtimeContext = new RuntimeContext(dataSourceMap, databaseType, configurations, props);
+        schemaContexts = new SchemaContextsBuilder(dataSourceMap, databaseType, configurations, props).build();
     }
     
     private DatabaseType createDatabaseType() throws SQLException {
