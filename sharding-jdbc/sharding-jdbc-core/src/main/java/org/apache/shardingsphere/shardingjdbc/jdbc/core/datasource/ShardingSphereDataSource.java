@@ -54,14 +54,14 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     private PrintWriter logWriter = new PrintWriter(System.out);
     
     public ShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
-        DatabaseType databaseType = createDatabaseType();
+        DatabaseType databaseType = createDatabaseType(dataSourceMap);
         runtimeContext = new RuntimeContext(dataSourceMap, databaseType, configurations, props);
         schemaContexts = new SchemaContextsBuilder(dataSourceMap, databaseType, configurations, props).build();
     }
     
-    private DatabaseType createDatabaseType() throws SQLException {
+    private DatabaseType createDatabaseType(final Map<String, DataSource> dataSourceMap) throws SQLException {
         DatabaseType result = null;
-        for (DataSource each : getDataSourceMap().values()) {
+        for (DataSource each : dataSourceMap.values()) {
             DatabaseType databaseType = createDatabaseType(each);
             Preconditions.checkState(null == result || result == databaseType, String.format("Database type inconsistent with '%s' and '%s'", result, databaseType));
             result = databaseType;
