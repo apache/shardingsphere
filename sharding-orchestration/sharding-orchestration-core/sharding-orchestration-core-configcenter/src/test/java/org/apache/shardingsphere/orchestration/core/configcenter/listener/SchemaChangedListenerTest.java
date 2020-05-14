@@ -62,7 +62,7 @@ public final class SchemaChangedListenerTest {
     
     private static final String SHARDING_RULE_YAML = ""
             + "rules:\n"
-            + "- !!org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlShardingRuleConfiguration\n"
+            + "- !!org.apache.shardingsphere.sharding.core.yaml.config.YamlShardingRuleConfiguration\n"
             + "  tables:\n"
             + "    t_order:\n"
             + "      logicTable: t_order\n" 
@@ -77,7 +77,7 @@ public final class SchemaChangedListenerTest {
     
     private static final String MASTER_SLAVE_RULE_YAML = ""
             + "rules:\n"
-            + "- !!org.apache.shardingsphere.sharding.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration\n"
+            + "- !!org.apache.shardingsphere.masterslave.core.yaml.config.YamlMasterSlaveRuleConfiguration\n"
             + "  dataSources:\n"
             + "    ms_ds:\n"
             + "      masterDataSourceName: master_ds\n" 

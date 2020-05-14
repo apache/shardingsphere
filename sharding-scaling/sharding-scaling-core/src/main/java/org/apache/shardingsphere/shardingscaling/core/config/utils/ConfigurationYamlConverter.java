@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.orchestration.core.configuration.DataSourceConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.core.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;

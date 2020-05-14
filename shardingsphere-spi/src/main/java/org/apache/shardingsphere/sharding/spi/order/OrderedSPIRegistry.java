@@ -30,6 +30,22 @@ import java.util.TreeMap;
 public final class OrderedSPIRegistry {
     
     /**
+     * Get registered services by class type.
+     *
+     * @param orderedSPIClass class of ordered SPI
+     * @param types types
+     * @param <T> type of ordered SPI class
+     * @return registered services
+     */
+    public static <T extends OrderedSPI> Map<Class<?>, T> getRegisteredServicesByClass(final Collection<Class<?>> types, final Class<T> orderedSPIClass) {
+        Map<Class<?>, T> result = new LinkedHashMap<>();
+        for (T each : getRegisteredServices(orderedSPIClass)) {
+            types.stream().filter(type -> isSameTypeClass(each, type)).forEach(type -> result.put(type, each));
+        }
+        return result;
+    }
+    
+    /**
      * Get registered services.
      *
      * @param orderedSPIClass class of ordered SPI

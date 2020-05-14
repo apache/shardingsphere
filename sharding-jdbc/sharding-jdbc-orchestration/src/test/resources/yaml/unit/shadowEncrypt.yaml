@@ -35,7 +35,7 @@ rules:
       props:
         aes.key.value: 123456
 
-- !!org.apache.shardingsphere.sharding.core.yaml.config.shadow.YamlShadowRuleConfiguration
+- !!org.apache.shardingsphere.shadow.core.yaml.config.YamlShadowRuleConfiguration
   column: shadows
   dataSource: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: org.h2.Driver

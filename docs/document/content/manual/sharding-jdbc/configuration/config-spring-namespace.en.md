@@ -301,8 +301,12 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere-examp
     <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order$->{order_id % 2}" />
     <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item$->{order_id % 2}" />
 
-    <sharding:key-generator id="orderKeyGenerator" type="SNOWFLAKE" column="order_id" />
-    <sharding:key-generator id="itemKeyGenerator" type="SNOWFLAKE" column="order_item_id" />
+    <bean id="snowflakeAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean">
+        <property name="type" value="SNOWFLAKE" />
+    </bean>
+
+    <sharding:key-generator id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
+    <sharding:key-generator id="itemKeyGenerator" column="order_item_id" algorithm-ref="snowflakeAlgorithm" />
 
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-source-names="ds_master0,ds_master0_slave0,ds_master0_slave1,ds_master1,ds_master1_slave0,ds_master1_slave1">
@@ -447,9 +451,15 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere-examp
                            http://shardingsphere.apache.org/schema/shardingsphere/orchestration/masterslave  
                            http://shardingsphere.apache.org/schema/shardingsphere/orchestration/masterslave/master-slave.xsd">
     
-    <reg:registry-center id="regCenter" type="zookeeper" server-lists="localhost:2181" namespace="orchestration-spring-namespace-demo" overwtite="false" />
-    <sharding:data-source id="shardingMasterSlaveDataSource" registry-center-ref="regCenter" />
-    <master-slave:data-source id="masterSlaveDataSource" registry-center-ref="regCenter" />
+    <util:properties id="instance-props">
+        <prop key="max-retries">3</prop>
+        <prop key="operation-timeout-milliseconds">3000</prop>
+    </util:properties>
+    <orchestraion:instance id="regCenter" orchestration-type="registry_center,config_center,metadata_center" instance-type="zookeeper" server-lists="localhost:2181" namespace="orchestration-spring-namespace-demo"
+                           props-ref="instance-props" />
+    <orchestraion:sharding-data-source id="shardingDatabasesTablesDataSource" data-source-ref="realShardingDatabasesTablesDataSource" instance-ref="regCenter" overwrite="true" />
+    <orchestraion:master-slave-data-source id="masterSlaveDataSource" data-source-ref="realMasterSlaveDataSource" instance-ref="regCenter" overwrite="true" />
+    <orchestraion:encrypt-data-source id="encryptDataSource" data-source-ref="realEncryptDataSource" instance-ref="regCenter" overwrite="true" />
 </beans>
 ```
 
@@ -699,8 +709,8 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/orchestration/
 | ------------------- | --------- | ------------------------------------------------------------ |
 | id                  | Attribute | ID                                                           |
 | data-source-ref (?) | Attribute | Orchestrated database id                                     |
-| registry-center-ref | Attribute | Registry center id                                           |
-| overwrite           | Attribute | Whether to overwrite local configurations with registry center configurations; if it can, each initialization should refer to local configurations; default means not to overwrite |
+| instance-ref        | Attribute | The id of orchestration instance                                          |
+| overwrite           | Attribute | Whether to overwrite local configurations with config center configurations; if it can, each initialization should refer to local configurations; default means not to overwrite |
 
 ### Read-Write Split + Orchestration
 
@@ -712,8 +722,8 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/orchestration/
 | ------------------- | --------- | ----------------------------------------------------------- |
 | id                  | Attribute | ID                                                          |
 | data-source-ref (?) | Attribute | The id of data source to be orchestrated                    |
-| registry-center-ref | Attribute | The id of registry center                                   |
-| overwrite           | Attribute | Use local configuration to overwrite registry center or not |
+| instance-ref        | Attribute | The id of orchestration instance                                   |
+| overwrite           | Attribute | Use local configuration to overwrite config center or not |
 
 ### Data Masking + Orchestration
 
@@ -725,25 +735,21 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/orchestration/
 | ------------------- | --------- | ----------------------------------------------------------- |
 | id                  | Attribute | ID                                                          |
 | data-source-ref (?) | Attribute | The id of data source to be orchestrated                    |
-| registry-center-ref | Attribute | The id of registry center                                   |
-| overwrite           | Attribute | Use local configuration to overwrite registry center or not |
+| instance-ref        | Attribute | The id of orchestration instance                                   |
+| overwrite           | Attribute | Use local configuration to overwrite config center or not |
 
 
-### Orchestration registry center
+### Orchestration instance
 
 Namespace: http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd
 
-#### \<orchestration:registry-center />
+#### \<orchestration:instance />
 
 | *Name*                             | *Type*    | *Description*                                                                   |
 | ---------------------------------- | --------- | ------------------------------------------------------------------------------- |
-| id                                 | Attribute | Spring Bean Id of registry center                                               |
-| type                               | Attribute | Registry center type. Example:zookeeper                                         |
-| server-lists                       | Attribute | Registry servers list, multiple split as comma. Example: host1:2181,host2:2181  |
-| namespace (?)                      | Attribute | Namespace of registry                                                           |
-| digest (?)                         | Attribute | Digest for registry. Default is not need digest                                 |
-| operation-timeout-milliseconds (?) | Attribute | Operation timeout time in milliseconds, default value is 500 seconds            |
-| max-retries (?)                    | Attribute | Max number of times to retry, default value is 3                                |
-| retry-interval-milliseconds (?)    | Attribute | Time interval in milliseconds on each retry, default value is 500 milliseconds  |
-| time-to-live-seconds (?)           | Attribute | Living time of temporary nodes; default value: 60 seconds                       |
+| id                                 | Attribute | Spring Bean Id of center                                               |
+| instance-type                      | Attribute | Center instance type. Example:zookeeper                                         |
+| orchestration-type                 | Attribute | The type of orchestration center: config_center or registry_center or metadata_center  |
+| server-lists                       | Attribute | Center servers list, multiple split as comma. Example: host1:2181,host2:2181  |
+| namespace (?)                      | Attribute | Namespace of center                                                           |
 | props-ref (?)                      | Attribute | Other customize properties of registry center                                   |

@@ -16,7 +16,7 @@
 #
 
 rules:
-- !!org.apache.shardingsphere.sharding.core.yaml.config.sharding.YamlShardingRuleConfiguration
+- !!org.apache.shardingsphere.sharding.core.yaml.config.YamlShardingRuleConfiguration
   tables:
     config:
       actualDataNodes: db_ms_${0..9}.t_config
@@ -50,7 +50,7 @@ rules:
   bindingTables:
     - t_order,t_order_item
 
-- !!org.apache.shardingsphere.sharding.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration
+- !!org.apache.shardingsphere.masterslave.core.yaml.config.YamlMasterSlaveRuleConfiguration
   dataSources:
     db_ms_0:
       masterDataSourceName: master_db_0
