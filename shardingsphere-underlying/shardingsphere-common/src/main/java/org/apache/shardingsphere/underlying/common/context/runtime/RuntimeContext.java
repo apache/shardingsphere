@@ -17,11 +17,6 @@
 
 package org.apache.shardingsphere.underlying.common.context.runtime;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Map;
-
 public final class RuntimeContext {
     
     private final SQLParseResultCache cache = new SQLParseResultCache();
@@ -30,14 +25,8 @@ public final class RuntimeContext {
     
     private final RuntimeExecutorKernel executorKernel;
     
-    public RuntimeContext(final Map<String, DataSource> dataSourceMap, final RuntimeExecutorKernel executorKernel) throws SQLException {
-        cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
+    public RuntimeContext(final CachedDatabaseMetaData cachedDatabaseMetaData, final RuntimeExecutorKernel executorKernel) {
+        this.cachedDatabaseMetaData = cachedDatabaseMetaData;
         this.executorKernel = executorKernel;
-    }
-    
-    private CachedDatabaseMetaData createCachedDatabaseMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        try (Connection connection = dataSourceMap.values().iterator().next().getConnection()) {
-            return new CachedDatabaseMetaData(connection.getMetaData());
-        }
     }
 }
