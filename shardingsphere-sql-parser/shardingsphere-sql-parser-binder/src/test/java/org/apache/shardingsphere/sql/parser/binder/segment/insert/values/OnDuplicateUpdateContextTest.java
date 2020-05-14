@@ -134,7 +134,6 @@ public final class OnDuplicateUpdateContextTest {
         Collection<AssignmentSegment> assignments = makeLiteralExpressionSegment(literalObject);
         List<Object> parameters = Collections.emptyList();
         OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, parameters, 0);
-
         ColumnSegment column = onDuplicateUpdateContext.getColumn(0);
         Assert.assertThat(column, is(assignments.iterator().next().getColumn()));
     }
