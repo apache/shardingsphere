@@ -15,26 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.yaml.engine.fixture;
+package org.apache.shardingsphere.underlying.common.yaml.fixture;
 
-import org.apache.shardingsphere.underlying.common.yaml.constructor.AbstractTypeConstructor;
-import org.yaml.snakeyaml.constructor.Construct;
-import org.yaml.snakeyaml.nodes.Node;
+import org.apache.shardingsphere.underlying.common.yaml.representer.processor.TupleProcessor;
+import org.yaml.snakeyaml.nodes.NodeTuple;
+import org.yaml.snakeyaml.nodes.ScalarNode;
+import org.yaml.snakeyaml.nodes.Tag;
 
-public final class FixtureTypeConstructor extends AbstractTypeConstructor {
+public final class FixtureTupleProcessor implements TupleProcessor {
     
-    public FixtureTypeConstructor() {
-        super(DefaultYamlRepresenterFixture.class);
-        registerConstruct(FixtureCustomClass.class, new Construct() {
-
-            @Override
-            public Object construct(final Node node) {
-                return new FixtureCustomClass();
-            }
-
-            @Override
-            public void construct2ndStep(final Node node, final Object newInstance) {
-            }
-        });
+    @Override
+    public String getProcessedTupleName() {
+        return "value";
+    }
+    
+    @Override
+    public NodeTuple process(final NodeTuple nodeTuple) {
+        return new NodeTuple(nodeTuple.getKeyNode(), new ScalarNode(Tag.STR, "processedValue", null, null, null));
     }
 }

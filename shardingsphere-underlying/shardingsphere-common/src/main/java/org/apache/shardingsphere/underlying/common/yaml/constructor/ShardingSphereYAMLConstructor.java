@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.underlying.common.yaml.constructor;
 
+import org.apache.shardingsphere.sharding.spi.ShardingSphereServiceLoader;
 import org.yaml.snakeyaml.constructor.Construct;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.nodes.Node;
@@ -25,31 +26,25 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Abstract type constructor.
+ * ShardingSphere YAML constructor.
  */
-public abstract class AbstractTypeConstructor extends Constructor {
+public final class ShardingSphereYAMLConstructor extends Constructor {
+    
+    static {
+        ShardingSphereServiceLoader.register(ShardingSphereYAMLConstruct.class);
+    }
     
     private final Map<Class, Construct> typeConstructs = new HashMap<>();
     
-    protected AbstractTypeConstructor(final Class<?> rootClass) {
+    public ShardingSphereYAMLConstructor(final Class<?> rootClass) {
         super(rootClass);
-    }
-    
-    /**
-     * register construct for class.
-     *
-     * @param typeClass type class
-     * @param classConstruct class construct
-     */
-    protected final void registerConstruct(final Class typeClass, final Construct classConstruct) {
-        typeConstructs.put(typeClass, classConstruct);
+        for (ShardingSphereYAMLConstruct each : ShardingSphereServiceLoader.newServiceInstances(ShardingSphereYAMLConstruct.class)) {
+            typeConstructs.put(each.getType(), each);
+        }
     }
     
     @Override
-    protected final Construct getConstructor(final Node node) {
-        if (typeConstructs.containsKey(node.getType())) {
-            return typeConstructs.get(node.getType());
-        }
-        return super.getConstructor(node);
+    protected Construct getConstructor(final Node node) {
+        return typeConstructs.getOrDefault(node.getType(), super.getConstructor(node));
     }
 }

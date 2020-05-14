@@ -15,20 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.config.yaml.constructor;
+package org.apache.shardingsphere.sharding.yaml.construct;
 
 import org.apache.shardingsphere.sharding.yaml.config.strategy.YamlNoneShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.yaml.constructor.construct.YamlNoneShardingStrategyConfigurationConstruct;
-import org.apache.shardingsphere.shardingproxy.config.yaml.YamlProxyRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.constructor.AbstractTypeConstructor;
+import org.apache.shardingsphere.underlying.common.yaml.constructor.ShardingSphereYAMLConstruct;
+import org.yaml.snakeyaml.nodes.Node;
 
 /**
- * YAML proxy rule configuration constructor.
+ * YAML none sharding strategy configuration YAML construct.
  */
-public final class YamlProxyRuleConfigurationConstructor extends AbstractTypeConstructor {
+public final class NoneShardingStrategyConfigurationYAMLConstruct implements ShardingSphereYAMLConstruct {
     
-    public YamlProxyRuleConfigurationConstructor() {
-        super(YamlProxyRuleConfiguration.class);
-        registerConstruct(YamlNoneShardingStrategyConfiguration.class, new YamlNoneShardingStrategyConfigurationConstruct());
+    @Override
+    public Object construct(final Node node) {
+        return new YamlNoneShardingStrategyConfiguration();
+    }
+    
+    @Override
+    public void construct2ndStep(final Node node, final Object newInstance) {
+    }
+    
+    @Override
+    public Class<?> getType() {
+        return YamlNoneShardingStrategyConfiguration.class;
     }
 }

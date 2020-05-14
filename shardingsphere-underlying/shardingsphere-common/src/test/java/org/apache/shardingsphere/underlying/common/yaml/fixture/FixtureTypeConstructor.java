@@ -15,7 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.yaml.engine.fixture;
+package org.apache.shardingsphere.underlying.common.yaml.fixture;
 
-public final class FixtureCustomClass {
+import org.apache.shardingsphere.underlying.common.yaml.constructor.ShardingSphereYAMLConstruct;
+import org.yaml.snakeyaml.nodes.Node;
+
+public final class FixtureTypeConstructor implements ShardingSphereYAMLConstruct {
+    
+    @Override
+    public Object construct(final Node node) {
+        return new FixtureCustomClass();
+    }
+    
+    @Override
+    public void construct2ndStep(final Node node, final Object newInstance) {
+    }
+    
+    @Override
+    public Class<?> getType() {
+        return FixtureCustomClass.class;
+    }
 }

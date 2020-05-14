@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.yaml.swapper;
 
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.constructor.YamlRootRuleConfigurationsConstructor;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 import org.junit.Test;
@@ -41,7 +40,7 @@ public final class YamlRootRuleConfigurationsForYamlShardingRuleConfigurationTes
     public void assertUnmarshalWithYamlFile() throws IOException {
         URL url = getClass().getClassLoader().getResource("yaml/sharding-rule.yaml");
         assertNotNull(url);
-        assertYamlShardingConfiguration(YamlEngine.unmarshal(new File(url.getFile()), YamlRootRuleConfigurations.class, new YamlRootRuleConfigurationsConstructor()));
+        assertYamlShardingConfiguration(YamlEngine.unmarshal(new File(url.getFile()), YamlRootRuleConfigurations.class));
     }
     
     @Test
@@ -57,7 +56,7 @@ public final class YamlRootRuleConfigurationsForYamlShardingRuleConfigurationTes
                 yamlContent.append(line).append("\n");
             }
         }
-        assertYamlShardingConfiguration(YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlRootRuleConfigurations.class, new YamlRootRuleConfigurationsConstructor()));
+        assertYamlShardingConfiguration(YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlRootRuleConfigurations.class));
     }
     
     private void assertDataSourceMap(final YamlRootRuleConfigurations actual) {

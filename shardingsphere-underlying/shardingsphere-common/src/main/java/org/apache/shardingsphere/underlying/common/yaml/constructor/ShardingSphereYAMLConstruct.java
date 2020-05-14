@@ -15,22 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.yaml.engine.fixture;
+package org.apache.shardingsphere.underlying.common.yaml.constructor;
 
-import org.apache.shardingsphere.underlying.common.yaml.representer.processor.TupleProcessor;
-import org.yaml.snakeyaml.nodes.NodeTuple;
-import org.yaml.snakeyaml.nodes.ScalarNode;
-import org.yaml.snakeyaml.nodes.Tag;
+import org.yaml.snakeyaml.constructor.Construct;
 
-public final class FixtureTupleProcessor implements TupleProcessor {
+/**
+ * ShardingSphere YAML construct.
+ */
+public interface ShardingSphereYAMLConstruct extends Construct {
     
-    @Override
-    public String getProcessedTupleName() {
-        return "value";
-    }
-    
-    @Override
-    public NodeTuple process(final NodeTuple nodeTuple) {
-        return new NodeTuple(nodeTuple.getKeyNode(), new ScalarNode(Tag.STR, "processedValue", null, null, null));
-    }
+    /**
+     * Get type.
+     * 
+     * @return type
+     */
+    Class<?> getType();
 }
