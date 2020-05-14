@@ -28,7 +28,6 @@ import org.apache.shardingsphere.sharding.core.strategy.algorithm.sharding.inlin
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.common.SpringBootRootConfigurationProperties;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding.LocalShardingRuleCondition;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding.OrchestrationSpringBootRuleConfigurationsYamlSwapper;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding.OrchestrationSpringBootRulesConfigurationProperties;
 import org.apache.shardingsphere.spring.boot.datasource.DataSourcePropertiesSetterHolder;
@@ -43,7 +42,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.StandardEnvironment;
@@ -104,8 +102,7 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
      * @throws SQLException SQL exception
      */
     @Bean
-    @Conditional(LocalShardingRuleCondition.class)
-    public DataSource shardingSphereDataSourceByLocal(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
+    public DataSource localShardingSphereDataSource(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
         return new OrchestrationShardingSphereDataSource(
                 new ShardingSphereDataSource(dataSourceMap, new OrchestrationSpringBootRuleConfigurationsYamlSwapper().swap(rules), root.getProps()), orchestrationConfiguration);
     }
