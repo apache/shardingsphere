@@ -59,11 +59,11 @@ public final class ShadowConfigurationLoggerTest {
     
     @Test
     public void assertLogShadowuleConfiguration() {
-        String yaml = "rules:\n" +
-                "- !SHADOW\n" +
-                "  column: shadow\n" +
-                "  shadowMappings:\n" +
-                "    ds: shadow_ds\n";
+        String yaml = "rules:\n"
+                + "- !SHADOW\n"
+                + "  column: shadow\n"
+                + "  shadowMappings:\n"
+                + "    ds: shadow_ds\n";
         assertLogInfo(yaml);
         ConfigurationLogger.log(Collections.singletonList(getShadowRuleConfiguration()));
     }
