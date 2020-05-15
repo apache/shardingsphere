@@ -47,10 +47,10 @@ dataSources:
     password: root
 
 rules:
-  - !SHADOW
-    column: shadow
-    shadowMappings:
-      ds: ds_0
+- !SHADOW
+  column: shadow
+  shadowMappings:
+    ds: ds_0
 
 props:
   sql.show: true
