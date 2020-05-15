@@ -22,7 +22,7 @@ import io.opentracing.tag.Tags;
 import org.apache.shardingsphere.opentracing.constant.ShardingTags;
 import org.apache.shardingsphere.sharding.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHook;
-import org.apache.shardingsphere.sql.parser.hook.SPIParsingHook;
+import org.apache.shardingsphere.sql.parser.hook.ParsingHookRegistry;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.junit.BeforeClass;
@@ -36,7 +36,7 @@ import static org.mockito.Mockito.mock;
 
 public final class OpenTracingParsingHookTest extends BaseOpenTracingHookTest {
     
-    private final ParsingHook parsingHook = new SPIParsingHook();
+    private final ParsingHookRegistry registry = ParsingHookRegistry.getInstance();
     
     @BeforeClass
     public static void registerSPI() {
@@ -45,8 +45,8 @@ public final class OpenTracingParsingHookTest extends BaseOpenTracingHookTest {
     
     @Test
     public void assertExecuteSuccess() {
-        parsingHook.start("SELECT * FROM XXX;");
-        parsingHook.finishSuccess(mock(SQLStatement.class));
+        registry.start("SELECT * FROM XXX;");
+        registry.finishSuccess(mock(SQLStatement.class));
         MockSpan actual = getActualSpan();
         assertThat(actual.operationName(), is("/ShardingSphere/parseSQL/"));
         Map<String, Object> actualTags = actual.tags();
@@ -57,8 +57,8 @@ public final class OpenTracingParsingHookTest extends BaseOpenTracingHookTest {
     
     @Test
     public void assertExecuteFailure() {
-        parsingHook.start("SELECT * FROM XXX;");
-        parsingHook.finishFailure(new ShardingSphereException("parse SQL error"));
+        registry.start("SELECT * FROM XXX;");
+        registry.finishFailure(new ShardingSphereException("parse SQL error"));
         MockSpan actual = getActualSpan();
         assertThat(actual.operationName(), is("/ShardingSphere/parseSQL/"));
         Map<String, Object> actualTags = actual.tags();
