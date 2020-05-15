@@ -26,7 +26,7 @@ import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.YamlCenterRepositoryConfigurationSwapperUtil;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml.YamlOrchestrationRootRuleConfigurations;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.underlying.common.yaml.swapper.RuleRootConfigurationsYamlSwapper;
+import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -41,7 +41,7 @@ import java.util.Properties;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlOrchestrationShardingSphereDataSourceFactory {
     
-    private static final RuleRootConfigurationsYamlSwapper SWAPPER = new RuleRootConfigurationsYamlSwapper();
+    private static final YamlRuleConfigurationSwapperEngine SWAPPER_ENGINE = new YamlRuleConfigurationSwapperEngine();
     
     /**
      * Create ShardingSphere data source.
@@ -102,7 +102,7 @@ public final class YamlOrchestrationShardingSphereDataSourceFactory {
         if (configurations.getRules().isEmpty() || dataSourceMap.isEmpty()) {
             return new OrchestrationShardingSphereDataSource(new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
         } else {
-            ShardingSphereDataSource shardingSphereDataSource = new ShardingSphereDataSource(dataSourceMap, SWAPPER.swap(configurations), props);
+            ShardingSphereDataSource shardingSphereDataSource = new ShardingSphereDataSource(dataSourceMap, SWAPPER_ENGINE.swapToRuleConfigurations(configurations.getRules()), props);
             return new OrchestrationShardingSphereDataSource(
                     shardingSphereDataSource, new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
         }

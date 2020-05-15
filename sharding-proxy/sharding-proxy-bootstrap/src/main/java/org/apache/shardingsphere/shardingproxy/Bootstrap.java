@@ -28,9 +28,6 @@ import org.apache.shardingsphere.opentracing.ShardingTracer;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.swapper.OrchestrationConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
-import org.apache.shardingsphere.underlying.common.log.ConfigurationLogger;
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlRootRuleConfigurations;
-import org.apache.shardingsphere.underlying.common.yaml.swapper.RuleRootConfigurationsYamlSwapper;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchemas;
 import org.apache.shardingsphere.shardingproxy.config.ShardingConfiguration;
 import org.apache.shardingsphere.shardingproxy.config.ShardingConfigurationLoader;
@@ -46,7 +43,10 @@ import org.apache.shardingsphere.underlying.common.auth.yaml.swapper.Authenticat
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.common.log.ConfigurationLogger;
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlRuleConfiguration;
+import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -207,12 +207,13 @@ public final class Bootstrap {
     
     private static Map<String, Collection<RuleConfiguration>> getRuleConfigurations(final Map<String, YamlProxyRuleConfiguration> localRuleConfigs) {
         Map<String, Collection<RuleConfiguration>> result = new HashMap<>();
+        YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
         for (Entry<String, YamlProxyRuleConfiguration> entry : localRuleConfigs.entrySet()) {
             YamlRootRuleConfigurations configurations = new YamlRootRuleConfigurations();
             for (YamlRuleConfiguration each : entry.getValue().getRules()) {
                 configurations.getRules().add(each);
             }
-            result.put(entry.getKey(), new RuleRootConfigurationsYamlSwapper().swap(configurations));
+            result.put(entry.getKey(), swapperEngine.swapToRuleConfigurations(configurations.getRules()));
         }
         return result;
     }

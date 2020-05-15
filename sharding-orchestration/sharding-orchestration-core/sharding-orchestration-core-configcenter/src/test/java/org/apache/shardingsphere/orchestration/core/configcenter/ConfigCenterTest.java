@@ -33,7 +33,7 @@ import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.underlying.common.yaml.swapper.RuleRootConfigurationsYamlSwapper;
+import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -378,19 +378,19 @@ public final class ConfigCenterTest {
     }
     
     private Collection<RuleConfiguration> createRuleConfigurations() {
-        return new RuleRootConfigurationsYamlSwapper().swap(YamlEngine.unmarshal(SHARDING_RULE_YAML, YamlRootRuleConfigurations.class));
+        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(SHARDING_RULE_YAML, YamlRootRuleConfigurations.class).getRules());
     }
     
     private Collection<RuleConfiguration> createMasterSlaveRuleConfiguration() {
-        return new RuleRootConfigurationsYamlSwapper().swap(YamlEngine.unmarshal(MASTER_SLAVE_RULE_YAML, YamlRootRuleConfigurations.class));
+        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(MASTER_SLAVE_RULE_YAML, YamlRootRuleConfigurations.class).getRules());
     }
     
     private Collection<RuleConfiguration> createEncryptRuleConfiguration() {
-        return new RuleRootConfigurationsYamlSwapper().swap(YamlEngine.unmarshal(ENCRYPT_RULE_YAML, YamlRootRuleConfigurations.class));
+        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(ENCRYPT_RULE_YAML, YamlRootRuleConfigurations.class).getRules());
     }
     
     private Collection<RuleConfiguration> createShadowRuleConfiguration() {
-        return new RuleRootConfigurationsYamlSwapper().swap(YamlEngine.unmarshal(SHADOW_RULE_YAML, YamlRootRuleConfigurations.class));
+        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(SHADOW_RULE_YAML, YamlRootRuleConfigurations.class).getRules());
     }
     
     private Authentication createAuthentication() {

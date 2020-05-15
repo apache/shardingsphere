@@ -35,7 +35,7 @@ import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguratio
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.underlying.common.yaml.swapper.RuleRootConfigurationsYamlSwapper;
+import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -131,7 +131,9 @@ public final class ConfigCenter {
                 configurations.add(each);
             }
         }
-        repository.persist(node.getRulePath(shardingSchemaName), YamlEngine.marshal(new RuleRootConfigurationsYamlSwapper().swap(configurations)));
+        YamlRootRuleConfigurations yamlRuleConfigurations = new YamlRootRuleConfigurations();
+        yamlRuleConfigurations.setRules(new YamlRuleConfigurationSwapperEngine().swapToYAMLConfigurations(configurations));
+        repository.persist(node.getRulePath(shardingSchemaName), YamlEngine.marshal(yamlRuleConfigurations));
     }
     
     /**
@@ -227,7 +229,8 @@ public final class ConfigCenter {
      * @return rule configurations
      */
     public Collection<RuleConfiguration> loadRuleConfigurations(final String shardingSchemaName) {
-        return new RuleRootConfigurationsYamlSwapper().swap(YamlEngine.unmarshal(repository.get(node.getRulePath(shardingSchemaName)), YamlRootRuleConfigurations.class));
+        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
+                YamlEngine.unmarshal(repository.get(node.getRulePath(shardingSchemaName)), YamlRootRuleConfigurations.class).getRules());
     }
     
     /**
@@ -237,8 +240,8 @@ public final class ConfigCenter {
      * @return master-slave rule configuration
      */
     public MasterSlaveRuleConfiguration loadMasterSlaveRuleConfiguration(final String shardingSchemaName) {
-        return (MasterSlaveRuleConfiguration) new RuleRootConfigurationsYamlSwapper().swap(
-                YamlEngine.unmarshal(repository.get(node.getRulePath(shardingSchemaName)), YamlRootRuleConfigurations.class)).iterator().next();
+        return (MasterSlaveRuleConfiguration) new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
+                YamlEngine.unmarshal(repository.get(node.getRulePath(shardingSchemaName)), YamlRootRuleConfigurations.class).getRules()).iterator().next();
     }
     
     /**
@@ -248,9 +251,8 @@ public final class ConfigCenter {
      * @return encrypt rule configuration
      */
     public EncryptRuleConfiguration loadEncryptRuleConfiguration(final String shardingSchemaName) {
-        System.out.println("00:" + repository.get(node.getRulePath(shardingSchemaName)));
-        Collection<RuleConfiguration> ruleConfigurations = new RuleRootConfigurationsYamlSwapper().swap(
-                YamlEngine.unmarshal(repository.get(node.getRulePath(shardingSchemaName)), YamlRootRuleConfigurations.class));
+        Collection<RuleConfiguration> ruleConfigurations = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
+                YamlEngine.unmarshal(repository.get(node.getRulePath(shardingSchemaName)), YamlRootRuleConfigurations.class).getRules());
         return ruleConfigurations.isEmpty() ? new EncryptRuleConfiguration(Collections.emptyMap(), Collections.emptyMap()) : (EncryptRuleConfiguration) ruleConfigurations.iterator().next();
     }
     
@@ -262,8 +264,8 @@ public final class ConfigCenter {
      */
     // TODO fix shadow
     public ShadowRuleConfiguration loadShadowRuleConfiguration(final String shardingSchemaName) {
-        return (ShadowRuleConfiguration) new RuleRootConfigurationsYamlSwapper().swap(
-                YamlEngine.unmarshal(repository.get(node.getRulePath(shardingSchemaName)), YamlRootRuleConfigurations.class)).iterator().next();
+        return (ShadowRuleConfiguration) new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
+                YamlEngine.unmarshal(repository.get(node.getRulePath(shardingSchemaName)), YamlRootRuleConfigurations.class).getRules()).iterator().next();
     }
     
     /**

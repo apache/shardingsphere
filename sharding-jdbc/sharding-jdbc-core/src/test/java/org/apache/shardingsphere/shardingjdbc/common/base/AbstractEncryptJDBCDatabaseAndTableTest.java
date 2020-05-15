@@ -19,13 +19,13 @@ package org.apache.shardingsphere.shardingjdbc.common.base;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlRootRuleConfigurations;
-import org.apache.shardingsphere.underlying.common.yaml.swapper.RuleRootConfigurationsYamlSwapper;
 import org.apache.shardingsphere.shardingjdbc.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.h2.tools.RunScript;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -72,7 +72,7 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
     
     private static DataSource createDataSourceWithEmptyProps(final DataSource dataSource, final File yamlFile) throws IOException, SQLException {
         YamlRootRuleConfigurations configurations = YamlEngine.unmarshal(yamlFile, YamlRootRuleConfigurations.class);
-        return ShardingSphereDataSourceFactory.createDataSource(dataSource, new RuleRootConfigurationsYamlSwapper().swap(configurations), new Properties());
+        return ShardingSphereDataSourceFactory.createDataSource(dataSource, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(configurations.getRules()), new Properties());
     }
     
     @Before
