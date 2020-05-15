@@ -18,39 +18,60 @@
 package org.apache.shardingsphere.sql.parser.hook;
 
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.sharding.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.ServiceLoader;
 
 /**
- * Parsing hook for SPI.
+ * Parsing hook registry.
  */
-public final class SPIParsingHook implements ParsingHook {
+public final class ParsingHookRegistry {
     
-    private final Collection<ParsingHook> parsingHooks = ShardingSphereServiceLoader.newServiceInstances(ParsingHook.class);
+    private static final ParsingHookRegistry INSTANCE = new ParsingHookRegistry();
     
-    static {
-        ShardingSphereServiceLoader.register(ParsingHook.class);
+    private final Collection<ParsingHook> hooks;
+    
+    private ParsingHookRegistry() {
+        hooks = new LinkedList<>();
+        for (ParsingHook each : ServiceLoader.load(ParsingHook.class)) {
+            hooks.add(each);
+        }
     }
     
-    @Override
+    /**
+     * Get instance.
+     * 
+     * @return instance
+     */
+    public static ParsingHookRegistry getInstance() {
+        return INSTANCE;
+    }
+    
+    /**
+     * Handle when parse started.
+     *
+     * @param sql SQL to be parsed
+     */
     public void start(final String sql) {
-        for (ParsingHook each : parsingHooks) {
-            each.start(sql);
-        }
+        hooks.forEach(each -> each.start(sql));
     }
     
-    @Override
+    /**
+     * Handle when parse finished success.
+     *
+     * @param sqlStatement sql statement
+     */
     public void finishSuccess(final SQLStatement sqlStatement) {
-        for (ParsingHook each : parsingHooks) {
-            each.finishSuccess(sqlStatement);
-        }
+        hooks.forEach(each -> each.finishSuccess(sqlStatement));
     }
     
-    @Override
+    /**
+     * Handle when parse finished failure.
+     *
+     * @param cause failure cause
+     */
     public void finishFailure(final Exception cause) {
-        for (ParsingHook each : parsingHooks) {
-            each.finishFailure(cause);
-        }
+        hooks.forEach(each -> each.finishFailure(cause));
     }
 }

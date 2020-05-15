@@ -23,31 +23,30 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
 
-public final class SPIParsingHookTest {
+public final class ParsingHookRegistryTest {
     
-    private SPIParsingHook spiParsingHook;
+    private ParsingHookRegistry registry = ParsingHookRegistry.getInstance();
     
     @Before
     public void setUp() {
         ParsingHookFixture.clearActions();
-        spiParsingHook = new SPIParsingHook();
     }
     
     @Test
     public void assertStart() {
-        spiParsingHook.start("");
+        registry.start("");
         assertTrue(ParsingHookFixture.containsAction("start"));
     }
     
     @Test
     public void assertFinishSuccess() {
-        spiParsingHook.finishSuccess(null);
+        registry.finishSuccess(null);
         assertTrue(ParsingHookFixture.containsAction("finishSuccess"));
     }
     
     @Test
     public void assertFinishFailure() {
-        spiParsingHook.finishFailure(null);
+        registry.finishFailure(null);
         assertTrue(ParsingHookFixture.containsAction("finishFailure"));
     }
 }
