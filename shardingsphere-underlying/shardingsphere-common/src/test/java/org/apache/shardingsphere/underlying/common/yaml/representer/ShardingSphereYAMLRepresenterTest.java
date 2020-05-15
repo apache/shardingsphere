@@ -31,12 +31,12 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class DefaultYamlRepresenterTest {
+public final class ShardingSphereYAMLRepresenterTest {
     
     @Test
     public void assertToYamlWithNull() {
         DefaultYamlRepresenterFixture actual = new DefaultYamlRepresenterFixture();
-        assertThat(new Yaml(new DefaultYamlRepresenter()).dumpAsMap(actual), is("{}\n"));
+        assertThat(new Yaml(new ShardingSphereYAMLRepresenter()).dumpAsMap(actual), is("{}\n"));
     }
     
     @Test
@@ -45,7 +45,7 @@ public final class DefaultYamlRepresenterTest {
         actual.setValue("");
         actual.setCollection(Collections.emptyList());
         actual.setMap(Collections.emptyMap());
-        assertThat(new Yaml(new DefaultYamlRepresenter()).dumpAsMap(actual), is("value: ''\n"));
+        assertThat(new Yaml(new ShardingSphereYAMLRepresenter()).dumpAsMap(actual), is("value: ''\n"));
     }
     
     @Test
@@ -57,7 +57,7 @@ public final class DefaultYamlRepresenterTest {
         map.put("key1", "value1");
         map.put("key2", "value2");
         actual.setMap(map);
-        String expected = new Yaml(new DefaultYamlRepresenter()).dumpAsMap(actual);
+        String expected = new Yaml(new ShardingSphereYAMLRepresenter()).dumpAsMap(actual);
         assertThat(expected, containsString("collection:\n- value1\n- value2\n"));
         assertThat(expected, containsString("map:\n  key1: value1\n  key2: value2\n"));
         assertThat(expected, containsString("value: value\n"));
@@ -67,7 +67,7 @@ public final class DefaultYamlRepresenterTest {
     public void assertToYamlWithTupleProcessor() {
         DefaultYamlRepresenterFixture actual = new DefaultYamlRepresenterFixture();
         actual.setValue("value");
-        DefaultYamlRepresenter yamlRepresenter = new DefaultYamlRepresenter();
+        ShardingSphereYAMLRepresenter yamlRepresenter = new ShardingSphereYAMLRepresenter();
         yamlRepresenter.registerTupleProcessor(new FixtureTupleProcessor());
         String expected = new Yaml(yamlRepresenter).dumpAsMap(actual);
         assertThat(expected, containsString("value: processedValue"));
