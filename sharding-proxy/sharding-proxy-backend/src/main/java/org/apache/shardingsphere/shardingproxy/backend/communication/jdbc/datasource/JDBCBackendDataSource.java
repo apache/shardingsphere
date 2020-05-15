@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datas
 import com.google.common.collect.Maps;
 import lombok.Getter;
 import org.apache.shardingsphere.shardingproxy.backend.BackendDataSource;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchemas;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -60,7 +60,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     public JDBCBackendDataSource(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
         this.dataSourceParameters = dataSourceParameters;
         this.dataSources = createDataSources(dataSourceParameters);
-        shardingTransactionManagerEngine.init(LogicSchemas.getInstance().getDatabaseType(), dataSources);
+        shardingTransactionManagerEngine.init(ShardingSphereSchemas.getInstance().getDatabaseType(), dataSources);
     }
     
     private Map<String, DataSource> createDataSources(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
@@ -189,7 +189,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
         this.dataSourceParameters.clear();
         this.dataSourceParameters.putAll(dataSourceParameters);
         shardingTransactionManagerEngine.close();
-        shardingTransactionManagerEngine.init(LogicSchemas.getInstance().getDatabaseType(), dataSources);
+        shardingTransactionManagerEngine.init(ShardingSphereSchemas.getInstance().getDatabaseType(), dataSources);
     }
     
     private synchronized List<String> getDeletedDataSources(final Map<String, YamlDataSourceParameter> dataSourceParameters) {

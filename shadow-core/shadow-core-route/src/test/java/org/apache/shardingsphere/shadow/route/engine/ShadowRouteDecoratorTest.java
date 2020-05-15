@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shadow.route.engine;
 
-import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
-import org.apache.shardingsphere.sharding.core.rule.ShadowRule;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
@@ -73,9 +73,7 @@ public class ShadowRouteDecoratorTest {
     @Before
     public void setUp() {
         routeDecorator = new ShadowRouteDecorator();
-        ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration();
-        shadowRuleConfiguration.setColumn(SHADOW_COLUMN);
-        shadowRuleConfiguration.setShadowMappings(Collections.singletonMap(ACTUAL_DATASOURCE, SHADOW_DATASOURCE));
+        ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration(SHADOW_COLUMN, Collections.singletonMap(ACTUAL_DATASOURCE, SHADOW_DATASOURCE));
         shadowRule = new ShadowRule(shadowRuleConfiguration);
         
     }

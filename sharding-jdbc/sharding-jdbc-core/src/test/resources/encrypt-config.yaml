@@ -15,7 +15,8 @@
 # limitations under the License.
 #
 
-encryptRule:
+rules:
+- !!org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration
   encryptors:
     test:
       type: test

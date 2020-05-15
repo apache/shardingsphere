@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.rewrite.token;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sharding.core.rule.ShadowRule;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.rewrite.aware.ShadowRuleAware;
 import org.apache.shardingsphere.shadow.rewrite.token.generator.impl.RemoveShadowColumnTokenGenerator;
 import org.apache.shardingsphere.shadow.rewrite.token.generator.impl.ShadowInsertValuesTokenGenerator;

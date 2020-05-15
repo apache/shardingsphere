@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper;
 
+import org.apache.shardingsphere.shardingproxy.backend.metrics.MetricsUtils;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.sql.group.ExecuteGroupEngine;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 
 /**
  * JDBC executor wrapper.
@@ -54,4 +58,15 @@ public interface JDBCExecutorWrapper {
      * @throws SQLException SQL exception
      */
     boolean executeSQL(Statement statement, String sql, boolean isReturnGeneratedKeys) throws SQLException;
+    
+    /**
+     * Route metrics collect.
+     *
+     * @param routeContext route context
+     * @param rules rules
+     */
+    default void routeMetricsCollect(final RouteContext routeContext, final Collection<ShardingSphereRule> rules) {
+        MetricsUtils.buriedShardingMetrics(routeContext.getRouteResult().getRouteUnits());
+        MetricsUtils.buriedShardingRuleMetrics(routeContext, rules);
+    }
 }

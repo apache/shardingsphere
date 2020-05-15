@@ -26,7 +26,7 @@ import org.apache.shardingsphere.dbtest.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.dbtest.engine.SingleIT;
 import org.apache.shardingsphere.dbtest.env.EnvironmentPath;
 import org.apache.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
-import org.apache.shardingsphere.sharding.core.strategy.algorithm.sharding.inline.InlineExpressionParser;
+import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.datanode.DataNode;
 import org.junit.After;

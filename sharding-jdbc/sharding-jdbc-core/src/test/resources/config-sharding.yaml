@@ -15,7 +15,8 @@
 # limitations under the License.
 #
 
-shardingRule:
+rules:
+- !!org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration
   tables:
     t_order:
       actualDataNodes: jdbc_${0..1}.t_order_${0..1}

@@ -30,8 +30,9 @@
     <packaging>pom</packaging>
     
     <modules>
-        <module>shadow-core-rewrite</module>
+        <module>shadow-core-api</module>
         <module>shadow-core-common</module>
         <module>shadow-core-route</module>
+        <module>shadow-core-rewrite</module>
     </modules>
 </project>

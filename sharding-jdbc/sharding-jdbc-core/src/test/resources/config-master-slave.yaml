@@ -15,7 +15,8 @@
 # limitations under the License.
 #
 
-masterSlaveRule:
+rules:
+- !!org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration
   dataSources:
     test_ds:
       name: test_ds

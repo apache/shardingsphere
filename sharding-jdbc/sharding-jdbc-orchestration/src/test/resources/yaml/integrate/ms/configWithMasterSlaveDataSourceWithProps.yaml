@@ -35,7 +35,8 @@ dataSources:
     password: 
     maxTotal: 100
 
-masterSlaveRule:
+rules:
+- !!org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration
   dataSources:
     db_ms:
       name: db_ms

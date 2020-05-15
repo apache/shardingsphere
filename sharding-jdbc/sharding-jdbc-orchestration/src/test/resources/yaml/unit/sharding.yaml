@@ -27,7 +27,8 @@ dataSources:
     username: sa
     password:
 
-shardingRule:
+rules:
+- !!org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration
   tables:
     t_order:
       actualDataNodes: ds_ms.t_order_${0..1}
@@ -76,7 +77,7 @@ shardingRule:
   defaultTableStrategy:
     none:
 
-masterSlaveRule:
+- !!org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration
   dataSources:
     ds_ms:
       masterDataSourceName: ds_m

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.rewrite.context;
 
-import org.apache.shardingsphere.sharding.core.rule.ShadowRule;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.rewrite.parameter.ShadowParameterRewriterBuilder;
 import org.apache.shardingsphere.shadow.rewrite.token.ShadowTokenGenerateBuilder;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;

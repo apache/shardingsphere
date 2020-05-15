@@ -43,7 +43,8 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 50
 
-masterSlaveRule:
+rules:
+- !!org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration
   dataSources:
     ms_ds: 
       name: ms_ds

@@ -439,8 +439,16 @@ weight = 4
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/orchestration
                            http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd">
-    <orchestration:registry-center id="regCenter" type="zookeeper" server-lists="localhost:2181" namespace="orchestration-spring-namespace-demo" operation-timeout-milliseconds="1000" 
-    max-retries="3" />
+        
+    <util:properties id="instance-props">
+        <prop key="max-retries">3</prop>
+        <prop key="operation-timeout-milliseconds">3000</prop>
+    </util:properties>
+    <orchestraion:instance id="regCenter" orchestration-type="registry_center,config_center,metadata_center" instance-type="zookeeper" server-lists="localhost:2181" namespace="orchestration-spring-namespace-demo"
+                           props-ref="instance-props" />
+    <orchestraion:sharding-data-source id="shardingDatabasesTablesDataSource" data-source-ref="realShardingDatabasesTablesDataSource" instance-ref="regCenter" overwrite="true" />
+    <orchestraion:master-slave-data-source id="masterSlaveDataSource" data-source-ref="realMasterSlaveDataSource" instance-ref="regCenter" overwrite="true" />
+    <orchestraion:encrypt-data-source id="encryptDataSource" data-source-ref="realEncryptDataSource" instance-ref="regCenter" overwrite="true" />
 </beans>
 ```
 
@@ -684,8 +692,8 @@ weight = 4
 | ------------------- | ----- | ------------------------------------------------------------------------ |
 | id                  | 属性   | ID                                                                       |
 | data-source-ref (?) | 属性   | 被治理的数据库id                                                           |
-| registry-center-ref | 属性   | 注册中心id                                                                |
-| overwrite           | 属性   | 本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准。缺省为不覆盖 |
+| instance-ref        | 属性   | 治理实例id                                                                |
+| overwrite           | 属性   | 本地配置是否覆盖配置中心配置。如果可覆盖，每次启动都以本地配置为准。缺省为不覆盖 |
 
 ### 读写分离 + 治理
 
@@ -697,8 +705,8 @@ weight = 4
 | ------------------- | ----- | ---------------------------------------------------------------------- |
 | id                  | 属性   | ID                                                                     |
 | data-source-ref (?) | 属性   | 被治理的数据库id                                                         |
-| registry-center-ref | 属性   | 注册中心id                                                              |
-| overwrite           | 属性   | 本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准。缺省为不覆盖 |
+| instance-ref        | 属性   | 治理实例id                                                              |
+| overwrite           | 属性   | 本地配置是否覆盖配置中心配置。如果可覆盖，每次启动都以本地配置为准。缺省为不覆盖 |
 
 ### 数据脱敏 + 治理
 
@@ -710,24 +718,20 @@ weight = 4
 | ------------------- | ----- | ---------------------------------------------------------------------- |
 | id                  | 属性   | ID                                                                     |
 | data-source-ref (?) | 属性   | 被治理的数据库id                                                         |
-| registry-center-ref | 属性   | 注册中心id                                                              |
-| overwrite           | 属性   | 本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准。缺省为不覆盖 |
+| instance-ref        | 属性   | 治理实例id                                                              |
+| overwrite           | 属性   | 本地配置是否覆盖配置中心配置。如果可覆盖，每次启动都以本地配置为准。缺省为不覆盖 |
 
-### 治理注册中心
+### 治理实例配置
 
 命名空间：http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd
 
-#### \<orchestration:registry-center />
+#### \<orchestration:instance />
 
 | *名称*                              | *类型* | *说明*                                                                                    |
 | ----------------------------------- | ----- | ------------------------------------------------------------------------------------------|
-| id                                  | 属性  | 注册中心的Spring Bean Id                                                                   |
-| type                                | 属性  | 注册中心类型。如：zookeeper                                                                |
-| server-lists                        | 属性  | 连接注册中心服务器的列表，包括IP地址和端口号，多个地址用逗号分隔。如: host1:2181,host2:2181   |
-| namespace (?)                       | 属性  | 注册中心的命名空间                                                                         |
-| digest (?)                          | 属性  | 连接注册中心的权限令牌。缺省为不需要权限验证                                                 |
-| operation-timeout-milliseconds (?)  | 属性  | 操作超时的毫秒数，默认500毫秒                                                               |
-| max-retries (?)                     | 属性  | 连接失败后的最大重试次数，默认3次                                                           |
-| retry-interval-milliseconds (?)     | 属性  | 重试间隔毫秒数，默认500毫秒                                                                |
-| time-to-live-seconds (?)            | 属性  | 临时节点存活秒数，默认60秒                                                                 |
+| id                                  | 属性  | 配置/注册/元数据中心的Spring Bean Id                                                                   |
+| instance-type                       | 属性  | 配置/注册/元数据中心实例类型。如：zookeeper                                                                |
+| orchestration-type                  | 属性  | 治理类型，例如config_center/registry_center/metadata_center                          |
+| server-lists                        | 属性  | 连接配置/注册/元数据中心服务器的列表，包括IP地址和端口号，多个地址用逗号分隔。如: host1:2181,host2:2181   |
+| namespace (?)                       | 属性  | 配置/注册/元数据中心的命名空间                                                                         |
 | props-ref (?)                       | 属性  | 配置中心其它属性                                                                           |

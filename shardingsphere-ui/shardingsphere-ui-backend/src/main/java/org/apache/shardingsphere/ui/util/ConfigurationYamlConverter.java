@@ -24,15 +24,14 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.orchestration.core.configuration.DataSourceConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration;
-import org.apache.shardingsphere.sharding.core.rule.Authentication;
-import org.apache.shardingsphere.sharding.core.yaml.config.YamlRootRuleConfigurations;
-import org.apache.shardingsphere.sharding.core.yaml.config.common.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.sharding.core.yaml.constructor.YamlRootRuleConfigurationsConstructor;
-import org.apache.shardingsphere.sharding.core.yaml.swapper.AuthenticationYamlSwapper;
-import org.apache.shardingsphere.sharding.core.yaml.swapper.root.RuleRootConfigurationsYamlSwapper;
+import org.apache.shardingsphere.underlying.common.auth.Authentication;
+import org.apache.shardingsphere.underlying.common.auth.yaml.config.YamlAuthenticationConfiguration;
+import org.apache.shardingsphere.underlying.common.auth.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.underlying.common.yaml.swapper.RuleRootConfigurationsYamlSwapper;
 
 import java.util.Collection;
 import java.util.Map;
@@ -65,7 +64,7 @@ public final class ConfigurationYamlConverter {
      * @return rule configurations
      */
     public static Collection<RuleConfiguration> loadRuleConfigurations(final String data) {
-        return new RuleRootConfigurationsYamlSwapper().swap(YamlEngine.unmarshal(data, YamlRootRuleConfigurations.class, new YamlRootRuleConfigurationsConstructor()));
+        return new RuleRootConfigurationsYamlSwapper().swap(YamlEngine.unmarshal(data, YamlRootRuleConfigurations.class));
     }
     
     /**

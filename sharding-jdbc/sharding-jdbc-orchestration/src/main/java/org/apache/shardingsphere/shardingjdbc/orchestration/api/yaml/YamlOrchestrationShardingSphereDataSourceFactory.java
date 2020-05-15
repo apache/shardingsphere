@@ -21,13 +21,12 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
-import org.apache.shardingsphere.sharding.core.yaml.swapper.root.RuleRootConfigurationsYamlSwapper;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.YamlCenterRepositoryConfigurationSwapperUtil;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml.YamlOrchestrationRootRuleConfigurations;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml.constructor.YamlOrchestrationShardingRuleConfigurationConstructor;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.underlying.common.yaml.swapper.RuleRootConfigurationsYamlSwapper;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -100,7 +99,7 @@ public final class YamlOrchestrationShardingSphereDataSourceFactory {
     
     private static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final YamlOrchestrationRootRuleConfigurations configurations, 
                                                final Properties props, final Map<String, YamlCenterRepositoryConfiguration> yamlInstanceConfigurationMap) throws SQLException {
-        if (null == configurations) {
+        if (configurations.getRules().isEmpty() || dataSourceMap.isEmpty()) {
             return new OrchestrationShardingSphereDataSource(new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
         } else {
             ShardingSphereDataSource shardingSphereDataSource = new ShardingSphereDataSource(dataSourceMap, SWAPPER.swap(configurations), props);
@@ -110,10 +109,10 @@ public final class YamlOrchestrationShardingSphereDataSourceFactory {
     }
     
     private static YamlOrchestrationRootRuleConfigurations unmarshal(final File yamlFile) throws IOException {
-        return YamlEngine.unmarshal(yamlFile, YamlOrchestrationRootRuleConfigurations.class, new YamlOrchestrationShardingRuleConfigurationConstructor());
+        return YamlEngine.unmarshal(yamlFile, YamlOrchestrationRootRuleConfigurations.class);
     }
     
     private static YamlOrchestrationRootRuleConfigurations unmarshal(final byte[] yamlBytes) throws IOException {
-        return YamlEngine.unmarshal(yamlBytes, YamlOrchestrationRootRuleConfigurations.class, new YamlOrchestrationShardingRuleConfigurationConstructor());
+        return YamlEngine.unmarshal(yamlBytes, YamlOrchestrationRootRuleConfigurations.class);
     }
 }

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.JDBCExecuteEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.PreparedStatementExecutorWrapper;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.StatementExecutorWrapper;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchema;
 
 import java.util.List;
 
@@ -48,25 +48,25 @@ public final class DatabaseCommunicationEngineFactory {
     /**
      * Create new instance of text protocol backend handler.
      *
-     * @param logicSchema logic schema
+     * @param schema ShardingSphere schema
      * @param sql SQL to be executed
      * @param backendConnection backend connection
      * @return instance of text protocol backend handler
      */
-    public DatabaseCommunicationEngine newTextProtocolInstance(final LogicSchema logicSchema, final String sql, final BackendConnection backendConnection) {
-        return new JDBCDatabaseCommunicationEngine(logicSchema, sql, new JDBCExecuteEngine(backendConnection, new StatementExecutorWrapper(logicSchema)));
+    public DatabaseCommunicationEngine newTextProtocolInstance(final ShardingSphereSchema schema, final String sql, final BackendConnection backendConnection) {
+        return new JDBCDatabaseCommunicationEngine(schema, sql, new JDBCExecuteEngine(backendConnection, new StatementExecutorWrapper(schema)));
     }
     
     /**
      * Create new instance of text protocol backend handler.
      *
-     * @param logicSchema logic schema
+     * @param schema ShardingSphere schema
      * @param sql SQL to be executed
      * @param parameters SQL parameters
      * @param backendConnection backend connection
      * @return instance of text protocol backend handler
      */
-    public DatabaseCommunicationEngine newBinaryProtocolInstance(final LogicSchema logicSchema, final String sql, final List<Object> parameters, final BackendConnection backendConnection) {
-        return new JDBCDatabaseCommunicationEngine(logicSchema, sql, new JDBCExecuteEngine(backendConnection, new PreparedStatementExecutorWrapper(logicSchema, parameters)));
+    public DatabaseCommunicationEngine newBinaryProtocolInstance(final ShardingSphereSchema schema, final String sql, final List<Object> parameters, final BackendConnection backendConnection) {
+        return new JDBCDatabaseCommunicationEngine(schema, sql, new JDBCExecuteEngine(backendConnection, new PreparedStatementExecutorWrapper(schema, parameters)));
     }
 }

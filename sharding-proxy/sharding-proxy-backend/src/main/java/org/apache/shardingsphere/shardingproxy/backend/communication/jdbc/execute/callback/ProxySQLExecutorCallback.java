@@ -23,7 +23,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execut
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.ExecuteUpdateResponse;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchemas;
 import org.apache.shardingsphere.sharding.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
@@ -64,7 +64,7 @@ public final class ProxySQLExecutorCallback extends DefaultSQLExecutorCallback<E
 
     public ProxySQLExecutorCallback(final SQLStatementContext sqlStatementContext, final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper,
                                     final boolean isExceptionThrown, final boolean isReturnGeneratedKeys, final boolean fetchMetaData) {
-        super(LogicSchemas.getInstance().getDatabaseType(), isExceptionThrown);
+        super(ShardingSphereSchemas.getInstance().getDatabaseType(), isExceptionThrown);
         this.sqlStatementContext = sqlStatementContext;
         this.backendConnection = backendConnection;
         this.jdbcExecutorWrapper = jdbcExecutorWrapper;
@@ -102,7 +102,7 @@ public final class ProxySQLExecutorCallback extends DefaultSQLExecutorCallback<E
     private List<QueryHeader> getQueryHeaders(final ProjectionsContext projectionsContext, final ResultSetMetaData resultSetMetaData) throws SQLException {
         List<QueryHeader> result = new LinkedList<>();
         for (int columnIndex = 1; columnIndex <= projectionsContext.getExpandProjections().size(); columnIndex++) {
-            result.add(new QueryHeader(projectionsContext, resultSetMetaData, backendConnection.getLogicSchema(), columnIndex));
+            result.add(new QueryHeader(projectionsContext, resultSetMetaData, backendConnection.getSchema(), columnIndex));
         }
         return result;
     }
@@ -110,7 +110,7 @@ public final class ProxySQLExecutorCallback extends DefaultSQLExecutorCallback<E
     private List<QueryHeader> getQueryHeaders(final ResultSetMetaData resultSetMetaData) throws SQLException {
         List<QueryHeader> result = new LinkedList<>();
         for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
-            result.add(new QueryHeader(resultSetMetaData, backendConnection.getLogicSchema(), columnIndex));
+            result.add(new QueryHeader(resultSetMetaData, backendConnection.getSchema(), columnIndex));
         }
         return result;
     }

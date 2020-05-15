@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.executor;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.sharding.core.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
