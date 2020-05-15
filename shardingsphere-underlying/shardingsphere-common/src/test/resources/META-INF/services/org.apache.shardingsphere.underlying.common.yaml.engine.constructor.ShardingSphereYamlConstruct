@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.underlying.common.yaml.engine.fixture.FixtureTypeConstructor
+org.apache.shardingsphere.underlying.common.yaml.engine.fixture.FixtureShardingSphereYamlConstruct

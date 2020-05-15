@@ -15,27 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.yaml.engine.representer.processor;
+package org.apache.shardingsphere.underlying.common.yaml.engine.constructor;
 
-import org.yaml.snakeyaml.nodes.NodeTuple;
+import org.yaml.snakeyaml.constructor.Construct;
 
 /**
- * ShardingSphere YAML tuple processor.
+ * ShardingSphere YAML construct.
  */
-public interface ShardingSphereYAMLTupleProcessor {
+public interface ShardingSphereYamlConstruct extends Construct {
     
     /**
-     * Get tuple name.
-     *
-     * @return tuple name
+     * Get type.
+     * 
+     * @return type
      */
-    String getTupleName();
-    
-    /**
-     * Process YAML tuple for representer.
-     *
-     * @param nodeTuple YAML node tuple
-     * @return YAML node tuple after process
-     */
-    NodeTuple process(NodeTuple nodeTuple);
+    Class<?> getType();
 }

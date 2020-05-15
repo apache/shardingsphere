@@ -21,8 +21,8 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.engine.constructor.ShardingSphereYAMLConstructor;
-import org.apache.shardingsphere.underlying.common.yaml.engine.representer.ShardingSphereYAMLRepresenter;
+import org.apache.shardingsphere.underlying.common.yaml.engine.constructor.ShardingSphereYamlConstructor;
+import org.apache.shardingsphere.underlying.common.yaml.engine.representer.ShardingSphereYamlRepresenter;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.ByteArrayInputStream;
@@ -55,7 +55,7 @@ public final class YamlEngine {
                 FileInputStream fileInputStream = new FileInputStream(yamlFile);
                 InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")
         ) {
-            return new Yaml(new ShardingSphereYAMLConstructor(classType)).loadAs(inputStreamReader, classType);
+            return new Yaml(new ShardingSphereYamlConstructor(classType)).loadAs(inputStreamReader, classType);
         }
     }
     
@@ -70,7 +70,7 @@ public final class YamlEngine {
      */
     public static <T extends YamlConfiguration> T unmarshal(final byte[] yamlBytes, final Class<T> classType) throws IOException {
         try (InputStream inputStream = new ByteArrayInputStream(yamlBytes)) {
-            return new Yaml(new ShardingSphereYAMLConstructor(classType)).loadAs(inputStream, classType);
+            return new Yaml(new ShardingSphereYamlConstructor(classType)).loadAs(inputStream, classType);
         }
     }
     
@@ -83,7 +83,7 @@ public final class YamlEngine {
      * @return object from YAML
      */
     public static <T> T unmarshal(final String yamlContent, final Class<T> classType) {
-        return new Yaml(new ShardingSphereYAMLConstructor(classType)).loadAs(yamlContent, classType);
+        return new Yaml(new ShardingSphereYamlConstructor(classType)).loadAs(yamlContent, classType);
     }
     
     /**
@@ -113,6 +113,6 @@ public final class YamlEngine {
      * @return YAML content
      */
     public static String marshal(final Object value) {
-        return new Yaml(new ShardingSphereYAMLRepresenter()).dumpAsMap(value);
+        return new Yaml(new ShardingSphereYamlRepresenter()).dumpAsMap(value);
     }
 }

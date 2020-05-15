@@ -27,7 +27,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-public final class ShardingSphereYAMLConstructorTest {
+public final class ShardingSphereYamlConstructorTest {
     
     @Test
     public void assertToObject() {
@@ -40,7 +40,7 @@ public final class ShardingSphereYAMLConstructorTest {
                 + "  key2: value2\n"
                 + "value: value\n"
                 + "customClass:";
-        DefaultYamlRepresenterFixture actual = new Yaml(new ShardingSphereYAMLConstructor(DefaultYamlRepresenterFixture.class)).loadAs(yamlString, DefaultYamlRepresenterFixture.class);
+        DefaultYamlRepresenterFixture actual = new Yaml(new ShardingSphereYamlConstructor(DefaultYamlRepresenterFixture.class)).loadAs(yamlString, DefaultYamlRepresenterFixture.class);
         assertThat(actual.getValue(), is("value"));
         assertThat(actual.getCollection().size(), is(2));
         Iterator<String> iterator = actual.getCollection().iterator();

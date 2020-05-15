@@ -44,7 +44,7 @@ public final class ConfigurationLogger {
      */
     public static void log(final Collection<RuleConfiguration> ruleConfigurations) {
         YamlRootRuleConfigurations yamlRuleConfigurations = new YamlRootRuleConfigurations();
-        yamlRuleConfigurations.setRules(new YamlRuleConfigurationSwapperEngine().swapToYAMLConfigurations(ruleConfigurations));
+        yamlRuleConfigurations.setRules(new YamlRuleConfigurationSwapperEngine().swapToYamlConfigurations(ruleConfigurations));
         log("Rule configurations: ", YamlEngine.marshal(yamlRuleConfigurations));
     }
     

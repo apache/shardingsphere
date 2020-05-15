@@ -30,12 +30,12 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class ShardingSphereYAMLRepresenterTest {
+public final class ShardingSphereYamlRepresenterTest {
     
     @Test
     public void assertToYamlWithNull() {
         DefaultYamlRepresenterFixture actual = new DefaultYamlRepresenterFixture();
-        assertThat(new Yaml(new ShardingSphereYAMLRepresenter()).dumpAsMap(actual), is("{}\n"));
+        assertThat(new Yaml(new ShardingSphereYamlRepresenter()).dumpAsMap(actual), is("{}\n"));
     }
     
     @Test
@@ -44,7 +44,7 @@ public final class ShardingSphereYAMLRepresenterTest {
         actual.setValue("");
         actual.setCollection(Collections.emptyList());
         actual.setMap(Collections.emptyMap());
-        assertThat(new Yaml(new ShardingSphereYAMLRepresenter()).dumpAsMap(actual), is("value: ''\n"));
+        assertThat(new Yaml(new ShardingSphereYamlRepresenter()).dumpAsMap(actual), is("value: ''\n"));
     }
     
     @Test
@@ -56,7 +56,7 @@ public final class ShardingSphereYAMLRepresenterTest {
         map.put("key1", "value1");
         map.put("key2", "value2");
         actual.setMap(map);
-        String expected = new Yaml(new ShardingSphereYAMLRepresenter()).dumpAsMap(actual);
+        String expected = new Yaml(new ShardingSphereYamlRepresenter()).dumpAsMap(actual);
         assertThat(expected, containsString("collection:\n- value1\n- value2\n"));
         assertThat(expected, containsString("map:\n  key1: value1\n  key2: value2\n"));
         assertThat(expected, containsString("value: value\n"));
