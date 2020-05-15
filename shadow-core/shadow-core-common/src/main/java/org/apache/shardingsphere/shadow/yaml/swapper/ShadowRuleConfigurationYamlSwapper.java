@@ -40,12 +40,17 @@ public final class ShadowRuleConfigurationYamlSwapper implements YamlRuleConfigu
     }
     
     @Override
-    public int getOrder() {
-        return -5;
+    public Class<ShadowRuleConfiguration> getTypeClass() {
+        return ShadowRuleConfiguration.class;
     }
     
     @Override
-    public Class<ShadowRuleConfiguration> getTypeClass() {
-        return ShadowRuleConfiguration.class;
+    public String getRuleTagName() {
+        return "SHADOW";
+    }
+    
+    @Override
+    public int getOrder() {
+        return -5;
     }
 }

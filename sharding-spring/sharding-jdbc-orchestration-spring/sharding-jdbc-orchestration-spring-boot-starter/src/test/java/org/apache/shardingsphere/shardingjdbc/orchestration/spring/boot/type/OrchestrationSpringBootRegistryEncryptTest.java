@@ -62,7 +62,7 @@ public class OrchestrationSpringBootRegistryEncryptTest {
                 + "    username: sa\n");
         testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/rule", ""
                 + "rules:\n"
-                + "- !!org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration\n"
+                + "- !ENCRYPT\n"
                 + "  encryptors:\n"
                 + "    order_encrypt:\n"
                 + "      props:\n"

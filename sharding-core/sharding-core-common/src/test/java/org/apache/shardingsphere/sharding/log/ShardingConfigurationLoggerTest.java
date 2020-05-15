@@ -62,7 +62,7 @@ public final class ShardingConfigurationLoggerTest {
     @Test
     public void assertLogShardingRuleConfiguration() {
         String yaml = "rules:\n"
-                + "- !!org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration\n"
+                + "- !SHARDING\n"
                 + "  tables:\n"
                 + "    user:\n"
                 + "      actualDataNodes: ds_${0}.user_${0..1}\n"

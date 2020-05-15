@@ -23,7 +23,7 @@ dataSources:
     password:
 
 rules:
-- !!org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration
+- !ENCRYPT
   encryptors:
     name_encryptror:
       type: aes

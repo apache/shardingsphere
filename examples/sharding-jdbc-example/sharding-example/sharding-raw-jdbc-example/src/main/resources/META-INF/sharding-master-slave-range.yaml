@@ -48,7 +48,7 @@ dataSources:
     password:
     
 rules:
-- !!org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration
+- !SHARDING
   tables:
     t_order: 
       actualDataNodes: ds_${0..1}.t_order_${0..1}
@@ -84,7 +84,7 @@ rules:
       shardingAlgorithm:
         type: STANDARD_TEST_DB
 
-- !!org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration
+- !MASTER_SLAVE
   dataSources:
     ds_0:
       masterDataSourceName: ds_master_0

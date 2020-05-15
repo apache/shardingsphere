@@ -57,7 +57,7 @@ dataSource: !!org.apache.commons.dbcp2.BasicDataSource
   password:
 
 rules:
-- !!org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration
+- !ENCRYPT
   tables:
     t_order:
       columns:
