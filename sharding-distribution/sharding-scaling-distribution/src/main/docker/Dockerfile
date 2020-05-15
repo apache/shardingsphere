@@ -27,5 +27,6 @@ RUN wget https://dist.apache.org/repos/dist/release/shardingsphere/${CURRENT_VER
     tar -xzvf ${APP_NAME}-${CURRENT_VERSION}-${MODULE_NAME}-bin.tar.gz && \
     mv ${APP_NAME}-${CURRENT_VERSION}-${MODULE_NAME}-bin ${LOCAL_PATH} && \
     rm -f ${APP_NAME}-${CURRENT_VERSION}-${MODULE_NAME}-bin.tar.gz
+RUN mkdir -p ${LOCAL_PATH}/ext-lib
 
 ENTRYPOINT ${LOCAL_PATH}/bin/start.sh ${PORT} && tail -f ${LOCAL_PATH}/logs/stdout.log
