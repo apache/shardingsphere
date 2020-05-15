@@ -25,9 +25,9 @@ import org.yaml.snakeyaml.nodes.SequenceNode;
 import org.yaml.snakeyaml.nodes.Tag;
 
 /**
- * Default tuple processor. 
+ * Default YAML tuple processor. 
  */
-public final class DefaultTupleProcessor {
+public final class DefaultYAMLTupleProcessor {
     
     /**
      * Process node tuple.

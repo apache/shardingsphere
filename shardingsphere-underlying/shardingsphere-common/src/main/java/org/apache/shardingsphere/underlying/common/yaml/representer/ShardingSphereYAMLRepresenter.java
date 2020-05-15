@@ -19,15 +19,13 @@ package org.apache.shardingsphere.underlying.common.yaml.representer;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.sharding.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.underlying.common.yaml.representer.processor.DefaultYAMLTupleProcessor;
 import org.apache.shardingsphere.underlying.common.yaml.representer.processor.ShardingSphereYAMLTupleProcessor;
-import org.apache.shardingsphere.underlying.common.yaml.representer.processor.DefaultTupleProcessor;
-import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.yaml.snakeyaml.introspector.Property;
 import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
-
-import java.lang.reflect.ParameterizedType;
 
 /**
  * ShardingSphere YAML representer.
@@ -35,16 +33,12 @@ import java.lang.reflect.ParameterizedType;
 public final class ShardingSphereYAMLRepresenter extends Representer {
     
     static {
-        ShardingSphereServiceLoader.register(YamlRuleConfigurationSwapper.class);
         ShardingSphereServiceLoader.register(ShardingSphereYAMLTupleProcessor.class);
     }
     
     @SneakyThrows
     public ShardingSphereYAMLRepresenter() {
-        for (YamlRuleConfigurationSwapper each : ShardingSphereServiceLoader.newServiceInstances(YamlRuleConfigurationSwapper.class)) {
-            Class<?> yamlRuleConfiguration = Class.forName(((ParameterizedType) each.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0].getTypeName());
-            addClassTag(yamlRuleConfiguration, new Tag("!" + each.getRuleTagName()));
-        }
+        YamlRuleConfigurationSwapperEngine.getYAMLShortcuts().forEach((key, value) -> addClassTag(value, new Tag(key)));
     }
     
     @Override
@@ -55,6 +49,6 @@ public final class ShardingSphereYAMLRepresenter extends Representer {
                 return each.process(nodeTuple);
             }
         }
-        return new DefaultTupleProcessor().process(nodeTuple);
+        return new DefaultYAMLTupleProcessor().process(nodeTuple);
     }
 }

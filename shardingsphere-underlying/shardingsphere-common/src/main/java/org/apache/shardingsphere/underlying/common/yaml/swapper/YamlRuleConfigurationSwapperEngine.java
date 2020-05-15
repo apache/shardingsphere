@@ -17,13 +17,17 @@
 
 package org.apache.shardingsphere.underlying.common.yaml.swapper;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.sharding.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sharding.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlRuleConfiguration;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
@@ -74,6 +78,21 @@ public final class YamlRuleConfigurationSwapperEngine {
             if (each.getRuleConfigurationType().equals(ruleConfigurationType)) {
                 result.add((RuleConfiguration) swapper.swap(each));
             }
+        }
+        return result;
+    }
+    
+    /**
+     * Get YAML shortcuts.
+     * 
+     * @return YAML shortcuts
+     */
+    @SneakyThrows
+    public static Map<String, Class<?>> getYAMLShortcuts() {
+        Map<String, Class<?>> result = new HashMap<>();
+        for (YamlRuleConfigurationSwapper each : ShardingSphereServiceLoader.newServiceInstances(YamlRuleConfigurationSwapper.class)) {
+            Class<?> yamlRuleConfigurationClass = Class.forName(((ParameterizedType) each.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0].getTypeName());
+            result.put("!" + each.getRuleTagName(), yamlRuleConfigurationClass);
         }
         return result;
     }
