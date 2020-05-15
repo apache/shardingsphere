@@ -28,8 +28,8 @@ dataSources:
     password:
 
 rules:
-  - !SHADOW
-    column: shadow
-    shadowMappings:
-      ds: shadow_ds
+- !SHADOW
+  column: shadow
+  shadowMappings:
+    ds: shadow_ds
 
