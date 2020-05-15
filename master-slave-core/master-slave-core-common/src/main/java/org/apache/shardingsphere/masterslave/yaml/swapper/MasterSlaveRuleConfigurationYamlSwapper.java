@@ -72,12 +72,17 @@ public final class MasterSlaveRuleConfigurationYamlSwapper implements YamlRuleCo
     }
     
     @Override
-    public int getOrder() {
-        return 10;
+    public Class<MasterSlaveRuleConfiguration> getTypeClass() {
+        return MasterSlaveRuleConfiguration.class;
     }
     
     @Override
-    public Class<MasterSlaveRuleConfiguration> getTypeClass() {
-        return MasterSlaveRuleConfiguration.class;
+    public String getRuleTagName() {
+        return "MASTER_SLAVE";
+    }
+    
+    @Override
+    public int getOrder() {
+        return 10;
     }
 }

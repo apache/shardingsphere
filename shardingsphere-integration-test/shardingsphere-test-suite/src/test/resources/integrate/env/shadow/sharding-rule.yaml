@@ -16,12 +16,12 @@
 #
 
 rules:
-- !!org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration
+- !SHADOW
   column: shadow
   shadowMappings:
     db: shadow_db
 
-- !!org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration
+- !SHARDING
   tables:
     t_order_item:
       actualDataNodes: db.t_order_item

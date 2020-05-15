@@ -65,7 +65,7 @@ public final class EncryptConfigurationLoggerTest {
     @Test
     public void assertLogEncryptRuleConfiguration() {
         String yaml = "rules:\n"
-                + "- !!org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration\n"
+                + "- !ENCRYPT\n"
                 + "  encryptors:\n"
                 + "    encryptor_aes:\n"
                 + "      props:\n"

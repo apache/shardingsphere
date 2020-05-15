@@ -62,7 +62,7 @@ public final class MasterSlaveConfigurationLoggerTest {
     @Test
     public void assertLogMasterSlaveRuleConfiguration() {
         String yaml = "rules:\n"
-                + "- !!org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration\n"
+                + "- !MASTER_SLAVE\n"
                 + "  dataSources:\n"
                 + "    ms_ds:\n"
                 + "      masterDataSourceName: master_ds\n"

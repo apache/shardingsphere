@@ -38,7 +38,7 @@
 #  maxPoolSize: 50
 #
 #rules:
-#- !!org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration
+#- !ENCRYPT
 #  encryptors:
 #    encryptor_aes:
 #      type: aes
@@ -75,7 +75,7 @@
 #  maxPoolSize: 50
 #
 #rules:
-#- !!org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration
+#- !ENCRYPT
 #  encryptors:
 #    encryptor_aes:
 #      type: aes

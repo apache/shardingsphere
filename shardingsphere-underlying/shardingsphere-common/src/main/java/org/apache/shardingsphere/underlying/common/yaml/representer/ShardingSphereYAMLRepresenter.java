@@ -17,22 +17,38 @@
 
 package org.apache.shardingsphere.underlying.common.yaml.representer;
 
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.sharding.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.underlying.common.yaml.representer.processor.SkipUnsetTupleProcessor;
 import org.apache.shardingsphere.underlying.common.yaml.representer.processor.TupleProcessor;
+import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlRuleConfigurationSwapper;
 import org.yaml.snakeyaml.introspector.Property;
 import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Default YAML representer.
+ * ShardingSphere YAML representer.
  */
-public final class DefaultYamlRepresenter extends Representer {
+public final class ShardingSphereYAMLRepresenter extends Representer {
     
     private final Map<String, TupleProcessor> tupleProcessors = new HashMap<>();
+    
+    static {
+        ShardingSphereServiceLoader.register(YamlRuleConfigurationSwapper.class);
+    }
+    
+    @SneakyThrows
+    public ShardingSphereYAMLRepresenter() {
+        for (YamlRuleConfigurationSwapper each : ShardingSphereServiceLoader.newServiceInstances(YamlRuleConfigurationSwapper.class)) {
+            Class<?> yamlRuleConfiguration = Class.forName(((ParameterizedType) each.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0].getTypeName());
+            addClassTag(yamlRuleConfiguration, new Tag("!" + each.getRuleTagName()));
+        }
+    }
     
     /**
      * Register new tuple processor into representer.

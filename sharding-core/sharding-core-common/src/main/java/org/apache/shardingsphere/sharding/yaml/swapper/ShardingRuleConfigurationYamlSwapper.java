@@ -79,12 +79,17 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
     }
     
     @Override
-    public int getOrder() {
-        return 0;
+    public Class<ShardingRuleConfiguration> getTypeClass() {
+        return ShardingRuleConfiguration.class;
     }
     
     @Override
-    public Class<ShardingRuleConfiguration> getTypeClass() {
-        return ShardingRuleConfiguration.class;
+    public String getRuleTagName() {
+        return "SHARDING";
+    }
+    
+    @Override
+    public int getOrder() {
+        return 0;
     }
 }

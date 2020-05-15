@@ -62,7 +62,7 @@ public final class SchemaChangedListenerTest {
     private static final String MASTER_SLAVE_RULE_YAML = "master-slave-rule.yaml";
 
     private static final String ENCRYPT_RULE_YAML = "encrypt-rule.yaml";
-    
+
     private SchemaChangedListener schemaChangedListener;
     
     @Mock

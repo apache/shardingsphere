@@ -91,7 +91,7 @@ public final class ConfigCenterTest {
     
     private static final String SHARDING_RULE_YAML = ""
             + "rules:\n"
-            + "- !!org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration\n"
+            + "- !SHARDING\n"
             + "  tables:\n"
             + "    t_order:\n"
             + "      actualDataNodes: ds_${0..1}.t_order_${0..1}\n"
@@ -106,7 +106,7 @@ public final class ConfigCenterTest {
     
     private static final String MASTER_SLAVE_RULE_YAML = ""
             + "rules:\n"
-            + "- !!org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration\n"
+            + "- !MASTER_SLAVE\n"
             + "  dataSources:\n"
             + "    ms_ds:\n"
             + "      masterDataSourceName: master_ds\n"
@@ -117,7 +117,7 @@ public final class ConfigCenterTest {
     
     private static final String ENCRYPT_RULE_YAML = ""
             + "rules:\n"
-            + "- !!org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration\n"
+            + "- !ENCRYPT\n"
             + "  encryptors:\n"
             + "    order_encryptor:\n"
             + "      props:\n"
@@ -132,7 +132,7 @@ public final class ConfigCenterTest {
     
     private static final String SHADOW_RULE_YAML = ""
             + "rules:\n"
-            + "- !!org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration\n"
+            + "- !SHADOW\n"
             + "  column: shadow\n"
             + "  shadowMappings:\n"
             + "    ds: shadow_ds\n";
@@ -150,7 +150,7 @@ public final class ConfigCenterTest {
     
     private static final String SHARDING_RULE_YAML_DEFAULT_TABLE_STRATEGY_NONE = ""
             + "rules:\n"
-            + "- !!org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration\n"
+            + "- !SHARDING\n"
             + "  defaultTableStrategy:\n"
             + "    none: ''\n";
     

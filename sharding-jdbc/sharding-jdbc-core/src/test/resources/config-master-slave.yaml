@@ -16,7 +16,7 @@
 #
 
 rules:
-- !!org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration
+- !MASTER_SLAVE
   dataSources:
     test_ds:
       name: test_ds
