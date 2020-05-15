@@ -35,7 +35,6 @@ import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguratio
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.underlying.common.yaml.swapper.RuleRootConfigurationsYamlSwapper;
 import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 
 import java.util.ArrayList;
@@ -132,7 +131,9 @@ public final class ConfigCenter {
                 configurations.add(each);
             }
         }
-        repository.persist(node.getRulePath(shardingSchemaName), YamlEngine.marshal(new RuleRootConfigurationsYamlSwapper().swap(configurations)));
+        YamlRootRuleConfigurations yamlRuleConfigurations = new YamlRootRuleConfigurations();
+        yamlRuleConfigurations.setRules(new YamlRuleConfigurationSwapperEngine().swapToYAMLConfigurations(configurations));
+        repository.persist(node.getRulePath(shardingSchemaName), YamlEngine.marshal(yamlRuleConfigurations));
     }
     
     /**
