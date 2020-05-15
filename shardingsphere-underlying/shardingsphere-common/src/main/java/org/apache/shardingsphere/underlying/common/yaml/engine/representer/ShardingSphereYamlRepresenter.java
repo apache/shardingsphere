@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.yaml.representer;
+package org.apache.shardingsphere.underlying.common.yaml.engine.representer;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.sharding.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.underlying.common.yaml.representer.processor.DefaultYAMLTupleProcessor;
-import org.apache.shardingsphere.underlying.common.yaml.representer.processor.ShardingSphereYAMLTupleProcessor;
+import org.apache.shardingsphere.underlying.common.yaml.engine.representer.processor.DefaultYamlTupleProcessor;
+import org.apache.shardingsphere.underlying.common.yaml.engine.representer.processor.ShardingSphereYamlTupleProcessor;
 import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.yaml.snakeyaml.introspector.Property;
 import org.yaml.snakeyaml.nodes.NodeTuple;
@@ -30,25 +30,25 @@ import org.yaml.snakeyaml.representer.Representer;
 /**
  * ShardingSphere YAML representer.
  */
-public final class ShardingSphereYAMLRepresenter extends Representer {
+public final class ShardingSphereYamlRepresenter extends Representer {
     
     static {
-        ShardingSphereServiceLoader.register(ShardingSphereYAMLTupleProcessor.class);
+        ShardingSphereServiceLoader.register(ShardingSphereYamlTupleProcessor.class);
     }
     
     @SneakyThrows
-    public ShardingSphereYAMLRepresenter() {
-        YamlRuleConfigurationSwapperEngine.getYAMLShortcuts().forEach((key, value) -> addClassTag(value, new Tag(key)));
+    public ShardingSphereYamlRepresenter() {
+        YamlRuleConfigurationSwapperEngine.getYamlShortcuts().forEach((key, value) -> addClassTag(value, new Tag(key)));
     }
     
     @Override
     protected NodeTuple representJavaBeanProperty(final Object javaBean, final Property property, final Object propertyValue, final Tag customTag) {
         NodeTuple nodeTuple = super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
-        for (ShardingSphereYAMLTupleProcessor each : ShardingSphereServiceLoader.newServiceInstances(ShardingSphereYAMLTupleProcessor.class)) {
+        for (ShardingSphereYamlTupleProcessor each : ShardingSphereServiceLoader.newServiceInstances(ShardingSphereYamlTupleProcessor.class)) {
             if (property.getName().equals(each.getTupleName())) {
                 return each.process(nodeTuple);
             }
         }
-        return new DefaultYAMLTupleProcessor().process(nodeTuple);
+        return new DefaultYamlTupleProcessor().process(nodeTuple);
     }
 }

@@ -15,19 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.yaml.constructor;
+package org.apache.shardingsphere.underlying.common.yaml.engine.fixture;
 
-import org.yaml.snakeyaml.constructor.Construct;
+import lombok.Getter;
+import lombok.Setter;
 
-/**
- * ShardingSphere YAML construct.
- */
-public interface ShardingSphereYAMLConstruct extends Construct {
+import java.util.Collection;
+import java.util.Map;
+
+@Getter
+@Setter
+public final class DefaultYamlRepresenterFixture {
     
-    /**
-     * Get type.
-     * 
-     * @return type
-     */
-    Class<?> getType();
+    private String value;
+    
+    private Collection<String> collection;
+    
+    private Map<String, String> map;
+    
+    private FixtureCustomClass customClass;
 }

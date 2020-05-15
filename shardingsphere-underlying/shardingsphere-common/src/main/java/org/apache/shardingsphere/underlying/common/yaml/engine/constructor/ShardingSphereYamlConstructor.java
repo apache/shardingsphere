@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.yaml.constructor;
+package org.apache.shardingsphere.underlying.common.yaml.engine.constructor;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.sharding.spi.ShardingSphereServiceLoader;
@@ -31,19 +31,19 @@ import java.util.Map;
 /**
  * ShardingSphere YAML constructor.
  */
-public final class ShardingSphereYAMLConstructor extends Constructor {
+public final class ShardingSphereYamlConstructor extends Constructor {
     
     static {
-        ShardingSphereServiceLoader.register(ShardingSphereYAMLConstruct.class);
+        ShardingSphereServiceLoader.register(ShardingSphereYamlConstruct.class);
     }
     
     private final Map<Class, Construct> typeConstructs = new HashMap<>();
     
     @SneakyThrows
-    public ShardingSphereYAMLConstructor(final Class<?> rootClass) {
+    public ShardingSphereYamlConstructor(final Class<?> rootClass) {
         super(rootClass);
-        ShardingSphereServiceLoader.newServiceInstances(ShardingSphereYAMLConstruct.class).forEach(each -> typeConstructs.put(each.getType(), each));
-        YamlRuleConfigurationSwapperEngine.getYAMLShortcuts().forEach((key, value) -> addTypeDescription(new TypeDescription(value, key)));
+        ShardingSphereServiceLoader.newServiceInstances(ShardingSphereYamlConstruct.class).forEach(each -> typeConstructs.put(each.getType(), each));
+        YamlRuleConfigurationSwapperEngine.getYamlShortcuts().forEach((key, value) -> addTypeDescription(new TypeDescription(value, key)));
     }
     
     @Override

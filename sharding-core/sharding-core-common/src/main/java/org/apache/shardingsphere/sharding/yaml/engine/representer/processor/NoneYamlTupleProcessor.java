@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.yaml.representer.processor;
+package org.apache.shardingsphere.sharding.yaml.engine.representer.processor;
 
-import org.apache.shardingsphere.underlying.common.yaml.representer.processor.ShardingSphereYAMLTupleProcessor;
+import org.apache.shardingsphere.underlying.common.yaml.engine.representer.processor.ShardingSphereYamlTupleProcessor;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.ScalarNode;
@@ -26,7 +26,7 @@ import org.yaml.snakeyaml.nodes.Tag;
 /**
  * None YAML tuple processor.
  */
-public final class NoneTupleProcessor implements ShardingSphereYAMLTupleProcessor {
+public final class NoneYamlTupleProcessor implements ShardingSphereYamlTupleProcessor {
     
     @Override
     public String getTupleName() {

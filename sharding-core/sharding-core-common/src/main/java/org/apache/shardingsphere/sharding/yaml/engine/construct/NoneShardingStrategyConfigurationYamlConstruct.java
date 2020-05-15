@@ -15,16 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.yaml.fixture;
+package org.apache.shardingsphere.sharding.yaml.engine.construct;
 
-import org.apache.shardingsphere.underlying.common.yaml.constructor.ShardingSphereYAMLConstruct;
+import org.apache.shardingsphere.sharding.yaml.config.strategy.YamlNoneShardingStrategyConfiguration;
+import org.apache.shardingsphere.underlying.common.yaml.engine.constructor.ShardingSphereYamlConstruct;
 import org.yaml.snakeyaml.nodes.Node;
 
-public final class FixtureTypeConstructor implements ShardingSphereYAMLConstruct {
+/**
+ * YAML none sharding strategy configuration YAML construct.
+ */
+public final class NoneShardingStrategyConfigurationYamlConstruct implements ShardingSphereYamlConstruct {
     
     @Override
     public Object construct(final Node node) {
-        return new FixtureCustomClass();
+        return new YamlNoneShardingStrategyConfiguration();
     }
     
     @Override
@@ -33,6 +37,6 @@ public final class FixtureTypeConstructor implements ShardingSphereYAMLConstruct
     
     @Override
     public Class<?> getType() {
-        return FixtureCustomClass.class;
+        return YamlNoneShardingStrategyConfiguration.class;
     }
 }

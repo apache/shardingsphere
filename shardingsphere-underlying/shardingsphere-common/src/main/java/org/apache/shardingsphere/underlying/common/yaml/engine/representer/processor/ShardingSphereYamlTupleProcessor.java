@@ -15,28 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.yaml.construct;
+package org.apache.shardingsphere.underlying.common.yaml.engine.representer.processor;
 
-import org.apache.shardingsphere.sharding.yaml.config.strategy.YamlNoneShardingStrategyConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.constructor.ShardingSphereYAMLConstruct;
-import org.yaml.snakeyaml.nodes.Node;
+import org.yaml.snakeyaml.nodes.NodeTuple;
 
 /**
- * YAML none sharding strategy configuration YAML construct.
+ * ShardingSphere YAML tuple processor.
  */
-public final class NoneShardingStrategyConfigurationYAMLConstruct implements ShardingSphereYAMLConstruct {
+public interface ShardingSphereYamlTupleProcessor {
     
-    @Override
-    public Object construct(final Node node) {
-        return new YamlNoneShardingStrategyConfiguration();
-    }
+    /**
+     * Get tuple name.
+     *
+     * @return tuple name
+     */
+    String getTupleName();
     
-    @Override
-    public void construct2ndStep(final Node node, final Object newInstance) {
-    }
-    
-    @Override
-    public Class<?> getType() {
-        return YamlNoneShardingStrategyConfiguration.class;
-    }
+    /**
+     * Process YAML tuple for representer.
+     *
+     * @param nodeTuple YAML node tuple
+     * @return YAML node tuple after process
+     */
+    NodeTuple process(NodeTuple nodeTuple);
 }

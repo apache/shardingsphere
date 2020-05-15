@@ -132,7 +132,7 @@ public final class ConfigCenter {
             }
         }
         YamlRootRuleConfigurations yamlRuleConfigurations = new YamlRootRuleConfigurations();
-        yamlRuleConfigurations.setRules(new YamlRuleConfigurationSwapperEngine().swapToYAMLConfigurations(configurations));
+        yamlRuleConfigurations.setRules(new YamlRuleConfigurationSwapperEngine().swapToYamlConfigurations(configurations));
         repository.persist(node.getRulePath(shardingSchemaName), YamlEngine.marshal(yamlRuleConfigurations));
     }
     

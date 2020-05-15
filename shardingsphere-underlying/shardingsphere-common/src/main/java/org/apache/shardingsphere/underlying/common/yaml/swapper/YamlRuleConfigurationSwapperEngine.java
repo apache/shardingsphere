@@ -47,7 +47,7 @@ public final class YamlRuleConfigurationSwapperEngine {
      * @return YAML rule configurations
      */
     @SuppressWarnings("unchecked")
-    public Collection<YamlRuleConfiguration> swapToYAMLConfigurations(final Collection<RuleConfiguration> ruleConfigurations) {
+    public Collection<YamlRuleConfiguration> swapToYamlConfigurations(final Collection<RuleConfiguration> ruleConfigurations) {
         Collection<YamlRuleConfiguration> result = new LinkedList<>();
         for (Entry<RuleConfiguration, YamlRuleConfigurationSwapper> entry : OrderedSPIRegistry.getRegisteredServices(ruleConfigurations, YamlRuleConfigurationSwapper.class).entrySet()) {
             result.add((YamlRuleConfiguration) entry.getValue().swap(entry.getKey()));
@@ -88,7 +88,7 @@ public final class YamlRuleConfigurationSwapperEngine {
      * @return YAML shortcuts
      */
     @SneakyThrows
-    public static Map<String, Class<?>> getYAMLShortcuts() {
+    public static Map<String, Class<?>> getYamlShortcuts() {
         Map<String, Class<?>> result = new HashMap<>();
         for (YamlRuleConfigurationSwapper each : ShardingSphereServiceLoader.newServiceInstances(YamlRuleConfigurationSwapper.class)) {
             Class<?> yamlRuleConfigurationClass = Class.forName(((ParameterizedType) each.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0].getTypeName());

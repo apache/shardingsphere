@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.yaml.representer.processor;
+package org.apache.shardingsphere.underlying.common.yaml.engine.representer.processor;
 
 import org.yaml.snakeyaml.nodes.CollectionNode;
 import org.yaml.snakeyaml.nodes.MappingNode;
@@ -27,7 +27,7 @@ import org.yaml.snakeyaml.nodes.Tag;
 /**
  * Default YAML tuple processor. 
  */
-public final class DefaultYAMLTupleProcessor {
+public final class DefaultYamlTupleProcessor {
     
     /**
      * Process node tuple.
