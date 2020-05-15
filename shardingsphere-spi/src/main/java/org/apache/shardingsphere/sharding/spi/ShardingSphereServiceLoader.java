@@ -23,10 +23,10 @@ import org.apache.shardingsphere.sharding.spi.exception.ServiceLoaderInstantiati
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingSphereServiceLoader {
     
-    private static final Map<Class, Collection<Class<?>>> SERVICE_MAP = new HashMap<>();
+    private static final Map<Class, Collection<Class<?>>> SERVICE_MAP = new ConcurrentHashMap<>();
     
     /**
      * Register SPI service into map for new instance.

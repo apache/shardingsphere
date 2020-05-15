@@ -27,7 +27,7 @@ dataSource:
   maxPoolSize: 50
 
 rules:
-- !!org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration
+- !ENCRYPT
   tables:
     t_encrypt:
       columns:

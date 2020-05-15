@@ -22,7 +22,7 @@ dataSource: !!org.apache.commons.dbcp2.BasicDataSource
     password:
 
 rules:
-- !!org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration
+- !ENCRYPT
   tables:
     t_order:
       columns:
@@ -35,7 +35,7 @@ rules:
       props:
         aes.key.value: 123456
 
-- !!org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration
+- !SHADOW
   column: shadows
   dataSource: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: org.h2.Driver

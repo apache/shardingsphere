@@ -46,12 +46,17 @@ public final class EncryptRuleConfigurationYamlSwapper implements YamlRuleConfig
     }
     
     @Override
-    public int getOrder() {
-        return 20;
+    public Class<EncryptRuleConfiguration> getTypeClass() {
+        return EncryptRuleConfiguration.class;
     }
     
     @Override
-    public Class<EncryptRuleConfiguration> getTypeClass() {
-        return EncryptRuleConfiguration.class;
+    public String getRuleTagName() {
+        return "ENCRYPT";
+    }
+    
+    @Override
+    public int getOrder() {
+        return 20;
     }
 }

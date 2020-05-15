@@ -32,7 +32,7 @@ dataSources:
     password:
 
 rules:
-- !!org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration
+- !MASTER_SLAVE
   dataSources:
     ms_ds:
       name: ds_ms
