@@ -22,13 +22,14 @@ import org.apache.shardingsphere.metrics.api.NoneHistogramMetricsTrackerDelegate
 import org.apache.shardingsphere.metrics.api.NoneSummaryMetricsTrackerDelegate;
 import org.apache.shardingsphere.metrics.api.SummaryMetricsTrackerDelegate;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
-import org.apache.shardingsphere.metrics.facade.fixture.FirstMetricsTrackerFactoryFixture;
-import org.apache.shardingsphere.metrics.facade.fixture.SecondMetricsTrackerFactoryFixture;
 import org.apache.shardingsphere.metrics.facade.fixture.SecondMetricsTrackerManagerFixture;
+import org.apache.shardingsphere.metrics.facade.util.FieldUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -38,14 +39,19 @@ import static org.junit.Assert.assertThat;
 @RunWith(MockitoJUnitRunner.class)
 public final class MetricsTrackerFacadeTest {
     
-    private MetricsTrackerFacade metricsTrackerFacade = MetricsTrackerFacade.getInstance();
+    private final MetricsTrackerFacade metricsTrackerFacade = MetricsTrackerFacade.getInstance();
     
     @Before
     public void setUp() {
-        MetricsConfiguration metricsConfiguration = new MetricsConfiguration("fixture", null, null, null);
+        MetricsConfiguration metricsConfiguration = new MetricsConfiguration("fixture", null, null, false, 8, null);
         metricsTrackerFacade.init(metricsConfiguration);
-        assertThat(metricsTrackerFacade.getMetricsTrackerManager().getClass().getName(), is(SecondMetricsTrackerManagerFixture.class.getName()));
-        assertThat(metricsTrackerFacade.getEnabled(), is(true));
+    }
+    
+    @Test
+    public void assertInit() {
+        MetricsConfiguration metricsConfiguration = new MetricsConfiguration("fixture", null, null, false, 8, null);
+        metricsTrackerFacade.init(metricsConfiguration);
+        assertThat(metricsTrackerFacade.isEnabled(), is(true));
     }
     
     @Test
@@ -55,45 +61,48 @@ public final class MetricsTrackerFacadeTest {
     }
     
     @Test
-    public void counterInc() {
+    public void assertCounterInc() {
         metricsTrackerFacade.counterInc("request_total");
     }
     
     @Test
-    public void gaugeInc() {
+    public void assertGaugeInc() {
         metricsTrackerFacade.gaugeInc("request_total");
     }
     
     @Test
-    public void gaugeDec() {
+    public void assertGaugeDec() {
         metricsTrackerFacade.gaugeDec("request_total");
     }
     
     @Test
-    public void histogram() {
+    public void assertHistogram() {
         assertThat(metricsTrackerFacade.getMetricsTrackerManager().getClass().getName(), is(SecondMetricsTrackerManagerFixture.class.getName()));
-        ((SecondMetricsTrackerManagerFixture) metricsTrackerFacade.getMetricsTrackerManager()).setMetricsTrackerFactory(new SecondMetricsTrackerFactoryFixture());
-        HistogramMetricsTrackerDelegate delegate = metricsTrackerFacade.histogramStartTimer("request");
-        metricsTrackerFacade.histogramObserveDuration(delegate);
-        assertThat(delegate.getClass().getName(), is(NoneHistogramMetricsTrackerDelegate.class.getName()));
+        Optional<HistogramMetricsTrackerDelegate> histogramDelegate = metricsTrackerFacade.histogramStartTimer("request");
+        assertThat(histogramDelegate.isPresent(), is(true));
+        histogramDelegate.ifPresent(delegate -> {
+            metricsTrackerFacade.histogramObserveDuration(delegate);
+            assertThat(delegate.getClass().getName(), is(NoneHistogramMetricsTrackerDelegate.class.getName()));
+        });
+    
+        FieldUtil.setField(metricsTrackerFacade, "enabled", false);
+        Optional<HistogramMetricsTrackerDelegate> empty = metricsTrackerFacade.histogramStartTimer("request");
+        assertThat(empty, is(Optional.empty()));
     }
     
     @Test
     public void summary() {
         assertThat(metricsTrackerFacade.getMetricsTrackerManager().getClass().getName(), is(SecondMetricsTrackerManagerFixture.class.getName()));
-        ((SecondMetricsTrackerManagerFixture) metricsTrackerFacade.getMetricsTrackerManager()).setMetricsTrackerFactory(new SecondMetricsTrackerFactoryFixture());
-        SummaryMetricsTrackerDelegate delegate = metricsTrackerFacade.summaryStartTimer("request");
-        metricsTrackerFacade.summaryObserveDuration(delegate);
-        assertThat(delegate.getClass().getName(), is(NoneSummaryMetricsTrackerDelegate.class.getName()));
-    }
+        Optional<SummaryMetricsTrackerDelegate> summaryDelegate = metricsTrackerFacade.summaryStartTimer("request");
+        assertThat(summaryDelegate.isPresent(), is(true));
+        summaryDelegate.ifPresent(delegate -> {
+            metricsTrackerFacade.summaryObserveDuration(delegate);
+            assertThat(delegate.getClass().getName(), is(NoneSummaryMetricsTrackerDelegate.class.getName()));
+        });
     
-    @Test
-    public void testNoneDelegate() {
-        ((SecondMetricsTrackerManagerFixture) metricsTrackerFacade.getMetricsTrackerManager()).setMetricsTrackerFactory(new FirstMetricsTrackerFactoryFixture());
-        SummaryMetricsTrackerDelegate summaryMetricsTrackerDelegate = metricsTrackerFacade.summaryStartTimer("request");
-        assertThat(summaryMetricsTrackerDelegate.getClass().getName(), is(NoneSummaryMetricsTrackerDelegate.class.getName()));
-        HistogramMetricsTrackerDelegate histogramMetricsTrackerDelegate = metricsTrackerFacade.histogramStartTimer("request");
-        assertThat(histogramMetricsTrackerDelegate.getClass().getName(), is(NoneHistogramMetricsTrackerDelegate.class.getName()));
+        FieldUtil.setField(metricsTrackerFacade, "enabled", false);
+        Optional<SummaryMetricsTrackerDelegate> empty = metricsTrackerFacade.summaryStartTimer("request");
+        assertThat(empty, is(Optional.empty()));
     }
 }
 

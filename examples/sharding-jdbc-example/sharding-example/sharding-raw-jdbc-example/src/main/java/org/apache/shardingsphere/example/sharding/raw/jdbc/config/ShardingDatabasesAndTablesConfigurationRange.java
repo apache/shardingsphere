@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.example.sharding.raw.jdbc.config;
 
-import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
-import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.strategy.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.example.algorithm.StandardModuloShardingDatabaseAlgorithm;
 import org.apache.shardingsphere.example.algorithm.StandardModuloShardingTableAlgorithm;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
-import org.apache.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
-import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.api.config.KeyGeneratorConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.strategy.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.spi.keygen.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.shardingjdbc.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 
 import javax.sql.DataSource;
@@ -51,7 +51,7 @@ public final class ShardingDatabasesAndTablesConfigurationRange implements Examp
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new StandardModuloShardingTableAlgorithm()));
         Collection<RuleConfiguration> configurations = new LinkedList<>();
         configurations.add(shardingRuleConfig);
-        return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), configurations, new Properties());
+        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), configurations, new Properties());
     }
     
     private static TableRuleConfiguration getOrderTableRuleConfiguration() {

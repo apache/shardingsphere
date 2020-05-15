@@ -24,10 +24,14 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Re
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ShowContext;
 import org.apache.shardingsphere.sql.parser.postgresql.visitor.PostgreSQLVisitor;
+import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.postgresql.ResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.postgresql.ShowStatement;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * DAL visitor for PostgreSQL.
@@ -42,15 +46,38 @@ public final class PostgreSQLDALVisitor extends PostgreSQLVisitor implements DAL
     @Override
     public ASTNode visitSet(final SetContext ctx) {
         SetStatement result = new SetStatement();
+        Collection<VariableAssignSegment> variableAssigns = new LinkedList<>();
         if (null != ctx.configurationParameterClause()) {
-            result.setVariable((VariableSegment) visit(ctx.configurationParameterClause()));
+            VariableAssignSegment variableAssignSegment = (VariableAssignSegment) visit(ctx.configurationParameterClause());
+            if (null != ctx.runtimeScope_()) {
+                variableAssignSegment.getVariable().setScope(ctx.runtimeScope_().getText());
+            }
+            variableAssigns.add(variableAssignSegment);
+            result.getVariableAssigns().addAll(variableAssigns);
         }
         return result;
     }
     
     @Override
     public ASTNode visitConfigurationParameterClause(final ConfigurationParameterClauseContext ctx) {
-        return new VariableSegment(ctx.identifier(0).getStart().getStartIndex(), ctx.identifier(0).getStop().getStopIndex(), ctx.identifier(0).getText());
+        VariableAssignSegment result = new VariableAssignSegment();
+        result.setStartIndex(ctx.start.getStartIndex());
+        result.setStopIndex(ctx.stop.getStopIndex());
+        VariableSegment variable = new VariableSegment();
+        variable.setStartIndex(ctx.identifier(0).start.getStartIndex());
+        variable.setStopIndex(ctx.identifier(0).stop.getStopIndex());
+        variable.setVariable(ctx.identifier(0).getText());
+        result.setVariable(variable);
+        if (null != ctx.identifier(1)) {
+            result.setAssignValue(ctx.identifier(1).getText());
+        }
+        if (null != ctx.DEFAULT()) {
+            result.setAssignValue(ctx.DEFAULT().getText());
+        }
+        if (null != ctx.STRING_()) {
+            result.setAssignValue(ctx.STRING_().getText());
+        }
+        return result;
     }
     
     @Override

@@ -48,7 +48,7 @@ sql.show: true
 A collection of multiple database connection pools, whose properties (e.g. DBCP, C3P0, Druid and HikariCP) are configured by users themselves.
 
 ```yaml
-ds_0: !!org.apache.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration
+ds_0: !!org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration
   dataSourceClassName: com.zaxxer.hikari.HikariDataSource
   properties:
     url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false
@@ -60,7 +60,7 @@ ds_0: !!org.apache.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration
     minPoolSize: 1
     username: root
     maxLifetimeMilliseconds: 1800000
-ds_1: !!org.apache.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration
+ds_1: !!org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration
   dataSourceClassName: com.zaxxer.hikari.HikariDataSource
   properties:
     url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false

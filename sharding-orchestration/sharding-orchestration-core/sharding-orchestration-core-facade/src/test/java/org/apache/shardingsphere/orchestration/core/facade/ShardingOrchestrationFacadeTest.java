@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.orchestration.core.facade;
 
-import org.apache.shardingsphere.core.rule.Authentication;
-import org.apache.shardingsphere.core.rule.ProxyUser;
+import org.apache.shardingsphere.underlying.common.auth.Authentication;
+import org.apache.shardingsphere.underlying.common.auth.ProxyUser;
 import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;

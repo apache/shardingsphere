@@ -47,6 +47,8 @@ public final class ShadowStatementTest extends AbstractShadowJDBCDatabaseAndTabl
     
     private static final String SELECT_SQL = "SELECT id, cipher_pwd, plain_pwd FROM t_encrypt WHERE id = 1";
     
+    private static final String CLEAN_SHADOW_SQL = "DELETE FROM t_encrypt WHERE shadow = TRUE";
+    
     private static final String CLEAN_SQL = "DELETE FROM t_encrypt";
     
     private static final String UPDATE_SQL = "UPDATE t_encrypt SET cipher_pwd ='cipher_pwd' WHERE id = 1";
@@ -55,7 +57,7 @@ public final class ShadowStatementTest extends AbstractShadowJDBCDatabaseAndTabl
     
     @Test
     public void assertInsertWithExecute() throws SQLException {
-        try (Statement statement = getConnection().createStatement()) {
+        try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
             statement.execute(INSERT_SQL);
         }
         assertResultSet(false, 1, "cipher");
@@ -64,7 +66,7 @@ public final class ShadowStatementTest extends AbstractShadowJDBCDatabaseAndTabl
     
     @Test
     public void assertShadowInsertWithExecute() throws SQLException {
-        try (Statement statement = getConnection().createStatement()) {
+        try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
             statement.execute(SHADOW_INSERT_SQL);
         }
         assertResultSet(false, 0, "cipher");
@@ -73,7 +75,7 @@ public final class ShadowStatementTest extends AbstractShadowJDBCDatabaseAndTabl
     
     @Test
     public void assertInsertWithExecuteWithGeneratedKey() throws SQLException {
-        try (Statement statement = getConnection().createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
+        try (Statement statement = getShadowDataSource().getConnection().createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
             statement.execute(INSERT_GENERATED_KEY_SQL, Statement.RETURN_GENERATED_KEYS);
             ResultSet resultSet = statement.getGeneratedKeys();
             assertTrue(resultSet.next());
@@ -99,7 +101,7 @@ public final class ShadowStatementTest extends AbstractShadowJDBCDatabaseAndTabl
     
     @Test
     public void assertDeleteWithExecute() throws SQLException {
-        try (Statement statement = getConnection().createStatement()) {
+        try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
             statement.execute(INSERT_SQL);
             statement.execute(DELETE_SQL);
         }
@@ -108,7 +110,7 @@ public final class ShadowStatementTest extends AbstractShadowJDBCDatabaseAndTabl
     
     @Test
     public void assertShadowDeleteWithExecute() throws SQLException {
-        try (Statement statement = getConnection().createStatement()) {
+        try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
             statement.execute(SHADOW_INSERT_SQL);
             statement.execute(SHADOW_DELETE_SQL);
         }
@@ -118,7 +120,7 @@ public final class ShadowStatementTest extends AbstractShadowJDBCDatabaseAndTabl
     @Test
     public void assertUpdateWithExecuteUpdate() throws SQLException {
         int result;
-        try (Statement statement = getConnection().createStatement()) {
+        try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
             statement.execute(INSERT_SQL);
             result = statement.executeUpdate(UPDATE_SQL);
         }
@@ -129,7 +131,7 @@ public final class ShadowStatementTest extends AbstractShadowJDBCDatabaseAndTabl
     @Test
     public void assertShadowUpdateWithExecuteUpdate() throws SQLException {
         int result;
-        try (Statement statement = getConnection().createStatement()) {
+        try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
             statement.execute(SHADOW_INSERT_SQL);
             result = statement.executeUpdate(SHADOW_UPDATE_SQL);
         }
@@ -139,12 +141,11 @@ public final class ShadowStatementTest extends AbstractShadowJDBCDatabaseAndTabl
     
     @After
     public void clean() throws SQLException {
-        try (Statement statement = getActualConnection().createStatement()) {
+        try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
             statement.execute(CLEAN_SQL);
         }
-        
-        try (Statement statement = getShadowConnection().createStatement()) {
-            statement.execute(CLEAN_SQL);
+        try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
+            statement.execute(CLEAN_SHADOW_SQL);
         }
     }
 }

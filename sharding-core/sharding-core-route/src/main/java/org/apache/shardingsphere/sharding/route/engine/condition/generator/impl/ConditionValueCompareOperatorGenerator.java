@@ -19,9 +19,9 @@ package org.apache.shardingsphere.sharding.route.engine.condition.generator.impl
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
-import org.apache.shardingsphere.core.strategy.route.value.RangeRouteValue;
-import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
+import org.apache.shardingsphere.sharding.strategy.route.value.ListRouteValue;
+import org.apache.shardingsphere.sharding.strategy.route.value.RangeRouteValue;
+import org.apache.shardingsphere.sharding.strategy.route.value.RouteValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValue;
@@ -37,17 +37,17 @@ import java.util.Optional;
  * Condition value generator for compare operator.
  */
 public final class ConditionValueCompareOperatorGenerator implements ConditionValueGenerator<PredicateCompareRightValue> {
-
+    
     private static final String EQUAL = "=";
-
+    
     private static final String GREATER_THAN = ">";
-
+    
     private static final String LESS_THAN = "<";
-
+    
     private static final String AT_MOST = "<=";
-
+    
     private static final String AT_LEAST = ">=";
-
+    
     private static final List<String> OPERATORS = Arrays.asList(EQUAL, GREATER_THAN, LESS_THAN, AT_LEAST, AT_MOST);
     
     @Override
@@ -65,7 +65,7 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
         }
         return Optional.empty();
     }
-
+    
     private Optional<RouteValue> generate(final Comparable comparable, final Column column, final String operator) {
         String columnName = column.getName();
         String tableName = column.getTableName();

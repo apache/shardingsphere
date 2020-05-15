@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingjdbc.common.base.AbstractShardingJDBCDatabaseAndTableTest;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.fixture.BASEShardingTransactionManagerFixture;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.fixture.XAShardingTransactionManagerFixture;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
@@ -53,7 +53,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     
     @Test
     public void assertLocalTransactionAutoCommit() throws SQLException {
-        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+        try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
             assertTrue(actual.getAutoCommit());
             actual.createStatement().executeQuery(sql);
             actual.setAutoCommit(false);
@@ -69,7 +69,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     @Test
     public void assertShardingTransactionAutoCommit() throws SQLException {
         TransactionTypeHolder.set(TransactionType.XA);
-        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+        try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
             actual.createStatement().executeQuery(sql);
             actual.setAutoCommit(false);
             actual.createStatement().executeQuery(sql);
@@ -85,12 +85,12 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     @Test
     public void assertShardingTransactionSkipAutoCommit() throws SQLException {
         TransactionTypeHolder.set(TransactionType.XA);
-        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+        try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
             actual.setAutoCommit(true);
             assertFalse(actual.getShardingTransactionManager().isInTransaction());
         }
         TransactionTypeHolder.set(TransactionType.XA);
-        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+        try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
             actual.setAutoCommit(false);
             assertTrue(actual.getShardingTransactionManager().isInTransaction());
             assertThat(XAShardingTransactionManagerFixture.getInvocations().size(), is(1));
@@ -101,7 +101,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     
     @Test
     public void assertLocalTransactionCommit() throws SQLException {
-        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+        try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
             actual.setAutoCommit(false);
             actual.createStatement().executeQuery(sql);
             actual.commit();
@@ -111,7 +111,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     @Test
     public void assertShardingTransactionCommit() throws SQLException {
         TransactionTypeHolder.set(TransactionType.XA);
-        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+        try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
             actual.commit();
             assertTrue(XAShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.COMMIT));
         }
@@ -120,7 +120,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     @Test
     public void assertShardingTransactionForceCommit() throws SQLException {
         TransactionTypeHolder.set(TransactionType.XA);
-        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+        try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
             actual.setAutoCommit(false);
             actual.setAutoCommit(true);
             assertTrue(XAShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.COMMIT));
@@ -129,7 +129,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     
     @Test
     public void assertLocalTransactionRollback() throws SQLException {
-        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+        try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
             actual.setAutoCommit(false);
             actual.createStatement().executeQuery(sql);
             actual.rollback();
@@ -139,7 +139,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     @Test
     public void assertShardingTransactionRollback() throws SQLException {
         TransactionTypeHolder.set(TransactionType.XA);
-        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+        try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
             actual.rollback();
             assertTrue(XAShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.ROLLBACK));
         }
@@ -147,14 +147,14 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     
     @Test
     public void assertClose() throws SQLException {
-        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+        try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
             actual.createStatement().executeQuery(sql);
             actual.close();
             assertClose(actual);
         }
     }
     
-    private void assertClose(final ShardingConnection actual) {
+    private void assertClose(final ShardingSphereConnection actual) {
         assertTrue(actual.isClosed());
         Multimap<String, Connection> cachedConnections = getCachedConnections(actual);
         assertTrue(cachedConnections.isEmpty());
@@ -162,7 +162,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     
     @Test
     public void assertSetReadOnly() throws SQLException {
-        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+        try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
             assertFalse(actual.isReadOnly());
             actual.setReadOnly(true);
             actual.createStatement().executeQuery(sql);
@@ -172,7 +172,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
         }
     }
     
-    private void assertReadOnly(final ShardingConnection actual, final boolean readOnly) throws SQLException {
+    private void assertReadOnly(final ShardingSphereConnection actual, final boolean readOnly) throws SQLException {
         assertThat(actual.isReadOnly(), is(readOnly));
         Multimap<String, Connection> cachedConnections = getCachedConnections(actual);
         assertThat(cachedConnections.size(), is(1));
@@ -183,7 +183,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     
     @Test
     public void assertGetTransactionIsolation() throws SQLException {
-        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+        try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
             actual.createStatement().executeQuery(sql);
             assertThat(actual.getTransactionIsolation(), is(Connection.TRANSACTION_READ_COMMITTED));
         }
@@ -191,7 +191,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     
     @Test
     public void assertSetTransactionIsolation() throws SQLException {
-        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+        try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
             assertThat(actual.getTransactionIsolation(), is(Connection.TRANSACTION_READ_UNCOMMITTED));
             actual.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
             actual.createStatement().executeQuery(sql);
@@ -201,7 +201,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
         }
     }
     
-    private void assertTransactionIsolation(final ShardingConnection actual, final int transactionIsolation) throws SQLException {
+    private void assertTransactionIsolation(final ShardingSphereConnection actual, final int transactionIsolation) throws SQLException {
         assertThat(actual.getTransactionIsolation(), is(transactionIsolation));
         Multimap<String, Connection> cachedConnections = getCachedConnections(actual);
         assertThat(cachedConnections.size(), is(1));
@@ -212,35 +212,35 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     
     @Test
     public void assertGetWarnings() throws SQLException {
-        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+        try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
             assertNull(actual.getWarnings());
         }
     }
     
     @Test
     public void assertClearWarnings() throws SQLException {
-        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+        try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
             actual.clearWarnings();
         }
     }
     
     @Test
     public void assertGetHoldability() throws SQLException {
-        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+        try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
             assertThat(actual.getHoldability(), is(ResultSet.CLOSE_CURSORS_AT_COMMIT));
         }
     }
     
     @Test
     public void assertSetHoldability() throws SQLException {
-        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+        try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
             actual.setHoldability(ResultSet.CONCUR_READ_ONLY);
             assertThat(actual.getHoldability(), is(ResultSet.CLOSE_CURSORS_AT_COMMIT));
         }
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private Multimap<String, Connection> getCachedConnections(final AbstractConnectionAdapter connectionAdapter) {
         Field field = AbstractConnectionAdapter.class.getDeclaredField("cachedConnections");
         field.setAccessible(true);

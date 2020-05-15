@@ -27,7 +27,8 @@ dataSources:
     username: sa
     password:
 
-masterSlaveRule:
+rules:
+- !MASTER_SLAVE
   name: ms_ds
   masterDataSourceName: ds_m
   slaveDataSourceNames:

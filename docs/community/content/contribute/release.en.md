@@ -504,7 +504,9 @@ https://shardingsphere.apache.org/document/current/en/downloads/
 
 https://shardingsphere.apache.org/document/current/cn/downloads/
 
-Keep two latest versions in `Latest releases`. Incubating stage versions will be archived automatically in [Archive repository](https://archive.apache.org/dist/incubator/shardingsphere/)
+GPG signatures and hashes (SHA* etc) should use URL start with `https://downloads.apache.org/shardingsphere/`
+
+Keep one latest versions in `Latest releases`. Incubating stage versions will be archived automatically in [Archive repository](https://archive.apache.org/dist/incubator/shardingsphere/)
 
 ### Docker Release
 
@@ -516,7 +518,7 @@ Install docker locally and start the docker service
 
 ```shell
 cd ~/shardingsphere/sharding-distribution/sharding-proxy-distribution/
-mvn clean package docker:build
+mvn clean package -Prelease,docker
 ```
 
 #### Tag the local Docker Image

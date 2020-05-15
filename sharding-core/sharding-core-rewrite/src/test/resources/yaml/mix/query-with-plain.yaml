@@ -22,7 +22,8 @@ dataSources:
     username: sa
     password:
 
-shardingRule:
+rules:
+- !SHARDING
   tables:
     t_account:
       actualDataNodes: db.t_account_${0..1}
@@ -60,7 +61,7 @@ shardingRule:
   bindingTables:
     - t_account, t_account_detail
 
-encryptRule:
+- !ENCRYPT
   tables:
     t_account:
       columns:

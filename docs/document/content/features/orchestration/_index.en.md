@@ -7,4 +7,4 @@ chapter = true
 
 ## Navigation
 
-Provide orchestration of config/registry center(and metadata center in plan), dynamic configuration, database & application disabling, and APM.
+Provide orchestration of config/registry/metadata center, dynamic configuration, database & application disabling, and APM.

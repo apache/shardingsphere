@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.sharding.route.fixture;
 
-import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.api.config.sharding.strategy.HintShardingStrategyConfiguration;
-import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
-import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
-import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
-import org.apache.shardingsphere.core.strategy.algorithm.sharding.inline.InlineShardingAlgorithm;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.HintShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.ShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.InlineShardingAlgorithm;
+import org.apache.shardingsphere.sharding.strategy.route.value.ListRouteValue;
+import org.apache.shardingsphere.sharding.strategy.route.value.RouteValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 

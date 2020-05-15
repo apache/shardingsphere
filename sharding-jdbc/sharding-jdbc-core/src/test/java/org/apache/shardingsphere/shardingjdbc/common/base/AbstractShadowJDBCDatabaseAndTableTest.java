@@ -17,58 +17,48 @@
 
 package org.apache.shardingsphere.shardingjdbc.common.base;
 
-import com.google.common.collect.ImmutableMap;
-import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
-import org.apache.shardingsphere.core.rule.ShadowRule;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShadowDataSource;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
+import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 public abstract class AbstractShadowJDBCDatabaseAndTableTest extends AbstractSQLTest {
     
-    private static ShadowDataSource shadowDataSource;
+    private static ShardingSphereDataSource shadowDataSource;
+    
+    private static final String CONFIG_SHADOW = "config-shadow.yaml";
+    
+    private static final List<String> SHADOW_DB_NAMES = Arrays.asList("jdbc_0", "jdbc_1");
     
     @BeforeClass
-    public static void initEncryptDataSource() throws SQLException {
+    public static void initShadowDataSource() throws SQLException, IOException {
         if (null != shadowDataSource) {
             return;
         }
-        initDataSource();
-        Map<String, DataSource> dataSources = getDatabaseTypeMap().get(DatabaseTypes.getActualDatabaseType("H2"));
-        shadowDataSource = new ShadowDataSource(dataSources.get("jdbc_0"), dataSources.get("jdbc_1"), new ShadowRule(createShadowRuleConfiguration()), createProperties());
+        shadowDataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSources(), getFile(CONFIG_SHADOW));
     }
     
-    private static Properties createProperties() {
-        Properties result = new Properties();
-        result.put(ConfigurationPropertyKey.SQL_SHOW.getKey(), true);
-        return result;
+    private static Map<String, DataSource> getDataSources() {
+        return Maps.filterKeys(getDatabaseTypeMap().values().iterator().next(), SHADOW_DB_NAMES::contains);
     }
     
-    private static ShadowRuleConfiguration createShadowRuleConfiguration() {
-        ShadowRuleConfiguration shardingRuleConfiguration = new ShadowRuleConfiguration();
-        shardingRuleConfiguration.setColumn("shadow");
-        shardingRuleConfiguration.setShadowMappings(ImmutableMap.of("jdbc_0", "jdbc_1"));
-        return shardingRuleConfiguration;
+    private static File getFile(final String fileName) {
+        return new File(Preconditions.checkNotNull(
+                AbstractMasterSlaveJDBCTest.class.getClassLoader().getResource(fileName), "file resource `%s` must not be null.", fileName).getFile());
     }
     
-    protected Connection getShadowConnection() throws SQLException {
-        return shadowDataSource.getShadowDataSource().getConnection();
-    }
-    
-    protected Connection getActualConnection() throws SQLException {
-        return shadowDataSource.getActualDataSource().getConnection();
-    }
-    
-    protected Connection getConnection() throws SQLException {
-        return shadowDataSource.getConnection();
+    protected final ShardingSphereDataSource getShadowDataSource() {
+        return shadowDataSource;
     }
     
     @AfterClass

@@ -27,7 +27,8 @@ dataSources:
     username: root
     password:
 
-shadowRule:
+rules:
+- !SHADOW
   column: shadow
   shadowMappings:
     ds: ds_0

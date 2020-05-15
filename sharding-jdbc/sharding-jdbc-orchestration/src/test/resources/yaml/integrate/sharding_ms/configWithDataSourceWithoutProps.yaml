@@ -41,7 +41,8 @@ dataSources:
     password: 
     maxTotal: 100
 
-shardingRule:
+rules:
+- !SHARDING
   tables:
     config:
       actualDataNodes: db_ms_${0..1}.t_config
@@ -86,17 +87,18 @@ shardingRule:
       shardingAlgorithm:
         type: COMPLEX_TEST
 
-masterSlaveRules:
-  db_ms_0:
-    masterDataSourceName: db0_master
-    slaveDataSourceNames:
-      - db0_slave
-    loadBalanceAlgorithmType: ROUND_ROBIN
-  db_ms_1:
-    masterDataSourceName: db1_master
-    slaveDataSourceNames:
-      - db1_slave
-    loadBalanceAlgorithmType: ROUND_ROBIN
+- !MASTER_SLAVE
+  dataSources:
+    db_ms_0:
+      masterDataSourceName: db0_master
+      slaveDataSourceNames:
+        - db0_slave
+      loadBalanceAlgorithmType: ROUND_ROBIN
+    db_ms_1:
+      masterDataSourceName: db1_master
+      slaveDataSourceNames:
+        - db1_slave
+      loadBalanceAlgorithmType: ROUND_ROBIN
 
 orchestration:
   test_sharding_ms_registry_name:

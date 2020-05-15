@@ -21,7 +21,8 @@ dataSource: !!org.apache.commons.dbcp2.BasicDataSource
     username: sa
     password:
 
-encryptRule:
+rules:
+- !ENCRYPT
   tables:
     t_order:
       columns:

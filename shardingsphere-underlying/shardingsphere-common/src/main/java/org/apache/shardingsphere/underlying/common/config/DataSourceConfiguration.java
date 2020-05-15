@@ -28,10 +28,10 @@ import lombok.SneakyThrows;
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.LinkedHashMap;
-import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Optional;
 
@@ -71,7 +71,7 @@ public final class DataSourceConfiguration {
         return result;
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private static Map<String, Object> findAllGetterProperties(final Object target) {
         Map<String, Object> result = new LinkedHashMap<>();
         for (Method each : findAllGetterMethods(target.getClass())) {
@@ -98,7 +98,7 @@ public final class DataSourceConfiguration {
      * 
      * @return data source
      */
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     public DataSource createDataSource() {
         DataSource result = (DataSource) Class.forName(dataSourceClassName).newInstance();
         Method[] methods = result.getClass().getMethods();

@@ -203,7 +203,7 @@ weight = 1
         CenterConfiguration result = new CenterConfiguration("zookeeper", properties);
         result.setServerLists("localhost:2181");
         result.setNamespace("sharding-sphere-orchestration");
-        result.setOrchestrationType("registry_center,config_center");
+        result.setOrchestrationType("registry_center,config_center,metadata_center");
         return result;
     }
 ```
@@ -453,27 +453,27 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 
 | *名称*           | *数据类型*                   | *说明*                                                     |
 | --------------- | --------------------------- | ---------------------------------------------------------- |
-| instanceConfigurationMap | Map\<String, CenterConfiguration\>  | 配置中心和注册中心的配置map，key为名称，value为配置或注册中心   |
+| instanceConfigurationMap | Map\<String, CenterConfiguration\>  | 配置/注册/元数据中心的配置map，key为名称，value为配置/注册/元数据中心   |
 
 #### CenterConfiguration
 
-用于配置配置中心或注册中心。
+用于配置配置/注册/元数据中心。
 
 | *名称*                             | *数据类型* | *说明*                                                                               |
 | --------------------------------- | ---------- | ----------------------------------------------------------------------------------- |
-| type                              | String     | 配置中心或注册中心的实例类型，例如zookeeper或etcd、apollo、nacos                                       |
+| instanceType                      | String     | 配置/注册/元数据中心的实例类型，例如zookeeper或etcd、apollo、nacos                                       |
 | properties                        | String     | 配置本实例需要的其他参数，例如zookeeper的连接参数等，具体参考properties配置                         |
-| orchestrationType                 | String     | 配置中心或注册中心的类型，例如config-center或registry-center，如果都是，可以"setOrchestrationType("registry_center,config_center");"              |
-| serverLists                       | String     | 连接配置中心或注册中心服务器的列表，包括IP地址和端口号，多个地址用逗号分隔。如: host1:2181,host2:2181 |
-| namespace (?)                     | String     | 配置中心或注册中心的命名空间                                                                     |
+| orchestrationType                 | String     | 治理类型，例如config_center/registry_center/metadata_center，如果都是，可以"setOrchestrationType("registry_center,config_center,metadata_center");"              |
+| serverLists                       | String     | 连接配置/注册/元数据中心服务器的列表，包括IP地址和端口号，多个地址用逗号分隔。如: host1:2181,host2:2181 |
+| namespace (?)                     | String     | 配置/注册/元数据中心的命名空间                                                                     |
 
 其中properties的通用配置如下：
 
 | *名称*           | *数据类型*                   | *说明*                                                     |
 | --------------- | --------------------------- | ---------------------------------------------------------- |
-| overwrite                         | boolean    | 本地配置是否覆盖注册中心配置，如果可覆盖，每次启动都以本地配置为准                         |
+| overwrite                         | boolean    | 本地配置是否覆盖配置中心配置，如果可覆盖，每次启动都以本地配置为准                         |
 
-如果采用了zookeeper作为配置中心或（和）注册中心，那么properties还可以配置：
+如果采用了zookeeper作为配置中心或（和）注册中心或 (和) 元数据中心，那么properties还可以配置：
 
 | *名称*           | *数据类型*                   | *说明*                                                     |
 | --------------- | --------------------------- | ---------------------------------------------------------- |
@@ -483,7 +483,7 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | retryIntervalMilliseconds (?)     | int        | 重试间隔毫秒数，默认500毫秒                                                            |
 | timeToLiveSeconds (?)             | int        | 临时节点存活秒数，默认60秒                                                             |
 
-如果采用了etcd作为配置中心或（和）注册中心，那么properties还可以配置：
+如果采用了etcd作为配置中心或（和）注册中心或 (和) 元数据中心，那么properties还可以配置：
 
 | *名称*           | *数据类型*                   | *说明*                                                     |
 | --------------- | --------------------------- | ---------------------------------------------------------- |
@@ -502,7 +502,7 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | connectTimeout (?) | int           | apollo connectTimeout，默认值为1000毫秒                                      |
 | readTimeout (?)    | int           | apollo readTimeout，默认值为5000毫秒                                         |
 
-如果采用了nacos作为配置中心，那么properties还可以配置：
+如果采用了nacos作为配置中心或 (和) 注册中心，那么properties还可以配置：
 
 | *名称*           | *数据类型*                   | *说明*                                                     |
 | --------------- | --------------------------- | ---------------------------------------------------------- |

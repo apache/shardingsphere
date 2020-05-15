@@ -202,7 +202,7 @@ The implementation of DataSource in the following configuration is [DataSourceUt
         CenterConfiguration result = new CenterConfiguration("zookeeper", properties);
         result.setServerLists("localhost:2181");
         result.setNamespace("sharding-sphere-orchestration");
-        result.setOrchestrationType("registry_center,config_center");
+        result.setOrchestrationType("registry_center,config_center,metadata_center");
         return result;
     }
 ```
@@ -444,9 +444,9 @@ Property configuration items, can be of the following properties.
 
 | *Name*                           | *Data Type* | *Explanation*                                                |
 | -------------------------------- | ----------- | ------------------------------------------------------------ |
-| type                              | String     | The type of center instance(zookeeper/etcd/apollo/nacos)                                       |
+| instanceType                      | String     | The type of center instance(zookeeper/etcd/apollo/nacos)                                       |
 | properties                        | String     | Properties for center instance config, such as options of zookeeper                        |
-| orchestrationType                 | String     | The type of orchestration center: config-center or registry-center, if both, use "setOrchestrationType("registry_center,config_center");"                  |
+| orchestrationType                 | String     | The type of orchestration center: config_center or registry_center or metadata_center, if both, use "setOrchestrationType("registry_center,config_center,metadata_center");"                  |
 | serverLists                       | String     | Connect to server lists in center, including IP address and port number; addresses are separated by commas, such as `host1:2181,host2:2181` |
 | namespace (?)                     | String     | Namespace of center instance                                                                    |
 
@@ -454,9 +454,9 @@ Common configuration in properties as follow:
 
 | *Name*                           | *Data Type* | *Explanation*                                                |
 | -------------------------------- | ----------- | ------------------------------------------------------------ |
-| overwrite                         | boolean    | Local configurations overwrite center configurations or not; if they overwrite, each start takes reference of local configurations                          |
+| overwrite                         | boolean    | Local configurations overwrite config center configurations or not; if they overwrite, each start takes reference of local configurations                          |
 
-If type of center is `zookeeper` with config-center&registry-center, properties could be set with the follow options:
+If type of center is `zookeeper` with config-center&registry-center&metadata-center, properties could be set with the follow options:
 
 | *Name*                           | *Data Type* | *Explanation*                                                |
 | -------------------------------- | ----------- | ------------------------------------------------------------ |
@@ -466,13 +466,13 @@ If type of center is `zookeeper` with config-center&registry-center, properties 
 | retryIntervalMilliseconds (?)    | int         | The retry interval millisecond number, default to be 500 milliseconds |
 | timeToLiveSeconds (?)            | int         | The living time for temporary nodes, default to be 60 seconds |
 
-If type of center is `etcd` with config-center&registry-center, properties could be set with the follow options:
+If type of center is `etcd` with config-center&registry-center&metadata-center, properties could be set with the follow options:
 
 | *Name*                           | *Data Type* | *Explanation*                                                |
 | -------------------------------- | ----------- | ------------------------------------------------------------ |
 | timeToLiveSeconds (?)            | long        | The etcd TTL in seconds, default to be 30 seconds            |
 
-If type of center is `apollo` with config-center&registry-center, properties could be set with the follow options:
+If type of center is `apollo` with config-center, properties could be set with the follow options:
 
 | *Name*                           | *Data Type* | *Explanation*                                                |
 | -------------------------------- | ----------- | ------------------------------------------------------------ |

@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.example.shadow.table.raw.jdbc.config;
 
-import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
-import org.apache.shardingsphere.shardingjdbc.api.ShadowDataSourceFactory;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shardingjdbc.api.ShardingSphereDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -28,20 +28,18 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ShadowDatabasesConfiguration implements ExampleConfiguration {
+public final class ShadowDatabasesConfiguration implements ExampleConfiguration {
     
     @Override
     public DataSource getDataSource() {
-        ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration();
-        shadowRuleConfiguration.setColumn("shadow");
-        shadowRuleConfiguration.setShadowMappings(Collections.singletonMap("ds", "ds_0"));
+        ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration("shadow", Collections.singletonMap("ds", "ds_0"));
         Map<String, DataSource> dataSourceMap = new HashMap<>();
         dataSourceMap.put("ds", DataSourceUtil.createDataSource("demo_ds"));
         dataSourceMap.put("ds_0", DataSourceUtil.createDataSource("shadow_demo_ds"));
         try {
-            return ShadowDataSourceFactory.createDataSource(dataSourceMap, shadowRuleConfiguration, null);
-        } catch (SQLException e) {
-            e.printStackTrace();
+            return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Collections.singleton(shadowRuleConfiguration), null);
+        } catch (final SQLException ex) {
+            ex.printStackTrace();
             return null;
         }
     }

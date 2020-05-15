@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.merge.dal;
 
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.merge.dal.common.SingleLocalDataMergedResult;
 import org.apache.shardingsphere.sharding.merge.dal.show.LogicTablesMergedResult;
 import org.apache.shardingsphere.sharding.merge.dal.show.ShowCreateTableMergedResult;
@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 
 public final class ShardingDALResultMergerTest {
     
-    private List<QueryResult> queryResults = new LinkedList<>();
+    private final List<QueryResult> queryResults = new LinkedList<>();
     
     @Before
     public void setUp() {

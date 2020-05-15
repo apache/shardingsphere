@@ -25,7 +25,7 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.sharding.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
 
@@ -55,7 +55,7 @@ public final class SQLParserFactory {
         throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseTypeName));
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private static SQLParser createSQLParser(final String sql, final SQLParserConfiguration configuration) {
         Lexer lexer = (Lexer) configuration.getLexerClass().getConstructor(CharStream.class).newInstance(CharStreams.fromString(sql));
         return configuration.getParserClass().getConstructor(TokenStream.class).newInstance(new CommonTokenStream(lexer));

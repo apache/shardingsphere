@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type;
 
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingDataSourceGroupBroadcastRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingDatabaseBroadcastRoutingEngine;
@@ -82,7 +82,7 @@ public final class ShardingRouteEngineFactoryTest {
     
     private Collection<String> tableNames;
 
-    private ConfigurationProperties properties = new ConfigurationProperties(new Properties());
+    private final ConfigurationProperties properties = new ConfigurationProperties(new Properties());
     
     @Before
     public void setUp() {

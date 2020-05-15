@@ -37,6 +37,10 @@ public final class MetricsConfiguration {
     
     private Integer port;
     
+    private Boolean async;
+    
+    private Integer threadCount;
+    
     private Properties props;
 }
 

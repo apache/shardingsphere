@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shardingjdbc.common.base;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
@@ -34,7 +34,7 @@ import java.util.Map;
 
 public abstract class AbstractMasterSlaveJDBCTest extends AbstractSQLTest {
     
-    private static ShardingDataSource masterSlaveDataSource;
+    private static ShardingSphereDataSource masterSlaveDataSource;
     
     private static final String CONFIG_MASTER_SLAVE = "config-master-slave.yaml";
     
@@ -45,7 +45,7 @@ public abstract class AbstractMasterSlaveJDBCTest extends AbstractSQLTest {
         if (null != masterSlaveDataSource) {
             return;
         }
-        masterSlaveDataSource = (ShardingDataSource) YamlShardingDataSourceFactory.createDataSource(getDataSources(), getFile(CONFIG_MASTER_SLAVE));
+        masterSlaveDataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSources(), getFile(CONFIG_MASTER_SLAVE));
     }
     
     private static Map<String, DataSource> getDataSources() {
@@ -57,7 +57,7 @@ public abstract class AbstractMasterSlaveJDBCTest extends AbstractSQLTest {
                 AbstractMasterSlaveJDBCTest.class.getClassLoader().getResource(fileName), "file resource `%s` must not be null.", fileName).getFile());
     }
     
-    protected final ShardingDataSource getMasterSlaveDataSource() {
+    protected final ShardingSphereDataSource getMasterSlaveDataSource() {
         return masterSlaveDataSource;
     }
     

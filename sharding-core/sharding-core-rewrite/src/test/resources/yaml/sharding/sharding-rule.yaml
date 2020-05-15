@@ -22,7 +22,8 @@ dataSources:
     username: sa
     password:
 
-shardingRule:
+rules:
+- !SHARDING
   tables:
     t_account:
       actualDataNodes: db.t_account_${0..1}

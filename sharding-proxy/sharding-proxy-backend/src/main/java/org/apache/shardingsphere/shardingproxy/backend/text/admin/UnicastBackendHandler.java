@@ -23,8 +23,8 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCom
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 
 import java.sql.SQLException;
@@ -45,13 +45,13 @@ public final class UnicastBackendHandler implements TextProtocolBackendHandler {
     
     @Override
     public BackendResponse execute() {
-        // TODO we should remove set default logicSchema after parser can recognize all DAL broadcast SQL.
-        LogicSchema logicSchema = backendConnection.getLogicSchema();
-        if (null == logicSchema) {
-            logicSchema = LogicSchemas.getInstance().getLogicSchemas().values().iterator().next();
-            backendConnection.setCurrentSchema(logicSchema.getName());
+        // TODO we should remove set default ShardingSphere schema after parser can recognize all DAL broadcast SQL.
+        ShardingSphereSchema schema = backendConnection.getSchema();
+        if (null == schema) {
+            schema = ShardingSphereSchemas.getInstance().getSchemas().values().iterator().next();
+            backendConnection.setCurrentSchema(schema.getName());
         }
-        databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(logicSchema, sql, backendConnection);
+        databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(schema, sql, backendConnection);
         return databaseCommunicationEngine.execute();
     }
     

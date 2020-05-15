@@ -24,6 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -81,7 +82,8 @@ public final class MemoryQueryResult implements QueryResult {
                 if (metaData.isSigned(columnIndex)) {
                     return resultSet.getLong(columnIndex);
                 }
-                return resultSet.getBigDecimal(columnIndex).toBigInteger();
+                BigDecimal bigDecimal = resultSet.getBigDecimal(columnIndex);
+                return bigDecimal == null ? null : bigDecimal.toBigInteger();
             case Types.NUMERIC:
             case Types.DECIMAL:
                 return resultSet.getBigDecimal(columnIndex);

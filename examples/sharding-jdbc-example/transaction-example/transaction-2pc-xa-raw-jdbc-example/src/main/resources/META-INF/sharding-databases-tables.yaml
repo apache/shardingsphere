@@ -29,7 +29,8 @@ dataSources:
     password:
     autoCommit: false
 
-shardingRule:
+rules:
+- !SHARDING
   tables:
     t_order: 
       actualDataNodes: ds_${0..1}.t_order_${0..1}

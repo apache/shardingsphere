@@ -25,8 +25,8 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchemas;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.underlying.common.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.underlying.common.database.type.dialect.PostgreSQLDatabaseType;
@@ -61,7 +61,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     private volatile String schemaName;
     
-    private LogicSchema logicSchema;
+    private ShardingSphereSchema schema;
     
     private TransactionType transactionType;
     
@@ -112,7 +112,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     }
     
     /**
-     * Change logic schema of current channel.
+     * Change schema of current channel.
      *
      * @param schemaName schema name
      */
@@ -121,10 +121,10 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
             throw new ShardingSphereException("Failed to switch schema, please terminate current transaction.");
         }
         this.schemaName = schemaName;
-        this.logicSchema = LogicSchemas.getInstance().getLogicSchema(schemaName);
+        this.schema = ShardingSphereSchemas.getInstance().getSchema(schemaName);
     }
     
-    @SneakyThrows
+    @SneakyThrows(InterruptedException.class)
     private boolean isSwitchFailed() {
         int retryCount = 0;
         while (stateHandler.isInTransaction() && retryCount < MAXIMUM_RETRY_COUNT) {
@@ -171,7 +171,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     }
     
     private List<Connection> getConnectionsWithoutTransaction(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        Preconditions.checkNotNull(logicSchema, "current logic schema is null");
+        Preconditions.checkNotNull(schema, "current schema is null");
         List<Connection> result = getConnectionFromUnderlying(dataSourceName, connectionSize, connectionMode);
         synchronized (cachedConnections) {
             cachedConnections.putAll(dataSourceName, result);
@@ -180,7 +180,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     }
     
     private List<Connection> createNewConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        Preconditions.checkNotNull(logicSchema, "current logic schema is null");
+        Preconditions.checkNotNull(schema, "current schema is null");
         List<Connection> result = getConnectionFromUnderlying(dataSourceName, connectionSize, connectionMode);
         for (Connection each : result) {
             replayMethodsInvocation(each);
@@ -189,7 +189,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     }
     
     private List<Connection> getConnectionFromUnderlying(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        return logicSchema.getBackendDataSource().getConnections(dataSourceName, connectionSize, connectionMode, transactionType);
+        return schema.getBackendDataSource().getConnections(dataSourceName, connectionSize, connectionMode, transactionType);
     }
     
     @Override
@@ -216,9 +216,9 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     }
     
     private void setFetchSize(final Statement statement) throws SQLException {
-        if (LogicSchemas.getInstance().getDatabaseType() instanceof MySQLDatabaseType) {
+        if (ShardingSphereSchemas.getInstance().getDatabaseType() instanceof MySQLDatabaseType) {
             statement.setFetchSize(MYSQL_MEMORY_FETCH_ONE_ROW_A_TIME);
-        } else if (LogicSchemas.getInstance().getDatabaseType() instanceof PostgreSQLDatabaseType) {
+        } else if (ShardingSphereSchemas.getInstance().getDatabaseType() instanceof PostgreSQLDatabaseType) {
             statement.setFetchSize(POSTGRESQL_MEMORY_FETCH_ONE_ROW_A_TIME);
         }
     }

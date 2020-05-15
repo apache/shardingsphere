@@ -22,7 +22,8 @@ dataSources:
     username: root
     password:
 
-shardingRule:
+rules:
+- !SHARDING
   tables:
     t_order: 
       actualDataNodes: ds.t_order_${0..1}

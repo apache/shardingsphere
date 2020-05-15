@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.shardingjdbc.spring.namespace.parser;
 
 import com.google.common.base.Splitter;
-import org.apache.shardingsphere.shardingjdbc.spring.datasource.SpringShardingDataSource;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
@@ -43,15 +44,15 @@ public final class MasterSlaveDataSourceBeanDefinitionParser extends AbstractBea
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SpringShardingDataSource.class);
-        MasterSlaveRuleConfigurationBeanDefinition configurationBeanDefinition = new MasterSlaveRuleConfigurationBeanDefinition(element);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingSphereDataSource.class);
+        MasterSlaveDataSourceConfigurationBeanDefinition configurationBeanDefinition = new MasterSlaveDataSourceConfigurationBeanDefinition(element);
         factory.addConstructorArgValue(parseDataSources(configurationBeanDefinition));
-        factory.addConstructorArgValue(parseRuleConfigurations(configurationBeanDefinition));
+        factory.addConstructorArgValue(parseRuleConfiguration(configurationBeanDefinition));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
         return factory.getBeanDefinition();
     }
     
-    private Map<String, RuntimeBeanReference> parseDataSources(final MasterSlaveRuleConfigurationBeanDefinition configurationBeanDefinition) {
+    private Map<String, RuntimeBeanReference> parseDataSources(final MasterSlaveDataSourceConfigurationBeanDefinition configurationBeanDefinition) {
         List<String> slaveDataSources = Splitter.on(",").trimResults().splitToList(configurationBeanDefinition.getSlaveDataSourceNames());
         Map<String, RuntimeBeanReference> result = new ManagedMap<>(slaveDataSources.size());
         for (String each : slaveDataSources) {
@@ -62,9 +63,13 @@ public final class MasterSlaveDataSourceBeanDefinitionParser extends AbstractBea
         return result;
     }
     
-    private Collection<BeanDefinition> parseRuleConfigurations(final MasterSlaveRuleConfigurationBeanDefinition configurationBeanDefinition) {
+    private Collection<BeanDefinition> parseRuleConfiguration(final MasterSlaveDataSourceConfigurationBeanDefinition masterSlaveDataSourceConfigurationBeanDefinition) {
+        Collection<BeanDefinition> groups = new ManagedList<>(1);
+        groups.add(masterSlaveDataSourceConfigurationBeanDefinition.getBeanDefinition());
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(MasterSlaveRuleConfiguration.class);
+        factory.addConstructorArgValue(groups);
         Collection<BeanDefinition> result = new ManagedList<>(1);
-        result.add(configurationBeanDefinition.getBeanDefinition());
+        result.add(factory.getBeanDefinition());
         return result;
     }
     

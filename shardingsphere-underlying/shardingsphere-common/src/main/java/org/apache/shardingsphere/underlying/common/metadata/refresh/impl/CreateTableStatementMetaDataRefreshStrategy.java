@@ -17,12 +17,21 @@
 
 package org.apache.shardingsphere.underlying.common.metadata.refresh.impl;
 
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaDataLoader;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateTableStatementContext;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.TableMetaDataLoaderCallback;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * Create table statement meta data refresh strategy.
@@ -30,8 +39,36 @@ import java.sql.SQLException;
 public final class CreateTableStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<CreateTableStatementContext> {
     
     @Override
-    public void refreshMetaData(final ShardingSphereMetaData metaData, final CreateTableStatementContext sqlStatementContext, final TableMetaDataLoaderCallback callback) throws SQLException {
+    public void refreshMetaData(final ShardingSphereMetaData metaData, final DatabaseType databaseType, 
+                                final Map<String, DataSource> dataSourceMap, final CreateTableStatementContext sqlStatementContext, final TableMetaDataLoaderCallback callback) throws SQLException {
         String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
-        callback.load(tableName).ifPresent(tableMetaData -> metaData.getSchema().getConfiguredSchemaMetaData().put(tableName, tableMetaData));
+        Optional<TableMetaData> tableMetaData = callback.load(tableName);
+        if (tableMetaData.isPresent()) {
+            metaData.getSchema().getConfiguredSchemaMetaData().put(tableName, tableMetaData.get());
+        } else {
+            refreshUnconfiguredMetaData(metaData, databaseType, dataSourceMap, tableName);
+        }
+    }
+    
+    private void refreshUnconfiguredMetaData(final ShardingSphereMetaData metaData, 
+                                             final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final String tableName) throws SQLException {
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            Optional<TableMetaData> tableMetaData = TableMetaDataLoader.load(entry.getValue(), tableName, databaseType.getName());
+            if (tableMetaData.isPresent()) {
+                refreshUnconfiguredMetaData(metaData, tableName, entry.getKey(), tableMetaData.get());
+                return;
+            }
+        }
+    }
+    
+    private void refreshUnconfiguredMetaData(final ShardingSphereMetaData metaData, final String tableName, final String dataSourceName, final TableMetaData tableMetaData) {
+        SchemaMetaData schemaMetaData = metaData.getSchema().getUnconfiguredSchemaMetaDataMap().get(dataSourceName);
+        if (null == schemaMetaData) {
+            Map<String, TableMetaData> tables = new HashMap<>(1, 1);
+            tables.put(tableName, tableMetaData);
+            metaData.getSchema().getUnconfiguredSchemaMetaDataMap().put(dataSourceName, new SchemaMetaData(tables));
+        } else {
+            schemaMetaData.put(tableName, tableMetaData);
+        }
     }
 }

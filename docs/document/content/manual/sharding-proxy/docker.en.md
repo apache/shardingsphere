@@ -16,7 +16,7 @@ docker pull apache/sharding-proxy
 git clone https://github.com/apache/shardingsphere
 mvn clean install
 cd sharding-distribution/sharding-proxy-distribution
-mvn clean package docker:build
+mvn clean package -Prelease,docker
 ```
 
 ## Configure Sharding-Proxy

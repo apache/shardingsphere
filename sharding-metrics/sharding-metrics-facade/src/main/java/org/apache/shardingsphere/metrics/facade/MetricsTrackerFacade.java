@@ -20,17 +20,10 @@ package org.apache.shardingsphere.metrics.facade;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.metrics.api.CounterMetricsTracker;
-import org.apache.shardingsphere.metrics.api.GaugeMetricsTracker;
-import org.apache.shardingsphere.metrics.api.HistogramMetricsTracker;
 import org.apache.shardingsphere.metrics.api.HistogramMetricsTrackerDelegate;
-import org.apache.shardingsphere.metrics.api.MetricsTracker;
-import org.apache.shardingsphere.metrics.api.NoneHistogramMetricsTrackerDelegate;
-import org.apache.shardingsphere.metrics.api.NoneSummaryMetricsTrackerDelegate;
-import org.apache.shardingsphere.metrics.api.SummaryMetricsTracker;
 import org.apache.shardingsphere.metrics.api.SummaryMetricsTrackerDelegate;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
-import org.apache.shardingsphere.metrics.enums.MetricsTypeEnum;
+import org.apache.shardingsphere.metrics.facade.handler.MetricsTrackerHandler;
 import org.apache.shardingsphere.metrics.spi.MetricsTrackerManager;
 
 import java.util.HashMap;
@@ -46,25 +39,23 @@ public final class MetricsTrackerFacade {
     
     private static final Map<String, MetricsTrackerManager> METRICS_MAP = new HashMap<>();
     
-    private static final MetricsTrackerFacade INSTANCE = new MetricsTrackerFacade();
-    
     @Getter
     private MetricsTrackerManager metricsTrackerManager;
     
     @Getter
-    private volatile Boolean enabled = false;
+    private volatile boolean enabled;
     
     private MetricsTrackerFacade() {
         loadMetricsManager();
     }
     
     /**
-     * Get metrics tracker facade.
+     * Get metrics tracker facade of lazy load singleton.
      *
      * @return metrics tracker facade
      */
     public static MetricsTrackerFacade getInstance() {
-        return INSTANCE;
+        return MetricsTrackerFacadeHolder.INSTANCE;
     }
     
     /**
@@ -86,6 +77,7 @@ public final class MetricsTrackerFacade {
         metricsTrackerManager = findMetricsTrackerManager(metricsConfiguration.getMetricsName());
         Preconditions.checkNotNull(metricsTrackerManager, "Can not find metrics tracker manager with metrics name in metrics configuration.");
         metricsTrackerManager.start(metricsConfiguration);
+        MetricsTrackerHandler.getInstance().init(metricsConfiguration.getAsync(), metricsConfiguration.getThreadCount(), metricsTrackerManager);
         enabled = true;
     }
     
@@ -97,8 +89,7 @@ public final class MetricsTrackerFacade {
      */
     public void counterInc(final String metricsLabel, final String... labelValues) {
         if (enabled) {
-            metricsTrackerManager.getMetricsTrackerFactory().create(MetricsTypeEnum.COUNTER.name(), metricsLabel)
-                .ifPresent(metricsTracker -> ((CounterMetricsTracker) metricsTracker).inc(1.0, labelValues));
+            MetricsTrackerHandler.getInstance().counterInc(metricsLabel, labelValues);
         }
     }
     
@@ -110,8 +101,7 @@ public final class MetricsTrackerFacade {
      */
     public void gaugeInc(final String metricsLabel, final String... labelValues) {
         if (enabled) {
-            metricsTrackerManager.getMetricsTrackerFactory().create(MetricsTypeEnum.GAUGE.name(), metricsLabel)
-                .ifPresent(metricsTracker -> ((GaugeMetricsTracker) metricsTracker).inc(1.0, labelValues));
+            MetricsTrackerHandler.getInstance().gaugeInc(metricsLabel, labelValues);
         }
     }
     
@@ -123,8 +113,7 @@ public final class MetricsTrackerFacade {
      */
     public void gaugeDec(final String metricsLabel, final String... labelValues) {
         if (enabled) {
-            metricsTrackerManager.getMetricsTrackerFactory().create(MetricsTypeEnum.GAUGE.name(), metricsLabel)
-                .ifPresent(metricsTracker -> ((GaugeMetricsTracker) metricsTracker).dec(1.0, labelValues));
+            MetricsTrackerHandler.getInstance().gaugeDec(metricsLabel, labelValues);
         }
     }
     
@@ -135,13 +124,11 @@ public final class MetricsTrackerFacade {
      * @param labelValues  label values
      * @return histogram metrics tracker delegate
      */
-    public HistogramMetricsTrackerDelegate histogramStartTimer(final String metricsLabel, final String... labelValues) {
-        Optional<MetricsTracker> metricsTracker = metricsTrackerManager.getMetricsTrackerFactory().create(MetricsTypeEnum.HISTOGRAM.name(), metricsLabel);
-        if (metricsTracker.isPresent()) {
-            return ((HistogramMetricsTracker) metricsTracker.get()).startTimer(labelValues);
-        } else {
-            return new NoneHistogramMetricsTrackerDelegate();
+    public Optional<HistogramMetricsTrackerDelegate> histogramStartTimer(final String metricsLabel, final String... labelValues) {
+        if (!enabled) {
+            return Optional.empty();
         }
+        return MetricsTrackerHandler.getInstance().histogramStartTimer(metricsLabel, labelValues);
     }
     
     /**
@@ -150,7 +137,9 @@ public final class MetricsTrackerFacade {
      * @param delegate histogram metrics tracker delegate
      */
     public void histogramObserveDuration(final HistogramMetricsTrackerDelegate delegate) {
-        delegate.observeDuration();
+        if (enabled) {
+            MetricsTrackerHandler.getInstance().histogramObserveDuration(delegate);
+        }
     }
     
     /**
@@ -160,13 +149,11 @@ public final class MetricsTrackerFacade {
      * @param labelValues  label values
      * @return summary metrics tracker delegate
      */
-    public SummaryMetricsTrackerDelegate summaryStartTimer(final String metricsLabel, final String... labelValues) {
-        Optional<MetricsTracker> metricsTracker = metricsTrackerManager.getMetricsTrackerFactory().create(MetricsTypeEnum.SUMMARY.name(), metricsLabel);
-        if (metricsTracker.isPresent()) {
-            return ((SummaryMetricsTracker) metricsTracker.get()).startTimer(labelValues);
-        } else {
-            return new NoneSummaryMetricsTrackerDelegate();
+    public Optional<SummaryMetricsTrackerDelegate> summaryStartTimer(final String metricsLabel, final String... labelValues) {
+        if (!enabled) {
+            return Optional.empty();
         }
+        return MetricsTrackerHandler.getInstance().summaryStartTimer(metricsLabel, labelValues);
     }
     
     /**
@@ -175,7 +162,9 @@ public final class MetricsTrackerFacade {
      * @param delegate summary metrics tracker delegate
      */
     public void summaryObserveDuration(final SummaryMetricsTrackerDelegate delegate) {
-        delegate.observeDuration();
+        if (enabled) {
+            MetricsTrackerHandler.getInstance().summaryObserveDuration(delegate);
+        }
     }
     
     private void loadMetricsManager() {
@@ -187,6 +176,14 @@ public final class MetricsTrackerFacade {
             }
             METRICS_MAP.put(each.getType(), each);
         }
+    }
+    
+    /**
+     * Metrics tracker facade holder.
+     */
+    private static class MetricsTrackerFacadeHolder {
+        
+        private static final MetricsTrackerFacade INSTANCE = new MetricsTrackerFacade();
     }
 }
 

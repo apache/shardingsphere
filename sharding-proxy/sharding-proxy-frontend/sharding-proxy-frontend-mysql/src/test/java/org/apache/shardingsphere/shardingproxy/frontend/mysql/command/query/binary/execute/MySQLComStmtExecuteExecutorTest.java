@@ -25,7 +25,7 @@ import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorRespo
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchema;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,9 +53,9 @@ public class MySQLComStmtExecuteExecutorTest {
     @SneakyThrows
     public void assertIsErrorResponse() {
         BackendConnection backendConnection = mock(BackendConnection.class);
-        LogicSchema logicSchema = mock(LogicSchema.class);
-        when(logicSchema.getRules()).thenReturn(Collections.emptyList());
-        when(backendConnection.getLogicSchema()).thenReturn(logicSchema);
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(schema.getRules()).thenReturn(Collections.emptyList());
+        when(backendConnection.getSchema()).thenReturn(schema);
         MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(mock(MySQLComStmtExecutePacket.class), backendConnection);
         FieldSetter.setField(mysqlComStmtExecuteExecutor, MySQLComStmtExecuteExecutor.class.getDeclaredField("databaseCommunicationEngine"), databaseCommunicationEngine);
         when(sqlException.getCause()).thenReturn(new Exception());
@@ -68,9 +68,9 @@ public class MySQLComStmtExecuteExecutorTest {
     @SneakyThrows
     public void assertIsUpdateResponse() {
         BackendConnection backendConnection = mock(BackendConnection.class);
-        LogicSchema logicSchema = mock(LogicSchema.class);
-        when(logicSchema.getRules()).thenReturn(Collections.emptyList());
-        when(backendConnection.getLogicSchema()).thenReturn(logicSchema);
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(schema.getRules()).thenReturn(Collections.emptyList());
+        when(backendConnection.getSchema()).thenReturn(schema);
         MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(mock(MySQLComStmtExecutePacket.class), backendConnection);
         FieldSetter.setField(mysqlComStmtExecuteExecutor, MySQLComStmtExecuteExecutor.class.getDeclaredField("databaseCommunicationEngine"), databaseCommunicationEngine);
         when(databaseCommunicationEngine.execute()).thenReturn(new UpdateResponse());
@@ -82,9 +82,9 @@ public class MySQLComStmtExecuteExecutorTest {
     @SneakyThrows
     public void assertIsQuery() {
         BackendConnection backendConnection = mock(BackendConnection.class);
-        LogicSchema logicSchema = mock(LogicSchema.class);
-        when(logicSchema.getRules()).thenReturn(Collections.emptyList());
-        when(backendConnection.getLogicSchema()).thenReturn(logicSchema);
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(schema.getRules()).thenReturn(Collections.emptyList());
+        when(backendConnection.getSchema()).thenReturn(schema);
         MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(mock(MySQLComStmtExecutePacket.class), backendConnection);
         FieldSetter.setField(mysqlComStmtExecuteExecutor, MySQLComStmtExecuteExecutor.class.getDeclaredField("databaseCommunicationEngine"), databaseCommunicationEngine);
         when(databaseCommunicationEngine.execute()).thenReturn(new QueryResponse(Collections.singletonList(mock(QueryHeader.class))));

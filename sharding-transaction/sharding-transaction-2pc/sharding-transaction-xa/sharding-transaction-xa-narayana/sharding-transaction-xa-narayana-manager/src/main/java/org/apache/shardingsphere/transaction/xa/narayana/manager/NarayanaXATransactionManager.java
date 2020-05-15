@@ -46,13 +46,11 @@ public final class NarayanaXATransactionManager implements XATransactionManager 
         RECOVERY_MANAGER_SERVICE.start();
     }
     
-    @SneakyThrows
     @Override
     public void registerRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
         XA_RECOVERY_MODULE.addXAResourceRecoveryHelper(new DataSourceXAResourceRecoveryHelper(xaDataSource));
     }
     
-    @SneakyThrows
     @Override
     public void removeRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
         XA_RECOVERY_MODULE.removeXAResourceRecoveryHelper(new DataSourceXAResourceRecoveryHelper(xaDataSource));

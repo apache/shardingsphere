@@ -45,10 +45,10 @@ public final class QueryBackendHandler implements TextProtocolBackendHandler {
     
     @Override
     public BackendResponse execute() {
-        if (null == backendConnection.getLogicSchema()) {
+        if (null == backendConnection.getSchema()) {
             return new ErrorResponse(new NoDatabaseSelectedException());
         }
-        databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(backendConnection.getLogicSchema(), sql, backendConnection);
+        databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(backendConnection.getSchema(), sql, backendConnection);
         return databaseCommunicationEngine.execute();
     }
     

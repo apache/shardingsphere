@@ -45,7 +45,8 @@
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
 #
-#shardingRule:
+#rules:
+#- !SHARDING
 #  tables:
 #    t_order:
 #      actualDataNodes: ds_${0..1}.t_order_${0..1}
@@ -109,7 +110,8 @@
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
 #
-#shardingRule:
+#rules:
+#- !SHARDING
 #  tables:
 #    t_order:
 #      actualDataNodes: ds_${0..1}.t_order_${0..1}

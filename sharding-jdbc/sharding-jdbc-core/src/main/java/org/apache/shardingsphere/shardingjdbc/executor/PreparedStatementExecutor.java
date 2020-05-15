@@ -21,8 +21,8 @@ import org.apache.shardingsphere.shardingjdbc.executor.callback.RuleExecuteExecu
 import org.apache.shardingsphere.shardingjdbc.executor.callback.RuleExecuteQueryExecutorCallback;
 import org.apache.shardingsphere.shardingjdbc.executor.callback.RuleExecuteUpdateExecutorCallback;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
+import org.apache.shardingsphere.sharding.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.sharding.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategyFactory;
@@ -182,7 +182,7 @@ public final class PreparedStatementExecutor {
         Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
         if (refreshStrategy.isPresent()) {
             RuleSchemaMetaDataLoader metaDataLoader = new RuleSchemaMetaDataLoader(runtimeContext.getRules());
-            refreshStrategy.get().refreshMetaData(runtimeContext.getMetaData(), sqlStatementContext,
+            refreshStrategy.get().refreshMetaData(runtimeContext.getMetaData(), runtimeContext.getDatabaseType(), dataSourceMap, sqlStatementContext,
                 tableName -> metaDataLoader.load(runtimeContext.getDatabaseType(), dataSourceMap, tableName, runtimeContext.getProperties()));
         }
     }

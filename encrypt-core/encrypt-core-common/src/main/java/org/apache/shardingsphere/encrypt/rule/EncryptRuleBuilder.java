@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rule;
 
-import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRuleBuilder;
 
 import java.util.Collection;

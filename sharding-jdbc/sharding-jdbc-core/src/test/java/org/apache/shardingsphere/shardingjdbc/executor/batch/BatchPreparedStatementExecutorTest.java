@@ -142,7 +142,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         setFields(executeGroups, routeUnits);
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setFields(final Collection<InputGroup<StatementExecuteUnit>> executeGroups, final Collection<BatchExecutionUnit> routeUnits) {
         Field field = BatchPreparedStatementExecutor.class.getDeclaredField("inputGroups");
         field.setAccessible(true);

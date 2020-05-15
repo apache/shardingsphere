@@ -19,6 +19,7 @@ package org.apache.shardingsphere.orchestration.core.common.listener;
 
 import org.apache.shardingsphere.orchestration.center.CenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
+import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 import org.apache.shardingsphere.orchestration.core.common.event.ShardingOrchestrationEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,8 +28,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
+import java.util.Collections;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -40,14 +45,19 @@ public final class PostShardingCenterRepositoryEventListenerTest {
     
     @Test
     public void assertWatch() {
-        PostShardingCenterRepositoryEventListener postShardingCenterRepositoryEventListener = new PostShardingCenterRepositoryEventListener(centerRepository, Arrays.asList("test")) {
+        PostShardingCenterRepositoryEventListener postShardingCenterRepositoryEventListener = new PostShardingCenterRepositoryEventListener(centerRepository, Collections.singletonList("test")) {
             
             @Override
             protected ShardingOrchestrationEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
                 return mock(ShardingOrchestrationEvent.class);
             }
         };
-        postShardingCenterRepositoryEventListener.watch();
+        doAnswer(invocationOnMock -> {
+            DataChangedEventListener listener = (DataChangedEventListener) invocationOnMock.getArguments()[1];
+            listener.onChange(new DataChangedEvent("test", "value", DataChangedEvent.ChangedType.UPDATED));
+            return mock(DataChangedEventListener.class);
+        }).when(centerRepository).watch(anyString(), any(DataChangedEventListener.class));
+        postShardingCenterRepositoryEventListener.watch(DataChangedEvent.ChangedType.UPDATED);
         verify(centerRepository).watch(eq("test"), ArgumentMatchers.any());
     }
     
@@ -60,7 +70,12 @@ public final class PostShardingCenterRepositoryEventListenerTest {
                 return mock(ShardingOrchestrationEvent.class);
             }
         };
-        postShardingCenterRepositoryEventListener.watch();
+        doAnswer(invocationOnMock -> {
+            DataChangedEventListener listener = (DataChangedEventListener) invocationOnMock.getArguments()[1];
+            listener.onChange(new DataChangedEvent("test", "value", DataChangedEvent.ChangedType.UPDATED));
+            return mock(DataChangedEventListener.class);
+        }).when(centerRepository).watch(anyString(), any(DataChangedEventListener.class));
+        postShardingCenterRepositoryEventListener.watch(DataChangedEvent.ChangedType.UPDATED, DataChangedEvent.ChangedType.DELETED);
         verify(centerRepository).watch(eq("test"), ArgumentMatchers.any());
         verify(centerRepository).watch(eq("dev"), ArgumentMatchers.any());
     }

@@ -21,7 +21,8 @@ dataSource: !!org.apache.commons.dbcp2.BasicDataSource
     username: sa
     password:
 
-encryptRule:
+rules:
+- !ENCRYPT
   tables:
     t_order:
       columns:
@@ -34,7 +35,7 @@ encryptRule:
       props:
         aes.key.value: 123456
 
-shadowRule:
+- !SHADOW
   column: shadows
   dataSource: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: org.h2.Driver

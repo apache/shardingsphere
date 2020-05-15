@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.shardingjdbc.spring.boot.type;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.apache.shardingsphere.masterslave.rule.MasterSlaveDataSourceRule;
+import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,21 +48,22 @@ public class SpringBootMasterSlaveTest {
     
     @Test
     public void assertDataSource() {
-        assertTrue(dataSource instanceof ShardingDataSource);
-        for (DataSource each : ((ShardingDataSource) dataSource).getDataSourceMap().values()) {
+        assertTrue(dataSource instanceof ShardingSphereDataSource);
+        for (DataSource each : ((ShardingSphereDataSource) dataSource).getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(100));
         }
-        Collection<ShardingSphereRule> rules = ((ShardingDataSource) dataSource).getRuntimeContext().getRules();
+        Collection<ShardingSphereRule> rules = ((ShardingSphereDataSource) dataSource).getRuntimeContext().getRules();
         assertThat(rules.size(), is(1));
         assertMasterSlaveRule((MasterSlaveRule) rules.iterator().next());
     }
     
     private void assertMasterSlaveRule(final MasterSlaveRule rule) {
-        assertThat(rule.getName(), is("ds_ms"));
-        assertThat(rule.getMasterDataSourceName(), is("ds_master"));
-        assertThat(rule.getSlaveDataSourceNames().size(), is(2));
-        assertThat(rule.getSlaveDataSourceNames().get(0), is("ds_slave_0"));
-        assertThat(rule.getSlaveDataSourceNames().get(1), is("ds_slave_1"));
-        assertThat(rule.getLoadBalanceAlgorithm().getType(), is("RANDOM"));
+        MasterSlaveDataSourceRule dataSourceRule = rule.getSingleDataSourceRule();
+        assertThat(dataSourceRule.getName(), is("ds_ms"));
+        assertThat(dataSourceRule.getMasterDataSourceName(), is("ds_master"));
+        assertThat(dataSourceRule.getSlaveDataSourceNames().size(), is(2));
+        assertThat(dataSourceRule.getSlaveDataSourceNames().get(0), is("ds_slave_0"));
+        assertThat(dataSourceRule.getSlaveDataSourceNames().get(1), is("ds_slave_1"));
+        assertThat(dataSourceRule.getLoadBalanceAlgorithm().getType(), is("RANDOM"));
     }
 }

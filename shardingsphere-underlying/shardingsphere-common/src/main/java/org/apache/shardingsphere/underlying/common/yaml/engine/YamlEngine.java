@@ -21,10 +21,9 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.representer.DefaultYamlRepresenter;
-import org.apache.shardingsphere.underlying.common.yaml.representer.processor.TupleProcessor;
+import org.apache.shardingsphere.underlying.common.yaml.engine.constructor.ShardingSphereYamlConstructor;
+import org.apache.shardingsphere.underlying.common.yaml.engine.representer.ShardingSphereYamlRepresenter;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -32,7 +31,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -53,25 +51,11 @@ public final class YamlEngine {
      * @throws IOException IO Exception
      */
     public static <T extends YamlConfiguration> T unmarshal(final File yamlFile, final Class<T> classType) throws IOException {
-        return unmarshal(yamlFile, classType, new Constructor(classType));
-    }
-    
-    /**
-     * Unmarshal YAML.
-     *
-     * @param yamlFile YAML file
-     * @param classType class type
-     * @param classConstructor class constructor
-     * @param <T> type of class
-     * @return object from YAML
-     * @throws IOException IO Exception
-     */
-    public static <T extends YamlConfiguration> T unmarshal(final File yamlFile, final Class<T> classType, final Constructor classConstructor) throws IOException {
         try (
-            FileInputStream fileInputStream = new FileInputStream(yamlFile);
-            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")
+                FileInputStream fileInputStream = new FileInputStream(yamlFile);
+                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")
         ) {
-            return new Yaml(classConstructor).loadAs(inputStreamReader, classType);
+            return new Yaml(new ShardingSphereYamlConstructor(classType)).loadAs(inputStreamReader, classType);
         }
     }
     
@@ -85,22 +69,8 @@ public final class YamlEngine {
      * @throws IOException IO Exception
      */
     public static <T extends YamlConfiguration> T unmarshal(final byte[] yamlBytes, final Class<T> classType) throws IOException {
-        return unmarshal(yamlBytes, classType, new Constructor(classType));
-    }
-    
-    /**
-     * Unmarshal YAML.
-     *
-     * @param yamlBytes YAML bytes
-     * @param classType class type
-     * @param classConstructor class constructor
-     * @param <T> type of class
-     * @return object from YAML
-     * @throws IOException IO Exception
-     */
-    public static <T extends YamlConfiguration> T unmarshal(final byte[] yamlBytes, final Class<T> classType, final Constructor classConstructor) throws IOException {
         try (InputStream inputStream = new ByteArrayInputStream(yamlBytes)) {
-            return new Yaml(classConstructor).loadAs(inputStream, classType);
+            return new Yaml(new ShardingSphereYamlConstructor(classType)).loadAs(inputStream, classType);
         }
     }
     
@@ -113,20 +83,7 @@ public final class YamlEngine {
      * @return object from YAML
      */
     public static <T> T unmarshal(final String yamlContent, final Class<T> classType) {
-        return unmarshal(yamlContent, classType, new Constructor(classType));
-    }
-    
-    /**
-     * Unmarshal YAML.
-     *
-     * @param yamlContent YAML content
-     * @param classType class type
-     * @param classConstructor class constructor
-     * @param <T> type of class
-     * @return object from YAML
-     */
-    public static <T> T unmarshal(final String yamlContent, final Class<T> classType, final Constructor classConstructor) {
-        return new Yaml(classConstructor).loadAs(yamlContent, classType);
+        return new Yaml(new ShardingSphereYamlConstructor(classType)).loadAs(yamlContent, classType);
     }
     
     /**
@@ -156,21 +113,6 @@ public final class YamlEngine {
      * @return YAML content
      */
     public static String marshal(final Object value) {
-        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(value);
-    }
-    
-    /**
-     * Marshal YAML.
-     *
-     * @param value object to be marshaled
-     * @param tupleProcessors tuple processors
-     * @return YAML content
-     */
-    public static String marshal(final Object value, final Collection<TupleProcessor> tupleProcessors) {
-        DefaultYamlRepresenter yamlRepresenter = new DefaultYamlRepresenter();
-        for (TupleProcessor each : tupleProcessors) {
-            yamlRepresenter.registerTupleProcessor(each);
-        }
-        return new Yaml(yamlRepresenter).dumpAsMap(value);
+        return new Yaml(new ShardingSphereYamlRepresenter()).dumpAsMap(value);
     }
 }

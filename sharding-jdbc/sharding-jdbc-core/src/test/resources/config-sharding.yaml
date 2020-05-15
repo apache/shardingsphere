@@ -15,7 +15,8 @@
 # limitations under the License.
 #
 
-shardingRule:
+rules:
+- !SHARDING
   tables:
     t_order:
       actualDataNodes: jdbc_${0..1}.t_order_${0..1}
@@ -36,7 +37,7 @@ shardingRule:
             props:
               algorithm.expression: t_user_${id % 2}
       keyGenerator:
-        type: RESETINCREMENT
+        type: RESET_INCREMENT
         column: id
   bindingTables:
     - t_order,t_order_item
