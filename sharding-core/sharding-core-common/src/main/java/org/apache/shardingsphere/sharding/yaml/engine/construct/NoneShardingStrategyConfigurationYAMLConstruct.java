@@ -15,34 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.yaml.representer.processor;
+package org.apache.shardingsphere.sharding.yaml.engine.construct;
 
-import org.apache.shardingsphere.underlying.common.yaml.representer.processor.ShardingSphereYAMLTupleProcessor;
+import org.apache.shardingsphere.sharding.yaml.config.strategy.YamlNoneShardingStrategyConfiguration;
+import org.apache.shardingsphere.underlying.common.yaml.engine.constructor.ShardingSphereYAMLConstruct;
 import org.yaml.snakeyaml.nodes.Node;
-import org.yaml.snakeyaml.nodes.NodeTuple;
-import org.yaml.snakeyaml.nodes.ScalarNode;
-import org.yaml.snakeyaml.nodes.Tag;
 
 /**
- * None YAML tuple processor.
+ * YAML none sharding strategy configuration YAML construct.
  */
-public final class NoneTupleProcessor implements ShardingSphereYAMLTupleProcessor {
+public final class NoneShardingStrategyConfigurationYAMLConstruct implements ShardingSphereYAMLConstruct {
     
     @Override
-    public String getTupleName() {
-        return "none";
+    public Object construct(final Node node) {
+        return new YamlNoneShardingStrategyConfiguration();
     }
     
     @Override
-    public NodeTuple process(final NodeTuple nodeTuple) {
-        return isNullNode(nodeTuple.getValueNode()) ? null : processNoneTuple(nodeTuple);
+    public void construct2ndStep(final Node node, final Object newInstance) {
     }
     
-    private boolean isNullNode(final Node valueNode) {
-        return Tag.NULL.equals(valueNode.getTag());
-    }
-    
-    private NodeTuple processNoneTuple(final NodeTuple noneTuple) {
-        return new NodeTuple(noneTuple.getKeyNode(), new ScalarNode(Tag.STR, "", null, null, null));
+    @Override
+    public Class<?> getType() {
+        return YamlNoneShardingStrategyConfiguration.class;
     }
 }

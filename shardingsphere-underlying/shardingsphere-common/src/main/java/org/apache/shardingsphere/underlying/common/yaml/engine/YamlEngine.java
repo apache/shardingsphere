@@ -21,8 +21,8 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.constructor.ShardingSphereYAMLConstructor;
-import org.apache.shardingsphere.underlying.common.yaml.representer.ShardingSphereYAMLRepresenter;
+import org.apache.shardingsphere.underlying.common.yaml.engine.constructor.ShardingSphereYAMLConstructor;
+import org.apache.shardingsphere.underlying.common.yaml.engine.representer.ShardingSphereYAMLRepresenter;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.ByteArrayInputStream;

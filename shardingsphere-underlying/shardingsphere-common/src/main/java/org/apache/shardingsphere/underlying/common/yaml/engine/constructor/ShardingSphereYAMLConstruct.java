@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.yaml.constructor;
+package org.apache.shardingsphere.underlying.common.yaml.engine.constructor;
 
 import org.yaml.snakeyaml.constructor.Construct;
 

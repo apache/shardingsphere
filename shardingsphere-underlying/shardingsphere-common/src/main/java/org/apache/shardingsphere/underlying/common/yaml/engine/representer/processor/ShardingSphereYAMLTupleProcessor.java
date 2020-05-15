@@ -15,7 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.yaml.fixture;
+package org.apache.shardingsphere.underlying.common.yaml.engine.representer.processor;
 
-public final class FixtureCustomClass {
+import org.yaml.snakeyaml.nodes.NodeTuple;
+
+/**
+ * ShardingSphere YAML tuple processor.
+ */
+public interface ShardingSphereYAMLTupleProcessor {
+    
+    /**
+     * Get tuple name.
+     *
+     * @return tuple name
+     */
+    String getTupleName();
+    
+    /**
+     * Process YAML tuple for representer.
+     *
+     * @param nodeTuple YAML node tuple
+     * @return YAML node tuple after process
+     */
+    NodeTuple process(NodeTuple nodeTuple);
 }

@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.yaml.representer;
+package org.apache.shardingsphere.underlying.common.yaml.engine.representer;
 
-import org.apache.shardingsphere.underlying.common.yaml.fixture.DefaultYamlRepresenterFixture;
+import org.apache.shardingsphere.underlying.common.yaml.engine.fixture.DefaultYamlRepresenterFixture;
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
 

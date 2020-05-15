@@ -15,27 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.yaml.representer.processor;
+package org.apache.shardingsphere.underlying.common.yaml.engine.fixture;
 
-import org.yaml.snakeyaml.nodes.NodeTuple;
+import lombok.Getter;
+import lombok.Setter;
 
-/**
- * ShardingSphere YAML tuple processor.
- */
-public interface ShardingSphereYAMLTupleProcessor {
+import java.util.Collection;
+import java.util.Map;
+
+@Getter
+@Setter
+public final class DefaultYamlRepresenterFixture {
     
-    /**
-     * Get tuple name.
-     *
-     * @return tuple name
-     */
-    String getTupleName();
+    private String value;
     
-    /**
-     * Process YAML tuple for representer.
-     *
-     * @param nodeTuple YAML node tuple
-     * @return YAML node tuple after process
-     */
-    NodeTuple process(NodeTuple nodeTuple);
+    private Collection<String> collection;
+    
+    private Map<String, String> map;
+    
+    private FixtureCustomClass customClass;
 }
