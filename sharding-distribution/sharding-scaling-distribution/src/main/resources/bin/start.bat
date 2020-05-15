@@ -21,7 +21,7 @@ cd %~dp0
 
 set SERVER_NAME=Sharding-Scaling
 
-set CLASS_PATH="..\conf;.;..;..\lib\*"
+set CLASS_PATH="..\conf;.;..;..\lib\*;..\ext-lib\*"
 
 echo The classpath is %CLASS_PATH%
 
