@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.orchestration.core.configcenter.listener;
 
-import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.ChangedType;
@@ -32,7 +32,7 @@ import org.apache.shardingsphere.orchestration.core.common.event.SchemaAddedEven
 import org.apache.shardingsphere.orchestration.core.common.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.ShardingOrchestrationEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,6 +40,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map.Entry;
@@ -51,55 +55,14 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class SchemaChangedListenerTest {
-    
-    private static final String DATA_SOURCE_YAML = ""
-            + "master_ds: !!" + YamlDataSourceConfiguration.class.getName() + "\n"
-            + "  dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n"
-            + "  properties:\n"
-            + "    url: jdbc:mysql://localhost:3306/demo_ds_master\n"
-            + "    username: root\n"
-            + "    password: null\n";
-    
-    private static final String SHARDING_RULE_YAML = ""
-            + "rules:\n"
-            + "- !!org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration\n"
-            + "  tables:\n"
-            + "    t_order:\n"
-            + "      logicTable: t_order\n" 
-            + "      actualDataNodes: ds_${0..1}.t_order_${0..1}\n"
-            + "      tableStrategy:\n"
-            + "        standard:\n" 
-            + "          shardingAlgorithm: \n"
-            + "            type: INLINE\n"
-            + "            props:\n"
-            + "              algorithm.expression: t_order_${order_id % 2}\n" 
-            + "          shardingColumn: order_id";
-    
-    private static final String MASTER_SLAVE_RULE_YAML = ""
-            + "rules:\n"
-            + "- !!org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration\n"
-            + "  dataSources:\n"
-            + "    ms_ds:\n"
-            + "      masterDataSourceName: master_ds\n" 
-            + "      name: ms_ds\n"
-            + "      slaveDataSourceNames:\n"
-            + "      - slave_ds_0\n"
-            + "      - slave_ds_1\n";
-    
-    private static final String ENCRYPT_RULE_YAML = ""
-            + "rules:\n"
-            + "- !!org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration\n"
-            + "  tables:\n"
-            + "    t_order:\n"
-            + "      columns:\n"
-            + "        order_id:\n" 
-            + "          cipherColumn: order_id\n"
-            + "          encryptor: order_encryptor\n"
-            + "  encryptors:\n"
-            + "    order_encryptor:\n" 
-            + "      type: aes\n"
-            + "      props:\n"
-            + "        aes.key.value: 123456";
+
+    private static final String DATA_SOURCE_YAML = "data-source.yaml";
+
+    private static final String SHARDING_RULE_YAML = "sharding-rule.yaml";
+
+    private static final String MASTER_SLAVE_RULE_YAML = "master-slave-rule.yaml";
+
+    private static final String ENCRYPT_RULE_YAML = "encrypt-rule.yaml";
     
     private SchemaChangedListener schemaChangedListener;
     
@@ -120,16 +83,33 @@ public final class SchemaChangedListenerTest {
     }
     
     @Test
-    public void assertCreateDataSourceChangedEventForExistedSchema() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/sharding_db/datasource", DATA_SOURCE_YAML, ChangedType.UPDATED);
+    public void assertCreateDataSourceChangedEventForExistedSchema() throws IOException {
+        String dataSource = readYamlIntoString(DATA_SOURCE_YAML);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/sharding_db/datasource", dataSource, ChangedType.UPDATED);
         ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(DataSourceChangedEvent.class));
         assertThat(((DataSourceChangedEvent) actual).getShardingSchemaName(), is("sharding_db"));
     }
+
+    private String readYamlIntoString(final String yamlFile) throws IOException {
+        File file = new File(Preconditions.checkNotNull(getClass().getClassLoader().getResource(yamlFile), "file resource `%s` must not be null.", yamlFile).getFile());
+        StringBuilder yamlContent = new StringBuilder();
+        FileReader fileReader = new FileReader(file);
+        BufferedReader reader = new BufferedReader(fileReader);
+        String line;
+        while (null != (line = reader.readLine())) {
+            if (line.startsWith("#")) {
+                continue;
+            }
+            yamlContent.append(line).append("\n");
+        }
+        return yamlContent.toString();
+    }
     
     @Test
-    public void assertCreateRuleConfigurationsChangedEventForExistedSchema() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/sharding_db/rule", SHARDING_RULE_YAML, ChangedType.UPDATED);
+    public void assertCreateRuleConfigurationsChangedEventForExistedSchema() throws IOException {
+        String shardingRule = readYamlIntoString(SHARDING_RULE_YAML);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/sharding_db/rule", shardingRule, ChangedType.UPDATED);
         ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(RuleConfigurationsChangedEvent.class));
         assertThat(((RuleConfigurationsChangedEvent) actual).getShardingSchemaName(), is("sharding_db"));
@@ -139,8 +119,9 @@ public final class SchemaChangedListenerTest {
     }
     
     @Test
-    public void assertCreateMasterSlaveRuleChangedEventForExistedSchema() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/masterslave_db/rule", MASTER_SLAVE_RULE_YAML, ChangedType.UPDATED);
+    public void assertCreateMasterSlaveRuleChangedEventForExistedSchema() throws IOException {
+        String masterSlaveRule = readYamlIntoString(MASTER_SLAVE_RULE_YAML);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/masterslave_db/rule", masterSlaveRule, ChangedType.UPDATED);
         ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(MasterSlaveRuleChangedEvent.class));
         assertThat(((MasterSlaveRuleChangedEvent) actual).getShardingSchemaName(), is("masterslave_db"));
@@ -148,8 +129,9 @@ public final class SchemaChangedListenerTest {
     }
     
     @Test
-    public void assertCreateEncryptRuleChangedEventForExistedSchema() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/encrypt_db/rule", ENCRYPT_RULE_YAML, ChangedType.UPDATED);
+    public void assertCreateEncryptRuleChangedEventForExistedSchema() throws IOException {
+        String encryptRule = readYamlIntoString(ENCRYPT_RULE_YAML);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/encrypt_db/rule", encryptRule, ChangedType.UPDATED);
         ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(EncryptRuleChangedEvent.class));
         assertThat(((EncryptRuleChangedEvent) actual).getShardingSchemaName(), is("encrypt_db"));
@@ -169,88 +151,103 @@ public final class SchemaChangedListenerTest {
     }
     
     @Test
-    public void assertCreateShardingSchemaAddedEventForNewSchema() {
-        when(configCenterRepository.get("/test/config/schema/logic_db/rule")).thenReturn(SHARDING_RULE_YAML);
-        when(configCenterRepository.get("/test/config/schema/logic_db/datasource")).thenReturn(DATA_SOURCE_YAML);
-        when(configCenterRepository.get("/test/config/schema/logic_db/rule")).thenReturn(SHARDING_RULE_YAML);
-        when(configCenterRepository.get("/test/config/schema/logic_db/datasource")).thenReturn(DATA_SOURCE_YAML);
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db/datasource", DATA_SOURCE_YAML, ChangedType.UPDATED);
+    public void assertCreateShardingSchemaAddedEventForNewSchema() throws IOException {
+        String shardingRule = readYamlIntoString(SHARDING_RULE_YAML);
+        String dataSource = readYamlIntoString(DATA_SOURCE_YAML);
+        when(configCenterRepository.get("/test/config/schema/logic_db/rule")).thenReturn(shardingRule);
+        when(configCenterRepository.get("/test/config/schema/logic_db/datasource")).thenReturn(dataSource);
+        when(configCenterRepository.get("/test/config/schema/logic_db/rule")).thenReturn(shardingRule);
+        when(configCenterRepository.get("/test/config/schema/logic_db/datasource")).thenReturn(dataSource);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db/datasource", dataSource, ChangedType.UPDATED);
         ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(SchemaAddedEvent.class));
         assertThat(((SchemaAddedEvent) actual).getRuleConfigurations().iterator().next(), instanceOf(ShardingRuleConfiguration.class));
     }
     
     @Test
-    public void assertCreateMasterSlaveSchemaAddedEventForNewSchema() {
-        when(configCenterRepository.get("/test/config/schema/logic_db/rule")).thenReturn(MASTER_SLAVE_RULE_YAML);
-        when(configCenterRepository.get("/test/config/schema/logic_db/datasource")).thenReturn(DATA_SOURCE_YAML);
-        when(configCenterRepository.get("/test/config/schema/logic_db/rule")).thenReturn(MASTER_SLAVE_RULE_YAML);
-        when(configCenterRepository.get("/test/config/schema/logic_db/datasource")).thenReturn(DATA_SOURCE_YAML);
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db/datasource", DATA_SOURCE_YAML, ChangedType.UPDATED);
+    public void assertCreateMasterSlaveSchemaAddedEventForNewSchema() throws IOException {
+        String dataSource = readYamlIntoString(DATA_SOURCE_YAML);
+        String masterSlaveRule = readYamlIntoString(MASTER_SLAVE_RULE_YAML);
+        when(configCenterRepository.get("/test/config/schema/logic_db/rule")).thenReturn(masterSlaveRule);
+        when(configCenterRepository.get("/test/config/schema/logic_db/datasource")).thenReturn(dataSource);
+        when(configCenterRepository.get("/test/config/schema/logic_db/rule")).thenReturn(masterSlaveRule);
+        when(configCenterRepository.get("/test/config/schema/logic_db/datasource")).thenReturn(dataSource);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db/datasource", dataSource, ChangedType.UPDATED);
         ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(SchemaAddedEvent.class));
         assertThat(((SchemaAddedEvent) actual).getRuleConfigurations().iterator().next(), instanceOf(MasterSlaveRuleConfiguration.class));
     }
     
     @Test
-    public void assertCreateEncryptSchemaAddedEventForNewSchema() {
-        when(configCenterRepository.get("/test/config/schema/logic_db/rule")).thenReturn(ENCRYPT_RULE_YAML);
-        when(configCenterRepository.get("/test/config/schema/logic_db/datasource")).thenReturn(DATA_SOURCE_YAML);
-        when(configCenterRepository.get("/test/config/schema/logic_db/rule")).thenReturn(ENCRYPT_RULE_YAML);
-        when(configCenterRepository.get("/test/config/schema/logic_db/datasource")).thenReturn(DATA_SOURCE_YAML);
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db/datasource", DATA_SOURCE_YAML, ChangedType.UPDATED);
+    public void assertCreateEncryptSchemaAddedEventForNewSchema() throws IOException {
+        String dataSource = readYamlIntoString(DATA_SOURCE_YAML);
+        String encryptRule = readYamlIntoString(ENCRYPT_RULE_YAML);
+        when(configCenterRepository.get("/test/config/schema/logic_db/rule")).thenReturn(encryptRule);
+        when(configCenterRepository.get("/test/config/schema/logic_db/datasource")).thenReturn(dataSource);
+        when(configCenterRepository.get("/test/config/schema/logic_db/rule")).thenReturn(encryptRule);
+        when(configCenterRepository.get("/test/config/schema/logic_db/datasource")).thenReturn(dataSource);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db/datasource", dataSource, ChangedType.UPDATED);
         ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(SchemaAddedEvent.class));
         assertThat(((SchemaAddedEvent) actual).getRuleConfigurations().iterator().next(), instanceOf(EncryptRuleConfiguration.class));
     }
     
     @Test
-    public void assertCreateSchemaDeletedEventForNewSchema() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db/datasource", DATA_SOURCE_YAML, ChangedType.DELETED);
+    public void assertCreateSchemaDeletedEventForNewSchema() throws IOException {
+        String dataSource = readYamlIntoString(DATA_SOURCE_YAML);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db/datasource", dataSource, ChangedType.DELETED);
         ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(SchemaDeletedEvent.class));
         assertThat(((SchemaDeletedEvent) actual).getShardingSchemaName(), is("logic_db"));
     }
     
     @Test
-    public void assertCreateWithInvalidNodeChangedEvent() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db", DATA_SOURCE_YAML, ChangedType.DELETED);
+    public void assertCreateWithInvalidNodeChangedEvent() throws IOException {
+        String dataSource = readYamlIntoString(DATA_SOURCE_YAML);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db", dataSource, ChangedType.DELETED);
         ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(IgnoredShardingOrchestrationEvent.class));
     }
     
     @Test
-    public void assertCreateWithNullShardingSchemaName() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/datasource", DATA_SOURCE_YAML, ChangedType.DELETED);
+    public void assertCreateWithNullShardingSchemaName() throws IOException {
+        String dataSource = readYamlIntoString(DATA_SOURCE_YAML);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/datasource", dataSource, ChangedType.DELETED);
         ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(IgnoredShardingOrchestrationEvent.class));
     }
     
     @Test
-    public void assertCreateAddedEventWithEncryptRuleConfigurationForNewSchema() {
-        when(configCenterRepository.get("/test/config/schema/logic_db/rule")).thenReturn(ENCRYPT_RULE_YAML);
-        when(configCenterRepository.get("/test/config/schema/logic_db/datasource")).thenReturn(DATA_SOURCE_YAML);
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db/rule", ENCRYPT_RULE_YAML, ChangedType.UPDATED);
+    public void assertCreateAddedEventWithEncryptRuleConfigurationForNewSchema() throws IOException {
+        String dataSource = readYamlIntoString(DATA_SOURCE_YAML);
+        String encryptRule = readYamlIntoString(ENCRYPT_RULE_YAML);
+        when(configCenterRepository.get("/test/config/schema/logic_db/rule")).thenReturn(encryptRule);
+        when(configCenterRepository.get("/test/config/schema/logic_db/datasource")).thenReturn(dataSource);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db/rule", encryptRule, ChangedType.UPDATED);
         ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(SchemaAddedEvent.class));
         assertThat(((SchemaAddedEvent) actual).getRuleConfigurations().iterator().next(), instanceOf(EncryptRuleConfiguration.class));
     }
     
     @Test
-    public void assertCreateAddedEventWithShardingRuleConfigurationForNewSchema() {
-        when(configCenterRepository.get("/test/config/schema/logic_db/rule")).thenReturn(SHARDING_RULE_YAML);
-        when(configCenterRepository.get("/test/config/schema/logic_db/datasource")).thenReturn(DATA_SOURCE_YAML);
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db/rule", SHARDING_RULE_YAML, ChangedType.UPDATED);
+    public void assertCreateAddedEventWithShardingRuleConfigurationForNewSchema() throws IOException {
+        String dataSource = readYamlIntoString(DATA_SOURCE_YAML);
+        String shardingRule = readYamlIntoString(SHARDING_RULE_YAML);
+        when(configCenterRepository.get("/test/config/schema/logic_db/rule")).thenReturn(shardingRule);
+        when(configCenterRepository.get("/test/config/schema/logic_db/datasource")).thenReturn(dataSource);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db/rule", shardingRule, ChangedType.UPDATED);
         ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(SchemaAddedEvent.class));
         assertThat(((SchemaAddedEvent) actual).getRuleConfigurations().iterator().next(), instanceOf(ShardingRuleConfiguration.class));
     }
     
     @Test
-    public void assertCreateAddedEventWithMasterSlaveRuleConfigurationForNewSchema() {
-        when(configCenterRepository.get("/test/config/schema/logic_db/rule")).thenReturn(MASTER_SLAVE_RULE_YAML);
-        when(configCenterRepository.get("/test/config/schema/logic_db/datasource")).thenReturn(DATA_SOURCE_YAML);
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db/rule", MASTER_SLAVE_RULE_YAML, ChangedType.UPDATED);
+    public void assertCreateAddedEventWithMasterSlaveRuleConfigurationForNewSchema() throws IOException {
+        String dataSource = readYamlIntoString(DATA_SOURCE_YAML);
+        String masterSlaveRule = readYamlIntoString(MASTER_SLAVE_RULE_YAML);
+        when(configCenterRepository.get("/test/config/schema/logic_db/rule")).thenReturn(masterSlaveRule);
+        when(configCenterRepository.get("/test/config/schema/logic_db/datasource")).thenReturn(dataSource);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db/rule", masterSlaveRule, ChangedType.UPDATED);
         ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(SchemaAddedEvent.class));
         assertThat(((SchemaAddedEvent) actual).getRuleConfigurations().iterator().next(), instanceOf(MasterSlaveRuleConfiguration.class));
