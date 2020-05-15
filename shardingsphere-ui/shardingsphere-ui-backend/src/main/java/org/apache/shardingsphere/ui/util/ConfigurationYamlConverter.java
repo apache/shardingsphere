@@ -31,7 +31,7 @@ import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguratio
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.underlying.common.yaml.swapper.RuleRootConfigurationsYamlSwapper;
+import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 
 import java.util.Collection;
 import java.util.Map;
@@ -64,7 +64,7 @@ public final class ConfigurationYamlConverter {
      * @return rule configurations
      */
     public static Collection<RuleConfiguration> loadRuleConfigurations(final String data) {
-        return new RuleRootConfigurationsYamlSwapper().swap(YamlEngine.unmarshal(data, YamlRootRuleConfigurations.class));
+        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(data, YamlRootRuleConfigurations.class).getRules());
     }
     
     /**

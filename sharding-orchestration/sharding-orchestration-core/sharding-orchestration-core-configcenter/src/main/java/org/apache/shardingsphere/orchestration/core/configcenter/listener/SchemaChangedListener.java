@@ -41,7 +41,7 @@ import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSource
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.underlying.common.yaml.swapper.RuleRootConfigurationsYamlSwapper;
+import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -136,16 +136,19 @@ public final class SchemaChangedListener extends PostShardingCenterRepositoryEve
     }
     
     private RuleConfigurationsChangedEvent createRuleConfigurationsChangedEvent(final String shardingSchemaName, final String ruleValue) {
-        return new RuleConfigurationsChangedEvent(shardingSchemaName, new RuleRootConfigurationsYamlSwapper().swap(YamlEngine.unmarshal(ruleValue, YamlRootRuleConfigurations.class)));
+        return new RuleConfigurationsChangedEvent(
+                shardingSchemaName, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(ruleValue, YamlRootRuleConfigurations.class).getRules()));
     }
     
     private EncryptRuleChangedEvent createEncryptRuleChangedEvent(final String shardingSchemaName, final String ruleValue) {
-        Collection<RuleConfiguration> ruleConfigurations = new RuleRootConfigurationsYamlSwapper().swap(YamlEngine.unmarshal(ruleValue, YamlRootRuleConfigurations.class));
+        Collection<RuleConfiguration> ruleConfigurations = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
+                YamlEngine.unmarshal(ruleValue, YamlRootRuleConfigurations.class).getRules());
         return new EncryptRuleChangedEvent(shardingSchemaName, (EncryptRuleConfiguration) ruleConfigurations.iterator().next());
     }
     
     private MasterSlaveRuleChangedEvent createMasterSlaveRuleChangedEvent(final String shardingSchemaName, final String ruleValue) {
-        Collection<RuleConfiguration> ruleConfigurations = new RuleRootConfigurationsYamlSwapper().swap(YamlEngine.unmarshal(ruleValue, YamlRootRuleConfigurations.class));
+        Collection<RuleConfiguration> ruleConfigurations = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
+                YamlEngine.unmarshal(ruleValue, YamlRootRuleConfigurations.class).getRules());
         return new MasterSlaveRuleChangedEvent(shardingSchemaName, (MasterSlaveRuleConfiguration) ruleConfigurations.iterator().next());
     }
     
