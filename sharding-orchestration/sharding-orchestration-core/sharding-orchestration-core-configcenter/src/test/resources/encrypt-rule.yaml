@@ -15,15 +15,16 @@
 # limitations under the License.
 #
 
-encryptRule:
-  tables:
-    t_order:
-      columns:
-        order_id:
-          cipherColumn: order_id
-          encryptor: order_encryptor
-  encryptors:
-    order_encryptor:
-      type: aes
-      props:
-        aes.key.value: 123456
+rules:
+- !!org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration
+    tables:
+      t_order:
+        columns:
+          order_id:
+            cipherColumn: order_id
+            encryptor: order_encryptor
+    encryptors:
+      order_encryptor:
+        type: aes
+        props:
+          aes.key.value: 123456
