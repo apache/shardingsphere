@@ -16,7 +16,7 @@
 #
 
 rules:
-- !!org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration
+- !ENCRYPT
     tables:
       t_order:
         columns:
