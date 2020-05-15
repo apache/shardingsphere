@@ -44,6 +44,9 @@ public final class ShardingSphereServiceLoader {
      * @param <T> type of service
      */
     public static <T> void register(final Class<T> service) {
+        if (SERVICE_MAP.containsKey(service)) {
+            return;
+        }
         for (T each : ServiceLoader.load(service)) {
             registerServiceClass(service, each);
         }
