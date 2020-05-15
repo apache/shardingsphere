@@ -100,8 +100,9 @@ public class OnDuplicateUpdateContext {
     }
     
     /**
-     * get on duplicate key update column by index of this clause.
-     * @param index index.
+     * Get on duplicate key update column by index of this clause.
+     *
+     * @param index index
      * @return columnSegment
      */
     public ColumnSegment getColumn(final int index) {
