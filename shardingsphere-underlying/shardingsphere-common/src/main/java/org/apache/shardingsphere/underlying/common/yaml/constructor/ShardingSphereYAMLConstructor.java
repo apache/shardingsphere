@@ -19,13 +19,12 @@ package org.apache.shardingsphere.underlying.common.yaml.constructor;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.sharding.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.constructor.Construct;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.nodes.Node;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,7 +35,6 @@ public final class ShardingSphereYAMLConstructor extends Constructor {
     
     static {
         ShardingSphereServiceLoader.register(ShardingSphereYAMLConstruct.class);
-        ShardingSphereServiceLoader.register(YamlRuleConfigurationSwapper.class);
     }
     
     private final Map<Class, Construct> typeConstructs = new HashMap<>();
@@ -44,13 +42,8 @@ public final class ShardingSphereYAMLConstructor extends Constructor {
     @SneakyThrows
     public ShardingSphereYAMLConstructor(final Class<?> rootClass) {
         super(rootClass);
-        for (ShardingSphereYAMLConstruct each : ShardingSphereServiceLoader.newServiceInstances(ShardingSphereYAMLConstruct.class)) {
-            typeConstructs.put(each.getType(), each);
-        }
-        for (YamlRuleConfigurationSwapper each : ShardingSphereServiceLoader.newServiceInstances(YamlRuleConfigurationSwapper.class)) {
-            Class<?> yamlRuleConfiguration = Class.forName(((ParameterizedType) each.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0].getTypeName());
-            addTypeDescription(new TypeDescription(yamlRuleConfiguration, "!" + each.getRuleTagName()));
-        }
+        ShardingSphereServiceLoader.newServiceInstances(ShardingSphereYAMLConstruct.class).forEach(each -> typeConstructs.put(each.getType(), each));
+        YamlRuleConfigurationSwapperEngine.getYAMLShortcuts().forEach((key, value) -> addTypeDescription(new TypeDescription(value, key)));
     }
     
     @Override

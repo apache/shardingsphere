@@ -20,16 +20,16 @@ package org.apache.shardingsphere.underlying.common.yaml.representer.processor;
 import org.yaml.snakeyaml.nodes.NodeTuple;
 
 /**
- * YAML tuple processor.
+ * ShardingSphere YAML tuple processor.
  */
-public interface TupleProcessor {
+public interface ShardingSphereYAMLTupleProcessor {
     
     /**
-     * Get the tuple name of processed by this processor.
+     * Get tuple name.
      *
-     * @return the tuple name
+     * @return tuple name
      */
-    String getProcessedTupleName();
+    String getTupleName();
     
     /**
      * Process YAML tuple for representer.

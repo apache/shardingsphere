@@ -17,31 +17,45 @@
 
 package org.apache.shardingsphere.underlying.common.yaml.representer.processor;
 
+import org.yaml.snakeyaml.nodes.CollectionNode;
+import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.NodeTuple;
-import org.yaml.snakeyaml.nodes.ScalarNode;
+import org.yaml.snakeyaml.nodes.SequenceNode;
 import org.yaml.snakeyaml.nodes.Tag;
 
 /**
- * None YAML tuple processor.
+ * Default YAML tuple processor. 
  */
-public final class NoneTupleProcessor implements TupleProcessor {
+public final class DefaultYAMLTupleProcessor {
     
-    @Override
-    public String getProcessedTupleName() {
-        return "none";
+    /**
+     * Process node tuple.
+     * 
+     * @param nodeTuple node tuple
+     * @return processed node tuple
+     */
+    public NodeTuple process(final NodeTuple nodeTuple) {
+        return isUnsetNodeTuple(nodeTuple.getValueNode()) ? null : nodeTuple;
     }
     
-    @Override
-    public NodeTuple process(final NodeTuple nodeTuple) {
-        return isNullNode(nodeTuple.getValueNode()) ? null : processNoneTuple(nodeTuple);
+    private boolean isUnsetNodeTuple(final Node valueNode) {
+        return isNullNode(valueNode) || isEmptyCollectionNode(valueNode);
     }
     
     private boolean isNullNode(final Node valueNode) {
         return Tag.NULL.equals(valueNode.getTag());
     }
     
-    private NodeTuple processNoneTuple(final NodeTuple noneTuple) {
-        return new NodeTuple(noneTuple.getKeyNode(), new ScalarNode(Tag.STR, "", null, null, null));
+    private boolean isEmptyCollectionNode(final Node valueNode) {
+        return valueNode instanceof CollectionNode && (isEmptySequenceNode(valueNode) || isEmptyMappingNode(valueNode));
+    }
+    
+    private boolean isEmptySequenceNode(final Node valueNode) {
+        return Tag.SEQ.equals(valueNode.getTag()) && ((SequenceNode) valueNode).getValue().isEmpty();
+    }
+    
+    private boolean isEmptyMappingNode(final Node valueNode) {
+        return Tag.MAP.equals(valueNode.getTag()) && ((MappingNode) valueNode).getValue().isEmpty();
     }
 }

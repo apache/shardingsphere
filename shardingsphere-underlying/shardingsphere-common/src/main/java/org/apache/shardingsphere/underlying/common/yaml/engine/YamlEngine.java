@@ -23,7 +23,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.constructor.ShardingSphereYAMLConstructor;
 import org.apache.shardingsphere.underlying.common.yaml.representer.ShardingSphereYAMLRepresenter;
-import org.apache.shardingsphere.underlying.common.yaml.representer.processor.TupleProcessor;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.ByteArrayInputStream;
@@ -32,7 +31,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -116,20 +114,5 @@ public final class YamlEngine {
      */
     public static String marshal(final Object value) {
         return new Yaml(new ShardingSphereYAMLRepresenter()).dumpAsMap(value);
-    }
-    
-    /**
-     * Marshal YAML.
-     *
-     * @param value object to be marshaled
-     * @param tupleProcessors tuple processors
-     * @return YAML content
-     */
-    public static String marshal(final Object value, final Collection<TupleProcessor> tupleProcessors) {
-        ShardingSphereYAMLRepresenter yamlRepresenter = new ShardingSphereYAMLRepresenter();
-        for (TupleProcessor each : tupleProcessors) {
-            yamlRepresenter.registerTupleProcessor(each);
-        }
-        return new Yaml(yamlRepresenter).dumpAsMap(value);
     }
 }
