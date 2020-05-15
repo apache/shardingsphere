@@ -19,9 +19,11 @@ package org.apache.shardingsphere.sql.parser.binder.statement.impl;
 
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
@@ -32,6 +34,7 @@ import org.junit.Test;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -62,7 +65,7 @@ public final class InsertStatementContextTest {
     }
     
     @Test
-    public void assertGetGroupedParameters() {
+    public void assertGetGroupedParametersWithoutOnDuplicateParameter() {
         SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
         when(schemaMetaData.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status"));
         InsertStatement insertStatement = new InsertStatement();
@@ -70,6 +73,22 @@ public final class InsertStatementContextTest {
         setUpInsertValues(insertStatement);
         InsertStatementContext actual = new InsertStatementContext(schemaMetaData, Arrays.asList(1, "Tom", 2, "Jerry"), insertStatement);
         assertThat(actual.getGroupedParameters().size(), is(2));
+        assertNull(actual.getOnDuplicateKeyUpdateValueContext());
+        assertThat(actual.getOnDuplicateKeyUpdateParameters().size(), is(0));
+    }
+    
+    @Test
+    public void assertGetGroupedParametersWithOnDuplicateParameters() {
+        SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
+        when(schemaMetaData.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status"));
+        InsertStatement insertStatement = new InsertStatement();
+        insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
+        setUpInsertValues(insertStatement);
+        setUpOnDuplicateValues(insertStatement);
+        InsertStatementContext actual = new InsertStatementContext(schemaMetaData, Arrays.asList(1, "Tom", 2, "Jerry", "onDuplicateKeyUpdateColumnValue"), insertStatement);
+        assertThat(actual.getGroupedParameters().size(), is(2));
+        assertThat(actual.getOnDuplicateKeyUpdateValueContext().getColumns().size(), is(2));
+        assertThat(actual.getOnDuplicateKeyUpdateParameters().size(), is(1));
     }
     
     private void setUpInsertValues(final InsertStatement insertStatement) {
@@ -77,6 +96,21 @@ public final class InsertStatementContextTest {
                 new ParameterMarkerExpressionSegment(0, 0, 1), new ParameterMarkerExpressionSegment(0, 0, 2), new LiteralExpressionSegment(0, 0, "init"))));
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Arrays.asList(
                 new ParameterMarkerExpressionSegment(0, 0, 3), new ParameterMarkerExpressionSegment(0, 0, 4), new LiteralExpressionSegment(0, 0, "init"))));
+    }
+    
+    private void setUpOnDuplicateValues(final InsertStatement insertStatement) {
+        AssignmentSegment parameterMarkerExpressionAssignment = new AssignmentSegment(0, 0,
+                new ColumnSegment(0, 0, new IdentifierValue("on_duplicate_key_update_column_1")),
+                new ParameterMarkerExpressionSegment(0, 0, 4)
+        );
+        AssignmentSegment literalExpressionAssignment = new AssignmentSegment(0, 0,
+                new ColumnSegment(0, 0, new IdentifierValue("on_duplicate_key_update_column_2")),
+                new LiteralExpressionSegment(0, 0, 5)
+        );
+        OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment = new OnDuplicateKeyColumnsSegment(0, 0, Arrays.asList(
+                parameterMarkerExpressionAssignment, literalExpressionAssignment
+        ));
+        insertStatement.setOnDuplicateKeyColumns(onDuplicateKeyColumnsSegment);
     }
     
     private void assertInsertStatementContext(final InsertStatementContext actual) {

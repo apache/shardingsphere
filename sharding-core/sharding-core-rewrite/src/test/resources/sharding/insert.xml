@@ -125,4 +125,10 @@
         <input sql="INSERT INTO t_account SET amount = ?, status = ?" parameters="1000, OK" />
         <output sql="INSERT INTO t_account_1 SET amount = ?, status = ?, account_id = ?" parameters="1000, OK, 1" />
     </rewrite-assertion>
+
+    <rewrite-assertion id="insert_multiple_values_with_columns_with_id_for_parameters_and_on_duplicate_update" db-type="MySQL">
+        <input sql="INSERT INTO t_account VALUES (100, 1000, 'OK'), (101, 2000, 'OK'), (102, 1000, 'OK')  ON DUPLICATE KEY UPDATE status = ?" parameters="OK_UPDATE" />
+        <output sql="INSERT INTO t_account_0 VALUES (100, 1000, 'OK'), (102, 1000, 'OK')  ON DUPLICATE KEY UPDATE status = ?" parameters="OK_UPDATE" />
+        <output sql="INSERT INTO t_account_1 VALUES (101, 2000, 'OK')  ON DUPLICATE KEY UPDATE status = ?" parameters="OK_UPDATE" />
+    </rewrite-assertion>
 </rewrite-assertions>
