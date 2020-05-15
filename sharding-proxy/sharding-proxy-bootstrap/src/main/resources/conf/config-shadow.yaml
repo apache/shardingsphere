@@ -26,7 +26,7 @@
 # 
 ######################################################################################################
 #
-#schemaName: sharding_db
+#schemaName: shadow_db
 #
 #dataSources:
 #  ds:
@@ -46,7 +46,8 @@
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
 #
-#shadowRule:
+#rules:
+#- !SHADOW
 #  column: shadow
 #  shadowMappings:
 #    ds: shadow_ds
@@ -58,7 +59,7 @@
 #
 ######################################################################################################
 #
-#schemaName: sharding_db
+#schemaName: shadow_db
 #
 #dataSources:
 #  ds:
@@ -78,7 +79,8 @@
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
 #
-#shadowRule:
+#rules:
+#- !SHADOW
 #  column: shadow
 #  shadowMappings:
 #    ds: shadow_ds

@@ -19,9 +19,10 @@ package org.apache.shardingsphere.shardingjdbc.spring.namespace.parser;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.shardingjdbc.spring.datasource.SpringShardingDataSource;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.EncryptDataSourceBeanDefinitionParserTag;
 import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -35,10 +36,12 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -48,9 +51,9 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SpringShardingDataSource.class);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingSphereDataSource.class);
         factory.addConstructorArgValue(parseDataSources(element));
-        factory.addConstructorArgValue(parseShardingRuleConfiguration(element));
+        factory.addConstructorArgValue(parseRuleConfigurations(element));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
         factory.setDestroyMethodName("close");
         return factory.getBeanDefinition();
@@ -66,17 +69,23 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
         return result;
     }
     
-    private BeanDefinition parseShardingRuleConfiguration(final Element element) {
+    private Collection<BeanDefinition> parseRuleConfigurations(final Element element) {
         Element shardingRuleElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.SHARDING_RULE_CONFIG_TAG);
+        Collection<BeanDefinition> result = new ManagedList<>(3);
+        result.add(parseShardingRuleConfiguration(shardingRuleElement));
+        parseMasterSlaveRuleConfiguration(shardingRuleElement).ifPresent(result::add);
+        parseEncryptRuleConfiguration(shardingRuleElement).ifPresent(result::add);
+        return result;
+    }
+    
+    private BeanDefinition parseShardingRuleConfiguration(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingRuleConfiguration.class);
-        parseDefaultDatabaseShardingStrategy(factory, shardingRuleElement);
-        parseDefaultTableShardingStrategy(factory, shardingRuleElement);
-        factory.addPropertyValue("tableRuleConfigs", parseTableRulesConfiguration(shardingRuleElement));
-        factory.addPropertyValue("masterSlaveRuleConfigs", parseMasterSlaveRulesConfiguration(shardingRuleElement));
-        factory.addPropertyValue("bindingTableGroups", parseBindingTablesConfiguration(shardingRuleElement));
-        factory.addPropertyValue("broadcastTables", parseBroadcastTables(shardingRuleElement));
-        parseDefaultKeyGenerator(factory, shardingRuleElement);
-        parseEncryptRuleConfiguration(factory, shardingRuleElement);
+        parseDefaultDatabaseShardingStrategy(factory, element);
+        parseDefaultTableShardingStrategy(factory, element);
+        factory.addPropertyValue("tableRuleConfigs", parseTableRulesConfiguration(element));
+        factory.addPropertyValue("bindingTableGroups", parseBindingTablesConfiguration(element));
+        factory.addPropertyValue("broadcastTables", parseBroadcastTables(element));
+        parseDefaultKeyGenerator(factory, element);
         return factory.getBeanDefinition();
     }
     
@@ -98,26 +107,6 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
         String defaultTableShardingStrategy = element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.DEFAULT_TABLE_STRATEGY_REF_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(defaultTableShardingStrategy)) {
             factory.addPropertyReference("defaultTableShardingStrategyConfig", defaultTableShardingStrategy);
-        }
-    }
-    
-    private List<BeanDefinition> parseMasterSlaveRulesConfiguration(final Element element) {
-        Element masterSlaveRulesElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.MASTER_SLAVE_RULES_TAG);
-        if (null == masterSlaveRulesElement) {
-            return new LinkedList<>();
-        }
-        List<Element> masterSlaveRuleElements = DomUtils.getChildElementsByTagName(masterSlaveRulesElement, ShardingDataSourceBeanDefinitionParserTag.MASTER_SLAVE_RULE_TAG);
-        List<BeanDefinition> result = new ManagedList<>(masterSlaveRuleElements.size());
-        for (Element each : masterSlaveRuleElements) {
-            result.add(new MasterSlaveRuleConfigurationBeanDefinition(each).getBeanDefinition());
-        }
-        return result;
-    }
-    
-    private void parseEncryptRuleConfiguration(final BeanDefinitionBuilder factory, final Element element) {
-        Element encryptRuleElement = DomUtils.getChildElementByTagName(element, EncryptDataSourceBeanDefinitionParserTag.ENCRYPT_RULE_TAG);
-        if (null != encryptRuleElement) {
-            factory.addPropertyValue("encryptRuleConfig", EncryptRuleBeanDefinitionParser.parseEncryptRuleElement(encryptRuleElement));
         }
     }
     
@@ -201,6 +190,26 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
             result.add(each.getAttribute(ShardingDataSourceBeanDefinitionParserTag.TABLE_ATTRIBUTE));
         }
         return result;
+    }
+    
+    private Optional<BeanDefinition> parseMasterSlaveRuleConfiguration(final Element element) {
+        Element masterSlaveRulesElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.MASTER_SLAVE_RULES_TAG);
+        if (null == masterSlaveRulesElement) {
+            return Optional.empty();
+        }
+        List<Element> masterSlaveDataSourceElements = DomUtils.getChildElementsByTagName(masterSlaveRulesElement, ShardingDataSourceBeanDefinitionParserTag.MASTER_SLAVE_RULE_TAG);
+        List<BeanDefinition> masterSlaveDataSources = new ManagedList<>(masterSlaveDataSourceElements.size());
+        for (Element each : masterSlaveDataSourceElements) {
+            masterSlaveDataSources.add(new MasterSlaveDataSourceConfigurationBeanDefinition(each).getBeanDefinition());
+        }
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(MasterSlaveRuleConfiguration.class);
+        factory.addConstructorArgValue(masterSlaveDataSources);
+        return Optional.of(factory.getBeanDefinition());
+    }
+    
+    private Optional<BeanDefinition> parseEncryptRuleConfiguration(final Element element) {
+        Element encryptRuleElement = DomUtils.getChildElementByTagName(element, EncryptDataSourceBeanDefinitionParserTag.ENCRYPT_RULE_TAG);
+        return null == encryptRuleElement ? Optional.empty() : Optional.of(EncryptRuleBeanDefinitionParser.parseEncryptRuleElement(encryptRuleElement));
     }
     
     private Properties parseProperties(final Element element, final ParserContext parserContext) {

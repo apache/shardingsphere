@@ -34,7 +34,7 @@ public class TableMetaDataTest {
     private TableMetaData tableMetaData;
     
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("test", Types.INTEGER, "INT", true, false, true)), Collections.emptyList());
     }
     

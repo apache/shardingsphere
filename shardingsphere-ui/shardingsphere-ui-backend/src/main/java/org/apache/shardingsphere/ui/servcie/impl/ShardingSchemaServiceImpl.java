@@ -93,13 +93,7 @@ public final class ShardingSchemaServiceImpl implements ShardingSchemaService {
     
     private void checkRuleConfiguration(final String configData) {
         try {
-            if (configData.contains("encryptors:\n")) {
-                ConfigurationYamlConverter.loadEncryptRuleConfiguration(configData);
-            } else if (configData.contains("tables:\n") || configData.contains("defaultTableStrategy:\n")) {
-                ConfigurationYamlConverter.loadShardingRuleConfiguration(configData);
-            } else {
-                ConfigurationYamlConverter.loadMasterSlaveRuleConfiguration(configData);
-            }
+            ConfigurationYamlConverter.loadRuleConfigurations(configData);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -135,7 +129,7 @@ public final class ShardingSchemaServiceImpl implements ShardingSchemaService {
         ConfigCenterRepository configCenterRepository = configCenterService.getActivatedConfigCenter();
         String schemaPath = configCenterService.getActivateConfigurationNode().getSchemaPath();
         String schemaNames = configCenterRepository.get(schemaPath);
-        List<String> schemaNameList = Strings.isNullOrEmpty(schemaNames)?new ArrayList<>():new ArrayList<>(Splitter.on(",").splitToList(schemaNames));
+        List<String> schemaNameList = Strings.isNullOrEmpty(schemaNames) ? new ArrayList<>() : new ArrayList<>(Splitter.on(",").splitToList(schemaNames));
         if (!schemaNameList.contains(schemaName)) {
             schemaNameList.add(schemaName);
             configCenterRepository.persist(schemaPath, Joiner.on(",").join(schemaNameList));

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.executor;
 
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutor;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.ExecutorExceptionHandler;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.underlying.executor.sql.QueryResult;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.StatementExecuteUnit;
 import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
@@ -61,7 +61,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     @Override
     public void setUp() throws SQLException {
         super.setUp();
-        ShardingConnection connection = getConnection();
+        ShardingSphereConnection connection = getConnection();
         actual = spy(new StatementExecutor(connection.getDataSourceMap(), connection.getRuntimeContext(), new SQLExecutor(getExecutorKernel(), false)));
     }
     

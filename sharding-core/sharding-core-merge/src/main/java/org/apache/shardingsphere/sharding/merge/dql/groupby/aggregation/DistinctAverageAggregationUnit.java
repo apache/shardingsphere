@@ -34,9 +34,9 @@ public final class DistinctAverageAggregationUnit implements AggregationUnit {
     
     private BigDecimal sum;
     
-    private Collection<Comparable<?>> countValues = new LinkedHashSet<>();
+    private final Collection<Comparable<?>> countValues = new LinkedHashSet<>();
     
-    private Collection<Comparable<?>> sumValues = new LinkedHashSet<>();
+    private final Collection<Comparable<?>> sumValues = new LinkedHashSet<>();
     
     @Override
     public void merge(final List<Comparable<?>> values) {

@@ -63,22 +63,22 @@ public final class MySQLNegotiateHandlerTest {
     @Mock
     private ChannelPipeline pipeline;
     
-    private MySQLNegotiateHandler mySQLNegotiateHandler;
+    private MySQLNegotiateHandler mysqlNegotiateHandler;
     
     @Before
     public void setUp() {
         when(channelHandlerContext.channel()).thenReturn(channel);
         when(channel.pipeline()).thenReturn(pipeline);
-        mySQLNegotiateHandler = new MySQLNegotiateHandler(USER_NAME, PASSWORD, authResultCallback);
+        mysqlNegotiateHandler = new MySQLNegotiateHandler(USER_NAME, PASSWORD, authResultCallback);
     }
     
     @Test
     public void assertChannelReadHandshakeInitPacket() throws NoSuchFieldException, IllegalAccessException {
         MySQLHandshakePacket handshakePacket = new MySQLHandshakePacket(0, new MySQLAuthPluginData(new byte[8], new byte[12]));
         handshakePacket.setAuthPluginName(MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION);
-        mySQLNegotiateHandler.channelRead(channelHandlerContext, handshakePacket);
+        mysqlNegotiateHandler.channelRead(channelHandlerContext, handshakePacket);
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLHandshakeResponse41Packet.class));
-        ServerInfo serverInfo = ReflectionUtil.getFieldValueFromClass(mySQLNegotiateHandler, "serverInfo", ServerInfo.class);
+        ServerInfo serverInfo = ReflectionUtil.getFieldValueFromClass(mysqlNegotiateHandler, "serverInfo", ServerInfo.class);
         assertThat(serverInfo.getServerVersion().getMajor(), is(5));
         assertThat(serverInfo.getServerVersion().getMinor(), is(6));
         assertThat(serverInfo.getServerVersion().getSeries(), is(4));
@@ -88,15 +88,15 @@ public final class MySQLNegotiateHandlerTest {
     public void assertChannelReadOkPacket() throws NoSuchFieldException, IllegalAccessException {
         MySQLOKPacket okPacket = new MySQLOKPacket(0);
         ServerInfo serverInfo = new ServerInfo();
-        ReflectionUtil.setFieldValueToClass(mySQLNegotiateHandler, "serverInfo", serverInfo);
-        mySQLNegotiateHandler.channelRead(channelHandlerContext, okPacket);
-        verify(pipeline).remove(mySQLNegotiateHandler);
+        ReflectionUtil.setFieldValueToClass(mysqlNegotiateHandler, "serverInfo", serverInfo);
+        mysqlNegotiateHandler.channelRead(channelHandlerContext, okPacket);
+        verify(pipeline).remove(mysqlNegotiateHandler);
         verify(authResultCallback).setSuccess(serverInfo);
     }
     
     @Test(expected = RuntimeException.class)
     public void assertChannelReadErrorPacket() {
         MySQLErrPacket errorPacket = new MySQLErrPacket(0, MySQLServerErrorCode.ER_NO_DB_ERROR);
-        mySQLNegotiateHandler.channelRead(channelHandlerContext, errorPacket);
+        mysqlNegotiateHandler.channelRead(channelHandlerContext, errorPacket);
     }
 }

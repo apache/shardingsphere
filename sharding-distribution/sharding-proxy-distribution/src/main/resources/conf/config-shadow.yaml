@@ -46,7 +46,8 @@
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
 #
-#shadowRule:
+#rules:
+#- !SHADOW
 #  column: shadow
 #  shadowMappings:
 #    ds: shadow_ds
@@ -78,7 +79,8 @@
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
 #
-#shadowRule:
+#rules:
+#- !SHADOW
 #  column: shadow
 #  shadowMappings:
 #    ds: shadow_ds

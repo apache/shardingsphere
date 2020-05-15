@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingscaling.mysql;
 
-import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,6 +27,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -60,8 +60,8 @@ public final class MySQLLogPositionManagerTest {
     
     @Test
     public void assertGetCurrentPosition() {
-        MySQLLogPositionManager mySQLLogManager = new MySQLLogPositionManager(dataSource);
-        BinlogPosition actual = mySQLLogManager.getCurrentPosition();
+        MySQLLogPositionManager mysqlLogManager = new MySQLLogPositionManager(dataSource);
+        BinlogPosition actual = mysqlLogManager.getCurrentPosition();
         assertThat(actual.getServerId(), is(SERVER_ID));
         assertThat(actual.getFilename(), is(LOG_FILE_NAME));
         assertThat(actual.getPosition(), is(LOG_POSITION));
@@ -69,14 +69,13 @@ public final class MySQLLogPositionManagerTest {
     
     @Test
     public void assertUpdateCurrentPosition() {
-        MySQLLogPositionManager mySQLLogManager = new MySQLLogPositionManager(dataSource);
+        MySQLLogPositionManager mysqlLogManager = new MySQLLogPositionManager(dataSource);
         BinlogPosition expected = new BinlogPosition(LOG_FILE_NAME, LOG_POSITION, SERVER_ID);
-        mySQLLogManager.updateCurrentPosition(expected);
-        assertThat(mySQLLogManager.getCurrentPosition(), is(expected));
+        mysqlLogManager.updateCurrentPosition(expected);
+        assertThat(mysqlLogManager.getCurrentPosition(), is(expected));
     }
     
-    @SneakyThrows
-    private PreparedStatement mockPositionStatement() {
+    private PreparedStatement mockPositionStatement() throws SQLException {
         PreparedStatement result = mock(PreparedStatement.class);
         ResultSet resultSet = mock(ResultSet.class);
         when(result.executeQuery()).thenReturn(resultSet);
@@ -86,8 +85,7 @@ public final class MySQLLogPositionManagerTest {
         return result;
     }
     
-    @SneakyThrows
-    private PreparedStatement mockServerIdStatement() {
+    private PreparedStatement mockServerIdStatement() throws SQLException {
         PreparedStatement result = mock(PreparedStatement.class);
         ResultSet resultSet = mock(ResultSet.class);
         when(result.executeQuery()).thenReturn(resultSet);

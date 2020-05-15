@@ -54,6 +54,6 @@ public final class RegistryCenterTest {
     @Test
     public void assertPersistDataSourcesNode() {
         registryCenter.persistDataSourcesNode();
-        verify(registryCenterRepository).persist("/test/state/datasources", "");
+        verify(registryCenterRepository).persist("/test/registry/datasources", "");
     }
 }

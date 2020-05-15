@@ -35,7 +35,8 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 50
 
-shardingRule:
+rules:
+- !SHARDING
   defaultDatabaseStrategy:
     none:
   tables:

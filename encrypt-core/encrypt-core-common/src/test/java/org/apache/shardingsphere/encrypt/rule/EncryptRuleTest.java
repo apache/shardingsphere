@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.encrypt.rule;
 
-import org.apache.shardingsphere.encrypt.api.EncryptColumnRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
+import com.google.common.collect.ImmutableMap;
+import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptorRuleConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -56,9 +57,7 @@ public final class EncryptRuleTest {
         ruleConfigurationMap.put(idNumber, idNumberConfig);
         EncryptorRuleConfiguration encryptorConfig = new EncryptorRuleConfiguration("assistedTest", props);
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration(ruleConfigurationMap);
-        encryptRuleConfig = new EncryptRuleConfiguration();
-        encryptRuleConfig.getEncryptors().put("aes", encryptorConfig);
-        encryptRuleConfig.getTables().put(table, tableConfig);
+        encryptRuleConfig = new EncryptRuleConfiguration(ImmutableMap.of("aes", encryptorConfig), ImmutableMap.of(table, tableConfig));
     }
     
     @Test

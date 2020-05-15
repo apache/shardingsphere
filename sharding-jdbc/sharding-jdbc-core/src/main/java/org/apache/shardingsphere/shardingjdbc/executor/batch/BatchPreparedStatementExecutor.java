@@ -19,11 +19,13 @@ package org.apache.shardingsphere.shardingjdbc.executor.batch;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.impl.ShardingRuntimeContext;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
+import org.apache.shardingsphere.shardingjdbc.executor.callback.RuleExecuteBatchExecutorCallback;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
+import org.apache.shardingsphere.sharding.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.sharding.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
+import org.apache.shardingsphere.underlying.common.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionUnit;
@@ -32,7 +34,6 @@ import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.E
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutor;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutorCallback;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.impl.DefaultSQLExecutorCallback;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.impl.RuleSQLExecutorCallback;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -51,14 +52,12 @@ import java.util.stream.Collectors;
 public final class BatchPreparedStatementExecutor {
     
     static {
-        ShardingSphereServiceLoader.register(RuleSQLExecutorCallback.class);
+        ShardingSphereServiceLoader.register(RuleExecuteBatchExecutorCallback.class);
     }
     
-    private final ShardingRuntimeContext runtimeContext;
+    private final RuntimeContext runtimeContext;
     
     private final SQLExecutor sqlExecutor;
-    
-    private final RuleSQLExecutorCallback ruleSQLExecutorCallback;
     
     private final Collection<InputGroup<StatementExecuteUnit>> inputGroups;
     
@@ -67,17 +66,11 @@ public final class BatchPreparedStatementExecutor {
     
     private int batchCount;
     
-    public BatchPreparedStatementExecutor(final ShardingRuntimeContext runtimeContext, final SQLExecutor sqlExecutor) {
+    public BatchPreparedStatementExecutor(final RuntimeContext runtimeContext, final SQLExecutor sqlExecutor) {
         this.runtimeContext = runtimeContext;
         this.sqlExecutor = sqlExecutor;
-        ruleSQLExecutorCallback = findRuleSQLExecutorCallback().orElse(null);
         inputGroups = new LinkedList<>();
         batchExecutionUnits = new LinkedList<>();
-    }
-    
-    private Optional<RuleSQLExecutorCallback> findRuleSQLExecutorCallback() {
-        Map<BaseRule, RuleSQLExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(runtimeContext.getRule().toRules(), RuleSQLExecutorCallback.class);
-        return callbackMap.isEmpty() ? Optional.empty() : Optional.of(callbackMap.values().iterator().next());
     }
     
     /**
@@ -110,11 +103,7 @@ public final class BatchPreparedStatementExecutor {
     }
     
     private void reviseBatchExecutionUnits(final BatchExecutionUnit batchExecutionUnit) {
-        for (BatchExecutionUnit each : batchExecutionUnits) {
-            if (each.equals(batchExecutionUnit)) {
-                reviseBatchExecutionUnit(each, batchExecutionUnit);
-            }
-        }
+        batchExecutionUnits.stream().filter(each -> each.equals(batchExecutionUnit)).forEach(each -> reviseBatchExecutionUnit(each, batchExecutionUnit));
     }
     
     private void reviseBatchExecutionUnit(final BatchExecutionUnit oldBatchExecutionUnit, final BatchExecutionUnit newBatchExecutionUnit) {
@@ -124,22 +113,20 @@ public final class BatchPreparedStatementExecutor {
     
     private void handleNewBatchExecutionUnits(final Collection<BatchExecutionUnit> newExecutionUnits) {
         newExecutionUnits.removeAll(batchExecutionUnits);
-        for (BatchExecutionUnit each : newExecutionUnits) {
-            each.mapAddBatchCount(batchCount);
-        }
+        newExecutionUnits.forEach(each -> each.mapAddBatchCount(batchCount));
         batchExecutionUnits.addAll(newExecutionUnits);
     }
     
     /**
      * Execute batch.
-     * 
+     *
      * @param sqlStatementContext SQL statement context
      * @return execute results
      * @throws SQLException SQL exception
      */
     public int[] executeBatch(final SQLStatementContext sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<int[]> callback = getSQLExecutorCallback(new DefaultSQLExecutorCallback<int[]>(runtimeContext.getDatabaseType(), isExceptionThrown) {
+        SQLExecutorCallback<int[]> callback = getExecuteBatchExecutorCallback(new DefaultSQLExecutorCallback<int[]>(runtimeContext.getDatabaseType(), isExceptionThrown) {
             
             @Override
             protected int[] executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -147,15 +134,17 @@ public final class BatchPreparedStatementExecutor {
             }
         });
         List<int[]> results = sqlExecutor.execute(inputGroups, callback);
-        if (!runtimeContext.getRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())) {
-            return accumulate(results);
-        } else {
-            return results.get(0);
-        }
+        return isNeedAccumulate(runtimeContext.getRules().stream().filter(rule -> rule instanceof DataNodeRoutedRule).collect(Collectors.toList()), sqlStatementContext)
+                ? accumulate(results) : results.get(0);
     }
     
-    private SQLExecutorCallback<int[]> getSQLExecutorCallback(final DefaultSQLExecutorCallback callback) {
-        return null == ruleSQLExecutorCallback ? callback : ruleSQLExecutorCallback;
+    private SQLExecutorCallback<int[]> getExecuteBatchExecutorCallback(final DefaultSQLExecutorCallback callback) {
+        Map<ShardingSphereRule, RuleExecuteBatchExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(runtimeContext.getRules(), RuleExecuteBatchExecutorCallback.class);
+        return callbackMap.isEmpty() ? callback : callbackMap.values().iterator().next();
+    }
+    
+    private boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext sqlStatementContext) {
+        return rules.stream().anyMatch(each -> ((DataNodeRoutedRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames()));
     }
     
     private int[] accumulate(final List<int[]> results) {
@@ -205,15 +194,8 @@ public final class BatchPreparedStatementExecutor {
      * @return parameter sets
      */
     public List<List<Object>> getParameterSet(final Statement statement) {
-        List<List<Object>> result = new LinkedList<>();
-        for (InputGroup<StatementExecuteUnit> each : inputGroups) {
-            Optional<StatementExecuteUnit> target = findStatementExecuteUnit(statement, each);
-            if (target.isPresent()) {
-                result = getParameterSets(target.get());
-                break;
-            }
-        }
-        return result;
+        return inputGroups.stream().map(each -> findStatementExecuteUnit(statement, each)).filter(Optional::isPresent).findFirst().map(Optional::get)
+                .map(this::getParameterSets).orElse(Collections.emptyList());
     }
     
     private Optional<StatementExecuteUnit> findStatementExecuteUnit(final Statement statement, final InputGroup<StatementExecuteUnit> executeGroup) {

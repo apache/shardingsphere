@@ -17,26 +17,30 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint;
 
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.api.hint.HintManager;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.rule.TableRule;
+import com.google.common.collect.ImmutableMap;
+import org.apache.shardingsphere.underlying.common.hint.HintManager;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintManagerHolder;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collections;
 
@@ -125,8 +129,7 @@ public final class ShardingCTLHintBackendHandlerTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertShowStatus() {
+    public void assertShowStatus() throws SQLException {
         clearThreadLocal();
         String sql = "sctl:hint show status";
         ShardingCTLHintBackendHandler defaultShardingCTLHintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
@@ -155,16 +158,12 @@ public final class ShardingCTLHintBackendHandlerTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertShowTableStatus() {
+    public void assertShowTableStatus() throws SQLException {
         clearThreadLocal();
-        TableRule tableRule = mock(TableRule.class);
-        ShardingRule shardingRule = mock(ShardingRule.class);
-        LogicSchema logicSchema = mock(LogicSchema.class);
-        when(tableRule.getLogicTable()).thenReturn("user");
-        when(shardingRule.getTableRules()).thenReturn(Collections.singletonList(tableRule));
-        when(logicSchema.getShardingRule()).thenReturn(shardingRule);
-        when(backendConnection.getLogicSchema()).thenReturn(logicSchema);
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(schema.getMetaData()).thenReturn(
+                new ShardingSphereMetaData(mock(DataSourceMetas.class), new RuleSchemaMetaData(new SchemaMetaData(ImmutableMap.of("user", mock(TableMetaData.class))), Collections.emptyMap())));
+        when(backendConnection.getSchema()).thenReturn(schema);
         String sql = "sctl:hint show table status";
         ShardingCTLHintBackendHandler defaultShardingCTLHintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
         BackendResponse backendResponse = defaultShardingCTLHintBackendHandler.execute();

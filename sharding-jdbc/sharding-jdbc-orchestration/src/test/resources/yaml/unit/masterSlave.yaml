@@ -26,8 +26,9 @@ dataSources:
     url: jdbc:h2:mem:ds_s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password:
-    
-masterSlaveRule:
+
+rules:
+- !MASTER_SLAVE
   name: ms_ds
   masterDataSourceName: ds_m
   slaveDataSourceNames:

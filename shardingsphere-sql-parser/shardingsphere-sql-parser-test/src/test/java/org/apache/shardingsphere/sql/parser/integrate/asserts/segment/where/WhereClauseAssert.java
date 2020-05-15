@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.PredicatesAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.predicate.ExpectedWhereClause;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.segment.impl.predicate.ExpectedWhereClause;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 
 /**

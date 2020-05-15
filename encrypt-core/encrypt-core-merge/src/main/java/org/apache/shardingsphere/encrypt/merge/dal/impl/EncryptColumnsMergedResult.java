@@ -53,7 +53,7 @@ public abstract class EncryptColumnsMergedResult implements MergedResult {
     @Override
     public final boolean next() throws SQLException { 
         boolean hasNext = nextValue();
-        if (hasNext && getTableEncryptColumnMetaDatas().isEmpty()) {
+        if (hasNext && getTableEncryptColumnMetaDataList().isEmpty()) {
             return true;
         }
         if (!hasNext) {
@@ -71,16 +71,16 @@ public abstract class EncryptColumnsMergedResult implements MergedResult {
     }
     
     private Collection<String> getAssistedQueryColumns() {
-        return getTableEncryptColumnMetaDatas().stream().map(EncryptColumnMetaData::getAssistedQueryColumnName)
+        return getTableEncryptColumnMetaDataList().stream().map(EncryptColumnMetaData::getAssistedQueryColumnName)
                 .collect(Collectors.toList());
     }
     
     private Collection<String> getPlainColumns() {
-        return getTableEncryptColumnMetaDatas().stream().map(EncryptColumnMetaData::getPlainColumnName)
+        return getTableEncryptColumnMetaDataList().stream().map(EncryptColumnMetaData::getPlainColumnName)
                 .collect(Collectors.toList());
     }
     
-    private Collection<EncryptColumnMetaData> getTableEncryptColumnMetaDatas() {
+    private Collection<EncryptColumnMetaData> getTableEncryptColumnMetaDataList() {
         Collection<EncryptColumnMetaData> result = new LinkedList<>();
         for (Entry<String, ColumnMetaData> entry : schemaMetaData.get(tableName).getColumns().entrySet()) {
             if (entry.getValue() instanceof EncryptColumnMetaData) {

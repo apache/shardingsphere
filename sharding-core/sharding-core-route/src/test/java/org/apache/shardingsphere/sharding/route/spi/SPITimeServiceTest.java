@@ -33,7 +33,7 @@ import static org.junit.Assert.assertTrue;
 
 public final class SPITimeServiceTest {
     
-    private SPITimeService timeService = new SPITimeService();
+    private final SPITimeService timeService = new SPITimeService();
     
     @Test
     public void assertGetTime() {
@@ -57,7 +57,7 @@ public final class SPITimeServiceTest {
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private Optional<TimeServiceFixture> getFixtureHook() {
         Field routingHooksField = SPITimeService.class.getDeclaredField("timeServices");
         routingHooksField.setAccessible(true);

@@ -22,9 +22,9 @@ import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceFactory;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.AbstractShardingScalingExecutor;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.Channel;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPosition;
+import org.apache.shardingsphere.shardingscaling.core.job.position.LogPosition;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.dumper.LogDumper;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.NopLogPosition;
+import org.apache.shardingsphere.shardingscaling.core.job.position.NopLogPosition;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.FinishedRecord;
@@ -58,6 +58,8 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor imp
     
     private final MetaDataManager metaDataManager;
     
+    private final Random random = new Random();
+    
     @Setter
     private Channel channel;
     
@@ -80,7 +82,7 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor imp
     public void dump(final Channel channel) {
         JDBCDataSourceConfiguration jdbcDataSourceConfiguration = (JDBCDataSourceConfiguration) rdbmsConfiguration.getDataSourceConfiguration();
         final JdbcUri uri = new JdbcUri(jdbcDataSourceConfiguration.getJdbcUrl());
-        MySQLClient client = new MySQLClient(new Random().nextInt(), uri.getHostname(), uri.getPort(), jdbcDataSourceConfiguration.getUsername(), jdbcDataSourceConfiguration.getPassword());
+        MySQLClient client = new MySQLClient(random.nextInt(), uri.getHostname(), uri.getPort(), jdbcDataSourceConfiguration.getUsername(), jdbcDataSourceConfiguration.getPassword());
         client.connect();
         client.subscribe(binlogPosition.getFilename(), binlogPosition.getPosition());
         while (isRunning()) {

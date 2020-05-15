@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type;
 
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingDataSourceGroupBroadcastRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingDatabaseBroadcastRoutingEngine;
-import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingMasterInstanceBroadcastRoutingEngine;
+import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingInstanceBroadcastRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingTableBroadcastRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.complex.ShardingComplexRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.standard.ShardingStandardRoutingEngine;
@@ -82,7 +82,7 @@ public final class ShardingRouteEngineFactoryTest {
     
     private Collection<String> tableNames;
 
-    private ConfigurationProperties properties = new ConfigurationProperties(new Properties());
+    private final ConfigurationProperties properties = new ConfigurationProperties(new Properties());
     
     @Before
     public void setUp() {
@@ -155,7 +155,7 @@ public final class ShardingRouteEngineFactoryTest {
         DCLStatement dclStatement = mock(DCLStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(dclStatement);
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, shardingSphereMetaData, sqlStatementContext, shardingConditions, properties);
-        assertThat(actual, instanceOf(ShardingMasterInstanceBroadcastRoutingEngine.class));
+        assertThat(actual, instanceOf(ShardingInstanceBroadcastRoutingEngine.class));
     }
     
     @Test

@@ -37,7 +37,8 @@
 #  maxLifetimeMilliseconds: 1800000
 #  maxPoolSize: 50
 #
-#encryptRule:
+#rules:
+#- !ENCRYPT
 #  encryptors:
 #    encryptor_aes:
 #      type: aes
@@ -73,7 +74,8 @@
 #  maxLifetimeMilliseconds: 1800000
 #  maxPoolSize: 50
 #
-#encryptRule:
+#rules:
+#- !ENCRYPT
 #  encryptors:
 #    encryptor_aes:
 #      type: aes

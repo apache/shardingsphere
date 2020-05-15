@@ -21,9 +21,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import java.util.Properties;
 import lombok.Getter;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.spi.type.TypedSPIRegistry;
+import org.apache.shardingsphere.sharding.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.sharding.spi.keygen.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.spi.type.TypedSPIRegistry;
 import org.springframework.beans.factory.FactoryBean;
 
 /**

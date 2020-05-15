@@ -25,7 +25,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.CircuitStateChangedEvent;
-import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
@@ -38,6 +38,7 @@ import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -88,7 +89,7 @@ public abstract class AbstractOrchestrationDataSource extends AbstractUnsupporte
     
     @Override
     public final void close() throws Exception {
-        ((AbstractDataSourceAdapter) getDataSource()).close();
+        ((ShardingSphereDataSource) getDataSource()).close();
         shardingOrchestrationFacade.close();
     }
     
@@ -109,8 +110,8 @@ public abstract class AbstractOrchestrationDataSource extends AbstractUnsupporte
     }
     
     protected final void initShardingOrchestrationFacade(
-            final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigurations, final Map<String, RuleConfiguration> schemaRuleMap, final Properties props) {
-        shardingOrchestrationFacade.init(dataSourceConfigurations, schemaRuleMap, null, props);
+            final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigurations, final Map<String, Collection<RuleConfiguration>> schemaRules, final Properties props) {
+        shardingOrchestrationFacade.init(dataSourceConfigurations, schemaRules, null, props);
         this.dataSourceConfigurations.putAll(dataSourceConfigurations.get(DefaultSchema.LOGIC_NAME));
     }
     

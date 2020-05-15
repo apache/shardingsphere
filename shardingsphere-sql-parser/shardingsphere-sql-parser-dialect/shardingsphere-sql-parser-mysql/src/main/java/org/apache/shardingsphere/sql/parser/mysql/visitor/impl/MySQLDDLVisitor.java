@@ -21,6 +21,8 @@ import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.Token;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.DDLVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.KeyPart_Context;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.KeyParts_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AddColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterSpecificationContext;
@@ -83,6 +85,7 @@ import org.apache.shardingsphere.sql.parser.sql.value.collection.CollectionValue
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * DDL visitor for MySQL.
@@ -267,7 +270,7 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     public ASTNode visitConstraintDefinition(final ConstraintDefinitionContext ctx) {
         ConstraintDefinitionSegment result = new ConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
         if (null != ctx.primaryKeyOption()) {
-            result.getPrimaryKeyColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.primaryKeyOption().columnNames())).getValue());
+            result.getPrimaryKeyColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.primaryKeyOption().keyParts_())).getValue());
         }
         if (null != ctx.foreignKeyOption()) {
             result.setReferencedTable((SimpleTableSegment) visit(ctx.foreignKeyOption().referenceDefinition()));
@@ -369,6 +372,18 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
         DropIndexStatement result = new DropIndexStatement();
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitKeyParts_(final KeyParts_Context ctx) {
+        CollectionValue<ColumnSegment> result = new CollectionValue<>();
+        List<KeyPart_Context> keyparts = ctx.keyPart_();
+        for (KeyPart_Context each : keyparts) {
+            if (null != each.columnName()) {
+                result.getValue().add((ColumnSegment) visit(each.columnName()));
+            }
+        }
         return result;
     }
 }

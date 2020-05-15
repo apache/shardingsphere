@@ -1,0 +1,107 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<integrate-test-cases>
+    <!-- FIXME cannot process un-config table t_log -->
+    <!--<ddl-test-case sql="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10))">-->
+        <!--<assertion table="t_log" expected-data-file="create_table.xml" />-->
+    <!--</ddl-test-case>-->
+    <!---->
+    <!--<ddl-test-case sql="CREATE TABLE t_log(id int PRIMARY KEY, status boolean)" db-types="PostgreSQL">-->
+        <!--<assertion table="t_log" expected-data-file="create_table.xml" />-->
+    <!--</ddl-test-case>-->
+    <!---->
+    <!--<ddl-test-case sql="CREATE TABLE IF NOT EXISTS t_log(id int, status varchar(10))" db-types="MySQL,PostgreSQL">-->
+        <!--<assertion table="t_log" expected-data-file="create_table.xml" />-->
+    <!--</ddl-test-case>-->
+    <!---->
+    <!--<ddl-test-case sql="CREATE TEMPORARY TABLE IF NOT EXISTS t_temp_log(id int, status varchar(10))" db-types="MySQL,PostgreSQL">-->
+        <!--<assertion table="t_temp_log" expected-data-file="create_temporary_table.xml" />-->
+    <!--</ddl-test-case>-->
+    <!---->
+    <!--<ddl-test-case sql="CREATE GLOBAL TEMPORARY TABLE t_temp_log(id int, status varchar(10))" db-types="Oracle,PostgreSQL">-->
+        <!--<assertion table="t_temp_log" expected-data-file="create_temporary_table.xml" />-->
+    <!--</ddl-test-case>-->
+    <!---->
+    <!--<ddl-test-case sql="CREATE LOCAL TEMP TABLE t_temp_log(id int, status varchar(10))" db-types="PostgreSQL">-->
+        <!--<assertion table="t_temp_log" expected-data-file="create_temporary_table.xml" />-->
+    <!--</ddl-test-case>-->
+    <!---->
+    <!--<ddl-test-case sql="CREATE UNLOGGED TABLE t_log(id int, status varchar(10))" db-types="PostgreSQL">-->
+        <!--<assertion table="t_log" expected-data-file="create_table.xml" />-->
+    <!--</ddl-test-case>-->
+    <!---->
+    <!--<ddl-test-case sql="CREATE INDEX t_log_index ON t_log (id)">-->
+        <!--<assertion init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="create_index.xml" />-->
+    <!--</ddl-test-case>-->
+    <!---->
+    <!--<ddl-test-case sql="CREATE UNIQUE INDEX t_log_index ON t_log (id)">-->
+        <!--<assertion init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="create_unique_index.xml" />-->
+    <!--</ddl-test-case>-->
+    <!---->
+    <!--<ddl-test-case sql="ALTER TABLE t_log ADD name varchar(10)">-->
+        <!--<assertion init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="alter_table.xml" />-->
+    <!--</ddl-test-case>-->
+    <!---->
+    <!--<ddl-test-case sql="ALTER TABLE IF EXISTS ONLY t_log ADD name varchar" db-types="PostgreSQL">-->
+        <!--<assertion init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="alter_table.xml" />-->
+    <!--</ddl-test-case>-->
+    <!---->
+    <!--<ddl-test-case sql="DROP TABLE t_log">-->
+        <!--<assertion init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />-->
+    <!--</ddl-test-case>-->
+    <!---->
+    <!--<ddl-test-case sql="DROP TABLE IF EXISTS t_log" db-types="MySQL,PostgreSQL,SQLServer">-->
+        <!--<assertion init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />-->
+    <!--</ddl-test-case>-->
+    <!---->
+    <!--<ddl-test-case sql="DROP TEMPORARY TABLE IF EXISTS t_temp_log" db-types="MySQL">-->
+        <!--<assertion init-sql="CREATE TABLE t_temp_log(id int, status varchar(10))" table="t_temp_log" expected-data-file="empty_temp_log.xml" />-->
+    <!--</ddl-test-case>-->
+    <!---->
+    <!--<ddl-test-case sql="DROP TABLE t_log RESTRICT" db-types="MySQL,PostgreSQL">-->
+        <!--<assertion init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />-->
+    <!--</ddl-test-case>-->
+    <!---->
+    <!--<ddl-test-case sql="DROP TABLE t_log CASCADE" db-types="MySQL,PostgreSQL">-->
+        <!--<assertion init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />-->
+    <!--</ddl-test-case>-->
+    <!---->
+    <!--<ddl-test-case sql="DROP TABLE t_log CASCADE CONSTRAINTS PURGE" db-types="Oracle">-->
+        <!--<assertion init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />-->
+    <!--</ddl-test-case>-->
+    <!---->
+    <!--<ddl-test-case sql="DROP INDEX t_log_index ON t_log" db-types="MySQL,SQLServer">-->
+        <!--<assertion init-sql="CREATE TABLE t_log(id int, status varchar(10));CREATE INDEX t_log_index ON t_log(status)" table="t_log" expected-data-file="empty_log.xml" />-->
+    <!--</ddl-test-case>-->
+    <!---->
+    <!--<ddl-test-case sql="DROP INDEX order_index" db-types="PostgreSQL,Oracle">-->
+        <!--<assertion init-sql="CREATE TABLE t_log(id int, status varchar(10));CREATE INDEX t_log_index ON t_log(status)" table="t_log" expected-data-file="empty_log.xml" />-->
+    <!--</ddl-test-case>-->
+    <!---->
+    <!--<ddl-test-case sql="DROP INDEX IF EXISTS order_index" db-types="PostgreSQL">-->
+        <!--<assertion init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />-->
+    <!--</ddl-test-case>-->
+    <!---->
+    <!--<ddl-test-case sql="TRUNCATE TABLE t_log>-->
+        <!--<assertion init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />-->
+    <!--</ddl-test-case>-->
+    <!---->
+    <!--<ddl-test-case sql="TRUNCATE TABLE ONLY t_log" db-types="PostgreSQL">-->
+        <!--<assertion init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />-->
+    <!--</ddl-test-case>-->
+</integrate-test-cases>

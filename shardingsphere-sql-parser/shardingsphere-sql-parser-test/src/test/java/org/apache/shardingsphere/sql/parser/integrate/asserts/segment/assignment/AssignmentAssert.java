@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.column.ColumnAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.assignment.ExpectedAssignment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.segment.impl.assignment.ExpectedAssignment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 
 /**

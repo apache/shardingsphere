@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPosition;
+import org.apache.shardingsphere.shardingscaling.core.job.position.LogPosition;
 import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntryLoader;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;

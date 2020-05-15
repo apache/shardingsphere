@@ -22,7 +22,8 @@ dataSources:
     username: sa
     password:
 
-shardingRule:
+rules:
+- !SHARDING
   tables:
     t_account:
       actualDataNodes: db.t_account_${0..1}
@@ -59,34 +60,34 @@ shardingRule:
               algorithm.expression: t_account_${account_id % 2}
   bindingTables:
     - t_account, t_account_detail
-  
-  encryptRule:
-    tables:
-      t_account:
-        columns:
-          password:
-            cipherColumn: cipher_password
-            assistedQueryColumn: assisted_query_password
-            encryptor: assisted_query
-          amount:
-            cipherColumn: cipher_amount
-            encryptor: normal
-      t_account_bak:
-        columns:
-          password:
-            cipherColumn: cipher_password
-            assistedQueryColumn: assisted_query_password
-            plainColumn: plain_password
-            encryptor: assisted_query
-          amount:
-            cipherColumn: cipher_amount
-            plainColumn: plain_amount
-            encryptor: normal
-    encryptors:
-      normal:
-        type: NORMAL_ENCRYPT
-      assisted_query:
-        type: ASSISTED_QUERY_ENCRYPT
+
+- !ENCRYPT
+  tables:
+    t_account:
+      columns:
+        password:
+          cipherColumn: cipher_password
+          assistedQueryColumn: assisted_query_password
+          encryptor: assisted_query
+        amount:
+          cipherColumn: cipher_amount
+          encryptor: normal
+    t_account_bak:
+      columns:
+        password:
+          cipherColumn: cipher_password
+          assistedQueryColumn: assisted_query_password
+          plainColumn: plain_password
+          encryptor: assisted_query
+        amount:
+          cipherColumn: cipher_amount
+          plainColumn: plain_amount
+          encryptor: normal
+  encryptors:
+    normal:
+      type: NORMAL_ENCRYPT
+    assisted_query:
+      type: ASSISTED_QUERY_ENCRYPT
 
 props:
   query.with.cipher.column: true

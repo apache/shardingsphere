@@ -239,8 +239,6 @@ cp -f ~/shardingsphere/sharding-distribution/sharding-proxy-distribution/target/
 cp -f ~/shardingsphere/sharding-distribution/sharding-proxy-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 cp -f ~/shardingsphere/sharding-distribution/sharding-scaling-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 cp -f ~/shardingsphere/sharding-distribution/sharding-scaling-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/sharding-distribution/sharding-ui-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/sharding-distribution/sharding-ui-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 ```
 
 ### Generate sign files
@@ -250,7 +248,6 @@ shasum -a 512 apache-shardingsphere-${RELEASE.VERSION}-src.zip >> apache-shardin
 shasum -b -a 512 apache-shardingsphere-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz >> apache-shardingsphere-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz.sha512
 shasum -b -a 512 apache-shardingsphere-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz >> apache-shardingsphere-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz.sha512
 shasum -b -a 512 apache-shardingsphere-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz >> apache-shardingsphere-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz.sha512
-shasum -b -a 512 apache-shardingsphere-${RELEASE.VERSION}-sharding-ui-bin.tar.gz >> apache-shardingsphere-${RELEASE.VERSION}-sharding-ui-bin.tar.gz.sha512
 ```
 
 ### Commit to Apache SVN
@@ -269,7 +266,6 @@ shasum -c apache-shardingsphere-${RELEASE.VERSION}-src.zip.sha512
 shasum -c apache-shardingsphere-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz.sha512
 shasum -c apache-shardingsphere-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz.sha512
 shasum -c apache-shardingsphere-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz.sha512
-shasum -c apache-shardingsphere-${RELEASE.VERSION}-sharding-ui-bin.tar.gz.sha512
 ```
 
 ### Check gpg Signature
@@ -305,7 +301,6 @@ gpg --verify apache-shardingsphere-${RELEASE.VERSION}-src.zip.asc apache-shardin
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz
-gpg --verify apache-shardingsphere-${RELEASE.VERSION}-sharding-ui-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-sharding-ui-bin.tar.gz
 ```
 
 ### Check Released Files
@@ -313,9 +308,10 @@ gpg --verify apache-shardingsphere-${RELEASE.VERSION}-sharding-ui-bin.tar.gz.asc
 #### compare release source with github tag
 
 ```
-curl -Lo tag-${RELEASE.VERSION}.zip https://github.com/apache/shardingsphere/archive/${RELEASE.VERSION}.zip | unzip
+curl -Lo tag-${RELEASE.VERSION}.zip https://github.com/apache/shardingsphere/archive/${RELEASE.VERSION}.zip
+unzip tag-${RELEASE.VERSION}.zip
 unzip apache-shardingsphere-${RELEASE.VERSION}-src.zip
-diff -r apache-shardingsphere-${RELEASE.VERSION}-src tag-${RELEASE.VERSION}
+diff -r apache-shardingsphere-${RELEASE.VERSION}-src-release shardingsphere-${RELEASE.VERSION}
 ```
 
 #### Check source package
@@ -330,8 +326,8 @@ diff -r apache-shardingsphere-${RELEASE.VERSION}-src tag-${RELEASE.VERSION}
 
 #### Check binary packages
 
-Decompress `apache-shardingsphere-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz`, `apache-shardingsphere-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz` ,
-`apache-shardingsphere-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz` and `apache-shardingsphere-${RELEASE.VERSION}-sharding-ui-bin.tar.gz`
+Decompress `apache-shardingsphere-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz`, `apache-shardingsphere-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz` and
+`apache-shardingsphere-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz`
 to check the following items:
 
 *   `LICENSE` and `NOTICE` files exist
@@ -392,6 +388,9 @@ https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS
 Look at here for how to verify this release candidate:
 https://shardingsphere.apache.org/community/en/contribute/release/
 
+GPG user ID:
+${YOUR.GPG.USER.ID}
+
 The vote will be open for at least 72 hours or until necessary number of votes are reached.
 
 Please vote accordingly:
@@ -409,8 +408,6 @@ Checklist for reference:
 [ ] Download links are valid.
 
 [ ] Checksums and PGP signatures are valid.
-
-[ ] DISCLAIMER is included.
 
 [ ] Source code distributions have correct names matching the current release.
 
@@ -493,7 +490,7 @@ git push --delete origin ${RELEASE.VERSION}-release
 
 ### Update README files
 
-Update `${RELEASE.VERSION}` to `${NEXT.RELEASE.VERSION}` in README.md and README_ZH.md
+Update `${PREVIOUS.RELEASE.VERSION}` to `${RELEASE.VERSION}` in README.md and README_ZH.md
 
 Update `${RELEASE.VERSION}` to `${NEXT.RELEASE.VERSION}` for `CURRENT_VERSION` in `Dockerfile`
 
@@ -507,7 +504,9 @@ https://shardingsphere.apache.org/document/current/en/downloads/
 
 https://shardingsphere.apache.org/document/current/cn/downloads/
 
-Keep two latest versions in `Latest releases`. Incubating stage versions will be archived automatically in [Archive repository](https://archive.apache.org/dist/incubator/shardingsphere/)
+GPG signatures and hashes (SHA* etc) should use URL start with `https://downloads.apache.org/shardingsphere/`
+
+Keep one latest versions in `Latest releases`. Incubating stage versions will be archived automatically in [Archive repository](https://archive.apache.org/dist/incubator/shardingsphere/)
 
 ### Docker Release
 
@@ -519,7 +518,7 @@ Install docker locally and start the docker service
 
 ```shell
 cd ~/shardingsphere/sharding-distribution/sharding-proxy-distribution/
-mvn clean package docker:build
+mvn clean package -Prelease,docker
 ```
 
 #### Tag the local Docker Image

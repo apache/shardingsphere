@@ -11,29 +11,29 @@ weight = 5
 
 ## 测试场景
 
-#### 单路由
+### 单路由
 
 在1000数据量的基础上分库分表，根据`id`分为4个库，部署在同一台机器上，根据`k`分为1024个表，查询操作路由到单库单表；
 作为对比，MySQL运行在1000数据量的基础上，使用INSERT+UPDATE+DELETE和单路由查询语句。
 
-#### 主从
+### 主从
 
 基本主从场景，设置一主库一从库，部署在两台不同的机器上，在10000数据量的基础上，观察读写性能；
 作为对比，MySQL运行在10000数据量的基础上，使用INSERT+SELECT+DELETE语句。
 
-#### 主从+脱敏+分库分表
+### 主从+脱敏+分库分表
 
 在1000数据量的基础上，根据`id`分为4个库，部署在四台不同的机器上，根据`k`分为1024个表，`c`使用aes加密，`pad`使用md5加密，查询操作路由到单库单表；
 作为对比，MySQL运行在1000数据量的基础上，使用INSERT+UPDATE+DELETE和单路由查询语句。
 
-#### 全路由
+### 全路由
 
 在1000数据量的基础上，分库分表，根据`id`分为4个库，部署在四台不同的机器上，根据`k`分为1个表，查询操作使用全路由。
 作为对比，MySQL运行在1000数据量的基础上，使用INSERT+UPDATE+DELETE和全路由查询语句。
 
 ## 测试环境搭建
 
-#### 数据库表结构
+### 数据库表结构
 
 此处表结构参考sysbench的sbtest表
 
@@ -47,11 +47,11 @@ CREATE TABLE `tbl` (
 );
 ```
 
-#### 测试场景配置
+### 测试场景配置
 
 Sharding-JDBC使用与Sharding-Proxy一致的配置，MySQL直连一个库用作性能对比，下面为四个场景的具体配置：
 
-##### 单路由配置
+#### 单路由配置
 
 ```yaml
 schemaName: sharding_db
@@ -108,7 +108,7 @@ shardingRule:
       none:
 ```
 
-##### 主从配置
+#### 主从配置
 
 ```yaml
 schemaName: sharding_db
@@ -137,7 +137,7 @@ masterSlaveRule:
     - slave_ds_0
 ```
 
-##### 主从+脱敏+分库分表配置
+#### 主从+脱敏+分库分表配置
 
 ```yaml
 schemaName: sharding_db
@@ -268,7 +268,7 @@ encryptRule:
           encryptor: encryptor_md5    
 ```
 
-##### 全路由
+#### 全路由
 
 ```yaml
 schemaName: sharding_db
@@ -327,7 +327,7 @@ shardingRule:
 
 ## 测试结果验证
 
-#### 压测语句
+### 压测语句
 
 ```shell
 INSERT+UPDATE+DELETE语句：
@@ -348,11 +348,11 @@ SELECT max(id) FROM tbl1 ignore index(`PRIMARY`);
 DELETE FROM tbl1 WHERE id=?
 ```
 
-#### 压测类
+### 压测类
 
 参考[shardingsphere-benchmark](https://github.com/apache/shardingsphere-benchmark/tree/master/shardingsphere-benchmark)实现，注意阅读其中的注释
 
-#### 编译
+### 编译
 
 ```shell
 git clone https://github.com/apache/shardingsphere-benchmark.git
@@ -360,7 +360,7 @@ cd shardingsphere-benchmark/shardingsphere-benchmark
 mvn clean install
 ```
 
-#### 压测执行
+### 压测执行
 
 ```shell
 cp target/shardingsphere-benchmark-1.0-SNAPSHOT-jar-with-dependencies.jar apache-jmeter-4.0/lib/ext
@@ -368,13 +368,13 @@ jmeter –n –t test_plan/test.jmx
 test.jmx参考https://github.com/apache/shardingsphere-benchmark/tree/master/report/script/test_plan/test.jmx
 ```
 
-#### 压测结果处理
+### 压测结果处理
 
 注意修改为上一步生成的result.jtl的位置。
 ```shell
 sh shardingsphere-benchmark/report/script/gen_report.sh
 ```
 
-#### 历史压测数据展示
+### 历史压测数据展示
 
 [Benchmark性能平台](https://shardingsphere.apache.org/benchmark/#/overview)是数据以天粒度展示

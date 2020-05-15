@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import lombok.EqualsAndHashCode;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedDatabaseMetaDataResultSet;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.DataNodeRoutedRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -30,18 +30,18 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
  * Database meta data result set.
  */
-public final class DatabaseMetaDataResultSet<T extends BaseRule> extends AbstractUnsupportedDatabaseMetaDataResultSet {
+public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabaseMetaDataResultSet {
     
     private static final String TABLE_NAME = "TABLE_NAME";
     
@@ -51,7 +51,7 @@ public final class DatabaseMetaDataResultSet<T extends BaseRule> extends Abstrac
     
     private final int concurrency;
     
-    private final T rule;
+    private final Collection<ShardingSphereRule> rules;
     
     private final ResultSetMetaData resultSetMetaData;
     
@@ -63,10 +63,10 @@ public final class DatabaseMetaDataResultSet<T extends BaseRule> extends Abstrac
     
     private DatabaseMetaDataObject currentDatabaseMetaDataObject;
     
-    public DatabaseMetaDataResultSet(final ResultSet resultSet, final T rule) throws SQLException {
+    public DatabaseMetaDataResultSet(final ResultSet resultSet, final Collection<ShardingSphereRule> rules) throws SQLException {
         this.type = resultSet.getType();
         this.concurrency = resultSet.getConcurrency();
-        this.rule = rule;
+        this.rules = rules;
         this.resultSetMetaData = resultSet.getMetaData();
         this.columnLabelIndexMap = initIndexMap();
         this.databaseMetaDataObjectIterator = initIterator(resultSet);
@@ -97,11 +97,12 @@ public final class DatabaseMetaDataResultSet<T extends BaseRule> extends Abstrac
     
     private DatabaseMetaDataObject generateDatabaseMetaDataObject(final int tableNameColumnIndex, final int indexNameColumnIndex, final ResultSet resultSet) throws SQLException {
         DatabaseMetaDataObject result = new DatabaseMetaDataObject(resultSetMetaData.getColumnCount());
+        Optional<DataNodeRoutedRule> dataNodeRoutedRule = findDataNodeRoutedRule();
         for (int i = 1; i <= columnLabelIndexMap.size(); i++) {
             if (tableNameColumnIndex == i) {
                 String tableName = resultSet.getString(i);
-                Collection<String> logicTableNames = rule instanceof ShardingRule ? ((ShardingRule) rule).getLogicTableNames(tableName) : Collections.emptyList();
-                result.addObject(logicTableNames.isEmpty() ? tableName : logicTableNames.iterator().next());
+                Optional<String> logicTableName = dataNodeRoutedRule.isPresent() ? dataNodeRoutedRule.get().findLogicTableByActualTable(tableName) : Optional.empty();
+                result.addObject(logicTableName.orElse(tableName));
             } else if (indexNameColumnIndex == i) {
                 String tableName = resultSet.getString(tableNameColumnIndex);
                 String indexName = resultSet.getString(i);
@@ -111,6 +112,10 @@ public final class DatabaseMetaDataResultSet<T extends BaseRule> extends Abstrac
             }
         }
         return result;
+    }
+    
+    private Optional<DataNodeRoutedRule> findDataNodeRoutedRule() {
+        return rules.stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
     }
     
     @Override

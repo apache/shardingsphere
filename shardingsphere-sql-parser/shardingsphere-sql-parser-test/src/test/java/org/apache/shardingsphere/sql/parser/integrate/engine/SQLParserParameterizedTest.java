@@ -22,13 +22,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.SQLStatementAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.SQLParserTestCasesRegistry;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.SQLParserTestCasesRegistryFactory;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.SQLParserTestCasesRegistry;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.SQLParserTestCasesRegistryFactory;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.sql.SQLCaseType;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.sql.loader.SQLCasesLoader;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.sql.loader.SQLCasesRegistry;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.test.sql.SQLCaseType;
-import org.apache.shardingsphere.test.sql.loader.SQLCasesLoader;
-import org.apache.shardingsphere.test.sql.loader.SQLCasesRegistry;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -127,9 +127,6 @@ public final class SQLParserParameterizedTest {
     
     @Test
     public void assertSupportedSQL() {
-        if ("select_pagination_with_row_number_for_greater_than_and_equal".equals(sqlCaseId)) {
-            System.out.println("fhsdfa");
-        }
         SQLParserTestCase expected = SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId);
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
         String sql = SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());

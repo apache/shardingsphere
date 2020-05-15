@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.ConnectionStatus;
@@ -31,10 +29,8 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
-import org.apache.shardingsphere.shardingproxy.backend.schema.impl.EncryptSchema;
-import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchemas;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
@@ -42,6 +38,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.common.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.underlying.executor.sql.QueryResult;
 import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.sql.log.SQLLogger;
@@ -59,7 +56,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicationEngine {
     
-    private final LogicSchema logicSchema;
+    private final ShardingSphereSchema schema;
     
     private final String sql;
     
@@ -91,10 +88,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             return new ErrorResponse(new TableModifyInTransactionException(getTableName(sqlStatementContext)));
         }
         response = executeEngine.execute(executionContext);
-        // TODO refresh non-sharding table meta data
-        if (logicSchema instanceof ShardingSchema) {
-            logicSchema.refreshTableMetaData(executionContext.getSqlStatementContext());
-        }
+        schema.refreshTableMetaData(executionContext.getSqlStatementContext());
         return merge(executionContext.getSqlStatementContext());
     }
     
@@ -123,18 +117,19 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private void mergeUpdateCount(final SQLStatementContext sqlStatementContext) {
-        if (!isAllBroadcastTables(sqlStatementContext)) {
+        if (isNeedAccumulate(sqlStatementContext)) {
             ((UpdateResponse) response).mergeUpdateCount();
         }
     }
     
-    private boolean isAllBroadcastTables(final SQLStatementContext sqlStatementContext) {
-        return logicSchema instanceof ShardingSchema && logicSchema.getShardingRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames());
+    private boolean isNeedAccumulate(final SQLStatementContext sqlStatementContext) {
+        Optional<DataNodeRoutedRule> dataNodeRoutedRule = schema.getRules().stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
+        return dataNodeRoutedRule.isPresent() && dataNodeRoutedRule.get().isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames());
     }
     
     private MergedResult mergeQuery(final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
-        MergeEngine mergeEngine = new MergeEngine(LogicSchemas.getInstance().getDatabaseType(), 
-                logicSchema.getMetaData().getSchema().getConfiguredSchemaMetaData(), ShardingProxyContext.getInstance().getProperties(), logicSchema.getShardingRule().toRules());
+        MergeEngine mergeEngine = new MergeEngine(ShardingSphereSchemas.getInstance().getDatabaseType(), 
+                schema.getMetaData().getSchema().getConfiguredSchemaMetaData(), ShardingProxyContext.getInstance().getProperties(), schema.getRules());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     
@@ -145,36 +140,12 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     @Override
     public QueryData getQueryData() throws SQLException {
-        Optional<EncryptRule> encryptRule = findEncryptRule();
-        boolean isQueryWithCipherColumn = ShardingProxyContext.getInstance().getProperties().getValue(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN);
         List<QueryHeader> queryHeaders = ((QueryResponse) response).getQueryHeaders();
         List<Object> row = new ArrayList<>(queryHeaders.size());
         for (int columnIndex = 1; columnIndex <= queryHeaders.size(); columnIndex++) {
-            Object value = mergedResult.getValue(columnIndex, Object.class);
-            if (isQueryWithCipherColumn && encryptRule.isPresent()) {
-                QueryHeader queryHeader = ((QueryResponse) response).getQueryHeaders().get(columnIndex - 1);
-                Optional<Encryptor> encryptor = encryptRule.get().findEncryptor(queryHeader.getTable(), queryHeader.getColumnName());
-                if (encryptor.isPresent()) {
-                    value = encryptor.get().decrypt(getCiphertext(value));
-                }
-            }
-            row.add(value);
+            row.add(mergedResult.getValue(columnIndex, Object.class));
         }
         return new QueryData(getColumnTypes(queryHeaders), row);
-    }
-    
-    private Optional<EncryptRule> findEncryptRule() {
-        if (logicSchema instanceof ShardingSchema) {
-            return Optional.of(logicSchema.getShardingRule().getEncryptRule());
-        }
-        if (logicSchema instanceof EncryptSchema) {
-            return Optional.of(((EncryptSchema) logicSchema).getEncryptRule());
-        }
-        return Optional.empty();
-    }
-    
-    private String getCiphertext(final Object value) {
-        return null == value ? null : value.toString();
     }
     
     private List<Integer> getColumnTypes(final List<QueryHeader> queryHeaders) {

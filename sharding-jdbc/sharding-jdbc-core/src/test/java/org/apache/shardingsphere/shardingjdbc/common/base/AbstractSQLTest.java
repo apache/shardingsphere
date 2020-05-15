@@ -42,7 +42,7 @@ public abstract class AbstractSQLTest {
     
     private static final List<String> DB_NAMES = Arrays.asList("jdbc_0", "jdbc_1", "encrypt", "test_ds_master", "test_ds_slave");
     
-    private static Set<DatabaseType> databaseTypes = Sets.newHashSet(DatabaseTypes.getActualDatabaseType("H2"));
+    private static final Set<DatabaseType> DATABASE_TYPES = Sets.newHashSet(DatabaseTypes.getActualDatabaseType("H2"));
     
     @Getter(AccessLevel.PROTECTED)
     private static Map<DatabaseType, Map<String, DataSource>> databaseTypeMap = new HashMap<>();
@@ -54,7 +54,7 @@ public abstract class AbstractSQLTest {
     
     private static void createDataSources() {
         for (String each : DB_NAMES) {
-            for (DatabaseType type : databaseTypes) {
+            for (DatabaseType type : DATABASE_TYPES) {
                 createDataSources(each, type);
             }
         }

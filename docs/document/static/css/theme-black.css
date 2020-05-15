@@ -420,7 +420,7 @@ textarea:focus, input[type="email"]:focus, input[type="number"]:focus, input[typ
 }
 #chapter #body-inner {
     padding-bottom: 3rem;
-    max-width: 80%;
+    max-width: 90%;
 }
 #chapter h3 {
     font-family: "Work Sans", "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif;

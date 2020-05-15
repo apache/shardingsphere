@@ -21,19 +21,14 @@ import com.google.common.primitives.Ints;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.shardingsphere.core.log.ConfigurationLogger;
-import org.apache.shardingsphere.core.rule.Authentication;
-import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.core.yaml.swapper.AuthenticationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.ShadowRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.metrics.configuration.swapper.MetricsConfigurationYamlSwapper;
+import org.apache.shardingsphere.metrics.configuration.yaml.YamlMetricsConfiguration;
+import org.apache.shardingsphere.metrics.facade.MetricsTrackerFacade;
 import org.apache.shardingsphere.opentracing.ShardingTracer;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.swapper.OrchestrationConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
+import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchemas;
 import org.apache.shardingsphere.shardingproxy.config.ShardingConfiguration;
 import org.apache.shardingsphere.shardingproxy.config.ShardingConfigurationLoader;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
@@ -42,13 +37,21 @@ import org.apache.shardingsphere.shardingproxy.config.yaml.YamlProxyServerConfig
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.shardingproxy.frontend.bootstrap.ShardingProxy;
 import org.apache.shardingsphere.shardingproxy.util.DataSourceConverter;
+import org.apache.shardingsphere.underlying.common.auth.Authentication;
+import org.apache.shardingsphere.underlying.common.auth.yaml.config.YamlAuthenticationConfiguration;
+import org.apache.shardingsphere.underlying.common.auth.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.common.log.ConfigurationLogger;
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlRootRuleConfigurations;
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlRuleConfiguration;
+import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -62,7 +65,7 @@ import java.util.Properties;
 public final class Bootstrap {
     
     private static final int DEFAULT_PORT = 3307;
-
+    
     private static final String DEFAULT_CONFIG_PATH = "/conf/";
     
     /**
@@ -75,9 +78,10 @@ public final class Bootstrap {
     public static void main(final String[] args) throws IOException, SQLException {
         int port = getPort(args);
         ShardingConfiguration shardingConfig = new ShardingConfigurationLoader().load(getConfigPath(args));
-        logRuleConfigurationMap(getRuleConfiguration(shardingConfig.getRuleConfigurationMap()).values());
+        logRuleConfigurationMap(getRuleConfigurations(shardingConfig.getRuleConfigurationMap()).values());
         if (null == shardingConfig.getServerConfiguration().getOrchestration()) {
-            startWithoutRegistryCenter(shardingConfig.getRuleConfigurationMap(), shardingConfig.getServerConfiguration().getAuthentication(), shardingConfig.getServerConfiguration().getProps(), port);
+            startWithoutRegistryCenter(shardingConfig.getRuleConfigurationMap(), shardingConfig.getServerConfiguration().getAuthentication(),
+                    shardingConfig.getServerConfiguration().getMetrics(), shardingConfig.getServerConfiguration().getProps(), port);
         } else {
             startWithRegistryCenter(shardingConfig.getServerConfiguration(), shardingConfig.getRuleConfigurationMap().keySet(), shardingConfig.getRuleConfigurationMap(), port);
         }
@@ -104,12 +108,13 @@ public final class Bootstrap {
     }
     
     private static void startWithoutRegistryCenter(final Map<String, YamlProxyRuleConfiguration> ruleConfigs,
-                                                   final YamlAuthenticationConfiguration yamlAuthenticationConfig, final Properties properties, final int port) throws SQLException {
+                                                   final YamlAuthenticationConfiguration yamlAuthenticationConfig,
+                                                   final YamlMetricsConfiguration metricsConfiguration, final Properties properties, final int port) throws SQLException {
         Authentication authentication = new AuthenticationYamlSwapper().swap(yamlAuthenticationConfig);
         logAndInitContext(authentication, properties);
-        Map<String, Map<String, YamlDataSourceParameter>> schemaRules = getDataSourceParameterMap(ruleConfigs);
-        startProxy(schemaRules.keySet(), port, schemaRules,
-                getRuleConfiguration(ruleConfigs), false);
+        initMetrics(metricsConfiguration);
+        Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources = getDataSourceParameterMap(ruleConfigs);
+        startProxy(schemaDataSources.keySet(), port, schemaDataSources, getRuleConfigurations(ruleConfigs));
     }
     
     private static void startWithRegistryCenter(final YamlProxyServerConfiguration serverConfig, final Collection<String> shardingSchemaNames,
@@ -120,8 +125,8 @@ public final class Bootstrap {
             Authentication authentication = shardingOrchestrationFacade.getConfigCenter().loadAuthentication();
             Properties properties = shardingOrchestrationFacade.getConfigCenter().loadProperties();
             logAndInitContext(authentication, properties);
-            startProxy(shardingSchemaNames, port, getSchemaDataSourceParameterMap(shardingOrchestrationFacade),
-                    getSchemaRules(shardingOrchestrationFacade), true);
+            initMetrics(serverConfig.getMetrics());
+            startProxy(shardingSchemaNames, port, getSchemaDataSourceParameterMap(shardingOrchestrationFacade), getSchemaRules(shardingOrchestrationFacade));
         }
     }
     
@@ -131,10 +136,9 @@ public final class Bootstrap {
         ShardingProxyContext.getInstance().init(authentication, properties);
     }
 
-    private static void startProxy(final Collection<String> shardingSchemaNames, final int port,
-                                   final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources,
-                                   final Map<String, RuleConfiguration> schemaRules, final boolean isUsingRegistry) throws SQLException {
-        LogicSchemas.getInstance().init(shardingSchemaNames, schemaDataSources, schemaRules, isUsingRegistry);
+    private static void startProxy(final Collection<String> shardingSchemaNames, final int port, final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources,
+                                   final Map<String, Collection<RuleConfiguration>> schemaRules) throws SQLException {
+        ShardingSphereSchemas.getInstance().init(shardingSchemaNames, schemaDataSources, schemaRules);
         initOpenTracing();
         ShardingProxy.getInstance().start(port);
     }
@@ -147,17 +151,17 @@ public final class Bootstrap {
         return result;
     }
     
-    private static Map<String, RuleConfiguration> getSchemaRules(final ShardingOrchestrationFacade shardingOrchestrationFacade) {
-        Map<String, RuleConfiguration> result = new LinkedHashMap<>();
+    private static Map<String, Collection<RuleConfiguration>> getSchemaRules(final ShardingOrchestrationFacade shardingOrchestrationFacade) {
+        Map<String, Collection<RuleConfiguration>> result = new LinkedHashMap<>();
         for (String each : shardingOrchestrationFacade.getConfigCenter().getAllShardingSchemaNames()) {
-            if (shardingOrchestrationFacade.getConfigCenter().isEncryptRule(each)) {
-                result.put(each, shardingOrchestrationFacade.getConfigCenter().loadEncryptRuleConfiguration(each));
-            } else if (shardingOrchestrationFacade.getConfigCenter().isShardingRule(each)) {
-                result.put(each, shardingOrchestrationFacade.getConfigCenter().loadShardingRuleConfiguration(each));
+            if (shardingOrchestrationFacade.getConfigCenter().isShardingRule(each)) {
+                result.put(each, shardingOrchestrationFacade.getConfigCenter().loadRuleConfigurations(each));
+            } else if (shardingOrchestrationFacade.getConfigCenter().isEncryptRule(each)) {
+                result.put(each, Collections.singletonList(shardingOrchestrationFacade.getConfigCenter().loadEncryptRuleConfiguration(each)));
             } else if (shardingOrchestrationFacade.getConfigCenter().isShadowRule(each)) {
-                result.put(each, shardingOrchestrationFacade.getConfigCenter().loadShadowRuleConfiguration(each));
+                result.put(each, Collections.singletonList(shardingOrchestrationFacade.getConfigCenter().loadShadowRuleConfiguration(each)));
             } else {
-                result.put(each, shardingOrchestrationFacade.getConfigCenter().loadMasterSlaveRuleConfiguration(each));
+                result.put(each, Collections.singletonList(shardingOrchestrationFacade.getConfigCenter().loadMasterSlaveRuleConfiguration(each)));
             }
         }
         return result;
@@ -169,13 +173,19 @@ public final class Bootstrap {
             shardingOrchestrationFacade.init();
         } else {
             shardingOrchestrationFacade.init(getDataSourceConfigurationMap(ruleConfigs),
-                    getRuleConfiguration(ruleConfigs), new AuthenticationYamlSwapper().swap(serverConfig.getAuthentication()), serverConfig.getProps());
+                    getRuleConfigurations(ruleConfigs), new AuthenticationYamlSwapper().swap(serverConfig.getAuthentication()), serverConfig.getProps());
         }
     }
     
     private static void initOpenTracing() {
         if (ShardingProxyContext.getInstance().getProperties().<Boolean>getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED)) {
             ShardingTracer.init();
+        }
+    }
+    
+    private static void initMetrics(final YamlMetricsConfiguration metricsConfiguration) {
+        if (ShardingProxyContext.getInstance().getProperties().<Boolean>getValue(ConfigurationPropertyKey.PROXY_METRICS_ENABLED)) {
+            MetricsTrackerFacade.getInstance().init(new MetricsConfigurationYamlSwapper().swap(metricsConfiguration));
         }
     }
     
@@ -195,18 +205,15 @@ public final class Bootstrap {
         return result;
     }
     
-    private static Map<String, RuleConfiguration> getRuleConfiguration(final Map<String, YamlProxyRuleConfiguration> localRuleConfigs) {
-        Map<String, RuleConfiguration> result = new HashMap<>();
+    private static Map<String, Collection<RuleConfiguration>> getRuleConfigurations(final Map<String, YamlProxyRuleConfiguration> localRuleConfigs) {
+        Map<String, Collection<RuleConfiguration>> result = new HashMap<>();
+        YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
         for (Entry<String, YamlProxyRuleConfiguration> entry : localRuleConfigs.entrySet()) {
-            if (null != entry.getValue().getShardingRule()) {
-                result.put(entry.getKey(), new ShardingRuleConfigurationYamlSwapper().swap(entry.getValue().getShardingRule()));
-            } else if (null != entry.getValue().getMasterSlaveRule()) {
-                result.put(entry.getKey(), new MasterSlaveRuleConfigurationYamlSwapper().swap(entry.getValue().getMasterSlaveRule()));
-            } else if (null != entry.getValue().getEncryptRule()) {
-                result.put(entry.getKey(), new EncryptRuleConfigurationYamlSwapper().swap(entry.getValue().getEncryptRule()));
-            } else if (null != entry.getValue().getShadowRule()) {
-                result.put(entry.getKey(), new ShadowRuleConfigurationYamlSwapper().swap(entry.getValue().getShadowRule()));
+            YamlRootRuleConfigurations configurations = new YamlRootRuleConfigurations();
+            for (YamlRuleConfiguration each : entry.getValue().getRules()) {
+                configurations.getRules().add(each);
             }
+            result.put(entry.getKey(), swapperEngine.swapToRuleConfigurations(configurations.getRules()));
         }
         return result;
     }
@@ -216,9 +223,9 @@ public final class Bootstrap {
      *
      * @param ruleConfigurations log rule configurations
      */
-    private static void logRuleConfigurationMap(final Collection<RuleConfiguration> ruleConfigurations) {
+    private static void logRuleConfigurationMap(final Collection<Collection<RuleConfiguration>> ruleConfigurations) {
         if (CollectionUtils.isNotEmpty(ruleConfigurations)) {
-            for (RuleConfiguration each : ruleConfigurations) {
+            for (Collection<RuleConfiguration> each : ruleConfigurations) {
                 ConfigurationLogger.log(each);
             }
         }

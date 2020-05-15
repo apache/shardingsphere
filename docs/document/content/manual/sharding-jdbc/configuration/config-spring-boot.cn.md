@@ -232,11 +232,11 @@ spring.shardingsphere.sharding.tables.t_order_item.key-generator.column=order_it
 spring.shardingsphere.sharding.binding-tables=t_order,t_order_item
 spring.shardingsphere.sharding.broadcast-tables=t_config
 
-spring.shardingsphere.orchestration.name=spring_boot_ds_sharding
-spring.shardingsphere.orchestration.overwrite=true
-spring.shardingsphere.orchestration.registry.type=zookeeper
-spring.shardingsphere.orchestration.registry.namespace=orchestration-spring-boot-sharding-test
-spring.shardingsphere.orchestration.registry.server-lists=localhost:2181
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.orchestration-type=registry_center,config_center,metadata_center
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.instance-type=zookeeper
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.server-lists=localhost:2181
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.namespace=orchestration-spring-boot-sharding-test
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.props.overwrite=true
 ```
 
 ### JNDI
@@ -364,15 +364,14 @@ spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.en
 ```properties
 #省略数据源、数据分片、读写分离和数据脱敏配置
 
-spring.shardingsphere.orchestration.name= #治理实例名称
-spring.shardingsphere.orchestration.overwrite= #本地配置是否覆盖注册中心配置。如果可覆盖，每次启动都以本地配置为准
-spring.shardingsphere.orchestration.registry.type= #配置中心类型。如：zookeeper
-spring.shardingsphere.orchestration.registry.server-lists= #连接注册中心服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181
-spring.shardingsphere.orchestration.registry.namespace= #注册中心的命名空间
-spring.shardingsphere.orchestration.registry.digest= #连接注册中心的权限令牌。缺省为不需要权限验证
-spring.shardingsphere.orchestration.registry.operation-timeout-milliseconds= #操作超时的毫秒数，默认500毫秒
-spring.shardingsphere.orchestration.registry.max-retries= #连接失败后的最大重试次数，默认3次
-spring.shardingsphere.orchestration.registry.retry-interval-milliseconds= #重试间隔毫秒数，默认500毫秒
-spring.shardingsphere.orchestration.registry.time-to-live-seconds= #临时节点存活秒数，默认60秒
-spring.shardingsphere.orchestration.registry.props= #配置中心其它属性
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.orchestration-type= #治理类型，例如config_center/registry_center/metadata_center
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.instance-type= #配置/注册/元数据中心实例类型。如：zookeeper
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.server-lists= #连接注册/配置/元数据中心服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.namespace= #注册/配置/元数据中心的命名空间
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.props.overwrite=true #本地配置是否覆盖配置中心配置。如果可覆盖，每次启动都以本地配置为准
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.props.digest= #连接配置/注册/元数据中心的权限令牌。缺省为不需要权限验证
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.props.operation-timeout-milliseconds= #操作超时的毫秒数，默认500毫秒
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.props.max-retries= #连接失败后的最大重试次数，默认3次
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.props.retry-interval-milliseconds= #重试间隔毫秒数，默认500毫秒
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.props.time-to-live-seconds= #临时节点存活秒数，默认60秒
 ```

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.core.configcenter.listener.ConfigurationChangedListenerManager;
 import org.apache.shardingsphere.orchestration.core.metadatacenter.listener.MetaDataListenerManager;
-import org.apache.shardingsphere.orchestration.core.registrycenter.listener.StateChangedListenerManager;
+import org.apache.shardingsphere.orchestration.core.registrycenter.listener.RegistryListenerManager;
 
 import java.util.Collection;
 
@@ -33,7 +33,7 @@ public final class ShardingOrchestrationListenerManager {
     
     private final ConfigurationChangedListenerManager configurationChangedListenerManager;
     
-    private final StateChangedListenerManager stateChangedListenerManager;
+    private final RegistryListenerManager registryListenerManager;
     
     private final MetaDataListenerManager metaDataListenerManager;
     
@@ -42,7 +42,7 @@ public final class ShardingOrchestrationListenerManager {
                                                 final String metadataCenterRepositoryName, final CenterRepository centerRepository,
                                                 final Collection<String> shardingSchemaNames) {
         configurationChangedListenerManager = new ConfigurationChangedListenerManager(configCenterRepositoryName, configCenterRepository, shardingSchemaNames);
-        stateChangedListenerManager = new StateChangedListenerManager(registryCenterRepositoryName, registryCenterRepository);
+        registryListenerManager = new RegistryListenerManager(registryCenterRepositoryName, registryCenterRepository);
         metaDataListenerManager = new MetaDataListenerManager(metadataCenterRepositoryName, centerRepository, shardingSchemaNames);
     }
     
@@ -51,7 +51,7 @@ public final class ShardingOrchestrationListenerManager {
      */
     public void initListeners() {
         configurationChangedListenerManager.initListeners();
-        stateChangedListenerManager.initListeners();
+        registryListenerManager.initListeners();
         metaDataListenerManager.initListeners();
     }
 }

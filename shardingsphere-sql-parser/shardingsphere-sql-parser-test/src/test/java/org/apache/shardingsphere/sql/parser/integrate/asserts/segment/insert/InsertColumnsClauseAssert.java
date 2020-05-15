@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.column.ColumnAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.insert.ExpectedInsertColumnsClause;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.segment.impl.insert.ExpectedInsertColumnsClause;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 

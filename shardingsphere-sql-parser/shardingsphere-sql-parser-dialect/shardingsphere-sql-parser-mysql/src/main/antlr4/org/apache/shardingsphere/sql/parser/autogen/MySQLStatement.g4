@@ -52,7 +52,7 @@ execute
     | setRole
     | setPassword
     | use
-    | desc
+    | explain
     | showDatabases
     | showTables
     | showTableStatus
@@ -61,6 +61,8 @@ execute
     | showCreateTable
     | showOther
     | setVariable
+    | setName
+    | setCharacter
     | call
     | changeMasterTo
     | startSlave

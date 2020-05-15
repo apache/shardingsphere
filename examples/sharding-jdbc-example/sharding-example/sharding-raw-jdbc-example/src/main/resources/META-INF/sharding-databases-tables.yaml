@@ -27,7 +27,8 @@ dataSources:
     username: root
     password:
 
-shardingRule:
+rules:
+- !SHARDING
   tables:
     t_order: 
       actualDataNodes: ds_${0..1}.t_order_${0..1}
@@ -42,7 +43,7 @@ shardingRule:
         type: SNOWFLAKE
         column: order_id
         props:
-          worker.id: 123        
+          worker.id: 123
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item_${0..1}
       tableStrategy:
@@ -56,7 +57,7 @@ shardingRule:
         type: SNOWFLAKE
         column: order_item_id
         props:
-          worker.id: 123        
+          worker.id: 123
   bindingTables:
     - t_order,t_order_item
   broadcastTables:

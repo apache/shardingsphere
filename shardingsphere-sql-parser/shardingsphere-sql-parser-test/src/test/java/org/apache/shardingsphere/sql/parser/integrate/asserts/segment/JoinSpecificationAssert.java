@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.segment;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.ExpectedJoinSpecification;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.cases.domain.segment.impl.ExpectedJoinSpecification;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.JoinSpecificationSegment;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -40,8 +40,8 @@ public final class JoinSpecificationAssert {
      * @param expected expected JoinSpecification
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final JoinSpecificationSegment actual, final ExpectedJoinSpecification expected) {
-        assertThat(assertContext.getText("startindex assert error"), actual.getStartIndex(), is(expected.getStartIndex()));
-        assertThat(assertContext.getText("stopindex assert error"), actual.getStopIndex(), is(expected.getStopIndex()));
+        assertThat(assertContext.getText("Start index assert error"), actual.getStartIndex(), is(expected.getStartIndex()));
+        assertThat(assertContext.getText("Stop index assert error"), actual.getStopIndex(), is(expected.getStopIndex()));
         PredicatesAssert.assertIs(assertContext, actual.getAndPredicates(), expected.getAndPredicates());
     }
 }

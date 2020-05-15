@@ -17,20 +17,23 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring;
 
+import org.apache.shardingsphere.masterslave.api.config.LoadBalanceStrategyConfiguration;
+import org.apache.shardingsphere.masterslave.rule.MasterSlaveDataSourceRule;
+import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
+import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.masterslave.strategy.RandomMasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.masterslave.strategy.RoundRobinMasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
+import org.junit.Test;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+
+import java.util.Optional;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-
-import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
-import org.apache.shardingsphere.core.strategy.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
-import org.apache.shardingsphere.core.strategy.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
-import org.apache.shardingsphere.spi.masterslave.MasterSlaveLoadBalanceAlgorithm;
-import org.junit.Test;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 @ContextConfiguration(locations = "classpath:META-INF/rdb/masterSlaveNamespace.xml")
 public class MasterSlaveNamespaceTest extends AbstractJUnit4SpringContextTests {
@@ -38,28 +41,36 @@ public class MasterSlaveNamespaceTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void assertDefaultMaserSlaveDataSource() {
         MasterSlaveRule masterSlaveRule = getMasterSlaveRule("defaultMasterSlaveDataSource");
-        assertThat(masterSlaveRule.getMasterDataSourceName(), is("dbtbl_0_master"));
-        assertTrue(masterSlaveRule.getSlaveDataSourceNames().contains("dbtbl_0_slave_0"));
-        assertTrue(masterSlaveRule.getSlaveDataSourceNames().contains("dbtbl_0_slave_1"));
+        Optional<MasterSlaveDataSourceRule> masterSlaveDataSourceRule = masterSlaveRule.findDataSourceRule("defaultMasterSlaveDataSource");
+        assertTrue(masterSlaveDataSourceRule.isPresent());
+        assertThat(masterSlaveDataSourceRule.get().getMasterDataSourceName(), is("dbtbl_0_master"));
+        assertTrue(masterSlaveDataSourceRule.get().getSlaveDataSourceNames().contains("dbtbl_0_slave_0"));
+        assertTrue(masterSlaveDataSourceRule.get().getSlaveDataSourceNames().contains("dbtbl_0_slave_1"));
     }
     
     @Test
     public void assertTypeMasterSlaveDataSource() {
         MasterSlaveRule randomSlaveRule = getMasterSlaveRule("randomMasterSlaveDataSource");
+        Optional<MasterSlaveDataSourceRule> randomMasterSlaveDataSourceRule = randomSlaveRule.findDataSourceRule("randomMasterSlaveDataSource");
+        assertTrue(randomMasterSlaveDataSourceRule.isPresent());
+        assertTrue(randomMasterSlaveDataSourceRule.get().getLoadBalanceAlgorithm() instanceof RandomMasterSlaveLoadBalanceAlgorithm);
         MasterSlaveRule roundRobinSlaveRule = getMasterSlaveRule("roundRobinMasterSlaveDataSource");
-        assertTrue(randomSlaveRule.getLoadBalanceAlgorithm() instanceof RandomMasterSlaveLoadBalanceAlgorithm);
-        assertTrue(roundRobinSlaveRule.getLoadBalanceAlgorithm() instanceof RoundRobinMasterSlaveLoadBalanceAlgorithm);
+        Optional<MasterSlaveDataSourceRule> roundRobinMasterSlaveDataSourceRule = roundRobinSlaveRule.findDataSourceRule("roundRobinMasterSlaveDataSource");
+        assertTrue(roundRobinMasterSlaveDataSourceRule.isPresent());
+        assertTrue(roundRobinMasterSlaveDataSourceRule.get().getLoadBalanceAlgorithm() instanceof RoundRobinMasterSlaveLoadBalanceAlgorithm);
     }
     
     @Test
     public void assertRefMasterSlaveDataSource() {
         assertThat(applicationContext.getBean("randomLoadBalanceAlgorithm"), instanceOf(LoadBalanceStrategyConfiguration.class));
         MasterSlaveRule masterSlaveRule = getMasterSlaveRule("refMasterSlaveDataSource");
-        assertThat(masterSlaveRule.getLoadBalanceAlgorithm(), instanceOf(MasterSlaveLoadBalanceAlgorithm.class));
+        Optional<MasterSlaveDataSourceRule> masterSlaveDataSourceRule = masterSlaveRule.findDataSourceRule("refMasterSlaveDataSource");
+        assertTrue(masterSlaveDataSourceRule.isPresent());
+        assertThat(masterSlaveDataSourceRule.get().getLoadBalanceAlgorithm(), instanceOf(MasterSlaveLoadBalanceAlgorithm.class));
     }
     
     private MasterSlaveRule getMasterSlaveRule(final String masterSlaveDataSourceName) {
-        MasterSlaveDataSource masterSlaveDataSource = applicationContext.getBean(masterSlaveDataSourceName, MasterSlaveDataSource.class);
-        return masterSlaveDataSource.getRuntimeContext().getRule();
+        ShardingSphereDataSource dataSource = applicationContext.getBean(masterSlaveDataSourceName, ShardingSphereDataSource.class);
+        return (MasterSlaveRule) dataSource.getRuntimeContext().getRules().iterator().next();
     }
 }

@@ -19,13 +19,13 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteTemplate;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.ShardingResultSetMetaData;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingPreparedStatement;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingSphereConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.ShardingSphereResultSetMetaData;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingSpherePreparedStatement;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionContext;
 
 import java.sql.ResultSet;
@@ -33,6 +33,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -62,12 +63,13 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     @Override
     public final ResultSetMetaData getMetaData() throws SQLException {
-        return new ShardingResultSetMetaData(resultSets.get(0).getMetaData(), getShardingRule(), executionContext.getSqlStatementContext());
+        return new ShardingSphereResultSetMetaData(resultSets.get(0).getMetaData(), getRules(), executionContext.getSqlStatementContext());
     }
     
-    private ShardingRule getShardingRule() {
-        ShardingConnection connection = statement instanceof ShardingPreparedStatement ? ((ShardingPreparedStatement) statement).getConnection() : ((ShardingStatement) statement).getConnection();
-        return connection.getRuntimeContext().getRule();
+    private Collection<ShardingSphereRule> getRules() {
+        ShardingSphereConnection connection = statement instanceof ShardingSpherePreparedStatement
+                ? ((ShardingSpherePreparedStatement) statement).getConnection() : ((ShardingSphereStatement) statement).getConnection();
+        return connection.getRuntimeContext().getRules();
     }
     
     @Override

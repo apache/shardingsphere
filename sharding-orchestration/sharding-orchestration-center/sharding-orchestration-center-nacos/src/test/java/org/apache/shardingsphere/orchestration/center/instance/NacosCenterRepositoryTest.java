@@ -36,6 +36,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -48,115 +49,142 @@ import static org.mockito.Mockito.when;
 
 public final class NacosCenterRepositoryTest {
     
-    private static ConfigCenterRepository configCenterRepository = new NacosCenterRepository();
+    private static final ConfigCenterRepository REPOSITORY = new NacosCenterRepository();
     
-    private ConfigService configService = mock(ConfigService.class);
+    private final ConfigService configService = mock(ConfigService.class);
     
-    private String group = "SHARDING_SPHERE_DEFAULT_GROUP";
+    private final String group = "SHARDING_SPHERE_DEFAULT_GROUP";
     
     @Before
     public void init() {
         Properties properties = new Properties();
         properties.setProperty("group", group);
         properties.setProperty("timeout", "3000");
-        CenterConfiguration configuration = new CenterConfiguration(configCenterRepository.getType(), properties);
+        CenterConfiguration configuration = new CenterConfiguration(REPOSITORY.getType(), properties);
         configuration.setServerLists("127.0.0.1:8848");
-        configCenterRepository.init(configuration);
+        REPOSITORY.init(configuration);
         setConfigService(configService);
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     private void setConfigService(final ConfigService configService) {
         Field configServiceField = NacosCenterRepository.class.getDeclaredField("configService");
         configServiceField.setAccessible(true);
-        configServiceField.set(configCenterRepository, configService);
+        configServiceField.set(REPOSITORY, configService);
     }
     
     @Test
-    @SneakyThrows
-    public void assertPersist() {
+    public void assertPersist() throws NacosException {
         String value = "value";
-        configCenterRepository.persist("/sharding/test", value);
+        REPOSITORY.persist("/sharding/test", value);
         verify(configService).publishConfig("sharding.test", group, value);
     }
     
     @Test
-    @SneakyThrows
-    public void assertGet() {
+    public void assertGet() throws NacosException {
         String value = "value";
         when(configService.getConfig(eq("sharding.test"), eq(group), anyLong())).thenReturn(value);
-        assertThat(configCenterRepository.get("/sharding/test"), is(value));
+        assertThat(REPOSITORY.get("/sharding/test"), is(value));
     }
     
     @Test
-    @SneakyThrows
-    public void assertWatch() {
+    public void assertWatch() throws NacosException {
         final String expectValue = "expectValue";
         final String[] actualValue = {null};
-        doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(expectValue)))
-            .when(configService)
-            .addListener(anyString(), anyString(), any(Listener.class));
+        doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(expectValue))).when(configService).addListener(anyString(), anyString(), any(Listener.class));
         DataChangedEventListener listener = dataChangedEvent -> actualValue[0] = dataChangedEvent.getValue();
-        configCenterRepository.watch("/sharding/test", listener);
+        REPOSITORY.watch("/sharding/test", listener);
         assertThat(actualValue[0], is(expectValue));
     }
     
     @Test
-    @SneakyThrows
     public void assertGetWithNonExistentKey() {
-        assertNull(configCenterRepository.get("/sharding/nonExistentKey"));
+        assertNull(REPOSITORY.get("/sharding/nonExistentKey"));
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetWhenThrowException() {
+    public void assertGetWhenThrowException() throws NacosException {
         doThrow(NacosException.class).when(configService).getConfig(eq("sharding.test"), eq(group), anyLong());
-        assertNull(configCenterRepository.get("/sharding/test"));
+        assertNull(REPOSITORY.get("/sharding/test"));
     }
     
     @Test
-    @SneakyThrows
-    public void assertUpdate() {
+    public void assertUpdate() throws NacosException {
         String updatedValue = "newValue";
-        configCenterRepository.persist("/sharding/test", updatedValue);
+        REPOSITORY.persist("/sharding/test", updatedValue);
         verify(configService).publishConfig("sharding.test", group, updatedValue);
     }
     
     @Test
-    @SneakyThrows
-    public void assertWatchUpdatedChangedType() {
+    public void assertWatchUpdatedChangedType() throws NacosException {
         final String expectValue = "expectValue";
         final String[] actualValue = {null};
         final ChangedType[] actualType = {null};
-        doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(expectValue)))
-                .when(configService)
-                .addListener(anyString(), anyString(), any(Listener.class));
+        doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(expectValue))).when(configService).addListener(anyString(), anyString(), any(Listener.class));
         DataChangedEventListener listener = dataChangedEvent -> {
             actualValue[0] = dataChangedEvent.getValue();
             actualType[0] = dataChangedEvent.getChangedType();
         };
-        configCenterRepository.watch("/sharding/test", listener);
+        REPOSITORY.watch("/sharding/test", listener);
         assertThat(actualValue[0], is(expectValue));
         assertThat(actualType[0], is(ChangedType.UPDATED));
     }
     
     @Test
-    @SneakyThrows
-    public void assertWatchDeletedChangedType() {
+    public void assertWatchDeletedChangedType() throws NacosException {
         final ChangedType[] actualType = {null};
-        doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(null)))
-                .when(configService)
-                .addListener(anyString(), anyString(), any(Listener.class));
+        doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(null))).when(configService).addListener(anyString(), anyString(), any(Listener.class));
         DataChangedEventListener listener = dataChangedEvent -> actualType[0] = dataChangedEvent.getChangedType();
-        configCenterRepository.watch("/sharding/test", listener);
+        REPOSITORY.watch("/sharding/test", listener);
         assertThat(actualType[0], is(ChangedType.UPDATED));
     }
     
     @Test
-    @SneakyThrows
-    public void assertDelete() {
-        configCenterRepository.delete("/sharding/test");
+    public void assertDelete() throws NacosException {
+        REPOSITORY.delete("/sharding/test");
         verify(configService).removeConfig("sharding.test", group);
+    }
+    
+    @SneakyThrows
+    @Test
+    public void assertDeleteWhenThrowException() {
+        when(configService.getConfig(eq("sharding.test"), eq(group), anyLong())).thenReturn("value");
+        doThrow(NacosException.class).when(configService).removeConfig(eq("sharding.test"), eq(group));
+        REPOSITORY.delete("/sharding/test");
+        assertNotNull(REPOSITORY.get("/sharding/test"));
+    }
+    
+    @SneakyThrows
+    @Test
+    public void assertWatchWhenThrowException() {
+        final ChangedType[] actualType = {null};
+        doThrow(NacosException.class)
+                .when(configService)
+                .addListener(anyString(), anyString(), any(Listener.class));
+        DataChangedEventListener listener = dataChangedEvent -> actualType[0] = dataChangedEvent.getChangedType();
+        REPOSITORY.watch("/sharding/test", listener);
+        assertNull(actualType[0]);
+    }
+    
+    @Test
+    @SneakyThrows
+    public void assertPersistWhenThrowException() {
+        String value = "value";
+        doThrow(NacosException.class).when(configService).publishConfig(eq("sharding.test"), eq(group), eq(value));
+        REPOSITORY.persist("/sharding/test", value);
+        assertNull(REPOSITORY.get("/sharding/test"));
+    }
+    
+    @Test
+    public void assertProperties() {
+        Properties properties = new Properties();
+        REPOSITORY.setProperties(properties);
+        assertThat(REPOSITORY.getProperties(), is(properties));
+    }
+    
+    @Test
+    public void assertGetChildrenKeys() {
+        assertNull(REPOSITORY.getChildrenKeys("/sharding/test"));
     }
     
     private VoidAnswer3 getListenerAnswer(final String expectValue) {

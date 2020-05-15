@@ -20,9 +20,9 @@ package org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.algorithm.ShardingAlgorithm;
-import org.apache.shardingsphere.spi.type.TypedSPIRegistry;
+import org.apache.shardingsphere.sharding.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.sharding.spi.algorithm.ShardingAlgorithm;
+import org.apache.shardingsphere.sharding.spi.type.TypedSPIRegistry;
 import org.springframework.beans.factory.FactoryBean;
 
 import java.util.Properties;

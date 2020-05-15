@@ -18,9 +18,12 @@
 package org.apache.shardingsphere.underlying.common.metadata.refresh;
 
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Map;
 
 /**
  * Meta data refresh strategy.
@@ -33,10 +36,12 @@ public interface MetaDataRefreshStrategy<T extends SQLStatementContext> {
      * Refresh meta data.
      *
      * @param metaData ShardingSphere meta data
+     * @param databaseType database type
+     * @param dataSourceMap dataSource map
      * @param sqlStatementContext SQL statement context
      * @param callback callback
      * @throws SQLException SQL exception
      */
-    void refreshMetaData(ShardingSphereMetaData metaData, T sqlStatementContext, TableMetaDataLoaderCallback callback) throws SQLException;
+    void refreshMetaData(ShardingSphereMetaData metaData, 
+                         DatabaseType databaseType, Map<String, DataSource> dataSourceMap, T sqlStatementContext, TableMetaDataLoaderCallback callback) throws SQLException;
 }
-

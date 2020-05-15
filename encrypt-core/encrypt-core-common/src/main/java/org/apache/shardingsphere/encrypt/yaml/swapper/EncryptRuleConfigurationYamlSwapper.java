@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.encrypt.yaml.swapper;
 
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
+import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlRuleConfigurationSwapper;
 
 /**
  * Encrypt rule configuration yaml swapper.
  */
-public final class EncryptRuleConfigurationYamlSwapper implements YamlSwapper<YamlEncryptRuleConfiguration, EncryptRuleConfiguration> {
+public final class EncryptRuleConfigurationYamlSwapper implements YamlRuleConfigurationSwapper<YamlEncryptRuleConfiguration, EncryptRuleConfiguration> {
     
     private final EncryptorRuleConfigurationYamlSwapper encryptorRuleConfigurationYamlSwapper = new EncryptorRuleConfigurationYamlSwapper();
     
@@ -41,9 +41,22 @@ public final class EncryptRuleConfigurationYamlSwapper implements YamlSwapper<Ya
     
     @Override
     public EncryptRuleConfiguration swap(final YamlEncryptRuleConfiguration yamlConfiguration) {
-        EncryptRuleConfiguration result = new EncryptRuleConfiguration();
-        result.getEncryptors().putAll(Maps.transformValues(yamlConfiguration.getEncryptors(), encryptorRuleConfigurationYamlSwapper::swap));
-        result.getTables().putAll(Maps.transformValues(yamlConfiguration.getTables(), encryptTableRuleConfigurationYamlSwapper::swap));
-        return result;
+        return new EncryptRuleConfiguration(Maps.transformValues(yamlConfiguration.getEncryptors(), encryptorRuleConfigurationYamlSwapper::swap), 
+                Maps.transformValues(yamlConfiguration.getTables(), encryptTableRuleConfigurationYamlSwapper::swap));
+    }
+    
+    @Override
+    public Class<EncryptRuleConfiguration> getTypeClass() {
+        return EncryptRuleConfiguration.class;
+    }
+    
+    @Override
+    public String getRuleTagName() {
+        return "ENCRYPT";
+    }
+    
+    @Override
+    public int getOrder() {
+        return 20;
     }
 }

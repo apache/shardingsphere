@@ -26,12 +26,11 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingscaling.core.config.ScalingContext;
 import org.apache.shardingsphere.shardingscaling.core.config.ServerConfiguration;
-import org.apache.shardingsphere.shardingscaling.web.HttpServerInitializer;
 import org.apache.shardingsphere.shardingscaling.utils.RuntimeUtil;
+import org.apache.shardingsphere.shardingscaling.web.HttpServerInitializer;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
 import java.io.File;
@@ -51,9 +50,10 @@ public final class Bootstrap {
      * Main entry.
      *
      * @param args running args
+     * @throws IOException IO exception
+     * @throws InterruptedException Interrupted exception
      */
-    @SneakyThrows
-    public static void main(final String[] args) {
+    public static void main(final String[] args) throws IOException, InterruptedException {
         log.info("Init server config");
         initServerConfig();
         log.info("ShardingScaling Startup");

@@ -26,7 +26,8 @@ dataSource:
   maxLifetimeMilliseconds: 1800000
   maxPoolSize: 50
 
-encryptRule:
+rules:
+- !ENCRYPT
   tables:
     t_encrypt:
       columns:

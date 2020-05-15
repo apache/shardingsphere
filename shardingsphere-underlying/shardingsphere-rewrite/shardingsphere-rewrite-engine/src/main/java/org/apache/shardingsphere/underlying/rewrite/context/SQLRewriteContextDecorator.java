@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.underlying.rewrite.context;
 
-import org.apache.shardingsphere.spi.order.OrderedSPI;
+import org.apache.shardingsphere.sharding.spi.order.OrderedSPI;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 /**
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.underlying.route.context.RouteContext;
  *
  * @param <T> type of rule
  */
-public interface SQLRewriteContextDecorator<T extends BaseRule> extends OrderedSPI<T> {
+public interface SQLRewriteContextDecorator<T extends ShardingSphereRule> extends OrderedSPI<T> {
     
     /**
      * Decorate SQL rewrite context.

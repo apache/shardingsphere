@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shardingproxy.config;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlProxyServerConfiguration;
-import org.apache.shardingsphere.shardingproxy.config.yaml.constructor.YamlProxyRuleConfigurationConstructor;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
 import java.io.File;
@@ -57,7 +56,7 @@ public final class ShardingConfigurationLoader {
         File configPath = new File(ShardingConfigurationLoader.class.getResource(path).getFile());
         Collection<YamlProxyRuleConfiguration> ruleConfigurations = new LinkedList<>();
         for (File each : findRuleConfigurationFiles(configPath)) {
-            loadRuleConfiguration(each, serverConfig).ifPresent(yamlProxyRuleConfiguration -> {
+            loadRuleConfiguration(each).ifPresent(yamlProxyRuleConfiguration -> {
                 Preconditions.checkState(
                         schemaNames.add(yamlProxyRuleConfiguration.getSchemaName()), "Schema name `%s` must unique at all rule configurations.", yamlProxyRuleConfiguration.getSchemaName());
                 ruleConfigurations.add(yamlProxyRuleConfiguration);
@@ -75,8 +74,8 @@ public final class ShardingConfigurationLoader {
         return result;
     }
     
-    private Optional<YamlProxyRuleConfiguration> loadRuleConfiguration(final File yamlFile, final YamlProxyServerConfiguration serverConfiguration) throws IOException {
-        YamlProxyRuleConfiguration result = YamlEngine.unmarshal(yamlFile, YamlProxyRuleConfiguration.class, new YamlProxyRuleConfigurationConstructor());
+    private Optional<YamlProxyRuleConfiguration> loadRuleConfiguration(final File yamlFile) throws IOException {
+        YamlProxyRuleConfiguration result = YamlEngine.unmarshal(yamlFile, YamlProxyRuleConfiguration.class);
         if (null == result) {
             return Optional.empty();
         }

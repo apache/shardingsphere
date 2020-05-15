@@ -154,7 +154,7 @@ public final class XAShardingTransactionManagerTest {
         assertFalse(xaShardingTransactionManager.isInTransaction());
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("unchecked")
     private Map<String, XATransactionDataSource> getCachedDataSources() {
         Field field = xaShardingTransactionManager.getClass().getDeclaredField("cachedDataSources");
@@ -162,7 +162,7 @@ public final class XAShardingTransactionManagerTest {
         return (Map<String, XATransactionDataSource>) field.get(xaShardingTransactionManager);
     }
     
-    @SneakyThrows
+    @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("unchecked")
     private ThreadLocal<Set<Transaction>> getEnlistedTransactions(final XATransactionDataSource transactionDataSource) {
         Field field = transactionDataSource.getClass().getDeclaredField("enlistedTransactions");
