@@ -47,17 +47,14 @@ public final class OnDuplicateUpdateContextTest {
         List<Object> parameters = Collections.emptyList();
         int parametersOffset = 0;
         OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, parameters, parametersOffset);
-
         Method calculateParametersCountMethod = OnDuplicateUpdateContext.class.getDeclaredMethod("calculateParametersCount", Collection.class);
         calculateParametersCountMethod.setAccessible(true);
         int calculateParametersCountResult = (int) calculateParametersCountMethod.invoke(onDuplicateUpdateContext, new Object[]{assignments});
         assertThat(onDuplicateUpdateContext.getParametersCount(), is(calculateParametersCountResult));
-
         Method getValueExpressionsMethod = OnDuplicateUpdateContext.class.getDeclaredMethod("getValueExpressions", Collection.class);
         getValueExpressionsMethod.setAccessible(true);
         List<ExpressionSegment> getValueExpressionsResult = (List<ExpressionSegment>) getValueExpressionsMethod.invoke(onDuplicateUpdateContext, new Object[]{assignments});
         assertThat(onDuplicateUpdateContext.getValueExpressions(), is(getValueExpressionsResult));
-
         Method getParametersMethod = OnDuplicateUpdateContext.class.getDeclaredMethod("getParameters", List.class, int.class);
         getParametersMethod.setAccessible(true);
         List<Object> getParametersResult = (List<Object>) getParametersMethod.invoke(onDuplicateUpdateContext, new Object[]{parameters, parametersOffset});
@@ -74,7 +71,6 @@ public final class OnDuplicateUpdateContextTest {
         OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, parameters, parametersOffset);
         Object valueFromInsertValueContext1 = onDuplicateUpdateContext.getValue(0);
         assertThat(valueFromInsertValueContext1, is(parameterValue1));
-
         Object valueFromInsertValueContext2 = onDuplicateUpdateContext.getValue(1);
         assertThat(valueFromInsertValueContext2, is(parameterValue2));
     }
