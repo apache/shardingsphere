@@ -34,16 +34,15 @@ import org.apache.shardingsphere.orchestration.core.common.event.ShardingOrchest
 import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
+import org.apache.shardingsphere.underlying.common.yaml.representer.DefaultYamlRepresenter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.yaml.snakeyaml.Yaml;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map.Entry;
@@ -91,19 +90,11 @@ public final class SchemaChangedListenerTest {
         assertThat(((DataSourceChangedEvent) actual).getShardingSchemaName(), is("sharding_db"));
     }
 
-    private String readYamlIntoString(final String yamlFile) throws IOException {
-        File file = new File(Preconditions.checkNotNull(getClass().getClassLoader().getResource(yamlFile), "file resource `%s` must not be null.", yamlFile).getFile());
-        StringBuilder yamlContent = new StringBuilder();
-        FileReader fileReader = new FileReader(file);
-        BufferedReader reader = new BufferedReader(fileReader);
-        String line;
-        while (null != (line = reader.readLine())) {
-            if (line.startsWith("#")) {
-                continue;
-            }
-            yamlContent.append(line).append("\n");
-        }
-        return yamlContent.toString();
+    private String readYamlIntoString(final String yamlFile) {
+        InputStream input = getClass().getClassLoader().getResourceAsStream(yamlFile);
+        Preconditions.checkNotNull(input, "file resource `%s` must not be null.", yamlFile);
+        Yaml yaml  = new Yaml(new DefaultYamlRepresenter());
+        return yaml.dumpAsMap(yaml.load(input));
     }
     
     @Test
