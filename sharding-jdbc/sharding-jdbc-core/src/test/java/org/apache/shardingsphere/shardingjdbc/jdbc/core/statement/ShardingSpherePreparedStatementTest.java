@@ -342,7 +342,6 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingJ
             preparedStatement.setString(9, updatedStatus);
             int result = preparedStatement.executeUpdate();
             assertThat(result, is(2));
-            
             queryStatement.setInt(1, orderId);
             queryStatement.setInt(2, userId1);
             try (ResultSet resultSet = queryStatement.executeQuery()) {
@@ -373,7 +372,6 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingJ
             preparedStatement.setString(9, updatedStatus);
             int result = preparedStatement.executeUpdate();
             assertThat(result, is(2));
-            
             queryStatement.setInt(1, orderId);
             queryStatement.setInt(2, userId1);
             try (ResultSet resultSet = queryStatement.executeQuery()) {

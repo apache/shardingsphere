@@ -111,8 +111,9 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     }
     
     /**
-     * Get OnDuplicateKeyUpdateParameters.
-     * @return OnDuplicateKeyUpdateParameters
+     * Get on duplicate key update parameters.
+     *
+     * @return on duplicate key update parameters
      */
     public List<Object> getOnDuplicateKeyUpdateParameters() {
         if (null == onDuplicateKeyUpdateValueContext) {
