@@ -19,8 +19,8 @@ package org.apache.shardingsphere.underlying.common.yaml.representer;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.sharding.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.underlying.common.yaml.representer.processor.SkipUnsetTupleProcessor;
-import org.apache.shardingsphere.underlying.common.yaml.representer.processor.TupleProcessor;
+import org.apache.shardingsphere.underlying.common.yaml.representer.processor.ShardingSphereYAMLTupleProcessor;
+import org.apache.shardingsphere.underlying.common.yaml.representer.processor.DefaultTupleProcessor;
 import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlRuleConfigurationSwapper;
 import org.yaml.snakeyaml.introspector.Property;
 import org.yaml.snakeyaml.nodes.NodeTuple;
@@ -28,18 +28,15 @@ import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 
 import java.lang.reflect.ParameterizedType;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * ShardingSphere YAML representer.
  */
 public final class ShardingSphereYAMLRepresenter extends Representer {
     
-    private final Map<String, TupleProcessor> tupleProcessors = new HashMap<>();
-    
     static {
         ShardingSphereServiceLoader.register(YamlRuleConfigurationSwapper.class);
+        ShardingSphereServiceLoader.register(ShardingSphereYAMLTupleProcessor.class);
     }
     
     @SneakyThrows
@@ -50,18 +47,14 @@ public final class ShardingSphereYAMLRepresenter extends Representer {
         }
     }
     
-    /**
-     * Register new tuple processor into representer.
-     *
-     * @param tupleProcessor tuple processor
-     */
-    public void registerTupleProcessor(final TupleProcessor tupleProcessor) {
-        tupleProcessors.put(tupleProcessor.getProcessedTupleName(), tupleProcessor);
-    }
-    
     @Override
     protected NodeTuple representJavaBeanProperty(final Object javaBean, final Property property, final Object propertyValue, final Tag customTag) {
-        TupleProcessor tupleProcessor = tupleProcessors.containsKey(property.getName()) ? tupleProcessors.get(property.getName()) : new SkipUnsetTupleProcessor();
-        return tupleProcessor.process(super.representJavaBeanProperty(javaBean, property, propertyValue, customTag));
+        NodeTuple nodeTuple = super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
+        for (ShardingSphereYAMLTupleProcessor each : ShardingSphereServiceLoader.newServiceInstances(ShardingSphereYAMLTupleProcessor.class)) {
+            if (property.getName().equals(each.getTupleName())) {
+                return each.process(nodeTuple);
+            }
+        }
+        return new DefaultTupleProcessor().process(nodeTuple);
     }
 }

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.underlying.common.yaml.representer;
 
 import org.apache.shardingsphere.underlying.common.yaml.fixture.DefaultYamlRepresenterFixture;
-import org.apache.shardingsphere.underlying.common.yaml.fixture.FixtureTupleProcessor;
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
 
@@ -61,15 +60,5 @@ public final class ShardingSphereYAMLRepresenterTest {
         assertThat(expected, containsString("collection:\n- value1\n- value2\n"));
         assertThat(expected, containsString("map:\n  key1: value1\n  key2: value2\n"));
         assertThat(expected, containsString("value: value\n"));
-    }
-    
-    @Test
-    public void assertToYamlWithTupleProcessor() {
-        DefaultYamlRepresenterFixture actual = new DefaultYamlRepresenterFixture();
-        actual.setValue("value");
-        ShardingSphereYAMLRepresenter yamlRepresenter = new ShardingSphereYAMLRepresenter();
-        yamlRepresenter.registerTupleProcessor(new FixtureTupleProcessor());
-        String expected = new Yaml(yamlRepresenter).dumpAsMap(actual);
-        assertThat(expected, containsString("value: processedValue"));
     }
 }

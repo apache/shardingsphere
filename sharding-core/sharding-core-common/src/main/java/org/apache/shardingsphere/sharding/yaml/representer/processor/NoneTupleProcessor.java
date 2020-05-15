@@ -15,22 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.yaml.fixture;
+package org.apache.shardingsphere.sharding.yaml.representer.processor;
 
-import org.apache.shardingsphere.underlying.common.yaml.representer.processor.TupleProcessor;
+import org.apache.shardingsphere.underlying.common.yaml.representer.processor.ShardingSphereYAMLTupleProcessor;
+import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.ScalarNode;
 import org.yaml.snakeyaml.nodes.Tag;
 
-public final class FixtureTupleProcessor implements TupleProcessor {
+/**
+ * None YAML tuple processor.
+ */
+public final class NoneTupleProcessor implements ShardingSphereYAMLTupleProcessor {
     
     @Override
-    public String getProcessedTupleName() {
-        return "value";
+    public String getTupleName() {
+        return "none";
     }
     
     @Override
     public NodeTuple process(final NodeTuple nodeTuple) {
-        return new NodeTuple(nodeTuple.getKeyNode(), new ScalarNode(Tag.STR, "processedValue", null, null, null));
+        return isNullNode(nodeTuple.getValueNode()) ? null : processNoneTuple(nodeTuple);
+    }
+    
+    private boolean isNullNode(final Node valueNode) {
+        return Tag.NULL.equals(valueNode.getTag());
+    }
+    
+    private NodeTuple processNoneTuple(final NodeTuple noneTuple) {
+        return new NodeTuple(noneTuple.getKeyNode(), new ScalarNode(Tag.STR, "", null, null, null));
     }
 }
