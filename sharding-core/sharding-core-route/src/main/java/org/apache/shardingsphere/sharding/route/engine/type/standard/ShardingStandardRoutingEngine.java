@@ -34,10 +34,10 @@ import org.apache.shardingsphere.sql.parser.binder.statement.dml.DeleteStatement
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.underlying.common.datanode.DataNode;
-import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
-import org.apache.shardingsphere.underlying.common.hint.HintManager;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.underlying.route.context.RouteMapper;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;

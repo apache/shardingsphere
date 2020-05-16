@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.executor;
 
-import org.apache.shardingsphere.underlying.common.hint.HintManager;
+import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintShardingType;

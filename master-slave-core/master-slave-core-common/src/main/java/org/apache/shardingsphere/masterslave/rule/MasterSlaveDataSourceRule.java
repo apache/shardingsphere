@@ -21,9 +21,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.masterslave.api.config.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceConfiguration;
-import org.apache.shardingsphere.underlying.common.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
-import org.apache.shardingsphere.underlying.common.spi.type.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
 
 import java.util.Collection;
 import java.util.HashMap;

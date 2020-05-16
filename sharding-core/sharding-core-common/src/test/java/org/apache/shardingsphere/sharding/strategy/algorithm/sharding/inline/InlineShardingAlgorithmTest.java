@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.StandardShardingSt
 import org.apache.shardingsphere.sharding.strategy.route.standard.StandardShardingStrategy;
 import org.apache.shardingsphere.sharding.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.sharding.strategy.route.value.RouteValue;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.junit.Before;
 import org.junit.Test;
 

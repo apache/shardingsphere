@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.core.registrycenter.schema;
 
-import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.opentracing.hook;
 
 import org.apache.shardingsphere.underlying.executor.kernel.ExecutorDataMap;
-import org.apache.shardingsphere.underlying.common.hook.RootInvokeHook;
-import org.apache.shardingsphere.underlying.common.hook.SPIRootInvokeHook;
-import org.apache.shardingsphere.underlying.common.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.hook.RootInvokeHook;
+import org.apache.shardingsphere.infra.hook.SPIRootInvokeHook;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

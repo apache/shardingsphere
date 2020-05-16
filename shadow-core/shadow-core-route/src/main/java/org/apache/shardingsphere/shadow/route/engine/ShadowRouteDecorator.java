@@ -23,8 +23,8 @@ import org.apache.shardingsphere.shadow.route.engine.impl.SimpleShadowDataSource
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DMLStatement;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteMapper;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;

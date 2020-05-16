@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.underlying.merge.engine;
 
-import org.apache.shardingsphere.underlying.common.spi.order.OrderedSPI;
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.spi.order.OrderedSPI;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 /**
  * Result process engine.

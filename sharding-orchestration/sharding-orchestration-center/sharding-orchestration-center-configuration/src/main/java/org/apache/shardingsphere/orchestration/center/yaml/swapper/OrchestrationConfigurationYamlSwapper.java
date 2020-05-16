@@ -21,7 +21,7 @@ import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepo
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 
 import java.util.HashMap;
 import java.util.Map;

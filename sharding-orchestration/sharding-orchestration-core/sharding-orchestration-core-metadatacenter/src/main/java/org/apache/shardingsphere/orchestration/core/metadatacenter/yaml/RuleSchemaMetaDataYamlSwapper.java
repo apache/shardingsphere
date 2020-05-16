@@ -21,8 +21,8 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaDat
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
-import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
+import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 
 import java.util.Collection;
 import java.util.Collections;

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.spring.namespace.parser;
 
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.EncryptDataSourceBeanDefinitionParserTag;
-import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;

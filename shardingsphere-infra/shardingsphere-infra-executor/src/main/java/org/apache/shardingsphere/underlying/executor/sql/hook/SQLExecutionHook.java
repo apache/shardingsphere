@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.underlying.executor.sql.hook;
 
-import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 
 import java.util.List;
 import java.util.Map;

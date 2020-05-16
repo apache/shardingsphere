@@ -31,7 +31,7 @@ import org.apache.shardingsphere.shardingscaling.core.config.ScalingContext;
 import org.apache.shardingsphere.shardingscaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.shardingscaling.utils.RuntimeUtil;
 import org.apache.shardingsphere.shardingscaling.web.HttpServerInitializer;
-import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import java.io.File;
 import java.io.IOException;

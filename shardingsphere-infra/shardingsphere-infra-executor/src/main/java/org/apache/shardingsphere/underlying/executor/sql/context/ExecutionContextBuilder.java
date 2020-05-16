@@ -19,7 +19,7 @@ package org.apache.shardingsphere.underlying.executor.sql.context;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.rewrite.engine.result.GenericSQLRewriteResult;
 import org.apache.shardingsphere.underlying.rewrite.engine.result.RouteSQLRewriteResult;
 import org.apache.shardingsphere.underlying.rewrite.engine.result.SQLRewriteResult;

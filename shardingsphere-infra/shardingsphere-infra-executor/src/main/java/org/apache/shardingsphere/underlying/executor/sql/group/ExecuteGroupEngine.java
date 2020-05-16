@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.underlying.executor.sql.group;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.underlying.common.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.underlying.common.spi.order.OrderedSPIRegistry;
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.sql.ExecutionConnection;

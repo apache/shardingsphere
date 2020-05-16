@@ -24,10 +24,10 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingSpher
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.fixture.XAShardingTransactionManagerFixture;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
-import org.apache.shardingsphere.underlying.common.database.type.dialect.H2DatabaseType;
-import org.apache.shardingsphere.underlying.common.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.junit.After;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;

@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.underlying.route.decorator;
 
-import org.apache.shardingsphere.underlying.common.spi.order.OrderedSPI;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.spi.order.OrderedSPI;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 /**

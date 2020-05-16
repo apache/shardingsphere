@@ -26,9 +26,9 @@ import org.apache.shardingsphere.encrypt.api.config.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.encrypt.strategy.EncryptTable;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 import org.apache.shardingsphere.encrypt.strategy.spi.QueryAssistedEncryptor;
-import org.apache.shardingsphere.underlying.common.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.underlying.common.spi.type.TypedSPIRegistry;
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
 import java.util.Collections;

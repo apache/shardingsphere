@@ -26,7 +26,7 @@ import org.apache.shardingsphere.shardingscaling.core.config.JDBCDataSourceConfi
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
-import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 
 import java.util.Collection;
 import java.util.HashMap;

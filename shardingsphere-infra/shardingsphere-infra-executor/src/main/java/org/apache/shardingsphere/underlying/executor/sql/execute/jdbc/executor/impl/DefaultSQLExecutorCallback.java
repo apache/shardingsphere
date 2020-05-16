@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.StatementExecuteUnit;

@@ -30,7 +30,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.ShardingCTLBack
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.utils.SCTLUtils;
 import org.apache.shardingsphere.shardingproxy.backend.text.transaction.SkipBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.transaction.TransactionBackendHandler;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;

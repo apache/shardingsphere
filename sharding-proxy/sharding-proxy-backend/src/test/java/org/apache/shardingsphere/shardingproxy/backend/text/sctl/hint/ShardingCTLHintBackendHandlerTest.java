@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.shardingsphere.underlying.common.hint.HintManager;
+import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
@@ -31,9 +31,9 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.Unsup
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintManagerHolder;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

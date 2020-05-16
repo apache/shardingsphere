@@ -20,7 +20,7 @@ package org.apache.shardingsphere.orchestration.core.metadatacenter.event;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.orchestration.core.common.event.ShardingOrchestrationEvent;
-import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 
 import java.util.Collection;
 

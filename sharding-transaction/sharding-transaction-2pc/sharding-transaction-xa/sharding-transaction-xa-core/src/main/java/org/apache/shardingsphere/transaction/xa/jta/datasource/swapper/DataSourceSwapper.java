@@ -22,7 +22,7 @@ import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
-import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;

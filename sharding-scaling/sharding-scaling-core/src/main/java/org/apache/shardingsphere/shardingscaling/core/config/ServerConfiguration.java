@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling.core.config;
 
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 
 import lombok.Getter;
 import lombok.Setter;

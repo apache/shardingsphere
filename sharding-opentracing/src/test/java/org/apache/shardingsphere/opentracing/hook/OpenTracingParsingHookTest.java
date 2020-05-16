@@ -20,11 +20,11 @@ package org.apache.shardingsphere.opentracing.hook;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.tag.Tags;
 import org.apache.shardingsphere.opentracing.constant.ShardingTags;
-import org.apache.shardingsphere.underlying.common.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHook;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHookRegistry;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.orchestration.core.common.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
 import java.util.Collection;
 

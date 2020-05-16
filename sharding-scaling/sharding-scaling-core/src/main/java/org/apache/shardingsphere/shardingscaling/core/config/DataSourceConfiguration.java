@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shardingscaling.core.config;
 
-import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 /**
  * Data source configuration.

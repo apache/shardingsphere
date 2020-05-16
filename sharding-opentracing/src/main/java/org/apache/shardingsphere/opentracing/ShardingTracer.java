@@ -22,7 +22,7 @@ import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 /**
  * Sharding tracer object container.

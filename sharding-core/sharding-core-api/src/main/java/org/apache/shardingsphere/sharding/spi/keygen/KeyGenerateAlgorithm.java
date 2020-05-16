@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.spi.keygen;
 
-import org.apache.shardingsphere.underlying.common.spi.type.TypedSPI;
+import org.apache.shardingsphere.infra.spi.type.TypedSPI;
 
 /**
  * Key generate algorithm.

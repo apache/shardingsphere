@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.group;
 
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.StatementExecuteUnit;

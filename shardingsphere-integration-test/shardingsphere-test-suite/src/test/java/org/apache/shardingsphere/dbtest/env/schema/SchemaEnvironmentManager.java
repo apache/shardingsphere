@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.dbtest.env.EnvironmentPath;
 import org.apache.shardingsphere.dbtest.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.dbtest.env.datasource.DataSourceUtil;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.h2.tools.RunScript;
 
 import javax.sql.DataSource;

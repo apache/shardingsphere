@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer;
 
-import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.impl.H2Recognizer;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.impl.MySQLRecognizer;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.impl.OracleRecognizer;

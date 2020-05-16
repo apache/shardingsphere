@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 
-import org.apache.shardingsphere.underlying.common.auth.Authentication;
-import org.apache.shardingsphere.underlying.common.auth.ProxyUser;
+import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.auth.ProxyUser;
 import org.apache.shardingsphere.shardingproxy.backend.MockShardingSphereSchemasUtil;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;

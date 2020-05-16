@@ -34,8 +34,8 @@ import org.apache.shardingsphere.orchestration.core.registrycenter.event.Disable
 import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationSchema;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
-import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
+import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

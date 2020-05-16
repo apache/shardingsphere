@@ -20,10 +20,10 @@ package org.apache.shardingsphere.masterslave.rule;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.rule.event.impl.DataSourceNameDisabledEvent;
-import org.apache.shardingsphere.underlying.common.rule.DataSourceRoutedRule;
-import org.apache.shardingsphere.underlying.common.rule.event.RuleChangedEvent;
-import org.apache.shardingsphere.underlying.common.rule.StatusContainedRule;
+import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
+import org.apache.shardingsphere.infra.rule.DataSourceRoutedRule;
+import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
+import org.apache.shardingsphere.infra.rule.StatusContainedRule;
 
 import java.util.Collection;
 import java.util.HashMap;

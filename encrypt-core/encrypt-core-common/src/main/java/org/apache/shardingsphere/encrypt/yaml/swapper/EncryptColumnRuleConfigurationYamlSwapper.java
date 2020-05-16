@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.yaml.swapper;
 
 import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptColumnRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 
 /**
  * Encrypt column configuration YAML swapper.

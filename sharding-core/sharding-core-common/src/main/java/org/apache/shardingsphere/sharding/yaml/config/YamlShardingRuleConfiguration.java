@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.yaml.config;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -38,10 +38,10 @@ import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenter;
 import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenterNode;
 import org.apache.shardingsphere.orchestration.core.configuration.DataSourceConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration;
-import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlRootRuleConfigurations;
-import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 
 import java.util.Collection;
 import java.util.Collections;

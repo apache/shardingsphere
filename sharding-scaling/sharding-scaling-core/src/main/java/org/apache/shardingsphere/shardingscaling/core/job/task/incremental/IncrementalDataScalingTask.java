@@ -33,7 +33,7 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Re
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.importer.Importer;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.importer.ImporterFactory;
 import org.apache.shardingsphere.shardingscaling.core.job.task.ScalingTask;
-import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.underlying.executor.sql.group;
 
-import org.apache.shardingsphere.underlying.common.spi.order.OrderedSPI;
+import org.apache.shardingsphere.infra.spi.order.OrderedSPI;
 import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
 
 import java.util.Collection;

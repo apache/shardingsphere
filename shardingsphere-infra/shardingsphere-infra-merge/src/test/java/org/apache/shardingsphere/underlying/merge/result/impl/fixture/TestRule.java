@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.underlying.merge.result.impl.fixture;
 
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 /**
  * Rule for test.

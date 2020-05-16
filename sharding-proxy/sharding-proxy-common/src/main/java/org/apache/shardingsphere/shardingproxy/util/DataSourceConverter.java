@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.util;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 
 import java.lang.reflect.Field;

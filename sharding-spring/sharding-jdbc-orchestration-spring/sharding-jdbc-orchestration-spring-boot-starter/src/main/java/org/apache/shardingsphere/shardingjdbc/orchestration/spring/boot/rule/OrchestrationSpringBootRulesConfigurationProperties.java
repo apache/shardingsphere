@@ -23,7 +23,7 @@ import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguratio
 import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.orchestration.center.instance;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.properties.TypedPropertyKey;
+import org.apache.shardingsphere.infra.properties.TypedPropertyKey;
 
 /**
  * Typed property key of Etcd.

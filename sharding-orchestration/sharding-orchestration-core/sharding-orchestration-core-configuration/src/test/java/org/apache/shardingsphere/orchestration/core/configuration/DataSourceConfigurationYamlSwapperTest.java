@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.core.configuration;
 
-import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

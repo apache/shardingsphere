@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.masterslave.api.config;
 
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.common.config.TypedSPIConfiguration;
+import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
 
 import java.util.Properties;
 

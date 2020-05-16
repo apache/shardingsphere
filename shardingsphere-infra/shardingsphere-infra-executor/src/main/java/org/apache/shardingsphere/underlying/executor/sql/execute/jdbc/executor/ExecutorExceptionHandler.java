@@ -20,7 +20,7 @@ package org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import java.sql.SQLException;
 

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.rule;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;

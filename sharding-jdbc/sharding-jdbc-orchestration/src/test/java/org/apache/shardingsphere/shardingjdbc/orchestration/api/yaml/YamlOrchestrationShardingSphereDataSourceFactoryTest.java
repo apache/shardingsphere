@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml;
 
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
-import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.junit.AfterClass;
 import org.junit.Test;
 

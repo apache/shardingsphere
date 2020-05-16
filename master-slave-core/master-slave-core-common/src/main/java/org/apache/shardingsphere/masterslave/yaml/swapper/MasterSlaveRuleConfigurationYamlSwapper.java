@@ -23,7 +23,7 @@ import org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceCon
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveDataSourceConfiguration;
 import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;

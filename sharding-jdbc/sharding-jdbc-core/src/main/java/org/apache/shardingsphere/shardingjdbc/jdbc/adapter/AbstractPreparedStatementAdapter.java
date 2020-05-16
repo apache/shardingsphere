@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 import com.google.common.io.CharStreams;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.invocation.SetParameterMethodInvocation;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
 

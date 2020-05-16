@@ -22,8 +22,8 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSche
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionContextBuilder;
 import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionUnit;

@@ -20,8 +20,8 @@ package org.apache.shardingsphere.shardingjdbc.api;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

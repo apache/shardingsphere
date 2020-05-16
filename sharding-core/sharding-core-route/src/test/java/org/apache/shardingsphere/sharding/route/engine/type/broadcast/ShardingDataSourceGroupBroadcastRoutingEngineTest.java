@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
-import org.apache.shardingsphere.underlying.common.datanode.DataNode;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 import org.junit.Test;

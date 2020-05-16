@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.underlying.route.context;
 
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.common.datanode.DataNode;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 
 import java.util.Collection;
 import java.util.HashMap;

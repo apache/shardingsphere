@@ -37,7 +37,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendH
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.postgresql.PostgreSQLErrPacketFactory;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 
 import java.sql.SQLException;
 import java.util.Collection;

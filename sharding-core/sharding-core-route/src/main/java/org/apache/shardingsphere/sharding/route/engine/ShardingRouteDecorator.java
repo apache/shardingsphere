@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.underlying.common.hint.HintManager;
+import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.sharding.rule.BindingTableRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
@@ -37,8 +37,8 @@ import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DMLStatement;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.decorator.RouteDecorator;
