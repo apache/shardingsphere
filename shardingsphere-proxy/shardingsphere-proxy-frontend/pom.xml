@@ -20,27 +20,17 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>sharding-proxy-frontend</artifactId>
+        <artifactId>shardingsphere-proxy</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-proxy-frontend-spi</artifactId>
+    <artifactId>shardingsphere-proxy-frontend</artifactId>
     <name>${project.artifactId}</name>
+    <packaging>pom</packaging>
     
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-db-protocol-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-proxy-backend</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-        </dependency>
-    </dependencies>
+    <modules>
+        <module>shardingsphere-proxy-frontend-spi</module>
+        <module>shardingsphere-proxy-frontend-core</module>
+        <module>shardingsphere-proxy-frontend-mysql</module>
+        <module>shardingsphere-proxy-frontend-postgresql</module>
+    </modules>
 </project>

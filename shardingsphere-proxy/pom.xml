@@ -24,7 +24,7 @@
         <artifactId>shardingsphere</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-proxy</artifactId>
+    <artifactId>shardingsphere-proxy</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
@@ -33,9 +33,9 @@
     </properties>
     
     <modules>
-        <module>sharding-proxy-common</module>
-        <module>sharding-proxy-frontend</module>
-        <module>sharding-proxy-backend</module>
-        <module>sharding-proxy-bootstrap</module>
+        <module>shardingsphere-proxy-common</module>
+        <module>shardingsphere-proxy-frontend</module>
+        <module>shardingsphere-proxy-backend</module>
+        <module>shardingsphere-proxy-bootstrap</module>
     </modules>
 </project>

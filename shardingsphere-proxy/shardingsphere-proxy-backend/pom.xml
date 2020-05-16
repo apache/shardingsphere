@@ -20,10 +20,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>sharding-proxy</artifactId>
+        <artifactId>shardingsphere-proxy</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-proxy-backend</artifactId>
+    <artifactId>shardingsphere-proxy-backend</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
@@ -64,7 +64,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-proxy-common</artifactId>
+            <artifactId>shardingsphere-proxy-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
