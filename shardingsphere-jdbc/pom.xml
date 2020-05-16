@@ -23,12 +23,12 @@
         <artifactId>shardingsphere</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-jdbc</artifactId>
+    <artifactId>shardingsphere-jdbc</artifactId>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
     
     <modules>
-        <module>sharding-jdbc-core</module>
-        <module>sharding-jdbc-orchestration</module>
+        <module>shardingsphere-jdbc-core</module>
+        <module>shardingsphere-jdbc-orchestration</module>
     </modules>
 </project>

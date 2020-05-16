@@ -85,12 +85,12 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>sharding-jdbc-core</artifactId>
+                <artifactId>shardingsphere-jdbc-core</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>sharding-jdbc-orchestration</artifactId>
+                <artifactId>shardingsphere-jdbc-orchestration</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>

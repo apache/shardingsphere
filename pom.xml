@@ -39,7 +39,7 @@
         <module>shadow-core</module>
         <module>master-slave-core</module>
         
-        <module>sharding-jdbc</module>
+        <module>shardingsphere-jdbc</module>
         <module>sharding-proxy</module>
         <module>sharding-spring</module>
         
