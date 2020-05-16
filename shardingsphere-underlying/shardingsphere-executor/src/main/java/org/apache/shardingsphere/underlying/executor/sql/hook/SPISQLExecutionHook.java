@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.underlying.executor.sql.hook;
 
-import org.apache.shardingsphere.sharding.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.underlying.common.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
 
 import java.util.Collection;

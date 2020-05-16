@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.spi.type;
+package org.apache.shardingsphere.underlying.common.spi.type;
 
 import java.util.Properties;
 

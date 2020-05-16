@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.underlying.rewrite.context;
 
-import org.apache.shardingsphere.sharding.spi.order.OrderedSPI;
+import org.apache.shardingsphere.underlying.common.spi.order.OrderedSPI;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRule;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;

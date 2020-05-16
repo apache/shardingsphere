@@ -32,9 +32,9 @@ import org.apache.shardingsphere.sharding.yaml.config.strategy.YamlHintShardingS
 import org.apache.shardingsphere.sharding.yaml.config.strategy.YamlNoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.YamlShardingAlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.YamlStandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.underlying.common.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sharding.spi.algorithm.ShardingAlgorithm;
-import org.apache.shardingsphere.sharding.spi.type.TypedSPIRegistry;
+import org.apache.shardingsphere.underlying.common.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
 

@@ -28,9 +28,9 @@ import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.Inl
 import org.apache.shardingsphere.sharding.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.sharding.strategy.route.ShardingStrategyFactory;
 import org.apache.shardingsphere.sharding.strategy.route.none.NoneShardingStrategy;
-import org.apache.shardingsphere.sharding.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.underlying.common.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sharding.spi.keygen.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.sharding.spi.type.TypedSPIRegistry;
+import org.apache.shardingsphere.underlying.common.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.underlying.common.datanode.DataNode;
 import org.apache.shardingsphere.underlying.common.rule.DataNodeRoutedRule;

@@ -19,8 +19,8 @@ package org.apache.shardingsphere.underlying.common.metadata.schema;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sharding.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.sharding.spi.order.OrderedSPIRegistry;
+import org.apache.shardingsphere.underlying.common.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.underlying.common.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDataLoader;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;

@@ -20,9 +20,9 @@ package org.apache.shardingsphere.sharding.yaml.swapper;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.sharding.api.config.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlKeyGeneratorConfiguration;
-import org.apache.shardingsphere.sharding.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.underlying.common.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sharding.spi.keygen.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.sharding.spi.type.TypedSPIRegistry;
+import org.apache.shardingsphere.underlying.common.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
 
 /**
