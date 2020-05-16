@@ -64,42 +64,42 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-route</artifactId>
+            <artifactId>shardingsphere-sharding-route</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>master-slave-core-route</artifactId>
+            <artifactId>shardingsphere-master-slave-route</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-rewrite</artifactId>
+            <artifactId>shardingsphere-sharding-rewrite</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>encrypt-core-rewrite</artifactId>
+            <artifactId>shardingsphere-encrypt-rewrite</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shadow-core-rewrite</artifactId>
+            <artifactId>shardingsphere-shadow-rewrite</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shadow-core-route</artifactId>
+            <artifactId>shardingsphere-shadow-route</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-merge</artifactId>
+            <artifactId>shardingsphere-sharding-merge</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>encrypt-core-merge</artifactId>
+            <artifactId>shardingsphere-encrypt-merge</artifactId>
             <version>${project.version}</version>
         </dependency>
         

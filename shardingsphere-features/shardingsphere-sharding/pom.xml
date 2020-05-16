@@ -20,17 +20,19 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>sharding-orchestration-center</artifactId>
+        <artifactId>shardingsphere-features</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-orchestration-center-api</artifactId>
+    <artifactId>shardingsphere-sharding</artifactId>
     <name>${project.artifactId}</name>
+    <packaging>pom</packaging>
     
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sharding-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
+    <modules>
+        <module>shardingsphere-sharding-api</module>
+        <module>shardingsphere-sharding-common</module>
+        <module>shardingsphere-sharding-route</module>
+        <module>shardingsphere-sharding-rewrite</module>
+        <module>shardingsphere-sharding-merge</module>
+        <module>shardingsphere-sharding-time-service</module>
+    </modules>
 </project>

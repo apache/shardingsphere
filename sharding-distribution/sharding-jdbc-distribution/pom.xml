@@ -30,12 +30,12 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-api</artifactId>
+            <artifactId>shardingsphere-sharding-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-common</artifactId>
+            <artifactId>shardingsphere-sharding-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -85,17 +85,17 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-route</artifactId>
+            <artifactId>shardingsphere-sharding-route</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-rewrite</artifactId>
+            <artifactId>shardingsphere-sharding-rewrite</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-merge</artifactId>
+            <artifactId>shardingsphere-sharding-merge</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

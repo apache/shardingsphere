@@ -20,10 +20,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>sharding-orchestration-core</artifactId>
+        <artifactId>shardingsphere-sharding</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-orchestration-core-common</artifactId>
+    <artifactId>shardingsphere-sharding-route</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
@@ -32,30 +32,51 @@
             <artifactId>shardingsphere-sharding-common</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-master-slave-common</artifactId>
+            <artifactId>shardingsphere-infra-route</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sql-parser-sql92</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-encrypt-common</artifactId>
+            <artifactId>shardingsphere-sql-parser-mysql</artifactId>
             <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-shadow-common</artifactId>
+            <artifactId>shardingsphere-sql-parser-postgresql</artifactId>
             <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-orchestration-core-configuration</artifactId>
+            <artifactId>shardingsphere-sql-parser-oracle</artifactId>
             <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-orchestration-center-api</artifactId>
+            <artifactId>shardingsphere-sql-parser-sqlserver</artifactId>
             <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
         </dependency>
     </dependencies>
 </project>
