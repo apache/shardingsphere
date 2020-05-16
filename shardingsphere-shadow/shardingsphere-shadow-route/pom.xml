@@ -22,16 +22,16 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shadow-core</artifactId>
+        <artifactId>shardingsphere-shadow</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shadow-core-route</artifactId>
+    <artifactId>shardingsphere-shadow-route</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shadow-core-common</artifactId>
+            <artifactId>shardingsphere-shadow-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

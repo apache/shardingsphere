@@ -89,7 +89,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shadow-core-rewrite</artifactId>
+            <artifactId>shardingsphere-shadow-rewrite</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
