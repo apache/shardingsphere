@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
-import org.apache.shardingsphere.underlying.common.hint.HintManager;
+import org.apache.shardingsphere.infra.hint.HintManager;
 import org.junit.Ignore;
 import org.junit.Test;
 

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.orchestration.internal.util;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.junit.Test;
 
 import javax.sql.DataSource;

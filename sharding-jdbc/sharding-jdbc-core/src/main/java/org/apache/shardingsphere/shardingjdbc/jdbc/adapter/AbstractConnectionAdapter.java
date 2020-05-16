@@ -26,11 +26,11 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecute
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
-import org.apache.shardingsphere.underlying.common.hook.RootInvokeHook;
-import org.apache.shardingsphere.underlying.common.hook.SPIRootInvokeHook;
-import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.connection.JDBCExecutionConnection;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.group.StatementOption;
+import org.apache.shardingsphere.infra.hook.RootInvokeHook;
+import org.apache.shardingsphere.infra.hook.SPIRootInvokeHook;
+import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
+import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.connection.JDBCExecutionConnection;
+import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.group.StatementOption;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

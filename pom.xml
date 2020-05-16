@@ -32,7 +32,7 @@
     <modules>
         <module>shardingsphere-sql-parser</module>
         <module>shardingsphere-db-protocol</module>
-        <module>shardingsphere-underlying</module>
+        <module>shardingsphere-infra</module>
         
         <module>sharding-core</module>
         <module>encrypt-core</module>

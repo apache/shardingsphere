@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.transaction.base.seata.at;
 
 import io.seata.core.context.RootContext;
-import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.underlying.executor.kernel.ExecutorDataMap;
+import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorDataMap;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

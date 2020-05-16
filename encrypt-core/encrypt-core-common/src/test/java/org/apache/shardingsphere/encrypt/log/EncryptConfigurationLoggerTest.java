@@ -23,7 +23,7 @@ import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfigurati
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptorRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.log.ConfigurationLogger;
+import org.apache.shardingsphere.infra.log.ConfigurationLogger;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

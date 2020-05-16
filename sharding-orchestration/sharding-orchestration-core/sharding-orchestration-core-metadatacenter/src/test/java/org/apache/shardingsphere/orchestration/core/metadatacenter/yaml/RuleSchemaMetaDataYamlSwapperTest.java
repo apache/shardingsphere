@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.orchestration.core.metadatacenter.yaml;
 
 import org.apache.shardingsphere.orchestration.core.metadatacenter.MetaDataTest;
-import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
-import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.junit.Test;
 
 import java.util.Collections;

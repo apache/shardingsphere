@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaDat
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
-import org.apache.shardingsphere.underlying.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.merge.result.MergedResult;
 
 import java.io.InputStream;
 import java.sql.SQLException;
@@ -95,7 +95,7 @@ public abstract class EncryptColumnsMergedResult implements MergedResult {
         if (1 == columnIndex) {
             String columnName = getOriginalValue(columnIndex, type).toString();
             Optional<String> logicColumn = getLogicColumnOfCipher(columnName);
-            return logicColumn.isPresent() ? logicColumn.get() : columnName;
+            return logicColumn.orElse(columnName);
         }
         return getOriginalValue(columnIndex, type);
     }

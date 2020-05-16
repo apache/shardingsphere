@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shadow.yaml.config;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 
 import java.util.Map;
 

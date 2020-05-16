@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.spi;
 
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypeAwareSPI;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeAwareSPI;
 
 import java.util.Collection;
 

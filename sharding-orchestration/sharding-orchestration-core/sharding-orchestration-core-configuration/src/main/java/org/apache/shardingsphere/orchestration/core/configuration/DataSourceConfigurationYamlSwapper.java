@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.orchestration.core.configuration;
 
-import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
+import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 
 /**
  * Data source configuration YAML swapper.

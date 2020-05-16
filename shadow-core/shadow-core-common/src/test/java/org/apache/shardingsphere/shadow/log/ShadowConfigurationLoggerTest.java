@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shadow.log;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.log.ConfigurationLogger;
+import org.apache.shardingsphere.infra.log.ConfigurationLogger;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

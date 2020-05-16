@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource;
 
 import com.google.common.collect.Sets;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionFactory;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManager;

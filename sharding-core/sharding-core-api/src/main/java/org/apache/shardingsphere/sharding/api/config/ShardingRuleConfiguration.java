@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.api.config;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sharding.api.config.strategy.ShardingStrategyConfiguration;
-import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
 import java.util.Collection;
 import java.util.LinkedList;

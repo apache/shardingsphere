@@ -32,7 +32,7 @@ import org.apache.shardingsphere.shardingproxy.frontend.executor.ChannelThreadEx
 import org.apache.shardingsphere.shardingproxy.frontend.executor.CommandExecutorSelector;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 
 import java.sql.SQLException;
 

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.StandardShardingSt
 import org.apache.shardingsphere.sharding.yaml.config.YamlKeyGeneratorConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlTableRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

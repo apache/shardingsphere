@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.sharding.rewrite.parameter.impl;
 
 import lombok.Setter;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.RouteContextAware;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.RouteContextAware;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.underlying.rewrite.parameter.builder.ParameterBuilder;
-import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.StandardParameterBuilder;
-import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriter;
-import org.apache.shardingsphere.underlying.route.context.RouteContext;
+import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
+import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
+import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 
 import java.util.List;
 

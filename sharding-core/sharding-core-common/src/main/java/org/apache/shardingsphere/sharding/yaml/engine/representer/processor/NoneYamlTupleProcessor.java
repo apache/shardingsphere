@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.yaml.engine.representer.processor;
 
-import org.apache.shardingsphere.underlying.common.yaml.engine.representer.processor.ShardingSphereYamlTupleProcessor;
+import org.apache.shardingsphere.infra.yaml.engine.representer.processor.ShardingSphereYamlTupleProcessor;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.ScalarNode;

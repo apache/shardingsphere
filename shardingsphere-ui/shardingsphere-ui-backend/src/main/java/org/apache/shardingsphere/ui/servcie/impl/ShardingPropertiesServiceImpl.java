@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.ui.servcie.impl;
 
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.ui.servcie.ConfigCenterService;
 import org.apache.shardingsphere.ui.servcie.ShardingPropertiesService;
 import org.apache.shardingsphere.ui.util.ConfigurationYamlConverter;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.Properties;
 
 /**
@@ -32,7 +32,7 @@ import java.util.Properties;
 @Service
 public final class ShardingPropertiesServiceImpl implements ShardingPropertiesService {
     
-    @Autowired
+    @Resource
     private ConfigCenterService configCenterService;
     
     @Override

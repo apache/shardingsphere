@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.strategy;
 
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;

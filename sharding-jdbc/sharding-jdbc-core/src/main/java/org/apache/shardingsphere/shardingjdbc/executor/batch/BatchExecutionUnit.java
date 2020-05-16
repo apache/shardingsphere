@@ -23,7 +23,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;

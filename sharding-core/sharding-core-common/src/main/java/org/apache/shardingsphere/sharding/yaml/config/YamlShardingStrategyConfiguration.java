@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sharding.yaml.config.strategy.YamlComplexShardi
 import org.apache.shardingsphere.sharding.yaml.config.strategy.YamlHintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.YamlNoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.YamlStandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 
 /**
  * Sharding strategy configuration for YAML.

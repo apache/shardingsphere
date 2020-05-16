@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.core.facade.properties;
 
-import org.apache.shardingsphere.underlying.common.properties.TypedProperties;
+import org.apache.shardingsphere.infra.properties.TypedProperties;
 
 import java.util.Properties;
 

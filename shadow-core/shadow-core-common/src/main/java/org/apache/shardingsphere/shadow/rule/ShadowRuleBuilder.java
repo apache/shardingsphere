@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.rule;
 
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.rule.ShardingSphereRuleBuilder;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRuleBuilder;
 
 import java.util.Collection;
 

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shardingjdbc.executor.batch;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.underlying.executor.sql.context.SQLUnit;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.junit.Test;
 
 import java.util.List;

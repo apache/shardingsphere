@@ -30,8 +30,8 @@ import org.apache.shardingsphere.encrypt.rewrite.token.generator.impl.AssistQuer
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.impl.EncryptAssignmentTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.impl.EncryptInsertValuesTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.impl.EncryptProjectionTokenGenerator;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.SQLTokenGenerator;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.builder.SQLTokenGeneratorBuilder;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.SQLTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.builder.SQLTokenGeneratorBuilder;
 
 import java.util.Collection;
 import java.util.LinkedList;

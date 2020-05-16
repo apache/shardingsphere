@@ -20,11 +20,11 @@ package org.apache.shardingsphere.shadow.rewrite.context;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.rewrite.parameter.ShadowParameterRewriterBuilder;
 import org.apache.shardingsphere.shadow.rewrite.token.ShadowTokenGenerateBuilder;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
-import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
-import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriter;
-import org.apache.shardingsphere.underlying.route.context.RouteContext;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
+import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorator;
+import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 
 /**
  * SQL rewrite context decorator for shadow.

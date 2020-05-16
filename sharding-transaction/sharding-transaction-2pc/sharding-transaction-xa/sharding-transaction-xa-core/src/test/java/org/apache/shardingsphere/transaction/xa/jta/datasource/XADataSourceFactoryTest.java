@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource;
 
 import com.microsoft.sqlserver.jdbc.SQLServerXADataSource;
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.config;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlProxyServerConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import java.io.File;
 import java.io.IOException;

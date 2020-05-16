@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.pojo;
 
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Substitutable;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
 
 /**
  * Assignment token for encrypt.

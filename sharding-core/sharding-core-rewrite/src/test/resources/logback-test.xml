@@ -25,8 +25,8 @@
     <logger name="org.apache.shardingsphere" level="info" additivity="false">
         <appender-ref ref="console"/>
     </logger>
-    <logger name="org.apache.shardingsphere.underlying.executor.sql.jdbc.executor.ExecutorExceptionHandler" level="off" />
-    <logger name="org.apache.shardingsphere.underlying.common.log.ConfigurationLogger" level="off" />
+    <logger name="org.apache.shardingsphere.infra.executor.sql.jdbc.executor.ExecutorExceptionHandler" level="off" />
+    <logger name="org.apache.shardingsphere.infra.log.ConfigurationLogger" level="off" />
     <logger name="ShardingSphere-metadata" level="off" />
     
     <root>

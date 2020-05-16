@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import org.apache.shardingsphere.shardingjdbc.common.base.AbstractShadowJDBCDatabaseAndTableTest;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

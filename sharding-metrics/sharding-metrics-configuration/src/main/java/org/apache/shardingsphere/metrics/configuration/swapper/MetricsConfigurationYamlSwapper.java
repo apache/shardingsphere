@@ -19,7 +19,7 @@ package org.apache.shardingsphere.metrics.configuration.swapper;
 
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.metrics.configuration.yaml.YamlMetricsConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 
 /**
  * Metrics configuration YAML swapper.
