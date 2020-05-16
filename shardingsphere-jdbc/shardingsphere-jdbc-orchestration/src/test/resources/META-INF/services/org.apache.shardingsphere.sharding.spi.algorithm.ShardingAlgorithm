@@ -15,5 +15,5 @@
 # limitations under the License.
 #
  
-org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture.MultiAlgorithm
-org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture.StandardAlgorithm
+org.apache.shardingsphere.driver.orchestration.api.yaml.fixture.MultiAlgorithm
+org.apache.shardingsphere.driver.orchestration.api.yaml.fixture.StandardAlgorithm

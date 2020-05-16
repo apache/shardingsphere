@@ -33,4 +33,4 @@ weight = 3
 
 - Do not support new functions of JDBC 4.1 interface
 
-For all the unsupported methods, please read `org.apache.shardingsphere.shardingjdbc.jdbc.unsupported` package.
+For all the unsupported methods, please read `org.apache.shardingsphere.jdbc.jdbc.unsupported` package.

@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.shardingjdbc.orchestration.fixture.FirstTestConfigCenterRepository
-org.apache.shardingsphere.shardingjdbc.orchestration.fixture.SecondTestConfigCenterRepository
-org.apache.shardingsphere.shardingjdbc.orchestration.fixture.ThirdTestConfigCenterRepository
-org.apache.shardingsphere.shardingjdbc.orchestration.fixture.FourthTestConfigCenterRepository
-org.apache.shardingsphere.shardingjdbc.orchestration.fixture.FirstTestMetaDataCenterRepository
+org.apache.shardingsphere.driver.orchestration.fixture.FirstTestConfigCenterRepository
+org.apache.shardingsphere.driver.orchestration.fixture.SecondTestConfigCenterRepository
+org.apache.shardingsphere.driver.orchestration.fixture.ThirdTestConfigCenterRepository
+org.apache.shardingsphere.driver.orchestration.fixture.FourthTestConfigCenterRepository
+org.apache.shardingsphere.driver.orchestration.fixture.FirstTestMetaDataCenterRepository

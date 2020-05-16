@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.example.sharding.raw.jdbc.factory;
 
 import org.apache.shardingsphere.example.type.ShardingType;
-import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.io.File;

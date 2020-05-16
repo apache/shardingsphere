@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.shardingjdbc.jdbc.core.fixture.XAShardingTransactionManagerFixture
-org.apache.shardingsphere.shardingjdbc.jdbc.core.fixture.BASEShardingTransactionManagerFixture
+org.apache.shardingsphere.driver.jdbc.core.fixture.XAShardingTransactionManagerFixture
+org.apache.shardingsphere.driver.jdbc.core.fixture.BASEShardingTransactionManagerFixture

@@ -55,5 +55,5 @@ The red part in the diagram indicates internal objects, which are used in Shardi
 
 #### Use Convention
 
-Classes in `org.apache.shardingsphere.api` and `org.apache.shardingsphere.shardingjdbc.api` packages are API open to users, the modifications of which will be declared in release notes. As internal implementations, classes in other packages can adjust any time, `please not use them directly`.
+Classes in `org.apache.shardingsphere.api` and `org.apache.shardingsphere.driver.api` packages are API open to users, the modifications of which will be declared in release notes. As internal implementations, classes in other packages can adjust any time, `please not use them directly`.
 

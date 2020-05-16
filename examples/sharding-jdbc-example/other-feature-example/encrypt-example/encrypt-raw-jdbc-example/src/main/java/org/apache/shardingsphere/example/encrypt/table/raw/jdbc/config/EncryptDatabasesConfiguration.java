@@ -23,7 +23,7 @@ import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguratio
 import org.apache.shardingsphere.encrypt.api.config.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
-import org.apache.shardingsphere.shardingjdbc.api.ShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

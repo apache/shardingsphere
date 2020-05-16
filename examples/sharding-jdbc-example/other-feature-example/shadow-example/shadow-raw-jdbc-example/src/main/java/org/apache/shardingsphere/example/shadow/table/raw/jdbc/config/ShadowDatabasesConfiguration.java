@@ -20,7 +20,7 @@ package org.apache.shardingsphere.example.shadow.table.raw.jdbc.config;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shardingjdbc.api.ShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

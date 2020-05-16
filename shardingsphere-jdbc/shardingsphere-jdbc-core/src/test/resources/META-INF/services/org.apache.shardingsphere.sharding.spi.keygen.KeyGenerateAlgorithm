@@ -17,5 +17,5 @@
 
 org.apache.shardingsphere.sharding.strategy.algorithm.keygen.SnowflakeKeyGenerateAlgorithm
 org.apache.shardingsphere.sharding.strategy.algorithm.keygen.UUIDKeyGenerateAlgorithm
-org.apache.shardingsphere.shardingjdbc.fixture.IncrementKeyGenerateAlgorithm
-org.apache.shardingsphere.shardingjdbc.fixture.ResetIncrementKeyGenerateAlgorithm
+org.apache.shardingsphere.driver.fixture.IncrementKeyGenerateAlgorithm
+org.apache.shardingsphere.driver.fixture.ResetIncrementKeyGenerateAlgorithm
