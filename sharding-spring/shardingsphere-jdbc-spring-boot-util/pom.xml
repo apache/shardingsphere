@@ -23,7 +23,7 @@
         <artifactId>sharding-spring</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-spring-boot-util</artifactId>
+    <artifactId>shardingsphere-jdbc-spring-boot-util</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>

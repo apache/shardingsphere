@@ -31,7 +31,7 @@ import java.util.Map;
 public abstract class AbstractDbcp2DataSourcePropertiesSetter implements DataSourcePropertiesSetter {
     
     /**
-     * common dbcp2 add custom connection properties.
+     * Common DBCP2 add custom connection properties.
      *
      * @param environment environment variable
      * @param prefix properties prefix
