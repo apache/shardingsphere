@@ -33,4 +33,4 @@ weight = 3
 
 - 不支持JDBC 4.1接口新功能
 
-查询所有未支持方法，请阅读org.apache.shardingsphere.shardingjdbc.jdbc.unsupported包。
+查询所有未支持方法，请阅读`org.apache.shardingsphere.driver.jdbc.unsupported`包。
