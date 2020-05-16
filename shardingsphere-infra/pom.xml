@@ -30,10 +30,10 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>shardingsphere-common</module>
-        <module>shardingsphere-route</module>
-        <module>shardingsphere-rewrite</module>
+        <module>shardingsphere-infra-common</module>
+        <module>shardingsphere-infra-route</module>
+        <module>shardingsphere-infra-rewrite</module>
         <module>shardingsphere-executor</module>
-        <module>shardingsphere-merge</module>
+        <module>shardingsphere-infra-merge</module>
     </modules>
 </project>

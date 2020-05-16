@@ -145,7 +145,7 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-common</artifactId>
+                <artifactId>shardingsphere-infra-common</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
             

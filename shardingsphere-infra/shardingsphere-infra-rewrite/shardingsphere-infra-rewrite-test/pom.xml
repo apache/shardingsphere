@@ -22,15 +22,26 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-infra</artifactId>
+        <artifactId>shardingsphere-infra-rewrite</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-rewrite</artifactId>
-    <name>${project.artifactId}</name>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-infra-rewrite-test</artifactId>
     
-    <modules>
-        <module>shardingsphere-rewrite-engine</module>
-        <module>shardingsphere-rewrite-test</module>
-    </modules>
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-rewrite-engine</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 </project>
