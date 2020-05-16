@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>sharding-spring</artifactId>
+        <artifactId>shardingsphere-jdbc-spring</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-jdbc-spring-boot-util</artifactId>
