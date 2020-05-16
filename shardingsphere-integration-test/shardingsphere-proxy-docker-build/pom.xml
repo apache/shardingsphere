@@ -26,7 +26,7 @@
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     
-    <artifactId>sharding-proxy-docker-build</artifactId>
+    <artifactId>shardingsphere-proxy-docker-build</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
@@ -65,14 +65,14 @@
         <profile>
             <id>test</id>
             <build>
-                <finalName>sharding-proxy-${project.version}</finalName>
+                <finalName>shardingsphere-proxy-${project.version}</finalName>
                 <plugins>
                     <plugin>
                         <artifactId>maven-assembly-plugin</artifactId>
                         <configuration>
                             <appendAssemblyId>false</appendAssemblyId>
                             <descriptors>
-                                <descriptor>src/main/assembly/sharding-proxy-assembly.xml</descriptor>
+                                <descriptor>src/main/assembly/shardingsphere-proxy-assembly.xml</descriptor>
                             </descriptors>
                         </configuration>
                         <executions>
@@ -90,14 +90,14 @@
                         <artifactId>dockerfile-maven-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>sharding-proxy-bin</id>
+                                <id>shardingsphere-proxy-bin</id>
                                 <goals>
                                     <goal>build</goal>
                                 </goals>
                             </execution>
                         </executions>
                         <configuration>
-                            <repository>apache/sharding-proxy-test</repository>
+                            <repository>apache/shardingsphere-proxy-test</repository>
                             <tag>${project.version}</tag>
                             <buildArgs>
                                 <APP_NAME>${project.build.finalName}</APP_NAME>
