@@ -507,7 +507,7 @@ https://shardingsphere.apache.org/document/current/cn/downloads/
 
 ```shell
 cd ~/shardingsphere/sharding-distribution/sharding-proxy-distribution/
-mvn clean package docker:build
+mvn clean package -Prelease,docker
 ```
 
 #### 给本地Docker镜像打标记

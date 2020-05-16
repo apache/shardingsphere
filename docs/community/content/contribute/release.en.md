@@ -516,7 +516,7 @@ Install docker locally and start the docker service
 
 ```shell
 cd ~/shardingsphere/sharding-distribution/sharding-proxy-distribution/
-mvn clean package docker:build
+mvn clean package -Prelease,docker
 ```
 
 #### Tag the local Docker Image
