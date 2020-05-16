@@ -37,7 +37,7 @@
         <module>shardingsphere-sharding</module>
         <module>shardingsphere-encrypt</module>
         <module>shadow-core</module>
-        <module>master-slave-core</module>
+        <module>shardingsphere-master-slave</module>
         
         <module>shardingsphere-jdbc</module>
         <module>shardingsphere-proxy</module>

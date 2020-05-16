@@ -25,13 +25,13 @@
         <artifactId>shardingsphere</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>master-slave-core</artifactId>
+    <artifactId>shardingsphere-master-slave</artifactId>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
     
     <modules>
-        <module>master-slave-core-api</module>
-        <module>master-slave-core-common</module>
-        <module>master-slave-core-route</module>
+        <module>shardingsphere-master-slave-api</module>
+        <module>shardingsphere-master-slave-common</module>
+        <module>shardingsphere-master-slave-route</module>
     </modules>
 </project>
