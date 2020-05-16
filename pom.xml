@@ -34,7 +34,7 @@
         <module>shardingsphere-db-protocol</module>
         <module>shardingsphere-infra</module>
         
-        <module>sharding-core</module>
+        <module>shardingsphere-sharding</module>
         <module>encrypt-core</module>
         <module>shadow-core</module>
         <module>master-slave-core</module>

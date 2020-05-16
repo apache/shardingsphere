@@ -64,7 +64,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-route</artifactId>
+            <artifactId>shardingsphere-core-route</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -74,7 +74,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-rewrite</artifactId>
+            <artifactId>shardingsphere-core-rewrite</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -94,7 +94,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-merge</artifactId>
+            <artifactId>shardingsphere-core-merge</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

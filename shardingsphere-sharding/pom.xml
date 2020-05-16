@@ -20,22 +20,19 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>sharding-core</artifactId>
+        <artifactId>shardingsphere</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-core-merge</artifactId>
+    <artifactId>shardingsphere-sharding</artifactId>
     <name>${project.artifactId}</name>
+    <packaging>pom</packaging>
     
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-merge</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-route</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
+    <modules>
+        <module>shardingsphere-core-api</module>
+        <module>shardingsphere-core-common</module>
+        <module>shardingsphere-core-route</module>
+        <module>shardingsphere-core-rewrite</module>
+        <module>shardingsphere-core-merge</module>
+        <module>shardingsphere-database-time-service</module>
+    </modules>
 </project>
