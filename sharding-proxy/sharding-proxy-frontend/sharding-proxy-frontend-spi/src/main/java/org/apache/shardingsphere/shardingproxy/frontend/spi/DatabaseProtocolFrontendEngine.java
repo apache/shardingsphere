@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.spi;
 
-import org.apache.shardingsphere.database.protocol.codec.DatabasePacketCodecEngine;
+import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.shardingproxy.frontend.engine.AuthenticationEngine;

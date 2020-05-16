@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.mysql;
 
-import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.shardingproxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.shardingproxy.backend.exception.TableModifyInTransactionException;
 import org.apache.shardingsphere.shardingproxy.backend.exception.UnknownDatabaseException;

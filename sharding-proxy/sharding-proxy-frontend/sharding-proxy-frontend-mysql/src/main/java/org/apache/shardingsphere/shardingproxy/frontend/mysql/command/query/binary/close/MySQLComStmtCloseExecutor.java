@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.command.query.binary.close;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.close.MySQLComStmtClosePacket;
-import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.close.MySQLComStmtClosePacket;
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 
 import java.util.Collection;

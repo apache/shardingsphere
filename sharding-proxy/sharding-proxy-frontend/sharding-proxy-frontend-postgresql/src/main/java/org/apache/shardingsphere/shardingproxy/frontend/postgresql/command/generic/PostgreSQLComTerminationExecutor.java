@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.postgresql.command.generic;
 
-import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 
 import java.util.Collection;

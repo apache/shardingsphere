@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.command.query.binary.prepare;
 
-import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLColumnType;
-import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLServerErrorCode;
-import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
-import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.MySQLBinaryStatementRegistry;
-import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.prepare.MySQLComStmtPrepareOKPacket;
-import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.prepare.MySQLComStmtPreparePacket;
-import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLEofPacket;
-import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErrPacket;
-import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLColumnType;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLBinaryStatementRegistry;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.prepare.MySQLComStmtPrepareOKPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.prepare.MySQLComStmtPreparePacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;

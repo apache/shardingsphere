@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shardingproxy.frontend.postgresql.command.query.text;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.text.PostgreSQLComQueryPacket;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.text.PostgreSQLComQueryPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.hamcrest.Matchers;

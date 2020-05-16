@@ -36,7 +36,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-database-protocol-mysql</artifactId>
+            <artifactId>shardingsphere-db-protocol-mysql</artifactId>
             <version>${parent.version}</version>
         </dependency>
         

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.shardingproxy.frontend.postgresql;
 
 import lombok.Getter;
-import org.apache.shardingsphere.database.protocol.codec.DatabasePacketCodecEngine;
-import org.apache.shardingsphere.database.protocol.postgresql.codec.PostgreSQLPacketCodecEngine;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.binary.BinaryStatementRegistry;
+import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
+import org.apache.shardingsphere.db.protocol.postgresql.codec.PostgreSQLPacketCodecEngine;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.BinaryStatementRegistry;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.shardingproxy.frontend.postgresql.auth.PostgreSQLAuthenticationEngine;

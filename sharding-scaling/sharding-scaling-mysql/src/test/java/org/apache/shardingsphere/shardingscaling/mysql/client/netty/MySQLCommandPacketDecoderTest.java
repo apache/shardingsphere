@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.shardingscaling.mysql.client.netty;
 
-import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLServerInfo;
-import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLStatusFlag;
-import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLEofPacket;
-import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErrPacket;
-import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
-import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLHandshakePacket;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLStatusFlag;
+import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.shardingscaling.mysql.client.InternalResultSet;
 import org.apache.shardingsphere.shardingscaling.utils.ReflectionUtil;
 import org.junit.Test;

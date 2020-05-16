@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.frontend.postgresql.command;
 
 import io.netty.channel.ChannelHandlerContext;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
 import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
