@@ -29,16 +29,16 @@ import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategyF
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
-import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
-import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
-import org.apache.shardingsphere.underlying.executor.sql.QueryResult;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.ExecutorExceptionHandler;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutor;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutorCallback;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.impl.DefaultSQLExecutorCallback;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.queryresult.MemoryQueryResult;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.queryresult.StreamQueryResult;
+import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
+import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
+import org.apache.shardingsphere.infra.executor.sql.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.ExecutorExceptionHandler;
+import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.SQLExecutor;
+import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.SQLExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.impl.DefaultSQLExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.queryresult.MemoryQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.queryresult.StreamQueryResult;
 
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;

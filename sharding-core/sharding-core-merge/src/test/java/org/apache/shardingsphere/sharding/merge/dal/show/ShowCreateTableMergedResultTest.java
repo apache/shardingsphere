@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.executor.sql.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute;
 
-import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionContext;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 
 import java.sql.SQLException;

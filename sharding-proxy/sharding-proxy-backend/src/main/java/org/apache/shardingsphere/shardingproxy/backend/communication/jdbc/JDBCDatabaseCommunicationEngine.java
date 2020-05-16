@@ -39,9 +39,9 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
-import org.apache.shardingsphere.underlying.executor.sql.QueryResult;
-import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionContext;
-import org.apache.shardingsphere.underlying.executor.sql.log.SQLLogger;
+import org.apache.shardingsphere.infra.executor.sql.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
+import org.apache.shardingsphere.infra.executor.sql.log.SQLLogger;
 import org.apache.shardingsphere.underlying.merge.MergeEngine;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 

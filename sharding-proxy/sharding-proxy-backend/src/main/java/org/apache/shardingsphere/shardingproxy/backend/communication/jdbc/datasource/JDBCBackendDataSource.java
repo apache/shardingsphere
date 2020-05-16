@@ -26,7 +26,7 @@ import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
+import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;

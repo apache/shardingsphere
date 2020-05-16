@@ -34,7 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrde
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.underlying.executor.sql.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.junit.Test;
 import org.mockito.internal.util.reflection.FieldSetter;
 

@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.shardingjdbc.executor;
 
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutor;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.ExecutorExceptionHandler;
+import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.SQLExecutor;
+import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.ExecutorExceptionHandler;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.underlying.executor.sql.QueryResult;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.StatementExecuteUnit;
-import org.apache.shardingsphere.underlying.executor.sql.ConnectionMode;
-import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.underlying.executor.sql.context.SQLUnit;
-import org.apache.shardingsphere.underlying.executor.kernel.InputGroup;
+import org.apache.shardingsphere.infra.executor.sql.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
+import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.junit.Test;
 
 import java.sql.Connection;

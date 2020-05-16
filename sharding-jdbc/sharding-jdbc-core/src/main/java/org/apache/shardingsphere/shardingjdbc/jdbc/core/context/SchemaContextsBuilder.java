@@ -36,7 +36,7 @@ import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRulesBuilder;
-import org.apache.shardingsphere.underlying.executor.kernel.ExecutorKernel;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

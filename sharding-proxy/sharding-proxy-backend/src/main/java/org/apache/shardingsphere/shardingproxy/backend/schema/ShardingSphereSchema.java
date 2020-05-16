@@ -50,7 +50,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.infra.rule.StatusContainedRule;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
-import org.apache.shardingsphere.underlying.executor.kernel.ExecutorKernel;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 
 import java.sql.SQLException;
 import java.util.Collection;

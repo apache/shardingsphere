@@ -26,7 +26,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingSphere
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.underlying.executor.sql.context.ExecutionContext;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;

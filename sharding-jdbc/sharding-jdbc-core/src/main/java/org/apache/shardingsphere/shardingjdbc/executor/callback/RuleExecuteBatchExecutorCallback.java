@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.executor.callback;
 
 import org.apache.shardingsphere.infra.spi.order.OrderedSPI;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.underlying.executor.sql.execute.jdbc.executor.SQLExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.SQLExecutorCallback;
 
 /**
  * Rule based SQL executor callback for execute batch.
