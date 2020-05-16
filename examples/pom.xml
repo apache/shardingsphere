@@ -95,17 +95,17 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>sharding-transaction-core</artifactId>
+                <artifactId>shardingsphere-transaction-core</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>sharding-transaction-xa-core</artifactId>
+                <artifactId>shardingsphere-transaction-xa-core</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>sharding-transaction-base-seata-at</artifactId>
+                <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>

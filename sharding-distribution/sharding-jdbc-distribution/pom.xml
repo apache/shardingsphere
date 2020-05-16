@@ -110,17 +110,17 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-transaction-core</artifactId>
+            <artifactId>shardingsphere-transaction-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-transaction-xa-spi</artifactId>
+            <artifactId>shardingsphere-transaction-xa-spi</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-transaction-xa-core</artifactId>
+            <artifactId>shardingsphere-transaction-xa-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

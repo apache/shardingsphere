@@ -20,18 +20,27 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>sharding-transaction-2pc</artifactId>
+        <artifactId>shardingsphere-transaction-xa</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-transaction-xa</artifactId>
+    <artifactId>shardingsphere-transaction-xa-bitronix</artifactId>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
     
     <modules>
-        <module>sharding-transaction-xa-spi</module>
-        <module>sharding-transaction-xa-core</module>
-        <module>sharding-transaction-xa-atomikos</module>
-        <module>sharding-transaction-xa-narayana</module>
-        <module>sharding-transaction-xa-bitronix</module>
+        <module>shardingsphere-transaction-xa-bitronix-manager</module>
     </modules>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-transaction-xa-spi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.btm</groupId>
+            <artifactId>btm</artifactId>
+        </dependency>
+    </dependencies>
 </project>
+

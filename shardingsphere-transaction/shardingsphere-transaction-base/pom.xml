@@ -20,14 +20,22 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>sharding-transaction</artifactId>
+        <artifactId>shardingsphere-transaction</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-transaction-2pc</artifactId>
+    <artifactId>shardingsphere-transaction-base</artifactId>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
-    
+
     <modules>
-        <module>sharding-transaction-xa</module>
+        <module>shardingsphere-transaction-base-seata-at</module>
     </modules>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-transaction-core</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+    </dependencies>
 </project>
