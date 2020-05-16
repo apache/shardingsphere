@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.jdbc.spring.boot.type;
+package org.apache.shardingsphere.driver.spring.boot.type;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.jdbc.spring.boot.fixture.TestJndiInitialContextFactory;
+import org.apache.shardingsphere.driver.spring.boot.fixture.TestJndiInitialContextFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;

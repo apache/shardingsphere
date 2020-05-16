@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-provides: sharding-jdbc-orchestration-spring-boot-starter
+provides: shardingsphere-jdbc-orchestration-spring-boot-starter

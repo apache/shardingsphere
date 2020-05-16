@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.jdbc.spring.boot.fixture;
+package org.apache.shardingsphere.driver.spring.boot.fixture;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;

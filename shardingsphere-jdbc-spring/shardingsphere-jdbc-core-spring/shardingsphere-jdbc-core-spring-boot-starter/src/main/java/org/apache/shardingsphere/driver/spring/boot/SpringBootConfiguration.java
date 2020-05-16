@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.jdbc.spring.boot;
+package org.apache.shardingsphere.driver.spring.boot;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.driver.spring.boot.prop.SpringBootPropertiesConfigurationProperties;
+import org.apache.shardingsphere.driver.spring.boot.rule.SpringBootRulesConfigurationProperties;
+import org.apache.shardingsphere.driver.spring.boot.rule.SpringBootRulesConfigurationYamlSwapper;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.jdbc.spring.boot.prop.SpringBootPropertiesConfigurationProperties;
-import org.apache.shardingsphere.jdbc.spring.boot.rule.SpringBootRulesConfigurationProperties;
-import org.apache.shardingsphere.jdbc.spring.boot.rule.SpringBootRulesConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.spring.boot.datasource.DataSourcePropertiesSetterHolder;
 import org.apache.shardingsphere.spring.boot.util.DataSourceUtil;

@@ -15,31 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.jdbc.spring.boot.type;
+package org.apache.shardingsphere.driver.spring.boot.type;
 
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
+import java.util.Collections;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = SpringBootRawDataSourceTest.class)
-@ActiveProfiles("raw")
+@SpringBootTest(classes = SpringBootBroadcastTableTest.class)
 @SpringBootApplication
-public class SpringBootRawDataSourceTest {
+@ActiveProfiles("broadcast-table")
+public class SpringBootBroadcastTableTest {
     
     @Resource
-    private ApplicationContext context;
+    private DataSource dataSource;
     
-    @Test(expected = NoSuchBeanDefinitionException.class)
-    public void assertDataSource() {
-        context.getBean(DataSource.class);
+    @Test
+    public void assertBroadcastTable() {
+        assertThat(dataSource, instanceOf(ShardingSphereDataSource.class));
+        ShardingSphereDataSource shardingSphereDataSource = (ShardingSphereDataSource) dataSource;
+        ShardingRule shardingRule = (ShardingRule) shardingSphereDataSource.getRuntimeContext().getRules().iterator().next();
+        assertThat(shardingRule.getBroadcastTables(), is(Collections.singletonList("t_config")));
+        assertThat(shardingRule.getDataSourceNames().size(), is(3));
     }
 }

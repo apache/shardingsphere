@@ -15,39 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.jdbc.spring.boot.fixture;
+package org.apache.shardingsphere.driver.spring.boot.prop;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.Properties;
 
 /**
- * Test encryptor.
+ * Properties configuration properties.
  */
+@ConfigurationProperties(prefix = "spring.shardingsphere")
 @Getter
 @Setter
-public final class TestEncryptor implements Encryptor {
+public class SpringBootPropertiesConfigurationProperties {
     
-    private Properties properties = new Properties();
-    
-    @Override
-    public String getType() {
-        return "test";
-    }
-    
-    @Override
-    public void init() {
-    }
-    
-    @Override
-    public String encrypt(final Object plaintext) {
-        return "";
-    }
-    
-    @Override
-    public Object decrypt(final String ciphertext) {
-        return "";
-    }
+    private Properties props = new Properties();
 }
