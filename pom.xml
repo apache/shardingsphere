@@ -35,7 +35,7 @@
         <module>shardingsphere-infra</module>
         
         <module>shardingsphere-sharding</module>
-        <module>encrypt-core</module>
+        <module>shardingsphere-encrypt</module>
         <module>shadow-core</module>
         <module>master-slave-core</module>
         

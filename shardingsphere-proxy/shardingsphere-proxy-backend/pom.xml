@@ -84,7 +84,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>encrypt-core-rewrite</artifactId>
+            <artifactId>shardingsphere-encrypt-rewrite</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -99,7 +99,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>encrypt-core-merge</artifactId>
+            <artifactId>shardingsphere-encrypt-merge</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

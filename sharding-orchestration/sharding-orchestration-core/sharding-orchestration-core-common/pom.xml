@@ -39,7 +39,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>encrypt-core-common</artifactId>
+            <artifactId>shardingsphere-encrypt-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

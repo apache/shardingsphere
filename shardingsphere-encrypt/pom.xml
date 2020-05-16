@@ -25,15 +25,15 @@
         <artifactId>shardingsphere</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>encrypt-core</artifactId>
+    <artifactId>shardingsphere-encrypt</artifactId>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
     
     <modules>
-        <module>encrypt-core-api</module>
-        <module>encrypt-core-common</module>
-        <module>encrypt-core-rewrite</module>
-        <module>encrypt-core-merge</module>
+        <module>shardingsphere-encrypt-api</module>
+        <module>shardingsphere-encrypt-common</module>
+        <module>shardingsphere-encrypt-rewrite</module>
+        <module>shardingsphere-encrypt-merge</module>
     </modules>
 </project>
 

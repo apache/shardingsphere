@@ -22,21 +22,16 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>encrypt-core</artifactId>
+        <artifactId>shardingsphere-encrypt</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>encrypt-core-merge</artifactId>
+    <artifactId>shardingsphere-encrypt-common</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-merge</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>encrypt-core-common</artifactId>
+            <artifactId>shardingsphere-encrypt-api</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
