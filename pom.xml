@@ -41,7 +41,7 @@
         
         <module>shardingsphere-jdbc</module>
         <module>sharding-proxy</module>
-        <module>sharding-spring</module>
+        <module>shardingsphere-jdbc-spring</module>
         
         <module>sharding-scaling</module>
         <module>sharding-transaction</module>

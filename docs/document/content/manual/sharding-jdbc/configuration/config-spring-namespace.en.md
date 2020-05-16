@@ -301,7 +301,7 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere-examp
     <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order$->{order_id % 2}" />
     <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item$->{order_id % 2}" />
 
-    <bean id="snowflakeAlgorithm" class="org.apache.shardingsphere.jdbc.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean">
+    <bean id="snowflakeAlgorithm" class="KeyGenerateAlgorithmFactoryBean">
         <property name="type" value="SNOWFLAKE" />
     </bean>
 

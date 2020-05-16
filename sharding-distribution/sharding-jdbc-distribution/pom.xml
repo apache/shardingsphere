@@ -175,22 +175,22 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-jdbc-spring-boot-starter</artifactId>
+            <artifactId>shardingsphere-jdbc-core-spring-boot-starter</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-jdbc-spring-namespace</artifactId>
+            <artifactId>shardingsphere-jdbc-core-spring-namespace</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-jdbc-orchestration-spring-boot-starter</artifactId>
+            <artifactId>shardingsphere-jdbc-orchestration-spring-boot-starter</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-jdbc-orchestration-spring-namespace</artifactId>
+            <artifactId>shardingsphere-jdbc-orchestration-spring-namespace</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
