@@ -15,6 +15,6 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.spring.boot.datasource.HikariDataSourcePropertiesSetter
-org.apache.shardingsphere.spring.boot.datasource.CommonDbcp2DataSourcePropertiesSetter
-org.apache.shardingsphere.spring.boot.datasource.TomcatDbcp2DataSourcePropertiesSetter
+org.apache.shardingsphere.driver.spring.boot.datasource.HikariDataSourcePropertiesSetter
+org.apache.shardingsphere.driver.spring.boot.datasource.CommonDbcp2DataSourcePropertiesSetter
+org.apache.shardingsphere.driver.spring.boot.datasource.TomcatDbcp2DataSourcePropertiesSetter

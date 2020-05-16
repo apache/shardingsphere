@@ -31,9 +31,9 @@ import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfig
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.swapper.CenterRepositoryConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.InlineExpressionParser;
-import org.apache.shardingsphere.spring.boot.datasource.DataSourcePropertiesSetterHolder;
-import org.apache.shardingsphere.spring.boot.util.DataSourceUtil;
-import org.apache.shardingsphere.spring.boot.util.PropertyUtil;
+import org.apache.shardingsphere.driver.spring.boot.datasource.DataSourcePropertiesSetterHolder;
+import org.apache.shardingsphere.driver.spring.boot.util.DataSourceUtil;
+import org.apache.shardingsphere.driver.spring.boot.util.PropertyUtil;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

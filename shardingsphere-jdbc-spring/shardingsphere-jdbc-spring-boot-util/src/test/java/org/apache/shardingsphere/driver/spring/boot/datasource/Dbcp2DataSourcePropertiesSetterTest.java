@@ -15,44 +15,47 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.boot.datasource;
+package org.apache.shardingsphere.driver.spring.boot.datasource;
 
-import com.zaxxer.hikari.HikariDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class HikariDataSourcePropertiesSetterTest {
+public final class Dbcp2DataSourcePropertiesSetterTest {
     
-    private final HikariDataSourcePropertiesSetter dbcpDataSourcePropertiesSetter = new HikariDataSourcePropertiesSetter();
+    private final CommonDbcp2DataSourcePropertiesSetter dbcp2DataSourcePropertiesSetter = new CommonDbcp2DataSourcePropertiesSetter();
     
-    private final HikariDataSource dataSource = new HikariDataSource();
+    private final BasicDataSource dataSource = new BasicDataSource();
     
     private Environment environment;
     
     @Before
     public void setUp() {
         MockEnvironment mockEnvironment = new MockEnvironment();
-        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds_master.type", "com.zaxxer.hikari.HikariDataSource");
-        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds_master.data-source-properties.cachePrepStmts", "true");
-        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds_master.data-source-properties.prepStmtCacheSize", "250");
+        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds_master.type", "org.apache.commons.dbcp2.BasicDataSource");
+        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds_master.connection-properties.test", "test");
+        mockEnvironment.setProperty("spring.shardingsphere.datasource.ds_master.connection-properties.xxx", "yyy");
         environment = mockEnvironment;
     }
     
     @Test
     public void assertPropertiesSet() {
-        dbcpDataSourcePropertiesSetter.propertiesSet(environment, "spring.shardingsphere.datasource.", "ds_master", dataSource);
-        assertThat(dataSource.getDataSourceProperties().getProperty("cachePrepStmts"), is("true"));
-        assertThat(dataSource.getDataSourceProperties().getProperty("prepStmtCacheSize"), is("250"));
+        dbcp2DataSourcePropertiesSetter.propertiesSet(environment, "spring.shardingsphere.datasource.", "ds_master", dataSource);
+        Properties connectionProperties = (Properties) ReflectionTestUtils.getField(dataSource, "connectionProperties");
+        assertThat(connectionProperties.getProperty("test"), is("test"));
+        assertThat(connectionProperties.getProperty("xxx"), is("yyy"));
     }
     
     @Test
     public void assertGetType() {
-        assertThat(dbcpDataSourcePropertiesSetter.getType(), is("com.zaxxer.hikari.HikariDataSource"));
+        assertThat(dbcp2DataSourcePropertiesSetter.getType(), is("org.apache.commons.dbcp2.BasicDataSource"));
     }
-    
 }

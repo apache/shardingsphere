@@ -15,15 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.boot.datasource;
+package org.apache.shardingsphere.driver.spring.boot.converter;
 
-/**
- * DBCP2 datasource properties setter.
- */
-public final class CommonDbcp2DataSourcePropertiesSetter extends AbstractDbcp2DataSourcePropertiesSetter {
+import org.apache.shardingsphere.sharding.yaml.config.strategy.YamlNoneShardingStrategyConfiguration;
+import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
+
+public final class StringToNoneShardingStrategyConfigurationConverterTest {
     
-    @Override
-    public String getType() {
-        return "org.apache.commons.dbcp2.BasicDataSource";
+    @Test
+    public void assertConvert() {
+        Object actual = new StringToNoneShardingStrategyConfigurationConverter().convert("anyString");
+        assertThat(actual, instanceOf(YamlNoneShardingStrategyConfiguration.class));
     }
 }

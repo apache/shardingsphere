@@ -15,38 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.boot.datasource;
+package org.apache.shardingsphere.driver.spring.boot.datasource;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.spring.boot.util.PropertyUtil;
+import org.apache.shardingsphere.driver.spring.boot.util.PropertyUtil;
 import org.springframework.core.env.Environment;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.Properties;
 
 /**
- * DBCP datasource properties setter.
+ * Hikari datasource properties setter.
  */
-public abstract class AbstractDbcp2DataSourcePropertiesSetter implements DataSourcePropertiesSetter {
+public final class HikariDataSourcePropertiesSetter implements DataSourcePropertiesSetter {
     
-    /**
-     * Common DBCP2 add custom connection properties.
-     *
-     * @param environment environment variable
-     * @param prefix properties prefix
-     * @param dataSourceName current database name
-     * @param dataSource dataSource instance
-     */
+    @Override
     @SneakyThrows(ReflectiveOperationException.class)
     public void propertiesSet(final Environment environment, final String prefix, final String dataSourceName, final DataSource dataSource) {
-        String datasourcePropertiesPrefix = prefix + dataSourceName.trim() + ".connection-properties";
-        if (PropertyUtil.containPropertyPrefix(environment, datasourcePropertiesPrefix)) {
-            Map datasourceProperties = PropertyUtil.handle(environment, datasourcePropertiesPrefix, Map.class);
-            Method method = dataSource.getClass().getMethod("addConnectionProperty", String.class, String.class);
-            for (Object each : datasourceProperties.keySet()) {
-                method.invoke(dataSource, each, datasourceProperties.get(each));
-            }
+        Properties properties = new Properties();
+        String datasourcePropertiesKey = prefix + dataSourceName.trim() + ".data-source-properties";
+        if (PropertyUtil.containPropertyPrefix(environment, datasourcePropertiesKey)) {
+            Map datasourceProperties = PropertyUtil.handle(environment, datasourcePropertiesKey, Map.class);
+            properties.putAll(datasourceProperties);
+            Method method = dataSource.getClass().getMethod("setDataSourceProperties", Properties.class);
+            method.invoke(dataSource, properties);
         }
+    }
+    
+    @Override
+    public String getType() {
+        return "com.zaxxer.hikari.HikariDataSource";
     }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.boot.util;
+package org.apache.shardingsphere.driver.spring.boot.util;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.collect.Sets;

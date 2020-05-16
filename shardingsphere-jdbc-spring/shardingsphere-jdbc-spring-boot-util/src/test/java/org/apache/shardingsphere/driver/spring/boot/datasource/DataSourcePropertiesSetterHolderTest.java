@@ -15,31 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.boot.datasource;
+package org.apache.shardingsphere.driver.spring.boot.datasource;
 
-import org.springframework.core.env.Environment;
+import com.zaxxer.hikari.HikariDataSource;
+import org.junit.Test;
 
-import javax.sql.DataSource;
+import java.util.Optional;
 
-/**
- * Different datasource properties setter.
- */
-public interface DataSourcePropertiesSetter {
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+public final class DataSourcePropertiesSetterHolderTest {
     
-    /**
-     * Set datasource custom properties.
-     *
-     * @param environment environment variable
-     * @param prefix properties prefix
-     * @param dataSourceName current database name
-     * @param dataSource dataSource instance
-     */
-    void propertiesSet(Environment environment, String prefix, String dataSourceName, DataSource dataSource);
-    
-    /**
-     * Get type name of data source.
-     *
-     * @return type name of data source.
-     */
-    String getType();
+    @Test
+    public void assertGetDataSourcePropertiesSetterByType() {
+        Optional<DataSourcePropertiesSetter> actual = DataSourcePropertiesSetterHolder.getDataSourcePropertiesSetterByType(HikariDataSource.class.getName());
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), instanceOf(HikariDataSourcePropertiesSetter.class));
+    }
 }

@@ -15,22 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.boot.converter;
-
-import org.apache.shardingsphere.sharding.yaml.config.strategy.YamlNoneShardingStrategyConfiguration;
-import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.stereotype.Component;
+package org.apache.shardingsphere.driver.spring.boot.datasource;
 
 /**
- * String convert to none sharding strategy configuration.
+ * DBCP2 datasource properties setter.
  */
-@Component
-@ConfigurationPropertiesBinding
-public final class StringToNoneShardingStrategyConfigurationConverter implements Converter<String, YamlNoneShardingStrategyConfiguration> {
+public final class CommonDbcp2DataSourcePropertiesSetter extends AbstractDbcp2DataSourcePropertiesSetter {
     
     @Override
-    public YamlNoneShardingStrategyConfiguration convert(final String value) {
-        return new YamlNoneShardingStrategyConfiguration();
+    public String getType() {
+        return "org.apache.commons.dbcp2.BasicDataSource";
     }
 }

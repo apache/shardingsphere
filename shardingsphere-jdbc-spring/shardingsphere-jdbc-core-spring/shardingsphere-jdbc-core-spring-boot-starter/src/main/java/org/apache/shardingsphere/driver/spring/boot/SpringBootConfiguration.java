@@ -25,9 +25,9 @@ import org.apache.shardingsphere.driver.spring.boot.rule.SpringBootRulesConfigur
 import org.apache.shardingsphere.driver.spring.boot.rule.SpringBootRulesConfigurationYamlSwapper;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.InlineExpressionParser;
-import org.apache.shardingsphere.spring.boot.datasource.DataSourcePropertiesSetterHolder;
-import org.apache.shardingsphere.spring.boot.util.DataSourceUtil;
-import org.apache.shardingsphere.spring.boot.util.PropertyUtil;
+import org.apache.shardingsphere.driver.spring.boot.datasource.DataSourcePropertiesSetterHolder;
+import org.apache.shardingsphere.driver.spring.boot.util.DataSourceUtil;
+import org.apache.shardingsphere.driver.spring.boot.util.PropertyUtil;
 import org.apache.shardingsphere.transaction.spring.ShardingTransactionTypeScanner;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
