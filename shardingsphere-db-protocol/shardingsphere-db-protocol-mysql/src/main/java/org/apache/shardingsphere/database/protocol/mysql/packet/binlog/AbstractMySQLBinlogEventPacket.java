@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.database.protocol.mysql.packet.binlog;
 
-import org.apache.shardingsphere.database.protocol.mysql.packet.MySQLPacket;
-import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.protocol.mysql.packet.MySQLPacket;
+import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 
 /**
  * Abstract MySQL binlog event packet.
