@@ -19,5 +19,5 @@ FROM openjdk:8-jdk-alpine
 
 ARG APP_NAME
 ADD target/${APP_NAME}.tar.gz /export
-RUN mv /export/${APP_NAME} /export/sharding-proxy
-ENTRYPOINT /export/sharding-proxy/bin/start.sh && tail -f /export/sharding-proxy/logs/stdout.log
+RUN mv /export/${APP_NAME} /export/shardingsphere-proxy
+ENTRYPOINT /export/shardingsphere-proxy/bin/start.sh && tail -f /export/shardingsphere-proxy/logs/stdout.log
