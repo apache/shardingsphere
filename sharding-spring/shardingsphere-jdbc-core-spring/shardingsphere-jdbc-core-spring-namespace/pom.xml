@@ -29,7 +29,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-transaction-spring</artifactId>
+            <artifactId>shardingsphere-jdbc-transaction-spring</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

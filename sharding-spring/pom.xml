@@ -31,7 +31,7 @@
         <module>shardingsphere-jdbc-core-spring</module>
         <module>shardingsphere-jdbc-orchestration-spring</module>
         <module>sharding-spring-boot-util</module>
-        <module>sharding-transaction-spring</module>
+        <module>shardingsphere-jdbc-transaction-spring</module>
     </modules>
     
     <dependencies>

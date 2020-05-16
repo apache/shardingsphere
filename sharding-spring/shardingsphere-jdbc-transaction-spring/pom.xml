@@ -25,7 +25,7 @@
         <groupId>org.apache.shardingsphere</groupId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-transaction-spring</artifactId>
+    <artifactId>shardingsphere-jdbc-transaction-spring</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
