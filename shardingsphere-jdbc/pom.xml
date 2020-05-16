@@ -30,5 +30,6 @@
     <modules>
         <module>shardingsphere-jdbc-core</module>
         <module>shardingsphere-jdbc-orchestration</module>
+        <module>shardingsphere-jdbc-spring</module>
     </modules>
 </project>
