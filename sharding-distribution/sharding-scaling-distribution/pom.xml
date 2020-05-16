@@ -30,7 +30,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-scaling-bootstrap</artifactId>
+            <artifactId>shardingsphere-scaling-bootstrap</artifactId>
             <version>${project.version}</version>
         </dependency>
         
@@ -67,7 +67,7 @@
                         </configuration>
                         <executions>
                             <execution>
-                                <id>sharding-scaling-bin</id>
+                                <id>shardingsphere-scaling-bin</id>
                                 <phase>package</phase>
                                 <goals>
                                     <goal>single</goal>

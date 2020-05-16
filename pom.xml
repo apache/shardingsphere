@@ -42,7 +42,7 @@
         <module>shardingsphere-jdbc</module>
         <module>shardingsphere-proxy</module>
         
-        <module>sharding-scaling</module>
+        <module>shardingsphere-scaling</module>
         <module>shardingsphere-transaction</module>
         
         <module>sharding-orchestration</module> 

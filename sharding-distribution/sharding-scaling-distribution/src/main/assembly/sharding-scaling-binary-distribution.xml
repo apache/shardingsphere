@@ -16,12 +16,12 @@
   -->
 
 <assembly>
-    <id>sharding-scaling-bin</id>
+    <id>shardingsphere-scaling-bin</id>
     <formats>
         <format>tar.gz</format>
     </formats>
     <includeBaseDirectory>true</includeBaseDirectory>
-    <baseDirectory>${project.build.finalName}-sharding-scaling-bin</baseDirectory>
+    <baseDirectory>${project.build.finalName}-shardingsphere-scaling-bin</baseDirectory>
 
     <fileSets>
         <fileSet>
