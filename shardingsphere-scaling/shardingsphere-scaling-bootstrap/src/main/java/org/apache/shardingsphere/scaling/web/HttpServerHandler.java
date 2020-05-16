@@ -50,7 +50,7 @@ import java.util.regex.Pattern;
 @Slf4j
 public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     
-    private static final Pattern URL_PATTERN = Pattern.compile("(^/shardingscaling/job/(start|stop|list))|(^/shardingscaling/job/progress/\\d+)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern URL_PATTERN = Pattern.compile("(^/scaling/job/(start|stop|list))|(^/scaling/job/progress/\\d+)", Pattern.CASE_INSENSITIVE);
     
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().serializeNulls().create();
     
