@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.command.admin.ping;
 
-import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
-import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 
 import java.util.Collection;

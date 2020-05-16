@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.shardingscaling.mysql.client.netty;
 
-import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLAuthenticationMethod;
-import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
-import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLFieldCountPacket;
-import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.text.MySQLTextResultSetRowPacket;
-import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLEofPacket;
-import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErrPacket;
-import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
-import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLHandshakePacket;
-import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLFieldCountPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.MySQLTextResultSetRowPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakePacket;
+import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;

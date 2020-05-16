@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.postgresql.command.query.binary.parse;
 
-import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.binary.BinaryStatementRegistry;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.binary.ConnectionScopeBinaryStatementRegistry;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.binary.parse.PostgreSQLComParsePacket;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.binary.parse.PostgreSQLParseCompletePacket;
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.BinaryStatementRegistry;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.ConnectionScopeBinaryStatementRegistry;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.parse.PostgreSQLComParsePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.parse.PostgreSQLParseCompletePacket;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;

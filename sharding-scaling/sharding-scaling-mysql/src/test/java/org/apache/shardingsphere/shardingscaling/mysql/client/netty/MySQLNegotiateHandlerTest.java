@@ -22,13 +22,13 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.util.concurrent.Promise;
 
-import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLAuthenticationMethod;
-import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLServerErrorCode;
-import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErrPacket;
-import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
-import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLAuthPluginData;
-import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLHandshakePacket;
-import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLHandshakeResponse41Packet;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
+import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
+import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakePacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakeResponse41Packet;
 import org.apache.shardingsphere.shardingscaling.mysql.client.ServerInfo;
 import org.apache.shardingsphere.shardingscaling.utils.ReflectionUtil;
 

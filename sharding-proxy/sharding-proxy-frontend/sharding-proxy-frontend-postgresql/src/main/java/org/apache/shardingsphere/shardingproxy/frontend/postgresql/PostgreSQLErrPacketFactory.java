@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.frontend.postgresql;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.postgresql.util.PSQLException;
 import org.postgresql.util.ServerErrorMessage;
 

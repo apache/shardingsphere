@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shardingproxy.frontend.mysql;
 
 import lombok.Getter;
-import org.apache.shardingsphere.database.protocol.codec.DatabasePacketCodecEngine;
-import org.apache.shardingsphere.database.protocol.mysql.codec.MySQLPacketCodecEngine;
+import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
+import org.apache.shardingsphere.db.protocol.mysql.codec.MySQLPacketCodecEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.shardingproxy.frontend.mysql.auth.MySQLAuthenticationEngine;

@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.command.admin.initdb;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLServerErrorCode;
-import org.apache.shardingsphere.database.protocol.mysql.packet.command.admin.initdb.MySQLComInitDbPacket;
-import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErrPacket;
-import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
-import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.initdb.MySQLComInitDbPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ShardingSphereSchemas;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;

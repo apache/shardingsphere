@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.command.generic;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.error.CommonErrorCode;
-import org.apache.shardingsphere.database.protocol.mysql.packet.command.MySQLCommandPacketType;
-import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErrPacket;
-import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.db.protocol.error.CommonErrorCode;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 
 import java.util.Collection;

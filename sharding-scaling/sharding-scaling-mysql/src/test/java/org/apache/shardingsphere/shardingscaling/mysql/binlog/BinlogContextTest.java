@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.shardingscaling.mysql.binlog;
 
-import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLColumnType;
-import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.MySQLBinlogTableMapEventPacket;
-import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLColumnType;
+import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.MySQLBinlogTableMapEventPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

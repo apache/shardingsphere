@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.shardingscaling.mysql.client;
 
-import org.apache.shardingsphere.database.protocol.codec.PacketCodec;
-import org.apache.shardingsphere.database.protocol.mysql.codec.MySQLPacketCodecEngine;
-import org.apache.shardingsphere.database.protocol.mysql.packet.command.binlog.MySQLComBinlogDumpCommandPacket;
-import org.apache.shardingsphere.database.protocol.mysql.packet.command.binlog.MySQLComRegisterSlaveCommandPacket;
-import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
-import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErrPacket;
-import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.db.protocol.codec.PacketCodec;
+import org.apache.shardingsphere.db.protocol.mysql.codec.MySQLPacketCodecEngine;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.binlog.MySQLComBinlogDumpCommandPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.binlog.MySQLComRegisterSlaveCommandPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.shardingscaling.mysql.client.netty.MySQLNegotiateHandler;
 import org.apache.shardingsphere.shardingscaling.mysql.client.netty.MySQLBinlogEventPacketDecoder;
 import org.apache.shardingsphere.shardingscaling.mysql.client.netty.MySQLCommandPacketDecoder;
