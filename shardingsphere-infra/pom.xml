@@ -33,7 +33,7 @@
         <module>shardingsphere-infra-common</module>
         <module>shardingsphere-infra-route</module>
         <module>shardingsphere-infra-rewrite</module>
-        <module>shardingsphere-executor</module>
+        <module>shardingsphere-infra-executor</module>
         <module>shardingsphere-infra-merge</module>
     </modules>
 </project>
