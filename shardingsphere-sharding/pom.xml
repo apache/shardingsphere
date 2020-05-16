@@ -28,11 +28,11 @@
     <packaging>pom</packaging>
     
     <modules>
-        <module>shardingsphere-core-api</module>
-        <module>shardingsphere-core-common</module>
-        <module>shardingsphere-core-route</module>
-        <module>shardingsphere-core-rewrite</module>
-        <module>shardingsphere-core-merge</module>
-        <module>shardingsphere-database-time-service</module>
+        <module>shardingsphere-sharding-api</module>
+        <module>shardingsphere-sharding-common</module>
+        <module>shardingsphere-sharding-route</module>
+        <module>shardingsphere-sharding-rewrite</module>
+        <module>shardingsphere-sharding-merge</module>
+        <module>shardingsphere-sharding-time-service</module>
     </modules>
 </project>

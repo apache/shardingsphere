@@ -75,7 +75,7 @@
         <dependencies>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-core-api</artifactId>
+                <artifactId>shardingsphere-sharding-api</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>

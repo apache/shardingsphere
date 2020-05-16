@@ -32,7 +32,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-core-api</artifactId>
+            <artifactId>shardingsphere-sharding-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
