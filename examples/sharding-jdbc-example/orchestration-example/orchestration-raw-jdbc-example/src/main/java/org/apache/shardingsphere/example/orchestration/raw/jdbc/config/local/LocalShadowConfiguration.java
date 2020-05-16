@@ -22,7 +22,7 @@ import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.driver.orchestration.api.OrchestrationShardingSphereDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -41,7 +41,8 @@ public class LocalShadowConfiguration implements ExampleConfiguration {
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        return OrchestrationShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singleton(getShadowRuleConfiguration()), new Properties(), getOrchestrationConfiguration());
+        return OrchestrationShardingSphereDataSourceFactory.createDataSource(
+                createDataSourceMap(), Collections.singleton(getShadowRuleConfiguration()), new Properties(), getOrchestrationConfiguration());
     }
     
     private Map<String, DataSource> createDataSourceMap() {

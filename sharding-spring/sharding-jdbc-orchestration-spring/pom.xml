@@ -35,7 +35,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-jdbc-orchestration</artifactId>
+            <artifactId>shardingsphere-jdbc-orchestration</artifactId>
             <version>${project.version}</version>
         </dependency>
 
