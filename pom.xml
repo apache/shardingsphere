@@ -34,16 +34,13 @@
         <module>shardingsphere-db-protocol</module>
         <module>shardingsphere-infra</module>
         
-        <module>shardingsphere-sharding</module>
-        <module>shardingsphere-encrypt</module>
-        <module>shardingsphere-shadow</module>
-        <module>shardingsphere-master-slave</module>
-        
         <module>shardingsphere-jdbc</module>
         <module>shardingsphere-proxy</module>
         
         <module>shardingsphere-scaling</module>
         <module>shardingsphere-transaction</module>
+        
+        <module>shardingsphere-features</module>
         
         <module>sharding-orchestration</module> 
         <module>sharding-opentracing</module>

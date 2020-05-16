@@ -22,18 +22,17 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere</artifactId>
+        <artifactId>shardingsphere-features</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-encrypt</artifactId>
+    <artifactId>shardingsphere-shadow</artifactId>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
     
     <modules>
-        <module>shardingsphere-encrypt-api</module>
-        <module>shardingsphere-encrypt-common</module>
-        <module>shardingsphere-encrypt-rewrite</module>
-        <module>shardingsphere-encrypt-merge</module>
+        <module>shardingsphere-shadow-api</module>
+        <module>shardingsphere-shadow-common</module>
+        <module>shardingsphere-shadow-route</module>
+        <module>shardingsphere-shadow-rewrite</module>
     </modules>
 </project>
-
