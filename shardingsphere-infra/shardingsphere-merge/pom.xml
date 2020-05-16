@@ -22,10 +22,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-underlying</artifactId>
+        <artifactId>shardingsphere-infra</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-common</artifactId>
+    <artifactId>shardingsphere-merge</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
@@ -34,32 +34,15 @@
             <artifactId>shardingsphere-sql-parser-binder</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
         <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy</artifactId>
-            <classifier>indy</classifier>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-common</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-        </dependency>
-        
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-dbcp2</artifactId>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-executor</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>
