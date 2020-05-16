@@ -26,10 +26,10 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStateme
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.underlying.route.context.RouteContext;
-import org.apache.shardingsphere.underlying.route.context.RouteMapper;
-import org.apache.shardingsphere.underlying.route.context.RouteResult;
-import org.apache.shardingsphere.underlying.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteMapper;
+import org.apache.shardingsphere.infra.route.context.RouteResult;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

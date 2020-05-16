@@ -32,8 +32,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.group.Statement
 import org.apache.shardingsphere.infra.executor.sql.group.ExecuteGroupEngine;
 import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.underlying.rewrite.engine.result.SQLRewriteResult;
-import org.apache.shardingsphere.underlying.route.DataNodeRouter;
-import org.apache.shardingsphere.underlying.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.DataNodeRouter;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 
 import java.sql.SQLException;
 import java.sql.Statement;

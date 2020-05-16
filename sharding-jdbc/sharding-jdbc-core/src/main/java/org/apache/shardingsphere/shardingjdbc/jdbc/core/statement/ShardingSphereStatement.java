@@ -49,8 +49,8 @@ import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.underlying.rewrite.engine.result.SQLRewriteResult;
-import org.apache.shardingsphere.underlying.route.DataNodeRouter;
-import org.apache.shardingsphere.underlying.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.DataNodeRouter;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

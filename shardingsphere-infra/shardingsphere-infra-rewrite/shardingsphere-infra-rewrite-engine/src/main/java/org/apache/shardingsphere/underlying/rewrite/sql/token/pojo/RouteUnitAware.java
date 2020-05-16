@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.underlying.rewrite.sql.token.pojo;
 
-import org.apache.shardingsphere.underlying.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 
 /**
  * Route unit aware.

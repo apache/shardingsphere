@@ -37,7 +37,7 @@ import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.keygen.Ge
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.keygen.GeneratedKeyInsertValuesTokenGenerator;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.builder.SQLTokenGeneratorBuilder;
-import org.apache.shardingsphere.underlying.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 
 import java.util.Collection;
 import java.util.LinkedList;

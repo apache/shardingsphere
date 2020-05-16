@@ -20,7 +20,7 @@ package org.apache.shardingsphere.underlying.rewrite.sql.impl;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.RouteUnitAware;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.underlying.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 
 /**
  * SQL builder with route.

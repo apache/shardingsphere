@@ -25,8 +25,8 @@ import org.apache.shardingsphere.underlying.rewrite.parameter.builder.ParameterB
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.underlying.rewrite.sql.impl.RouteSQLBuilder;
-import org.apache.shardingsphere.underlying.route.context.RouteResult;
-import org.apache.shardingsphere.underlying.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.route.context.RouteResult;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;

@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegme
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.InsertValuesToken;
-import org.apache.shardingsphere.underlying.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 
 import java.util.Collection;
 import java.util.Collections;

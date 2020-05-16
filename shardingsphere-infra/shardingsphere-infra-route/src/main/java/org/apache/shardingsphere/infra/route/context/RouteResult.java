@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.route.context;
+package org.apache.shardingsphere.infra.route.context;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.datanode.DataNode;

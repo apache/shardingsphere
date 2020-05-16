@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatement
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriter;
-import org.apache.shardingsphere.underlying.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 
 import java.util.List;
 

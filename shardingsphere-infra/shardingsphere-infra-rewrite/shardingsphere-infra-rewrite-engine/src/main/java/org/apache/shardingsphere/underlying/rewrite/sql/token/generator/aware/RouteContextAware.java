@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware;
 
-import org.apache.shardingsphere.underlying.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 
 /**
  * Route context aware.

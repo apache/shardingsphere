@@ -20,7 +20,7 @@ package org.apache.shardingsphere.underlying.rewrite.context;
 import org.apache.shardingsphere.infra.spi.order.OrderedSPI;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.underlying.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 
 /**
  * SQL rewrite context decorator.

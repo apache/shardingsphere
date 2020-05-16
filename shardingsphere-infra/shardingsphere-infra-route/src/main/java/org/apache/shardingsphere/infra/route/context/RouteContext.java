@@ -15,23 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.route.context;
+package org.apache.shardingsphere.infra.route.context;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+
+import java.util.List;
 
 /**
- * Route mapper.
+ * Route context.
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
-@ToString
-public final class RouteMapper {
+public final class RouteContext {
     
-    private final String logicName;
+    private final SQLStatementContext sqlStatementContext;
     
-    private final String actualName;
+    private final List<Object> parameters;
+    
+    private final RouteResult routeResult;
 }

@@ -15,35 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.route.hook;
+package org.apache.shardingsphere.infra.route.hook.fixture;
 
+import lombok.Getter;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.hook.RoutingHook;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
-/**
- * Routing hook.
- */
-public interface RoutingHook {
+@Getter
+public final class RoutingHookFixture implements RoutingHook {
     
-    /**
-     * Handle when routing started.
-     *
-     * @param sql SQL to be routing
-     */
-    void start(String sql);
+    private String sql;
     
-    /**
-     * Handle when routing finished success.
-     *
-     * @param routeContext route context
-     * @param schemaMetaData schema meta data
-     */
-    void finishSuccess(RouteContext routeContext, SchemaMetaData schemaMetaData);
+    private RouteContext routeContext;
     
-    /**
-     * Handle when routing finished failure.
-     * 
-     * @param cause failure cause
-     */
-    void finishFailure(Exception cause);
+    private SchemaMetaData schemaMetaData;
+    
+    private Exception cause;
+    
+    @Override
+    public void start(final String sql) {
+        this.sql = sql;
+    }
+    
+    @Override
+    public void finishSuccess(final RouteContext routeContext, final SchemaMetaData schemaMetaData) {
+        this.routeContext = routeContext;
+        this.schemaMetaData = schemaMetaData;
+    }
+    
+    @Override
+    public void finishFailure(final Exception cause) {
+        this.cause = cause;
+    }
 }

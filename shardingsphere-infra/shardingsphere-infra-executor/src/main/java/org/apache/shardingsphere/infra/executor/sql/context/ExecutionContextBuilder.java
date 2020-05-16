@@ -24,7 +24,7 @@ import org.apache.shardingsphere.underlying.rewrite.engine.result.GenericSQLRewr
 import org.apache.shardingsphere.underlying.rewrite.engine.result.RouteSQLRewriteResult;
 import org.apache.shardingsphere.underlying.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.underlying.rewrite.engine.result.SQLRewriteUnit;
-import org.apache.shardingsphere.underlying.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 
 import java.util.Collection;
 import java.util.Collections;

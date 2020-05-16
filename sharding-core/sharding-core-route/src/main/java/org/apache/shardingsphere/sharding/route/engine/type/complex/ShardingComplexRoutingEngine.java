@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sharding.route.engine.type.standard.ShardingSta
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.underlying.route.context.RouteResult;
+import org.apache.shardingsphere.infra.route.context.RouteResult;
 
 import java.util.ArrayList;
 import java.util.Collection;

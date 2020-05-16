@@ -19,7 +19,7 @@ package org.apache.shardingsphere.underlying.rewrite.engine.result;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 
 import java.util.Map;
 

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.shardingproxy.backend.metrics.MetricsUtils;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.group.ExecuteGroupEngine;
-import org.apache.shardingsphere.underlying.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 
 import java.sql.SQLException;
 import java.sql.Statement;
