@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
-import org.apache.shardingsphere.underlying.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.junit.Before;
 import org.junit.Test;
 

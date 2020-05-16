@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sharding.merge.dql.pagination;
 
-import org.apache.shardingsphere.underlying.merge.result.MergedResult;
-import org.apache.shardingsphere.underlying.merge.result.impl.decorator.DecoratorMergedResult;
+import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.merge.result.impl.decorator.DecoratorMergedResult;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.pagination.PaginationContext;
 
 import java.sql.SQLException;

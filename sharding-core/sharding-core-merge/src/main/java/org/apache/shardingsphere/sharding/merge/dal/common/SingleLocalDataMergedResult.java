@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.merge.dal.common;
 
-import org.apache.shardingsphere.underlying.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.merge.result.MergedResult;
 
 import java.io.InputStream;
 import java.sql.SQLException;

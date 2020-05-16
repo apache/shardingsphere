@@ -28,9 +28,9 @@ import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatement
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.underlying.merge.engine.decorator.ResultDecorator;
-import org.apache.shardingsphere.underlying.merge.engine.decorator.ResultDecoratorEngine;
-import org.apache.shardingsphere.underlying.merge.engine.decorator.impl.TransparentResultDecorator;
+import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecorator;
+import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecoratorEngine;
+import org.apache.shardingsphere.infra.merge.engine.decorator.impl.TransparentResultDecorator;
 
 /**
  * Result decorator engine for encrypt.

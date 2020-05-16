@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.rownum.Nu
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
-import org.apache.shardingsphere.underlying.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.junit.Test;
 
 import java.sql.SQLException;
