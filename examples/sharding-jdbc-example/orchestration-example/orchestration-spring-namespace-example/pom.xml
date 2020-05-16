@@ -45,7 +45,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-jdbc-orchestration-spring-namespace</artifactId>
+            <artifactId>shardingsphere-jdbc-orchestration-spring-namespace</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>

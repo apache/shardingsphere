@@ -50,7 +50,6 @@
         <property name="maxTotal" value="500" />
     </bean>
     
-    
     <bean id="dbtbl_1_master" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="${dbtbl_0_master.driver}"/>
         <property name="url" value="${dbtbl_1_master.url}"/>

@@ -32,15 +32,15 @@
                         ">
     <import resource="datasource/masterSlaveDataSource.xml" />
     <import resource="datasource/dataSource.xml" />
-
+    
     <spi:sharding-algorithm id="databaseStrategyShardingAlgorithm" type="INLINE" props-ref="databaseProps"/>
     <spi:sharding-algorithm id="orderTableStrategyShardingAlgorithm" type="INLINE" props-ref="orderTableProps"/>
     <spi:sharding-algorithm id="orderItemTableStrategyShardingAlgorithm" type="INLINE" props-ref="orderItemTableProps"/>
-
+    
     <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="databaseStrategyShardingAlgorithm" />
     <sharding:standard-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-ref="orderTableStrategyShardingAlgorithm" />
     <sharding:standard-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-ref="orderItemTableStrategyShardingAlgorithm" />
-
+    
     <bean:properties id="databaseProps">
         <prop key="algorithm.expression">dbtbl_${user_id % 2}</prop>
     </bean:properties>
@@ -50,7 +50,7 @@
     <bean:properties id="orderItemTableProps">
         <prop key="algorithm.expression">t_order_item_${order_id % 4}</prop>
     </bean:properties>
-
+    
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-source-names="dbtbl_0_master,dbtbl_0_slave_0,dbtbl_0_slave_1,dbtbl_1_master,dbtbl_1_slave_0,dbtbl_1_slave_1">
             <sharding:master-slave-rules>

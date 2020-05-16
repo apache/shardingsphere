@@ -28,10 +28,10 @@
                         http://shardingsphere.apache.org/schema/shardingsphere/spi/spi.xsd
                         ">
     <import resource="datasource/dataSource.xml" />
-
+    
     <spi:sharding-algorithm id="standardModuloDatabaseShardingAlgorithm" type="STANDARD_TEST_DB"/>
     <spi:sharding-algorithm id="standardModuloTableShardingAlgorithm" type="STANDARD_TEST_TBL"/>
-
+    
     <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="standardModuloDatabaseShardingAlgorithm" />
     <sharding:standard-strategy id="tableStrategy" sharding-column="order_id" algorithm-ref="standardModuloTableShardingAlgorithm" />
     

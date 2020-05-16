@@ -20,26 +20,28 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>sharding-jdbc-orchestration-spring</artifactId>
+        <artifactId>sharding-spring</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-jdbc-orchestration-spring-namespace</artifactId>
+    <artifactId>shardingsphere-jdbc-orchestration-spring</artifactId>
     <name>${project.artifactId}</name>
+    <packaging>pom</packaging>
+    
+    <modules>
+        <module>shardingsphere-jdbc-orchestration-spring-boot-starter</module>
+        <module>shardingsphere-jdbc-orchestration-spring-namespace</module>
+    </modules>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-jdbc-core-spring-namespace</artifactId>
+            <artifactId>shardingsphere-jdbc-orchestration</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
+
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context-support</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-test</artifactId>
         </dependency>
     </dependencies>
 </project>

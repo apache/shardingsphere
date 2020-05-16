@@ -115,7 +115,7 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>sharding-jdbc-orchestration-spring-boot-starter</artifactId>
+                <artifactId>shardingsphere-jdbc-orchestration-spring-boot-starter</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
@@ -125,7 +125,7 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>sharding-jdbc-orchestration-spring-namespace</artifactId>
+                <artifactId>shardingsphere-jdbc-orchestration-spring-namespace</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>

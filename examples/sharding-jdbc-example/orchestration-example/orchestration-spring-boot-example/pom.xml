@@ -36,7 +36,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-jdbc-orchestration-spring-boot-starter</artifactId>
+            <artifactId>shardingsphere-jdbc-orchestration-spring-boot-starter</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>

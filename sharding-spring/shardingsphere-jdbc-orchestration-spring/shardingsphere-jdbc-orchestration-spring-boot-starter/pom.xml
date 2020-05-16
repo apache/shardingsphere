@@ -20,10 +20,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>sharding-jdbc-orchestration-spring</artifactId>
+        <artifactId>shardingsphere-jdbc-orchestration-spring</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-jdbc-orchestration-spring-boot-starter</artifactId>
+    <artifactId>shardingsphere-jdbc-orchestration-spring-boot-starter</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
