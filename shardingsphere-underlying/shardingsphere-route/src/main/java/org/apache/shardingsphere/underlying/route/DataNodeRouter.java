@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.underlying.route;
 
-import org.apache.shardingsphere.sharding.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.sharding.spi.order.OrderedSPIRegistry;
+import org.apache.shardingsphere.underlying.common.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.underlying.common.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;

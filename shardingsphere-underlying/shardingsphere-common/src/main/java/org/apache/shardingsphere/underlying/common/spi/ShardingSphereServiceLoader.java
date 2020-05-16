@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.spi;
+package org.apache.shardingsphere.underlying.common.spi;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sharding.spi.exception.ServiceLoaderInstantiationException;
+import org.apache.shardingsphere.underlying.common.spi.exception.ServiceLoaderInstantiationException;
 
 import java.util.Collection;
 import java.util.Collections;

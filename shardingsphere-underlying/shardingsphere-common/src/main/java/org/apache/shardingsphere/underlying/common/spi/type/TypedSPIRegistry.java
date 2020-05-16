@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.spi.type;
+package org.apache.shardingsphere.underlying.common.spi.type;
 
-import org.apache.shardingsphere.sharding.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.sharding.spi.exception.ServiceProviderNotFoundException;
+import org.apache.shardingsphere.underlying.common.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.underlying.common.spi.exception.ServiceProviderNotFoundException;
 
 import java.util.Optional;
 import java.util.Properties;

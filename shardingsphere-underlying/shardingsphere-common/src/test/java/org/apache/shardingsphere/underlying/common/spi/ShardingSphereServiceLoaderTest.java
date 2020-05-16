@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.spi;
+package org.apache.shardingsphere.underlying.common.spi;
 
-import org.apache.shardingsphere.sharding.spi.fixture.TypedSPIFixture;
+import org.apache.shardingsphere.underlying.common.spi.fixture.TypedSPIFixture;
 import org.junit.Test;
 
 import java.util.Collection;

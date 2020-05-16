@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.frontend;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
-import org.apache.shardingsphere.sharding.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.underlying.common.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.underlying.route.hook;
 
-import org.apache.shardingsphere.sharding.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.underlying.common.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 

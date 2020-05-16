@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sharding.spi.fixture.TypedSPIFixtureImpl
+org.apache.shardingsphere.underlying.common.spi.fixture.TypedSPIFixtureImpl

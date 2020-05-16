@@ -24,9 +24,9 @@ import org.apache.shardingsphere.sharding.api.config.strategy.NoneShardingStrate
 import org.apache.shardingsphere.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.strategy.algorithm.keygen.fixture.IncrementKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.InlineShardingAlgorithm;
-import org.apache.shardingsphere.sharding.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.underlying.common.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sharding.spi.keygen.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.sharding.spi.type.TypedSPIRegistry;
+import org.apache.shardingsphere.underlying.common.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.underlying.common.datanode.DataNode;
 import org.junit.BeforeClass;

@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.spi.order;
+package org.apache.shardingsphere.underlying.common.spi.order;
 
-import org.apache.shardingsphere.sharding.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.underlying.common.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;

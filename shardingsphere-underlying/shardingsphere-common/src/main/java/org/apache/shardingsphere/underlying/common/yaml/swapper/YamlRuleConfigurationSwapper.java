@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.underlying.common.yaml.swapper;
 
-import org.apache.shardingsphere.sharding.spi.order.OrderedSPI;
+import org.apache.shardingsphere.underlying.common.spi.order.OrderedSPI;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlRuleConfiguration;
 

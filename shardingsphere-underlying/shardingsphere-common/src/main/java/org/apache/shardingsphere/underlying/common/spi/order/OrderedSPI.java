@@ -15,20 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.spi.exception;
+package org.apache.shardingsphere.underlying.common.spi.order;
 
 /**
- * Service provider not found exception.
+ * Ordered SPI.
+ * 
+ * @param <T> type
  */
-public final class ServiceProviderNotFoundException extends RuntimeException {
+public interface OrderedSPI<T> {
     
-    private static final long serialVersionUID = -3730257541332863236L;
+    /**
+     * Get order of load.
+     *
+     * @return load order
+     */
+    int getOrder();
     
-    public ServiceProviderNotFoundException(final Class<?> clazz) {
-        super(String.format("No implementation class load from SPI `%s`.", clazz.getName()));
-    }
-    
-    public ServiceProviderNotFoundException(final Class<?> clazz, final String type) {
-        super(String.format("No implementation class load from SPI `%s` with type `%s`.", clazz.getName(), type));
-    }
+    /**
+     * Get type class.
+     * 
+     * @return type class
+     */
+    Class<T> getTypeClass();
 }
