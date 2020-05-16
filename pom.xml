@@ -43,7 +43,7 @@
         <module>shardingsphere-proxy</module>
         
         <module>sharding-scaling</module>
-        <module>sharding-transaction</module>
+        <module>shardingsphere-transaction</module>
         
         <module>sharding-orchestration</module> 
         <module>sharding-opentracing</module>
