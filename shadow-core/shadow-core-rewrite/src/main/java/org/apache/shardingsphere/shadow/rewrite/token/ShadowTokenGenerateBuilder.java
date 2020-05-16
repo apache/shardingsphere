@@ -23,8 +23,8 @@ import org.apache.shardingsphere.shadow.rewrite.aware.ShadowRuleAware;
 import org.apache.shardingsphere.shadow.rewrite.token.generator.impl.RemoveShadowColumnTokenGenerator;
 import org.apache.shardingsphere.shadow.rewrite.token.generator.impl.ShadowInsertValuesTokenGenerator;
 import org.apache.shardingsphere.shadow.rewrite.token.generator.impl.ShadowPredicateColumnTokenGenerator;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.SQLTokenGenerator;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.builder.SQLTokenGeneratorBuilder;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.SQLTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.builder.SQLTokenGeneratorBuilder;
 
 import java.util.Collection;
 import java.util.LinkedList;

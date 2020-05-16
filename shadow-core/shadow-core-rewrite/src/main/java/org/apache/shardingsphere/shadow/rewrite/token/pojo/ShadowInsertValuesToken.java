@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shadow.rewrite.token.pojo;
 
-import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.InsertValue;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.InsertValuesToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertValue;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertValuesToken;
 
 /**
  * Insert values token for encrypt.

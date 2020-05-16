@@ -20,10 +20,10 @@ package org.apache.shardingsphere.infra.executor.sql.context;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.underlying.rewrite.engine.result.GenericSQLRewriteResult;
-import org.apache.shardingsphere.underlying.rewrite.engine.result.RouteSQLRewriteResult;
-import org.apache.shardingsphere.underlying.rewrite.engine.result.SQLRewriteResult;
-import org.apache.shardingsphere.underlying.rewrite.engine.result.SQLRewriteUnit;
+import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
+import org.apache.shardingsphere.infra.rewrite.engine.result.RouteSQLRewriteResult;
+import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
+import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteUnit;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 
 import java.util.Collection;

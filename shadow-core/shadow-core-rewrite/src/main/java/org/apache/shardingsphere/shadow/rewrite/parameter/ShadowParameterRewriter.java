@@ -22,7 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.shadow.rewrite.aware.ShadowRuleAware;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriter;
+import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
 
 /**
  * Parameter rewriter for shadow.

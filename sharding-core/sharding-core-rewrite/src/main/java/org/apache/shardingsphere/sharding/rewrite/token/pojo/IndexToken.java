@@ -19,11 +19,11 @@ package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
 import lombok.Getter;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.RouteUnitAware;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.RouteUnitAware;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Substitutable;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 

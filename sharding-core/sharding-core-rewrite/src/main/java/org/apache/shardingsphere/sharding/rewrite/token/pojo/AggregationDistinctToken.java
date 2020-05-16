@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Substitutable;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
 
 /**
  * Aggregation distinct token.

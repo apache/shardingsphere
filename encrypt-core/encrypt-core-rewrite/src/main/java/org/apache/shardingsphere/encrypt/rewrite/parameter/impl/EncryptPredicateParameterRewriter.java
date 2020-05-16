@@ -24,9 +24,9 @@ import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptConditionEngin
 import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriter;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.rewrite.parameter.builder.ParameterBuilder;
-import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.StandardParameterBuilder;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
+import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
+import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 
 import java.util.List;
 import java.util.Map;

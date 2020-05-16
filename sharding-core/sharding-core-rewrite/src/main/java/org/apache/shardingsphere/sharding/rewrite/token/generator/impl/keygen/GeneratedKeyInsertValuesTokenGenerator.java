@@ -26,10 +26,10 @@ import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.express
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.expression.DerivedSimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.InsertValue;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.InsertValuesToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertValue;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertValuesToken;
 
 import java.util.Iterator;
 import java.util.List;
