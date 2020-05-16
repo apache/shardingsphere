@@ -30,7 +30,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-proxy-bootstrap</artifactId>
+            <artifactId>shardingsphere-proxy-bootstrap</artifactId>
             <version>${project.version}</version>
         </dependency>
         
@@ -94,10 +94,10 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <repository>apache/sharding-proxy</repository>
+                            <repository>apache/shardingsphere-proxy</repository>
                             <tag>${project.version}</tag>
                             <buildArgs>
-                                <APP_NAME>${project.build.finalName}-sharding-proxy-bin</APP_NAME>
+                                <APP_NAME>${project.build.finalName}-shardingsphere-proxy-bin</APP_NAME>
                             </buildArgs>
                         </configuration>
                     </plugin>

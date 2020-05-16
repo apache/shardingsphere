@@ -40,7 +40,7 @@
         <module>master-slave-core</module>
         
         <module>shardingsphere-jdbc</module>
-        <module>sharding-proxy</module>
+        <module>shardingsphere-proxy</module>
         
         <module>sharding-scaling</module>
         <module>sharding-transaction</module>
