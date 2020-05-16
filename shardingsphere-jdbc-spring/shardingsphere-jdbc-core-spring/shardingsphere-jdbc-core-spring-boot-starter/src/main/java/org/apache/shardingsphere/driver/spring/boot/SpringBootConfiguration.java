@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.Inl
 import org.apache.shardingsphere.driver.spring.boot.datasource.DataSourcePropertiesSetterHolder;
 import org.apache.shardingsphere.driver.spring.boot.util.DataSourceUtil;
 import org.apache.shardingsphere.driver.spring.boot.util.PropertyUtil;
-import org.apache.shardingsphere.transaction.spring.ShardingTransactionTypeScanner;
+import org.apache.shardingsphere.driver.spring.transaction.ShardingTransactionTypeScanner;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -53,7 +53,7 @@ import java.util.Map;
  * Spring boot starter configuration.
  */
 @Configuration
-@ComponentScan("org.apache.shardingsphere.spring.boot.converter")
+@ComponentScan("org.apache.shardingsphere.driver.spring.boot.converter")
 @EnableConfigurationProperties({SpringBootRulesConfigurationProperties.class, SpringBootPropertiesConfigurationProperties.class})
 @ConditionalOnProperty(prefix = "spring.shardingsphere", name = "enabled", havingValue = "true", matchIfMissing = true)
 @AutoConfigureBefore(DataSourceAutoConfiguration.class)

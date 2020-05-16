@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.spring.fixture;
+package org.apache.shardingsphere.driver.spring.transaction.fixture;
 
-import org.apache.shardingsphere.transaction.spring.ShardingTransactionTypeScanner;
+import org.apache.shardingsphere.driver.spring.transaction.ShardingTransactionTypeScanner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ComponentScan(basePackages = {"org.apache.shardingsphere.transaction.spring"})
+@ComponentScan(basePackages = {"org.apache.shardingsphere.driver.spring.transaction"})
 public class FixtureSpringConfiguration {
     
     /**

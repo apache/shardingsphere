@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.spring;
+package org.apache.shardingsphere.driver.spring.transaction;
 
+import org.apache.shardingsphere.driver.spring.transaction.fixture.FixtureSpringConfiguration;
+import org.apache.shardingsphere.driver.spring.transaction.fixture.MockService;
 import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.apache.shardingsphere.transaction.spring.fixture.FixtureSpringConfiguration;
-import org.apache.shardingsphere.transaction.spring.fixture.MockService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

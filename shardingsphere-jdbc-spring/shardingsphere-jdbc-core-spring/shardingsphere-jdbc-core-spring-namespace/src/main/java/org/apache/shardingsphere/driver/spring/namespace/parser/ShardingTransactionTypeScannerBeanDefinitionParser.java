@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver.spring.namespace.parser;
 
-import org.apache.shardingsphere.transaction.spring.ShardingTransactionTypeScanner;
+import org.apache.shardingsphere.driver.spring.transaction.ShardingTransactionTypeScanner;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;

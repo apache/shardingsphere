@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.spring;
+package org.apache.shardingsphere.driver.spring.transaction;
 
 import org.aopalliance.aop.Advice;
 import org.apache.shardingsphere.transaction.annotation.ShardingTransactionType;

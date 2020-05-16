@@ -62,7 +62,7 @@ import java.util.Map.Entry;
  * Orchestration spring boot configuration.
  */
 @Configuration
-@ComponentScan("org.apache.shardingsphere.spring.boot.converter")
+@ComponentScan("org.apache.shardingsphere.driver.spring.boot.converter")
 @EnableConfigurationProperties({OrchestrationSpringBootRulesConfigurationProperties.class, SpringBootRootConfigurationProperties.class})
 @ConditionalOnProperty(prefix = "spring.shardingsphere", name = "enabled", havingValue = "true", matchIfMissing = true)
 @RequiredArgsConstructor

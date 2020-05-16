@@ -27,6 +27,7 @@
     </logger>
     <logger name="org.apache.shardingsphere.infra.log.ConfigurationLogger" level="off" />
     <logger name="ShardingSphere-metadata" level="off" />
+    
     <root>
         <level value="error" />
         <appender-ref ref="console" />

@@ -37,7 +37,7 @@ import org.apache.shardingsphere.sharding.rule.BindingTableRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.sharding.spi.keygen.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.transaction.spring.ShardingTransactionTypeScanner;
+import org.apache.shardingsphere.driver.spring.transaction.ShardingTransactionTypeScanner;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
