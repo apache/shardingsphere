@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
-import org.apache.shardingsphere.driver.common.base.AbstractMasterSlaveJDBCTest;
+import org.apache.shardingsphere.driver.common.base.AbstractShardingSphereDataSourceForMasterSlaveTest;
 import org.junit.Test;
 
 import java.sql.PreparedStatement;
@@ -26,7 +26,7 @@ import java.sql.SQLException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class MasterSlavePreparedStatementTest extends AbstractMasterSlaveJDBCTest {
+public final class MasterSlavePreparedStatementTest extends AbstractShardingSphereDataSourceForMasterSlaveTest {
     
     @Test(expected = SQLException.class)
     public void assertQueryWithNull() throws SQLException {

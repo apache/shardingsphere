@@ -54,7 +54,7 @@ public abstract class AbstractShardingSphereDataSourceForShadowTest extends Abst
     
     private static File getFile(final String fileName) {
         return new File(Preconditions.checkNotNull(
-                AbstractMasterSlaveJDBCTest.class.getClassLoader().getResource(fileName), "file resource `%s` must not be null.", fileName).getFile());
+                AbstractShardingSphereDataSourceForShadowTest.class.getClassLoader().getResource(fileName), "file resource `%s` must not be null.", fileName).getFile());
     }
     
     protected final ShardingSphereDataSource getShadowDataSource() {

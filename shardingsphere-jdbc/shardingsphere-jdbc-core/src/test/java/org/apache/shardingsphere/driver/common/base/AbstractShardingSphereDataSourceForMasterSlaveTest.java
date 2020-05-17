@@ -32,7 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractMasterSlaveJDBCTest extends AbstractSQLTest {
+public abstract class AbstractShardingSphereDataSourceForMasterSlaveTest extends AbstractSQLTest {
     
     private static ShardingSphereDataSource masterSlaveDataSource;
     
@@ -54,7 +54,7 @@ public abstract class AbstractMasterSlaveJDBCTest extends AbstractSQLTest {
     
     private static File getFile(final String fileName) {
         return new File(Preconditions.checkNotNull(
-                AbstractMasterSlaveJDBCTest.class.getClassLoader().getResource(fileName), "file resource `%s` must not be null.", fileName).getFile());
+                AbstractShardingSphereDataSourceForMasterSlaveTest.class.getClassLoader().getResource(fileName), "file resource `%s` must not be null.", fileName).getFile());
     }
     
     protected final ShardingSphereDataSource getMasterSlaveDataSource() {
