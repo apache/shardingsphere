@@ -10,7 +10,7 @@ weight = 2
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-jdbc-core</artifactId>
+    <artifactId>shardingsphere-jdbc-core</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
@@ -117,14 +117,14 @@ try (
 <!-- for spring boot -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-jdbc-spring-boot-starter</artifactId>
+    <artifactId>shardingsphere-jdbc-spring-boot-starter</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!-- for spring namespace -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-jdbc-spring-namespace</artifactId>
+    <artifactId>shardingsphere-jdbc-spring-namespace</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
@@ -227,4 +227,4 @@ spring.shardingsphere.props.sql.show=true
 private DataSource dataSource;
 ```
 
-更多的详细配置请参考[配置手册](/cn/manual/sharding-jdbc/configuration/)。
+更多的详细配置请参考[配置手册](/cn/manual/shardingsphere-jdbc/configuration/)。

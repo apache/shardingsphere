@@ -11,7 +11,7 @@ weight = 2
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-jdbc-core</artifactId>
+    <artifactId>shardingsphere-jdbc-core</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
@@ -117,14 +117,14 @@ try (
 <!-- for spring boot -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-jdbc-spring-boot-starter</artifactId>
+    <artifactId>shardingsphere-jdbc-spring-boot-starter</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!-- for spring namespace -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-jdbc-spring-namespace</artifactId>
+    <artifactId>shardingsphere-jdbc-spring-namespace</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
@@ -226,4 +226,4 @@ Inject DataSource to use; or configure DataSource in JPA, Hibernate or MyBatis t
 private DataSource dataSource;
 ```
 
-For more detailed configurations, please refer to [Configuration Manual](/en/manual/sharding-jdbc/configuration/).
+For more detailed configurations, please refer to [Configuration Manual](/en/manual/shardingsphere-jdbc/configuration/).
