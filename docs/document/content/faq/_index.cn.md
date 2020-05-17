@@ -199,7 +199,7 @@ https://ourcodeworld.com/articles/read/109/how-to-solve-filename-too-long-error-
 
 打开cmd.exe并执行下面的命令：
 ```
-tar zxvf apache-shardingsphere-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz
+tar zxvf apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz
 ```
 
 ## 15. Type is required 异常的解决方法?
@@ -259,11 +259,11 @@ ShardingSphere中很多功能实现类的加载方式是通过[SPI](https://shar
 1. 4.1.0之前的版本不支持动态添加或删除logic schema的功能，例如一个proxy启动的时候有2个logic schema，就会一直持有这2个schema，只能感知这两个schema内部的表和rule的变更事件。
 2. 4.1.0版本支持在sharding-ui或直接在zookeeper上增加新的logic schema，删除logic schema的功能计划在5.0.0版本支持。
 
-## 22. 在使用sharing-proxy时，怎么使用合适的工具连接到proxy？
+## 22. 在使用ShardingSphere-Proxy时，怎么使用合适的工具连接到ShardingSphere-Proxy？
 
 回答：
 
-1. sharding-proxy可以看做是一个mysql server，所以首选支持mysql命令连接和操作。
+1. ShardingSphere-Proxy可以看做是一个mysql server，所以首选支持mysql命令连接和操作。
 2. 如果使用其他第三方数据库工具，可能由于不同工具的特定实现导致出现异常。建议选择特定版本的工具或者打开特定参数，例如使用Navicat 11.1.13版本(不建议12.x)，使用IDEA/DataGrip时打开`introspect using JDBC metadata`选项。
 
 ## 23. 引入`sharding-transaction-xa-core`后，如何避免spring-boot自动加载默认的JtaTransactionManager？

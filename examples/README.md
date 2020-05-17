@@ -115,8 +115,8 @@ You can get more detail from **[encrypt-example](sharding-jdbc-example/other-fea
 
 We will add APM integration example recently.
 
-### Best Practice for sharding-proxy
+### Best Practice for ShardingSphere-Proxy
 
 We prefer to add a docker base example recently.
 
-### [how to use docker to config sharding-jdbc & sharding-proxy](./docker/docker-compose.md) (Optional)
+### [how to use docker to config ShardingSphere-JDBC & ShardingSphere-Proxy](./docker/docker-compose.md) (Optional)

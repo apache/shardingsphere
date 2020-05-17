@@ -59,7 +59,7 @@ cd ~/shardingsphere/shardingsphere-ui
 mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github username}
 ```
 
--Prelease: choose release profile, which will pack all the source codes, jar files and executable binary packages of sharding-proxy.
+-Prelease: choose release profile, which will pack all the source codes, jar files and executable binary packages of ShardingSphere-Proxy.
 
 -DautoVersionSubmodules=true: it can make the version number is inputted only once and not for each sub-module.
 
@@ -135,7 +135,7 @@ mkdir -p ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}
 cd ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}
 ```
 
-Add source code packages, binary packages and executable binary packages of sharding-proxy to SVN working directory.
+Add source code packages, binary packages and executable binary packages of ShardingSphere-Proxy to SVN working directory.
 
 ```shell
 cp -f ~/shardingsphere/shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-src-distribution/target/*.zip ~/ss_svn/dev/shardingsphere/shardingsphere-ui-${RELEASE.VERSION}

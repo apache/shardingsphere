@@ -118,4 +118,4 @@ shardingsphere-example
 
 我们希望最近添加一个docker基础示例。
 
-### [如何使用docker配置sharding-jdbc和sharding-proxy](./docker/docker-compose.md) (可选)
+### [如何使用docker配置ShardingSphere-JDBC和ShardingSphere-Proxy](./docker/docker-compose.md) (可选)

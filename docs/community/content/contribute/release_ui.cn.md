@@ -59,7 +59,7 @@ cd ~/shardingsphere/shardingsphere-ui
 mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github用户名}
 ```
 
--Prelease: 选择release的profile，这个profile会打包所有源码、jar文件以及sharding-proxy的可执行二进制包。
+-Prelease: 选择release的profile，这个profile会打包所有源码、jar文件以及ShardingSphere-Proxy的可执行二进制包。
 
 -DautoVersionSubmodules=true：作用是发布过程中版本号只需要输入一次，不必为每个子模块都输入一次。
 
