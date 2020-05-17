@@ -20,7 +20,7 @@ The migration scene we support：
 **Attention**: 
 
 If the backend database is MySQL, download [MySQL Connector/J](https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.47.tar.gz) 
-and decompress, then copy mysql-connector-java-5.1.47.jar to ${sharding-scaling}\lib directory.
+and decompress, then copy mysql-connector-java-5.1.47.jar to ${shardingsphere-scaling}\lib directory.
 
 ### Privileges
 
@@ -46,7 +46,7 @@ PostgreSQL need to support and open [test_decoding](https://www.postgresql.org/d
 
 ### API
 
-Sharding-Scaling provides a simple HTTP API
+ShardingSphere-Scaling provides a simple HTTP API
 
 #### Start scaling job
 
@@ -217,5 +217,5 @@ Response：
 
 ### Operate through the UI interface
 
-We provide user interface in sharding-ui, so all the operations related can be implemented with a click of the UI interface.
-For more information, please refer to the sharding-ui module.
+We provide user interface in ShardingSphere-UI, so all the operations related can be implemented with a click of the UI interface.
+For more information, please refer to the ShardingSphere-UI module.

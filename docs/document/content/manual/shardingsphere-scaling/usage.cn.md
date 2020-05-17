@@ -20,7 +20,7 @@ weight = 2
 **注意**：
 
 如果后端连接MySQL数据库，需要下载[MySQL Connector/J](https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.47.tar.gz)，
-解压缩后，将mysql-connector-java-5.1.47.jar拷贝到${sharding-scaling}\lib目录。
+解压缩后，将mysql-connector-java-5.1.47.jar拷贝到${shardingsphere-scaling}\lib目录。
 
 ### 权限要求
 
@@ -218,6 +218,6 @@ curl -X POST \
 
 ## 通过UI界面来操作
 
-Sharding-scaling与sharding-ui集成了用户界面，所以上述所有任务相关的操作都可以通过UI界面点点鼠标来实现，当然本质上还是调用了上述基本接口。
+ShardingSphere-Scaling与ShardingSphere-UI集成了用户界面，所以上述所有任务相关的操作都可以通过UI界面点点鼠标来实现，当然本质上还是调用了上述基本接口。
 
-更多信息请参考sharding-ui项目。
+更多信息请参考ShardingSphere-UI项目。
