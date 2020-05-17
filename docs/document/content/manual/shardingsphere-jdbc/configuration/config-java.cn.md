@@ -192,7 +192,7 @@ weight = 1
     private Map<String, CenterConfiguration> createCenterConfigurationMap() {
         Map<String, CenterConfiguration> instanceConfigurationMap = new HashMap<String, CenterConfiguration>();
         CenterConfiguration config = createCenterConfiguration();
-        instanceConfigurationMap.put("orchestration-sharding-data-source", config);
+        instanceConfigurationMap.put("orchestration-shardingsphere-data-source", config);
         return instanceConfigurationMap;
     }
     private CenterConfiguration createCenterConfiguration() {
