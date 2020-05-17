@@ -19,39 +19,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>shardingsphere-control-panel</artifactId>
+        <artifactId>shardingsphere-metrics</artifactId>
         <groupId>org.apache.shardingsphere</groupId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-control-panel-core</artifactId>
-    <name>${project.artifactId}</name>
+    <modelVersion>4.0.0</modelVersion>
+    
+    <artifactId>shardingsphere-metrics-spi</artifactId>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-orchestration-core-facade</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-orchestration-center-zookeeper-curator</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-opentracing</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-metrics-facade</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-metrics-prometheus</artifactId>
+            <artifactId>shardingsphere-metrics-configuration</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

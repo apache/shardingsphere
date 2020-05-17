@@ -16,23 +16,20 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <packaging>pom</packaging>
+    <modules>
+        <module>shardingsphere-metrics-spi</module>
+        <module>shardingsphere-metrics-facade</module>
+        <module>shardingsphere-metrics-prometheus</module>
+        <module>shardingsphere-metrics-configuration</module>
+    </modules>
     <parent>
-        <artifactId>sharding-metrics</artifactId>
         <groupId>org.apache.shardingsphere</groupId>
+        <artifactId>shardingsphere</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
-
-    <artifactId>sharding-metrics-facade</artifactId>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-metrics-spi</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
+    <artifactId>shardingsphere-metrics</artifactId>
+    <name>${project.artifactId}</name>
 </project>
