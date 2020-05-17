@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQLTest {
+public abstract class AbstractShardingSphereDataSourceForEncryptTest extends AbstractSQLTest {
     
     private static ShardingSphereDataSource encryptDataSource;
     
@@ -63,7 +63,8 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
     }
     
     private static File getFile(final String fileName) {
-        return new File(Preconditions.checkNotNull(AbstractEncryptJDBCDatabaseAndTableTest.class.getClassLoader().getResource(fileName), "file resource `%s` must not be null.", fileName).getFile());
+        return new File(Preconditions.checkNotNull(
+                AbstractShardingSphereDataSourceForEncryptTest.class.getClassLoader().getResource(fileName), "file resource `%s` must not be null.", fileName).getFile());
     }
     
     private static Map<String, DataSource> getDataSources() {
