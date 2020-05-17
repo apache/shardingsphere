@@ -42,13 +42,14 @@
         
         <module>shardingsphere-features</module>
         
+        <module>shardingsphere-control-panel</module>
         <module>sharding-orchestration</module> 
         <module>sharding-opentracing</module>
         <module>sharding-metrics</module>
-        <module>control-panel</module>
+        
+        <module>shardingsphere-integration-test</module>
         
         <module>sharding-distribution</module>
-        <module>shardingsphere-integration-test</module>
     </modules>
     
     <properties>
