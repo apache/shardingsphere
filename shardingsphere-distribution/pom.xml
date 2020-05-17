@@ -23,7 +23,7 @@
         <artifactId>shardingsphere</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-distribution</artifactId>
+    <artifactId>shardingsphere-distribution</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
@@ -33,8 +33,8 @@
     
     <modules>
         <module>shardingsphere-src-distribution</module>
-        <module>sharding-jdbc-distribution</module>
-        <module>sharding-proxy-distribution</module>
-        <module>sharding-scaling-distribution</module>
+        <module>shardingsphere-jdbc-distribution</module>
+        <module>shardingsphere-proxy-distribution</module>
+        <module>shardingsphere-scaling-distribution</module>
     </modules>
 </project>
