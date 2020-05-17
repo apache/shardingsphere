@@ -9,7 +9,7 @@ weight = 1
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-jdbc-core</artifactId>
+    <artifactId>shardingsphere-jdbc-core</artifactId>
     <version>${latest.release.version}</version>
 </dependency>
 ```
@@ -18,7 +18,7 @@ Notice: Please change `${latest.release.version}` to the actual version.
 
 ## 2. Sharding Rule Configuration
 
-ShardingSphere-JDBC can be configured by four methods, `Java`, `YAML`, `Spring namespace` and `Spring boot starter`. Developers can choose the suitable method according to different situations. Please refer to [Configuration Manual](/en/manual/sharding-jdbc/configuration/) for more details.
+ShardingSphere-JDBC can be configured by four methods, `Java`, `YAML`, `Spring namespace` and `Spring boot starter`. Developers can choose the suitable method according to different situations. Please refer to [Configuration Manual](/en/manual/shardingsphere-jdbc/configuration/) for more details.
 
 ## 3. Create DataSource
 
