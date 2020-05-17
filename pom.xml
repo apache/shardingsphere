@@ -37,15 +37,10 @@
         <module>shardingsphere-jdbc</module>
         <module>shardingsphere-proxy</module>
         
+        <module>shardingsphere-features</module>
         <module>shardingsphere-scaling</module>
         <module>shardingsphere-transaction</module>
-        
-        <module>shardingsphere-features</module>
-        
         <module>shardingsphere-control-panel</module>
-        <module>shardingsphere-orchestration</module> 
-        <module>shardingsphere-opentracing</module>
-        <module>shardingsphere-metrics</module>
         
         <module>shardingsphere-integration-test</module>
         

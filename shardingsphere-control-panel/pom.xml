@@ -32,5 +32,8 @@
     <modules>
         <module>shardingsphere-control-panel-core</module>
         <module>shardingsphere-control-panel-cluster</module>
+        <module>shardingsphere-orchestration</module>
+        <module>shardingsphere-opentracing</module>
+        <module>shardingsphere-metrics</module>
     </modules>
 </project>
