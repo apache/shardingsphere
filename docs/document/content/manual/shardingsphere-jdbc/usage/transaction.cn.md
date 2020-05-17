@@ -11,7 +11,7 @@ weight = 5
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-jdbc-core</artifactId>
-    <version>${sharding-sphere.version}</version>
+    <version>${shardingsphere.version}</version>
 </dependency>
 
 <!-- 使用XA事务时，需要引入此模块 -->
@@ -25,7 +25,7 @@ weight = 5
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-transaction-base-seata-at</artifactId>
-    <version>${sharding-sphere.version}</version>
+    <version>${shardingsphere.version}</version>
 </dependency>
 ```
 
@@ -65,7 +65,7 @@ try (Connection connection = dataSource.getConnection()) { // dataSource的类�
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-transaction-base-seata-at</artifactId>
-    <version>${sharding-sphere.version}</version>
+    <version>${shardingsphere.version}</version>
 </dependency>
 ```
 
@@ -124,7 +124,7 @@ public void insert() {
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-transaction-base-seata-at</artifactId>
-    <version>${sharding-sphere.version}</version>
+    <version>${shardingsphere.version}</version>
 </dependency>
 ```
 

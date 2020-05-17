@@ -36,7 +36,7 @@ username: root
 
 ### config/sharding/props
 
-相对于sharding-sphere配置里面的Sharding Properties。
+相对于shardingsphere配置里面的Sharding Properties。
 
 ```yaml
 executor.size: 20

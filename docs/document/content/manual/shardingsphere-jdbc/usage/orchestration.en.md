@@ -13,13 +13,13 @@ Using orchestration requires designating a config center, registry center & meta
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-jdbc-orchestration</artifactId>
-    <version>${sharding-sphere.version}</version>
+    <version>${shardingsphere.version}</version>
 </dependency>
 <!--If you want to use zookeeper, please use the artifactId below.-->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
-    <version>${sharding-sphere.version}</version>
+    <version>${shardingsphere.version}</version>
 </dependency>
 ```
 
@@ -34,7 +34,7 @@ Using orchestration requires designating a config center, registry center & meta
     properties.setProperty("overwrite", overwrite);
     CenterConfiguration centerConfiguration = new CenterConfiguration("zookeeper", properties);
     centerConfiguration.setServerLists("localhost:2181");
-    centerConfiguration.setNamespace("sharding-sphere-orchestration");
+    centerConfiguration.setNamespace("shardingsphere-orchestration");
     centerConfiguration.setOrchestrationType("registry_center,config_center,metadata_center");
 
     // Configure orchestration
@@ -74,14 +74,14 @@ orchestration:
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-jdbc-orchestration-spring-boot-starter</artifactId>
-    <version>${sharding-sphere.version}</version>
+    <version>${shardingsphere.version}</version>
 </dependency>
 
 <!--If you want to use zookeeper, please add the Maven below.-->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
-    <version>${sharding-sphere.version}</version>
+    <version>${shardingsphere.version}</version>
 </dependency>
 ```
 
@@ -90,14 +90,14 @@ orchestration:
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-jdbc-orchestration-spring-namespace</artifactId>
-    <version>${sharding-sphere.version}</version>
+    <version>${shardingsphere.version}</version>
 </dependency>
 
 <!--If you want to use zookeeper, please add the Maven below.-->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
-    <version>${sharding-sphere.version}</version>
+    <version>${shardingsphere.version}</version>
 </dependency>
 ```
 

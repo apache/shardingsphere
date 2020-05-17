@@ -13,7 +13,7 @@ Distributed transaction have been integrated into `ShardingDataSource`, you can 
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-jdbc-core</artifactId>
-    <version>${sharding-sphere.version}</version>
+    <version>${shardingsphere.version}</version>
 </dependency>
 
 <!-- introduce this module if you want to use XA transaction -->
@@ -27,7 +27,7 @@ Distributed transaction have been integrated into `ShardingDataSource`, you can 
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-transaction-base-seata-at</artifactId>
-    <version>${sharding-sphere.version}</version>
+    <version>${shardingsphere.version}</version>
 </dependency>
 ```
 
@@ -67,7 +67,7 @@ try (Connection connection = dataSource.getConnection()) { // dataSource type is
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-transaction-base-seata-at</artifactId>
-    <version>${sharding-sphere.version}</version>
+    <version>${shardingsphere.version}</version>
 </dependency>
 ```
 
@@ -126,7 +126,7 @@ public void insert() {
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-transaction-base-seata-at</artifactId>
-    <version>${sharding-sphere.version}</version>
+    <version>${shardingsphere.version}</version>
 </dependency>
 ```
 

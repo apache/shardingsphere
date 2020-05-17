@@ -11,7 +11,7 @@ weight = 1
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-jdbc-core</artifactId>
-    <version>${sharding-sphere.version}</version>
+    <version>${shardingsphere.version}</version>
 </dependency>
 ```
 
@@ -133,14 +133,14 @@ try (
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-jdbc-spring-boot-starter</artifactId>
-    <version>${sharding-sphere.version}</version>
+    <version>${shardingsphere.version}</version>
 </dependency>
 
 <!-- for spring namespace -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-jdbc-spring-namespace</artifactId>
-    <version>${sharding-sphere.version}</version>
+    <version>${shardingsphere.version}</version>
 </dependency>
 ```
 

@@ -166,7 +166,7 @@ ShardingSphere采用snowflake算法作为默认的分布式自增主键策略，
 
 而snowflake算法的最后4位是在同一毫秒内的访问递增值。因此，如果毫秒内并发度不高，最后4位为零的几率则很大。因此并发度不高的应用生成偶数主键的几率会更高。
 
-在3.1.0版本中，尾数大多为偶数的问题已彻底解决，参见：https://github.com/sharding-sphere/sharding-sphere/issues/1617
+在3.1.0版本中，尾数大多为偶数的问题已彻底解决，参见：https://github.com/apache/shardingsphere/issues/1617
 
 ## 13. Windows环境下，通过Git克隆ShardingSphere源码时为什么提示文件名过长，如何解决？
 
@@ -189,7 +189,7 @@ git config --global core.longpaths true
 https://docs.microsoft.com/zh-cn/windows/desktop/FileIO/naming-a-file
 https://ourcodeworld.com/articles/read/109/how-to-solve-filename-too-long-error-in-git-powershell-and-github-application-for-windows
 
-## 14. Windows环境下，运行Sharding-Proxy，找不到或无法加载主类 org.apache.shardingshpere.shardingproxy.Bootstrap，如何解决？
+## 14. Windows环境下，运行Sharding-Proxy，找不到或无法加载主类 org.apache.shardingsphere.proxy.Bootstrap，如何解决？
 
 回答：
 

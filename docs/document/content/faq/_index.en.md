@@ -160,7 +160,7 @@ ShardingSphere uses snowflake algorithms as the default distributed auto-augment
 
 But the last four numbers of snowflake algorithm are incremental value within one millisecond. Thus, if concurrency degree in one millisecond is not high,  the last four numbers are likely to be zero, which explains why the rate of even end number is higher.
 
-In 3.1.0 version, the problem of ending with even numbers has been totally solved, please refer to: https://github.com/sharding-sphere/sharding-sphere/issues/1617
+In 3.1.0 version, the problem of ending with even numbers has been totally solved, please refer to: https://github.com/apache/shardingsphere/issues/1617
 
 ## 13. In Windows environment,when cloning ShardingSphere source code through Git, why prompt filename too long and how to solve it?
 
@@ -186,7 +186,7 @@ Reference material:
 https://docs.microsoft.com/zh-cn/windows/desktop/FileIO/naming-a-file
 https://ourcodeworld.com/articles/read/109/how-to-solve-filename-too-long-error-in-git-powershell-and-github-application-for-windows
 
-## 14. In Windows environment, could not find or load main class org.apache.shardingshpere.shardingproxy.Bootstrap, how to solve it?
+## 14. In Windows environment, could not find or load main class org.apache.shardingsphere.proxy.Bootstrap, how to solve it?
 
 Answer:
 

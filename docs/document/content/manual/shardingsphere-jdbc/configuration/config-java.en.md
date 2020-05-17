@@ -201,7 +201,7 @@ The implementation of DataSource in the following configuration is [DataSourceUt
         properties.setProperty("overwrite", overwrite);
         CenterConfiguration result = new CenterConfiguration("zookeeper", properties);
         result.setServerLists("localhost:2181");
-        result.setNamespace("sharding-sphere-orchestration");
+        result.setNamespace("shardingsphere-orchestration");
         result.setOrchestrationType("registry_center,config_center,metadata_center");
         return result;
     }

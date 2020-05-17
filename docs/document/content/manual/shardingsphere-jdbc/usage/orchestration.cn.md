@@ -13,14 +13,14 @@ weight = 4
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-jdbc-orchestration</artifactId>
-    <version>${sharding-sphere.version}</version>
+    <version>${shardingsphere.version}</version>
 </dependency>
 
 <!--若使用zookeeper, 请加入下面Maven坐标-->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
-    <version>${sharding-sphere.version}</version>
+    <version>${shardingsphere.version}</version>
 </dependency>
 ```
 
@@ -35,7 +35,7 @@ weight = 4
     properties.setProperty("overwrite", overwrite);
     CenterConfiguration centerConfiguration = new CenterConfiguration("zookeeper", properties);
     centerConfiguration.setServerLists("localhost:2181");
-    centerConfiguration.setNamespace("sharding-sphere-orchestration");
+    centerConfiguration.setNamespace("shardingsphere-orchestration");
     centerConfiguration.setOrchestrationType("registry_center,config_center,metadata_center");
 
     // 配置治理
@@ -75,14 +75,14 @@ orchestration:
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-jdbc-orchestration-spring-boot-starter</artifactId>
-    <version>${sharding-sphere.version}</version>
+    <version>${shardingsphere.version}</version>
 </dependency>
 
 <!--若使用zookeeper, 请加入下面Maven坐标-->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
-    <version>${sharding-sphere.version}</version>
+    <version>${shardingsphere.version}</version>
 </dependency>
 ```
 
@@ -91,14 +91,14 @@ orchestration:
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-jdbc-orchestration-spring-namespace</artifactId>
-    <version>${sharding-sphere.version}</version>
+    <version>${shardingsphere.version}</version>
 </dependency>
 
 <!--若使用zookeeper, 请加入下面Maven坐标-->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
-    <version>${sharding-sphere.version}</version>
+    <version>${shardingsphere.version}</version>
 </dependency>
 ```
 

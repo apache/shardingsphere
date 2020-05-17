@@ -7,7 +7,7 @@ weight = 1
 
 1. `git clone https://github.com/apache/shardingsphere.git`；
 1. 运行 `mvn clean install -Prelease`；
-1. 获取安装包 `/sharding-distribution/shardingsphere-ui-distribution/target/apache-shardingsphere-${latest.release.version}-sharding-ui-bin.tar.gz`；
+1. 获取安装包 `/shardingsphere-ui/shardingsphere-ui-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-ui-bin.tar.gz`；
 1. 解压缩后运行`bin/start.sh`；
 1. 访问`http://localhost:8088/`。
 
@@ -22,7 +22,7 @@ Sharding-UI采用前后端分离的方式。
 
 ### 前端
 
-1. 进入`sharding-ui-frontend/`目录；
+1. 进入`shardingsphere-ui-frontend/`目录；
 1. 执行`npm install`；
 1. 执行`npm run dev`；
 1. 访问`http://localhost:8080/`。
@@ -50,7 +50,7 @@ user.admin.password=admin
 ERROR  Failed to compile with 17 errors
 error  in ./src/views/orchestration/module/instance.vue?vue&type=style&index=0&id=9e59b740&lang=scss&scoped=true&
 Module build failed (from ./node_modules/sass-loader/dist/cjs.js):
-Error: Missing binding /sharding-sphere/sharding-ui/sharding-ui-frontend/node_modules/node-sass/vendor/darwin-x64-57/binding.node
+Error: Missing binding /shardingsphere/shardingsphere-ui/shardingsphere-ui-frontend/node_modules/node-sass/vendor/darwin-x64-57/binding.node
 Node Sass could not find a binding for your current environment: OS X 64-bit with Node.js 8.x
 Found bindings for the following environments:
   - OS X 64-bit with Node.js 6.x
