@@ -1,6 +1,6 @@
 # ShardingSphere示例
 
-1.x的示例，请参阅 `https://github.com/apache/shardingsphere/tree/${tag}/sharding-jdbc-example`
+1.x的示例，请参阅 `https://github.com/apache/shardingsphere/tree/${tag}/shardingsphere-jdbc-example`
 
 2.x或3.x或4.x的示例，请参见 `https://github.com/apache/shardingsphere-example/tree/${tag}`
 
@@ -55,7 +55,7 @@ shardingsphere-example
   │   ├── example-spring-jpa
   │   └── example-spring-mybatis
   ├── shardingsphere-jdbc-example
-  │   ├── sharding-example
+  │   ├── shardingsphere-example
   │   │   ├── sharding-raw-jdbc-example
   │   │   ├── sharding-spring-boot-jpa-example
   │   │   ├── sharding-spring-boot-mybatis-example
@@ -86,29 +86,29 @@ shardingsphere-example
 * 主从
 * 分片和主从
 
-您可以从[sharding-example](sharding-jdbc-example/sharding-example)中获取更多详细信息
+您可以从[shardingsphere-example](shardingsphere-jdbc-example/shardingsphere-example)中获取更多详细信息
 
 ### 分片与编排的最佳实践
 
 * 使用本地配置文件和zookeeper/etcd配置分片
 * 使用注册中心（zookeeper/etcd）的配置进行分片
 
-您可以从业务[orchestration-example](sharding-jdbc-example/orchestration-example)中获取更多细节
+您可以从业务[orchestration-example](shardingsphere-jdbc-example/orchestration-example)中获取更多细节
 
 ### 分片+分布式事务的最佳实践
 
 * 2pc-xa事务
 * base-seata事务
 
-您可以从[transaction-example](sharding-jdbc-example/transaction-example)中获取更多详细信息
+您可以从[transaction-example](shardingsphere-jdbc-example/transaction-example)中获取更多详细信息
 
 ### 提示路由的最佳实践
 
-您可以从[hint-example](sharding-jdbc-example/other-feature-example/hint-example)中获取更多细节
+您可以从[hint-example](shardingsphere-jdbc-example/other-feature-example/hint-example)中获取更多细节
 
 ### 数据加密的最佳实践
 
-您可以从[encrypt-example](sharding-jdbc-example/other-feature-example/encrypt-example)中获取更多详细信息
+您可以从[encrypt-example](shardingsphere-jdbc-example/other-feature-example/encrypt-example)中获取更多详细信息
 
 ### APM集成的最佳实践
 

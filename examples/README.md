@@ -1,6 +1,6 @@
 # ShardingSphere-example
 
-Example for 1.x please see tags in `https://github.com/apache/shardingsphere/tree/${tag}/sharding-jdbc-example`
+Example for 1.x please see tags in `https://github.com/apache/shardingsphere/tree/${tag}/shardingsphere-jdbc-example`
 
 Example for 2.x or 3.x or 4.x please see tags in `https://github.com/apache/shardingsphere-example/tree/${tag}`
 
@@ -56,7 +56,7 @@ shardingsphere-example
   │   ├── example-spring-jpa
   │   └── example-spring-mybatis
   ├── shardingsphere-jdbc-example
-  │   ├── sharding-example
+  │   ├── shardingsphere-example
   │   │   ├── sharding-raw-jdbc-example
   │   │   ├── sharding-spring-boot-jpa-example
   │   │   ├── sharding-spring-boot-mybatis-example
@@ -87,29 +87,29 @@ shardingsphere-example
 * master-slave
 * sharding & master-slave
 
-You can get more detail from **[sharding-example](sharding-jdbc-example/sharding-example)**
+You can get more detail from **[shardingsphere-example](shardingsphere-jdbc-example/shardingsphere-example)**
 
 ### Best practice for sharding + orchestration
 
 * using local configuration file for zookeeper/etcd & sharding
 * using register center(zookeeper/etcd)'s configuration for sharding
 
-You can get more detail from **[orchestration-example](sharding-jdbc-example/orchestration-example)**
+You can get more detail from **[orchestration-example](shardingsphere-jdbc-example/orchestration-example)**
 
 ### Best Practice for sharding + distribution-transaction
 
 * 2pc-xa transaction
 * base-seata transaction
 
-You can get more detail from **[transaction-example](sharding-jdbc-example/transaction-example)**
+You can get more detail from **[transaction-example](shardingsphere-jdbc-example/transaction-example)**
 
 ### Best Practice for hint routing
 
-You can get more detail from **[hint-example](sharding-jdbc-example/other-feature-example/hint-example)**
+You can get more detail from **[hint-example](shardingsphere-jdbc-example/other-feature-example/hint-example)**
 
 ### Best Practice for data encrypt
 
-You can get more detail from **[encrypt-example](sharding-jdbc-example/other-feature-example/encrypt-example)**
+You can get more detail from **[encrypt-example](shardingsphere-jdbc-example/other-feature-example/encrypt-example)**
 
 ### Best Practice for APM Integration
 
