@@ -44,12 +44,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-metrics-facade</artifactId>
+            <artifactId>shardingsphere-metrics-facade</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-metrics-configuration</artifactId>
+            <artifactId>shardingsphere-metrics-configuration</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

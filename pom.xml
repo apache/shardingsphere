@@ -44,8 +44,8 @@
         
         <module>shardingsphere-control-panel</module>
         <module>shardingsphere-orchestration</module> 
-        <module>sharding-opentracing</module>
-        <module>sharding-metrics</module>
+        <module>shardingsphere-opentracing</module>
+        <module>shardingsphere-metrics</module>
         
         <module>shardingsphere-integration-test</module>
         
