@@ -10,7 +10,7 @@ weight = 1
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-jdbc-core</artifactId>
+    <artifactId>shardingsphere-jdbc-core</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
@@ -131,14 +131,14 @@ try (
 <!-- for spring boot -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-jdbc-spring-boot-starter</artifactId>
+    <artifactId>shardingsphere-jdbc-spring-boot-starter</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!-- for spring namespace -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-jdbc-spring-namespace</artifactId>
+    <artifactId>shardingsphere-jdbc-spring-namespace</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
@@ -243,4 +243,4 @@ Inject DataSource to use; or configure DataSource in JPA, Hibernate or MyBatis t
 private DataSource dataSource;
 ```
 
-Rule configurations include data source configuration, table rule configuration, database sharding strategy and table sharding strategy. All these are the simplest configuration methods, and the practical use can be more flexible, like multiple sharding keys, table rule configuration bound directly with sharding strategies, etc. For more detailed configurations, please refer to [Configuration Manual](https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/configuration/).
+Rule configurations include data source configuration, table rule configuration, database sharding strategy and table sharding strategy. All these are the simplest configuration methods, and the practical use can be more flexible, like multiple sharding keys, table rule configuration bound directly with sharding strategies, etc. For more detailed configurations, please refer to [Configuration Manual](https://shardingsphere.apache.org/document/current/en/manual/shardingsphere-jdbc/configuration/).

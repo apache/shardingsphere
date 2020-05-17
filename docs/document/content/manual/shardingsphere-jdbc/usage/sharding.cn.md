@@ -10,7 +10,7 @@ weight = 1
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-jdbc-core</artifactId>
+    <artifactId>shardingsphere-jdbc-core</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
@@ -132,14 +132,14 @@ try (
 <!-- for spring boot -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-jdbc-spring-boot-starter</artifactId>
+    <artifactId>shardingsphere-jdbc-spring-boot-starter</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!-- for spring namespace -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-jdbc-spring-namespace</artifactId>
+    <artifactId>shardingsphere-jdbc-spring-namespace</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
@@ -244,4 +244,4 @@ spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.algorit
 private DataSource dataSource;
 ```
 
-规则配置包括数据源配置、表规则配置、分库策略和分表策略组成。这只是最简单的配置方式，实际使用可更加灵活，如：多分片键，分片策略直接和表规则配置绑定等。更多的详细配置请参考[配置手册](/cn/manual/sharding-jdbc/configuration/)。
+规则配置包括数据源配置、表规则配置、分库策略和分表策略组成。这只是最简单的配置方式，实际使用可更加灵活，如：多分片键，分片策略直接和表规则配置绑定等。更多的详细配置请参考[配置手册](/cn/manual/shardingsphere-jdbc/configuration/)。
