@@ -126,9 +126,9 @@ ShardingSphere是多接入端共同组成的生态圈。
 构建产物：
 
 ```
-sharding-distribution/sharding-jdbc-distribution/target/apache-shardingsphere-${latest.release.version}-sharding-jdbc-bin.tar.gz: ShardingSphere-JDBC的二进制包
-sharding-distribution/sharding-proxy-distribution/target/apache-shardingsphere-${latest.release.version}-sharding-proxy-bin.tar.gz: ShardingSphere-Proxy的二进制包
-sharding-distribution/shardingsphere-src-distribution/target/apache-shardingsphere-${latest.release.version}-src.zip: ShardingSphere的源码包
+shardingsphere-distribution/shardingsphere-jdbc-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-jdbc-bin.tar.gz: ShardingSphere-JDBC的二进制包
+shardingsphere-distribution/shardingsphere-proxy-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-proxy-bin.tar.gz: ShardingSphere-Proxy的二进制包
+shardingsphere-distribution/shardingsphere-src-distribution/target/apache-shardingsphere-${latest.release.version}-src.zip: ShardingSphere的源码包
 ```
 
 ### 构建ShardingSphere UI

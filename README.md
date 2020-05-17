@@ -132,9 +132,9 @@ Architects can adjust the system architecture to the most applicable one to curr
 Artifact:
 
 ```
-sharding-distribution/sharding-jdbc-distribution/target/apache-shardingsphere-${latest.release.version}-sharding-jdbc-bin.tar.gz: Binary package of ShardingSphere-JDBC
-sharding-distribution/sharding-proxy-distribution/target/apache-shardingsphere-${latest.release.version}-sharding-proxy-bin.tar.gz: Binary package of ShardingSphere-Proxy
-sharding-distribution/shardingsphere-src-distribution/target/apache-shardingsphere-${latest.release.version}-src.zip: Source code package of ShardingSphere
+shardingsphere-distribution/shardingsphere-jdbc-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-jdbc-bin.tar.gz: Binary package of ShardingSphere-JDBC
+shardingsphere-distribution/shardingsphere-proxy-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-proxy-bin.tar.gz: Binary package of ShardingSphere-Proxy
+shardingsphere-distribution/shardingsphere-src-distribution/target/apache-shardingsphere-${latest.release.version}-src.zip: Source code package of ShardingSphere
 ```
 
 ### Build ShardingSphere-UI
