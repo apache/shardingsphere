@@ -13,7 +13,7 @@ create ShardingDataSource, On another hand, when user only adopt the feather of 
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-jdbc-core</artifactId>
+    <artifactId>shardingsphere-jdbc-core</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
@@ -80,14 +80,14 @@ props:
 <!-- for spring boot -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-jdbc-spring-boot-starter</artifactId>
+    <artifactId>shardingsphere-jdbc-spring-boot-starter</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!-- for spring namespace -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-jdbc-spring-namespace</artifactId>
+    <artifactId>shardingsphere-jdbc-spring-namespace</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
