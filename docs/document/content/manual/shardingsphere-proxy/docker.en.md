@@ -7,7 +7,7 @@ weight = 3
 ## Pull Official Docker Clone
 
 ```
-docker pull apache/sharding-proxy
+docker pull apache/shardingsphere-proxy
 ```
 
 ## Build Docker Clone Manually (Optional)
@@ -15,38 +15,38 @@ docker pull apache/sharding-proxy
 ```
 git clone https://github.com/apache/shardingsphere
 mvn clean install
-cd sharding-distribution/sharding-proxy-distribution
+cd shardingsphere-distribution/shardingsphere-proxy-distribution
 mvn clean package -Prelease,docker
 ```
 
-## Configure Sharding-Proxy
+## Configure ShardingSphere-Proxy
 
 Create `server.yaml` and `config-xxx.yaml` to configure sharding rules and server rule in `/${your_work_dir}/conf/`. 
-Please refer to [Configuration Manual](/en/manual/sharding-proxy/configuration/).
-Please refer to [Example](https://github.com/apache/shardingsphere/tree/master/sharding-proxy/sharding-proxy-bootstrap/src/main/resources/conf).
+Please refer to [Configuration Manual](/en/manual/shardingsphere-proxy/configuration/).
+Please refer to [Example](https://github.com/apache/shardingsphere/tree/master/shardingsphere-proxy/shardingsphere-proxy-bootstrap/src/main/resources/conf).
 
 ## Run Docker
 
 ```
-docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf -e PORT=3308 -p13308:3308 apache/sharding-proxy:latest
+docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -e PORT=3308 -p13308:3308 apache/shardingsphere-proxy:latest
 ```
 **Notice**
 * You can define port `3308` and `13308` by yourself. `3308` refers to docker port; `13308` refers to the host port.
-* You have to volume conf dir to /opt/sharding-proxy/conf.
+* You have to volume conf dir to /opt/shardingsphere-proxy/conf.
 
 ```
-docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf -e JVM_OPTS="-Djava.awt.headless=true" -e PORT=3308 -p13308:3308 apache/sharding-proxy:latest
+docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -e JVM_OPTS="-Djava.awt.headless=true" -e PORT=3308 -p13308:3308 apache/shardingsphere-proxy:latest
 ```
 **Notice**
 * You can define JVM related parameters to environment variable `JVM_OPTS`.
 
 ```
-docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf -v /${your_work_dir}/ext-lib:/opt/sharding-proxy/ext-lib -p13308:3308 apache/sharding-proxy:latest
+docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -v /${your_work_dir}/ext-lib:/opt/shardingsphere-proxy/ext-lib -p13308:3308 apache/shardingsphere-proxy:latest
 ```
 **Notice**
-* If you want to import external jar packages, whose directory is supposed to volume to /opt/sharding-proxy/ext-lib.
+* If you want to import external jar packages, whose directory is supposed to volume to /opt/shardingsphere-proxy/ext-lib.
 
-## Access Sharding-Proxy
+## Access ShardingSphere-Proxy
 
 It is in the same way as connecting to PostgreSQL.
 
@@ -66,8 +66,8 @@ Answer: please make sure designated PostgreSQL  IP in `/${your_work_dir}/conf/co
 
 Question 3：How to start ShardingProxy whose backend databases are MySQL.
 
-Answer：Volume the directory where `mysql-connector.jar` stores to /opt/sharding-proxy/ext-lib.
+Answer：Volume the directory where `mysql-connector.jar` stores to /opt/shardingsphere-proxy/ext-lib.
 
 Question 4：How to import user-defined sharding strategy？
 
-Answer: Volume the directory where `sharding-strategy.jar` stores to /opt/sharding-proxy/ext-lib.
+Answer: Volume the directory where `shardingsphere-strategy.jar` stores to /opt/shardingsphere-proxy/ext-lib.
