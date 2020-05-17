@@ -28,7 +28,7 @@
     <packaging>pom</packaging>
     
     <modules>
-        <module>control-panel-cluster-state</module>
+        <module>shardingsphere-control-panel-cluster-state</module>
         <module>shardingsphere-control-panel-cluster-heartbeat</module>
     </modules>
 </project>
