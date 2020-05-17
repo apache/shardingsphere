@@ -43,8 +43,7 @@
         <module>shardingsphere-control-panel</module>
         
         <module>shardingsphere-integration-test</module>
-        
-        <module>sharding-distribution</module>
+        <module>shardingsphere-distribution</module>
     </modules>
     
     <properties>
