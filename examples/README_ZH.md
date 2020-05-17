@@ -86,7 +86,7 @@ shardingsphere-example
 * 主从
 * 分片和主从
 
-您可以从[shardingsphere-example](shardingsphere-jdbc-example/shardingsphere-example)中获取更多详细信息
+您可以从[shardingsphere-example](shardingsphere-jdbc-example/sharding-example)中获取更多详细信息
 
 ### 分片与编排的最佳实践
 
