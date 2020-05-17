@@ -12,21 +12,21 @@ Distributed transaction have been integrated into `ShardingDataSource`, you can 
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-jdbc-core</artifactId>
+    <artifactId>shardingsphere-jdbc-core</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!-- introduce this module if you want to use XA transaction -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-transaction-xa-core</artifactId>
+    <artifactId>shardingsphere-transaction-xa-core</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!-- introduce this module if you want to use BASE transaction -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-transaction-base-seata-at</artifactId>
+    <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
@@ -52,21 +52,21 @@ try (Connection connection = dataSource.getConnection()) { // dataSource type is
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-jdbc-spring-namespace</artifactId>
+    <artifactId>shardingsphere-jdbc-spring-namespace</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!-- introduce this module if you want to use XA transaction -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-transaction-xa-core</artifactId>
+    <artifactId>shardingsphere-transaction-xa-core</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!-- introduce this module if you want to use BASE transaction -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-transaction-base-seata-at</artifactId>
+    <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
@@ -111,21 +111,21 @@ public void insert() {
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-jdbc-spring-boot-starter</artifactId>
+    <artifactId>shardingsphere-jdbc-spring-boot-starter</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!-- introduce this module if you want to use XA transaction -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-transaction-xa-core</artifactId>
+    <artifactId>shardingsphere-transaction-xa-core</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!-- introduce this module if you want to use BASE transaction -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-transaction-base-seata-at</artifactId>
+    <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
@@ -209,4 +209,4 @@ client {
 
 ## Distributed Transaction Example
 
-* [official example](https://github.com/apache/shardingsphere/tree/master/examples/sharding-jdbc-example/sharding-example)
+* [official example](https://github.com/apache/shardingsphere/tree/master/examples/shardingsphere-jdbc-example/sharding-example)

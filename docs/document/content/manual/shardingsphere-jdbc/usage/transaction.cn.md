@@ -10,21 +10,21 @@ weight = 5
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-jdbc-core</artifactId>
+    <artifactId>shardingsphere-jdbc-core</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!-- 使用XA事务时，需要引入此模块 -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-transaction-xa-core</artifactId>
+    <artifactId>shardingsphere-transaction-xa-core</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!-- 使用BASE事务时，需要引入此模块 -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-transaction-base-seata-at</artifactId>
+    <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
@@ -50,21 +50,21 @@ try (Connection connection = dataSource.getConnection()) { // dataSource的类�
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-jdbc-spring-namespace</artifactId>
+    <artifactId>shardingsphere-jdbc-spring-namespace</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!-- 使用XA事务时，需要引入此模块 -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-transaction-xa-core</artifactId>
+    <artifactId>shardingsphere-transaction-xa-core</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!-- 使用BASE事务时，需要引入此模块 -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-transaction-base-seata-at</artifactId>
+    <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
@@ -109,21 +109,21 @@ public void insert() {
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-jdbc-spring-boot-starter</artifactId>
+    <artifactId>shardingsphere-jdbc-spring-boot-starter</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!-- 使用XA事务时，需要引入此模块 -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-transaction-xa-core</artifactId>
+    <artifactId>shardingsphere-transaction-xa-core</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!-- 使用BASE事务时，需要引入此模块 -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-transaction-base-seata-at</artifactId>
+    <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
@@ -205,4 +205,4 @@ client {
 
 ## 分布式事务example
 
-* [官方example](https://github.com/apache/shardingsphere/tree/master/examples/sharding-jdbc-example/sharding-example)
+* [官方example](https://github.com/apache/shardingsphere/tree/master/examples/shardingsphere-jdbc-example/sharding-example)
