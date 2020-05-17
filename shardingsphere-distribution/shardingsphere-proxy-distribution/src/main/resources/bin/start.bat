@@ -19,7 +19,7 @@
 
 cd %~dp0
 
-set SERVER_NAME=Sharding-Proxy
+set SERVER_NAME=ShardingSphere-Proxy
 
 set CLASS_PATH="..;..\lib\*;..\ext-lib\*"
 

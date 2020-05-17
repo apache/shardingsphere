@@ -62,12 +62,12 @@
                         <artifactId>maven-assembly-plugin</artifactId>
                         <configuration>
                             <descriptors>
-                                <descriptor>src/main/assembly/sharding-proxy-binary-distribution.xml</descriptor>
+                                <descriptor>src/main/assembly/shardingsphere-proxy-binary-distribution.xml</descriptor>
                             </descriptors>
                         </configuration>
                         <executions>
                             <execution>
-                                <id>sharding-proxy-bin</id>
+                                <id>shardingsphere-proxy-bin</id>
                                 <phase>package</phase>
                                 <goals>
                                     <goal>single</goal>
@@ -87,7 +87,7 @@
                         <artifactId>dockerfile-maven-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>sharding-proxy-bin</id>
+                                <id>shardingsphere-proxy-bin</id>
                                 <goals>
                                     <goal>build</goal>
                                 </goals>

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-SERVER_NAME=Sharding-Scaling
+SERVER_NAME=ShardingSphere-Scaling
 
 cd `dirname $0`
 cd ..

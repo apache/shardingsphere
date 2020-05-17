@@ -62,7 +62,7 @@
                         <artifactId>maven-assembly-plugin</artifactId>
                         <configuration>
                             <descriptors>
-                                <descriptor>src/main/assembly/sharding-scaling-binary-distribution.xml</descriptor>
+                                <descriptor>src/main/assembly/shardingsphere-scaling-binary-distribution.xml</descriptor>
                             </descriptors>
                         </configuration>
                         <executions>

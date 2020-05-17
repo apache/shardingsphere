@@ -19,7 +19,7 @@
 
 cd %~dp0
 
-set SERVER_NAME=Sharding-Scaling
+set SERVER_NAME=ShardingSphere-Scaling
 
 set CLASS_PATH="..\conf;.;..;..\lib\*"
 

@@ -204,14 +204,14 @@
                         <artifactId>maven-assembly-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>sharding-jdbc-bin</id>
+                                <id>shardingsphere-jdbc-bin</id>
                                 <phase>package</phase>
                                 <goals>
                                     <goal>single</goal>
                                 </goals>
                                 <configuration>
                                     <descriptors>
-                                        <descriptor>src/main/assembly/sharding-jdbc-binary-distribution.xml</descriptor>
+                                        <descriptor>src/main/assembly/shardingsphere-jdbc-binary-distribution.xml</descriptor>
                                     </descriptors>
                                 </configuration>
                             </execution>
