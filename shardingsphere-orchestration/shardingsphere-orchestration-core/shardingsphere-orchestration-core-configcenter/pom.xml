@@ -29,7 +29,7 @@
     <dependencies>
       <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-shardingsphere-orchestration-core-common</artifactId>
+            <artifactId>shardingsphere-orchestration-core-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

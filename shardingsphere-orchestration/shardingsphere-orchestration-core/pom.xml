@@ -29,7 +29,7 @@
     
     <modules>
         <module>shardingsphere-orchestration-core-configuration</module>
-        <module>sharding-shardingsphere-orchestration-core-common</module>
+        <module>shardingsphere-orchestration-core-common</module>
         <module>shardingsphere-orchestration-core-configcenter</module>
         <module>shardingsphere-orchestration-core-registrycenter</module>
         <module>shardingsphere-orchestration-core-metadatacenter</module>
