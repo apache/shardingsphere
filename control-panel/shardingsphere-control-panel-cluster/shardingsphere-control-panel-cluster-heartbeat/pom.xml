@@ -20,10 +20,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>control-panel-cluster</artifactId>
+        <artifactId>shardingsphere-control-panel-cluster</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-control-panel-cluster-state</artifactId>
+    <artifactId>shardingsphere-control-panel-cluster-heartbeat</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
