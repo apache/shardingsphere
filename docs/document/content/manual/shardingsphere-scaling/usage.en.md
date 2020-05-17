@@ -7,16 +7,18 @@ weight = 2
 ## Manual
 
 ### Environment
+
 JAVA，JDK 1.8+.
 
 The migration scene we support：
 
-| Source     | Destination    | Whether support or not |
-| ---------- | -------------- | ---------------------- |
-| MySQL(5.1.15 ~ 5.7.x)      | sharding-proxy | support                |
-| PostgreSQL(9.4 ~ ) | sharding-proxy | support                |
+| Source                     | Destination          | Support |
+| -------------------------- | -------------------- | ------- |
+| MySQL(5.1.15 ~ 5.7.x)      | ShardingSphere-Proxy | Yes     |
+| PostgreSQL(9.4 ~ )         | ShardingSphere-Proxy | Yes     |
 
 **Attention**: 
+
 If the backend database is MySQL, download [MySQL Connector/J](https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.47.tar.gz) 
 and decompress, then copy mysql-connector-java-5.1.47.jar to ${sharding-scaling}\lib directory.
 
@@ -159,6 +161,7 @@ Response：
 ```
 
 #### List scaling jobs
+
 Interface description：GET /shardingscaling/job/list
 
 Example：
@@ -184,6 +187,7 @@ Response：
 ```
 
 #### Stop scaling job
+
 Interface description：POST /shardingscaling/job/stop
 
 Body：

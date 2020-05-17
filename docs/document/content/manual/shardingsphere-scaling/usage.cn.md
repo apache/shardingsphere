@@ -12,12 +12,13 @@ weight = 2
 
 支持迁移场景如下：
 
-| 源端       | 目标端         | 是否支持 |
-| ---------- | -------------- | -------- |
-| MySQL(5.1.15 ~ 5.7.x)      | sharding-proxy | 支持     |
-| PostgreSQL(9.4 ~ ) | sharding-proxy | 支持     |
+| 源端                  | 目标端                | 是否支持 |
+| --------------------- | -------------------- | ------- |
+| MySQL(5.1.15 ~ 5.7.x) | ShardingSphere-Proxy | 是      |
+| PostgreSQL(9.4 ~ )    | ShardingSphere-Proxy | 是      |
 
 **注意**：
+
 如果后端连接MySQL数据库，需要下载[MySQL Connector/J](https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.47.tar.gz)，
 解压缩后，将mysql-connector-java-5.1.47.jar拷贝到${sharding-scaling}\lib目录。
 
