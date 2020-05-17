@@ -12,14 +12,14 @@ weight = 4
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-jdbc-orchestration</artifactId>
+    <artifactId>shardingsphere-jdbc-orchestration</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!--若使用zookeeper, 请加入下面Maven坐标-->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
+    <artifactId>shardingsphere-orchestration-reg-zookeeper-curator</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
@@ -40,7 +40,7 @@ weight = 4
 
     // 配置治理
     Map<String, CenterConfiguration> instanceConfigurationMap = new HashMap<String, CenterConfiguration>();
-    instanceConfigurationMap.put("orchestration-sharding-data-source", centerConfiguration);
+    instanceConfigurationMap.put("orchestration-shardingsphere-data-source", centerConfiguration);
 
     // 获取数据源对象
     OrchestrationShardingDataSourceFactory.createDataSource(
@@ -74,14 +74,14 @@ orchestration:
 <!-- for spring boot -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-jdbc-orchestration-spring-boot-starter</artifactId>
+    <artifactId>shardingsphere-jdbc-orchestration-spring-boot-starter</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!--若使用zookeeper, 请加入下面Maven坐标-->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
+    <artifactId>shardingsphere-orchestration-reg-zookeeper-curator</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
@@ -90,14 +90,14 @@ orchestration:
 <!-- for spring namespace -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-jdbc-orchestration-spring-namespace</artifactId>
+    <artifactId>shardingsphere-jdbc-orchestration-spring-namespace</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!--若使用zookeeper, 请加入下面Maven坐标-->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
+    <artifactId>shardingsphere-orchestration-reg-zookeeper-curator</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
@@ -108,7 +108,7 @@ orchestration:
 spring.shardingsphere.orchestration.spring_boot_ds_sharding.orchestration-type=registry_center,config_center,metadata_center
 spring.shardingsphere.orchestration.spring_boot_ds_sharding.instance-type=zookeeper
 spring.shardingsphere.orchestration.spring_boot_ds_sharding.server-lists=localhost:2181
-spring.shardingsphere.orchestration.spring_boot_ds_sharding.namespace=orchestration-spring-boot-sharding-test
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.namespace=orchestration-spring-boot-shardingsphere-test
 spring.shardingsphere.orchestration.spring_boot_ds_sharding.props.overwrite=true
 ```
 
@@ -136,4 +136,4 @@ spring.shardingsphere.orchestration.spring_boot_ds_sharding.props.overwrite=true
 </beans>
 ```
 
-更多的详细配置请参考[配置手册](/cn/manual/sharding-jdbc/configuration/)。
+更多的详细配置请参考[配置手册](/cn/manual/shardingsphere-jdbc/configuration/)。

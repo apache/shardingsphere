@@ -12,13 +12,13 @@ Using orchestration requires designating a config center, registry center & meta
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-jdbc-orchestration</artifactId>
+    <artifactId>shardingsphere-jdbc-orchestration</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 <!--If you want to use zookeeper, please use the artifactId below.-->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
+    <artifactId>shardingsphere-orchestration-reg-zookeeper-curator</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
@@ -39,7 +39,7 @@ Using orchestration requires designating a config center, registry center & meta
 
     // Configure orchestration
     Map<String, CenterConfiguration> instanceConfigurationMap = new HashMap<String, CenterConfiguration>();
-    instanceConfigurationMap.put("orchestration-sharding-data-source", centerConfiguration);
+    instanceConfigurationMap.put("orchestration-shardingsphere-data-source", centerConfiguration);
 
     // Get data source
     OrchestrationShardingDataSourceFactory.createDataSource(
@@ -73,14 +73,14 @@ orchestration:
 <!-- for spring boot -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-jdbc-orchestration-spring-boot-starter</artifactId>
+    <artifactId>shardingsphere-jdbc-orchestration-spring-boot-starter</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!--If you want to use zookeeper, please add the Maven below.-->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
+    <artifactId>shardingsphere-orchestration-reg-zookeeper-curator</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
@@ -89,14 +89,14 @@ orchestration:
 <!-- for spring namespace -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-jdbc-orchestration-spring-namespace</artifactId>
+    <artifactId>shardingsphere-jdbc-orchestration-spring-namespace</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
 <!--If you want to use zookeeper, please add the Maven below.-->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
+    <artifactId>shardingsphere-orchestration-reg-zookeeper-curator</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
@@ -107,7 +107,7 @@ orchestration:
 spring.shardingsphere.orchestration.spring_boot_ds_sharding.orchestration-type=registry_center,config_center,metadata_center
 spring.shardingsphere.orchestration.spring_boot_ds_sharding.instance-type=zookeeper
 spring.shardingsphere.orchestration.spring_boot_ds_sharding.server-lists=localhost:2181
-spring.shardingsphere.orchestration.spring_boot_ds_sharding.namespace=orchestration-spring-boot-sharding-test
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.namespace=orchestration-spring-boot-shardingsphere-test
 spring.shardingsphere.orchestration.spring_boot_ds_sharding.props.overwrite=true
 ```
 
@@ -135,4 +135,4 @@ spring.shardingsphere.orchestration.spring_boot_ds_sharding.props.overwrite=true
 </beans>
 ```
 
-For detailed configurations, please refer to [Configuration Manual](http://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/configuration/).
+For detailed configurations, please refer to [Configuration Manual](http://shardingsphere.apache.org/document/current/cn/manual/shardingsphere-jdbc/configuration/).
