@@ -84,7 +84,7 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     QUERY_WITH_CIPHER_COLUMN("query.with.cipher.column", String.valueOf(Boolean.TRUE), boolean.class),
     
     /**
-     * Sharding-Proxy's flush threshold for every records from databases.
+     * ShardingSphere-Proxy's flush threshold for every records from databases.
      */
     PROXY_FRONTEND_FLUSH_THRESHOLD("proxy.frontend.flush.threshold", String.valueOf(128), int.class),
     
@@ -93,33 +93,33 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
      *
      * <p>
      * LOCAL:
-     * Sharding-Proxy will run with LOCAL transaction.
+     * ShardingSphere-Proxy will run with LOCAL transaction.
      * </p>
      *
      * <p>
      * XA:
-     * Sharding-Proxy will run with XA transaction.
+     * ShardingSphere-Proxy will run with XA transaction.
      * </p>
      *
      * <p>
      * BASE:
-     * Sharding-Proxy will run with BASE transaction.
+     * ShardingSphere-Proxy will run with BASE transaction.
      * </p>
      */
     PROXY_TRANSACTION_TYPE("proxy.transaction.type", "LOCAL", String.class),
     
     /**
-     * Enable opentracing for Sharding-Proxy.
+     * Enable opentracing for ShardingSphere-Proxy.
      */
     PROXY_OPENTRACING_ENABLED("proxy.opentracing.enabled", String.valueOf(Boolean.FALSE), boolean.class),
     
     /**
-     * Enable metrics for Sharding-Proxy.
+     * Enable metrics for ShardingSphere-Proxy.
      */
     PROXY_METRICS_ENABLED("proxy.metrics.enabled", String.valueOf(Boolean.FALSE), boolean.class),
     
     /**
-     * Enable hint for Sharding-Proxy.
+     * Enable hint for ShardingSphere-Proxy.
      */
     PROXY_HINT_ENABLED("proxy.hint.enabled", String.valueOf(Boolean.FALSE), boolean.class),
     

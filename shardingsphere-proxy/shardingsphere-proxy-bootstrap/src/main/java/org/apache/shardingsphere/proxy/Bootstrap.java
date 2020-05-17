@@ -35,7 +35,7 @@ import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.proxy.context.ShardingProxyContext;
-import org.apache.shardingsphere.proxy.frontend.bootstrap.ShardingProxy;
+import org.apache.shardingsphere.proxy.frontend.bootstrap.ShardingSphereProxy;
 import org.apache.shardingsphere.proxy.util.DataSourceConverter;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
@@ -59,7 +59,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
- * Sharding-Proxy Bootstrap.
+ * ShardingSphere-Proxy Bootstrap.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Bootstrap {
@@ -140,7 +140,7 @@ public final class Bootstrap {
                                    final Map<String, Collection<RuleConfiguration>> schemaRules) throws SQLException {
         ShardingSphereSchemas.getInstance().init(shardingSchemaNames, schemaDataSources, schemaRules);
         initOpenTracing();
-        ShardingProxy.getInstance().start(port);
+        ShardingSphereProxy.getInstance().start(port);
     }
     
     private static Map<String, Map<String, YamlDataSourceParameter>> getSchemaDataSourceParameterMap(final ShardingOrchestrationFacade shardingOrchestrationFacade) {

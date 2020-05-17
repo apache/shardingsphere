@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.log.ConfigurationLogger;
 import java.util.Properties;
 
 /**
- * Context of Sharding-Proxy.
+ * Context of ShardingSphere-Proxy.
  */
 @Getter
 public final class ShardingProxyContext {
@@ -48,9 +48,9 @@ public final class ShardingProxyContext {
     }
     
     /**
-     * Get instance of Sharding-Proxy's context.
+     * Get instance of ShardingSphere-Proxy's context.
      *
-     * @return instance of Sharding-Proxy's context.
+     * @return instance of ShardingSphere-Proxy's context.
      */
     public static ShardingProxyContext getInstance() {
         return INSTANCE;

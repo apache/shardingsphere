@@ -78,7 +78,7 @@ public final class JDBCRawBackendDataSourceFactory implements JDBCBackendDataSou
         try {
             Class.forName(driverClassName);
         } catch (final ClassNotFoundException ex) {
-            throw new ShardingSphereException("Cannot load JDBC driver class `%s`, make sure it in Sharding-Proxy's classpath.", driverClassName);
+            throw new ShardingSphereException("Cannot load JDBC driver class `%s`, make sure it in ShardingSphere-Proxy's classpath.", driverClassName);
         }
     }
 }
