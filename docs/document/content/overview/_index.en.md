@@ -60,7 +60,7 @@ Friendlier to DBA, the MySQL version provided now can use any kind of terminal (
 * Totally transparent to applications, it can be used directly as MySQL.
 * Applicable to any kind of terminal that is compatible with MySQL and PostgreSQL protocol.
 
-![ShardingSphere-Proxy Architecture](https://shardingsphere.apache.org/document/current/img//sharding-proxy-brief_v2.png)
+![ShardingSphere-Proxy Architecture](https://shardingsphere.apache.org/document/current/img//shardingsphere-proxy-brief.png)
 
 ### ShardingSphere-Sidecar(TODO)
 

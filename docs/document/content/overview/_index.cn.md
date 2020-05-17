@@ -60,7 +60,7 @@ ShardingSphere已经在2020年4月16日从[Apache孵化器](http://incubator.apa
 * 向应用程序完全透明，可直接当做MySQL/PostgreSQL使用。
 * 适用于任何兼容MySQL/PostgreSQL协议的的客户端。
 
-![ShardingSphere-Proxy Architecture](https://shardingsphere.apache.org/document/current/img/sharding-proxy-brief_v2.png)
+![ShardingSphere-Proxy Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-proxy-brief.png)
 
 ### ShardingSphere-Sidecar（TODO）
 

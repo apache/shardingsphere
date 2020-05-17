@@ -12,7 +12,7 @@ ShardingSphere-Proxy is the second product of ShardingSphere. It defines itself 
 - Totally transparent to applications, it can be used directly as MySQL/PostgreSQL.
 - Applicable to any kind of client end that is compatible with MySQL/PostgreSQL protocol.
 
-![ShardingSphere-Proxy Architecture](https://shardingsphere.apache.org/document/current/img/sharding-proxy-brief_v2.png)
+![ShardingSphere-Proxy Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-proxy-brief.png)
 
 ## Comparison
 
