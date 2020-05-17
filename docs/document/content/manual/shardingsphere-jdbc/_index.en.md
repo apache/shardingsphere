@@ -13,7 +13,7 @@ As the first product and the predecessor of ShardingSphere, ShardingSphere-JDBC 
 * Support any third-party database connection pool, such as DBCP, C3P0, BoneCP, Druid, HikariCP.
 * Support any kind of JDBC standard database: MySQL, Oracle, SQLServer, PostgreSQL and any SQL92 followed databases.
 
-![ShardingSphere-JDBC Architecture](https://shardingsphere.apache.org/document/current/img/sharding-jdbc-brief.png)
+![ShardingSphere-JDBC Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-jdbc-brief.png)
 
 ## Comparison
 

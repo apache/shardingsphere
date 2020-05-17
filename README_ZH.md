@@ -45,7 +45,7 @@ __Apache官方发布从4.0.0版本开始。__
 * 支持任何第三方的数据库连接池，如：DBCP, C3P0, BoneCP, Druid, HikariCP等。
 * 支持任意实现JDBC规范的数据库。目前支持MySQL，Oracle，SQLServer，PostgreSQL以及任何遵循SQL92标准的数据库。
 
-![ShardingSphere-JDBC Architecture](https://shardingsphere.apache.org//document/current/img/sharding-jdbc-brief.png)
+![ShardingSphere-JDBC Architecture](https://shardingsphere.apache.org//document/current/img/shardingsphere-jdbc-brief.png)
 
 ### ShardingSphere-Proxy
 
