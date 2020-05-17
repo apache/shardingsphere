@@ -1,6 +1,6 @@
 +++
 pre = "<b>2.3. </b>"
-title = "Sharding-Scaling(Alpha)"
+title = "ShardingSphere-Scaling(Alpha)"
 weight = 3
 +++
 
@@ -8,7 +8,7 @@ weight = 3
 
 ### Deployment
 
-#### 1. Execute the following command to compile and generate the sharding-scaling binary package:
+#### 1. Execute the following command to compile and generate the shardingsphere-scaling binary package:
 
 ```
 git clone https://github.com/apache/shardingsphere.git；
@@ -16,7 +16,7 @@ cd shardingsphere;
 mvn clean install -Prelease;
 ```
 
-The binary package's directory is:`/sharding-distribution/sharding-scaling-distribution/target/apache-shardingsphere-${latest.release.version}-sharding-scaling-bin.tar.gz`。
+The binary package's directory is:`/shardingsphere-distribution/shardingsphere-scaling-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-scaling-bin.tar.gz`。
 
 #### 2. Unzip the distribution package, modify the configuration file `conf/server.yaml`, we should ensure the port does not conflict with others, and other values can be left as default:
 
@@ -27,21 +27,22 @@ pushTimeout: 1000
 workerThread: 30
 ```
 
-#### 3. start up sharding-scaling:
+#### 3. start up ShardingSphere-Scaling:
 
 ```
 sh bin/start.sh
 ```
 
 **Attention**: 
+
 If the backend database is MySQL, download [MySQL Connector/J](https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.47.tar.gz) 
-and decompress, then copy mysql-connector-java-5.1.47.jar to ${sharding-scaling}\lib directory.
+and decompress, then copy mysql-connector-java-5.1.47.jar to ${shardingsphere-scaling}\lib directory.
 
 #### 4. See the log file `logs/stdout.log`，ensure successful startup.
 
 ### Start scaling job
 
-Sharding-Scaling provides a corresponding HTTP interface to manage the migration jobs. We can invoke the appropriate interface to start the migration job.
+ShardingSphere-Scaling provides a corresponding HTTP interface to manage the migration jobs. We can invoke the appropriate interface to start the migration job.
 
 Start scaling job:
 
@@ -68,7 +69,7 @@ curl -X POST \
 
 Note: The `ruleConfiguration.sourceDatasource` and `ruleConfiguration.sourceRule` should be changed to source's ShardingSphere's datasource and table rule.
 
-What's more, the `ruleConfiguration.destinationDataSources` should be changed to destination's sharding-proxy.
+What's more, the `ruleConfiguration.destinationDataSources` should be changed to destination's ShardingSphere-Proxy.
 
 The following information is returned, indicating that the job was successfully created:
 
@@ -81,7 +82,7 @@ The following information is returned, indicating that the job was successfully 
 }
 ```
 
-It should be noted that, after the Sharding-Scaling's job is successfully created, it will automatically run.
+It should be noted that, after the ShardingSphere-Scaling's job is successfully created, it will automatically run.
 
 ### Get scaling progress
 
@@ -192,7 +193,7 @@ Response：
 }
 ```
 
-### Shutdown Sharding-Scaling
+### Shutdown ShardingSphere-Scaling
 
 ```
 sh bin/stop.sh
