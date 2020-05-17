@@ -13,7 +13,7 @@ weight = 1
 
 ## Source Code Debug
 
-Sharding-UI use frontend and backend separately mode.
+ShardingSphere-UI use frontend and backend separately mode.
 
 ### backend
 
@@ -29,7 +29,7 @@ Sharding-UI use frontend and backend separately mode.
 
 ## Configuration
 
-Configuration file of Sharding-UI is conf/application.properties in distribution package. It is constituted by two parts.
+Configuration file of ShardingSphere-UI is conf/application.properties in distribution package. It is constituted by two parts.
 
 1. Listening port;
 1. authentication.

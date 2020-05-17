@@ -13,7 +13,7 @@ weight = 1
 
 ## 源码调试模式
 
-Sharding-UI采用前后端分离的方式。
+ShardingSphere-UI采用前后端分离的方式。
 
 ### 后端
 
@@ -29,7 +29,7 @@ Sharding-UI采用前后端分离的方式。
 
 ## 配置
 
-Sharding-UI的配置文件为`conf/application.properties`, 它由两部分组成。
+ShardingSphere-UI的配置文件为`conf/application.properties`, 它由两部分组成。
 
 1. 程序监听端口；
 1. 登录身份验证信息。

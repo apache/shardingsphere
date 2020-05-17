@@ -28,7 +28,7 @@
 1. Fix the problem of the stop index dislocation of segment with alias
 1. Fix the problem that overwriting SQL `SELECT * FROM tbl WHERE encrypt_col = ? AND (sharding_key = ? OR sharding_key = ?)` when using sharding + encrypt would throw StringIndexOutOfBoundsException
 1. Fix the problem of incorrect decoding after AES encoding when using ShardingSphere-Proxy in Spring Boot
-1. Fix a long-time problem of adding schema dynamically in Sharding-UI
+1. Fix a long-time problem of adding schema dynamically in ShardingSphere-UI
 
 ###  Change Logs
 
@@ -43,7 +43,7 @@
 1. Proxy for PostgreSQL decode parameters error in all types except String.
 1. COM_STM_EXECUTE of proxy for MySQL could not support sysbench.
 1. None sharding strategy could not config in spring-boot.
-1. Plain column could not get from resultSet in sharding-encrypt mode.
+1. Plain column could not get from resultSet in encrypt mode.
 1. WasNull field was wrong in GroupByStreamMergeResult.
 1. Metadata.getColumns could not work in JDBC.
 1. IN operator contains space and `\n` `\t` `\r` could not supported by parser.
