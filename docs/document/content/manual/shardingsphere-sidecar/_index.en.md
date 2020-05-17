@@ -11,7 +11,7 @@ ShardingSphere-Sidecar (TODO) defines itself as a cloud native database agent of
 
 It provides a mesh layer interacting with the database, we call this as `Database Mesh`.
 
-![ShardingSphere-Sidecar Architecture](https://shardingsphere.apache.org/document/current/img/sharding-sidecar-brief_v2.png)
+![ShardingSphere-Sidecar Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-sidecar-brief.png)
 
 
 ## Comparison

@@ -68,7 +68,7 @@ __Apache官方发布从4.0.0版本开始。__
 Database Mesh的关注重点在于如何将分布式的数据访问应用与数据库有机串联起来，它更加关注的是交互，是将杂乱无章的应用与数据库之间的交互有效的梳理。
 使用Database Mesh，访问数据库的应用和数据库终将形成一个巨大的网格体系，应用和数据库只需在网格体系中对号入座即可，它们都是被啮合层所治理的对象。
 
-![ShardingSphere-Sidecar Architecture](https://shardingsphere.apache.org//document/current/img/sharding-sidecar-brief_v2.png)
+![ShardingSphere-Sidecar Architecture](https://shardingsphere.apache.org//document/current/img/shardingsphere-sidecar-brief.png)
 
 |           | *ShardingSphere-JDBC* | *ShardingSphere-Proxy* | *ShardingSphere-Sidecar* |
 | --------- | --------------------- | ---------------------- | ------------------------ |
