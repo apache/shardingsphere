@@ -16,7 +16,7 @@ weight = 1
 
 ```
 config
-    ├──authentication                            # Sharding-Proxy权限配置
+    ├──authentication                            # ShardingSphere-Proxy权限配置
     ├──props                                     # 属性配置
     ├──schema                                    # Schema配置
     ├      ├──sharding_db                        # SchemaName配置

@@ -22,7 +22,7 @@ Supplementary instruction about the figure:
 
 MySQL: 5.1.15 ~ 5.7.x
 
-Sharding-Proxy: 3.x ~ 5.x
+ShardingSphere-Proxy: 3.x ~ 5.x
 
 ## How to Run
 

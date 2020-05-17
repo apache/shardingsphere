@@ -9,7 +9,7 @@ chapter = true
 
 Answer:
 
-`sql.show` configuration is provided in Sharding-Proxy and post-1.5.0 version of ShardingSphere-JDBC, enabling the context parsing, rewritten SQL and the routed data source printed to info log. `sql.show` configuration is off in default, and users can turn it on in configurations.
+`sql.show` configuration is provided in ShardingSphere-Proxy and post-1.5.0 version of ShardingSphere-JDBC, enabling the context parsing, rewritten SQL and the routed data source printed to info log. `sql.show` configuration is off in default, and users can turn it on in configurations.
 
 ## 2. Why do some compiling errors appear?
 
@@ -190,7 +190,7 @@ https://ourcodeworld.com/articles/read/109/how-to-solve-filename-too-long-error-
 
 Answer:
 
-Some decompression tools may truncate the file name when decompressing the Sharding-Proxy binary package, resulting in some classes not being found.
+Some decompression tools may truncate the file name when decompressing the ShardingSphere-Proxy binary package, resulting in some classes not being found.
 
 The solutions:
 

@@ -11,7 +11,7 @@
 1. Optimization for Sharing Parser with ANTLR Visitor improving the parsing performance of long SQL by 100%~1000%
 1. Use multiple threads to load metadata for different data sources
 1. Support `allow.range.query.with.inline.sharding` option
-1. The docker of Sharding-Proxy supports loading external lib packages
+1. The docker of ShardingSphere-Proxy supports loading external lib packages
 1. Support integration with Spring using @ShardingTransactionType
 1. Enhance ShardingDataSource to compatiable with Seata in micro-sevice distribution transaction
 
@@ -27,7 +27,7 @@
 1. Fix the problem that `ALTER TABLE` fails to execute when the field type of the table contains Integer/Double/BigDecimal
 1. Fix the problem of the stop index dislocation of segment with alias
 1. Fix the problem that overwriting SQL `SELECT * FROM tbl WHERE encrypt_col = ? AND (sharding_key = ? OR sharding_key = ?)` when using sharding + encrypt would throw StringIndexOutOfBoundsException
-1. Fix the problem of incorrect decoding after AES encoding when using Sharding-Proxy in Spring Boot
+1. Fix the problem of incorrect decoding after AES encoding when using ShardingSphere-Proxy in Spring Boot
 1. Fix a long-time problem of adding schema dynamically in Sharding-UI
 
 ###  Change Logs
@@ -68,7 +68,7 @@
 ### New Features
 
 1. SQL92 Syntax available.
-1. Sharding-Proxy for PostgreSQL protocol available.
+1. ShardingSphere-Proxy for PostgreSQL protocol available.
 1. SQL 100% compatible if route to single data node.
 1. Less-than(<), greater-than(>) and Less-than-equal(<=), greater-than-equal(>=) for sharding key operator available.
 1. DISTINCT SQL syntax available.
@@ -85,8 +85,8 @@
 1. MariaDB supported.
 1. Improve the compatibility of SQL parsing.
 1. `SELECT FOR UPDATE` route to master data source only.
-1. Hint in Sharding-Proxy available.
-1. Make configuration of orchestration consistent between ShardingSphere-JDBC and Sharding-Proxy.
+1. Hint in ShardingSphere-Proxy available.
+1. Make configuration of orchestration consistent between ShardingSphere-JDBC and ShardingSphere-Proxy.
 1. Renew modified data sources only, not renew all the data sources.
 1. Vibrate configurable for Snowflake key generator.
 
@@ -118,9 +118,9 @@
 
 1. Support using less-than character(<) and greater-than character(>) for sharding data.
 1. When master and slave dataSources exist, support executing `SELECT FOR UPDATE` on master dataSource.
-1. Support hint in Sharding-Proxy.
+1. Support hint in ShardingSphere-Proxy.
 1. Finish parsing DAL syntax for MySQL.
-1. Make configuration of orchestration compatible between ShardingSphere-JDBC and Sharding-Proxy.
+1. Make configuration of orchestration compatible between ShardingSphere-JDBC and ShardingSphere-Proxy.
 
 ### Bug Fixes
 
@@ -183,7 +183,7 @@ Merge all change logs of version 3.1.0.M1, 3.1.0, 3.1.0.1 and 4.0.0.M1. First ap
 
 1. XA Transaction available.
 1. Data encrypt available.
-1. Use PostgreSQL protocol access Sharding-Proxy available.
+1. Use PostgreSQL protocol access ShardingSphere-Proxy available.
 1. DISTINCT SQL syntax available.
 1. Broadcast table.
 1. All SQL 100% compatible if route to single data node (MySQL Only).
@@ -200,7 +200,7 @@ Merge all change logs of version 3.1.0.M1, 3.1.0, 3.1.0.1 and 4.0.0.M1. First ap
 
 ### Milestones
 
-1. Sharding-Proxy launch. Support the use of ShardingSphere in the form of database to support for MySQL CLI and GUI client
+1. ShardingSphere-Proxy launch. Support the use of ShardingSphere in the form of database to support for MySQL CLI and GUI client
 
 ### New Features
 
@@ -211,7 +211,7 @@ Merge all change logs of version 3.1.0.M1, 3.1.0, 3.1.0.1 and 4.0.0.M1. First ap
 1. [ISSUE #980](https://github.com/apache/shardingsphere/issues/980) Support DCL
 1. [ISSUE #1111](https://github.com/apache/shardingsphere/issues/1111) Support MySQL DAL
 
-#### Sharding-Proxy
+#### ShardingSphere-Proxy
 
 1. [ISSUE #902](https://github.com/apache/shardingsphere/issues/902) Support XA transaction
 1. [ISSUE #916](https://github.com/apache/shardingsphere/issues/916) Support authorization

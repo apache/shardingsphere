@@ -14,7 +14,7 @@ ShardingSphere-Proxy是ShardingSphere的第二个产品。
 * 向应用程序完全透明，可直接当做MySQL/PostgreSQL使用。
 * 适用于任何兼容MySQL/PostgreSQL协议的的客户端。
 
-![Sharding-Proxy Architecture](https://shardingsphere.apache.org/document/current/img/sharding-proxy-brief_v2.png)
+![ShardingSphere-Proxy Architecture](https://shardingsphere.apache.org/document/current/img/sharding-proxy-brief_v2.png)
 
 ## 对比
 
@@ -27,4 +27,4 @@ ShardingSphere-Proxy是ShardingSphere的第二个产品。
 | 无中心化   | 是                    | `否`                     | 是                        |
 | 静态入口   | 无                    | `有`                     | 无                        |
 
-Sharding-Proxy的优势在于对异构语言的支持，以及为DBA提供可操作入口。
+ShardingSphere-Proxy的优势在于对异构语言的支持，以及为DBA提供可操作入口。

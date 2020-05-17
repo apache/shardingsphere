@@ -11,7 +11,7 @@ chapter = true
 [![GitHub watchers](https://img.shields.io/github/watchers/apache/shardingsphere.svg?style=social&label=Watch)](https://github.com/apache/shardingsphere/watchers)
 [![Stargazers over time](https://starchart.cc/apache/shardingsphere.svg)](https://starchart.cc/apache/shardingsphere)
 
-ShardingSphere是一套开源的分布式数据库中间件解决方案组成的生态圈，它由ShardingSphere-JDBC、Sharding-Proxy和Sharding-Sidecar（计划中）这3款相互独立的产品组成。
+ShardingSphere是一套开源的分布式数据库中间件解决方案组成的生态圈，它由ShardingSphere-JDBC、ShardingSphere-Proxy和ShardingSphere-Sidecar（计划中）这3款相互独立的产品组成。
 他们均提供标准化的数据分片、分布式事务和数据库治理功能，可适用于如Java同构、异构语言、云原生等各种多样化的应用场景。
 
 ShardingSphere定位为关系型数据库中间件，旨在充分合理地在分布式的场景下利用关系型数据库的计算和存储能力，而并非实现一个全新的关系型数据库。
@@ -49,7 +49,7 @@ ShardingSphere已经在2020年4月16日从[Apache孵化器](http://incubator.apa
 
 ![ShardingSphere-JDBC Architecture](https://shardingsphere.apache.org/document/current/img/sharding-jdbc-brief.png)
 
-### Sharding-Proxy
+### ShardingSphere-Proxy
 
 [![Download](https://img.shields.io/badge/release-download-orange.svg)](https://www.apache.org/dyn/closer.cgi?path=incubator/shardingsphere/4.0.1/apache-shardingsphere-incubating-4.0.1-sharding-proxy-bin.tar.gz)
 [![Docker Pulls](https://img.shields.io/docker/pulls/shardingsphere/sharding-proxy.svg)](https://store.docker.com/community/images/shardingsphere/sharding-proxy)
@@ -60,32 +60,32 @@ ShardingSphere已经在2020年4月16日从[Apache孵化器](http://incubator.apa
 * 向应用程序完全透明，可直接当做MySQL/PostgreSQL使用。
 * 适用于任何兼容MySQL/PostgreSQL协议的的客户端。
 
-![Sharding-Proxy Architecture](https://shardingsphere.apache.org/document/current/img/sharding-proxy-brief_v2.png)
+![ShardingSphere-Proxy Architecture](https://shardingsphere.apache.org/document/current/img/sharding-proxy-brief_v2.png)
 
-### Sharding-Sidecar（TODO）
+### ShardingSphere-Sidecar（TODO）
 
 定位为Kubernetes的云原生数据库代理，以Sidecar的形式代理所有对数据库的访问。
 通过无中心、零侵入的方案提供与数据库交互的的啮合层，即Database Mesh，又可称数据网格。
 
 Database Mesh的关注重点在于如何将分布式的数据访问应用与数据库有机串联起来，它更加关注的是交互，是将杂乱无章的应用与数据库之间的交互有效的梳理。使用Database Mesh，访问数据库的应用和数据库终将形成一个巨大的网格体系，应用和数据库只需在网格体系中对号入座即可，它们都是被啮合层所治理的对象。
 
-![Sharding-Sidecar Architecture](https://shardingsphere.apache.org/document/current/img/sharding-sidecar-brief_v2.png)
+![ShardingSphere-Sidecar Architecture](https://shardingsphere.apache.org/document/current/img/sharding-sidecar-brief_v2.png)
 
-|           | *ShardingSphere-JDBC* | *Sharding-Proxy* | *Sharding-Sidecar* |
-| --------- | --------------- | ---------------- | ------------------ |
-| 数据库     | 任意            | MySQL            | MySQL              |
-| 连接消耗数 | 高              | 低               | 高                  |
-| 异构语言   | 仅Java          | 任意             | 任意                |
-| 性能       | 损耗低          | 损耗略高          | 损耗低              |
-| 无中心化   | 是              | 否               | 是                  |
-| 静态入口   | 无              | 有               | 无                  |
+|           | *ShardingSphere-JDBC* | *ShardingSphere-Proxy* | *ShardingSphere-Sidecar* |
+| --------- | --------------------- | ---------------------- | ------------------------ |
+| 数据库     | 任意                  | MySQL                  | MySQL                    |
+| 连接消耗数 | 高                    | 低                     | 高                        |
+| 异构语言   | 仅Java                | 任意                   | 任意                      |
+| 性能       | 损耗低                | 损耗略高                | 损耗低                    |
+| 无中心化   | 是                    | 否                     | 是                        |
+| 静态入口   | 无                    | 有                     | 无                        |
 
 ### 混合架构
 
-ShardingSphere-JDBC采用无中心化架构，适用于Java开发的高性能的轻量级OLTP应用；Sharding-Proxy提供静态入口以及异构语言的支持，适用于OLAP应用以及对分片数据库进行管理和运维的场景。
+ShardingSphere-JDBC采用无中心化架构，适用于Java开发的高性能的轻量级OLTP应用；ShardingSphere-Proxy提供静态入口以及异构语言的支持，适用于OLAP应用以及对分片数据库进行管理和运维的场景。
 
 ShardingSphere是多接入端共同组成的生态圈。
-通过混合使用ShardingSphere-JDBC和Sharding-Proxy，并采用同一注册中心统一配置分片策略，能够灵活的搭建适用于各种场景的应用系统，架构师可以更加自由的调整适合于当前业务的最佳系统架构。
+通过混合使用ShardingSphere-JDBC和ShardingSphere-Proxy，并采用同一注册中心统一配置分片策略，能够灵活的搭建适用于各种场景的应用系统，架构师可以更加自由的调整适合于当前业务的最佳系统架构。
 
 ![ShardingSphere Hybrid Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-hybrid.png)
 

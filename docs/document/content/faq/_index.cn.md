@@ -9,7 +9,7 @@ chapter = true
 
 回答：
 
-在Sharding-Proxy以及ShardingSphere-JDBC 1.5.0版本之后提供了`sql.show`的配置，可以将解析上下文和改写后的SQL以及最终路由至的数据源的细节信息全部打印至info日志。
+在ShardingSphere-Proxy以及ShardingSphere-JDBC 1.5.0版本之后提供了`sql.show`的配置，可以将解析上下文和改写后的SQL以及最终路由至的数据源的细节信息全部打印至info日志。
 `sql.show`配置默认关闭，如果需要请通过配置开启。
 
 ## 2. 阅读源码时为什么会出现编译错误?
@@ -189,11 +189,11 @@ git config --global core.longpaths true
 https://docs.microsoft.com/zh-cn/windows/desktop/FileIO/naming-a-file
 https://ourcodeworld.com/articles/read/109/how-to-solve-filename-too-long-error-in-git-powershell-and-github-application-for-windows
 
-## 14. Windows环境下，运行Sharding-Proxy，找不到或无法加载主类 org.apache.shardingsphere.proxy.Bootstrap，如何解决？
+## 14. Windows环境下，运行ShardingSphere-Proxy，找不到或无法加载主类 org.apache.shardingsphere.proxy.Bootstrap，如何解决？
 
 回答：
 
-某些解压缩工具在解压Sharding-Proxy二进制包时可能将文件名截断，导致找不到某些类。
+某些解压缩工具在解压ShardingSphere-Proxy二进制包时可能将文件名截断，导致找不到某些类。
 
 解决方案：
 

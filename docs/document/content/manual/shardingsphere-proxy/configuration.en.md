@@ -6,7 +6,7 @@ weight = 2
 
 ## Data Source and Sharding Configuration Instance
 
-Sharding-Proxy supports multiple logic data source, each one of which is a `yalm` configuration document named with `config-` prefix. The following is the configuration instance of `config-xxx.yaml`.
+ShardingSphere-Proxy supports multiple logic data source, each one of which is a `yalm` configuration document named with `config-` prefix. The following is the configuration instance of `config-xxx.yaml`.
 
 ### Data Sharding
 
@@ -321,7 +321,7 @@ shardingRule:
 
 ## Overall Configuration Instance
 
-Sharding-Proxy uses `conf/server.yaml` to configure the registry center, authentication information and common properties.
+ShardingSphere-Proxy uses `conf/server.yaml` to configure the registry center, authentication information and common properties.
 
 ### Orchestration
 Orchestration can config config-center and registry-center now, as follow:
@@ -433,7 +433,7 @@ props:
 
 ### Authentication
 
-It is used to verify the authentication to log in Sharding-Proxy, which must use correct user name and password after the configuration of them.
+It is used to verify the authentication to log in ShardingSphere-Proxy, which must use correct user name and password after the configuration of them.
 
 ```yaml
 authentication:

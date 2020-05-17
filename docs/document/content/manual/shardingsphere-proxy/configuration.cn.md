@@ -6,7 +6,7 @@ weight = 2
 
 ## 数据源与分片配置示例
 
-Sharding-Proxy支持多逻辑数据源，每个以config-前缀命名的yaml配置文件，即为一个逻辑数据源。以下是`config-xxx.yaml`的配置配置示例。
+ShardingSphere-Proxy支持多逻辑数据源，每个以config-前缀命名的yaml配置文件，即为一个逻辑数据源。以下是`config-xxx.yaml`的配置配置示例。
 
 ### 数据分片
 
@@ -322,7 +322,7 @@ shardingRule:
 
 ## 全局配置示例
 
-Sharding-Proxy使用conf/server.yaml配置注册中心、认证信息以及公用属性。
+ShardingSphere-Proxy使用conf/server.yaml配置注册中心、认证信息以及公用属性。
 
 ### 治理
 治理模块目前支持配置中心和注册中心，具体配置为：
