@@ -17,7 +17,7 @@ weight = 1
 
 ### Rule Configuration Based on Java
 
-Sharding database and table of Sharding-JDBC configure descriptions according to rules. The following example is the configuration of two databases plus two tables, whose databases take module and split according to order_id, tables take module and split according to order_id.
+Sharding database and table of ShardingSphere-JDBC configure descriptions according to rules. The following example is the configuration of two databases plus two tables, whose databases take module and split according to order_id, tables take module and split according to order_id.
 
 ```java
     // Configure actual data sources
@@ -174,7 +174,7 @@ spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.algorit
 
 #### Rule Configuration Based on Spring Boot + JNDI
 
-If you plan to use Sharding-JDBC in Application Server (such as Tomcat) with `Spring boot + JNDI`, `spring.shardingsphere.datasource.${datasourceName}.jndiName` can be used as an alternative to series of configuration of datasource. For example:
+If you plan to use ShardingSphere-JDBC in Application Server (such as Tomcat) with `Spring boot + JNDI`, `spring.shardingsphere.datasource.${datasourceName}.jndiName` can be used as an alternative to series of configuration of datasource. For example:
 
 ```properties
 spring.shardingsphere.datasource.names=ds0,ds1

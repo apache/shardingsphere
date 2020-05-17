@@ -62,7 +62,7 @@
 ### API Changes
 
 1. Change package and maven groupId form `io.shardingsphere` to `org.apache.shardingsphere`.
-1. Adjust Sharding-JDBC configuration API.
+1. Adjust ShardingSphere-JDBC configuration API.
 1. Adjust persist structure for registry center.
 
 ### New Features
@@ -86,7 +86,7 @@
 1. Improve the compatibility of SQL parsing.
 1. `SELECT FOR UPDATE` route to master data source only.
 1. Hint in Sharding-Proxy available.
-1. Make configuration of orchestration consistent between Sharding-JDBC and Sharding-Proxy.
+1. Make configuration of orchestration consistent between ShardingSphere-JDBC and Sharding-Proxy.
 1. Renew modified data sources only, not renew all the data sources.
 1. Vibrate configurable for Snowflake key generator.
 
@@ -120,7 +120,7 @@
 1. When master and slave dataSources exist, support executing `SELECT FOR UPDATE` on master dataSource.
 1. Support hint in Sharding-Proxy.
 1. Finish parsing DAL syntax for MySQL.
-1. Make configuration of orchestration compatible between Sharding-JDBC and Sharding-Proxy.
+1. Make configuration of orchestration compatible between ShardingSphere-JDBC and Sharding-Proxy.
 
 ### Bug Fixes
 
@@ -175,7 +175,7 @@ Merge all change logs of version 3.1.0.M1, 3.1.0, 3.1.0.1 and 4.0.0.M1. First ap
 ### API Changes
 
 1. Adjust persist structure for orchestration's registry center.
-1. Adjust Sharding-JDBC configuration API.
+1. Adjust ShardingSphere-JDBC configuration API.
 1. Change package and maven groupId form `io.shardingsphere` to `org.apache.shardingsphere`.
 1. Adjust spring-boot-starter.
 
@@ -230,7 +230,7 @@ Merge all change logs of version 3.1.0.M1, 3.1.0, 3.1.0.1 and 4.0.0.M1. First ap
 1. [ISSUE #1004](https://github.com/apache/shardingsphere/issues/1004) Properties can configure for Sharding and Master-slave independent
 1. [ISSUE #1205](https://github.com/apache/shardingsphere/issues/1205) Execute engine enhancement
 
-#### Sharding-JDBC
+#### ShardingSphere-JDBC
 
 1. [ISSUE #652](https://github.com/apache/shardingsphere/issues/652) Support `Spring Boot Starter` 2.X
 1. [ISSUE #702](https://github.com/apache/shardingsphere/issues/702) Support `$->{..}` for inline expression 
@@ -266,7 +266,7 @@ Merge all change logs of version 3.1.0.M1, 3.1.0, 3.1.0.1 and 4.0.0.M1. First ap
 1. [ISSUE #1186](https://github.com/apache/shardingsphere/issues/1186) Dead lock may occur on MEMORY_STRICTLY mode when get connection on concurrency environment
 1. [ISSUE #1265](https://github.com/apache/shardingsphere/issues/1265) RoundRobinMasterSlaveLoadBalanceAlgorithm throw an ArrayIndexOutOfBoundsException when AtomicInteger overflow
 
-#### Sharding-JDBC
+#### ShardingSphere-JDBC
 
 1. [ISSUE #372](https://github.com/apache/shardingsphere/issues/372) Reuse PreparedStatement cause cache of route result do not clean
 1. [ISSUE #629](https://github.com/apache/shardingsphere/issues/629) Support transaction isolation on JDBC
@@ -288,7 +288,7 @@ Merge all change logs of version 3.1.0.M1, 3.1.0, 3.1.0.1 and 4.0.0.M1. First ap
 1. [ISSUE #540](https://github.com/apache/shardingsphere/issues/540) Support SQL that alias is the keyword
 1. [ISSUE #577](https://github.com/apache/shardingsphere/issues/577) Support new line for `YAML` configuration
 
-#### Sharding-JDBC
+#### ShardingSphere-JDBC
 
 1. [ISSUE #522](https://github.com/apache/shardingsphere/issues/522) Slave database does not need to execute the DDL for read-write splitting
 
@@ -313,7 +313,7 @@ Merge all change logs of version 3.1.0.M1, 3.1.0, 3.1.0.1 and 4.0.0.M1. First ap
 1. [ISSUE #559](https://github.com/apache/shardingsphere/issues/559) Support parsing numbers beginning with minus and decimal (e.g. `-.12`)
 1. [ISSUE #567](https://github.com/apache/shardingsphere/issues/567) Add escape char for derived columns or alias when using MySQL
 
-#### Sharding-JDBC
+#### ShardingSphere-JDBC
 
 1. [ISSUE #520](https://github.com/apache/shardingsphere/issues/520) Exception is no longer `DuplicateKeyException` when the unique key conflict
 
@@ -330,7 +330,7 @@ Merge all change logs of version 3.1.0.M1, 3.1.0, 3.1.0.1 and 4.0.0.M1. First ap
 
 ### Bug Fixes
 
-#### Sharding-JDBC
+#### ShardingSphere-JDBC
 
 1. [ISSUE #489](https://github.com/apache/shardingsphere/issues/489) Uses `RuntimeBeanReference` to prevent the creation of `InnerBean` on spring namespace
 1. [ISSUE #491](https://github.com/apache/shardingsphere/issues/491) Can't close connection by `ResultSet.getStatement().getConnection().close()`
@@ -341,11 +341,11 @@ Merge all change logs of version 3.1.0.M1, 3.1.0, 3.1.0.1 and 4.0.0.M1. First ap
 ### Milestones
 
 1. API adjust. Brand new groupId and artifactId for `Maven`, package name and spring namespace name. Simplify and enhance API configuration, inline expression fully configuration support
-1. Support `spring-boot-starter` of `Sharding-JDBC`
+1. Support `spring-boot-starter` of `ShardingSphere-JDBC`
 1. Dynamic configuration. `ZooKeeper` and `etcd` can be used as registry to dynamically modify data sources and sharding configurations
 1. Database orchestration. Fusing database access procedures to access databases and disable access to slave databases
 1. ConfigMap support. Predefined metadata can be obtained in the sharding and read-write separation strategy
-1. Tracking system support. You can view the invocation chain of `Sharding-JDBC` through `sky-walking` and other `Opentracing` based APM systems
+1. Tracking system support. You can view the invocation chain of `ShardingSphere-JDBC` through `sky-walking` and other `Opentracing` based APM systems
 
 ### Enhancements
 
@@ -353,7 +353,7 @@ Merge all change logs of version 3.1.0.M1, 3.1.0, 3.1.0.1 and 4.0.0.M1. First ap
 
 1. [ISSUE #386](https://github.com/apache/shardingsphere/issues/386) Support SQL that does not contain table names, such as `SELECT 1`
 
-#### Sharding-JDBC
+#### ShardingSphere-JDBC
 
 1. [ISSUE #407](https://github.com/apache/shardingsphere/issues/407) Support Hyphen properties for `sharding-jdbc-spring-boot-starter`
 1. [ISSUE #424](https://github.com/apache/shardingsphere/issues/424) Providing SQL overall execution events
@@ -366,7 +366,7 @@ Merge all change logs of version 3.1.0.M1, 3.1.0, 3.1.0.1 and 4.0.0.M1. First ap
 1. [ISSUE #419](https://github.com/apache/shardingsphere/issues/419) When SQL is rewritten, it does not determine whether alias is a keyword without the escape character, which results in SQL exception
 1. [ISSUE #464](https://github.com/apache/shardingsphere/issues/464) SQL if the varchar type is not closed due to the absence of matching single quotes, and the next varchar in SQL is the wrong SQL of Chinese characters, it will lead to higher use of CPU
 
-#### Sharding-JDBC
+#### ShardingSphere-JDBC
 
 1. [ISSUE #394](https://github.com/apache/shardingsphere/issues/394) Can't only close statement
 1. [ISSUE #398](https://github.com/apache/shardingsphere/issues/398) Use Hint routing to shield case sensitivity 
@@ -641,7 +641,7 @@ Automatic generation key implementation, including
 1. [ISSUE #16](https://github.com/apache/shardingsphere/issues/16) For now a new connection pool is executed every time SQL is executed. Instead, each ShardingDataSource object should be changed to share a pool
 1. [ISSUE #18](https://github.com/apache/shardingsphere/issues/18) When query Count, getObject() throws Exception: Unsupported data type: Object
 1. [ISSUE #19](https://github.com/apache/shardingsphere/issues/19) In SUM and AVG functions, merger is not executed if aliases are not added, and null pointer exception fired if aliases are added
-1. [ISSUE #38](https://github.com/apache/shardingsphere/issues/38) The compatibility between JPA and Sharding-JDBC. JPA automatically add the column aliases of SELECT, resulting in ORDER BY obtaining ResultSet data only by aliases rather than column names
+1. [ISSUE #38](https://github.com/apache/shardingsphere/issues/38) The compatibility between JPA and ShardingSphere-JDBC. JPA automatically add the column aliases of SELECT, resulting in ORDER BY obtaining ResultSet data only by aliases rather than column names
 
 ## 1.0.0
 

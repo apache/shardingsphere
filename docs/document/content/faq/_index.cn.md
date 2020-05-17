@@ -9,7 +9,7 @@ chapter = true
 
 回答：
 
-在Sharding-Proxy以及Sharding-JDBC 1.5.0版本之后提供了`sql.show`的配置，可以将解析上下文和改写后的SQL以及最终路由至的数据源的细节信息全部打印至info日志。
+在Sharding-Proxy以及ShardingSphere-JDBC 1.5.0版本之后提供了`sql.show`的配置，可以将解析上下文和改写后的SQL以及最终路由至的数据源的细节信息全部打印至info日志。
 `sql.show`配置默认关闭，如果需要请通过配置开启。
 
 ## 2. 阅读源码时为什么会出现编译错误?

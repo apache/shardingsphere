@@ -371,7 +371,7 @@ props:
 schemaName: #逻辑数据源名称
 
 dataSources: #数据源配置，可配置多个data_source_name
-  <data_source_name>: #与Sharding-JDBC配置不同，无需配置数据库连接池
+  <data_source_name>: #与ShardingSphere-JDBC配置不同，无需配置数据库连接池
     url: #数据库url连接
     username: #数据库用户名
     password: #数据库密码
@@ -380,7 +380,7 @@ dataSources: #数据源配置，可配置多个data_source_name
     maxLifetimeMilliseconds: 1800000 #连接最大存活时间毫秒数
     maxPoolSize: 65 #最大连接数
 
-shardingRule: #省略数据分片配置，与Sharding-JDBC配置一致
+shardingRule: #省略数据分片配置，与ShardingSphere-JDBC配置一致
 ```
 
 ### 读写分离
@@ -390,7 +390,7 @@ schemaName: #逻辑数据源名称
 
 dataSources: #省略数据源配置，与数据分片一致
 
-masterSlaveRule: #省略读写分离配置，与Sharding-JDBC配置一致
+masterSlaveRule: #省略读写分离配置，与ShardingSphere-JDBC配置一致
 ```
 
 ### 数据脱敏
@@ -419,12 +419,12 @@ props:
 
 ### 治理
 
-与Sharding-JDBC配置一致。
+与ShardingSphere-JDBC配置一致。
 
 ### Proxy属性
 
 ```yaml
-#省略与Sharding-JDBC一致的配置属性
+#省略与ShardingSphere-JDBC一致的配置属性
 props:
   acceptor.size: #用于设置接收客户端请求的工作线程个数，默认为CPU核数*2
   proxy.transaction.type: #默认为LOCAL事务，允许LOCAL，XA，BASE三个值，XA采用Atomikos作为事务管理器，BASE类型需要拷贝实现ShardingTransactionManager的接口的jar包至lib目录中

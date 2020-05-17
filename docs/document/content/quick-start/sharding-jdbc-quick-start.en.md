@@ -1,6 +1,6 @@
 +++
 pre = "<b>2.1. </b>"
-title = "Sharding-JDBC"
+title = "ShardingSphere-JDBC"
 weight = 1
 +++
 
@@ -18,7 +18,7 @@ Notice: Please change `${latest.release.version}` to the actual version.
 
 ## 2. Sharding Rule Configuration
 
-Sharding-JDBC can be configured by four methods, `Java`, `YAML`, `Spring namespace` and `Spring boot starter`. Developers can choose the suitable method according to different situations. Please refer to [Configuration Manual](/en/manual/sharding-jdbc/configuration/) for more details.
+ShardingSphere-JDBC can be configured by four methods, `Java`, `YAML`, `Spring namespace` and `Spring boot starter`. Developers can choose the suitable method according to different situations. Please refer to [Configuration Manual](/en/manual/sharding-jdbc/configuration/) for more details.
 
 ## 3. Create DataSource
 

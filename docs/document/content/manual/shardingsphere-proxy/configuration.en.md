@@ -370,7 +370,7 @@ props:
 schemaName: #Logic data schema name
 
 dataSources: #Data source configuration, which can be multiple data_source_name
-  <data_source_name>: #Different from Sharding-JDBC configuration, it does not need to be configured with database connection pool
+  <data_source_name>: #Different from ShardingSphere-JDBC configuration, it does not need to be configured with database connection pool
     url: #Database url connection
     username: #Database username
     password: #Database password
@@ -379,7 +379,7 @@ dataSources: #Data source configuration, which can be multiple data_source_name
     maxLifetimeMilliseconds: 1800000 #Maximum lifetime
     maxPoolSize: 65 #Maximum connection number in the pool
 
-shardingRule: #Omit data sharding configuration and be consistent with Sharding-JDBC configuration
+shardingRule: #Omit data sharding configuration and be consistent with ShardingSphere-JDBC configuration
 ```
 
 ### Read-Write Split
@@ -389,7 +389,7 @@ schemaName: #Logic data schema name
 
 dataSources: #Omit data source configurations; keep it consistent with data sharding
 
-masterSlaveRule: #Omit data source configurations; keep it consistent with Sharding-JDBC
+masterSlaveRule: #Omit data source configurations; keep it consistent with ShardingSphere-JDBC
 ```
 
 ### Data Masking
@@ -418,12 +418,12 @@ props:
 
 ### Orchestration
 
-It is the same with Sharding-JDBC configuration.
+It is the same with ShardingSphere-JDBC configuration.
 
 ### Proxy Property
 
 ```yaml
-#Omit configurations that are the same with Sharding-JDBC
+#Omit configurations that are the same with ShardingSphere-JDBC
 props:
   acceptor.size: #The thread number of accept connection; default to be 2 times of cpu core
   proxy.transaction.type: #Support LOCAL, XA, BASE; Default is LOCAL transaction, for BASE type you should copy ShardingTransactionManager associated jar to lib directory

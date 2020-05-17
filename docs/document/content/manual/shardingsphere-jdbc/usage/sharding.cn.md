@@ -17,7 +17,7 @@ weight = 1
 
 ### 基于Java编码的规则配置
 
-Sharding-JDBC的分库分表通过规则配置描述，以下例子是根据user_id取模分库, 且根据order_id取模分表的两库两表的配置。
+ShardingSphere-JDBC的分库分表通过规则配置描述，以下例子是根据user_id取模分库, 且根据order_id取模分表的两库两表的配置。
 
 ```java
     // 配置真实数据源
@@ -175,7 +175,7 @@ spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.algorit
 
 #### 基于Spring boot + JNDI的规则配置
 
-如果您计划使用`Spring boot + JNDI`的方式，在应用容器（如Tomcat）中使用Sharding-JDBC时，可使用`spring.shardingsphere.datasource.${datasourceName}.jndiName`来代替数据源的一系列配置。
+如果您计划使用`Spring boot + JNDI`的方式，在应用容器（如Tomcat）中使用ShardingSphere-JDBC时，可使用`spring.shardingsphere.datasource.${datasourceName}.jndiName`来代替数据源的一系列配置。
 如：
 ```properties
 spring.shardingsphere.datasource.names=ds0,ds1

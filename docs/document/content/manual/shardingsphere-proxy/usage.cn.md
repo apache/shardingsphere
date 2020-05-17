@@ -38,7 +38,7 @@ weight = 1
 
 ## 分布式事务
 
-ShardingSphere-Proxy接入的分布式事务API同Sharding-JDBC保持一致，支持LOCAL，XA，BASE类型的事务。
+ShardingSphere-Proxy接入的分布式事务API同ShardingSphere-JDBC保持一致，支持LOCAL，XA，BASE类型的事务。
 
 ### XA事务
 

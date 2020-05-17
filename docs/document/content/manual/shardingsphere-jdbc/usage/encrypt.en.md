@@ -117,7 +117,7 @@ spring.shardingsphere.props.query.with.cipher.column=true
 
 #### Rule Configuration Based on Spring Boot + JNDI
 
-If you plan to use Sharding-JDBC in Application Server(such as Tomcat) with `Spring boot + JNDI`, `spring.shardingsphere.datasource.${datasourceName}.jndiName` can be used as an alternative to series of configuration of datasource. 
+If you plan to use ShardingSphere-JDBC in Application Server(such as Tomcat) with `Spring boot + JNDI`, `spring.shardingsphere.datasource.${datasourceName}.jndiName` can be used as an alternative to series of configuration of datasource. 
 For example:
 ```properties
 spring.shardingsphere.datasource.name=ds

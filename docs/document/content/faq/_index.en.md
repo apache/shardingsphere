@@ -9,7 +9,7 @@ chapter = true
 
 Answer:
 
-`sql.show` configuration is provided in Sharding-Proxy and post-1.5.0 version of Sharding-JDBC, enabling the context parsing, rewritten SQL and the routed data source printed to info log. `sql.show` configuration is off in default, and users can turn it on in configurations.
+`sql.show` configuration is provided in Sharding-Proxy and post-1.5.0 version of ShardingSphere-JDBC, enabling the context parsing, rewritten SQL and the routed data source printed to info log. `sql.show` configuration is off in default, and users can turn it on in configurations.
 
 ## 2. Why do some compiling errors appear?
 

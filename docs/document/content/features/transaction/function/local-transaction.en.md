@@ -14,4 +14,4 @@ weight = 1
 
 ## Support
 
-* Sharding-JDBC and Sharding-Proxy can innately support local transaction.
+* ShardingSphere-JDBC and Sharding-Proxy can innately support local transaction.

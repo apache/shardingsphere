@@ -161,7 +161,7 @@ spring.shardingsphere.props.sql.show=true
 
 #### Rule Configuration Based on Spring Boot + JNDI
 
-If you plan to use Sharding-JDBC in Application Server (such as Tomcat) with `Spring boot + JNDI`, `spring.shardingsphere.datasource.${datasourceName}.jndiName` can be used as an alternative to series of configuration of datasource. For example:
+If you plan to use ShardingSphere-JDBC in Application Server (such as Tomcat) with `Spring boot + JNDI`, `spring.shardingsphere.datasource.${datasourceName}.jndiName` can be used as an alternative to series of configuration of datasource. For example:
 ```properties
 spring.shardingsphere.datasource.names=master,slave0,slave1
 

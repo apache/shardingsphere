@@ -20,7 +20,7 @@
 
 ## 概述
 
-ShardingSphere是一套开源的分布式数据库中间件解决方案组成的生态圈，它由Sharding-JDBC、Sharding-Proxy和Sharding-Sidecar（计划中）这3款相互独立的产品组成。
+ShardingSphere是一套开源的分布式数据库中间件解决方案组成的生态圈，它由ShardingSphere-JDBC、Sharding-Proxy和Sharding-Sidecar（计划中）这3款相互独立的产品组成。
 他们均提供标准化的数据分片、分布式事务和数据库治理功能，可适用于如Java同构、异构语言、云原生等各种多样化的应用场景。
 
 ShardingSphere定位为关系型数据库中间件，旨在充分合理地在分布式的场景下利用关系型数据库的计算和存储能力，而并非实现一个全新的关系型数据库。
@@ -34,7 +34,7 @@ __Apache官方发布从4.0.0版本开始。__
 
 ![ShardingSphere Scope](https://shardingsphere.apache.org//document/current/img/shardingsphere-scope_cn.png)
 
-### Sharding-JDBC
+### ShardingSphere-JDBC
 
 [![Maven Status](https://maven-badges.herokuapp.com/maven-central/org.apache.shardingsphere/sharding-jdbc/badge.svg)](https://mvnrepository.com/artifact/org.apache.shardingsphere/sharding-jdbc)
 
@@ -45,7 +45,7 @@ __Apache官方发布从4.0.0版本开始。__
 * 支持任何第三方的数据库连接池，如：DBCP, C3P0, BoneCP, Druid, HikariCP等。
 * 支持任意实现JDBC规范的数据库。目前支持MySQL，Oracle，SQLServer，PostgreSQL以及任何遵循SQL92标准的数据库。
 
-![Sharding-JDBC Architecture](https://shardingsphere.apache.org//document/current/img/sharding-jdbc-brief.png)
+![ShardingSphere-JDBC Architecture](https://shardingsphere.apache.org//document/current/img/sharding-jdbc-brief.png)
 
 ### Sharding-Proxy
 
@@ -70,7 +70,7 @@ Database Mesh的关注重点在于如何将分布式的数据访问应用与数�
 
 ![Sharding-Sidecar Architecture](https://shardingsphere.apache.org//document/current/img/sharding-sidecar-brief_v2.png)
 
-|           | *Sharding-JDBC* | *Sharding-Proxy* | *Sharding-Sidecar* |
+|           | *ShardingSphere-JDBC* | *Sharding-Proxy* | *Sharding-Sidecar* |
 | --------- | --------------- | ---------------- | ------------------ |
 | 数据库     | 任意            | MySQL/PostgreSQL | MySQL/PostgreSQL   |
 | 连接消耗数 | 高              | 低               | 高                  |
@@ -81,10 +81,10 @@ Database Mesh的关注重点在于如何将分布式的数据访问应用与数�
 
 ### 混合架构
 
-Sharding-JDBC采用无中心化架构，适用于Java开发的高性能的轻量级OLTP应用；Sharding-Proxy提供静态入口以及异构语言的支持，适用于OLAP应用以及对分片数据库进行管理和运维的场景。
+ShardingSphere-JDBC采用无中心化架构，适用于Java开发的高性能的轻量级OLTP应用；Sharding-Proxy提供静态入口以及异构语言的支持，适用于OLAP应用以及对分片数据库进行管理和运维的场景。
 
 ShardingSphere是多接入端共同组成的生态圈。
-通过混合使用Sharding-JDBC和Sharding-Proxy，并采用同一注册中心统一配置分片策略，能够灵活的搭建适用于各种场景的应用系统，使得架构师更加自由的调整适合与当前业务的最佳系统架构。
+通过混合使用ShardingSphere-JDBC和Sharding-Proxy，并采用同一注册中心统一配置分片策略，能够灵活的搭建适用于各种场景的应用系统，使得架构师更加自由的调整适合与当前业务的最佳系统架构。
 
 ![ShardingSphere Hybrid Architecture](https://shardingsphere.apache.org//document/current/img/shardingsphere-hybrid.png)
 
@@ -126,7 +126,7 @@ ShardingSphere是多接入端共同组成的生态圈。
 构建产物：
 
 ```
-sharding-distribution/sharding-jdbc-distribution/target/apache-shardingsphere-${latest.release.version}-sharding-jdbc-bin.tar.gz: Sharding-JDBC的二进制包
+sharding-distribution/sharding-jdbc-distribution/target/apache-shardingsphere-${latest.release.version}-sharding-jdbc-bin.tar.gz: ShardingSphere-JDBC的二进制包
 sharding-distribution/sharding-proxy-distribution/target/apache-shardingsphere-${latest.release.version}-sharding-proxy-bin.tar.gz: Sharding-Proxy的二进制包
 sharding-distribution/shardingsphere-src-distribution/target/apache-shardingsphere-${latest.release.version}-src.zip: ShardingSphere的源码包
 ```
