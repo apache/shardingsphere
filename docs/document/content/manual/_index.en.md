@@ -5,6 +5,6 @@ weight = 4
 chapter = true
 +++
 
-This chapter describe ho to use projects of ShardingSphere: Sharding-JDBC, Sharding-Proxy and Sharding-Sidecar.
+This chapter describe ho to use projects of ShardingSphere: ShardingSphere-JDBC, ShardingSphere-Proxy and ShardingSphere-Sidecar.
 
 This chapter introduce the usage and configuration for the most recent version, currently 4.0.0.RC2.

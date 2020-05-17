@@ -23,7 +23,7 @@ Please refer to [SQL Parsing](/en/features/sharding/principle/parse/) for the in
 
 ### Database Protocol
 
-The database protocol interface is used to regulate parse and adapter protocol of database access for Sharding-Proxy.
+The database protocol interface is used to regulate parse and adapter protocol of database access for ShardingSphere-Proxy.
 
 Its main interface is `DatabaseProtocolFrontendEngine` and built-in implementation types are `MySQLProtocolFrontendEngine` and `PostgreSQLProtocolFrontendEngine`.
 

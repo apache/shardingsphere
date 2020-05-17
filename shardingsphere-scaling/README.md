@@ -12,24 +12,24 @@ Supplementary instruction about the figure:
 
 2. The process of migration splits into two steps, inventory data migration and incremental data synchronization.
 
-  - During inventory data migration, Sharding-Scaling use `select *` statement to acquire the data, and use `insert` statement to migrate the data to the target;
+  - During inventory data migration, ShardingSphere-Scaling use `select *` statement to acquire the data, and use `insert` statement to migrate the data to the target;
    
-  - During incremental data migration, Sharding-Scaling use binlog to migrate the data, and mark the binlog position before migration.
+  - During incremental data migration, ShardingSphere-Scaling use binlog to migrate the data, and mark the binlog position before migration.
 
-3. If the table in the source schema has primary key, Sharding-Scaling can migrate it concurrently using `where predication`.
+3. If the table in the source schema has primary key, ShardingSphere-Scaling can migrate it concurrently using `where predication`.
 
 ## Requirement
 
 MySQL: 5.1.15 ~ 5.7.x
 
-Sharding-Proxy: 3.x ~ 5.x
+ShardingSphere-Proxy: 3.x ~ 5.x
 
 ## How to Run
 
-Refer to the [Quick Start](https://shardingsphere.apache.org/document/current/en/quick-start/sharding-scaling-quick-start/)
+Refer to the [Quick Start](https://shardingsphere.apache.org/document/current/en/quick-start/shardingsphere-scaling-quick-start/)
 
 ## For more documents
 
-[Overview](https://shardingsphere.apache.org/document/current/en/features/sharding-scaling/)
+[Overview](https://shardingsphere.apache.org/document/current/en/features/shardingsphere-scaling/)
 
-[Principle](https://shardingsphere.apache.org/document/current/en/features/sharding-scaling/principle/)
+[Principle](https://shardingsphere.apache.org/document/current/en/features/shardingsphere-scaling/principle/)

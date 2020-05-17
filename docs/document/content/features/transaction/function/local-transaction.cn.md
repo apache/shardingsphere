@@ -14,4 +14,4 @@ weight = 1
 
 ## 支持情况
 
-* Sharding-JDBC和Sharding-Proxy原生支持本地事务
+* ShardingSphere-JDBC和ShardingSphere-Proxy原生支持本地事务

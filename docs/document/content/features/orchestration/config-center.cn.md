@@ -16,7 +16,7 @@ weight = 1
 
 ```
 config
-    ├──authentication                            # Sharding-Proxy权限配置
+    ├──authentication                            # ShardingSphere-Proxy权限配置
     ├──props                                     # 属性配置
     ├──schema                                    # Schema配置
     ├      ├──sharding_db                        # SchemaName配置
@@ -36,7 +36,7 @@ username: root
 
 ### config/sharding/props
 
-相对于sharding-sphere配置里面的Sharding Properties。
+相对于shardingsphere配置里面的Sharding Properties。
 
 ```yaml
 executor.size: 20
