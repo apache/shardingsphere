@@ -29,7 +29,7 @@
     <modules>
         <module>example-core</module>
         <module>shardingsphere-jdbc-example</module>
-        <module>sharding-proxy-example</module>
+        <module>shardingsphere-proxy-example</module>
     </modules>
     
     <properties>

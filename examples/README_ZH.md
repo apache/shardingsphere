@@ -54,7 +54,7 @@ shardingsphere-example
   │   ├── example-raw-jdbc
   │   ├── example-spring-jpa
   │   └── example-spring-mybatis
-  ├── sharding-jdbc-example
+  ├── shardingsphere-jdbc-example
   │   ├── sharding-example
   │   │   ├── sharding-raw-jdbc-example
   │   │   ├── sharding-spring-boot-jpa-example
@@ -71,8 +71,9 @@ shardingsphere-example
   │   ├── other-feature-example
   │   │   ├── hint-example
   │   │   └── encrypt-example
-  ├── sharding-proxy-example
-  │   └── sharding-proxy-boot-mybatis-example
+  ├── shardingsphere-proxy-example
+  │   ├── shardingsphere-proxy-boot-mybatis-example
+  │   └── shardingsphere-proxy-hint-example
   └── src/resources
         └── manual_schema.sql
 ```
