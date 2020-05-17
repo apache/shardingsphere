@@ -22,7 +22,7 @@ If users want to use the database orchestration function of ShardingSphere-Proxy
 
 ### Other Third Party Registry Center
 
-1. Delete`sharding-orchestration-reg-zookeeper-curator-${shardingsphere.version}.jar` under the lib catalog of ShardingSphere-Proxy.
+1. Delete`shardingsphere-orchestration-reg-zookeeper-curator-${shardingsphere.version}.jar` under the lib catalog of ShardingSphere-Proxy.
 2. Use SPI methods in logic coding and put the generated jar package to the lib catalog of ShardingSphere-Proxy.
 3. Follow [Configuration Rules](/en/manual/shardingsphere-proxy/configuration/) to set the registry center and use it.
 

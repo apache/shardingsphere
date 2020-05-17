@@ -23,7 +23,7 @@ weight = 1
 
 ### 其他第三方注册中心
 
-1. 将ShardingSphere-Proxy的lib目录下的`sharding-orchestration-reg-zookeeper-curator-${shardingsphere.version}.jar`文件删除。
+1. 将ShardingSphere-Proxy的lib目录下的`shardingsphere-orchestration-reg-zookeeper-curator-${shardingsphere.version}.jar`文件删除。
 1. 使用SPI方式实现相关逻辑编码，并将生成的jar包放到ShardingSphere-Proxy的lib目录下。
 1. 按照[配置规则](/cn/manual/shardingsphere-proxy/configuration/)进行注册中心的配置，即可使用。
 
