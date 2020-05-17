@@ -56,7 +56,7 @@ shardingsphere-example
   │   ├── example-spring-jpa
   │   └── example-spring-mybatis
   ├── shardingsphere-jdbc-example
-  │   ├── shardingsphere-example
+  │   ├── sharding-example
   │   │   ├── sharding-raw-jdbc-example
   │   │   ├── sharding-spring-boot-jpa-example
   │   │   ├── sharding-spring-boot-mybatis-example
@@ -87,7 +87,7 @@ shardingsphere-example
 * master-slave
 * sharding & master-slave
 
-You can get more detail from **[shardingsphere-example](shardingsphere-jdbc-example/shardingsphere-example)**
+You can get more detail from **[shardingsphere-example](shardingsphere-jdbc-example/sharding-example)**
 
 ### Best practice for sharding + orchestration
 

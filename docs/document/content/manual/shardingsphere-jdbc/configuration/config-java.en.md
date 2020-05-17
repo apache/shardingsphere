@@ -5,8 +5,6 @@ weight = 1
 
 ## Configuration Instance
 
-The implementation of DataSource in the following configuration is [DataSourceUtil](https://github.com/geomonlin/shardingsphere-example/blob/4.0.0-RC2/example-core/example-api/src/main/java/org/apache/shardingsphere/example/core/api/DataSourceUtil.java)，The ModuloShardingTableAlgorithm class needs user-defined. For a detailed example [ModuloShardingTableAlgorithm](https://github.com/geomonlin/incubator-shardingsphere-example/tree/dev/example-core/config-utility/src/main/java/org/apache/shardingsphere/example/algorithm) 
-
 ### Data Sharding
 
 ```java

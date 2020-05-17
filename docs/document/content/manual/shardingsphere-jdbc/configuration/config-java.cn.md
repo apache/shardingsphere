@@ -5,9 +5,7 @@ weight = 1
 
 ## 配置示例
 
-### 数据分片
-
-以下配置中DataSourceUtil的实现为[DataSourceUtil](https://github.com/geomonlin/incubator-shardingsphere-example/blob/4.0.0-RC2/example-core/example-api/src/main/java/org/apache/shardingsphere/example/core/api/DataSourceUtil.java)，ModuloShardingTableAlgorithm 类需用户自定义实现，详细例子 [ModuloShardingTableAlgorithm](https://github.com/geomonlin/shardingsphere-example/tree/dev/example-core/config-utility/src/main/java/org/apache/shardingsphere/example/algorithm) 
+### 数据分片 
 
 ```java
      DataSource getShardingDataSource() throws SQLException {
