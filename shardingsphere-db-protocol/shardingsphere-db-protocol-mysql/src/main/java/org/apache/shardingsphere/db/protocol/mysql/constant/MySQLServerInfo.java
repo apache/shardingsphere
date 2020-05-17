@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Sharding-Proxy's information for MySQL.
+ * ShardingSphere-Proxy's information for MySQL.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLServerInfo {
@@ -34,7 +34,7 @@ public final class MySQLServerInfo {
     /**
      * Server version.
      */
-    public static final String SERVER_VERSION = "5.6.4-Sharding-Proxy 5.0.0-RC1";
+    public static final String SERVER_VERSION = "5.6.4-ShardingSphere-Proxy 5.0.0-RC1";
     
     /**
      * Charset code 0x21 is utf8_general_ci.

@@ -38,12 +38,12 @@ import org.apache.shardingsphere.proxy.backend.executor.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.frontend.netty.ServerHandlerInitializer;
 
 /**
- * Sharding-Proxy.
+ * ShardingSphere-Proxy.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingProxy {
+public final class ShardingSphereProxy {
     
-    private static final ShardingProxy INSTANCE = new ShardingProxy();
+    private static final ShardingSphereProxy INSTANCE = new ShardingSphereProxy();
     
     private EventLoopGroup bossGroup;
     
@@ -54,12 +54,12 @@ public final class ShardingProxy {
      *
      * @return instance of proxy context.
      */
-    public static ShardingProxy getInstance() {
+    public static ShardingSphereProxy getInstance() {
         return INSTANCE;
     }
     
     /**
-     * Start Sharding-Proxy.
+     * Start ShardingSphere-Proxy.
      *
      * @param port port
      */

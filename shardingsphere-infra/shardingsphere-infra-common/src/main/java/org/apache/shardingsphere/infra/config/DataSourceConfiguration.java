@@ -151,7 +151,7 @@ public final class DataSourceConfiguration {
     }
 
     /**
-     * Add alias to share configuration with sharding-jdbc.
+     * Add alias to share configuration.
      *
      * @param alias alias for configuration
      */

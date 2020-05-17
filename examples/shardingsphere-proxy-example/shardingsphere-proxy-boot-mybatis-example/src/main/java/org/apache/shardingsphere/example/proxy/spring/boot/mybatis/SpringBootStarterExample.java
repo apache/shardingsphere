@@ -27,10 +27,10 @@ import org.springframework.context.annotation.ComponentScan;
 import java.sql.SQLException;
 
 /*
- * 1. Copy resources/conf/*.yaml to sharding-proxy conf folder and overwrite original file.
+ * 1. Copy resources/conf/*.yaml to ShardingSphere-Proxy conf folder and overwrite original file.
  *    If you want to use master-slave, please select config-master_slave.yaml
  *    If you want to use sharding only, please select config-sharding.yaml
- * 2. Please make sure sharding-proxy is running before you run this example.
+ * 2. Please make sure ShardingSphere-Proxy is running before you run this example.
  */
 @ComponentScan("org.apache.shardingsphere.example")
 @MapperScan(basePackages = "org.apache.shardingsphere.example.core.mybatis.repository")
