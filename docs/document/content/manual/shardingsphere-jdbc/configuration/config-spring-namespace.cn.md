@@ -8,7 +8,7 @@ weight = 4
 行表达式标识符可以使用`${...}`或`$->{...}`，但前者与Spring本身的属性文件占位符冲突，因此在Spring环境中使用行表达式标识符建议使用`$->{...}`。
 
 ## 配置示例
-详细example: [shardingsphere-example](https://github.com/apache/shardingsphere-example/tree/dev/shardingsphere-jdbc-example/shardingsphere-example/sharding-spring-namespace-jpa-example/src/main/resources/META-INF)
+example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/master/examples/shardingsphere-jdbc-example/sharding-example/sharding-spring-namespace-jpa-example)
 ### 数据分片
 
 ```xml

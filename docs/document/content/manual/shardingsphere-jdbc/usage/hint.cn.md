@@ -123,4 +123,5 @@ try (
 ```
 
 ### example
-[hint-example](https://github.com/apache/shardingsphere-example/tree/4.0.0-RC2/sharding-jdbc-example/other-feature-example/hint-example)
+
+[hint-example](https://github.com/apache/shardingsphere/tree/master/examples/shardingsphere-jdbc-example/other-feature-example/hint-example)
