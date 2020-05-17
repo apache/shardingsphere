@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.proxy.context.ShardingProxyContext;
+import org.apache.shardingsphere.proxy.context.ShardingSphereProxyContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
@@ -46,7 +46,7 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     
-    private static final ShardingProxyContext SHARDING_PROXY_CONTEXT = ShardingProxyContext.getInstance();
+    private static final ShardingSphereProxyContext SHARDING_PROXY_CONTEXT = ShardingSphereProxyContext.getInstance();
     
     private final ShardingSphereSchema schema;
     
@@ -68,7 +68,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     
     @Override
     public ExecuteGroupEngine getExecuteGroupEngine() {
-        int maxConnectionsSizePerQuery = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        int maxConnectionsSizePerQuery = ShardingSphereProxyContext.getInstance().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new StatementExecuteGroupEngine(maxConnectionsSizePerQuery, schema.getRules());
     }
     

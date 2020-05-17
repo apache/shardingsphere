@@ -31,7 +31,7 @@ import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.schema.ShardingSphereSchemas;
-import org.apache.shardingsphere.proxy.context.ShardingProxyContext;
+import org.apache.shardingsphere.proxy.context.ShardingSphereProxyContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
@@ -70,8 +70,8 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     public BackendResponse execute() {
         try {
             ExecutionContext executionContext = executeEngine.getJdbcExecutorWrapper().route(sql);
-            if (ShardingProxyContext.getInstance().getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
-                SQLLogger.logSQL(sql, ShardingProxyContext.getInstance().getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
+            if (ShardingSphereProxyContext.getInstance().getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
+                SQLLogger.logSQL(sql, ShardingSphereProxyContext.getInstance().getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
             }
             return execute(executionContext);
         } catch (final SQLException ex) {
@@ -129,7 +129,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private MergedResult mergeQuery(final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         MergeEngine mergeEngine = new MergeEngine(ShardingSphereSchemas.getInstance().getDatabaseType(), 
-                schema.getMetaData().getSchema().getConfiguredSchemaMetaData(), ShardingProxyContext.getInstance().getProperties(), schema.getRules());
+                schema.getMetaData().getSchema().getConfiguredSchemaMetaData(), ShardingSphereProxyContext.getInstance().getProperties(), schema.getRules());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     

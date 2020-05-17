@@ -23,7 +23,7 @@ import org.apache.shardingsphere.proxy.backend.MockShardingSphereSchemasUtil;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
-import org.apache.shardingsphere.proxy.context.ShardingProxyContext;
+import org.apache.shardingsphere.proxy.context.ShardingSphereProxyContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,7 +50,7 @@ public final class ShowDatabasesBackendHandlerTest {
         MockShardingSphereSchemasUtil.setSchemas("schema", 5);
         BackendConnection backendConnection = mock(BackendConnection.class);
         when(backendConnection.getUserName()).thenReturn("root");
-        ShardingProxyContext.getInstance().init(getAuthentication(), new Properties());
+        ShardingSphereProxyContext.getInstance().init(getAuthentication(), new Properties());
         showDatabasesBackendHandler = new ShowDatabasesBackendHandler(backendConnection);
     }
     

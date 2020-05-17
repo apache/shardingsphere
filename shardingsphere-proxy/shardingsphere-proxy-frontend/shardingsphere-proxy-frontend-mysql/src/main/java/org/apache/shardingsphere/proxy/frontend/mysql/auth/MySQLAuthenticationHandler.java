@@ -24,7 +24,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.infra.auth.ProxyUser;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
-import org.apache.shardingsphere.proxy.context.ShardingProxyContext;
+import org.apache.shardingsphere.proxy.context.ShardingSphereProxyContext;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,7 +37,7 @@ import java.util.Optional;
 @Getter
 public final class MySQLAuthenticationHandler {
     
-    private static final ShardingProxyContext SHARDING_PROXY_CONTEXT = ShardingProxyContext.getInstance();
+    private static final ShardingSphereProxyContext SHARDING_PROXY_CONTEXT = ShardingSphereProxyContext.getInstance();
     
     private final MySQLAuthPluginData authPluginData = new MySQLAuthPluginData();
     

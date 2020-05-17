@@ -34,7 +34,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class ShardingProxyContextTest {
+public final class ShardingSphereProxyContextTest {
     
     @Test
     public void assertInit() {
@@ -44,10 +44,10 @@ public final class ShardingProxyContextTest {
         Properties props = new Properties();
         props.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString());
         props.setProperty(ConfigurationPropertyKey.PROXY_TRANSACTION_TYPE.getKey(), "BASE");
-        ShardingProxyContext.getInstance().init(authentication, props);
-        assertThat(ShardingProxyContext.getInstance().getAuthentication(), is(authentication));
-        assertTrue(ShardingProxyContext.getInstance().getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
-        assertThat(ShardingProxyContext.getInstance().getProperties().getValue(ConfigurationPropertyKey.PROXY_TRANSACTION_TYPE), is("BASE"));
+        ShardingSphereProxyContext.getInstance().init(authentication, props);
+        assertThat(ShardingSphereProxyContext.getInstance().getAuthentication(), is(authentication));
+        assertTrue(ShardingSphereProxyContext.getInstance().getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
+        assertThat(ShardingSphereProxyContext.getInstance().getProperties().getValue(ConfigurationPropertyKey.PROXY_TRANSACTION_TYPE), is("BASE"));
     }
     
     @Test
@@ -55,12 +55,12 @@ public final class ShardingProxyContextTest {
         ProxyUser proxyUser = new ProxyUser("root", Collections.singleton("db1"));
         Authentication authentication = new Authentication();
         authentication.getUsers().put("root", proxyUser);
-        ShardingProxyContext.getInstance().init(authentication, new Properties());
-        assertTrue(ShardingProxyContext.getInstance().getProperties().getProps().isEmpty());
+        ShardingSphereProxyContext.getInstance().init(authentication, new Properties());
+        assertTrue(ShardingSphereProxyContext.getInstance().getProperties().getProps().isEmpty());
         Properties props = new Properties();
         props.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString());
         ShardingOrchestrationEventBus.getInstance().post(new PropertiesChangedEvent(props));
-        assertFalse(ShardingProxyContext.getInstance().getProperties().getProps().isEmpty());
+        assertFalse(ShardingSphereProxyContext.getInstance().getProperties().getProps().isEmpty());
     }
     
     @Test
@@ -68,18 +68,18 @@ public final class ShardingProxyContextTest {
         ProxyUser proxyUser = new ProxyUser("root", Collections.singleton("db1"));
         Authentication authentication = new Authentication();
         authentication.getUsers().put("root", proxyUser);
-        ShardingProxyContext.getInstance().init(authentication, new Properties());
+        ShardingSphereProxyContext.getInstance().init(authentication, new Properties());
         ShardingOrchestrationEventBus.getInstance().post(new AuthenticationChangedEvent(authentication));
-        assertThat(ShardingProxyContext.getInstance().getAuthentication().getUsers().keySet().iterator().next(), is("root"));
-        assertThat(ShardingProxyContext.getInstance().getAuthentication().getUsers().get("root").getPassword(), is("root"));
-        assertThat(ShardingProxyContext.getInstance().getAuthentication().getUsers().get("root").getAuthorizedSchemas().iterator().next(), is("db1"));
+        assertThat(ShardingSphereProxyContext.getInstance().getAuthentication().getUsers().keySet().iterator().next(), is("root"));
+        assertThat(ShardingSphereProxyContext.getInstance().getAuthentication().getUsers().get("root").getPassword(), is("root"));
+        assertThat(ShardingSphereProxyContext.getInstance().getAuthentication().getUsers().get("root").getAuthorizedSchemas().iterator().next(), is("db1"));
     }
     
     @Test
     public void assertRenewCircuitState() {
-        assertFalse(ShardingProxyContext.getInstance().isCircuitBreak());
+        assertFalse(ShardingSphereProxyContext.getInstance().isCircuitBreak());
         ShardingOrchestrationEventBus.getInstance().post(new CircuitStateChangedEvent(true));
-        assertTrue(ShardingProxyContext.getInstance().isCircuitBreak());
+        assertTrue(ShardingSphereProxyContext.getInstance().isCircuitBreak());
         ShardingOrchestrationEventBus.getInstance().post(new CircuitStateChangedEvent(false));
     }
 }

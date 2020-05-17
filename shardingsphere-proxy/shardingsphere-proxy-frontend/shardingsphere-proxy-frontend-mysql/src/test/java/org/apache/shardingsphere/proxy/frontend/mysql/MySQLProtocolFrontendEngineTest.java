@@ -28,7 +28,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.context.ShardingProxyContext;
+import org.apache.shardingsphere.proxy.context.ShardingSphereProxyContext;
 import org.apache.shardingsphere.proxy.frontend.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.mysql.auth.MySQLAuthenticationEngine;
 import org.junit.Before;
@@ -121,9 +121,9 @@ public final class MySQLProtocolFrontendEngineTest {
     private void setAuthentication(final ProxyUser proxyUser) {
         Authentication authentication = new Authentication();
         authentication.getUsers().put("root", proxyUser);
-        Field field = ShardingProxyContext.class.getDeclaredField("authentication");
+        Field field = ShardingSphereProxyContext.class.getDeclaredField("authentication");
         field.setAccessible(true);
-        field.set(ShardingProxyContext.getInstance(), authentication);
+        field.set(ShardingSphereProxyContext.getInstance(), authentication);
     }
     
     @SneakyThrows
