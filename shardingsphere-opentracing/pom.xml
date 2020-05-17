@@ -23,7 +23,7 @@
         <artifactId>shardingsphere</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-opentracing</artifactId>
+    <artifactId>shardingsphere-opentracing</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>

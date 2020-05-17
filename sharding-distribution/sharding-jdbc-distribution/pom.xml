@@ -170,7 +170,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-opentracing</artifactId>
+            <artifactId>shardingsphere-opentracing</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
