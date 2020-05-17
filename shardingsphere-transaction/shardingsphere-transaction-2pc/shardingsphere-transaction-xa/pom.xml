@@ -30,6 +30,7 @@
     <modules>
         <module>shardingsphere-transaction-xa-spi</module>
         <module>shardingsphere-transaction-xa-core</module>
+        
         <module>shardingsphere-transaction-xa-atomikos</module>
         <module>shardingsphere-transaction-xa-narayana</module>
         <module>shardingsphere-transaction-xa-bitronix</module>

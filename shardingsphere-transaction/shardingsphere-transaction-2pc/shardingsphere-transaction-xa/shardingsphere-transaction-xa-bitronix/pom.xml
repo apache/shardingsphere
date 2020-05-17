@@ -25,11 +25,6 @@
     </parent>
     <artifactId>shardingsphere-transaction-xa-bitronix</artifactId>
     <name>${project.artifactId}</name>
-    <packaging>pom</packaging>
-    
-    <modules>
-        <module>shardingsphere-transaction-xa-bitronix-manager</module>
-    </modules>
     
     <dependencies>
         <dependency>
@@ -37,10 +32,10 @@
             <artifactId>shardingsphere-transaction-xa-spi</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
         <dependency>
             <groupId>org.codehaus.btm</groupId>
             <artifactId>btm</artifactId>
         </dependency>
     </dependencies>
 </project>
-
