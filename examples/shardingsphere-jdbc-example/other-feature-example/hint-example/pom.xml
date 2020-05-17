@@ -26,7 +26,7 @@
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>hint-example</artifactId>
-    <name>Example::hint::root</name>
+    <name>${project.artifactId}</name>
     
     <packaging>pom</packaging>
     

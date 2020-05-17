@@ -26,7 +26,7 @@
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-proxy-boot-mybatis-example</artifactId>
-    <name>Example::proxy::spring-boot-mybatis</name>
+    <name>${project.artifactId}</name>
     
     <dependencies>
         <dependency>
@@ -34,7 +34,7 @@
             <artifactId>example-spring-mybatis</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+        
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>

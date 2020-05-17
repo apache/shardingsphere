@@ -26,7 +26,7 @@
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>encrypt-spring-namespace-example</artifactId>
-    <name>Example::encrypt::spring-namespace</name>
+    <name>${project.artifactId}</name>
     
     <dependencies>
         <dependency>
