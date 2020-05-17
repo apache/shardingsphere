@@ -29,17 +29,17 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-orchestration-core-facade</artifactId>
+            <artifactId>shardingsphere-orchestration-core-facade</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-orchestration-center-api</artifactId>
+            <artifactId>shardingsphere-orchestration-center-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-orchestration-center-configuration</artifactId>
+            <artifactId>shardingsphere-orchestration-center-configuration</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
