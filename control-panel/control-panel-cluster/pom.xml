@@ -29,6 +29,6 @@
     
     <modules>
         <module>control-panel-cluster-state</module>
-        <module>control-panel-cluster-heartbeat</module>
+        <module>shardingsphere-control-panel-cluster-heartbeat</module>
     </modules>
 </project>
