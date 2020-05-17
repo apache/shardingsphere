@@ -25,7 +25,7 @@
         <groupId>org.apache.shardingsphere</groupId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>control-panel-core</artifactId>
+    <artifactId>shardingsphere-control-panel-core</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>

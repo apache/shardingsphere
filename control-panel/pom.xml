@@ -30,7 +30,7 @@
     <packaging>pom</packaging>
     
     <modules>
-        <module>control-panel-core</module>
+        <module>shardingsphere-control-panel-core</module>
         <module>control-panel-cluster</module>
     </modules>
 </project>
