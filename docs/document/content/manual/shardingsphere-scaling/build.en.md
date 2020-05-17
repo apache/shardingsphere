@@ -6,7 +6,7 @@ weight = 1
 
 ## Build&Deployment
 
-1. Execute the following command to compile and generate the sharding-scaling binary package:
+1. Execute the following command to compile and generate the ShardingSphere-Scaling binary package:
 
 ```
 git clone https://github.com/apache/shardingsphere.git；
@@ -14,7 +14,7 @@ cd shardingsphere;
 mvn clean install -Prelease;
 ```
 
-The binary package's directory is:`/sharding-distribution/sharding-scaling-distribution/target/apache-shardingsphere-${latest.release.version}-sharding-scaling-bin.tar.gz`。
+The binary package's directory is:`/shardingsphere-distribution/shardingsphere-scaling-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-scaling-bin.tar.gz`。
 
 2. Unzip the distribution package, modify the configuration file `conf/server.yaml`, we should ensure the port does not conflict with others, and other values can be left as default:
 
@@ -25,7 +25,7 @@ pushTimeout: 1000
 workerThread: 30
 ```
 
-3. start up sharding-scaling:
+3. Start up ShardingSphere-Scaling:
 
 ```
 sh bin/start.sh
@@ -45,19 +45,19 @@ response:
 {"success":true,"errorCode":0,"errorMsg":null,"model":[]}
 ```
 
-## Shutdown Sharding-Scaling
+## Shutdown ShardingSphere-Scaling
    
  ```
  sh bin/stop.sh
  ```
  
-## # Configuration
+## Configuration
 
  The existing configuration items are as follows, We can modify them in `conf/server.yaml`：
  
-| Name           | Description                                                  | Default value |
-| -------------- | ------------------------------------------------------------ | ------------- |
-| port           | Listening port of HTTP server                                | 8888          |
-| blockQueueSize | Queue size of data transmission channel                      | 10000         |
-| pushTimeout    | Data push timeout(ms)                                        | 1000          |
+| Name           | Description                                                                               | Default value |
+| -------------- | ----------------------------------------------------------------------------------------- | ------------- |
+| port           | Listening port of HTTP server                                                             | 8888          |
+| blockQueueSize | Queue size of data transmission channel                                                   | 10000         |
+| pushTimeout    | Data push timeout(ms)                                                                     | 1000          |
 | workerThread   | Worker thread pool size, the number of migration task threads allowed to run concurrently | 30            |
