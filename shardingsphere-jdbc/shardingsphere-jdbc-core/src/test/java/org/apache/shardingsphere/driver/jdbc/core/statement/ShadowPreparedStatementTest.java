@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
-import org.apache.shardingsphere.driver.common.base.AbstractShadowJDBCDatabaseAndTableTest;
+import org.apache.shardingsphere.driver.common.base.AbstractShardingSphereDataSourceForShadowTest;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.junit.After;
 import org.junit.Before;
@@ -33,7 +33,7 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class ShadowPreparedStatementTest extends AbstractShadowJDBCDatabaseAndTableTest {
+public final class ShadowPreparedStatementTest extends AbstractShardingSphereDataSourceForShadowTest {
     
     private static final String INSERT_SQL = "INSERT INTO t_encrypt (id, cipher_pwd, plain_pwd, shadow) VALUES (?, ?, ?, ?)";
     

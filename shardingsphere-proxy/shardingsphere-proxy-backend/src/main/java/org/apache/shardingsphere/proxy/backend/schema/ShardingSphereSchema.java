@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.log.ConfigurationLogger;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.proxy.backend.executor.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
-import org.apache.shardingsphere.proxy.context.ShardingProxyContext;
+import org.apache.shardingsphere.proxy.context.ShardingSphereProxyContext;
 import org.apache.shardingsphere.proxy.util.DataSourceConverter;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
@@ -106,7 +106,7 @@ public final class ShardingSphereSchema {
     
     private RuleSchemaMetaData loadRuleSchemaMetaData(final DatabaseType databaseType, final Collection<ShardingSphereRule> rules) throws SQLException {
         ExecutorKernel executorKernel = BackendExecutorContext.getInstance().getExecutorKernel();
-        return new RuleSchemaMetaDataLoader(rules).load(databaseType, getBackendDataSource().getDataSources(), ShardingProxyContext.getInstance().getProperties(),
+        return new RuleSchemaMetaDataLoader(rules).load(databaseType, getBackendDataSource().getDataSources(), ShardingSphereProxyContext.getInstance().getProperties(),
                 executorKernel.getExecutorService().getExecutorService());
     }
     
@@ -214,6 +214,6 @@ public final class ShardingSphereSchema {
     
     private Optional<TableMetaData> loadTableMetaData(final String tableName) throws SQLException {
         RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(getRules());
-        return loader.load(ShardingSphereSchemas.getInstance().getDatabaseType(), getBackendDataSource().getDataSources(), tableName, ShardingProxyContext.getInstance().getProperties());
+        return loader.load(ShardingSphereSchemas.getInstance().getDatabaseType(), getBackendDataSource().getDataSources(), tableName, ShardingSphereProxyContext.getInstance().getProperties());
     }
 }

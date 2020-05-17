@@ -32,7 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractShadowJDBCDatabaseAndTableTest extends AbstractSQLTest {
+public abstract class AbstractShardingSphereDataSourceForShadowTest extends AbstractSQLTest {
     
     private static ShardingSphereDataSource shadowDataSource;
     
@@ -54,7 +54,7 @@ public abstract class AbstractShadowJDBCDatabaseAndTableTest extends AbstractSQL
     
     private static File getFile(final String fileName) {
         return new File(Preconditions.checkNotNull(
-                AbstractMasterSlaveJDBCTest.class.getClassLoader().getResource(fileName), "file resource `%s` must not be null.", fileName).getFile());
+                AbstractShardingSphereDataSourceForShadowTest.class.getClassLoader().getResource(fileName), "file resource `%s` must not be null.", fileName).getFile());
     }
     
     protected final ShardingSphereDataSource getShadowDataSource() {

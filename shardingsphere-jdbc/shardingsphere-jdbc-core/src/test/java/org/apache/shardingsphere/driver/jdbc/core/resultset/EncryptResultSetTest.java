@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
-import org.apache.shardingsphere.driver.common.base.AbstractEncryptJDBCDatabaseAndTableTest;
+import org.apache.shardingsphere.driver.common.base.AbstractShardingSphereDataSourceForEncryptTest;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -30,7 +30,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @Ignore
-public final class EncryptResultSetTest extends AbstractEncryptJDBCDatabaseAndTableTest {
+public final class EncryptResultSetTest extends AbstractShardingSphereDataSourceForEncryptTest {
     
     private static final String SELECT_SQL_TO_ASSERT = "SELECT id, cipher_pwd, plain_pwd FROM t_encrypt";
     

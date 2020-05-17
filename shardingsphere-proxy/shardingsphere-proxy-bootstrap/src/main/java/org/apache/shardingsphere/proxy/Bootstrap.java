@@ -34,7 +34,7 @@ import org.apache.shardingsphere.proxy.config.ShardingConfigurationLoader;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
-import org.apache.shardingsphere.proxy.context.ShardingProxyContext;
+import org.apache.shardingsphere.proxy.context.ShardingSphereProxyContext;
 import org.apache.shardingsphere.proxy.frontend.bootstrap.ShardingSphereProxy;
 import org.apache.shardingsphere.proxy.util.DataSourceConverter;
 import org.apache.shardingsphere.infra.auth.Authentication;
@@ -133,7 +133,7 @@ public final class Bootstrap {
     private static void logAndInitContext(final Authentication authentication, final Properties properties) {
         ConfigurationLogger.log(authentication);
         ConfigurationLogger.log(properties);
-        ShardingProxyContext.getInstance().init(authentication, properties);
+        ShardingSphereProxyContext.getInstance().init(authentication, properties);
     }
 
     private static void startProxy(final Collection<String> shardingSchemaNames, final int port, final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources,
@@ -178,13 +178,13 @@ public final class Bootstrap {
     }
     
     private static void initOpenTracing() {
-        if (ShardingProxyContext.getInstance().getProperties().<Boolean>getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED)) {
+        if (ShardingSphereProxyContext.getInstance().getProperties().<Boolean>getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED)) {
             ShardingTracer.init();
         }
     }
     
     private static void initMetrics(final YamlMetricsConfiguration metricsConfiguration) {
-        if (ShardingProxyContext.getInstance().getProperties().<Boolean>getValue(ConfigurationPropertyKey.PROXY_METRICS_ENABLED)) {
+        if (ShardingSphereProxyContext.getInstance().getProperties().<Boolean>getValue(ConfigurationPropertyKey.PROXY_METRICS_ENABLED)) {
             MetricsTrackerFacade.getInstance().init(new MetricsConfigurationYamlSwapper().swap(metricsConfiguration));
         }
     }

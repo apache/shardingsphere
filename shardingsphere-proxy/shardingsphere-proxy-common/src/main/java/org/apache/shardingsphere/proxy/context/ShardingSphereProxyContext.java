@@ -33,9 +33,9 @@ import java.util.Properties;
  * Context of ShardingSphere-Proxy.
  */
 @Getter
-public final class ShardingProxyContext {
+public final class ShardingSphereProxyContext {
     
-    private static final ShardingProxyContext INSTANCE = new ShardingProxyContext();
+    private static final ShardingSphereProxyContext INSTANCE = new ShardingSphereProxyContext();
     
     private ConfigurationProperties properties = new ConfigurationProperties(new Properties());
     
@@ -43,7 +43,7 @@ public final class ShardingProxyContext {
     
     private boolean isCircuitBreak;
     
-    private ShardingProxyContext() {
+    private ShardingSphereProxyContext() {
         ShardingOrchestrationEventBus.getInstance().register(this);
     }
     
@@ -52,7 +52,7 @@ public final class ShardingProxyContext {
      *
      * @return instance of ShardingSphere-Proxy's context.
      */
-    public static ShardingProxyContext getInstance() {
+    public static ShardingSphereProxyContext getInstance() {
         return INSTANCE;
     }
     

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.adapter;
 
-import org.apache.shardingsphere.driver.common.base.AbstractShardingJDBCDatabaseAndTableTest;
+import org.apache.shardingsphere.driver.common.base.AbstractShardingSphereDataSourceForShardingTest;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.junit.Test;
 
@@ -35,7 +35,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class DataSourceAdapterTest extends AbstractShardingJDBCDatabaseAndTableTest {
+public final class DataSourceAdapterTest extends AbstractShardingSphereDataSourceForShardingTest {
     
     @Test
     public void assertUnwrapSuccess() throws SQLException {
