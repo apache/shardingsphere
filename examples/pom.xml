@@ -28,7 +28,7 @@
     
     <modules>
         <module>example-core</module>
-        <module>sharding-jdbc-example</module>
+        <module>shardingsphere-jdbc-example</module>
         <module>sharding-proxy-example</module>
     </modules>
     

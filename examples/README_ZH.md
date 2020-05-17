@@ -85,29 +85,29 @@ shardingsphere-example
 * 主从
 * 分片和主从
 
-您可以从[sharding-example](./sharding-jdbc-example/sharding-example)中获取更多详细信息
+您可以从[sharding-example](sharding-jdbc-example/sharding-example)中获取更多详细信息
 
 ### 分片与编排的最佳实践
 
 * 使用本地配置文件和zookeeper/etcd配置分片
 * 使用注册中心（zookeeper/etcd）的配置进行分片
 
-您可以从业务[orchestration-example](./sharding-jdbc-example/orchestration-example)中获取更多细节
+您可以从业务[orchestration-example](sharding-jdbc-example/orchestration-example)中获取更多细节
 
 ### 分片+分布式事务的最佳实践
 
 * 2pc-xa事务
 * base-seata事务
 
-您可以从[transaction-example](./sharding-jdbc-example/transaction-example)中获取更多详细信息
+您可以从[transaction-example](sharding-jdbc-example/transaction-example)中获取更多详细信息
 
 ### 提示路由的最佳实践
 
-您可以从[hint-example](./sharding-jdbc-example/other-feature-example/hint-example)中获取更多细节
+您可以从[hint-example](sharding-jdbc-example/other-feature-example/hint-example)中获取更多细节
 
 ### 数据加密的最佳实践
 
-您可以从[encrypt-example](./sharding-jdbc-example/other-feature-example/encrypt-example)中获取更多详细信息
+您可以从[encrypt-example](sharding-jdbc-example/other-feature-example/encrypt-example)中获取更多详细信息
 
 ### APM集成的最佳实践
 

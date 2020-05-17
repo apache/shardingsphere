@@ -22,16 +22,19 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
-        <artifactId>sharding-jdbc-example</artifactId>
+        <artifactId>shardingsphere-jdbc-example</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>orchestration-example</artifactId>
-    <name>Example::orchestration</name>
+    <artifactId>sharding-example</artifactId>
+    <name>Example::sharding::root</name>
+    
     <packaging>pom</packaging>
     
     <modules>
-        <module>orchestration-raw-jdbc-example</module>
-        <module>orchestration-spring-boot-example</module>
-        <module>orchestration-spring-namespace-example</module>
+        <module>sharding-raw-jdbc-example</module>
+        <module>sharding-spring-boot-jpa-example</module>
+        <module>sharding-spring-boot-mybatis-example</module>
+        <module>sharding-spring-namespace-mybatis-example</module>
+        <module>sharding-spring-namespace-jpa-example</module>
     </modules>
 </project>
