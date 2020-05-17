@@ -20,15 +20,19 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere</artifactId>
+        <artifactId>sharding-orchestration</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-orchestration</artifactId>
+    <artifactId>shardingsphere-orchestration-core</artifactId>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
     
     <modules>
-        <module>sharding-orchestration-center</module>
-        <module>shardingsphere-orchestration-core</module>
+        <module>shardingsphere-orchestration-core-configuration</module>
+        <module>sharding-shardingsphere-orchestration-core-common</module>
+        <module>shardingsphere-orchestration-core-configcenter</module>
+        <module>shardingsphere-orchestration-core-registrycenter</module>
+        <module>shardingsphere-orchestration-core-metadatacenter</module>
+        <module>shardingsphere-orchestration-core-facade</module>
     </modules>
 </project>

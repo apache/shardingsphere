@@ -31,7 +31,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-orchestration-core-facade</artifactId>
+            <artifactId>shardingsphere-orchestration-core-facade</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
