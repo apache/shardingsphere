@@ -18,14 +18,11 @@
 FROM java:8
 MAINTAINER ShardingSphere "dev@shardingsphere.apache.org"
 
-ENV CURRENT_VERSION 4.1.1
-ENV APP_NAME apache-shardingsphere
-ENV MODULE_NAME sharding-scaling
-ENV LOCAL_PATH /opt/sharding-scaling
+ARG APP_NAME
+ENV LOCAL_PATH /opt/shardingsphere-scaling
 
-RUN wget https://dist.apache.org/repos/dist/release/shardingsphere/${CURRENT_VERSION}/${APP_NAME}-${CURRENT_VERSION}-${MODULE_NAME}-bin.tar.gz && \
-    tar -xzvf ${APP_NAME}-${CURRENT_VERSION}-${MODULE_NAME}-bin.tar.gz && \
-    mv ${APP_NAME}-${CURRENT_VERSION}-${MODULE_NAME}-bin ${LOCAL_PATH} && \
-    rm -f ${APP_NAME}-${CURRENT_VERSION}-${MODULE_NAME}-bin.tar.gz
+ADD target/${APP_NAME}.tar.gz /opt
+RUN mv /opt/${APP_NAME} ${LOCAL_PATH}
+RUN mkdir -p ${LOCAL_PATH}/ext-lib
 
 ENTRYPOINT ${LOCAL_PATH}/bin/start.sh ${PORT} && tail -f ${LOCAL_PATH}/logs/stdout.log
