@@ -7,4 +7,4 @@ chapter = true
 
 ## Navigation
 
-This chapter will introduce the use of Sharding-UI.
+This chapter will introduce the use of ShardingSphere-UI.

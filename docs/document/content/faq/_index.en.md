@@ -17,7 +17,7 @@ Answer:
 
 ShardingSphere uses lombok to enable minimal coding. For more details about using and installment, please refer to the official website of [lombok](https://projectlombok.org/download.html).
 
-Sharding-orchestration-reg module needs to execute `mvn install` command first, and generate gRPC java files according to protobuf files.
+shardingsphere-orchestration-reg module needs to execute `mvn install` command first, and generate gRPC java files according to protobuf files.
 
 ## 3. Why is xsd unable to be found when Spring Namespace is used?
 
@@ -25,7 +25,7 @@ Answer:
 
 The use norm of Spring Namespace does not require to deploy xsd files to the official website. But considering some users' needs, we will deploy them to ShardingSphere's official website.
 
-Actually, META-INF\spring.schemas in the jar package of sharding-jdbc-spring-namespace has been configured with the position of xsd files: META-INF\namespace\sharding.xsd and META-INF\namespace\master-slave.xsd, so you only need to make sure that the file is in the jar package.
+Actually, META-INF\spring.schemas in the jar package of shardingsphere-jdbc-spring-namespace has been configured with the position of xsd files: META-INF\namespace\sharding.xsd and META-INF\namespace\master-slave.xsd, so you only need to make sure that the file is in the jar package.
 
 ## 4. How to solve `Cloud not resolve placeholder … in string value …` error?
 
@@ -242,19 +242,19 @@ Answer:
 2. Configure`allow.range.query.with.inline.sharding` to `true` (Default value is `false`).
 3. A tip here: then each range query will be broadcast to every sharding table.
 
-## 20. Why there may be an error when configure both sharding-jdbc-spring-boot-starter and a spring-boot-starter of certain datasource pool(such as druid)?
+## 20. Why there may be an error when configure both shardingsphere-jdbc-spring-boot-starter and a spring-boot-starter of certain datasource pool(such as druid)?
  
 Answer:
  
-1. Because the spring-boot-starter of certain datasource pool (such as druid) will configured before sharding-jdbc-spring-boot-starter and create a default datasource, then conflict occur when sharding-jdbc create datasources.
-2. A simple way to solve this issue is removing the the spring-boot-starter of certain datasource pool, sharding-jdbc create datasources with suitable pools. 
+1. Because the spring-boot-starter of certain datasource pool (such as druid) will configured before shardingsphere-jdbc-spring-boot-starter and create a default datasource, then conflict occur when ShardingSphere-JDBC create datasources.
+2. A simple way to solve this issue is removing the the spring-boot-starter of certain datasource pool, shardingsphere-jdbc create datasources with suitable pools. 
  
 ## 21. How to add a new logic schema dynamically when use ShardingSphere-Proxy?
  
 Answer:
  
 1. Before version 4.1.0, sharing-proxy can't support adding a new logic schema dynamically, for example, when a proxy starting with two logic schemas, it always hold the two schemas and will be notified about the table/rule changed events in the two schemas.
-2. Since version 4.1.0, sharing-proxy support adding a new logic schema dynamically via sharding-ui or zookeeper, and it's a plan to support removing a exist logic schema dynamically in runtime.
+2. Since version 4.1.0, sharing-proxy support adding a new logic schema dynamically via ShardingSphere-UI or zookeeper, and it's a plan to support removing a exist logic schema dynamically in runtime.
  
 ## 22. How to use a suitable database tools connecting ShardingSphere-Proxy? 
  
@@ -267,4 +267,4 @@ Answer:
 
 Answer:
 
-1. `sharding-transaction-xa-core` include atomikos, it will trigger auto-configuration mechanism in spring-boot, add `@SpringBootApplication(exclude = JtaAutoConfiguration.class)` will solve it. 
+1. `shardingsphere-transaction-xa-core` include atomikos, it will trigger auto-configuration mechanism in spring-boot, add `@SpringBootApplication(exclude = JtaAutoConfiguration.class)` will solve it. 

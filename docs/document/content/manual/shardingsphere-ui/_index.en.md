@@ -1,13 +1,13 @@
 +++
 pre = "<b>4.4. </b>"
-title = "Sharding-UI"
+title = "ShardingSphere-UI"
 weight = 4
 chapter = true
 +++
 
 ## Introduction
 
-Sharding-UI is a simple and useful web administration console for ShardingSphere. 
+ShardingSphere-UI is a simple and useful web administration console for ShardingSphere. 
 It is designed to help users more easily use ShardingSphere, and currently provides ability of registry center management, dynamic configuration management, database orchestration, etc.
 
 The frontend of project uses vue as javascript framework and the backend is a standard spring boot project. 
