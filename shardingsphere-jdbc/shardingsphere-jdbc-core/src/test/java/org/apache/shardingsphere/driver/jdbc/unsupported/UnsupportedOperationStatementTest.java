@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.unsupported;
 
-import org.apache.shardingsphere.driver.common.base.AbstractShardingJDBCDatabaseAndTableTest;
+import org.apache.shardingsphere.driver.common.base.AbstractShardingSphereDataSourceForShardingTest;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.junit.After;
 import org.junit.Before;
@@ -30,7 +30,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class UnsupportedOperationStatementTest extends AbstractShardingJDBCDatabaseAndTableTest {
+public final class UnsupportedOperationStatementTest extends AbstractShardingSphereDataSourceForShardingTest {
     
     private final List<ShardingSphereConnection> shardingSphereConnections = new ArrayList<>();
     

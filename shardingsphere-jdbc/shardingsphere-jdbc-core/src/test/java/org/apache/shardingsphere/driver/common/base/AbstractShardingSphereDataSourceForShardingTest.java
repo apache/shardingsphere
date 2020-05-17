@@ -36,7 +36,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractSQLTest {
+public abstract class AbstractShardingSphereDataSourceForShardingTest extends AbstractSQLTest {
     
     private static ShardingSphereDataSource shardingSphereDataSource;
     
@@ -57,7 +57,8 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
     }
     
     private static File getFile(final String fileName) {
-        return new File(Preconditions.checkNotNull(AbstractShardingJDBCDatabaseAndTableTest.class.getClassLoader().getResource(fileName), "file resource `%s` must not be null.", fileName).getFile());
+        return new File(Preconditions.checkNotNull(
+                AbstractShardingSphereDataSourceForShardingTest.class.getClassLoader().getResource(fileName), "file resource `%s` must not be null.", fileName).getFile());
     }
     
     @Before

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.unsupported;
 
-import org.apache.shardingsphere.driver.common.base.AbstractShardingJDBCDatabaseAndTableTest;
+import org.apache.shardingsphere.driver.common.base.AbstractShardingSphereDataSourceForShardingTest;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.junit.After;
 import org.junit.Before;
@@ -31,7 +31,7 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class UnsupportedOperationPreparedStatementTest extends AbstractShardingJDBCDatabaseAndTableTest {
+public final class UnsupportedOperationPreparedStatementTest extends AbstractShardingSphereDataSourceForShardingTest {
     
     private static final String SQL = "SELECT user_id AS usr_id FROM t_order WHERE status = 'init'";
     

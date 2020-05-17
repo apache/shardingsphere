@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.adapter;
 
-import org.apache.shardingsphere.driver.common.base.AbstractShardingJDBCDatabaseAndTableTest;
+import org.apache.shardingsphere.driver.common.base.AbstractShardingSphereDataSourceForShardingTest;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.util.JDBCTestSQL;
@@ -42,7 +42,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class ResultSetAdapterTest extends AbstractShardingJDBCDatabaseAndTableTest {
+public final class ResultSetAdapterTest extends AbstractShardingSphereDataSourceForShardingTest {
     
     private final List<ShardingSphereConnection> shardingSphereConnections = new ArrayList<>();
     

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.unsupported;
 
-import org.apache.shardingsphere.driver.common.base.AbstractShardingJDBCDatabaseAndTableTest;
+import org.apache.shardingsphere.driver.common.base.AbstractShardingSphereDataSourceForShardingTest;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.util.JDBCTestSQL;
 import org.junit.After;
@@ -39,7 +39,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class UnsupportedUpdateOperationResultSetTest extends AbstractShardingJDBCDatabaseAndTableTest {
+public final class UnsupportedUpdateOperationResultSetTest extends AbstractShardingSphereDataSourceForShardingTest {
     
     private final List<ShardingSphereConnection> shardingSphereConnections = new ArrayList<>();
     

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.adapter;
 
-import org.apache.shardingsphere.driver.common.base.AbstractShardingJDBCDatabaseAndTableTest;
+import org.apache.shardingsphere.driver.common.base.AbstractShardingSphereDataSourceForShardingTest;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
 import org.apache.shardingsphere.driver.jdbc.util.JDBCTestSQL;
@@ -47,7 +47,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class PreparedStatementAdapterTest extends AbstractShardingJDBCDatabaseAndTableTest {
+public final class PreparedStatementAdapterTest extends AbstractShardingSphereDataSourceForShardingTest {
     
     private final List<ShardingSphereConnection> shardingSphereConnections = new ArrayList<>();
     
