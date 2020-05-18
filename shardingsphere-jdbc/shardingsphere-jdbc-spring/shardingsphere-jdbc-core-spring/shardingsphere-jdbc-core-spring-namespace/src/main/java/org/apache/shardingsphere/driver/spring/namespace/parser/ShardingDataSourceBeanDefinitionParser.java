@@ -73,8 +73,8 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
         Element shardingRuleElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.SHARDING_RULE_CONFIG_TAG);
         if (null != shardingRuleElement) {
             parseShardingRuleConfiguration(shardingRuleElement).ifPresent(result::add);
-            parseMasterSlaveRuleConfiguration(shardingRuleElement).ifPresent(result::add);
         }
+        parseMasterSlaveRuleConfiguration(element).ifPresent(result::add);
         parseEncryptRuleConfiguration(element).ifPresent(result::add);
         return result;
     }

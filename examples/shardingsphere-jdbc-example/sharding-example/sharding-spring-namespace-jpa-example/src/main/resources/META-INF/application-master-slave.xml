@@ -78,10 +78,8 @@
     <master-slave:load-balance-algorithm id="randomStrategy" type="RANDOM" />
     
     <sharding:data-source id="masterSlaveDataSource" data-source-names="demo_ds_master, demo_ds_slave_0, demo_ds_slave_1">
-        <sharding:sharding-rule>
-            <sharding:master-slave-rule>
-                <master-slave:data-source-rule id="demo_ds" master-data-source-name="demo_ds_master" slave-data-source-names="demo_ds_slave_0, demo_ds_slave_1" strategy-ref="randomStrategy" />
-            </sharding:master-slave-rule>
-        </sharding:sharding-rule>
+        <sharding:master-slave-rule>
+            <master-slave:data-source-rule id="demo_ds" master-data-source-name="demo_ds_master" slave-data-source-names="demo_ds_slave_0, demo_ds_slave_1" strategy-ref="randomStrategy" />
+        </sharding:master-slave-rule>
     </sharding:data-source>
 </beans>
