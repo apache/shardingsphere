@@ -54,20 +54,18 @@
     </bean:properties>
     
     <sharding:data-source id="realEncryptDataSource" data-source-names="dbtbl_0">
-        <sharding:sharding-rule>
-            <sharding:encrypt-rule>
-                <encrypt:tables>
-                    <encrypt:table name="t_user">
-                        <encrypt:column logic-column="user_name" cipher-column="user_name" encryptor-ref="name_encryptor" />
-                        <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" encryptor-ref="pwd_encryptor"/>
-                    </encrypt:table>
-                </encrypt:tables>
-                <encrypt:encryptors>
-                    <encrypt:encryptor id="name_encryptor" type="AES" props-ref="props"/>
-                    <encrypt:encryptor id="pwd_encryptor" type="assistedTest" />
-                </encrypt:encryptors>
-            </sharding:encrypt-rule>
-        </sharding:sharding-rule>
+        <sharding:encrypt-rule>
+            <encrypt:tables>
+                <encrypt:table name="t_user">
+                    <encrypt:column logic-column="user_name" cipher-column="user_name" encryptor-ref="name_encryptor" />
+                    <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" encryptor-ref="pwd_encryptor"/>
+                </encrypt:table>
+            </encrypt:tables>
+            <encrypt:encryptors>
+                <encrypt:encryptor id="name_encryptor" type="AES" props-ref="props"/>
+                <encrypt:encryptor id="pwd_encryptor" type="assistedTest" />
+            </encrypt:encryptors>
+        </sharding:encrypt-rule>
         <sharding:props>
             <prop key="query.with.cipher.column">true</prop>
         </sharding:props>

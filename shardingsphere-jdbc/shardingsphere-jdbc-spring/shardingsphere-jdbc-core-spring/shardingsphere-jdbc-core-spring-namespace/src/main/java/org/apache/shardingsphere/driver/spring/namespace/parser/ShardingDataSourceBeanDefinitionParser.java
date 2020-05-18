@@ -71,9 +71,11 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
     private Collection<BeanDefinition> parseRuleConfigurations(final Element element) {
         Collection<BeanDefinition> result = new ManagedList<>(3);
         Element shardingRuleElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.SHARDING_RULE_CONFIG_TAG);
-        parseShardingRuleConfiguration(shardingRuleElement).ifPresent(result::add);
-        parseMasterSlaveRuleConfiguration(shardingRuleElement).ifPresent(result::add);
-        parseEncryptRuleConfiguration(shardingRuleElement).ifPresent(result::add);
+        if (null != shardingRuleElement) {
+            parseShardingRuleConfiguration(shardingRuleElement).ifPresent(result::add);
+            parseMasterSlaveRuleConfiguration(shardingRuleElement).ifPresent(result::add);
+        }
+        parseEncryptRuleConfiguration(element).ifPresent(result::add);
         return result;
     }
     
