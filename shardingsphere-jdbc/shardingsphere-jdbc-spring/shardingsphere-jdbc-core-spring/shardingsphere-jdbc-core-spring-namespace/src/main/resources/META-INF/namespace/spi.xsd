@@ -27,7 +27,7 @@
             <xsd:attribute name="props-ref" type="xsd:string" />
         </xsd:complexType>
     </xsd:element>
-
+    
     <xsd:element name="sharding-algorithm">
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required" />
