@@ -20,10 +20,12 @@ package org.apache.shardingsphere.driver.spring.boot;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.spring.boot.datasource.DataSourceMapSetter;
-import org.apache.shardingsphere.driver.spring.boot.prop.SpringBootPropertiesConfigurationProperties;
-import org.apache.shardingsphere.driver.spring.boot.rule.SpringBootRulesConfigurationProperties;
-import org.apache.shardingsphere.driver.spring.boot.rule.SpringBootRulesConfigurationYamlSwapper;
+import org.apache.shardingsphere.driver.spring.boot.prop.SpringBootPropertiesConfiguration;
+import org.apache.shardingsphere.driver.spring.boot.rule.RuleConfigurationsBuilder;
+import org.apache.shardingsphere.driver.spring.boot.rule.SpringBootRulesConfiguration;
 import org.apache.shardingsphere.driver.spring.transaction.ShardingTransactionTypeScanner;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -36,6 +38,7 @@ import org.springframework.core.env.Environment;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -44,19 +47,17 @@ import java.util.Map;
  */
 @Configuration
 @ComponentScan("org.apache.shardingsphere.driver.spring.boot.converter")
-@EnableConfigurationProperties({SpringBootRulesConfigurationProperties.class, SpringBootPropertiesConfigurationProperties.class})
+@EnableConfigurationProperties({SpringBootRulesConfiguration.class, SpringBootPropertiesConfiguration.class})
 @ConditionalOnProperty(prefix = "spring.shardingsphere", name = "enabled", havingValue = "true", matchIfMissing = true)
 @AutoConfigureBefore(DataSourceAutoConfiguration.class)
 @RequiredArgsConstructor
 public class SpringBootConfiguration implements EnvironmentAware {
     
-    private final SpringBootRulesConfigurationProperties rules;
+    private final SpringBootRulesConfiguration rules;
     
-    private final SpringBootPropertiesConfigurationProperties props;
+    private final SpringBootPropertiesConfiguration props;
     
     private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
-    
-    private final SpringBootRulesConfigurationYamlSwapper swapper = new SpringBootRulesConfigurationYamlSwapper();
     
     /**
      * Get ShardingSphere data source bean.
@@ -66,7 +67,8 @@ public class SpringBootConfiguration implements EnvironmentAware {
      */
     @Bean
     public DataSource shardingSphereDataSource() throws SQLException {
-        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, swapper.swap(rules), props.getProps());
+        Collection<RuleConfiguration> ruleConfigurations = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(RuleConfigurationsBuilder.getYamlRuleConfigurations(rules));
+        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, ruleConfigurations, props.getProps());
     }
     
     /**

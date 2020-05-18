@@ -58,14 +58,14 @@ public final class YamlRuleConfigurationSwapperEngine {
     /**
      * Swap from YAML rule configurations to rule configurations.
      *
-     * @param yamlRuleConfigurations YAML rule configurations
+     * @param springBootRuleConfigurations Spring boot rule configurations
      * @return rule configurations
      */
-    public Collection<RuleConfiguration> swapToRuleConfigurations(final Collection<YamlRuleConfiguration> yamlRuleConfigurations) {
+    public Collection<RuleConfiguration> swapToRuleConfigurations(final Collection<YamlRuleConfiguration> springBootRuleConfigurations) {
         Collection<RuleConfiguration> result = new LinkedList<>();
-        Collection<Class<?>> ruleConfigurationTypes = yamlRuleConfigurations.stream().map(YamlRuleConfiguration::getRuleConfigurationType).collect(Collectors.toList());
+        Collection<Class<?>> ruleConfigurationTypes = springBootRuleConfigurations.stream().map(YamlRuleConfiguration::getRuleConfigurationType).collect(Collectors.toList());
         for (Entry<Class<?>, YamlRuleConfigurationSwapper> entry : OrderedSPIRegistry.getRegisteredServicesByClass(ruleConfigurationTypes, YamlRuleConfigurationSwapper.class).entrySet()) {
-            result.addAll(swapToRuleConfigurations(yamlRuleConfigurations, entry.getKey(), entry.getValue()));
+            result.addAll(swapToRuleConfigurations(springBootRuleConfigurations, entry.getKey(), entry.getValue()));
         }
         return result;
     }

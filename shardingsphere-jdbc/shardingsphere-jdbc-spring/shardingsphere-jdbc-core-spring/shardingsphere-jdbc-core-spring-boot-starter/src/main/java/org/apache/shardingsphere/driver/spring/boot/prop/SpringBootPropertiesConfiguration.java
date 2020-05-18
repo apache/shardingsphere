@@ -24,12 +24,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.util.Properties;
 
 /**
- * Properties configuration properties.
+ * Spring boot properties configuration.
  */
 @ConfigurationProperties(prefix = "spring.shardingsphere")
 @Getter
 @Setter
-public class SpringBootPropertiesConfigurationProperties {
+public class SpringBootPropertiesConfiguration {
     
     private Properties props = new Properties();
 }

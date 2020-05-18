@@ -20,19 +20,20 @@ package org.apache.shardingsphere.driver.spring.boot.rule;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Spring boot rules configuration properties.
+ * Spring boot rules configuration.
  */
 @ConfigurationProperties(prefix = "spring.shardingsphere.rules")
 @Getter
 @Setter
-public class SpringBootRulesConfigurationProperties implements YamlConfiguration {
+// TODO use plugin framework to process here
+public class SpringBootRulesConfiguration implements YamlConfiguration {
     
     private YamlShardingRuleConfiguration sharding;
     

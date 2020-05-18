@@ -26,12 +26,12 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Root configuration properties.
+ * Orchestration spring boot root configuration.
  */
 @ConfigurationProperties(prefix = "spring.shardingsphere")
 @Getter
 @Setter
-public final class SpringBootRootConfigurationProperties {
+public final class OrchestrationSpringBootRootConfiguration {
     
     private Properties props = new Properties();
     

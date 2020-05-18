@@ -21,11 +21,13 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
-import org.apache.shardingsphere.driver.orchestration.spring.boot.common.SpringBootRootConfigurationProperties;
+import org.apache.shardingsphere.driver.orchestration.spring.boot.common.OrchestrationSpringBootRootConfiguration;
 import org.apache.shardingsphere.driver.orchestration.spring.boot.rule.LocalRulesCondition;
-import org.apache.shardingsphere.driver.orchestration.spring.boot.rule.OrchestrationSpringBootRulesConfigurationProperties;
-import org.apache.shardingsphere.driver.orchestration.spring.boot.rule.OrchestrationSpringBootRulesConfigurationYamlSwapper;
 import org.apache.shardingsphere.driver.spring.boot.datasource.DataSourceMapSetter;
+import org.apache.shardingsphere.driver.spring.boot.rule.RuleConfigurationsBuilder;
+import org.apache.shardingsphere.driver.spring.boot.rule.SpringBootRulesConfiguration;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
@@ -45,6 +47,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -55,7 +58,7 @@ import java.util.Map.Entry;
  */
 @Configuration
 @ComponentScan("org.apache.shardingsphere.driver.spring.boot.converter")
-@EnableConfigurationProperties({OrchestrationSpringBootRulesConfigurationProperties.class, SpringBootRootConfigurationProperties.class})
+@EnableConfigurationProperties({SpringBootRulesConfiguration.class, OrchestrationSpringBootRootConfiguration.class})
 @ConditionalOnProperty(prefix = "spring.shardingsphere", name = "enabled", havingValue = "true", matchIfMissing = true)
 @RequiredArgsConstructor
 @AutoConfigureBefore(DataSourceAutoConfiguration.class)
@@ -63,13 +66,11 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     
     private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
     
-    private final OrchestrationSpringBootRulesConfigurationProperties rules;
+    private final SpringBootRulesConfiguration rules;
     
-    private final SpringBootRootConfigurationProperties root;
+    private final OrchestrationSpringBootRootConfiguration root;
     
     private final CenterRepositoryConfigurationYamlSwapper centerRepositorySwapper = new CenterRepositoryConfigurationYamlSwapper();
-    
-    private final OrchestrationSpringBootRulesConfigurationYamlSwapper configurationSwapper = new OrchestrationSpringBootRulesConfigurationYamlSwapper();
     
     /**
      * Get orchestration configuration.
@@ -100,7 +101,8 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @Bean
     @Conditional(LocalRulesCondition.class)
     public DataSource localShardingSphereDataSource(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
-        return new OrchestrationShardingSphereDataSource(new ShardingSphereDataSource(dataSourceMap, configurationSwapper.swap(rules), root.getProps()), orchestrationConfiguration);
+        Collection<RuleConfiguration> ruleConfigurations = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(RuleConfigurationsBuilder.getYamlRuleConfigurations(rules));
+        return new OrchestrationShardingSphereDataSource(new ShardingSphereDataSource(dataSourceMap, ruleConfigurations, root.getProps()), orchestrationConfiguration);
     }
     
     /**
