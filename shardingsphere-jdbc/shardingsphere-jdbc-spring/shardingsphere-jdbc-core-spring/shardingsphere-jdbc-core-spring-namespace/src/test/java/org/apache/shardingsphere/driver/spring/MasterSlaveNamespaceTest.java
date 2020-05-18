@@ -41,7 +41,7 @@ public class MasterSlaveNamespaceTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void assertDefaultMaserSlaveDataSource() {
         MasterSlaveRule masterSlaveRule = getMasterSlaveRule("defaultMasterSlaveDataSource");
-        Optional<MasterSlaveDataSourceRule> masterSlaveDataSourceRule = masterSlaveRule.findDataSourceRule("defaultMasterSlaveDataSource");
+        Optional<MasterSlaveDataSourceRule> masterSlaveDataSourceRule = masterSlaveRule.findDataSourceRule("default_dbtbl_0");
         assertTrue(masterSlaveDataSourceRule.isPresent());
         assertThat(masterSlaveDataSourceRule.get().getMasterDataSourceName(), is("dbtbl_0_master"));
         assertTrue(masterSlaveDataSourceRule.get().getSlaveDataSourceNames().contains("dbtbl_0_slave_0"));
@@ -51,11 +51,11 @@ public class MasterSlaveNamespaceTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void assertTypeMasterSlaveDataSource() {
         MasterSlaveRule randomSlaveRule = getMasterSlaveRule("randomMasterSlaveDataSource");
-        Optional<MasterSlaveDataSourceRule> randomMasterSlaveDataSourceRule = randomSlaveRule.findDataSourceRule("randomMasterSlaveDataSource");
+        Optional<MasterSlaveDataSourceRule> randomMasterSlaveDataSourceRule = randomSlaveRule.findDataSourceRule("random_dbtbl_0");
         assertTrue(randomMasterSlaveDataSourceRule.isPresent());
         assertTrue(randomMasterSlaveDataSourceRule.get().getLoadBalanceAlgorithm() instanceof RandomMasterSlaveLoadBalanceAlgorithm);
         MasterSlaveRule roundRobinSlaveRule = getMasterSlaveRule("roundRobinMasterSlaveDataSource");
-        Optional<MasterSlaveDataSourceRule> roundRobinMasterSlaveDataSourceRule = roundRobinSlaveRule.findDataSourceRule("roundRobinMasterSlaveDataSource");
+        Optional<MasterSlaveDataSourceRule> roundRobinMasterSlaveDataSourceRule = roundRobinSlaveRule.findDataSourceRule("roundRobin_dbtbl_0");
         assertTrue(roundRobinMasterSlaveDataSourceRule.isPresent());
         assertTrue(roundRobinMasterSlaveDataSourceRule.get().getLoadBalanceAlgorithm() instanceof RoundRobinMasterSlaveLoadBalanceAlgorithm);
     }
@@ -64,7 +64,7 @@ public class MasterSlaveNamespaceTest extends AbstractJUnit4SpringContextTests {
     public void assertRefMasterSlaveDataSource() {
         assertThat(applicationContext.getBean("randomLoadBalanceAlgorithm"), instanceOf(LoadBalanceStrategyConfiguration.class));
         MasterSlaveRule masterSlaveRule = getMasterSlaveRule("refMasterSlaveDataSource");
-        Optional<MasterSlaveDataSourceRule> masterSlaveDataSourceRule = masterSlaveRule.findDataSourceRule("refMasterSlaveDataSource");
+        Optional<MasterSlaveDataSourceRule> masterSlaveDataSourceRule = masterSlaveRule.findDataSourceRule("random_dbtbl_1");
         assertTrue(masterSlaveDataSourceRule.isPresent());
         assertThat(masterSlaveDataSourceRule.get().getLoadBalanceAlgorithm(), instanceOf(MasterSlaveLoadBalanceAlgorithm.class));
     }
