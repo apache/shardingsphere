@@ -15,15 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.boot.datasource;
+package org.apache.shardingsphere.driver.spring.boot.datasource.prop;
+
+import org.springframework.core.env.Environment;
+
+import javax.sql.DataSource;
 
 /**
- * DBCP2 datasource properties setter.
+ * Different datasource properties setter.
  */
-public final class CommonDbcp2DataSourcePropertiesSetter extends AbstractDbcp2DataSourcePropertiesSetter {
+public interface DataSourcePropertiesSetter {
     
-    @Override
-    public String getType() {
-        return "org.apache.commons.dbcp2.BasicDataSource";
-    }
+    /**
+     * Set datasource custom properties.
+     *
+     * @param environment environment variable
+     * @param prefix properties prefix
+     * @param dataSourceName current database name
+     * @param dataSource dataSource instance
+     */
+    void propertiesSet(Environment environment, String prefix, String dataSourceName, DataSource dataSource);
+    
+    /**
+     * Get type name of data source.
+     *
+     * @return type name of data source.
+     */
+    String getType();
 }

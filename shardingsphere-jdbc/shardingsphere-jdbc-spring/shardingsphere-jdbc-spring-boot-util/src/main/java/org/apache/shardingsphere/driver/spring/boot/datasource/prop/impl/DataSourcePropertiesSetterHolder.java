@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.boot.datasource;
+package org.apache.shardingsphere.driver.spring.boot.datasource.prop.impl;
 
+import org.apache.shardingsphere.driver.spring.boot.datasource.prop.DataSourcePropertiesSetter;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import java.util.HashMap;

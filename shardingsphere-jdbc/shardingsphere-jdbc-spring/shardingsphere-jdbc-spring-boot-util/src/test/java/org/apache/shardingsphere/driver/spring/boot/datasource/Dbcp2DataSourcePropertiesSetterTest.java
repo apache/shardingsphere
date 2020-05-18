@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.driver.spring.boot.datasource;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.shardingsphere.driver.spring.boot.datasource.prop.impl.CommonDbcp2DataSourcePropertiesSetter;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.env.Environment;

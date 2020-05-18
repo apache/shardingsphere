@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.boot.datasource;
+package org.apache.shardingsphere.driver.spring.boot.datasource.prop.impl;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.driver.spring.boot.datasource.prop.DataSourcePropertiesSetter;
 import org.apache.shardingsphere.driver.spring.boot.util.PropertyUtil;
 import org.springframework.core.env.Environment;
 

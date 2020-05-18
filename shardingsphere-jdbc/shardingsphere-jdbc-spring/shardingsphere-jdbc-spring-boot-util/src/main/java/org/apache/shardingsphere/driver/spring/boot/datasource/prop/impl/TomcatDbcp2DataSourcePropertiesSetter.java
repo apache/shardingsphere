@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.boot.datasource;
+package org.apache.shardingsphere.driver.spring.boot.datasource.prop.impl;
 
 /**
  * Tomcat DBCP2 datasource properties setter.
