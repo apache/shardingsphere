@@ -77,14 +77,16 @@ public final class ShadowRouteDecorator implements RouteDecorator<ShadowRule> {
             routeContext.getRouteResult().getRouteUnits().addAll(toBeAdded);
             return routeContext;
         }
+        Collection<RouteUnit> toBeRemoved = new LinkedList<>();
         if (isShadowSQL(routeContext, shadowRule)) {
             for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
-                Collection<RouteMapper> tableMappers = each.getTableMappers();
-                routeContext.getRouteResult().getRouteUnits().remove(each);
+                toBeRemoved.add(each);
                 String shadowDataSourceName = shadowRule.getShadowMappings().get(each.getDataSourceMapper().getActualName());
-                routeContext.getRouteResult().getRouteUnits().add(new RouteUnit(new RouteMapper(each.getDataSourceMapper().getLogicName(), shadowDataSourceName), tableMappers));
+                toBeAdded.add(new RouteUnit(new RouteMapper(each.getDataSourceMapper().getLogicName(), shadowDataSourceName), each.getTableMappers()));
             }
         }
+        routeContext.getRouteResult().getRouteUnits().removeAll(toBeRemoved);
+        routeContext.getRouteResult().getRouteUnits().addAll(toBeAdded);
         return routeContext;
     }
     
