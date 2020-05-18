@@ -21,20 +21,20 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Getter
 public final class SchemaContexts {
     
-    private final Collection<SchemaContext> schemaContexts = new LinkedList<>();
+    private final Map<String, SchemaContext> schemaContexts = new LinkedHashMap<>();
     
     private final ConfigurationProperties properties;
     
     private final Authentication authentication;
     
-    public SchemaContexts(final Collection<SchemaContext> schemaContexts, final ConfigurationProperties properties, final Authentication authentication) {
-        this.schemaContexts.addAll(schemaContexts);
+    public SchemaContexts(final Map<String, SchemaContext> schemaContexts, final ConfigurationProperties properties, final Authentication authentication) {
+        this.schemaContexts.putAll(schemaContexts);
         this.properties = properties;
         this.authentication = authentication;
     }
@@ -42,10 +42,9 @@ public final class SchemaContexts {
     /**
      * Close.
      * 
-     * @throws Exception exception
      */
-    public void close() throws Exception {
-        for (SchemaContext each : schemaContexts) {
+    public void close() {
+        for (SchemaContext each : schemaContexts.values()) {
             each.getRuntimeContext().getExecutorKernel().close();
         }
     }
