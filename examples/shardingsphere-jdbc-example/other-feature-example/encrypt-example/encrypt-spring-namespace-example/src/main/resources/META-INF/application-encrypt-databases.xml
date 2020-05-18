@@ -20,17 +20,21 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
        xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
        xmlns:bean="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-                        http://www.springframework.org/schema/beans/spring-beans.xsd 
-                        http://www.springframework.org/schema/tx 
-                        http://www.springframework.org/schema/tx/spring-tx.xsd
-                        http://www.springframework.org/schema/context 
-                        http://www.springframework.org/schema/context/spring-context.xsd
-                        http://shardingsphere.apache.org/schema/shardingsphere/encrypt
-                        http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd 
-                        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+                           http://www.springframework.org/schema/beans/spring-beans.xsd 
+                           http://www.springframework.org/schema/tx 
+                           http://www.springframework.org/schema/tx/spring-tx.xsd
+                           http://www.springframework.org/schema/context 
+                           http://www.springframework.org/schema/context/spring-context.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/sharding
+                           http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/encrypt
+                           http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd 
+                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+                           ">
     <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />
     
     <bean id="ds" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
@@ -44,23 +48,25 @@
         <prop key="aes.key.value">123456</prop>
     </bean:properties>
     
-    <encrypt:data-source id="encryptDataSource" data-source-name="ds" >
-        <encrypt:encrypt-rule>
-            <encrypt:tables>
-                <encrypt:table name="t_user">
-                    <encrypt:column logic-column="user_name" plain-column="user_name_plain" cipher-column="user_name" encryptor-ref="name_encryptor" />
-                    <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" encryptor-ref="pwd_encryptor"/>
-                </encrypt:table>
-            </encrypt:tables>
-            <encrypt:encryptors>
-                <encrypt:encryptor id="name_encryptor" type="AES" props-ref="props"/>
-                <encrypt:encryptor id="pwd_encryptor" type="assistedTest" />
-            </encrypt:encryptors>
-        </encrypt:encrypt-rule>
-        <encrypt:props>
+    <sharding:data-source id="encryptDataSource">
+        <sharding:sharding-rule data-source-names="dbtbl_0" >
+            <sharding:encrypt-rule>
+                <encrypt:tables>
+                    <encrypt:table name="t_user">
+                        <encrypt:column logic-column="user_name" plain-column="user_name_plain" cipher-column="user_name" encryptor-ref="name_encryptor" />
+                        <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" encryptor-ref="pwd_encryptor"/>
+                    </encrypt:table>
+                </encrypt:tables>
+                <encrypt:encryptors>
+                    <encrypt:encryptor id="name_encryptor" type="AES" props-ref="props"/>
+                    <encrypt:encryptor id="pwd_encryptor" type="assistedTest" />
+                </encrypt:encryptors>
+            </sharding:encrypt-rule>
+        </sharding:sharding-rule>
+        <sharding:props>
             <prop key="query.with.cipher.column">true</prop>
-        </encrypt:props>
-    </encrypt:data-source>
+        </sharding:props>
+    </sharding:data-source>
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="encryptDataSource" />

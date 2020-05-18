@@ -21,23 +21,27 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:bean="http://www.springframework.org/schema/util"
+       xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
        xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
        xmlns:orchestraion="http://shardingsphere.apache.org/schema/shardingsphere/orchestration"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-                        http://www.springframework.org/schema/beans/spring-beans.xsd 
-                        http://www.springframework.org/schema/context 
-                        http://www.springframework.org/schema/context/spring-context.xsd
-                        http://www.springframework.org/schema/tx 
-                        http://www.springframework.org/schema/tx/spring-tx.xsd
-                        http://www.springframework.org/schema/util
-                        http://www.springframework.org/schema/util/spring-util.xsd
-                        http://shardingsphere.apache.org/schema/shardingsphere/encrypt
-                        http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd 
-                        http://shardingsphere.apache.org/schema/shardingsphere/orchestration
-                        http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd">
+                           http://www.springframework.org/schema/beans/spring-beans.xsd 
+                           http://www.springframework.org/schema/context 
+                           http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/tx 
+                           http://www.springframework.org/schema/tx/spring-tx.xsd
+                           http://www.springframework.org/schema/util
+                           http://www.springframework.org/schema/util/spring-util.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/sharding
+                           http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/encrypt
+                           http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd 
+                           http://shardingsphere.apache.org/schema/shardingsphere/orchestration
+                           http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd
+                           ">
     <import resource="classpath*:META-INF/zookeeper/registry-center.xml" />
     <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />
-
+    
     <bean id="demo_ds_encrypt" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds"/>
@@ -49,23 +53,25 @@
         <prop key="aes.key.value">123456</prop>
     </bean:properties>
     
-    <encrypt:data-source id="realEncryptDataSource" data-source-name="demo_ds_encrypt" >
-        <encrypt:encrypt-rule>
-            <encrypt:tables>
-                <encrypt:table name="t_user">
-                    <encrypt:column logic-column="user_name" cipher-column="user_name" encryptor-ref="name_encryptor" />
-                    <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" encryptor-ref="pwd_encryptor"/>
-                </encrypt:table>
-            </encrypt:tables>
-            <encrypt:encryptors>
-                <encrypt:encryptor id="name_encryptor" type="AES" props-ref="props"/>
-                <encrypt:encryptor id="pwd_encryptor" type="assistedTest" />
-            </encrypt:encryptors>
-        </encrypt:encrypt-rule>
-        <encrypt:props>
+    <sharding:data-source id="realEncryptDataSource">
+        <sharding:sharding-rule data-source-names="dbtbl_0" >
+            <sharding:encrypt-rule>
+                <encrypt:tables>
+                    <encrypt:table name="t_user">
+                        <encrypt:column logic-column="user_name" cipher-column="user_name" encryptor-ref="name_encryptor" />
+                        <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" encryptor-ref="pwd_encryptor"/>
+                    </encrypt:table>
+                </encrypt:tables>
+                <encrypt:encryptors>
+                    <encrypt:encryptor id="name_encryptor" type="AES" props-ref="props"/>
+                    <encrypt:encryptor id="pwd_encryptor" type="assistedTest" />
+                </encrypt:encryptors>
+            </sharding:encrypt-rule>
+        </sharding:sharding-rule>
+        <sharding:props>
             <prop key="query.with.cipher.column">true</prop>
-        </encrypt:props>
-    </encrypt:data-source>
+        </sharding:props>
+    </sharding:data-source>
     
     <orchestraion:encrypt-data-source id="encryptDataSource" data-source-ref="realEncryptDataSource" instance-ref="regCenter" overwrite="true" />
     
