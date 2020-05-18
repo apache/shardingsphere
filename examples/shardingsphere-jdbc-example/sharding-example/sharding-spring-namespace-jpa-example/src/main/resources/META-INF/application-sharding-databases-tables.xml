@@ -21,22 +21,28 @@
        xmlns:p="http://www.springframework.org/schema/p"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
        xmlns:spi="http://shardingsphere.apache.org/schema/shardingsphere/spi"
        xmlns:bean="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
-                        http://www.springframework.org/schema/beans/spring-beans.xsd
-                        http://shardingsphere.apache.org/schema/shardingsphere/sharding
-                        http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
-                        http://shardingsphere.apache.org/schema/shardingsphere/spi
-                        http://shardingsphere.apache.org/schema/shardingsphere/spi/spi.xsd
-                        http://www.springframework.org/schema/context
-                        http://www.springframework.org/schema/context/spring-context.xsd
-                        http://www.springframework.org/schema/tx
-                        http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/tx
+                           http://www.springframework.org/schema/tx/spring-tx.xsd
+                           http://www.springframework.org/schema/util
+                           http://www.springframework.org/schema/util/spring-util.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/datasource
+                           http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/sharding
+                           http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/spi
+                           http://shardingsphere.apache.org/schema/shardingsphere/spi/spi.xsd
+                           ">
     <context:annotation-config />
     <context:component-scan base-package="org.apache.shardingsphere.example.core.jpa"/>
-
+    
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="shardingDataSource" />
         <property name="jpaVendorAdapter">
@@ -83,8 +89,8 @@
     <sharding:key-generator id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
     <sharding:key-generator id="itemKeyGenerator" column="order_item_id" algorithm-ref="snowflakeAlgorithm" />
     
-    <sharding:data-source id="shardingDataSource" data-source-names="demo_ds_0, demo_ds_1">
-        <sharding:sharding-rule>
+    <shardingsphere:data-source id="shardingDataSource" data-source-names="demo_ds_0, demo_ds_1">
+        <shardingsphere:sharding-rule>
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" actual-data-nodes="demo_ds_${0..1}.t_order_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" key-generator-ref="orderKeyGenerator" />
                 <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_ds_${0..1}.t_order_item_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" key-generator-ref="itemKeyGenerator" />
@@ -95,9 +101,9 @@
             <sharding:broadcast-table-rules>
                 <sharding:broadcast-table-rule table="t_address"/>
             </sharding:broadcast-table-rules>
-        </sharding:sharding-rule>
-        <sharding:props>
+        </shardingsphere:sharding-rule>
+        <shardingsphere:props>
             <prop key="sql.show">false</prop>
-        </sharding:props>
-    </sharding:data-source>
+        </shardingsphere:props>
+    </shardingsphere:data-source>
 </beans>

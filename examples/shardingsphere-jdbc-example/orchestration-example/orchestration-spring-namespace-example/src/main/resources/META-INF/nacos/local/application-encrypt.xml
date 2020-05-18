@@ -21,7 +21,7 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:bean="http://www.springframework.org/schema/util"
-       xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
+       xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
        xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
        xmlns:orchestraion="http://shardingsphere.apache.org/schema/shardingsphere/orchestration"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
@@ -32,8 +32,8 @@
                            http://www.springframework.org/schema/tx/spring-tx.xsd
                            http://www.springframework.org/schema/util
                            http://www.springframework.org/schema/util/spring-util.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/sharding
-                           http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/datasource
+                           http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/orchestration
@@ -53,8 +53,8 @@
         <prop key="aes.key.value">123456</prop>
     </bean:properties>
     
-    <sharding:data-source id="realEncryptDataSource" data-source-names="dbtbl_0">
-        <sharding:encrypt-rule>
+    <shardingsphere:data-source id="realEncryptDataSource" data-source-names="dbtbl_0">
+        <shardingsphere:encrypt-rule>
             <encrypt:tables>
                 <encrypt:table name="t_user">
                     <encrypt:column logic-column="user_name" cipher-column="user_name" encryptor-ref="name_encryptor" />
@@ -65,11 +65,11 @@
                 <encrypt:encryptor id="name_encryptor" type="AES" props-ref="props"/>
                 <encrypt:encryptor id="pwd_encryptor" type="MD5" />
             </encrypt:encryptors>
-        </sharding:encrypt-rule>
-        <sharding:props>
+        </shardingsphere:encrypt-rule>
+        <shardingsphere:props>
             <prop key="query.with.cipher.column">true</prop>
-        </sharding:props>
-    </sharding:data-source>
+        </shardingsphere:props>
+    </shardingsphere:data-source>
     
     <orchestraion:encrypt-data-source id="encryptDataSource" data-source-ref="realEncryptDataSource" instance-ref="regCenter,confCenter" overwrite="true" />
     

@@ -18,21 +18,24 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
        xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
        xmlns:spi="http://shardingsphere.apache.org/schema/shardingsphere/spi"
        xmlns:bean="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-                        http://www.springframework.org/schema/beans/spring-beans.xsd 
-                        http://shardingsphere.apache.org/schema/shardingsphere/sharding
-                        http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
-                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave
-                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd
-                        http://shardingsphere.apache.org/schema/shardingsphere/spi
-                        http://shardingsphere.apache.org/schema/shardingsphere/spi/spi.xsd
-                        http://www.springframework.org/schema/util
-                        http://www.springframework.org/schema/util/spring-util.xsd
-                        ">
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/util
+                           http://www.springframework.org/schema/util/spring-util.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/datasource
+                           http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/sharding
+                           http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/masterslave
+                           http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/spi
+                           http://shardingsphere.apache.org/schema/shardingsphere/spi/spi.xsd
+                           ">
     <import resource="datasource/masterSlaveDataSource.xml" />
     <import resource="datasource/dataSource.xml" />
     
@@ -54,16 +57,16 @@
         <prop key="algorithm.expression">t_order_item_${order_id % 4}</prop>
     </bean:properties>
     
-    <sharding:data-source id="shardingDataSource" data-source-names="dbtbl_0_master,dbtbl_0_slave_0,dbtbl_0_slave_1,dbtbl_1_master,dbtbl_1_slave_0,dbtbl_1_slave_1">
-        <sharding:sharding-rule>
+    <shardingsphere:data-source id="shardingDataSource" data-source-names="dbtbl_0_master,dbtbl_0_slave_0,dbtbl_0_slave_1,dbtbl_1_master,dbtbl_1_slave_0,dbtbl_1_slave_1">
+        <shardingsphere:sharding-rule>
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" />
                 <sharding:table-rule logic-table="t_order_item" actual-data-nodes="dbtbl_${0..1}.t_order_item_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" />
             </sharding:table-rules>
-        </sharding:sharding-rule>
-        <sharding:master-slave-rule>
+        </shardingsphere:sharding-rule>
+        <shardingsphere:master-slave-rule>
             <master-slave:data-source-rule id="dbtbl_0" master-data-source-name="dbtbl_0_master" slave-data-source-names="dbtbl_0_slave_0,dbtbl_0_slave_1"/>
             <master-slave:data-source-rule id="dbtbl_1" master-data-source-name="dbtbl_1_master" slave-data-source-names="dbtbl_1_slave_0,dbtbl_1_slave_1"/>
-        </sharding:master-slave-rule>
-    </sharding:data-source>
+        </shardingsphere:master-slave-rule>
+    </shardingsphere:data-source>
 </beans>

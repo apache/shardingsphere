@@ -18,10 +18,13 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
     xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
     xmlns:spi="http://shardingsphere.apache.org/schema/shardingsphere/spi"
     xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://shardingsphere.apache.org/schema/shardingsphere/datasource
+                        http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
                         http://shardingsphere.apache.org/schema/shardingsphere/spi
@@ -35,12 +38,12 @@
     <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="standardModuloDatabaseShardingAlgorithm" />
     <sharding:standard-strategy id="tableStrategy" sharding-column="order_id" algorithm-ref="standardModuloTableShardingAlgorithm" />
     
-    <sharding:data-source id="shardingDataSource" data-source-names="dbtbl_0,dbtbl_1">
-        <sharding:sharding-rule>
+    <shardingsphere:data-source id="shardingDataSource" data-source-names="dbtbl_0,dbtbl_1">
+        <shardingsphere:sharding-rule>
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="tableStrategy" />
                 <sharding:table-rule logic-table="t_order_item" actual-data-nodes="dbtbl_${0..1}.t_order_item_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="tableStrategy" />
             </sharding:table-rules>
-        </sharding:sharding-rule>
-    </sharding:data-source>
+        </shardingsphere:sharding-rule>
+    </shardingsphere:data-source>
 </beans>

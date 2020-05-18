@@ -18,25 +18,26 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
+       xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
        xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
        xmlns:bean="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
-                        http://www.springframework.org/schema/beans/spring-beans.xsd
-                        http://shardingsphere.apache.org/schema/shardingsphere/sharding
-                        http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
-                        http://shardingsphere.apache.org/schema/shardingsphere/encrypt 
-                        http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd 
-                        http://www.springframework.org/schema/util 
-                        http://www.springframework.org/schema/util/spring-util.xsd">
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/util 
+                           http://www.springframework.org/schema/util/spring-util.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/datasource
+                           http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/encrypt 
+                           http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd 
+                           ">
     <import resource="../datasource/dataSource.xml" />
     
     <bean:properties id="props">
         <prop key="aes.key.value">123456</prop>
     </bean:properties>
     
-    <sharding:data-source id="encryptDataSource" data-source-names="dbtbl_0">
-        <sharding:encrypt-rule>
+    <shardingsphere:data-source id="encryptDataSource" data-source-names="dbtbl_0">
+        <shardingsphere:encrypt-rule>
             <encrypt:tables>
                 <encrypt:table name="t_order">
                     <encrypt:column logic-column="user_id" plain-column="user_decrypt" cipher-column="user_encrypt" encryptor-ref="encryptor_aes" />
@@ -47,10 +48,10 @@
                 <encrypt:encryptor id="encryptor_aes" type="AES" props-ref="props"/>
                 <encrypt:encryptor id="encryptor_md5" type="MD5" />
             </encrypt:encryptors>
-        </sharding:encrypt-rule>
-        <sharding:props>
+        </shardingsphere:encrypt-rule>
+        <shardingsphere:props>
             <prop key="sql.show">${sql_show}</prop>
             <prop key="query.with.cipher.column">false</prop>
-        </sharding:props>
-    </sharding:data-source>
+        </shardingsphere:props>
+    </shardingsphere:data-source>
 </beans>
