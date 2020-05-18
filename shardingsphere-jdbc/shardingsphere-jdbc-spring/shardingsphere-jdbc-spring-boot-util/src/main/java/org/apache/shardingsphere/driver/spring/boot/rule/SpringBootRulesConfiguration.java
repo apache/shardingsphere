@@ -17,29 +17,88 @@
 
 package org.apache.shardingsphere.driver.spring.boot.rule;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.driver.spring.boot.condition.EncryptSpringBootCondition;
+import org.apache.shardingsphere.driver.spring.boot.condition.MasterSlaveSpringBootCondition;
+import org.apache.shardingsphere.driver.spring.boot.condition.ShadowSpringBootCondition;
+import org.apache.shardingsphere.driver.spring.boot.condition.ShardingSpringBootCondition;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * Spring boot rules configuration.
  */
-@ConfigurationProperties(prefix = "spring.shardingsphere.rules")
-@Getter
-@Setter
-// TODO use plugin framework to process here
-public class SpringBootRulesConfiguration implements YamlConfiguration {
+@Configuration
+public class SpringBootRulesConfiguration {
     
-    private YamlShardingRuleConfiguration sharding;
+    /**
+     * Sharding YAML rule configuration.
+     *
+     * @return YAML rule configuration
+     */
+    @Bean
+    @ConditionalOnClass(YamlShardingRuleConfiguration.class)
+    @ConfigurationProperties(prefix = "spring.shardingsphere.rules.sharding")
+    @Conditional(ShardingSpringBootCondition.class)
+    public YamlRuleConfiguration sharding() {
+        return new YamlShardingRuleConfiguration();
+    }
     
-    private YamlMasterSlaveRuleConfiguration masterSlave;
+    /**
+     * Master slave YAML rule configuration.
+     *
+     * @return YAML rule configuration
+     */
+    @Bean
+    @ConfigurationProperties(prefix = "spring.shardingsphere.rules.master-slave")
+    @ConditionalOnClass(YamlMasterSlaveRuleConfiguration.class)
+    @Conditional(MasterSlaveSpringBootCondition.class)
+    public YamlRuleConfiguration masterSlave() {
+        return new YamlMasterSlaveRuleConfiguration();
+    }
     
-    private YamlEncryptRuleConfiguration encrypt;
+    /**
+     * Encrypt YAML rule configuration.
+     *
+     * @return YAML rule configuration
+     */
+    @Bean
+    @ConfigurationProperties(prefix = "spring.shardingsphere.rules.encrypt")
+    @ConditionalOnClass(YamlEncryptRuleConfiguration.class)
+    @Conditional(EncryptSpringBootCondition.class)
+    public YamlRuleConfiguration encrypt() {
+        return new YamlEncryptRuleConfiguration();
+    }
     
-    private YamlShadowRuleConfiguration shadow;
+    /**
+     * Shadow YAML rule configuration.
+     *
+     * @return YAML rule configuration
+     */
+    @Bean
+    @ConfigurationProperties(prefix = "spring.shardingsphere.rules.shadow")
+    @ConditionalOnClass(YamlShadowRuleConfiguration.class)
+    @Conditional(ShadowSpringBootCondition.class)
+    public YamlRuleConfiguration shadow() {
+        return new YamlShadowRuleConfiguration();
+    }
+    
+    /**
+     * Default YAML rule configuration.
+     *
+     * @return YAML rule configuration
+     */
+    @Bean
+    @ConditionalOnMissingBean(YamlRuleConfiguration.class)
+    public YamlRuleConfiguration noRules() {
+        return () -> DefaultRuleConfiguration.class;
+    }
 }
