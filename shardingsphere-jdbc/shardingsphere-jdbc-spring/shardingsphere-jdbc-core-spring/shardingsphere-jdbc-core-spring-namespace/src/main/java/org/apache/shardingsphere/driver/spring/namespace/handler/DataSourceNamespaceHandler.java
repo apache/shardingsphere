@@ -17,17 +17,20 @@
 
 package org.apache.shardingsphere.driver.spring.namespace.handler;
 
-import org.apache.shardingsphere.driver.spring.namespace.constants.EncryptDataSourceBeanDefinitionParserTag;
-import org.apache.shardingsphere.driver.spring.namespace.parser.EncryptDataSourceBeanDefinitionParser;
+import org.apache.shardingsphere.driver.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
+import org.apache.shardingsphere.driver.spring.namespace.constants.ShardingTransactionTypeScannerBeanDefinitionParserTag;
+import org.apache.shardingsphere.driver.spring.namespace.parser.ShardingDataSourceBeanDefinitionParser;
+import org.apache.shardingsphere.driver.spring.namespace.parser.ShardingTransactionTypeScannerBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
- * Spring namespace handler for encrypt.
+ * Spring namespace handler for data source.
  */
-public final class EncryptNamespaceHandler extends NamespaceHandlerSupport {
+public final class DataSourceNamespaceHandler extends NamespaceHandlerSupport {
     
     @Override
     public void init() {
-        registerBeanDefinitionParser(EncryptDataSourceBeanDefinitionParserTag.ROOT_TAG, new EncryptDataSourceBeanDefinitionParser());
+        registerBeanDefinitionParser(ShardingDataSourceBeanDefinitionParserTag.ROOT_TAG, new ShardingDataSourceBeanDefinitionParser());
+        registerBeanDefinitionParser(ShardingTransactionTypeScannerBeanDefinitionParserTag.ROOT_TAG, new ShardingTransactionTypeScannerBeanDefinitionParser());
     }
 }

@@ -20,15 +20,19 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
        xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
-                        http://www.springframework.org/schema/beans/spring-beans.xsd 
-                        http://www.springframework.org/schema/context 
-                        http://www.springframework.org/schema/context/spring-context.xsd
-                        http://www.springframework.org/schema/tx 
-                        http://www.springframework.org/schema/tx/spring-tx.xsd
-                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave
-                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd">
+                           http://www.springframework.org/schema/beans/spring-beans.xsd 
+                           http://www.springframework.org/schema/context 
+                           http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/tx 
+                           http://www.springframework.org/schema/tx/spring-tx.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/datasource
+                           http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/masterslave
+                           http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd
+                           ">
     <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />
     
     <bean id="demo_ds_master" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
@@ -51,9 +55,14 @@
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>
-
+    
     <master-slave:load-balance-algorithm id="randomStrategy" type="RANDOM" />
-    <master-slave:data-source id="masterSlaveDataSource" master-data-source-name="demo_ds_master" slave-data-source-names="demo_ds_slave_0, demo_ds_slave_1" strategy-ref="randomStrategy" />
+    
+    <shardingsphere:data-source id="masterSlaveDataSource" data-source-names="demo_ds_master, demo_ds_slave_0, demo_ds_slave_1">
+        <shardingsphere:master-slave-rule>
+            <master-slave:data-source-rule id="demo_ds" master-data-source-name="demo_ds_master" slave-data-source-names="demo_ds_slave_0, demo_ds_slave_1" strategy-ref="randomStrategy" />
+        </shardingsphere:master-slave-rule>
+    </shardingsphere:data-source>
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="masterSlaveDataSource" />

@@ -60,8 +60,7 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
     }
     
     private Map<String, RuntimeBeanReference> parseDataSources(final Element element) {
-        Element shardingRuleElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.SHARDING_RULE_CONFIG_TAG);
-        List<String> dataSources = Splitter.on(",").trimResults().splitToList(shardingRuleElement.getAttribute(ShardingDataSourceBeanDefinitionParserTag.DATA_SOURCE_NAMES_TAG));
+        List<String> dataSources = Splitter.on(",").trimResults().splitToList(element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.DATA_SOURCE_NAMES_TAG));
         Map<String, RuntimeBeanReference> result = new ManagedMap<>(dataSources.size());
         for (String each : dataSources) {
             result.put(each, new RuntimeBeanReference(each));
@@ -70,23 +69,26 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
     }
     
     private Collection<BeanDefinition> parseRuleConfigurations(final Element element) {
-        Element shardingRuleElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.SHARDING_RULE_CONFIG_TAG);
         Collection<BeanDefinition> result = new ManagedList<>(3);
-        result.add(parseShardingRuleConfiguration(shardingRuleElement));
-        parseMasterSlaveRuleConfiguration(shardingRuleElement).ifPresent(result::add);
-        parseEncryptRuleConfiguration(shardingRuleElement).ifPresent(result::add);
+        parseShardingRuleConfiguration(element).ifPresent(result::add);
+        parseMasterSlaveRuleConfiguration(element).ifPresent(result::add);
+        parseEncryptRuleConfiguration(element).ifPresent(result::add);
         return result;
     }
     
-    private BeanDefinition parseShardingRuleConfiguration(final Element element) {
+    private Optional<BeanDefinition> parseShardingRuleConfiguration(final Element element) {
+        Element shardingRuleElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.SHARDING_RULE_CONFIG_TAG);
+        if (null == shardingRuleElement) {
+            return Optional.empty();
+        }
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingRuleConfiguration.class);
-        parseDefaultDatabaseShardingStrategy(factory, element);
-        parseDefaultTableShardingStrategy(factory, element);
-        factory.addPropertyValue("tableRuleConfigs", parseTableRulesConfiguration(element));
-        factory.addPropertyValue("bindingTableGroups", parseBindingTablesConfiguration(element));
-        factory.addPropertyValue("broadcastTables", parseBroadcastTables(element));
-        parseDefaultKeyGenerator(factory, element);
-        return factory.getBeanDefinition();
+        parseDefaultDatabaseShardingStrategy(factory, shardingRuleElement);
+        parseDefaultTableShardingStrategy(factory, shardingRuleElement);
+        factory.addPropertyValue("tableRuleConfigs", parseTableRulesConfiguration(shardingRuleElement));
+        factory.addPropertyValue("bindingTableGroups", parseBindingTablesConfiguration(shardingRuleElement));
+        factory.addPropertyValue("broadcastTables", parseBroadcastTables(shardingRuleElement));
+        parseDefaultKeyGenerator(factory, shardingRuleElement);
+        return Optional.of(factory.getBeanDefinition());
     }
     
     private void parseDefaultKeyGenerator(final BeanDefinitionBuilder factory, final Element element) {
@@ -193,11 +195,11 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
     }
     
     private Optional<BeanDefinition> parseMasterSlaveRuleConfiguration(final Element element) {
-        Element masterSlaveRulesElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.MASTER_SLAVE_RULES_TAG);
-        if (null == masterSlaveRulesElement) {
+        Element masterSlaveRuleElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.MASTER_SLAVE_RULE_TAG);
+        if (null == masterSlaveRuleElement) {
             return Optional.empty();
         }
-        List<Element> masterSlaveDataSourceElements = DomUtils.getChildElementsByTagName(masterSlaveRulesElement, ShardingDataSourceBeanDefinitionParserTag.MASTER_SLAVE_RULE_TAG);
+        List<Element> masterSlaveDataSourceElements = DomUtils.getChildElementsByTagName(masterSlaveRuleElement, ShardingDataSourceBeanDefinitionParserTag.MASTER_SLAVE_DATA_SOURCE_TAG);
         List<BeanDefinition> masterSlaveDataSources = new ManagedList<>(masterSlaveDataSourceElements.size());
         for (Element each : masterSlaveDataSourceElements) {
             masterSlaveDataSources.add(new MasterSlaveDataSourceConfigurationBeanDefinition(each).getBeanDefinition());

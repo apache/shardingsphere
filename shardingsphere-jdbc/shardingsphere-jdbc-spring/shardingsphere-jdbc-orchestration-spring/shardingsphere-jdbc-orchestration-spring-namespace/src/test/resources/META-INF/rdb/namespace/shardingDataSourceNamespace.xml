@@ -17,19 +17,22 @@
   -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
-    xmlns:spi="http://shardingsphere.apache.org/schema/shardingsphere/spi"
-    xmlns:bean="http://www.springframework.org/schema/util"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans 
-                        http://www.springframework.org/schema/beans/spring-beans.xsd
-                        http://shardingsphere.apache.org/schema/shardingsphere/sharding
-                        http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
-                        http://shardingsphere.apache.org/schema/shardingsphere/spi
-                        http://shardingsphere.apache.org/schema/shardingsphere/spi/spi.xsd
-                        http://www.springframework.org/schema/util
-                        http://www.springframework.org/schema/util/spring-util.xsd
-                        ">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
+       xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
+       xmlns:spi="http://shardingsphere.apache.org/schema/shardingsphere/spi"
+       xmlns:bean="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/util
+                           http://www.springframework.org/schema/util/spring-util.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/datasource
+                           http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/sharding
+                           http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/spi
+                           http://shardingsphere.apache.org/schema/shardingsphere/spi/spi.xsd
+                           ">
     <import resource="../datasource/dataSource.xml" />
     <import resource="../datasource/masterSlaveDataSource.xml" />
     
@@ -53,45 +56,44 @@
         <prop key="algorithm.expression">t_order_${order_id % 4}</prop>
     </bean:properties>
     
-    <sharding:data-source id="simpleShardingDataSource">
-        <sharding:sharding-rule data-source-names="dbtbl_0">
+    <shardingsphere:data-source id="simpleShardingDataSource" data-source-names="dbtbl_0">
+        <shardingsphere:sharding-rule>
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" />
             </sharding:table-rules>
-        </sharding:sharding-rule>
-    </sharding:data-source>
+        </shardingsphere:sharding-rule>
+    </shardingsphere:data-source>
     
-    <sharding:data-source id="shardingRuleWithAttributesDataSource">
-        <sharding:sharding-rule
-            data-source-names="dbtbl_0,dbtbl_1"
+    <shardingsphere:data-source id="shardingRuleWithAttributesDataSource" data-source-names="dbtbl_0,dbtbl_1">
+        <shardingsphere:sharding-rule
             default-database-strategy-ref="standardStrategy"
             default-table-strategy-ref="inlineStrategy"
             default-key-generator-ref="keyGenerator">
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" />
             </sharding:table-rules>
-        </sharding:sharding-rule>
-    </sharding:data-source>
+        </shardingsphere:sharding-rule>
+    </shardingsphere:data-source>
     
-    <sharding:data-source id="tableRuleWithAttributesDataSource">
-        <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1">
+    <shardingsphere:data-source id="tableRuleWithAttributesDataSource" data-source-names="dbtbl_0,dbtbl_1">
+        <shardingsphere:sharding-rule>
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" key-generator-ref="keyGenerator" />
             </sharding:table-rules>
-        </sharding:sharding-rule>
-    </sharding:data-source>
+        </shardingsphere:sharding-rule>
+    </shardingsphere:data-source>
     
-    <sharding:data-source id="multiTableRulesDataSource">
-        <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1">
+    <shardingsphere:data-source id="multiTableRulesDataSource" data-source-names="dbtbl_0,dbtbl_1">
+        <shardingsphere:sharding-rule>
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" />
                 <sharding:table-rule logic-table="t_order_item" />
             </sharding:table-rules>
-        </sharding:sharding-rule>
-    </sharding:data-source>
+        </shardingsphere:sharding-rule>
+    </shardingsphere:data-source>
     
-    <sharding:data-source id="bindingTableRuleDatasource">
-        <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1" >
+    <shardingsphere:data-source id="bindingTableRuleDatasource" data-source-names="dbtbl_0,dbtbl_1">
+        <shardingsphere:sharding-rule>
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" />
                 <sharding:table-rule logic-table="t_order_item" />
@@ -99,11 +101,11 @@
             <sharding:binding-table-rules>
                 <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
             </sharding:binding-table-rules>
-        </sharding:sharding-rule>
-    </sharding:data-source>
+        </shardingsphere:sharding-rule>
+    </shardingsphere:data-source>
     
-    <sharding:data-source id="multiBindingTableRulesDatasource">
-        <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1" >
+    <shardingsphere:data-source id="multiBindingTableRulesDatasource" data-source-names="dbtbl_0,dbtbl_1">
+        <shardingsphere:sharding-rule>
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" />
                 <sharding:table-rule logic-table="t_order_item" />
@@ -114,11 +116,11 @@
                 <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
                 <sharding:binding-table-rule logic-tables="t_user, t_user_detail" />
             </sharding:binding-table-rules>
-        </sharding:sharding-rule>
-    </sharding:data-source>
+        </shardingsphere:sharding-rule>
+    </shardingsphere:data-source>
     
-    <sharding:data-source id="broadcastTableRuleDatasource">
-        <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1" >
+    <shardingsphere:data-source id="broadcastTableRuleDatasource" data-source-names="dbtbl_0,dbtbl_1">
+        <shardingsphere:sharding-rule>
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" />
                 <sharding:table-rule logic-table="t_order_item" />
@@ -129,11 +131,11 @@
             <sharding:broadcast-table-rules>
                 <sharding:broadcast-table-rule table="t_config" />
             </sharding:broadcast-table-rules>
-        </sharding:sharding-rule>
-    </sharding:data-source>
+        </shardingsphere:sharding-rule>
+    </shardingsphere:data-source>
     
-    <sharding:data-source id="multiBroadcastTableRulesDatasource">
-        <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1" >
+    <shardingsphere:data-source id="multiBroadcastTableRulesDatasource" data-source-names="dbtbl_0,dbtbl_1">
+        <shardingsphere:sharding-rule>
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" />
                 <sharding:table-rule logic-table="t_order_item" />
@@ -145,19 +147,19 @@
                 <sharding:broadcast-table-rule table="t_config1" />
                 <sharding:broadcast-table-rule table="t_config2" />
             </sharding:broadcast-table-rules>
-        </sharding:sharding-rule>
-    </sharding:data-source>
+        </shardingsphere:sharding-rule>
+    </shardingsphere:data-source>
     
-    <sharding:data-source id="propsDataSource">
-        <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1">
+    <shardingsphere:data-source id="propsDataSource" data-source-names="dbtbl_0,dbtbl_1">
+        <shardingsphere:sharding-rule>
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" />
             </sharding:table-rules>
-        </sharding:sharding-rule>
-        <sharding:props>
+        </shardingsphere:sharding-rule>
+        <shardingsphere:props>
             <prop key="sql.show">${sql_show}</prop>
             <prop key="executor.size">10</prop>
             <prop key="foo">bar</prop>
-        </sharding:props>
-    </sharding:data-source>
+        </shardingsphere:props>
+    </shardingsphere:data-source>
 </beans>

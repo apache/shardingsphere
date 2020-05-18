@@ -26,10 +26,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EncryptDataSourceBeanDefinitionParserTag {
     
-    public static final String ROOT_TAG = "data-source";
-    
-    public static final String DATA_SOURCE_NAME_TAG = "data-source-name";
-    
     public static final String ENCRYPT_RULE_TAG = "encrypt-rule";
     
     public static final String TABLES_CONFIG_TAG = "tables";
@@ -55,6 +51,4 @@ public final class EncryptDataSourceBeanDefinitionParserTag {
     public static final String ENCRYPTOR_TYPE_ATTRIBUTE = "type";
     
     public static final String ENCRYPTOR_PROPERTY_REF_ATTRIBUTE = "props-ref";
-    
-    public static final String PROPS_TAG = "props";
 }
