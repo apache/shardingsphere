@@ -32,7 +32,6 @@ import org.springframework.util.StringUtils;
 
 import javax.naming.NamingException;
 import javax.sql.DataSource;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,14 +75,11 @@ public final class DataSourceMapSetter {
     private static List<String> getDataSourceNames(final Environment environment, final String prefix) {
         StandardEnvironment standardEnv = (StandardEnvironment) environment;
         standardEnv.setIgnoreUnresolvableNestedPlaceholders(true);
-        String dataSources = standardEnv.getProperty(prefix + DATA_SOURCE_NAME);
-        if (StringUtils.isEmpty(dataSources)) {
-            dataSources = standardEnv.getProperty(prefix + DATA_SOURCE_NAMES);
+        String dataSourceNames = standardEnv.getProperty(prefix + DATA_SOURCE_NAME);
+        if (StringUtils.isEmpty(dataSourceNames)) {
+            dataSourceNames = standardEnv.getProperty(prefix + DATA_SOURCE_NAMES);
         }
-        if (StringUtils.isEmpty(dataSources)) {
-            return Collections.emptyList();
-        }
-        return new InlineExpressionParser(dataSources).splitAndEvaluate();
+        return new InlineExpressionParser(dataSourceNames).splitAndEvaluate();
     }
     
     @SuppressWarnings("unchecked")
