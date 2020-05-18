@@ -44,6 +44,7 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Random;
 
 /**
@@ -88,23 +89,31 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor imp
         while (isRunning()) {
             AbstractBinlogEvent event = client.poll();
             if (null == event) {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException ignored) {
-                }
+                sleep();
                 continue;
             }
-            if (event instanceof WriteRowsEvent) {
-                handleWriteRowsEvent(channel, uri, (WriteRowsEvent) event);
-            } else if (event instanceof UpdateRowsEvent) {
-                handleUpdateRowsEvent(channel, uri, (UpdateRowsEvent) event);
-            } else if (event instanceof DeleteRowsEvent) {
-                handleDeleteRowsEvent(channel, uri, (DeleteRowsEvent) event);
-            } else if (event instanceof PlaceholderEvent) {
-                createPlaceholderRecord(channel, event);
-            }
+            handleEvent(channel, uri, event);
         }
         pushRecord(channel, new FinishedRecord(new NopLogPosition()));
+    }
+    
+    private void sleep() {
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException ignored) {
+        }
+    }
+    
+    private void handleEvent(final Channel channel, final JdbcUri uri, final AbstractBinlogEvent event) {
+        if (event instanceof WriteRowsEvent) {
+            handleWriteRowsEvent(channel, uri, (WriteRowsEvent) event);
+        } else if (event instanceof UpdateRowsEvent) {
+            handleUpdateRowsEvent(channel, uri, (UpdateRowsEvent) event);
+        } else if (event instanceof DeleteRowsEvent) {
+            handleDeleteRowsEvent(channel, uri, (DeleteRowsEvent) event);
+        } else if (event instanceof PlaceholderEvent) {
+            createPlaceholderRecord(channel, event);
+        }
     }
     
     private void handleWriteRowsEvent(final Channel channel, final JdbcUri uri, final WriteRowsEvent event) {
@@ -137,7 +146,7 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor imp
             for (int j = 0; j < beforeValues.length; j++) {
                 Object oldValue = beforeValues[j];
                 Object newValue = afterValues[j];
-                record.addColumn(new Column(tableMetaData.getColumnMetaData(j).getName(), newValue, !newValue.equals(oldValue), tableMetaData.isPrimaryKey(j)));
+                record.addColumn(new Column(tableMetaData.getColumnMetaData(j).getName(), newValue, !Objects.equals(newValue, oldValue), tableMetaData.isPrimaryKey(j)));
             }
             pushRecord(channel, record);
         }
