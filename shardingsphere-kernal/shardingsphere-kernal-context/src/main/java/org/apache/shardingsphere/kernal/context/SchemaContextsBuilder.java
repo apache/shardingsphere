@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.log.ConfigurationLogger;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -34,6 +35,8 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.kernal.context.runtime.CachedDatabaseMetaData;
 import org.apache.shardingsphere.kernal.context.runtime.RuntimeContext;
+import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
+import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -86,8 +89,15 @@ public final class SchemaContextsBuilder {
         Collection<RuleConfiguration> configurations = this.configurations.get(schemaName);
         Map<String, DataSource> dataSources = this.dataSources.get(schemaName);
         Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(configurations, dataSources.keySet());
-        return new SchemaContext(new ShardingSphereSchema(databaseType, configurations, rules, dataSources, createMetaData(dataSources, rules)), 
-                new RuntimeContext(createCachedDatabaseMetaData(dataSources), executorKernel));
+        RuntimeContext runtimeContext = new RuntimeContext(createCachedDatabaseMetaData(dataSources),
+                executorKernel, SQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(databaseType)), createShardingTransactionManagerEngine(dataSources));
+        return new SchemaContext(new ShardingSphereSchema(databaseType, configurations, rules, dataSources, createMetaData(dataSources, rules)), runtimeContext);
+    }
+    
+    private ShardingTransactionManagerEngine createShardingTransactionManagerEngine(final Map<String, DataSource> dataSources) {
+        ShardingTransactionManagerEngine result = new ShardingTransactionManagerEngine();
+        result.init(databaseType, dataSources);
+        return result;
     }
     
     private ShardingSphereMetaData createMetaData(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) throws SQLException {
