@@ -15,7 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context.runtime;
+package org.apache.shardingsphere.kernal.context;
 
-public interface RuntimeExecutorKernel extends AutoCloseable {
+import org.apache.shardingsphere.kernal.context.runtime.RuntimeContext;
+import lombok.Getter;
+
+@Getter
+public final class SchemaContext {
+    
+    private final ShardingSphereSchema schema;
+    
+    private final RuntimeContext runtimeContext;
+    
+    public SchemaContext(final ShardingSphereSchema schema, final RuntimeContext runtimeContext) {
+        this.schema = schema;
+        this.runtimeContext = runtimeContext;
+    }
 }

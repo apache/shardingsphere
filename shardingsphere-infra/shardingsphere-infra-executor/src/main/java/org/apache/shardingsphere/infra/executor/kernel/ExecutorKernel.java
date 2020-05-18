@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.executor.kernel;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ListenableFuture;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.context.runtime.RuntimeExecutorKernel;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.impl.ShardingSphereExecutorService;
 
@@ -36,7 +35,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * Executor kernel.
  */
-public final class ExecutorKernel implements RuntimeExecutorKernel {
+public final class ExecutorKernel implements AutoCloseable {
     
     @Getter
     private final ShardingSphereExecutorService executorService;
