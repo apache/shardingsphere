@@ -22,6 +22,7 @@
             targetNamespace="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
             elementFormDefault="qualified">
     <xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd"/>
+    
     <xsd:element name="data-source">
         <xsd:complexType>
             <xsd:sequence>
@@ -38,14 +39,6 @@
             <xsd:element ref="tables" />
         </xsd:all>
     </xsd:complexType>
-    <!--<xsd:element name="encrypt-rule">-->
-        <!--<xsd:complexType>-->
-            <!--<xsd:all>-->
-                <!--<xsd:element ref="encryptors" />-->
-                <!--<xsd:element ref="tables" />-->
-            <!--</xsd:all>-->
-        <!--</xsd:complexType>-->
-    <!--</xsd:element>-->
      <xsd:element name="encryptors">
        <xsd:complexType>
             <xsd:sequence>

@@ -193,11 +193,11 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
     }
     
     private Optional<BeanDefinition> parseMasterSlaveRuleConfiguration(final Element element) {
-        Element masterSlaveRulesElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.MASTER_SLAVE_RULES_TAG);
-        if (null == masterSlaveRulesElement) {
+        Element masterSlaveRuleElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.MASTER_SLAVE_RULE_TAG);
+        if (null == masterSlaveRuleElement) {
             return Optional.empty();
         }
-        List<Element> masterSlaveDataSourceElements = DomUtils.getChildElementsByTagName(masterSlaveRulesElement, ShardingDataSourceBeanDefinitionParserTag.MASTER_SLAVE_RULE_TAG);
+        List<Element> masterSlaveDataSourceElements = DomUtils.getChildElementsByTagName(masterSlaveRuleElement, ShardingDataSourceBeanDefinitionParserTag.MASTER_SLAVE_DATA_SOURCE_TAG);
         List<BeanDefinition> masterSlaveDataSources = new ManagedList<>(masterSlaveDataSourceElements.size());
         for (Element each : masterSlaveDataSourceElements) {
             masterSlaveDataSources.add(new MasterSlaveDataSourceConfigurationBeanDefinition(each).getBeanDefinition());

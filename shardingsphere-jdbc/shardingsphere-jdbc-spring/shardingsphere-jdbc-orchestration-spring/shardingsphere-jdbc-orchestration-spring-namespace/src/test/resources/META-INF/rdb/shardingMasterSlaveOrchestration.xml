@@ -22,7 +22,10 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/orchestration
-                           http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd http://www.springframework.org/schema/util https://www.springframework.org/schema/util/spring-util.xsd">
+                           http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd 
+                           http://www.springframework.org/schema/util 
+                           https://www.springframework.org/schema/util/spring-util.xsd
+                           ">
     <import resource="namespace/shardingMasterSlaveNamespace.xml" />
     
     <util:properties id="instance-props">

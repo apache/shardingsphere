@@ -19,12 +19,19 @@
 <xsd:schema xmlns="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:beans="http://www.springframework.org/schema/beans"
+            xmlns:masterslave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
             xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
             targetNamespace="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
             elementFormDefault="qualified" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:schemaLocation="http://shardingsphere.apache.org/schema/shardingsphere/encrypt http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd">
+            xsi:schemaLocation="http://shardingsphere.apache.org/schema/shardingsphere/masterslave
+                                http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd
+                                http://shardingsphere.apache.org/schema/shardingsphere/encrypt
+                                http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd
+                                ">
     <xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd" />
+    <xsd:import namespace="http://shardingsphere.apache.org/schema/shardingsphere/masterslave" schemaLocation="http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd"/>
     <xsd:import namespace="http://shardingsphere.apache.org/schema/shardingsphere/encrypt" schemaLocation="http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd"/>
+    
     <xsd:element name="data-source">
         <xsd:complexType>
             <xsd:all>
@@ -37,10 +44,10 @@
     <xsd:element name="sharding-rule">
         <xsd:complexType>
             <xsd:all>
-                <xsd:element ref="master-slave-rules" minOccurs="0" />
                 <xsd:element ref="table-rules" minOccurs="0" />
                 <xsd:element ref="binding-table-rules" minOccurs="0" />
                 <xsd:element ref="broadcast-table-rules" minOccurs="0" />
+                <xsd:element name="master-slave-rule" type="masterslave:master-slave-rule" minOccurs="0" />
                 <xsd:element name="encrypt-rule" type="encrypt:encrypt-rule" minOccurs="0" />
             </xsd:all>
             <xsd:attribute name="data-source-names" type="xsd:string" use="required" />
@@ -115,7 +122,14 @@
             <xsd:attribute name="id" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>
-
+    <xsd:element name="key-generator">
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="column" type="xsd:string" use="required" />
+            <xsd:attribute name="algorithm-ref" type="xsd:string" />
+        </xsd:complexType>
+    </xsd:element>
+    
     <xsd:element name="master-slave-rules">
         <xsd:complexType>
             <xsd:sequence>
@@ -131,13 +145,7 @@
             <xsd:attribute name="strategy-ref" type="xsd:string" />
         </xsd:complexType>
     </xsd:element>
-    <xsd:element name="key-generator">
-        <xsd:complexType>
-            <xsd:attribute name="id" type="xsd:string" use="required" />
-            <xsd:attribute name="column" type="xsd:string" use="required" />
-            <xsd:attribute name="algorithm-ref" type="xsd:string" />
-        </xsd:complexType>
-    </xsd:element>
+    
     <xsd:element name="props">
         <xsd:complexType>
             <xsd:complexContent>
