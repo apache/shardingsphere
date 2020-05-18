@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * HeartBeat configuration.
+ * Heart beat configuration.
  */
 @Getter
 @Setter
