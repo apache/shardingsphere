@@ -49,13 +49,13 @@ public final class OrchestrationSpringBootRulesConfigurationYamlSwapper implemen
         OrchestrationSpringBootRulesConfigurationProperties result = new OrchestrationSpringBootRulesConfigurationProperties();
         for (RuleConfiguration each : data) {
             if (each instanceof ShardingRuleConfiguration) {
-                result.setShardingRule(shardingRuleConfigurationYamlSwapper.swap((ShardingRuleConfiguration) each));
+                result.setSharding(shardingRuleConfigurationYamlSwapper.swap((ShardingRuleConfiguration) each));
             } else if (each instanceof MasterSlaveRuleConfiguration) {
-                result.setMasterSlaveRule(masterSlaveRuleConfigurationYamlSwapper.swap((MasterSlaveRuleConfiguration) each));
+                result.setMasterSlave(masterSlaveRuleConfigurationYamlSwapper.swap((MasterSlaveRuleConfiguration) each));
             } else if (each instanceof EncryptRuleConfiguration) {
-                result.setEncryptRule(encryptRuleConfigurationYamlSwapper.swap((EncryptRuleConfiguration) each));
+                result.setEncrypt(encryptRuleConfigurationYamlSwapper.swap((EncryptRuleConfiguration) each));
             } else if (each instanceof ShadowRuleConfiguration) {
-                result.setShadowRule(shadowRuleConfigurationYamlSwapper.swap((ShadowRuleConfiguration) each));
+                result.setShadow(shadowRuleConfigurationYamlSwapper.swap((ShadowRuleConfiguration) each));
             }
         }
         return result;
@@ -64,17 +64,17 @@ public final class OrchestrationSpringBootRulesConfigurationYamlSwapper implemen
     @Override
     public Collection<RuleConfiguration> swap(final OrchestrationSpringBootRulesConfigurationProperties configurations) {
         Collection<RuleConfiguration> result = new LinkedList<>();
-        if (null != configurations.getShardingRule()) {
-            result.add(shardingRuleConfigurationYamlSwapper.swap(configurations.getShardingRule()));
+        if (null != configurations.getSharding()) {
+            result.add(shardingRuleConfigurationYamlSwapper.swap(configurations.getSharding()));
         }
-        if (null != configurations.getMasterSlaveRule()) {
-            result.add(masterSlaveRuleConfigurationYamlSwapper.swap(configurations.getMasterSlaveRule()));
+        if (null != configurations.getMasterSlave()) {
+            result.add(masterSlaveRuleConfigurationYamlSwapper.swap(configurations.getMasterSlave()));
         }
-        if (null != configurations.getEncryptRule()) {
-            result.add(encryptRuleConfigurationYamlSwapper.swap(configurations.getEncryptRule()));
+        if (null != configurations.getEncrypt()) {
+            result.add(encryptRuleConfigurationYamlSwapper.swap(configurations.getEncrypt()));
         }
-        if (null != configurations.getShadowRule()) {
-            result.add(shadowRuleConfigurationYamlSwapper.swap(configurations.getShadowRule()));
+        if (null != configurations.getShadow()) {
+            result.add(shadowRuleConfigurationYamlSwapper.swap(configurations.getShadow()));
         }
         return result;
     }

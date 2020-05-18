@@ -34,11 +34,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Setter
 public class OrchestrationSpringBootRulesConfigurationProperties implements YamlConfiguration {
     
-    private YamlShardingRuleConfiguration shardingRule;
+    private YamlShardingRuleConfiguration sharding;
     
-    private YamlMasterSlaveRuleConfiguration masterSlaveRule;
+    private YamlMasterSlaveRuleConfiguration masterSlave;
     
-    private YamlEncryptRuleConfiguration encryptRule;
+    private YamlEncryptRuleConfiguration encrypt;
     
-    private YamlShadowRuleConfiguration shadowRule;
+    private YamlShadowRuleConfiguration shadow;
 }
