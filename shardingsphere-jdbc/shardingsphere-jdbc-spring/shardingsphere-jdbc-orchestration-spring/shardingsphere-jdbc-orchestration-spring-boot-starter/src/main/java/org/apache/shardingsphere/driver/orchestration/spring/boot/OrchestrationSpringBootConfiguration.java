@@ -21,19 +21,17 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
-import org.apache.shardingsphere.driver.orchestration.spring.boot.common.SpringBootRootConfigurationProperties;
+import org.apache.shardingsphere.driver.orchestration.spring.boot.common.OrchestrationSpringBootRootConfiguration;
 import org.apache.shardingsphere.driver.orchestration.spring.boot.rule.LocalRulesCondition;
-import org.apache.shardingsphere.driver.orchestration.spring.boot.rule.OrchestrationSpringBootRulesConfigurationProperties;
-import org.apache.shardingsphere.driver.orchestration.spring.boot.rule.OrchestrationSpringBootRulesConfigurationYamlSwapper;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.driver.spring.boot.datasource.DataSourceMapSetter;
+import org.apache.shardingsphere.driver.spring.boot.rule.RuleConfigurationsBuilder;
+import org.apache.shardingsphere.driver.spring.boot.rule.SpringBootRulesConfiguration;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.swapper.CenterRepositoryConfigurationYamlSwapper;
-import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.InlineExpressionParser;
-import org.apache.shardingsphere.driver.spring.boot.datasource.DataSourcePropertiesSetterHolder;
-import org.apache.shardingsphere.driver.spring.boot.util.DataSourceUtil;
-import org.apache.shardingsphere.driver.spring.boot.util.PropertyUtil;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -45,16 +43,13 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.StandardEnvironment;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -63,7 +58,7 @@ import java.util.Map.Entry;
  */
 @Configuration
 @ComponentScan("org.apache.shardingsphere.driver.spring.boot.converter")
-@EnableConfigurationProperties({OrchestrationSpringBootRulesConfigurationProperties.class, SpringBootRootConfigurationProperties.class})
+@EnableConfigurationProperties({SpringBootRulesConfiguration.class, OrchestrationSpringBootRootConfiguration.class})
 @ConditionalOnProperty(prefix = "spring.shardingsphere", name = "enabled", havingValue = "true", matchIfMissing = true)
 @RequiredArgsConstructor
 @AutoConfigureBefore(DataSourceAutoConfiguration.class)
@@ -71,13 +66,11 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     
     private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
     
-    private final OrchestrationSpringBootRulesConfigurationProperties rules;
+    private final SpringBootRulesConfiguration rules;
     
-    private final SpringBootRootConfigurationProperties root;
+    private final OrchestrationSpringBootRootConfiguration root;
     
     private final CenterRepositoryConfigurationYamlSwapper centerRepositorySwapper = new CenterRepositoryConfigurationYamlSwapper();
-    
-    private final OrchestrationSpringBootRulesConfigurationYamlSwapper configurationSwapper = new OrchestrationSpringBootRulesConfigurationYamlSwapper();
     
     /**
      * Get orchestration configuration.
@@ -108,7 +101,8 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @Bean
     @Conditional(LocalRulesCondition.class)
     public DataSource localShardingSphereDataSource(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
-        return new OrchestrationShardingSphereDataSource(new ShardingSphereDataSource(dataSourceMap, configurationSwapper.swap(rules), root.getProps()), orchestrationConfiguration);
+        Collection<RuleConfiguration> ruleConfigurations = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(RuleConfigurationsBuilder.getYamlRuleConfigurations(rules));
+        return new OrchestrationShardingSphereDataSource(new ShardingSphereDataSource(dataSourceMap, ruleConfigurations, root.getProps()), orchestrationConfiguration);
     }
     
     /**
@@ -126,36 +120,6 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     
     @Override
     public final void setEnvironment(final Environment environment) {
-        String prefix = "spring.shardingsphere.datasource.";
-        for (String each : getDataSourceNames(environment, prefix)) {
-            try {
-                dataSourceMap.put(each, getDataSource(environment, prefix, each));
-            } catch (final ReflectiveOperationException ex) {
-                throw new ShardingSphereException("Can't find data source type.", ex);
-            }
-        }
-    }
-    
-    private List<String> getDataSourceNames(final Environment environment, final String prefix) {
-        StandardEnvironment standardEnv = (StandardEnvironment) environment;
-        standardEnv.setIgnoreUnresolvableNestedPlaceholders(true);
-        String dataSources = standardEnv.getProperty(prefix + "name");
-        if (StringUtils.isEmpty(dataSources)) {
-            dataSources = standardEnv.getProperty(prefix + "names");
-        }
-        if (StringUtils.isEmpty(dataSources)) {
-            return Collections.emptyList();
-        }
-        return new InlineExpressionParser(dataSources).splitAndEvaluate();
-    }
-    
-    @SuppressWarnings("unchecked")
-    private DataSource getDataSource(final Environment environment, final String prefix, final String dataSourceName) throws ReflectiveOperationException {
-        Map<String, Object> dataSourceProps = PropertyUtil.handle(environment, prefix + dataSourceName, Map.class);
-        Preconditions.checkState(!dataSourceProps.isEmpty(), String.format("Wrong datasource [%s] properties!", dataSourceName));
-        DataSource result = DataSourceUtil.getDataSource(dataSourceProps.get("type").toString(), dataSourceProps);
-        DataSourcePropertiesSetterHolder.getDataSourcePropertiesSetterByType(dataSourceProps.get("type").toString()).ifPresent(
-            dataSourcePropertiesSetter -> dataSourcePropertiesSetter.propertiesSet(environment, prefix, dataSourceName, result));
-        return result;
+        dataSourceMap.putAll(DataSourceMapSetter.getDataSourceMap(environment));
     }
 }

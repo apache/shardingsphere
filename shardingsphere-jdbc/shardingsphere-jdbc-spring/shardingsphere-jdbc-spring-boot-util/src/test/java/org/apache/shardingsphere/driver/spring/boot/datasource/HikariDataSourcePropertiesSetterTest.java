@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.driver.spring.boot.datasource;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.shardingsphere.driver.spring.boot.datasource.prop.impl.HikariDataSourcePropertiesSetter;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.env.Environment;

@@ -15,21 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.boot.prop;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
-import java.util.Properties;
+package org.apache.shardingsphere.driver.spring.boot.datasource.prop.impl;
 
 /**
- * Properties configuration properties.
+ * DBCP2 datasource properties setter.
  */
-@ConfigurationProperties(prefix = "spring.shardingsphere")
-@Getter
-@Setter
-public class SpringBootPropertiesConfigurationProperties {
+public final class CommonDbcp2DataSourcePropertiesSetter extends AbstractDbcp2DataSourcePropertiesSetter {
     
-    private Properties props = new Properties();
+    @Override
+    public String getType() {
+        return "org.apache.commons.dbcp2.BasicDataSource";
+    }
 }

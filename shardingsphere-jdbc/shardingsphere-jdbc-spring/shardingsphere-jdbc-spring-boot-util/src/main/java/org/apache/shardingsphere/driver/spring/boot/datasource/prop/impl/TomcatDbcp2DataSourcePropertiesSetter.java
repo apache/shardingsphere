@@ -15,25 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.orchestration.spring.boot.common;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
-import java.util.Map;
-import java.util.Properties;
+package org.apache.shardingsphere.driver.spring.boot.datasource.prop.impl;
 
 /**
- * Root configuration properties.
+ * Tomcat DBCP2 datasource properties setter.
  */
-@ConfigurationProperties(prefix = "spring.shardingsphere")
-@Getter
-@Setter
-public final class SpringBootRootConfigurationProperties {
+public final class TomcatDbcp2DataSourcePropertiesSetter extends AbstractDbcp2DataSourcePropertiesSetter {
     
-    private Properties props = new Properties();
-    
-    private Map<String, YamlCenterRepositoryConfiguration> orchestration;
+    @Override
+    public String getType() {
+        return "org.apache.tomcat.dbcp.dbcp2.BasicDataSource";
+    }
 }

@@ -72,13 +72,13 @@
     {
       "name": "spring.shardingsphere.props",
       "type": "java.util.Properties",
-      "sourceType": "org.apache.shardingsphere.driver.orchestration.spring.boot.common.SpringBootRootConfigurationProperties",
+      "sourceType": "org.apache.shardingsphere.driver.orchestration.spring.boot.common.OrchestrationSpringBootRootConfiguration",
       "description": "Customize shardingsphere properties."
     },
     {
       "name": "spring.shardingsphere.orchestration",
       "type": "java.util.Map<java.lang.String,org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration>",
-      "sourceType": "org.apache.shardingsphere.driver.orchestration.spring.boot.common.SpringBootRootConfigurationProperties",
+      "sourceType": "org.apache.shardingsphere.driver.orchestration.spring.boot.common.OrchestrationSpringBootRootConfiguration",
       "description": "Customize ShardingSphere orchestration instance."
     },
     {

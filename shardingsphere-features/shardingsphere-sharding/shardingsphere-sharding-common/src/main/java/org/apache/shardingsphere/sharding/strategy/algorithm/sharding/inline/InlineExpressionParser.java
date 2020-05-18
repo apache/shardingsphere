@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
 import groovy.lang.Closure;
@@ -64,10 +65,7 @@ public final class InlineExpressionParser {
      * @return result list
      */
     public List<String> splitAndEvaluate() {
-        if (null == inlineExpression) {
-            return Collections.emptyList();
-        }
-        return flatten(evaluate(split()));
+        return Strings.isNullOrEmpty(inlineExpression) ? Collections.emptyList() : flatten(evaluate(split()));
     }
     
     /**

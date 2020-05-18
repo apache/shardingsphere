@@ -15,30 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.boot.rule;
+package org.apache.shardingsphere.driver.spring.boot.prop;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.Properties;
+
 /**
- * Spring boot rules configuration properties.
+ * Spring boot properties configuration.
  */
-@ConfigurationProperties(prefix = "spring.shardingsphere.rules")
+@ConfigurationProperties(prefix = "spring.shardingsphere")
 @Getter
 @Setter
-public class SpringBootRulesConfigurationProperties implements YamlConfiguration {
+public class SpringBootPropertiesConfiguration {
     
-    private YamlShardingRuleConfiguration shardingRule;
-    
-    private YamlMasterSlaveRuleConfiguration masterSlaveRule;
-    
-    private YamlEncryptRuleConfiguration encryptRule;
-    
-    private YamlShadowRuleConfiguration shadowRule;
+    private Properties props = new Properties();
 }

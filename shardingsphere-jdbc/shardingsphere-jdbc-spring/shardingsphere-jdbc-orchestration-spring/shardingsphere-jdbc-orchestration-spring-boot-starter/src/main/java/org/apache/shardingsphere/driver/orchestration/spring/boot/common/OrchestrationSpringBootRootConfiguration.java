@@ -15,31 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.boot.datasource;
+package org.apache.shardingsphere.driver.orchestration.spring.boot.common;
 
-import org.springframework.core.env.Environment;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import javax.sql.DataSource;
+import java.util.Map;
+import java.util.Properties;
 
 /**
- * Different datasource properties setter.
+ * Orchestration spring boot root configuration.
  */
-public interface DataSourcePropertiesSetter {
+@ConfigurationProperties(prefix = "spring.shardingsphere")
+@Getter
+@Setter
+public final class OrchestrationSpringBootRootConfiguration {
     
-    /**
-     * Set datasource custom properties.
-     *
-     * @param environment environment variable
-     * @param prefix properties prefix
-     * @param dataSourceName current database name
-     * @param dataSource dataSource instance
-     */
-    void propertiesSet(Environment environment, String prefix, String dataSourceName, DataSource dataSource);
+    private Properties props = new Properties();
     
-    /**
-     * Get type name of data source.
-     *
-     * @return type name of data source.
-     */
-    String getType();
+    private Map<String, YamlCenterRepositoryConfiguration> orchestration;
 }
