@@ -23,18 +23,6 @@
             elementFormDefault="qualified">
     <xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd"/>
     
-    <xsd:element name="data-source">
-        <xsd:complexType>
-            <xsd:all>
-                <xsd:element ref="props" minOccurs="0" />
-            </xsd:all>
-            <xsd:attribute name="id" type="xsd:string" use="required" />
-            <xsd:attribute name="master-data-source-name" type="xsd:string" use="required" />
-            <xsd:attribute name="slave-data-source-names" type="xsd:string" use="required" />
-            <xsd:attribute name="strategy-ref" type="xsd:string" />
-        </xsd:complexType>
-    </xsd:element>
-    
     <xsd:complexType name="master-slave-rule">
         <xsd:sequence>
             <xsd:element ref="data-source-rule" maxOccurs="unbounded" />
