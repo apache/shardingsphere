@@ -43,10 +43,10 @@ public final class ClusterConfigurationYamlSwapper implements YamlSwapper<YamlCl
     public ClusterConfiguration swap(final YamlClusterConfiguration yamlConfiguration) {
         final ClusterConfiguration clusterConfiguration = new ClusterConfiguration();
         final HeartBeatConfiguration heartBeatConfiguration = new HeartBeatConfiguration();
-        heartBeatConfiguration.setSql(clusterConfiguration.getHeartBeat().getSql());
-        heartBeatConfiguration.setInterval(clusterConfiguration.getHeartBeat().getInterval());
-        heartBeatConfiguration.setRetryEnable(clusterConfiguration.getHeartBeat().getRetryEnable());
-        heartBeatConfiguration.setRetryMaximum(clusterConfiguration.getHeartBeat().getRetryMaximum());
+        heartBeatConfiguration.setSql(yamlConfiguration.getHeartBeat().getSql());
+        heartBeatConfiguration.setInterval(yamlConfiguration.getHeartBeat().getInterval());
+        heartBeatConfiguration.setRetryEnable(yamlConfiguration.getHeartBeat().getRetryEnable());
+        heartBeatConfiguration.setRetryMaximum(yamlConfiguration.getHeartBeat().getRetryMaximum());
         clusterConfiguration.setHeartBeat(heartBeatConfiguration);
         return clusterConfiguration;
     }
