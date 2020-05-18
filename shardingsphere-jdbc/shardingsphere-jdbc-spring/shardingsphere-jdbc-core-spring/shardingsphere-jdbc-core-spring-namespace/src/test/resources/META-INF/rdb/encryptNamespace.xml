@@ -36,8 +36,8 @@
         <prop key="aes.key.value">123456</prop>
     </bean:properties>
     
-    <sharding:data-source id="encryptDataSource">
-        <sharding:sharding-rule data-source-names="dbtbl_0" >
+    <sharding:data-source id="encryptDataSource" data-source-names="dbtbl_0">
+        <sharding:sharding-rule  >
             <sharding:encrypt-rule>
                 <encrypt:tables>
                     <encrypt:table name="t_order">

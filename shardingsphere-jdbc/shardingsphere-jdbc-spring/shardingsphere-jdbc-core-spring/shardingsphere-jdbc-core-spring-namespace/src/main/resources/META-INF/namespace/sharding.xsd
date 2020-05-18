@@ -39,6 +39,7 @@
                 <xsd:element ref="props" minOccurs="0" />
             </xsd:all>
             <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="data-source-names" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>
     <xsd:element name="sharding-rule">
@@ -50,7 +51,6 @@
                 <xsd:element name="master-slave-rule" type="masterslave:master-slave-rule" minOccurs="0" />
                 <xsd:element name="encrypt-rule" type="encrypt:encrypt-rule" minOccurs="0" />
             </xsd:all>
-            <xsd:attribute name="data-source-names" type="xsd:string" use="required" />
             <xsd:attribute name="default-database-strategy-ref" type="xsd:string" />
             <xsd:attribute name="default-table-strategy-ref" type="xsd:string" />
             <xsd:attribute name="default-key-generator-ref" type="xsd:string" />
