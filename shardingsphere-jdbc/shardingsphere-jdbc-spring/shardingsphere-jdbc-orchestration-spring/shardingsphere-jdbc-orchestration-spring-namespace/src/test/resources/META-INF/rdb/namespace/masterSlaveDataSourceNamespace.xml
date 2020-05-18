@@ -18,9 +18,12 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
        xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://shardingsphere.apache.org/schema/shardingsphere/sharding
+                        http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
                         http://shardingsphere.apache.org/schema/shardingsphere/masterslave
                         http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd
                         ">
@@ -29,13 +32,19 @@
     <master-slave:load-balance-algorithm id="randomLoadBalanceAlgorithm" type="RANDOM" />
     <master-slave:load-balance-algorithm id="roundRobinLoadBalanceAlgorithm" type="ROUND_ROBIN" />
     
-    <master-slave:data-source id="defaultMasterSlaveDataSource" master-data-source-name="dbtbl_0_master" slave-data-source-names="dbtbl_0_slave_0, dbtbl_0_slave_1" >
-        <master-slave:props>
+    <sharding:data-source id="defaultMasterSlaveDataSource">
+        <sharding:sharding-rule data-source-names="dbtbl_0_master, dbtbl_0_slave_0, dbtbl_0_slave_1">
+            <sharding:master-slave-rule>
+                <master-slave:data-source-rule id="dbtbl_0" master-data-source-name="dbtbl_0_master" slave-data-source-names="dbtbl_0_slave_0, dbtbl_0_slave_1" />
+            </sharding:master-slave-rule>
+        </sharding:sharding-rule>
+        <sharding:props>
             <prop key="sql.show">${sql_show}</prop>
             <prop key="executor.size">10</prop>
             <prop key="foo">bar</prop>
-        </master-slave:props>
-    </master-slave:data-source>
+        </sharding:props>
+    </sharding:data-source>
+    
     <master-slave:data-source id="randomMasterSlaveDataSource" master-data-source-name="dbtbl_0_master" slave-data-source-names="dbtbl_0_slave_0, dbtbl_0_slave_1" strategy-ref="randomLoadBalanceAlgorithm" />
     <master-slave:data-source id="roundRobinMasterSlaveDataSource" master-data-source-name="dbtbl_0_master" slave-data-source-names="dbtbl_0_slave_0, dbtbl_0_slave_1" strategy-ref="roundRobinLoadBalanceAlgorithm" />
     <master-slave:data-source id="refMasterSlaveDataSource" master-data-source-name="dbtbl_1_master" slave-data-source-names="dbtbl_1_slave_0, dbtbl_1_slave_1" strategy-ref="randomLoadBalanceAlgorithm" />
