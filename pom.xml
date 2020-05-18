@@ -33,6 +33,7 @@
         <module>shardingsphere-sql-parser</module>
         <module>shardingsphere-db-protocol</module>
         <module>shardingsphere-infra</module>
+        <module>shardingsphere-kernal</module>
         
         <module>shardingsphere-jdbc</module>
         <module>shardingsphere-proxy</module>
@@ -43,7 +44,7 @@
         <module>shardingsphere-control-panel</module>
         
         <module>shardingsphere-integration-test</module>
-        <module>shardingsphere-distribution</module><module>shardingsphere-kernal</module>
+        <module>shardingsphere-distribution</module>
     </modules>
     
     <properties>
