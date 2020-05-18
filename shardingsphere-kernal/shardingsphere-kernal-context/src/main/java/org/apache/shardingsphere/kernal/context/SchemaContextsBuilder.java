@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.context;
+package org.apache.shardingsphere.kernal.context;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.auth.Authentication;
@@ -32,9 +32,6 @@ import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRulesBuilder;
-import org.apache.shardingsphere.kernal.context.SchemaContext;
-import org.apache.shardingsphere.kernal.context.SchemaContexts;
-import org.apache.shardingsphere.kernal.context.ShardingSphereSchema;
 import org.apache.shardingsphere.kernal.context.runtime.CachedDatabaseMetaData;
 import org.apache.shardingsphere.kernal.context.runtime.RuntimeContext;
 
@@ -43,65 +40,57 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-@Slf4j(topic = "ShardingSphere-metadata")
+@Slf4j(topic = "ShardingSphere-schemaContexts")
 public final class SchemaContextsBuilder {
-    
-    private final Map<String, DataSource> dataSources;
     
     private final DatabaseType databaseType;
     
-    private final Collection<RuleConfiguration> configurations;
+    private final Map<String, Map<String, DataSource>> dataSources;
     
-    private final Collection<ShardingSphereRule> rules;
+    private final Map<String, Collection<RuleConfiguration>> configurations;
     
     private final ConfigurationProperties properties;
     
     private final ExecutorKernel executorKernel;
     
-    private final CachedDatabaseMetaData cachedDatabaseMetaData;
-    
-    private final ShardingSphereMetaData metaData;
-    
-    public SchemaContextsBuilder(final Map<String, DataSource> dataSources,
-                                 final DatabaseType databaseType, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
+    public SchemaContextsBuilder(final Map<String, Map<String, DataSource>> dataSources,
+                                 final DatabaseType databaseType, final Map<String, Collection<RuleConfiguration>> configurations, final Properties props) throws SQLException {
         this.dataSources = dataSources;
         this.databaseType = databaseType;
         this.configurations = configurations;
-        rules = ShardingSphereRulesBuilder.build(configurations, dataSources.keySet());
         properties = new ConfigurationProperties(null == props ? new Properties() : props);
         executorKernel = new ExecutorKernel(properties.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
-        cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSources);
-        metaData = createMetaData(dataSources, databaseType);
         log(configurations, props);
     }
     
     /**
      *  Build.
      * 
+     * @exception SQLException sql exception
      * @return SchemaContexts
      */
-    public SchemaContexts build() {
-        return new SchemaContexts(Collections.singleton(createSchemaContext()), properties, new Authentication());
-    }
-    
-    private SchemaContext createSchemaContext() {
-        return new SchemaContext(new ShardingSphereSchema(databaseType, configurations, rules, dataSources, metaData), 
-                new RuntimeContext(cachedDatabaseMetaData, executorKernel));
-    }
-    
-    private CachedDatabaseMetaData createCachedDatabaseMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        try (Connection connection = dataSourceMap.values().iterator().next().getConnection()) {
-            return new CachedDatabaseMetaData(connection.getMetaData());
+    public SchemaContexts build() throws SQLException {
+        Map<String, SchemaContext> schemaContexts = new LinkedHashMap<>();
+        for (String each : configurations.keySet()) {
+            schemaContexts.put(each, createSchemaContext(each));
         }
+        return new SchemaContexts(schemaContexts, properties, new Authentication());
     }
     
-    private ShardingSphereMetaData createMetaData(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) throws SQLException {
+    private SchemaContext createSchemaContext(final String schemaName) throws SQLException {
+        Collection<RuleConfiguration> configurations = this.configurations.get(schemaName);
+        Map<String, DataSource> dataSources = this.dataSources.get(schemaName);
+        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(configurations, dataSources.keySet());
+        return new SchemaContext(new ShardingSphereSchema(databaseType, configurations, rules, dataSources, createMetaData(dataSources, rules)), 
+                new RuntimeContext(createCachedDatabaseMetaData(dataSources), executorKernel));
+    }
+    
+    private ShardingSphereMetaData createMetaData(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) throws SQLException {
         long start = System.currentTimeMillis();
         DataSourceMetas dataSourceMetas = new DataSourceMetas(databaseType, getDatabaseAccessConfigurationMap(dataSourceMap));
         RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataLoader(rules).load(databaseType, dataSourceMap, properties, executorKernel.getExecutorService().getExecutorService());
@@ -122,8 +111,14 @@ public final class SchemaContextsBuilder {
         return result;
     }
     
-    private void log(final Collection<RuleConfiguration> configurations, final Properties props) {
-        ConfigurationLogger.log(configurations);
+    private CachedDatabaseMetaData createCachedDatabaseMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {
+        try (Connection connection = dataSourceMap.values().iterator().next().getConnection()) {
+            return new CachedDatabaseMetaData(connection.getMetaData());
+        }
+    }
+    
+    private void log(final Map<String, Collection<RuleConfiguration>> configurations, final Properties props) {
+        configurations.values().forEach(ConfigurationLogger::log);
         ConfigurationLogger.log(props);
     }
 }

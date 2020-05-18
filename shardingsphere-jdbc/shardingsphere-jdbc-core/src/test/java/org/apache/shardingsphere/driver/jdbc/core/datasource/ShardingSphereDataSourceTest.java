@@ -18,16 +18,17 @@
 package org.apache.shardingsphere.driver.jdbc.core.datasource;
 
 import com.google.common.base.Joiner;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.fixture.XAShardingTransactionManagerFixture;
-import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
+import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.junit.After;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -98,7 +99,7 @@ public final class ShardingSphereDataSourceTest {
     
     private void assertDatabaseProductName(final Map<String, DataSource> dataSourceMap, final Connection... connections) throws SQLException {
         try {
-            assertThat(createShardingSphereDataSource(dataSourceMap).getSchemaContexts().getSchemaContexts().iterator().next().getSchema().getDatabaseType(), 
+            assertThat(createShardingSphereDataSource(dataSourceMap).getSchemaContexts().getSchemaContexts().get(DefaultSchema.LOGIC_NAME).getSchema().getDatabaseType(), 
                     instanceOf(H2DatabaseType.class));
         } finally {
             for (Connection each : connections) {
