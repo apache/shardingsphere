@@ -70,27 +70,24 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
     
     private Collection<BeanDefinition> parseRuleConfigurations(final Element element) {
         Collection<BeanDefinition> result = new ManagedList<>(3);
-        Element shardingRuleElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.SHARDING_RULE_CONFIG_TAG);
-        if (null != shardingRuleElement) {
-            parseShardingRuleConfiguration(shardingRuleElement).ifPresent(result::add);
-        }
+        parseShardingRuleConfiguration(element).ifPresent(result::add);
         parseMasterSlaveRuleConfiguration(element).ifPresent(result::add);
         parseEncryptRuleConfiguration(element).ifPresent(result::add);
         return result;
     }
     
     private Optional<BeanDefinition> parseShardingRuleConfiguration(final Element element) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingRuleConfiguration.class);
-        parseDefaultDatabaseShardingStrategy(factory, element);
-        parseDefaultTableShardingStrategy(factory, element);
-        List<BeanDefinition> tableRuleConfigs = parseTableRulesConfiguration(element);
-        if (tableRuleConfigs.isEmpty()) {
+        Element shardingRuleElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.SHARDING_RULE_CONFIG_TAG);
+        if (null == shardingRuleElement) {
             return Optional.empty();
         }
-        factory.addPropertyValue("tableRuleConfigs", tableRuleConfigs);
-        factory.addPropertyValue("bindingTableGroups", parseBindingTablesConfiguration(element));
-        factory.addPropertyValue("broadcastTables", parseBroadcastTables(element));
-        parseDefaultKeyGenerator(factory, element);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingRuleConfiguration.class);
+        parseDefaultDatabaseShardingStrategy(factory, shardingRuleElement);
+        parseDefaultTableShardingStrategy(factory, shardingRuleElement);
+        factory.addPropertyValue("tableRuleConfigs", parseTableRulesConfiguration(shardingRuleElement));
+        factory.addPropertyValue("bindingTableGroups", parseBindingTablesConfiguration(shardingRuleElement));
+        factory.addPropertyValue("broadcastTables", parseBroadcastTables(shardingRuleElement));
+        parseDefaultKeyGenerator(factory, shardingRuleElement);
         return Optional.of(factory.getBeanDefinition());
     }
     
@@ -116,20 +113,13 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
     }
     
     private List<BeanDefinition> parseTableRulesConfiguration(final Element element) {
-        try {
-            Element tableRulesElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.TABLE_RULES_TAG);
-            List<Element> tableRuleElements = DomUtils.getChildElementsByTagName(tableRulesElement, ShardingDataSourceBeanDefinitionParserTag.TABLE_RULE_TAG);
-            List<BeanDefinition> result = new ManagedList<>(tableRuleElements.size());
-            for (Element each : tableRuleElements) {
-                result.add(parseTableRuleConfiguration(each));
-            }
-            return result;
-            // TODO split shading rule and data source
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            return Collections.emptyList();
+        Element tableRulesElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.TABLE_RULES_TAG);
+        List<Element> tableRuleElements = DomUtils.getChildElementsByTagName(tableRulesElement, ShardingDataSourceBeanDefinitionParserTag.TABLE_RULE_TAG);
+        List<BeanDefinition> result = new ManagedList<>(tableRuleElements.size());
+        for (Element each : tableRuleElements) {
+            result.add(parseTableRuleConfiguration(each));
         }
+        return result;
     }
     
     private BeanDefinition parseTableRuleConfiguration(final Element tableElement) {
