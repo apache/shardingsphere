@@ -124,7 +124,9 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
             }
             return result;
             // TODO split shading rule and data source
+            // CHECKSTYLE:OFF
         } catch (final Exception ex) {
+            // CHECKSTYLE:ON
             return Collections.emptyList();
         }
     }
