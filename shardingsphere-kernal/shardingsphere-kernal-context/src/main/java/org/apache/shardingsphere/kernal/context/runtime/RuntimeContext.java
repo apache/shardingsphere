@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context.runtime;
+package org.apache.shardingsphere.kernal.context.runtime;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 
 @Getter
 public final class RuntimeContext {
     
-    private final SQLParseResultCache cache = new SQLParseResultCache();
-    
     private final CachedDatabaseMetaData cachedDatabaseMetaData;
     
-    private final RuntimeExecutorKernel executorKernel;
+    private final ExecutorKernel executorKernel;
     
-    public RuntimeContext(final CachedDatabaseMetaData cachedDatabaseMetaData, final RuntimeExecutorKernel executorKernel) {
+    public RuntimeContext(final CachedDatabaseMetaData cachedDatabaseMetaData, final ExecutorKernel executorKernel) {
         this.cachedDatabaseMetaData = cachedDatabaseMetaData;
         this.executorKernel = executorKernel;
     }
