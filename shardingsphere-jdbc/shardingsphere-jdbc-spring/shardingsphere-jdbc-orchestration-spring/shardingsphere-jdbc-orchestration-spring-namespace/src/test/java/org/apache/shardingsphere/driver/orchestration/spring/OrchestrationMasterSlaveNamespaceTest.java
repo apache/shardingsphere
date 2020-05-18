@@ -57,7 +57,7 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
     @Test
     public void assertDefaultMaserSlaveDataSource() {
         MasterSlaveRule masterSlaveRule = getMasterSlaveRule("defaultMasterSlaveDataSourceOrchestration");
-        Optional<MasterSlaveDataSourceRule> masterSlaveDataSourceRule = masterSlaveRule.findDataSourceRule("dbtbl_0");
+        Optional<MasterSlaveDataSourceRule> masterSlaveDataSourceRule = masterSlaveRule.findDataSourceRule("default_dbtbl_0");
         assertTrue(masterSlaveDataSourceRule.isPresent());
         assertThat(masterSlaveDataSourceRule.get().getMasterDataSourceName(), is("dbtbl_0_master"));
         assertTrue(masterSlaveDataSourceRule.get().getSlaveDataSourceNames().contains("dbtbl_0_slave_0"));
@@ -67,11 +67,11 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
     @Test
     public void assertTypeMasterSlaveDataSource() {
         MasterSlaveRule randomSlaveRule = getMasterSlaveRule("randomMasterSlaveDataSourceOrchestration");
-        Optional<MasterSlaveDataSourceRule> randomMasterSlaveDataSourceRule = randomSlaveRule.findDataSourceRule("randomMasterSlaveDataSource");
+        Optional<MasterSlaveDataSourceRule> randomMasterSlaveDataSourceRule = randomSlaveRule.findDataSourceRule("random_dbtbl_0");
         assertTrue(randomMasterSlaveDataSourceRule.isPresent());
         assertTrue(randomMasterSlaveDataSourceRule.get().getLoadBalanceAlgorithm() instanceof RandomMasterSlaveLoadBalanceAlgorithm);
         MasterSlaveRule roundRobinSlaveRule = getMasterSlaveRule("roundRobinMasterSlaveDataSourceOrchestration");
-        Optional<MasterSlaveDataSourceRule> roundRobinMasterSlaveDataSourceRule = roundRobinSlaveRule.findDataSourceRule("roundRobinMasterSlaveDataSource");
+        Optional<MasterSlaveDataSourceRule> roundRobinMasterSlaveDataSourceRule = roundRobinSlaveRule.findDataSourceRule("roundRobin_dbtbl_0");
         assertTrue(roundRobinMasterSlaveDataSourceRule.isPresent());
         assertTrue(roundRobinMasterSlaveDataSourceRule.get().getLoadBalanceAlgorithm() instanceof RoundRobinMasterSlaveLoadBalanceAlgorithm);
     }
