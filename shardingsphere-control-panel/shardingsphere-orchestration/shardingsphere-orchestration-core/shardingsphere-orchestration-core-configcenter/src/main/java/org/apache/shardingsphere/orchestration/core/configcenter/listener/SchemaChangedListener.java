@@ -128,11 +128,11 @@ public final class SchemaChangedListener extends PostShardingCenterRepositoryEve
     }
     
     private boolean isShardingRule(final DataChangedEvent event) {
-        return event.getValue().contains("tables:\n") || event.getValue().contains("tables:\r\n");
+        return event.getValue().contains("- !SHARDING");
     }
     
     private boolean isEncryptRule(final DataChangedEvent event) {
-        return event.getValue().contains("encryptors:\n");
+        return event.getValue().contains("- !ENCRYPT");
     }
     
     private RuleConfigurationsChangedEvent createRuleConfigurationsChangedEvent(final String shardingSchemaName, final String ruleValue) {
