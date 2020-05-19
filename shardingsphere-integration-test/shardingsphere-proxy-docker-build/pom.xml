@@ -63,7 +63,7 @@
     
     <profiles>
         <profile>
-            <id>test</id>
+            <id>it-proxy</id>
             <build>
                 <finalName>shardingsphere-proxy-${project.version}</finalName>
                 <plugins>
