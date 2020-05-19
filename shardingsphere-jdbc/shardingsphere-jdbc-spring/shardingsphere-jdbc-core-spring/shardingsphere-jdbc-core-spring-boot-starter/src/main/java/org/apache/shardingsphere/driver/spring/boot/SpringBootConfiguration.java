@@ -23,7 +23,6 @@ import org.apache.shardingsphere.driver.spring.boot.datasource.DataSourceMapSett
 import org.apache.shardingsphere.driver.spring.boot.prop.SpringBootPropertiesConfiguration;
 import org.apache.shardingsphere.driver.spring.boot.rule.SpringBootRulesConfiguration;
 import org.apache.shardingsphere.driver.spring.transaction.ShardingTransactionTypeScanner;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,8 +67,7 @@ public class SpringBootConfiguration implements EnvironmentAware {
     @Bean
     @Autowired(required = false)
     public DataSource shardingSphereDataSource(final Collection<YamlRuleConfiguration> rules) throws SQLException {
-        Collection<RuleConfiguration> ruleConfigurations = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rules);
-        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, ruleConfigurations, props.getProps());
+        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rules), props.getProps());
     }
     
     /**
