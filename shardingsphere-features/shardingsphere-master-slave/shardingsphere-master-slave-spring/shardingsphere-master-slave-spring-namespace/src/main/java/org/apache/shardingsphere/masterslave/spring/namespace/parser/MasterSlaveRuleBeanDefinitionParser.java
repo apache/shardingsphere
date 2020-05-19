@@ -41,12 +41,12 @@ public final class MasterSlaveRuleBeanDefinitionParser extends AbstractBeanDefin
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(MasterSlaveRuleConfiguration.class);
         List<Element> masterSlaveDataSourceElements = DomUtils.getChildElementsByTagName(element, MasterSlaveRuleBeanDefinitionTag.MASTER_SLAVE_DATA_SOURCE_TAG);
         List<BeanDefinition> masterSlaveDataSources = new ManagedList<>(masterSlaveDataSourceElements.size());
         for (Element each : masterSlaveDataSourceElements) {
             masterSlaveDataSources.add(parseMasterSlaveDataSourceConfiguration(each));
         }
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(MasterSlaveRuleConfiguration.class);
         factory.addConstructorArgValue(masterSlaveDataSources);
         return factory.getBeanDefinition();
     }
