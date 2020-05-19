@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.namespace.handler;
+package org.apache.shardingsphere.driver.spring.namespace.parser.rule.sharding;
 
-import org.apache.shardingsphere.driver.spring.namespace.constants.LoadBalanceAlgorithmBeanDefinitionParserTag;
-import org.apache.shardingsphere.driver.spring.namespace.parser.rule.masterslave.MasterSlaveLoadBalanceStrategyBeanDefinitionParser;
-import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
+import org.springframework.beans.factory.xml.ParserContext;
+import org.w3c.dom.Element;
 
 /**
- * Spring namespace handler for master-slave.
+ * Sharding strategy bean parser for spring namespace.
  */
-public final class MasterSlaveNamespaceHandler extends NamespaceHandlerSupport {
+public final class ShardingStrategyBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     @Override
-    public void init() {
-        registerBeanDefinitionParser(LoadBalanceAlgorithmBeanDefinitionParserTag.LOAD_BALANCE_ALGORITHM_TAG, new MasterSlaveLoadBalanceStrategyBeanDefinitionParser());
+    protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
+        return ShardingStrategyBeanDefinition.getBeanDefinitionByElement(element);
     }
 }

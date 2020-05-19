@@ -22,9 +22,9 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataS
 import org.apache.shardingsphere.driver.spring.namespace.constants.DataSourceBeanDefinitionParserTag;
 import org.apache.shardingsphere.driver.spring.namespace.constants.EncryptDataSourceBeanDefinitionParserTag;
 import org.apache.shardingsphere.driver.spring.namespace.constants.ShardingRuleBeanDefinitionParserTag;
-import org.apache.shardingsphere.driver.spring.namespace.parser.rule.EncryptRuleBeanDefinitionParser;
-import org.apache.shardingsphere.driver.spring.namespace.parser.rule.MasterSlaveDataSourceConfigurationBeanDefinition;
-import org.apache.shardingsphere.driver.spring.namespace.parser.rule.ShardingRuleBeanDefinitionParser;
+import org.apache.shardingsphere.driver.spring.namespace.parser.rule.encrypt.EncryptRuleBeanDefinitionParser;
+import org.apache.shardingsphere.driver.spring.namespace.parser.rule.masterslave.MasterSlaveDataSourceConfigurationBeanDefinition;
+import org.apache.shardingsphere.driver.spring.namespace.parser.rule.sharding.ShardingRuleBeanDefinitionParser;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;

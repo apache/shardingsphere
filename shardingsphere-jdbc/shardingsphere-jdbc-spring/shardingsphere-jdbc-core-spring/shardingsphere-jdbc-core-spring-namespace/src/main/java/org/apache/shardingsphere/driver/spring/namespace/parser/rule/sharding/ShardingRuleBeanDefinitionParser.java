@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.namespace.parser.rule;
+package org.apache.shardingsphere.driver.spring.namespace.parser.rule.sharding;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.driver.spring.namespace.constants.ShardingRuleBeanDefinitionParserTag;

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.driver.spring.namespace.handler;
 import org.apache.shardingsphere.driver.spring.namespace.constants.DataSourceBeanDefinitionParserTag;
 import org.apache.shardingsphere.driver.spring.namespace.constants.ShardingTransactionTypeScannerBeanDefinitionParserTag;
 import org.apache.shardingsphere.driver.spring.namespace.parser.DataSourceBeanDefinitionParser;
-import org.apache.shardingsphere.driver.spring.namespace.parser.rule.ShardingTransactionTypeScannerBeanDefinitionParser;
+import org.apache.shardingsphere.driver.spring.namespace.parser.rule.sharding.ShardingTransactionTypeScannerBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
