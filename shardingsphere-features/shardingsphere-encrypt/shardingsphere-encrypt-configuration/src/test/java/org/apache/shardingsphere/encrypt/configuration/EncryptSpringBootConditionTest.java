@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.boot.condition;
+package org.apache.shardingsphere.encrypt.configuration;
 
+import org.apache.shardingsphere.encrypt.configuration.condition.EncryptSpringBootCondition;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;

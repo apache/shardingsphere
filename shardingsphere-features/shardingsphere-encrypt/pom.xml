@@ -32,6 +32,7 @@
     <modules>
         <module>shardingsphere-encrypt-api</module>
         <module>shardingsphere-encrypt-common</module>
+        <module>shardingsphere-encrypt-configuration</module>
         <module>shardingsphere-encrypt-rewrite</module>
         <module>shardingsphere-encrypt-merge</module>
     </modules>

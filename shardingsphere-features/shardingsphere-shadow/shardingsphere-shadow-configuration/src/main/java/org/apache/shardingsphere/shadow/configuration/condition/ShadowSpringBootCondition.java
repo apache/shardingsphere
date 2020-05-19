@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.boot.condition;
+package org.apache.shardingsphere.shadow.configuration.condition;
 
 import org.apache.shardingsphere.driver.spring.boot.util.PropertyUtil;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
@@ -24,15 +24,15 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * Encrypt spring boot condition.
+ * Shadow spring boot condition.
  */
-public class EncryptSpringBootCondition extends SpringBootCondition {
+public class ShadowSpringBootCondition extends SpringBootCondition {
     
-    private static final String ENCRYPT_PREFIX = "spring.shardingsphere.rules.encrypt";
+    private static final String SHADOW_PREFIX = "spring.shardingsphere.rules.shadow";
     
     @Override
     public ConditionOutcome getMatchOutcome(final ConditionContext conditionContext, final AnnotatedTypeMetadata annotatedTypeMetadata) {
-        return PropertyUtil.containPropertyPrefix(conditionContext.getEnvironment(), ENCRYPT_PREFIX)
-                ? ConditionOutcome.match() : ConditionOutcome.noMatch("Can't find ShardingSphere encrypt rule configuration in local file.");
+        return PropertyUtil.containPropertyPrefix(conditionContext.getEnvironment(), SHADOW_PREFIX)
+                ? ConditionOutcome.match() : ConditionOutcome.noMatch("Can't find ShardingSphere shadow rule configuration in local file.");
     }
 }

@@ -36,6 +36,7 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 
 import javax.sql.DataSource;
@@ -51,9 +52,8 @@ import java.util.Map;
 @ComponentScan("org.apache.shardingsphere.driver.spring.boot.converter")
 @EnableConfigurationProperties(SpringBootPropertiesConfiguration.class)
 @ConditionalOnProperty(prefix = "spring.shardingsphere", name = "enabled", havingValue = "true", matchIfMissing = true)
-@AutoConfigureBefore(DataSourceAutoConfiguration.class)
+@AutoConfigureBefore({DataSourceAutoConfiguration.class, SpringBootRulesConfiguration.class})
 @RequiredArgsConstructor
-@ImportAutoConfiguration(SpringBootRulesConfiguration.class)
 public class SpringBootConfiguration implements EnvironmentAware {
     
     private final SpringBootPropertiesConfiguration props;

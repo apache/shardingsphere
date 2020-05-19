@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.boot.condition;
+package org.apache.shardingsphere.masterslave.configruation.condition;
 
 import org.apache.shardingsphere.driver.spring.boot.util.PropertyUtil;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
@@ -24,7 +24,7 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * Master slave spring boot condition.
+ * Spring boot condition for master-slave .
  */
 public class MasterSlaveSpringBootCondition extends SpringBootCondition {
     

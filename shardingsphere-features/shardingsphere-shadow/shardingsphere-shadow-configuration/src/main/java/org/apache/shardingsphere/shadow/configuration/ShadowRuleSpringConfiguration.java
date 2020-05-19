@@ -15,27 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.boot.rule;
+package org.apache.shardingsphere.shadow.configuration;
 
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.apache.shardingsphere.shadow.configuration.condition.ShadowSpringBootCondition;
+import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Spring boot rules configuration.
+ * Shadow rule configuration for spring boot.
  */
 @Configuration
-public class SpringBootRulesConfiguration {
+public class ShadowRuleSpringConfiguration {
     
     /**
-     * Default YAML rule configuration for no rule configuration.
+     * Shadow YAML rule spring boot configuration.
      *
      * @return YAML rule configuration
      */
     @Bean
-    @ConditionalOnMissingBean(YamlRuleConfiguration.class)
-    public YamlRuleConfiguration noRules() {
-        return () -> DefaultRuleConfiguration.class;
+    @ConfigurationProperties(prefix = "spring.shardingsphere.rules.shadow")
+    @ConditionalOnClass(YamlShadowRuleConfiguration.class)
+    @Conditional(ShadowSpringBootCondition.class)
+    public YamlRuleConfiguration shadow() {
+        return new YamlShadowRuleConfiguration();
     }
 }
