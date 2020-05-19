@@ -59,7 +59,7 @@ public final class ClusterStateInstance {
      */
     public InstanceState loadInstanceState() {
         String instanceData = ShardingOrchestrationFacade.getInstance().getRegistryCenter().loadInstanceData();
-        return Optional.ofNullable(YamlEngine.unmarshal(instanceData, InstanceState.class)).orElse(null);
+        return YamlEngine.unmarshal(instanceData, InstanceState.class);
     }
     
     /**
