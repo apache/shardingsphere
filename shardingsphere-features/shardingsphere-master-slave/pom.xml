@@ -32,7 +32,6 @@
     <modules>
         <module>shardingsphere-master-slave-api</module>
         <module>shardingsphere-master-slave-common</module>
-        <module>shardingsphere-master-slave-configruation</module>
         <module>shardingsphere-master-slave-route</module>
         <module>shardingsphere-master-slave-spring</module>
     </modules>

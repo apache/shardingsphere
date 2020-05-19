@@ -31,5 +31,6 @@
     
     <modules>
         <module>shardingsphere-shadow-spring-namespace</module>
+        <module>shardingsphere-shadow-spring-boot-starter</module>
     </modules>
 </project>

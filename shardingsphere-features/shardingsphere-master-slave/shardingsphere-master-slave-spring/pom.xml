@@ -31,5 +31,6 @@
     
     <modules>
         <module>shardingsphere-master-slave-spring-namespace</module>
+        <module>shardingsphere-master-slave-spring-boot-starter</module>
     </modules>
 </project>

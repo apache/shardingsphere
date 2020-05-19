@@ -34,7 +34,6 @@ import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepo
 import org.apache.shardingsphere.orchestration.center.yaml.swapper.CenterRepositoryConfigurationYamlSwapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -63,8 +62,7 @@ import java.util.Map.Entry;
 @EnableConfigurationProperties(OrchestrationSpringBootRootConfiguration.class)
 @ConditionalOnProperty(prefix = "spring.shardingsphere", name = "enabled", havingValue = "true", matchIfMissing = true)
 @RequiredArgsConstructor
-@AutoConfigureBefore(DataSourceAutoConfiguration.class)
-@ImportAutoConfiguration(SpringBootRulesConfiguration.class)
+@AutoConfigureBefore({DataSourceAutoConfiguration.class, SpringBootRulesConfiguration.class})
 public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     
     private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
