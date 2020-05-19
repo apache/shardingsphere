@@ -71,13 +71,13 @@
     
     <sharding:key-generator id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
     
-    <shardingsphere:data-source id="shardingDataSource" data-source-names="demo_ds_0, demo_ds_1">
-        <shardingsphere:sharding-rule>
-            <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" database-strategy-ref="databaseStrategy" key-generator-ref="orderKeyGenerator" />
-            </sharding:table-rules>
-        </shardingsphere:sharding-rule>
-    </shardingsphere:data-source>
+    <sharding:rule id="shardingRule">
+        <sharding:table-rules>
+            <sharding:table-rule logic-table="t_order" database-strategy-ref="databaseStrategy" key-generator-ref="orderKeyGenerator" />
+        </sharding:table-rules>
+    </sharding:rule>
+    
+    <shardingsphere:data-source id="shardingDataSource" data-source-names="demo_ds_0, demo_ds_1" rule-refs="shardingRule" />
     
     <shardingsphere:tx-type-annotation-driven />
     

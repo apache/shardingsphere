@@ -46,10 +46,13 @@ public final class IntegrateTestEnvironment {
     
     private final Map<DatabaseType, DatabaseEnvironment> databaseEnvironments;
     
+    private final String activeProfile;
+    
     private IntegrateTestEnvironment() {
+        activeProfile = loadActiveProfile();
         Properties prop = new Properties();
         try {
-            prop.load(IntegrateTestEnvironment.class.getClassLoader().getResourceAsStream("integrate/env.properties"));
+            prop.load(IntegrateTestEnvironment.class.getClassLoader().getResourceAsStream("proxy".equals(activeProfile) ? "integrate/env-proxy.properties" : "integrate/env.properties"));
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
@@ -85,6 +88,16 @@ public final class IntegrateTestEnvironment {
                     break;
             }
         }
+    }
+    
+    private String loadActiveProfile() {
+        Properties prop = new Properties();
+        try {
+            prop.load(IntegrateTestEnvironment.class.getClassLoader().getResourceAsStream("integrate/profile.properties"));
+        } catch (final IOException ex) {
+            ex.printStackTrace();
+        }
+        return prop.getProperty("mode");
     }
     
     /**

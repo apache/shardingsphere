@@ -61,27 +61,23 @@
     <bean:properties id="databaseInlineProps">
         <prop key="algorithm.expression">demo_ds_${user_id % 2}</prop>
     </bean:properties>
-
+    
     <bean:properties id="orderInlineProps">
         <prop key="algorithm.expression">t_order_${order_id % 2}</prop>
     </bean:properties>
-
+    
     <bean:properties id="orderItemInlineProps">
         <prop key="algorithm.expression">t_order_item_${order_id % 2}</prop>
     </bean:properties>
-
+    
     <spi:sharding-algorithm id="databaseIineStrategyShardingAlgorithm" type="INLINE" props-ref="databaseInlineProps"/>
-
     <spi:sharding-algorithm id="orderInlineStrategyShardingAlgorithm" type="INLINE" props-ref="orderInlineProps"/>
-
     <spi:sharding-algorithm id="orderItemInlineStrategyShardingAlgorithm" type="INLINE" props-ref="orderItemInlineProps"/>
-
+    
     <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="databaseIineStrategyShardingAlgorithm"/>
-
     <sharding:standard-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-ref="orderInlineStrategyShardingAlgorithm"/>
-
     <sharding:standard-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-ref="orderItemInlineStrategyShardingAlgorithm"/>
-
+    
     <bean:properties id="properties">
         <prop key="worker.id">123</prop>
     </bean:properties>
@@ -90,21 +86,21 @@
     
     <sharding:key-generator id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
     <sharding:key-generator id="itemKeyGenerator" column="order_item_id" algorithm-ref="snowflakeAlgorithm" />
+
+    <sharding:rule id="shardingRule">
+        <sharding:table-rules>
+            <sharding:table-rule logic-table="t_order" actual-data-nodes="demo_ds_${0..1}.t_order_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" key-generator-ref="orderKeyGenerator" />
+            <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_ds_${0..1}.t_order_item_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" key-generator-ref="itemKeyGenerator" />
+        </sharding:table-rules>
+        <sharding:binding-table-rules>
+            <sharding:binding-table-rule logic-tables="t_order, t_order_item"/>
+        </sharding:binding-table-rules>
+        <sharding:broadcast-table-rules>
+            <sharding:broadcast-table-rule table="t_address"/>
+        </sharding:broadcast-table-rules>
+    </sharding:rule>
     
-    <shardingsphere:data-source id="realShardingDatabasesTablesDataSource" data-source-names="demo_ds_0, demo_ds_1">
-        <shardingsphere:sharding-rule>
-            <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" actual-data-nodes="demo_ds_${0..1}.t_order_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" key-generator-ref="orderKeyGenerator" />
-                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_ds_${0..1}.t_order_item_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" key-generator-ref="itemKeyGenerator" />
-            </sharding:table-rules>
-            <sharding:binding-table-rules>
-                <sharding:binding-table-rule logic-tables="t_order, t_order_item"/>
-            </sharding:binding-table-rules>
-            <sharding:broadcast-table-rules>
-                <sharding:broadcast-table-rule table="t_address"/>
-            </sharding:broadcast-table-rules>
-        </shardingsphere:sharding-rule>
-    </shardingsphere:data-source>
+    <shardingsphere:data-source id="realShardingDatabasesTablesDataSource" data-source-names="demo_ds_0, demo_ds_1" rule-refs="shardingRule" />
     <orchestraion:sharding-data-source id="shardingDatabasesTablesDataSource" data-source-ref="realShardingDatabasesTablesDataSource" instance-ref="regCenter,confCenter" overwrite="true" />
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
@@ -116,7 +112,7 @@
         <property name="dataSource" ref="shardingDatabasesTablesDataSource"/>
         <property name="mapperLocations" value="classpath*:META-INF/mappers/*.xml"/>
     </bean>
-
+    
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="basePackage" value="org.apache.shardingsphere.example.core.mybatis.repository"/>
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>

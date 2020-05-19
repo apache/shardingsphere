@@ -19,33 +19,18 @@
 <xsd:schema xmlns="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:beans="http://www.springframework.org/schema/beans"
-            xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
-            xmlns:masterslave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
-            xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
             targetNamespace="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
-            elementFormDefault="qualified" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:schemaLocation="http://shardingsphere.apache.org/schema/shardingsphere/sharding
-                                http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
-                                http://shardingsphere.apache.org/schema/shardingsphere/masterslave
-                                http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd
-                                http://shardingsphere.apache.org/schema/shardingsphere/encrypt
-                                http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd
-                                ">
+            elementFormDefault="qualified">
     <xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd" />
-    <xsd:import namespace="http://shardingsphere.apache.org/schema/shardingsphere/sharding" schemaLocation="http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd" />
-    <xsd:import namespace="http://shardingsphere.apache.org/schema/shardingsphere/masterslave" schemaLocation="http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd" />
-    <xsd:import namespace="http://shardingsphere.apache.org/schema/shardingsphere/encrypt" schemaLocation="http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd" />
     
     <xsd:element name="data-source">
         <xsd:complexType>
             <xsd:all>
-                <xsd:element name="sharding-rule" type="sharding:sharding-rule" minOccurs="0" />
-                <xsd:element name="master-slave-rule" type="masterslave:master-slave-rule" minOccurs="0" />
-                <xsd:element name="encrypt-rule" type="encrypt:encrypt-rule" minOccurs="0" />
                 <xsd:element ref="props" minOccurs="0" />
             </xsd:all>
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="data-source-names" type="xsd:string" use="required" />
+            <xsd:attribute name="rule-refs" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>
     
