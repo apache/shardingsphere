@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.spring.namespace.parser.rule.masterslav
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.driver.spring.namespace.constants.ShardingRuleBeanDefinitionParserTag;
+import org.apache.shardingsphere.driver.spring.namespace.constants.MasterSlaveRuleBeanDefinitionParserTag;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -43,11 +43,11 @@ public final class MasterSlaveRuleBeanDefinitionParser {
      * @return bean definition of master-slave rule
      */
     public static Optional<BeanDefinition> parseMasterSlaveRuleConfiguration(final Element element) {
-        Element masterSlaveRuleElement = DomUtils.getChildElementByTagName(element, ShardingRuleBeanDefinitionParserTag.MASTER_SLAVE_RULE_TAG);
+        Element masterSlaveRuleElement = DomUtils.getChildElementByTagName(element, MasterSlaveRuleBeanDefinitionParserTag.MASTER_SLAVE_RULE_TAG);
         if (null == masterSlaveRuleElement) {
             return Optional.empty();
         }
-        List<Element> masterSlaveDataSourceElements = DomUtils.getChildElementsByTagName(masterSlaveRuleElement, ShardingRuleBeanDefinitionParserTag.MASTER_SLAVE_DATA_SOURCE_TAG);
+        List<Element> masterSlaveDataSourceElements = DomUtils.getChildElementsByTagName(masterSlaveRuleElement, MasterSlaveRuleBeanDefinitionParserTag.MASTER_SLAVE_DATA_SOURCE_TAG);
         List<BeanDefinition> masterSlaveDataSources = new ManagedList<>(masterSlaveDataSourceElements.size());
         for (Element each : masterSlaveDataSourceElements) {
             masterSlaveDataSources.add(new MasterSlaveDataSourceConfigurationBeanDefinition(each).getBeanDefinition());
