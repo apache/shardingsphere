@@ -42,7 +42,7 @@ public final class ShardingRuleBeanDefinitionParser extends AbstractBeanDefiniti
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        return (AbstractBeanDefinition) parseShardingRuleConfiguration(element).get();
+        return parseShardingRuleConfiguration(element).get();
     }
     
     /**
@@ -51,7 +51,7 @@ public final class ShardingRuleBeanDefinitionParser extends AbstractBeanDefiniti
      * @param element element
      * @return bean definition of encrypt rule
      */
-    public static Optional<BeanDefinition> parseShardingRuleConfiguration(final Element element) {
+    public static Optional<AbstractBeanDefinition> parseShardingRuleConfiguration(final Element element) {
         Element shardingRuleElement = DomUtils.getChildElementByTagName(element, ShardingRuleBeanDefinitionParserTag.SHARDING_RULE_CONFIG_TAG);
         if (null == shardingRuleElement) {
             return Optional.empty();

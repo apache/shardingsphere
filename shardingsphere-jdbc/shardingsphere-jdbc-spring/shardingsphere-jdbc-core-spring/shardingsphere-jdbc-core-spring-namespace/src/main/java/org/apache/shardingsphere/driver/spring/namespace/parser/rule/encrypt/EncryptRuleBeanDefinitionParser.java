@@ -18,18 +18,18 @@
 package org.apache.shardingsphere.driver.spring.namespace.parser.rule.encrypt;
 
 import com.google.common.base.Strings;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.driver.spring.namespace.constants.rules.encrypt.EncryptDataSourceBeanDefinitionParserTag;
 import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptorRuleConfiguration;
-import org.apache.shardingsphere.driver.spring.namespace.constants.rules.encrypt.EncryptDataSourceBeanDefinitionParserTag;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.ManagedMap;
+import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.BeanDefinitionParserDelegate;
+import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
@@ -41,8 +41,12 @@ import java.util.Properties;
 /**
  * Encrypt rule parser for spring namespace.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class EncryptRuleBeanDefinitionParser {
+public final class EncryptRuleBeanDefinitionParser extends AbstractBeanDefinitionParser {
+    
+    @Override
+    protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
+        return parseEncryptRuleElement(element).get();
+    }
     
     /**
      * Parse encrypt rule element.

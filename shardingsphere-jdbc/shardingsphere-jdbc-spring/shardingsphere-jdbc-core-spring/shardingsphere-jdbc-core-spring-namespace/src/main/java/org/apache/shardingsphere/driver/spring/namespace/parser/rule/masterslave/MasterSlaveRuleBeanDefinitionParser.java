@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.driver.spring.namespace.parser.rule.masterslave;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.driver.spring.namespace.constants.rules.masterslave.MasterSlaveRuleBeanDefinitionParserTag;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.ManagedList;
+import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
+import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
@@ -33,8 +34,12 @@ import java.util.Optional;
 /**
  * Master-slave rule parser for spring namespace.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MasterSlaveRuleBeanDefinitionParser {
+public final class MasterSlaveRuleBeanDefinitionParser extends AbstractBeanDefinitionParser {
+    
+    @Override
+    protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
+        return parseMasterSlaveRuleConfiguration(element).get();
+    }
     
     /**
      * Parse master-slave rule configuration.
@@ -42,7 +47,7 @@ public final class MasterSlaveRuleBeanDefinitionParser {
      * @param element element
      * @return bean definition of master-slave rule
      */
-    public static Optional<BeanDefinition> parseMasterSlaveRuleConfiguration(final Element element) {
+    public static Optional<AbstractBeanDefinition> parseMasterSlaveRuleConfiguration(final Element element) {
         Element masterSlaveRuleElement = DomUtils.getChildElementByTagName(element, MasterSlaveRuleBeanDefinitionParserTag.MASTER_SLAVE_RULE_TAG);
         if (null == masterSlaveRuleElement) {
             return Optional.empty();
