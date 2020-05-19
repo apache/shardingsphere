@@ -21,6 +21,7 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.spring.namespace.constants.EncryptDataSourceBeanDefinitionParserTag;
+import org.apache.shardingsphere.driver.spring.namespace.constants.ShadowDataSourceBeanDefinitionParserTag;
 import org.apache.shardingsphere.driver.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -73,6 +74,7 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
         parseShardingRuleConfiguration(element).ifPresent(result::add);
         parseMasterSlaveRuleConfiguration(element).ifPresent(result::add);
         parseEncryptRuleConfiguration(element).ifPresent(result::add);
+        parseShadowRuleConfiguration(element).ifPresent(result::add);
         return result;
     }
     
@@ -212,6 +214,11 @@ public final class ShardingDataSourceBeanDefinitionParser extends AbstractBeanDe
     private Optional<BeanDefinition> parseEncryptRuleConfiguration(final Element element) {
         Element encryptRuleElement = DomUtils.getChildElementByTagName(element, EncryptDataSourceBeanDefinitionParserTag.ENCRYPT_RULE_TAG);
         return null == encryptRuleElement ? Optional.empty() : Optional.of(EncryptRuleBeanDefinitionParser.parseEncryptRuleElement(encryptRuleElement));
+    }
+    
+    private Optional<BeanDefinition> parseShadowRuleConfiguration(final Element element) {
+        Element shadowRuleElement = DomUtils.getChildElementByTagName(element, ShadowDataSourceBeanDefinitionParserTag.SHADOW_RULE_TAG);
+        return null == shadowRuleElement ? Optional.empty() : Optional.of(ShadowRuleBeanDefinitionParser.parseShadowRuleElement(shadowRuleElement));
     }
     
     private Properties parseProperties(final Element element, final ParserContext parserContext) {

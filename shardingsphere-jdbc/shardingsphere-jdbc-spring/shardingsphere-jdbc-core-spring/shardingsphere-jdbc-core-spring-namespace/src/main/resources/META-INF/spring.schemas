@@ -18,4 +18,5 @@ http\://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xs
 http\://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd=META-INF/namespace/sharding.xsd
 http\://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd=META-INF/namespace/master-slave.xsd
 http\://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd=META-INF/namespace/encrypt.xsd
+http\://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow.xsd=META-INF/namespace/shadow.xsd
 http\://shardingsphere.apache.org/schema/shardingsphere/spi/spi.xsd=META-INF/namespace/spi.xsd
