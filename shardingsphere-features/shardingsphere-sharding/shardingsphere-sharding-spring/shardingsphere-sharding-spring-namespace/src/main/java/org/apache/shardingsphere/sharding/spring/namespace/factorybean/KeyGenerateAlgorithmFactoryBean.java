@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.namespace.factorybean;
+package org.apache.shardingsphere.sharding.spring.namespace.factorybean;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;

@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.namespace.handler;
+package org.apache.shardingsphere.sharding.spring.namespace.handler;
 
-import org.apache.shardingsphere.driver.spring.namespace.parser.rule.sharding.KeyGenerateAlgorithmBeanDefinitionParser;
-import org.apache.shardingsphere.driver.spring.namespace.parser.rule.sharding.ShardingAlgorithmBeanDefinitionParser;
-import org.apache.shardingsphere.driver.spring.namespace.constants.rules.sharding.SPIBeanDefinitionParserTag;
+import org.apache.shardingsphere.sharding.spring.namespace.parser.KeyGenerateAlgorithmBeanDefinitionParser;
+import org.apache.shardingsphere.sharding.spring.namespace.parser.ShardingAlgorithmBeanDefinitionParser;
+import org.apache.shardingsphere.sharding.spring.namespace.tag.SPIBeanDefinitionTag;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
@@ -29,7 +29,7 @@ public final class SPINamespaceHandler extends NamespaceHandlerSupport {
 
     @Override
     public void init() {
-        registerBeanDefinitionParser(SPIBeanDefinitionParserTag.KEY_GENERATE_ALGORITHM_TAG, new KeyGenerateAlgorithmBeanDefinitionParser());
-        registerBeanDefinitionParser(SPIBeanDefinitionParserTag.SHARDING_ALGORITHM_TAG, new ShardingAlgorithmBeanDefinitionParser());
+        registerBeanDefinitionParser(SPIBeanDefinitionTag.KEY_GENERATE_ALGORITHM_TAG, new KeyGenerateAlgorithmBeanDefinitionParser());
+        registerBeanDefinitionParser(SPIBeanDefinitionTag.SHARDING_ALGORITHM_TAG, new ShardingAlgorithmBeanDefinitionParser());
     }
 }

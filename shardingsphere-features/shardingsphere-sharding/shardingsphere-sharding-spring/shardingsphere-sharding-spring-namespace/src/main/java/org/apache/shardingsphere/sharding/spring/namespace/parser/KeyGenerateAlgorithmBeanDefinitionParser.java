@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.namespace.parser.rule.sharding;
+package org.apache.shardingsphere.sharding.spring.namespace.parser;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.driver.spring.namespace.constants.rules.sharding.SPIBeanDefinitionParserTag;
-import org.apache.shardingsphere.driver.spring.namespace.factorybean.ShardingAlgorithmFactoryBean;
+import org.apache.shardingsphere.sharding.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean;
+import org.apache.shardingsphere.sharding.spring.namespace.tag.SPIBeanDefinitionTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -29,20 +29,20 @@ import org.w3c.dom.Element;
 import java.util.Properties;
 
 /**
- * Sharding algorithm bean parser for spring namespace.
+ * Key generate algorithm bean parser for spring namespace.
  */
-public final class ShardingAlgorithmBeanDefinitionParser extends AbstractBeanDefinitionParser {
-
+public final class KeyGenerateAlgorithmBeanDefinitionParser extends AbstractBeanDefinitionParser {
+    
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingAlgorithmFactoryBean.class);
-        factory.addConstructorArgValue(element.getAttribute(SPIBeanDefinitionParserTag.SHARDING_ALGORITHM_TYPE_ATTRIBUTE));
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(KeyGenerateAlgorithmFactoryBean.class);
+        factory.addConstructorArgValue(element.getAttribute(SPIBeanDefinitionTag.KEY_GENERATE_ALGORITHM_TYPE_ATTRIBUTE));
         parseProperties(element, factory);
         return factory.getBeanDefinition();
     }
-
+    
     private void parseProperties(final Element element, final BeanDefinitionBuilder factory) {
-        String properties = element.getAttribute(SPIBeanDefinitionParserTag.SHARDING_ALGORITHM_PROPERTY_REF_ATTRIBUTE);
+        String properties = element.getAttribute(SPIBeanDefinitionTag.KEY_GENERATE_ALGORITHM_PROPERTY_REF_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(properties)) {
             factory.addConstructorArgReference(properties);
         } else {

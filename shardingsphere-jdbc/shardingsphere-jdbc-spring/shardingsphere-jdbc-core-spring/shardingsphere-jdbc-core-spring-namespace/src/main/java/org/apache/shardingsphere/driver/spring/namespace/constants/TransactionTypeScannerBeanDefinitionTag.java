@@ -15,26 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.namespace.constants.rules.sharding;
+package org.apache.shardingsphere.driver.spring.namespace.constants;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * SPI parser tag constants.
+ * Transaction type scanner bean definition tag.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SPIBeanDefinitionParserTag {
+public final class TransactionTypeScannerBeanDefinitionTag {
     
-    public static final String KEY_GENERATE_ALGORITHM_TAG = "key-generate-algorithm";
-    
-    public static final String KEY_GENERATE_ALGORITHM_TYPE_ATTRIBUTE = "type";
-    
-    public static final String KEY_GENERATE_ALGORITHM_PROPERTY_REF_ATTRIBUTE = "props-ref";
-
-    public static final String SHARDING_ALGORITHM_TAG = "sharding-algorithm";
-
-    public static final String SHARDING_ALGORITHM_TYPE_ATTRIBUTE = "type";
-
-    public static final String SHARDING_ALGORITHM_PROPERTY_REF_ATTRIBUTE = "props-ref";
+    public static final String ROOT_TAG = "tx-type-annotation-driven";
 }

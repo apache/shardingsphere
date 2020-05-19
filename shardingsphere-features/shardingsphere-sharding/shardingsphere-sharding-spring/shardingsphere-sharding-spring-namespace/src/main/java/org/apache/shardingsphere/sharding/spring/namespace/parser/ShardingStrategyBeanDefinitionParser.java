@@ -15,16 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.namespace.constants.rules.sharding;
+package org.apache.shardingsphere.sharding.spring.namespace.parser;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
+import org.springframework.beans.factory.xml.ParserContext;
+import org.w3c.dom.Element;
 
 /**
- * Sharding transaction type scanner parser tag constants.
+ * Sharding strategy bean parser for spring namespace.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingTransactionTypeScannerBeanDefinitionParserTag {
+public final class ShardingStrategyBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
-    public static final String ROOT_TAG = "tx-type-annotation-driven";
+    @Override
+    protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
+        return ShardingStrategyBeanDefinition.getBeanDefinitionByElement(element);
+    }
 }

@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.namespace.parser.rule.sharding;
+package org.apache.shardingsphere.sharding.spring.namespace.parser;
 
 import org.apache.shardingsphere.sharding.api.config.KeyGeneratorConfiguration;
-import org.apache.shardingsphere.driver.spring.namespace.constants.rules.sharding.ShardingRuleBeanDefinitionParserTag;
+import org.apache.shardingsphere.sharding.spring.namespace.tag.ShardingRuleBeanDefinitionTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -33,8 +33,8 @@ public final class KeyGeneratorBeanDefinitionParser extends AbstractBeanDefiniti
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(KeyGeneratorConfiguration.class);
-        factory.addConstructorArgValue(element.getAttribute(ShardingRuleBeanDefinitionParserTag.GENERATE_KEY_COLUMN_ATTRIBUTE));
-        factory.addConstructorArgReference(element.getAttribute(ShardingRuleBeanDefinitionParserTag.GENERATE_KEY_ALGORITHM_REF_TAG));
+        factory.addConstructorArgValue(element.getAttribute(ShardingRuleBeanDefinitionTag.GENERATE_KEY_COLUMN_ATTRIBUTE));
+        factory.addConstructorArgReference(element.getAttribute(ShardingRuleBeanDefinitionTag.GENERATE_KEY_ALGORITHM_REF_TAG));
         return factory.getBeanDefinition();
     }
 }

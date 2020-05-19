@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.namespace.constants.rules.sharding;
+package org.apache.shardingsphere.sharding.spring.namespace.tag;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Sharding rule parser tag constants.
+ * Sharding rule bean definition tag.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingRuleBeanDefinitionParserTag {
+public final class ShardingRuleBeanDefinitionTag {
     
-    public static final String SHARDING_RULE_CONFIG_TAG = "rule";
+    public static final String ROOT_TAG = "rule";
     
     public static final String TABLE_RULES_TAG = "table-rules";
     

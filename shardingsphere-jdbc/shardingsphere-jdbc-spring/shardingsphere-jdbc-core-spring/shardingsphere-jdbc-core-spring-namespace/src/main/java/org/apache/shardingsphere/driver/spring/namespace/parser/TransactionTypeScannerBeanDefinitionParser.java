@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.namespace.parser.rule.sharding;
+package org.apache.shardingsphere.driver.spring.namespace.parser;
 
 import org.apache.shardingsphere.driver.spring.transaction.ShardingTransactionTypeScanner;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -25,9 +25,9 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
 
 /**
- * Sharding transaction type scanner bean definition parser.
+ * Transaction type scanner bean definition parser.
  */
-public final class ShardingTransactionTypeScannerBeanDefinitionParser extends AbstractBeanDefinitionParser {
+public final class TransactionTypeScannerBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {

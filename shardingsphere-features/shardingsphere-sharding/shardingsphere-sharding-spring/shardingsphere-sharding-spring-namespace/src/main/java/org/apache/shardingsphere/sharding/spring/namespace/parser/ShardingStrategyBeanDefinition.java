@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.namespace.parser.rule.sharding;
+package org.apache.shardingsphere.sharding.spring.namespace.parser;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.ComplexShardingStr
 import org.apache.shardingsphere.sharding.api.config.strategy.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.driver.spring.namespace.constants.rules.sharding.ShardingStrategyBeanDefinitionParserTag;
+import org.apache.shardingsphere.sharding.spring.namespace.tag.ShardingStrategyBeanDefinitionTag;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -38,13 +38,13 @@ public final class ShardingStrategyBeanDefinition {
     static AbstractBeanDefinition getBeanDefinitionByElement(final Element element) {
         String type = element.getLocalName();
         switch (type) {
-            case ShardingStrategyBeanDefinitionParserTag.STANDARD_STRATEGY_ROOT_TAG:
+            case ShardingStrategyBeanDefinitionTag.STANDARD_STRATEGY_ROOT_TAG:
                 return getStandardShardingStrategyConfigBeanDefinition(element);
-            case ShardingStrategyBeanDefinitionParserTag.COMPLEX_STRATEGY_ROOT_TAG:
+            case ShardingStrategyBeanDefinitionTag.COMPLEX_STRATEGY_ROOT_TAG:
                 return getComplexShardingStrategyConfigBeanDefinition(element);
-            case ShardingStrategyBeanDefinitionParserTag.HINT_STRATEGY_ROOT_TAG:
+            case ShardingStrategyBeanDefinitionTag.HINT_STRATEGY_ROOT_TAG:
                 return getHintShardingStrategyConfigBeanDefinition(element);
-            case ShardingStrategyBeanDefinitionParserTag.NONE_STRATEGY_ROOT_TAG:
+            case ShardingStrategyBeanDefinitionTag.NONE_STRATEGY_ROOT_TAG:
                 return getNoneShardingStrategyConfigBeanDefinition();
             default:
                 throw new ShardingSphereException("Cannot support type: %s", type);
@@ -53,21 +53,21 @@ public final class ShardingStrategyBeanDefinition {
     
     private static AbstractBeanDefinition getStandardShardingStrategyConfigBeanDefinition(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(StandardShardingStrategyConfiguration.class);
-        factory.addConstructorArgValue(element.getAttribute(ShardingStrategyBeanDefinitionParserTag.SHARDING_COLUMN_ATTRIBUTE));
-        factory.addConstructorArgReference(element.getAttribute(ShardingStrategyBeanDefinitionParserTag.ALGORITHM_REF_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(ShardingStrategyBeanDefinitionTag.SHARDING_COLUMN_ATTRIBUTE));
+        factory.addConstructorArgReference(element.getAttribute(ShardingStrategyBeanDefinitionTag.ALGORITHM_REF_ATTRIBUTE));
         return factory.getBeanDefinition();
     }
     
     private static AbstractBeanDefinition getComplexShardingStrategyConfigBeanDefinition(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ComplexShardingStrategyConfiguration.class);
-        factory.addConstructorArgValue(element.getAttribute(ShardingStrategyBeanDefinitionParserTag.SHARDING_COLUMNS_ATTRIBUTE));
-        factory.addConstructorArgReference(element.getAttribute(ShardingStrategyBeanDefinitionParserTag.ALGORITHM_REF_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(ShardingStrategyBeanDefinitionTag.SHARDING_COLUMNS_ATTRIBUTE));
+        factory.addConstructorArgReference(element.getAttribute(ShardingStrategyBeanDefinitionTag.ALGORITHM_REF_ATTRIBUTE));
         return factory.getBeanDefinition();
     }
     
     private static AbstractBeanDefinition getHintShardingStrategyConfigBeanDefinition(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(HintShardingStrategyConfiguration.class);
-        factory.addConstructorArgReference(element.getAttribute(ShardingStrategyBeanDefinitionParserTag.ALGORITHM_REF_ATTRIBUTE));
+        factory.addConstructorArgReference(element.getAttribute(ShardingStrategyBeanDefinitionTag.ALGORITHM_REF_ATTRIBUTE));
         return factory.getBeanDefinition();
     }
     
