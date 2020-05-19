@@ -35,6 +35,7 @@
         <module>shardingsphere-encrypt-configuration</module>
         <module>shardingsphere-encrypt-rewrite</module>
         <module>shardingsphere-encrypt-merge</module>
+        <module>shardingsphere-encrypt-spring</module>
     </modules>
 </project>
 

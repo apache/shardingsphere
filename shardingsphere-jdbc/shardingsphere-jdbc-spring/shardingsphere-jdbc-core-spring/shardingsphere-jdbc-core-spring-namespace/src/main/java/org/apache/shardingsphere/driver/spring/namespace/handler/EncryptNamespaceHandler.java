@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.driver.spring.namespace.handler;
 
-import org.apache.shardingsphere.driver.spring.namespace.constants.EncryptDataSourceBeanDefinitionParserTag;
-import org.apache.shardingsphere.driver.spring.namespace.parser.EncryptDataSourceBeanDefinitionParser;
+import org.apache.shardingsphere.driver.spring.namespace.constants.rules.encrypt.EncryptDataSourceBeanDefinitionParserTag;
+import org.apache.shardingsphere.driver.spring.namespace.parser.rule.encrypt.EncryptRuleBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
@@ -28,6 +28,6 @@ public final class EncryptNamespaceHandler extends NamespaceHandlerSupport {
     
     @Override
     public void init() {
-        registerBeanDefinitionParser(EncryptDataSourceBeanDefinitionParserTag.ROOT_TAG, new EncryptDataSourceBeanDefinitionParser());
+        registerBeanDefinitionParser(EncryptDataSourceBeanDefinitionParserTag.ENCRYPT_RULE_TAG, new EncryptRuleBeanDefinitionParser());
     }
 }

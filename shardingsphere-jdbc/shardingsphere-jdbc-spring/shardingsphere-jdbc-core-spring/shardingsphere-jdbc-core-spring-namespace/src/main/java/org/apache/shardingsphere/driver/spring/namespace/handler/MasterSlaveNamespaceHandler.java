@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.driver.spring.namespace.handler;
 
-import org.apache.shardingsphere.driver.spring.namespace.parser.MasterSlaveLoadBalanceStrategyBeanDefinitionParser;
-import org.apache.shardingsphere.driver.spring.namespace.constants.LoadBalanceAlgorithmBeanDefinitionParserTag;
-import org.apache.shardingsphere.driver.spring.namespace.constants.MasterSlaveDataSourceBeanDefinitionParserTag;
-import org.apache.shardingsphere.driver.spring.namespace.parser.MasterSlaveDataSourceBeanDefinitionParser;
+import org.apache.shardingsphere.driver.spring.namespace.constants.rules.masterslave.LoadBalanceAlgorithmBeanDefinitionParserTag;
+import org.apache.shardingsphere.driver.spring.namespace.constants.rules.masterslave.MasterSlaveRuleBeanDefinitionParserTag;
+import org.apache.shardingsphere.driver.spring.namespace.parser.rule.masterslave.MasterSlaveLoadBalanceStrategyBeanDefinitionParser;
+import org.apache.shardingsphere.driver.spring.namespace.parser.rule.masterslave.MasterSlaveRuleBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
@@ -30,7 +30,7 @@ public final class MasterSlaveNamespaceHandler extends NamespaceHandlerSupport {
     
     @Override
     public void init() {
+        registerBeanDefinitionParser(MasterSlaveRuleBeanDefinitionParserTag.MASTER_SLAVE_RULE_TAG, new MasterSlaveRuleBeanDefinitionParser());
         registerBeanDefinitionParser(LoadBalanceAlgorithmBeanDefinitionParserTag.LOAD_BALANCE_ALGORITHM_TAG, new MasterSlaveLoadBalanceStrategyBeanDefinitionParser());
-        registerBeanDefinitionParser(MasterSlaveDataSourceBeanDefinitionParserTag.ROOT_TAG, new MasterSlaveDataSourceBeanDefinitionParser());
     }
 }

@@ -36,6 +36,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Properties;
@@ -129,6 +130,19 @@ public class ShadowRouteDecoratorTest {
         assertThat(actual.getRouteResult().getRouteUnits().size(), is(2));
         assertThat(actual.getRouteResult().getActualDataSourceNames().contains(SHADOW_DATASOURCE), is(true));
         assertThat(actual.getRouteResult().getActualDataSourceNames().contains(ACTUAL_DATASOURCE), is(true));
+    }
+    
+    @Test
+    public void assertTableMapperWithRouteUnit() {
+        RouteContext routeContext = mockSQLRouteContextForShadow();
+        routeContext.getRouteResult().getRouteUnits().add(mockRouteUnit());
+        RouteContext actual = routeDecorator.decorate(routeContext, mock(ShardingSphereMetaData.class), shadowRule, new ConfigurationProperties(new Properties()));
+        assertThat(actual.getRouteResult().getRouteUnits().size(), is(1));
+        assertThat(actual.getRouteResult().getActualDataSourceNames().contains(SHADOW_DATASOURCE), is(true));
+        Collection<RouteMapper> tableMappers = actual.getRouteResult().getRouteUnits().iterator().next().getTableMappers();
+        assertThat(tableMappers.size(), is(1));
+        assertThat(tableMappers.iterator().next().getActualName(), is("table_0"));
+        assertThat(tableMappers.iterator().next().getLogicName(), is("table"));
     }
     
     private RouteContext mockSQLRouteContextForShadow() {

@@ -35,5 +35,6 @@
         <module>shardingsphere-sharding-rewrite</module>
         <module>shardingsphere-sharding-merge</module>
         <module>shardingsphere-sharding-time-service</module>
+        <module>shardingsphere-sharding-spring</module>
     </modules>
 </project>

@@ -35,5 +35,6 @@
         <module>shardingsphere-shadow-configuration</module>
         <module>shardingsphere-shadow-route</module>
         <module>shardingsphere-shadow-rewrite</module>
+        <module>shardingsphere-shadow-spring</module>
     </modules>
 </project>

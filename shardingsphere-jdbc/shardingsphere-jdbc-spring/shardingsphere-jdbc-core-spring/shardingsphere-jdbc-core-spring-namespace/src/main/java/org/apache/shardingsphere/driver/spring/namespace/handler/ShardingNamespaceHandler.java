@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.driver.spring.namespace.handler;
 
-import org.apache.shardingsphere.driver.spring.namespace.parser.ShardingStrategyBeanDefinitionParser;
-import org.apache.shardingsphere.driver.spring.namespace.parser.ShardingTransactionTypeScannerBeanDefinitionParser;
-import org.apache.shardingsphere.driver.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
-import org.apache.shardingsphere.driver.spring.namespace.constants.ShardingStrategyBeanDefinitionParserTag;
-import org.apache.shardingsphere.driver.spring.namespace.constants.ShardingTransactionTypeScannerBeanDefinitionParserTag;
-import org.apache.shardingsphere.driver.spring.namespace.parser.KeyGeneratorBeanDefinitionParser;
-import org.apache.shardingsphere.driver.spring.namespace.parser.ShardingDataSourceBeanDefinitionParser;
+import org.apache.shardingsphere.driver.spring.namespace.constants.rules.sharding.ShardingRuleBeanDefinitionParserTag;
+import org.apache.shardingsphere.driver.spring.namespace.constants.rules.sharding.ShardingStrategyBeanDefinitionParserTag;
+import org.apache.shardingsphere.driver.spring.namespace.parser.rule.sharding.KeyGeneratorBeanDefinitionParser;
+import org.apache.shardingsphere.driver.spring.namespace.parser.rule.sharding.ShardingRuleBeanDefinitionParser;
+import org.apache.shardingsphere.driver.spring.namespace.parser.rule.sharding.ShardingStrategyBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
@@ -33,12 +31,11 @@ public final class ShardingNamespaceHandler extends NamespaceHandlerSupport {
     
     @Override
     public void init() {
+        registerBeanDefinitionParser(ShardingRuleBeanDefinitionParserTag.SHARDING_RULE_CONFIG_TAG, new ShardingRuleBeanDefinitionParser());
         registerBeanDefinitionParser(ShardingStrategyBeanDefinitionParserTag.STANDARD_STRATEGY_ROOT_TAG, new ShardingStrategyBeanDefinitionParser());
         registerBeanDefinitionParser(ShardingStrategyBeanDefinitionParserTag.COMPLEX_STRATEGY_ROOT_TAG, new ShardingStrategyBeanDefinitionParser());
         registerBeanDefinitionParser(ShardingStrategyBeanDefinitionParserTag.HINT_STRATEGY_ROOT_TAG, new ShardingStrategyBeanDefinitionParser());
         registerBeanDefinitionParser(ShardingStrategyBeanDefinitionParserTag.NONE_STRATEGY_ROOT_TAG, new ShardingStrategyBeanDefinitionParser());
-        registerBeanDefinitionParser(ShardingDataSourceBeanDefinitionParserTag.KEY_GENERATOR_REF_TAG, new KeyGeneratorBeanDefinitionParser());
-        registerBeanDefinitionParser(ShardingDataSourceBeanDefinitionParserTag.ROOT_TAG, new ShardingDataSourceBeanDefinitionParser());
-        registerBeanDefinitionParser(ShardingTransactionTypeScannerBeanDefinitionParserTag.ROOT_TAG, new ShardingTransactionTypeScannerBeanDefinitionParser());
+        registerBeanDefinitionParser(ShardingRuleBeanDefinitionParserTag.KEY_GENERATOR_REF_TAG, new KeyGeneratorBeanDefinitionParser());
     }
 }
