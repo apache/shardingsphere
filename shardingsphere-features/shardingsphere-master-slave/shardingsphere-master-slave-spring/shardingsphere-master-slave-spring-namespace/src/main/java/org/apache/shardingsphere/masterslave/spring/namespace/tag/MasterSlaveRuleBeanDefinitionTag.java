@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.namespace.constants.rules.masterslave;
+package org.apache.shardingsphere.masterslave.spring.namespace.tag;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Master-slave rule parser tag constants.
+ * Master-slave rule bean definition tag.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MasterSlaveRuleBeanDefinitionParserTag {
+public final class MasterSlaveRuleBeanDefinitionTag {
     
-    public static final String MASTER_SLAVE_RULE_TAG = "rule";
+    public static final String ROOT_TAG = "rule";
     
     public static final String MASTER_SLAVE_DATA_SOURCE_TAG = "data-source-rule";
 }

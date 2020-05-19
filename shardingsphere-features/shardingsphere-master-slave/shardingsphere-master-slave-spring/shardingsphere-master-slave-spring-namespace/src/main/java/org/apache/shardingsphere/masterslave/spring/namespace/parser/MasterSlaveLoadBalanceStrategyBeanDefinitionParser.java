@@ -15,35 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.namespace.parser.rule.masterslave;
+package org.apache.shardingsphere.masterslave.spring.namespace.parser;
 
-import org.apache.shardingsphere.driver.spring.namespace.constants.rules.masterslave.MasterSlaveRuleBeanDefinitionParserTag;
-import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
-import org.springframework.beans.factory.config.BeanDefinition;
+import com.google.common.base.Strings;
+import org.apache.shardingsphere.masterslave.api.config.LoadBalanceStrategyConfiguration;
+import org.apache.shardingsphere.masterslave.spring.namespace.tag.LoadBalanceAlgorithmBeanDefinitionTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
-import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
-import java.util.List;
+import java.util.Properties;
 
 /**
- * Master-slave rule parser for spring namespace.
+ * Master slave load balance strategy bean bean definition parser.
  */
-public final class MasterSlaveRuleBeanDefinitionParser extends AbstractBeanDefinitionParser {
+public final class MasterSlaveLoadBalanceStrategyBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        List<Element> masterSlaveDataSourceElements = DomUtils.getChildElementsByTagName(element, MasterSlaveRuleBeanDefinitionParserTag.MASTER_SLAVE_DATA_SOURCE_TAG);
-        List<BeanDefinition> masterSlaveDataSources = new ManagedList<>(masterSlaveDataSourceElements.size());
-        for (Element each : masterSlaveDataSourceElements) {
-            masterSlaveDataSources.add(new MasterSlaveDataSourceConfigurationBeanDefinition(each).getBeanDefinition());
-        }
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(MasterSlaveRuleConfiguration.class);
-        factory.addConstructorArgValue(masterSlaveDataSources);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(LoadBalanceStrategyConfiguration.class);
+        factory.addConstructorArgValue(element.getAttribute(LoadBalanceAlgorithmBeanDefinitionTag.ALGORITHM_TYPE_ATTRIBUTE));
+        parseProperties(element, factory);
         return factory.getBeanDefinition();
+    }
+    
+    private void parseProperties(final Element element, final BeanDefinitionBuilder factory) {
+        String properties = element.getAttribute(LoadBalanceAlgorithmBeanDefinitionTag.ALGORITHM_PROPERTY_REF_ATTRIBUTE);
+        if (!Strings.isNullOrEmpty(properties)) {
+            factory.addConstructorArgReference(properties);
+        } else {
+            factory.addConstructorArgValue(new Properties());
+        }
     }
 }

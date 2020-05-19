@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.namespace.parser.rule.masterslave;
+package org.apache.shardingsphere.masterslave.spring.namespace.parser;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -30,10 +30,9 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Master slave data source configuration bean definition.
+ * Master-slave rule configuration bean definition.
  */
-@Getter
-public final class MasterSlaveDataSourceConfigurationBeanDefinition {
+public final class MasterSlaveRuleConfigurationBeanDefinition {
     
     private static final String MASTER_DATA_SOURCE_NAME_ATTRIBUTE = "master-data-source-name";
     
@@ -45,9 +44,10 @@ public final class MasterSlaveDataSourceConfigurationBeanDefinition {
     
     private String slaveDataSourceNames;
     
+    @Getter
     private BeanDefinition beanDefinition;
     
-    public MasterSlaveDataSourceConfigurationBeanDefinition(final Element element) {
+    public MasterSlaveRuleConfigurationBeanDefinition(final Element element) {
         masterDataSourceName = element.getAttribute(MASTER_DATA_SOURCE_NAME_ATTRIBUTE);
         slaveDataSourceNames = element.getAttribute(SLAVE_DATA_SOURCE_NAMES_ATTRIBUTE);
         beanDefinition = getBeanDefinition(element);

@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.namespace.constants.rules.masterslave;
+package org.apache.shardingsphere.masterslave.spring.namespace.tag;
 
 /**
- * Load balance algorithm bean definition parser tag.
+ * Load balance algorithm bean definition tag.
  */
-public final class LoadBalanceAlgorithmBeanDefinitionParserTag {
+public final class LoadBalanceAlgorithmBeanDefinitionTag {
     
     public static final String LOAD_BALANCE_ALGORITHM_TAG = "load-balance-algorithm";
     
