@@ -29,7 +29,7 @@ import static org.junit.Assert.assertThat;
 
 public final class ClusterConfigurationYamlSwapperTest {
     
-    private static final String SQL = "select 1;";
+    private static final String SQL = "select 1";
     
     private static final Integer INTERVAL = 60;
     
