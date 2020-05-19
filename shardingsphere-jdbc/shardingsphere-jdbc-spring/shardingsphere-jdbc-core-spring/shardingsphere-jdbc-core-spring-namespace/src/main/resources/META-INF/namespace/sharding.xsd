@@ -21,7 +21,7 @@
             targetNamespace="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
             elementFormDefault="qualified">
     
-    <xsd:element name="sharding-rule">
+    <xsd:element name="rule">
         <xsd:complexType>
             <xsd:all>
                 <xsd:element ref="table-rules" minOccurs="0" />

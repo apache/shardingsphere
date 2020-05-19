@@ -36,7 +36,7 @@
         <prop key="aes.key.value">123456</prop>
     </bean:properties>
     
-    <encrypt:encrypt-rule id="encryptRule">
+    <encrypt:rule id="encryptRule">
         <encrypt:tables>
             <encrypt:table name="t_order">
                 <encrypt:column logic-column="user_id" plain-column="user_decrypt" cipher-column="user_encrypt" encryptor-ref="encryptor_aes" />
@@ -47,7 +47,7 @@
             <encrypt:encryptor id="encryptor_aes" type="AES" props-ref="props"/>
             <encrypt:encryptor id="encryptor_md5" type="MD5" />
         </encrypt:encryptors>
-    </encrypt:encrypt-rule>
+    </encrypt:rule>
     
     <shardingsphere:data-source id="encryptDataSource" data-source-names="dbtbl_0" rule-refs="encryptRule">
         <shardingsphere:props>

@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingRuleBeanDefinitionParserTag {
     
-    public static final String SHARDING_RULE_CONFIG_TAG = "sharding-rule";
+    public static final String SHARDING_RULE_CONFIG_TAG = "rule";
     
     public static final String TABLE_RULES_TAG = "table-rules";
     

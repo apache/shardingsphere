@@ -22,7 +22,7 @@
             elementFormDefault="qualified">
     <xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd"/>
     
-    <xsd:element name="encrypt-rule">
+    <xsd:element name="rule">
         <xsd:complexType>
             <xsd:all>
                 <xsd:element ref="encryptors" />

@@ -38,7 +38,7 @@
     <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="standardModuloDatabaseShardingAlgorithm" />
     <sharding:standard-strategy id="tableStrategy" sharding-column="order_id" algorithm-ref="standardModuloTableShardingAlgorithm" />
     
-    <sharding:sharding-rule id="shardingRule">
+    <sharding:rule id="shardingRule">
         <sharding:table-rules>
             <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="tableStrategy" />
             <sharding:table-rule logic-table="t_order_item" actual-data-nodes="dbtbl_${0..1}.t_order_item_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="tableStrategy" />
@@ -49,7 +49,7 @@
         <sharding:broadcast-table-rules>
             <sharding:broadcast-table-rule table="t_config"/>
         </sharding:broadcast-table-rules>
-    </sharding:sharding-rule>
+    </sharding:rule>
     
     <shardingsphere:data-source id="shardingDatasource" data-source-names="dbtbl_0,dbtbl_1" rule-refs="shardingRule" />
 </beans>

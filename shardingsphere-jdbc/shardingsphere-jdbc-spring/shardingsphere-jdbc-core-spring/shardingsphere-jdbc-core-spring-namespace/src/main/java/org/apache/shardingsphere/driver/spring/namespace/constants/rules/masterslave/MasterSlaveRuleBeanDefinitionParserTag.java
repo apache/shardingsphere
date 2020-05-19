@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MasterSlaveRuleBeanDefinitionParserTag {
     
-    public static final String MASTER_SLAVE_RULE_TAG = "master-slave-rule";
+    public static final String MASTER_SLAVE_RULE_TAG = "rule";
     
     public static final String MASTER_SLAVE_DATA_SOURCE_TAG = "data-source-rule";
 }
