@@ -44,14 +44,14 @@ public class YamlOrchestrationShardingSphereDataSourceFactoryTest extends Abstra
         CONFIG_FILES.forEach(each -> {
             try {
                 File yamlFile = new File(YamlOrchestrationShardingSphereDataSourceFactoryTest.class.getResource(each).toURI());
-                exeuteSQL(yamlFile);
+                executeSQL(yamlFile);
             } catch (URISyntaxException | SQLException | IOException e) {
                 throw new ShardingSphereException(e);
             }
         });
     }
     
-    private void exeuteSQL(final File yamlFile) throws SQLException, IOException {
+    private void executeSQL(final File yamlFile) throws SQLException, IOException {
         dataSource = YamlOrchestrationShardingSphereDataSourceFactory.createDataSource(yamlFile);
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
