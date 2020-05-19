@@ -83,6 +83,9 @@ public final class ShardingMetaDataLoader implements RuleMetaDataLoader<Sharding
             return TableMetaDataLoader.load(dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName(), databaseType.getName());
         }
         Map<String, TableMetaData> actualTableMetaDataMap = parallelLoadTables(databaseType, dataSourceMap, dataNodes, tableName, maxConnectionsSizePerQuery);
+        if (actualTableMetaDataMap.isEmpty()) {
+            return Optional.empty();
+        }
         checkUniformed(tableRule.getLogicTable(), actualTableMetaDataMap, shardingRule);
         return Optional.of(actualTableMetaDataMap.values().iterator().next());
     }
