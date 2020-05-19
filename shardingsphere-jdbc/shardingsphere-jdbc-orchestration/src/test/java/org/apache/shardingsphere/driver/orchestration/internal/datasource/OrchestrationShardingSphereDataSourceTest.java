@@ -110,7 +110,8 @@ public final class OrchestrationShardingSphereDataSourceTest {
     @Test
     public void assertRenewRules() {
         orchestrationDataSource.renew(new RuleConfigurationsChangedEvent(DefaultSchema.LOGIC_NAME, Arrays.asList(getShardingRuleConfiguration(), getMasterSlaveRuleConfiguration())));
-        assertThat(((ShardingRule) orchestrationDataSource.getDataSource().getRuntimeContext().getRules().iterator().next()).getTableRules().size(), is(1));
+        assertThat(((ShardingRule) 
+                orchestrationDataSource.getDataSource().getSchemaContexts().getDefaultSchemaContext().getSchema().getRules().iterator().next()).getTableRules().size(), is(1));
     }
     
     private ShardingRuleConfiguration getShardingRuleConfiguration() {
@@ -148,7 +149,7 @@ public final class OrchestrationShardingSphereDataSourceTest {
     @Test
     public void assertRenewProperties() {
         orchestrationDataSource.renew(getPropertiesChangedEvent());
-        assertThat(orchestrationDataSource.getDataSource().getRuntimeContext().getProperties().getProps().getProperty("sql.show"), is("true"));
+        assertThat(orchestrationDataSource.getDataSource().getSchemaContexts().getProperties().getProps().getProperty("sql.show"), is("true"));
     }
     
     private PropertiesChangedEvent getPropertiesChangedEvent() {

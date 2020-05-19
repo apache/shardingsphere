@@ -62,7 +62,7 @@ public final class SchemaContextsBuilder {
     private final ExecutorKernel executorKernel;
     
     public SchemaContextsBuilder(final Map<String, Map<String, DataSource>> dataSources,
-                                 final DatabaseType databaseType, final Map<String, Collection<RuleConfiguration>> configurations, final Properties props) throws SQLException {
+                                 final DatabaseType databaseType, final Map<String, Collection<RuleConfiguration>> configurations, final Properties props) {
         this.dataSources = dataSources;
         this.databaseType = databaseType;
         this.configurations = configurations;

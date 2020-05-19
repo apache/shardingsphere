@@ -21,8 +21,10 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.kernal.context.SchemaContextsBuilder;
 import org.h2.tools.RunScript;
 import org.junit.Before;
 import org.springframework.test.context.TestExecutionListeners;
@@ -35,9 +37,10 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -82,19 +85,19 @@ public abstract class AbstractSpringJUnitTest extends AbstractJUnit4SpringContex
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows(ReflectiveOperationException.class)
+    @SneakyThrows(SQLException.class)
     private void reInitMetaData() {
-        Map<String, DataSource> dataSourceMap = shardingSphereDataSource.getDataSourceMap();
-        ShardingSphereMetaData newMetaData = (ShardingSphereMetaData) getCreateMetaDataMethod().invoke(
-                shardingSphereDataSource.getRuntimeContext(), dataSourceMap, shardingSphereDataSource.getRuntimeContext().getDatabaseType());
-        setFieldValue(shardingSphereDataSource.getRuntimeContext(), "metaData", newMetaData);
+        SchemaContextsBuilder schemaContextsBuilder = createSchemaContextsBuilder();
+        setFieldValue(shardingSphereDataSource.getSchemaContexts().getDefaultSchemaContext().getSchema(), "metaData", 
+                schemaContextsBuilder.build().getDefaultSchemaContext().getSchema().getMetaData());
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
-    private Method getCreateMetaDataMethod() {
-        Method result = shardingSphereDataSource.getRuntimeContext().getClass().getDeclaredMethod("createMetaData", Map.class, DatabaseType.class);
-        result.setAccessible(true);
-        return result;
+    private SchemaContextsBuilder createSchemaContextsBuilder() {
+        Map<String, Map<String, DataSource>> dataSources = Collections.singletonMap(DefaultSchema.LOGIC_NAME, shardingSphereDataSource.getDataSourceMap());
+        DatabaseType databaseType = shardingSphereDataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getDatabaseType();
+        Map<String, Collection<RuleConfiguration>> configurations = 
+                Collections.singletonMap(DefaultSchema.LOGIC_NAME, shardingSphereDataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getConfigurations());
+        return new SchemaContextsBuilder(dataSources, databaseType, configurations, shardingSphereDataSource.getSchemaContexts().getProperties().getProps());
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

@@ -17,16 +17,19 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.connection;
 
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
-import org.apache.shardingsphere.driver.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.driver.jdbc.core.fixture.BASEShardingTransactionManagerFixture;
 import org.apache.shardingsphere.driver.jdbc.core.fixture.XAShardingTransactionManagerFixture;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.kernal.context.SchemaContext;
+import org.apache.shardingsphere.kernal.context.SchemaContexts;
+import org.apache.shardingsphere.kernal.context.ShardingSphereSchema;
+import org.apache.shardingsphere.kernal.context.runtime.RuntimeContext;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -50,7 +53,7 @@ public final class ShardingSphereConnectionTest {
     
     private ShardingSphereConnection connection;
     
-    private RuntimeContext runtimeContext;
+    private SchemaContexts schemaContexts;
     
     @BeforeClass
     public static void init() throws SQLException {
@@ -69,12 +72,18 @@ public final class ShardingSphereConnectionTest {
     
     @Before
     public void setUp() {
-        runtimeContext = mock(RuntimeContext.class);
-        when(runtimeContext.getDatabaseType()).thenReturn(DatabaseTypes.getActualDatabaseType("H2"));
+        schemaContexts = mock(SchemaContexts.class);
+        SchemaContext schemaContext = mock(SchemaContext.class);
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        RuntimeContext runtimeContext = mock(RuntimeContext.class);
+        when(schemaContexts.getDefaultSchemaContext()).thenReturn(schemaContext);
+        when(schemaContext.getSchema()).thenReturn(schema);
+        when(schema.getDatabaseType()).thenReturn(DatabaseTypes.getActualDatabaseType("H2"));
+        when(schemaContext.getRuntimeContext()).thenReturn(runtimeContext);
         when(runtimeContext.getShardingTransactionManagerEngine()).thenReturn(new ShardingTransactionManagerEngine());
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(new TableRuleConfiguration("test"));
-        connection = new ShardingSphereConnection(dataSourceMap, runtimeContext, TransactionType.LOCAL);
+        connection = new ShardingSphereConnection(dataSourceMap, schemaContexts, TransactionType.LOCAL);
     }
     
     @After
@@ -100,7 +109,7 @@ public final class ShardingSphereConnectionTest {
     
     @Test
     public void assertXATransactionOperation() throws SQLException {
-        connection = new ShardingSphereConnection(dataSourceMap, runtimeContext, TransactionType.XA);
+        connection = new ShardingSphereConnection(dataSourceMap, schemaContexts, TransactionType.XA);
         connection.setAutoCommit(false);
         assertTrue(XAShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.BEGIN));
         connection.commit();
@@ -111,7 +120,7 @@ public final class ShardingSphereConnectionTest {
     
     @Test
     public void assertBASETransactionOperation() throws SQLException {
-        connection = new ShardingSphereConnection(dataSourceMap, runtimeContext, TransactionType.BASE);
+        connection = new ShardingSphereConnection(dataSourceMap, schemaContexts, TransactionType.BASE);
         connection.setAutoCommit(false);
         assertTrue(BASEShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.BEGIN));
         connection.commit();

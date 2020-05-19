@@ -66,6 +66,6 @@ public class OrchestrationShardingMasterSlaveNamespaceTest extends AbstractJUnit
     private ShardingRule getShardingRule(final String shardingSphereDataSourceName) {
         OrchestrationSpringShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(shardingSphereDataSourceName, OrchestrationSpringShardingSphereDataSource.class);
         ShardingSphereDataSource dataSource = (ShardingSphereDataSource) FieldValueUtil.getFieldValue(shardingSphereDataSource, "dataSource", true);
-        return (ShardingRule) dataSource.getRuntimeContext().getRules().iterator().next();
+        return (ShardingRule) dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getRules().iterator().next();
     }
 }
