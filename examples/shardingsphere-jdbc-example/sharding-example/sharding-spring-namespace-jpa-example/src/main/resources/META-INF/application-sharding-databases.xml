@@ -85,18 +85,18 @@
     <sharding:key-generator id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
     <sharding:key-generator id="itemKeyGenerator" column="order_item_id" algorithm-ref="snowflakeAlgorithm" />
     
-    <shardingsphere:data-source id="shardingDataSource" data-source-names="demo_ds_0, demo_ds_1">
-        <shardingsphere:sharding-rule>
-            <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" database-strategy-ref="databaseStrategy" key-generator-ref="orderKeyGenerator" />
-                <sharding:table-rule logic-table="t_order_item" database-strategy-ref="databaseStrategy" key-generator-ref="itemKeyGenerator" />
-            </sharding:table-rules>
-            <sharding:binding-table-rules>
-                <sharding:binding-table-rule logic-tables="t_order,t_order_item"/>
-            </sharding:binding-table-rules>
-            <sharding:broadcast-table-rules>
-                <sharding:broadcast-table-rule table="t_address"/>
-            </sharding:broadcast-table-rules>
-        </shardingsphere:sharding-rule>
-    </shardingsphere:data-source>
+    <sharding:rule id="shardingRule">
+        <sharding:table-rules>
+            <sharding:table-rule logic-table="t_order" database-strategy-ref="databaseStrategy" key-generator-ref="orderKeyGenerator" />
+            <sharding:table-rule logic-table="t_order_item" database-strategy-ref="databaseStrategy" key-generator-ref="itemKeyGenerator" />
+        </sharding:table-rules>
+        <sharding:binding-table-rules>
+            <sharding:binding-table-rule logic-tables="t_order,t_order_item"/>
+        </sharding:binding-table-rules>
+        <sharding:broadcast-table-rules>
+            <sharding:broadcast-table-rule table="t_address"/>
+        </sharding:broadcast-table-rules>
+    </sharding:rule>
+    
+    <shardingsphere:data-source id="shardingDataSource" data-source-names="demo_ds_0, demo_ds_1" rule-refs="shardingRule" />
 </beans>

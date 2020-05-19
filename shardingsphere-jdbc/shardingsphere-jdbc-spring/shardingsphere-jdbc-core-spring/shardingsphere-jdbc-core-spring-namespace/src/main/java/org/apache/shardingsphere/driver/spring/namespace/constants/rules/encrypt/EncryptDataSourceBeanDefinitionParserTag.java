@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.namespace.constants;
+package org.apache.shardingsphere.driver.spring.namespace.constants.rules.encrypt;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EncryptDataSourceBeanDefinitionParserTag {
     
-    public static final String ENCRYPT_RULE_TAG = "encrypt-rule";
+    public static final String ENCRYPT_RULE_TAG = "rule";
     
     public static final String TABLES_CONFIG_TAG = "tables";
     

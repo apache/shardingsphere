@@ -15,12 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.namespace.parser;
+package org.apache.shardingsphere.driver.spring.namespace.parser.rule.sharding;
 
-import com.google.common.base.Strings;
-import java.util.Properties;
-import org.apache.shardingsphere.driver.spring.namespace.constants.SPIBeanDefinitionParserTag;
-import org.apache.shardingsphere.driver.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean;
+import org.apache.shardingsphere.driver.spring.transaction.ShardingTransactionTypeScanner;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -28,24 +25,18 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
 
 /**
- * Key generate algorithm bean parser for spring namespace.
+ * Sharding transaction type scanner bean definition parser.
  */
-public final class KeyGenerateAlgorithmBeanDefinitionParser extends AbstractBeanDefinitionParser {
+public final class ShardingTransactionTypeScannerBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(KeyGenerateAlgorithmFactoryBean.class);
-        factory.addConstructorArgValue(element.getAttribute(SPIBeanDefinitionParserTag.KEY_GENERATE_ALGORITHM_TYPE_ATTRIBUTE));
-        parseProperties(element, factory);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingTransactionTypeScanner.class);
         return factory.getBeanDefinition();
     }
     
-    private void parseProperties(final Element element, final BeanDefinitionBuilder factory) {
-        String properties = element.getAttribute(SPIBeanDefinitionParserTag.KEY_GENERATE_ALGORITHM_PROPERTY_REF_ATTRIBUTE);
-        if (!Strings.isNullOrEmpty(properties)) {
-            factory.addConstructorArgReference(properties);
-        } else {
-            factory.addConstructorArgValue(new Properties());
-        }
+    @Override
+    protected boolean shouldGenerateId() {
+        return true;
     }
 }

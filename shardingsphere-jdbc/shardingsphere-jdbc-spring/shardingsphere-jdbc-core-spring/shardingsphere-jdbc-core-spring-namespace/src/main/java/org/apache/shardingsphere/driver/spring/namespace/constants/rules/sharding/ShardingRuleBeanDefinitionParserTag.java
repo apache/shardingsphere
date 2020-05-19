@@ -15,32 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.namespace.constants;
+package org.apache.shardingsphere.driver.spring.namespace.constants.rules.sharding;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Sharding data source parser tag constants.
+ * Sharding rule parser tag constants.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingDataSourceBeanDefinitionParserTag {
+public final class ShardingRuleBeanDefinitionParserTag {
     
-    public static final String ROOT_TAG = "data-source";
-    
-    public static final String SHARDING_RULE_CONFIG_TAG = "sharding-rule";
-    
-    public static final String PROPS_TAG = "props";
-    
-    public static final String DATA_SOURCE_NAMES_TAG = "data-source-names";
+    public static final String SHARDING_RULE_CONFIG_TAG = "rule";
     
     public static final String TABLE_RULES_TAG = "table-rules";
     
     public static final String TABLE_RULE_TAG = "table-rule";
-    
-    public static final String MASTER_SLAVE_RULE_TAG = "master-slave-rule";
-    
-    public static final String MASTER_SLAVE_DATA_SOURCE_TAG = "data-source-rule";
     
     public static final String BINDING_TABLE_RULES_TAG = "binding-table-rules";
     

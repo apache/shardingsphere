@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.namespace.parser;
+package org.apache.shardingsphere.driver.spring.namespace.handler;
 
-import org.springframework.beans.factory.support.AbstractBeanDefinition;
-import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
-import org.springframework.beans.factory.xml.ParserContext;
-import org.w3c.dom.Element;
+import org.apache.shardingsphere.driver.spring.namespace.constants.rules.encrypt.EncryptDataSourceBeanDefinitionParserTag;
+import org.apache.shardingsphere.driver.spring.namespace.parser.rule.encrypt.EncryptRuleBeanDefinitionParser;
+import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
- * Sharding strategy bean parser for spring namespace.
+ * Spring namespace handler for encrypt.
  */
-public final class ShardingStrategyBeanDefinitionParser extends AbstractBeanDefinitionParser {
+public final class EncryptNamespaceHandler extends NamespaceHandlerSupport {
     
     @Override
-    protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        return ShardingStrategyBeanDefinition.getBeanDefinitionByElement(element);
+    public void init() {
+        registerBeanDefinitionParser(EncryptDataSourceBeanDefinitionParserTag.ENCRYPT_RULE_TAG, new EncryptRuleBeanDefinitionParser());
     }
 }

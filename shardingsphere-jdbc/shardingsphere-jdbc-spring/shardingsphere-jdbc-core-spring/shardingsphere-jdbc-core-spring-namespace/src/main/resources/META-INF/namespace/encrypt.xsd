@@ -22,12 +22,16 @@
             elementFormDefault="qualified">
     <xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd"/>
     
-    <xsd:complexType name="encrypt-rule">
-        <xsd:all>
-            <xsd:element ref="encryptors" />
-            <xsd:element ref="tables" />
-        </xsd:all>
-    </xsd:complexType>
+    <xsd:element name="rule">
+        <xsd:complexType>
+            <xsd:all>
+                <xsd:element ref="encryptors" />
+                <xsd:element ref="tables" />
+            </xsd:all>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+        </xsd:complexType>
+    </xsd:element>
+    
      <xsd:element name="encryptors">
        <xsd:complexType>
             <xsd:sequence>

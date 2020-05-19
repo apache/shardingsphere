@@ -15,26 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.namespace.constants;
+package org.apache.shardingsphere.driver.spring.namespace.constants.rules.masterslave;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * SPI parser tag constants.
+ * Master-slave rule parser tag constants.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SPIBeanDefinitionParserTag {
+public final class MasterSlaveRuleBeanDefinitionParserTag {
     
-    public static final String KEY_GENERATE_ALGORITHM_TAG = "key-generate-algorithm";
+    public static final String MASTER_SLAVE_RULE_TAG = "rule";
     
-    public static final String KEY_GENERATE_ALGORITHM_TYPE_ATTRIBUTE = "type";
-    
-    public static final String KEY_GENERATE_ALGORITHM_PROPERTY_REF_ATTRIBUTE = "props-ref";
-
-    public static final String SHARDING_ALGORITHM_TAG = "sharding-algorithm";
-
-    public static final String SHARDING_ALGORITHM_TYPE_ATTRIBUTE = "type";
-
-    public static final String SHARDING_ALGORITHM_PROPERTY_REF_ATTRIBUTE = "props-ref";
+    public static final String MASTER_SLAVE_DATA_SOURCE_TAG = "data-source-rule";
 }

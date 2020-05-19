@@ -69,142 +69,138 @@
         <prop key="algorithm.expression">t_order_${order_id % 4}</prop>
     </bean:properties>
     
-    <shardingsphere:data-source id="simpleShardingDataSource" data-source-names="dbtbl_0">
-        <shardingsphere:sharding-rule>
-            <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" />
-            </sharding:table-rules>
-        </shardingsphere:sharding-rule>
-        <shardingsphere:encrypt-rule>
-            <encrypt:tables>
-                <encrypt:table name="t_order">
-                    <encrypt:column logic-column="user_id" plain-column="user_decrypt" cipher-column="user_encrypt" assisted-query-column="user_assisted" encryptor-ref="encryptor_aes" />
-                    <encrypt:column logic-column="order_id" plain-column="order_decrypt" cipher-column="order_encrypt" assisted-query-column="order_assisted" encryptor-ref="encryptor_md5"/>
-                </encrypt:table>
-            </encrypt:tables>
-            <encrypt:encryptors>
-                <encrypt:encryptor id="encryptor_aes" type="AES" props-ref="props"/>
-                <encrypt:encryptor id="encryptor_md5" type="MD5" />
-            </encrypt:encryptors>
-        </shardingsphere:encrypt-rule>
-    </shardingsphere:data-source>
+    <sharding:rule id="simpleShardingDataSourceShardingRule">
+        <sharding:table-rules>
+            <sharding:table-rule logic-table="t_order" />
+        </sharding:table-rules>
+    </sharding:rule>
+    <encrypt:rule id="simpleShardingDataSourceEncryptRule">
+        <encrypt:tables>
+            <encrypt:table name="t_order">
+                <encrypt:column logic-column="user_id" plain-column="user_decrypt" cipher-column="user_encrypt" assisted-query-column="user_assisted" encryptor-ref="encryptor_aes" />
+                <encrypt:column logic-column="order_id" plain-column="order_decrypt" cipher-column="order_encrypt" assisted-query-column="order_assisted" encryptor-ref="encryptor_md5"/>
+            </encrypt:table>
+        </encrypt:tables>
+        <encrypt:encryptors>
+            <encrypt:encryptor id="encryptor_aes" type="AES" props-ref="props"/>
+            <encrypt:encryptor id="encryptor_md5" type="MD5" />
+        </encrypt:encryptors>
+    </encrypt:rule>
     
-    <shardingsphere:data-source id="masterSlaveShardingDataSourceByDefaultStrategy" data-source-names="dbtbl_0_master,dbtbl_0_slave_0,dbtbl_0_slave_1,dbtbl_1_master,dbtbl_1_slave_0,dbtbl_1_slave_1">
-        <shardingsphere:sharding-rule default-key-generator-ref="defaultKeyGenerator">
-            <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" key-generator-ref="orderKeyGenerator" />
-            </sharding:table-rules>
-        </shardingsphere:sharding-rule>
-        <shardingsphere:master-slave-rule>
-            <master-slave:data-source-rule id="dbtbl_0" master-data-source-name="dbtbl_0_master" slave-data-source-names="dbtbl_0_slave_0,dbtbl_0_slave_1"/>
-            <master-slave:data-source-rule id="dbtbl_1" master-data-source-name="dbtbl_1_master" slave-data-source-names="dbtbl_1_slave_0,dbtbl_1_slave_1"/>
-        </shardingsphere:master-slave-rule>
-    </shardingsphere:data-source>
+    <shardingsphere:data-source id="simpleShardingDataSource" data-source-names="dbtbl_0" rule-refs="simpleShardingDataSourceShardingRule, simpleShardingDataSourceEncryptRule" />
     
-    <shardingsphere:data-source id="masterSlaveShardingDataSourceByUserStrategy" data-source-names="dbtbl_0_master,dbtbl_0_slave_0,dbtbl_0_slave_1,dbtbl_1_master,dbtbl_1_slave_0,dbtbl_1_slave_1">
-        <shardingsphere:sharding-rule default-key-generator-ref="defaultKeyGenerator">
-            <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" key-generator-ref="orderKeyGenerator" />
-            </sharding:table-rules>
-        </shardingsphere:sharding-rule>
-        <shardingsphere:master-slave-rule>
-            <master-slave:data-source-rule id="dbtbl_0" master-data-source-name="dbtbl_0_master" slave-data-source-names="dbtbl_0_slave_0,dbtbl_0_slave_1" strategy-ref="randomLoadBalanceAlgorithm"/>
-            <master-slave:data-source-rule id="dbtbl_1" master-data-source-name="dbtbl_1_master" slave-data-source-names="dbtbl_1_slave_0,dbtbl_1_slave_1" strategy-ref="randomLoadBalanceAlgorithm"/>
-        </shardingsphere:master-slave-rule>
-    </shardingsphere:data-source>
+    <sharding:rule id="masterSlaveShardingDataSourceByDefaultStrategyShardingRule" default-key-generator-ref="defaultKeyGenerator">
+        <sharding:table-rules>
+            <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" key-generator-ref="orderKeyGenerator" />
+        </sharding:table-rules>
+    </sharding:rule>
+    <master-slave:rule id="masterSlaveShardingDataSourceByDefaultStrategyMasterSlaveRule">
+        <master-slave:data-source-rule id="dbtbl_0" master-data-source-name="dbtbl_0_master" slave-data-source-names="dbtbl_0_slave_0,dbtbl_0_slave_1"/>
+        <master-slave:data-source-rule id="dbtbl_1" master-data-source-name="dbtbl_1_master" slave-data-source-names="dbtbl_1_slave_0,dbtbl_1_slave_1"/>
+    </master-slave:rule>
     
-    <shardingsphere:data-source id="shardingRuleWithAttributesDataSource" data-source-names="dbtbl_0,dbtbl_1">
-        <shardingsphere:sharding-rule
-            default-database-strategy-ref="standardStrategy"
-            default-table-strategy-ref="inlineStrategy"
-            default-key-generator-ref="defaultKeyGenerator">
-            <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" />
-            </sharding:table-rules>
-        </shardingsphere:sharding-rule>
-    </shardingsphere:data-source>
+    <shardingsphere:data-source id="masterSlaveShardingDataSourceByDefaultStrategy" data-source-names="dbtbl_0_master,dbtbl_0_slave_0,dbtbl_0_slave_1,dbtbl_1_master,dbtbl_1_slave_0,dbtbl_1_slave_1" rule-refs="masterSlaveShardingDataSourceByDefaultStrategyShardingRule, masterSlaveShardingDataSourceByDefaultStrategyMasterSlaveRule" />
     
-    <shardingsphere:data-source id="tableRuleWithAttributesDataSource" data-source-names="dbtbl_0,dbtbl_1">
-        <shardingsphere:sharding-rule>
-            <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" key-generator-ref="orderKeyGenerator" />
-            </sharding:table-rules>
-        </shardingsphere:sharding-rule>
-    </shardingsphere:data-source>
+    <sharding:rule id="masterSlaveShardingDataSourceByUserStrategyShardingRule" default-key-generator-ref="defaultKeyGenerator">
+        <sharding:table-rules>
+            <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" key-generator-ref="orderKeyGenerator" />
+        </sharding:table-rules>
+    </sharding:rule>
+    <master-slave:rule id="masterSlaveShardingDataSourceByUserStrategyMasterSlaveRule">
+        <master-slave:data-source-rule id="dbtbl_0" master-data-source-name="dbtbl_0_master" slave-data-source-names="dbtbl_0_slave_0,dbtbl_0_slave_1" strategy-ref="randomLoadBalanceAlgorithm"/>
+        <master-slave:data-source-rule id="dbtbl_1" master-data-source-name="dbtbl_1_master" slave-data-source-names="dbtbl_1_slave_0,dbtbl_1_slave_1" strategy-ref="randomLoadBalanceAlgorithm"/>
+    </master-slave:rule>
     
-    <shardingsphere:data-source id="multiTableRulesDataSource" data-source-names="dbtbl_0,dbtbl_1">
-        <shardingsphere:sharding-rule>
-            <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" />
-                <sharding:table-rule logic-table="t_order_item" />
-            </sharding:table-rules>
-        </shardingsphere:sharding-rule>
-    </shardingsphere:data-source>
+    <shardingsphere:data-source id="masterSlaveShardingDataSourceByUserStrategy" data-source-names="dbtbl_0_master,dbtbl_0_slave_0,dbtbl_0_slave_1,dbtbl_1_master,dbtbl_1_slave_0,dbtbl_1_slave_1" rule-refs="masterSlaveShardingDataSourceByUserStrategyShardingRule, masterSlaveShardingDataSourceByUserStrategyMasterSlaveRule" />
     
-    <shardingsphere:data-source id="bindingTableRuleDatasource" data-source-names="dbtbl_0,dbtbl_1">
-        <shardingsphere:sharding-rule>
-            <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" />
-                <sharding:table-rule logic-table="t_order_item" />
-            </sharding:table-rules>
-            <sharding:binding-table-rules>
-                <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
-            </sharding:binding-table-rules>
-        </shardingsphere:sharding-rule>
-    </shardingsphere:data-source>
+    <sharding:rule id="shardingRuleWithAttributesDataSourceShardingRule" default-database-strategy-ref="standardStrategy" default-table-strategy-ref="inlineStrategy" default-key-generator-ref="defaultKeyGenerator">
+        <sharding:table-rules>
+            <sharding:table-rule logic-table="t_order" />
+        </sharding:table-rules>
+    </sharding:rule>
     
-    <shardingsphere:data-source id="multiBindingTableRulesDatasource" data-source-names="dbtbl_0,dbtbl_1">
-        <shardingsphere:sharding-rule>
-            <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" />
-                <sharding:table-rule logic-table="t_order_item" />
-                <sharding:table-rule logic-table="t_user" />
-                <sharding:table-rule logic-table="t_user_detail" />
-            </sharding:table-rules>
-            <sharding:binding-table-rules>
-                <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
-                <sharding:binding-table-rule logic-tables="t_user, t_user_detail" />
-            </sharding:binding-table-rules>
-        </shardingsphere:sharding-rule>
-    </shardingsphere:data-source>
+    <shardingsphere:data-source id="shardingRuleWithAttributesDataSource" data-source-names="dbtbl_0,dbtbl_1" rule-refs="shardingRuleWithAttributesDataSourceShardingRule" />
     
-    <shardingsphere:data-source id="broadcastTableRuleDatasource" data-source-names="dbtbl_0,dbtbl_1">
-        <shardingsphere:sharding-rule>
-            <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" />
-                <sharding:table-rule logic-table="t_order_item" />
-            </sharding:table-rules>
-            <sharding:binding-table-rules>
-                <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
-            </sharding:binding-table-rules>
-            <sharding:broadcast-table-rules>
-                <sharding:broadcast-table-rule table="t_config" />
-            </sharding:broadcast-table-rules>
-        </shardingsphere:sharding-rule>
-    </shardingsphere:data-source>
+    <sharding:rule id="tableRuleWithAttributesDataSourceShardingRule">
+        <sharding:table-rules>
+            <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" key-generator-ref="orderKeyGenerator" />
+        </sharding:table-rules>
+    </sharding:rule>
     
-    <shardingsphere:data-source id="multiBroadcastTableRulesDatasource" data-source-names="dbtbl_0,dbtbl_1">
-        <shardingsphere:sharding-rule>
-            <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" />
-                <sharding:table-rule logic-table="t_order_item" />
-            </sharding:table-rules>
-            <sharding:binding-table-rules>
-                <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
-            </sharding:binding-table-rules>
-            <sharding:broadcast-table-rules>
-                <sharding:broadcast-table-rule table="t_config1" />
-                <sharding:broadcast-table-rule table="t_config2" />
-            </sharding:broadcast-table-rules>
-        </shardingsphere:sharding-rule>
-    </shardingsphere:data-source>
+    <shardingsphere:data-source id="tableRuleWithAttributesDataSource" data-source-names="dbtbl_0,dbtbl_1" rule-refs="tableRuleWithAttributesDataSourceShardingRule" />
     
-    <shardingsphere:data-source id="propsDataSource" data-source-names="dbtbl_0,dbtbl_1">
-        <shardingsphere:sharding-rule>
-            <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" />
-            </sharding:table-rules>
-        </shardingsphere:sharding-rule>
+    <sharding:rule id="multiTableRulesDataSourceShardingRule">
+        <sharding:table-rules>
+            <sharding:table-rule logic-table="t_order" />
+            <sharding:table-rule logic-table="t_order_item" />
+        </sharding:table-rules>
+    </sharding:rule>
+    <shardingsphere:data-source id="multiTableRulesDataSource" data-source-names="dbtbl_0,dbtbl_1" rule-refs="multiTableRulesDataSourceShardingRule" />
+    
+    <sharding:rule id="bindingTableRuleDatasourceShardingRule">
+        <sharding:table-rules>
+            <sharding:table-rule logic-table="t_order" />
+            <sharding:table-rule logic-table="t_order_item" />
+        </sharding:table-rules>
+        <sharding:binding-table-rules>
+            <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
+        </sharding:binding-table-rules>
+    </sharding:rule>
+    <shardingsphere:data-source id="bindingTableRuleDatasource" data-source-names="dbtbl_0,dbtbl_1" rule-refs="bindingTableRuleDatasourceShardingRule" />
+    
+    <sharding:rule id="multiBindingTableRulesDatasourceShardingRule">
+        <sharding:table-rules>
+            <sharding:table-rule logic-table="t_order" />
+            <sharding:table-rule logic-table="t_order_item" />
+            <sharding:table-rule logic-table="t_user" />
+            <sharding:table-rule logic-table="t_user_detail" />
+        </sharding:table-rules>
+        <sharding:binding-table-rules>
+            <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
+            <sharding:binding-table-rule logic-tables="t_user, t_user_detail" />
+        </sharding:binding-table-rules>
+    </sharding:rule>
+    
+    <shardingsphere:data-source id="multiBindingTableRulesDatasource" data-source-names="dbtbl_0,dbtbl_1" rule-refs="multiBindingTableRulesDatasourceShardingRule" />
+    
+    <sharding:rule id="broadcastTableRuleDatasourceShardingRule">
+        <sharding:table-rules>
+            <sharding:table-rule logic-table="t_order" />
+            <sharding:table-rule logic-table="t_order_item" />
+        </sharding:table-rules>
+        <sharding:binding-table-rules>
+            <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
+        </sharding:binding-table-rules>
+        <sharding:broadcast-table-rules>
+            <sharding:broadcast-table-rule table="t_config" />
+        </sharding:broadcast-table-rules>
+    </sharding:rule>
+    
+    <shardingsphere:data-source id="broadcastTableRuleDatasource" data-source-names="dbtbl_0,dbtbl_1" rule-refs="broadcastTableRuleDatasourceShardingRule" />
+    
+    <sharding:rule id="multiBroadcastTableRulesDatasourceShardingRule">
+        <sharding:table-rules>
+            <sharding:table-rule logic-table="t_order" />
+            <sharding:table-rule logic-table="t_order_item" />
+        </sharding:table-rules>
+        <sharding:binding-table-rules>
+            <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
+        </sharding:binding-table-rules>
+        <sharding:broadcast-table-rules>
+            <sharding:broadcast-table-rule table="t_config1" />
+            <sharding:broadcast-table-rule table="t_config2" />
+        </sharding:broadcast-table-rules>
+    </sharding:rule>
+    
+    <shardingsphere:data-source id="multiBroadcastTableRulesDatasource" data-source-names="dbtbl_0,dbtbl_1" rule-refs="multiBroadcastTableRulesDatasourceShardingRule" />
+    
+    <sharding:rule id="propsDataSourceShardingRule">
+        <sharding:table-rules>
+            <sharding:table-rule logic-table="t_order" />
+        </sharding:table-rules>
+    </sharding:rule>
+    
+    <shardingsphere:data-source id="propsDataSource" data-source-names="dbtbl_0,dbtbl_1" rule-refs="propsDataSourceShardingRule">
         <shardingsphere:props>
             <prop key="sql.show">${sql_show}</prop>
             <prop key="executor.size">10</prop>
