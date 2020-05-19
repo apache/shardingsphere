@@ -43,11 +43,11 @@ public class ShadowNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     private ShadowRule getShadowRule() {
         ShardingSphereDataSource dataSource = applicationContext.getBean("shadowDataSource", ShardingSphereDataSource.class);
-        return (ShadowRule) dataSource.getRuntimeContext().getRules().iterator().next();
+        return (ShadowRule) dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getRules().iterator().next();
     }
     
     private ConfigurationProperties getProperties() {
         ShardingSphereDataSource dataSource = applicationContext.getBean("shadowDataSource", ShardingSphereDataSource.class);
-        return dataSource.getRuntimeContext().getProperties();
+        return dataSource.getSchemaContexts().getProperties();
     }
 }

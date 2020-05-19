@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.namespace.constants;
+package org.apache.shardingsphere.shadow.spring.namespace.tag;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -26,13 +26,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShadowDataSourceBeanDefinitionParserTag {
     
-    public static final String SHADOW_RULE_TAG = "shadow-rule";
+    public static final String ROOT_TAG = "rule";
     
     public static final String MAPPINGS_CONFIG_TAG = "mappings";
     
     public static final String MAPPING_CONFIG_TAG = "mapping";
     
-    public static final String COLUMN_CONFIG_TAG = "shadow-column";
+    public static final String COLUMN_CONFIG_TAG = "column";
     
     public static final String PRODUCT_DATA_SOURCE_NAME = "product-data-source-name";
     

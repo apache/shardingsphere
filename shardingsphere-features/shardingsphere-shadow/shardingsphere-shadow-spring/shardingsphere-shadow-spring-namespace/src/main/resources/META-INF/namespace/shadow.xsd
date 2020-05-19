@@ -21,13 +21,17 @@
             targetNamespace="http://shardingsphere.apache.org/schema/shardingsphere/shadow"
             elementFormDefault="qualified">
     <xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd"/>
-    
-    <xsd:complexType name="shadow-rule">
-        <xsd:all>
-            <xsd:element ref="mappings" />
-        </xsd:all>
-        <xsd:attribute name="shadow-column" type="xsd:string" />
-    </xsd:complexType>
+
+    <xsd:element name="rule">
+        <xsd:complexType>
+            <xsd:all>
+                <xsd:element ref="mappings" />
+            </xsd:all>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="column" type="xsd:string" />
+        </xsd:complexType>
+    </xsd:element>
+
      <xsd:element name="mappings">
        <xsd:complexType>
             <xsd:sequence>
@@ -35,6 +39,7 @@
             </xsd:sequence>
         </xsd:complexType>
     </xsd:element>
+
      <xsd:element name="mapping">
         <xsd:complexType>
             <xsd:attribute name="product-data-source-name" type="xsd:string" use="required" />

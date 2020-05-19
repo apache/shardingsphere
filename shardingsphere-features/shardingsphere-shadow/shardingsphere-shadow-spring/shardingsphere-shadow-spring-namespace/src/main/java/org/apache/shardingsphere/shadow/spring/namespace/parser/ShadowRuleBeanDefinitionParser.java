@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.namespace.parser;
+package org.apache.shardingsphere.shadow.spring.namespace.parser;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.driver.spring.namespace.constants.ShadowDataSourceBeanDefinitionParserTag;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.spring.namespace.tag.ShadowDataSourceBeanDefinitionParserTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
+import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
@@ -33,8 +33,7 @@ import java.util.Map;
 /**
  * Shadow rule parser for spring namespace.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShadowRuleBeanDefinitionParser {
+public final class ShadowRuleBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     /**
      * Parse shadow rule element.
@@ -42,7 +41,8 @@ public final class ShadowRuleBeanDefinitionParser {
      * @param element element
      * @return Bean definition of shadow rule
      */
-    public static AbstractBeanDefinition parseShadowRuleElement(final Element element) {
+    @Override
+    protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShadowRuleConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(ShadowDataSourceBeanDefinitionParserTag.COLUMN_CONFIG_TAG));
         factory.addConstructorArgValue(parseShadowMappings(DomUtils.getChildElementByTagName(element, ShadowDataSourceBeanDefinitionParserTag.MAPPINGS_CONFIG_TAG)));
