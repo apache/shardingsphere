@@ -61,10 +61,6 @@
     <sharding:key-generator id="orderKeyGenerator" column="order_id" algorithm-ref="incrementAlgorithm" />
     <master-slave:load-balance-algorithm id="randomLoadBalanceAlgorithm" type="RANDOM" />
     
-    <bean:properties id="props">
-        <prop key="appToken">business</prop>
-    </bean:properties>
-    
     <bean:properties id="inlineProps">
         <prop key="algorithm.expression">t_order_${order_id % 4}</prop>
     </bean:properties>
@@ -82,7 +78,11 @@
             </encrypt:table>
         </encrypt:tables>
         <encrypt:encryptors>
-            <encrypt:encryptor id="encryptor_aes" type="AES" props-ref="props"/>
+            <encrypt:encryptor id="encryptor_aes" type="AES">
+                <props>
+                    <prop key="appToken">business</prop>
+                </props>
+            </encrypt:encryptor>
             <encrypt:encryptor id="encryptor_md5" type="MD5" />
         </encrypt:encryptors>
     </encrypt:rule>
