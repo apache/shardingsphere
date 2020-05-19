@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.kernal.context;
+package org.apache.shardingsphere.kernal.context.schema;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -41,6 +41,8 @@ public final class ShardingSphereSchema {
     
     private final Map<String, DataSource> dataSources = new LinkedHashMap<>();
     
+    private final Map<String, DataSourceParameter> dataSourceParameters = new LinkedHashMap<>();
+    
     @Setter
     private ShardingSphereMetaData metaData;
     
@@ -51,5 +53,11 @@ public final class ShardingSphereSchema {
         this.rules = rules;
         this.dataSources.putAll(dataSourceMap);
         metaData = shardingSphereMetaData;
+    }
+    
+    public ShardingSphereSchema(final DatabaseType databaseType, final Collection<RuleConfiguration> configurations, final Collection<ShardingSphereRule> rules,
+                                final Map<String, DataSource> dataSourceMap, final Map<String, DataSourceParameter> dataSourceParameters, final ShardingSphereMetaData shardingSphereMetaData) {
+        this(databaseType, configurations, rules, dataSourceMap, shardingSphereMetaData);
+        this.dataSourceParameters.putAll(dataSourceParameters);
     }
 }

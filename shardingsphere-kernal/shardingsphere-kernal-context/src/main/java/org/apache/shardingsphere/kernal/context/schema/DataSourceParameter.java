@@ -15,21 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.kernal.context;
+package org.apache.shardingsphere.kernal.context.schema;
 
-import org.apache.shardingsphere.kernal.context.runtime.RuntimeContext;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.apache.shardingsphere.kernal.context.schema.ShardingSphereSchema;
+import lombok.Setter;
 
+/**
+ * Data source parameters for YAML.
+ */
 @Getter
-public final class SchemaContext {
+@Setter
+@EqualsAndHashCode
+public final class DataSourceParameter {
     
-    private final ShardingSphereSchema schema;
+    private String url;
     
-    private final RuntimeContext runtimeContext;
+    private String username;
     
-    public SchemaContext(final ShardingSphereSchema schema, final RuntimeContext runtimeContext) {
-        this.schema = schema;
-        this.runtimeContext = runtimeContext;
-    }
+    private String password;
+    
+    private long connectionTimeoutMilliseconds = 30 * 1000;
+    
+    private long idleTimeoutMilliseconds = 60 * 1000;
+    
+    private long maxLifetimeMilliseconds;
+    
+    private int maxPoolSize = 50;
+    
+    private int minPoolSize = 1;
+    
+    private long maintenanceIntervalMilliseconds = 30 * 1000;
+
+    private boolean readOnly;
 }
