@@ -24,7 +24,10 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
+import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
+
+import java.util.Properties;
 
 /**
  * Orchestration instance parser for spring namespace.
@@ -35,7 +38,7 @@ public final class InstanceBeanDefinitionParser extends AbstractBeanDefinitionPa
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(CenterConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(InstanceBeanDefinitionParserTag.TYPE_TAG));
-        addPropertiesArgReferenceIfNotEmpty(element, factory);
+        factory.addConstructorArgValue(parseProperties(element, parserContext));
         addPropertyValueIfNotEmpty(InstanceBeanDefinitionParserTag.ORCHESTRATION_TYPE_TAG, "orchestrationType", element, factory);
         addPropertyValueIfNotEmpty(InstanceBeanDefinitionParserTag.SERVER_LISTS_TAG, "serverLists", element, factory);
         addPropertyValueIfNotEmpty(InstanceBeanDefinitionParserTag.NAMESPACE_TAG, "META-INF/namespace", element, factory);
@@ -49,11 +52,8 @@ public final class InstanceBeanDefinitionParser extends AbstractBeanDefinitionPa
         }
     }
     
-    private void addPropertiesArgReferenceIfNotEmpty(final Element element, final BeanDefinitionBuilder factory) {
-        String properties = element.getAttribute(InstanceBeanDefinitionParserTag.PROPERTY_REF_TAG);
-        if (!Strings.isNullOrEmpty(properties)) {
-            factory.addConstructorArgReference(properties);
-        }
+    private Properties parseProperties(final Element element, final ParserContext parserContext) {
+        Element propsElement = DomUtils.getChildElementByTagName(element, InstanceBeanDefinitionParserTag.PROPERTY_REF_TAG);
+        return null == propsElement ? new Properties() : parserContext.getDelegate().parsePropsElement(propsElement);
     }
 }
-

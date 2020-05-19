@@ -37,11 +37,11 @@
     </master-slave:rule>
     
     <shardingsphere:data-source id="defaultMasterSlaveDataSource" data-source-names="dbtbl_0_master, dbtbl_0_slave_0, dbtbl_0_slave_1" rule-refs="defaultMasterSlaveDataSourceMasterSlaveRule">
-        <shardingsphere:props>
+        <props>
             <prop key="sql.show">${sql_show}</prop>
             <prop key="executor.size">10</prop>
             <prop key="foo">bar</prop>
-        </shardingsphere:props>
+        </props>
     </shardingsphere:data-source>
     
     <master-slave:rule id="randomMasterSlaveDataSourceMasterSlaveRule">

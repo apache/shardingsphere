@@ -22,7 +22,10 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/orchestration
-                           http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd http://www.springframework.org/schema/util https://www.springframework.org/schema/util/spring-util.xsd">
+                           http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd
+                           http://www.springframework.org/schema/util
+                           https://www.springframework.org/schema/util/spring-util.xsd
+                           ">
     <import resource="namespace/shardingDataSourceNamespace.xml" />
     
     <util:properties id="instance-props">
@@ -30,7 +33,12 @@
         <prop key="operation-timeout-milliseconds">1000</prop>
     </util:properties>
     
-    <orchestraion:instance id="centerRepository" orchestration-type="registry_center,config_center,metadata_center" instance-type="TestRegistry" server-lists="localhost:3181" namespace="orchestration-spring-namespace-test" props-ref="instance-props"/>
+    <orchestraion:instance id="centerRepository" orchestration-type="registry_center,config_center,metadata_center" instance-type="TestRegistry" server-lists="localhost:3181" namespace="orchestration-spring-namespace-test">
+        <props>
+            <prop key="max-retries">3</prop>
+            <prop key="operation-timeout-milliseconds">1000</prop>
+        </props>
+    </orchestraion:instance>
     
     <orchestraion:sharding-data-source id="simpleShardingOrchestration" data-source-ref="simpleShardingDataSource" instance-ref="centerRepository" />
     <orchestraion:sharding-data-source id="shardingRuleWithAttributesDataSourceOrchestration" data-source-ref="shardingRuleWithAttributesDataSource" instance-ref="centerRepository" />

@@ -66,5 +66,5 @@ public final class ShardingRuleBeanDefinitionTag {
     
     public static final String GENERATE_KEY_ALGORITHM_REF_TAG = "algorithm-ref";
     
-    public static final String LOGIC_INDEX = "logic-index";
+    public static final String LOGIC_INDEX_ATTRIBUTE = "logic-index";
 }

@@ -45,10 +45,6 @@
         <property name="password" value=""/>
     </bean>
     
-    <bean:properties id="props">
-        <prop key="aes.key.value">123456</prop>
-    </bean:properties>
-    
     <encrypt:rule id="encryptRule">
         <encrypt:tables>
             <encrypt:table name="t_user">
@@ -57,15 +53,19 @@
             </encrypt:table>
         </encrypt:tables>
         <encrypt:encryptors>
-            <encrypt:encryptor id="name_encryptor" type="AES" props-ref="props"/>
+            <encrypt:encryptor id="name_encryptor" type="AES">
+                <props>
+                    <prop key="aes.key.value">123456</prop>
+                </props>
+            </encrypt:encryptor>
             <encrypt:encryptor id="pwd_encryptor" type="assistedTest" />
         </encrypt:encryptors>
     </encrypt:rule>
     
     <shardingsphere:data-source id="encryptDataSource" data-source-names="dbtbl_0" rule-refs="encryptRule">
-        <shardingsphere:props>
+        <props>
             <prop key="query.with.cipher.column">true</prop>
-        </shardingsphere:props>
+        </props>
     </shardingsphere:data-source>
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
