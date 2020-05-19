@@ -22,6 +22,7 @@ import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.spring.boot.datasource.DataSourceMapSetter;
 import org.apache.shardingsphere.driver.spring.boot.prop.SpringBootPropertiesConfiguration;
 import org.apache.shardingsphere.driver.spring.transaction.ShardingTransactionTypeScanner;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.springframework.beans.factory.ObjectProvider;
