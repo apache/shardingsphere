@@ -70,4 +70,13 @@ public final class SimpleTableSegment implements TableSegment, OwnerAvailable, A
     public Optional<String> getAlias() {
         return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());
     }
+
+    /**
+     * Get alias stopIndex for table.
+     * 
+     * @return alias stopIndex
+     */
+    public int getAliasStopIndex() {
+        return null == alias ? -1 : alias.getStopIndex();
+    }
 }
