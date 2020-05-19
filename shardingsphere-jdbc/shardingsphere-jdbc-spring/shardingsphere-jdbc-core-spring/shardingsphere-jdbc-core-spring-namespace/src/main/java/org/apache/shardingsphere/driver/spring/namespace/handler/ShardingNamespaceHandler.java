@@ -20,6 +20,7 @@ package org.apache.shardingsphere.driver.spring.namespace.handler;
 import org.apache.shardingsphere.driver.spring.namespace.constants.rules.sharding.ShardingRuleBeanDefinitionParserTag;
 import org.apache.shardingsphere.driver.spring.namespace.constants.rules.sharding.ShardingStrategyBeanDefinitionParserTag;
 import org.apache.shardingsphere.driver.spring.namespace.parser.rule.sharding.KeyGeneratorBeanDefinitionParser;
+import org.apache.shardingsphere.driver.spring.namespace.parser.rule.sharding.ShardingRuleBeanDefinitionParser;
 import org.apache.shardingsphere.driver.spring.namespace.parser.rule.sharding.ShardingStrategyBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
@@ -30,6 +31,7 @@ public final class ShardingNamespaceHandler extends NamespaceHandlerSupport {
     
     @Override
     public void init() {
+        registerBeanDefinitionParser(ShardingRuleBeanDefinitionParserTag.SHARDING_RULE_CONFIG_TAG, new ShardingRuleBeanDefinitionParser());
         registerBeanDefinitionParser(ShardingStrategyBeanDefinitionParserTag.STANDARD_STRATEGY_ROOT_TAG, new ShardingStrategyBeanDefinitionParser());
         registerBeanDefinitionParser(ShardingStrategyBeanDefinitionParserTag.COMPLEX_STRATEGY_ROOT_TAG, new ShardingStrategyBeanDefinitionParser());
         registerBeanDefinitionParser(ShardingStrategyBeanDefinitionParserTag.HINT_STRATEGY_ROOT_TAG, new ShardingStrategyBeanDefinitionParser());
