@@ -35,7 +35,6 @@ import org.w3c.dom.Element;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -45,24 +44,10 @@ public final class EncryptRuleBeanDefinitionParser extends AbstractBeanDefinitio
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        return parseEncryptRuleElement(element).get();
-    }
-    
-    /**
-     * Parse encrypt rule element.
-     * 
-     * @param element element
-     * @return bean definition of encrypt rule
-     */
-    public static Optional<AbstractBeanDefinition> parseEncryptRuleElement(final Element element) {
-        Element encryptRuleElement = DomUtils.getChildElementByTagName(element, EncryptDataSourceBeanDefinitionParserTag.ENCRYPT_RULE_TAG);
-        if (null == encryptRuleElement) {
-            return Optional.empty();
-        }
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(EncryptRuleConfiguration.class);
-        factory.addConstructorArgValue(parseEncryptorRuleConfigurations(encryptRuleElement));
-        factory.addConstructorArgValue(parseEncryptTableRuleConfigurations(encryptRuleElement));
-        return Optional.of(factory.getBeanDefinition());
+        factory.addConstructorArgValue(parseEncryptorRuleConfigurations(element));
+        factory.addConstructorArgValue(parseEncryptTableRuleConfigurations(element));
+        return factory.getBeanDefinition();
     }
     
     private static Map<String, BeanDefinition> parseEncryptorRuleConfigurations(final Element element) {

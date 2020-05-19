@@ -20,10 +20,6 @@ package org.apache.shardingsphere.driver.spring.namespace.parser;
 import com.google.common.base.Splitter;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.spring.namespace.constants.DataSourceBeanDefinitionParserTag;
-import org.apache.shardingsphere.driver.spring.namespace.parser.rule.encrypt.EncryptRuleBeanDefinitionParser;
-import org.apache.shardingsphere.driver.spring.namespace.parser.rule.masterslave.MasterSlaveRuleBeanDefinitionParser;
-import org.apache.shardingsphere.driver.spring.namespace.parser.rule.sharding.ShardingRuleBeanDefinitionParser;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -63,11 +59,12 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
         return result;
     }
     
-    private Collection<BeanDefinition> parseRuleConfigurations(final Element element) {
-        Collection<BeanDefinition> result = new ManagedList<>(3);
-        ShardingRuleBeanDefinitionParser.parseShardingRuleConfiguration(element).ifPresent(result::add);
-        MasterSlaveRuleBeanDefinitionParser.parseMasterSlaveRuleConfiguration(element).ifPresent(result::add);
-        EncryptRuleBeanDefinitionParser.parseEncryptRuleElement(element).ifPresent(result::add);
+    private Collection<RuntimeBeanReference> parseRuleConfigurations(final Element element) {
+        List<String> ruleIdList = Splitter.on(",").trimResults().splitToList(element.getAttribute(DataSourceBeanDefinitionParserTag.RULE_REFS_TAG));
+        Collection<RuntimeBeanReference> result = new ManagedList<>(ruleIdList.size());
+        for (String each : ruleIdList) {
+            result.add(new RuntimeBeanReference(each));
+        }
         return result;
     }
     

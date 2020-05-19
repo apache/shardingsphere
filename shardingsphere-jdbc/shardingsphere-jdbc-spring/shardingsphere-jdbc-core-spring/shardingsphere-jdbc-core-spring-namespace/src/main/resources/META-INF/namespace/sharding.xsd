@@ -20,17 +20,20 @@
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             targetNamespace="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
             elementFormDefault="qualified">
-    <xsd:complexType name="sharding-rule">
-        <xsd:all>
-            <xsd:element ref="table-rules" minOccurs="0" />
-            <xsd:element ref="binding-table-rules" minOccurs="0" />
-            <xsd:element ref="broadcast-table-rules" minOccurs="0" />
-        </xsd:all>
-        <xsd:attribute name="id" type="xsd:string" use="required" />
-        <xsd:attribute name="default-database-strategy-ref" type="xsd:string" />
-        <xsd:attribute name="default-table-strategy-ref" type="xsd:string" />
-        <xsd:attribute name="default-key-generator-ref" type="xsd:string" />
-    </xsd:complexType>
+    
+    <xsd:element name="sharding-rule">
+        <xsd:complexType>
+            <xsd:all>
+                <xsd:element ref="table-rules" minOccurs="0" />
+                <xsd:element ref="binding-table-rules" minOccurs="0" />
+                <xsd:element ref="broadcast-table-rules" minOccurs="0" />
+            </xsd:all>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="default-database-strategy-ref" type="xsd:string" />
+            <xsd:attribute name="default-table-strategy-ref" type="xsd:string" />
+            <xsd:attribute name="default-key-generator-ref" type="xsd:string" />
+        </xsd:complexType>
+    </xsd:element>
     
     <xsd:element name="table-rules">
         <xsd:complexType>

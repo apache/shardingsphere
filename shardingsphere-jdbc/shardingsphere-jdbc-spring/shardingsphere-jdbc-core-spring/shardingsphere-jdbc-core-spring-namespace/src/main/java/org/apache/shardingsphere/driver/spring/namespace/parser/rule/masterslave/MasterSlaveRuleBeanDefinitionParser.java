@@ -29,7 +29,6 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Master-slave rule parser for spring namespace.
@@ -38,27 +37,13 @@ public final class MasterSlaveRuleBeanDefinitionParser extends AbstractBeanDefin
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        return parseMasterSlaveRuleConfiguration(element).get();
-    }
-    
-    /**
-     * Parse master-slave rule configuration.
-     * 
-     * @param element element
-     * @return bean definition of master-slave rule
-     */
-    public static Optional<AbstractBeanDefinition> parseMasterSlaveRuleConfiguration(final Element element) {
-        Element masterSlaveRuleElement = DomUtils.getChildElementByTagName(element, MasterSlaveRuleBeanDefinitionParserTag.MASTER_SLAVE_RULE_TAG);
-        if (null == masterSlaveRuleElement) {
-            return Optional.empty();
-        }
-        List<Element> masterSlaveDataSourceElements = DomUtils.getChildElementsByTagName(masterSlaveRuleElement, MasterSlaveRuleBeanDefinitionParserTag.MASTER_SLAVE_DATA_SOURCE_TAG);
+        List<Element> masterSlaveDataSourceElements = DomUtils.getChildElementsByTagName(element, MasterSlaveRuleBeanDefinitionParserTag.MASTER_SLAVE_DATA_SOURCE_TAG);
         List<BeanDefinition> masterSlaveDataSources = new ManagedList<>(masterSlaveDataSourceElements.size());
         for (Element each : masterSlaveDataSourceElements) {
             masterSlaveDataSources.add(new MasterSlaveDataSourceConfigurationBeanDefinition(each).getBeanDefinition());
         }
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(MasterSlaveRuleConfiguration.class);
         factory.addConstructorArgValue(masterSlaveDataSources);
-        return Optional.of(factory.getBeanDefinition());
+        return factory.getBeanDefinition();
     }
 }

@@ -49,19 +49,20 @@
         <prop key="aes.key.value">123456</prop>
     </bean:properties>
     
+    <encrypt:encrypt-rule id="encryptRule">
+        <encrypt:tables>
+            <encrypt:table name="t_user">
+                <encrypt:column logic-column="user_name" plain-column="user_name_plain" cipher-column="user_name" encryptor-ref="name_encryptor" />
+                <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" encryptor-ref="pwd_encryptor"/>
+            </encrypt:table>
+        </encrypt:tables>
+        <encrypt:encryptors>
+            <encrypt:encryptor id="name_encryptor" type="AES" props-ref="props"/>
+            <encrypt:encryptor id="pwd_encryptor" type="assistedTest" />
+        </encrypt:encryptors>
+    </encrypt:encrypt-rule>
+    
     <shardingsphere:data-source id="encryptDataSource" data-source-names="dbtbl_0" rule-refs="encryptRule">
-        <shardingsphere:encrypt-rule id="encryptRule">
-            <encrypt:tables>
-                <encrypt:table name="t_user">
-                    <encrypt:column logic-column="user_name" plain-column="user_name_plain" cipher-column="user_name" encryptor-ref="name_encryptor" />
-                    <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" encryptor-ref="pwd_encryptor"/>
-                </encrypt:table>
-            </encrypt:tables>
-            <encrypt:encryptors>
-                <encrypt:encryptor id="name_encryptor" type="AES" props-ref="props"/>
-                <encrypt:encryptor id="pwd_encryptor" type="assistedTest" />
-            </encrypt:encryptors>
-        </shardingsphere:encrypt-rule>
         <shardingsphere:props>
             <prop key="query.with.cipher.column">true</prop>
         </shardingsphere:props>
