@@ -20,6 +20,7 @@ package org.apache.shardingsphere.kernal.context;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -37,6 +38,15 @@ public final class SchemaContexts {
         this.schemaContexts.putAll(schemaContexts);
         this.properties = properties;
         this.authentication = authentication;
+    }
+    
+    /**
+     * Get default schema context.
+     * 
+     * @return default schema context
+     */
+    public SchemaContext getDefaultSchemaContext() {
+        return schemaContexts.get(DefaultSchema.LOGIC_NAME);
     }
     
     /**

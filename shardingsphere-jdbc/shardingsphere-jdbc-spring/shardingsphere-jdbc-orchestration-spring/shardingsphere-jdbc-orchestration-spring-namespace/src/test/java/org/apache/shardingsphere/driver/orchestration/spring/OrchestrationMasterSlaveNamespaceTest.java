@@ -90,7 +90,7 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
     private MasterSlaveRule getMasterSlaveRule(final String masterSlaveDataSourceName) {
         OrchestrationSpringShardingSphereDataSource masterSlaveDataSource = applicationContext.getBean(masterSlaveDataSourceName, OrchestrationSpringShardingSphereDataSource.class);
         ShardingSphereDataSource dataSource = (ShardingSphereDataSource) FieldValueUtil.getFieldValue(masterSlaveDataSource, "dataSource", true);
-        return (MasterSlaveRule) dataSource.getRuntimeContext().getRules().iterator().next();
+        return (MasterSlaveRule) dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getRules().iterator().next();
     }
     
     @Test
@@ -102,6 +102,6 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
     private ConfigurationProperties getProperties(final String masterSlaveDataSourceName) {
         OrchestrationSpringShardingSphereDataSource masterSlaveDataSource = applicationContext.getBean(masterSlaveDataSourceName, OrchestrationSpringShardingSphereDataSource.class);
         ShardingSphereDataSource dataSource = (ShardingSphereDataSource) FieldValueUtil.getFieldValue(masterSlaveDataSource, "dataSource", true);
-        return dataSource.getRuntimeContext().getProperties();
+        return dataSource.getSchemaContexts().getProperties();
     }
 }

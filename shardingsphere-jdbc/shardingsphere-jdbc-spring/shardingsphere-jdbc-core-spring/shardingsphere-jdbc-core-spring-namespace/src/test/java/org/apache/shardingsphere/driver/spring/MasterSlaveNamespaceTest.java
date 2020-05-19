@@ -71,6 +71,6 @@ public class MasterSlaveNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     private MasterSlaveRule getMasterSlaveRule(final String masterSlaveDataSourceName) {
         ShardingSphereDataSource dataSource = applicationContext.getBean(masterSlaveDataSourceName, ShardingSphereDataSource.class);
-        return (MasterSlaveRule) dataSource.getRuntimeContext().getRules().iterator().next();
+        return (MasterSlaveRule) dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getRules().iterator().next();
     }
 }

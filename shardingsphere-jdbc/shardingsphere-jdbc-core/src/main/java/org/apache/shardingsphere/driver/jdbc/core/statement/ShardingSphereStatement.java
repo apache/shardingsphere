@@ -23,18 +23,11 @@ import org.apache.shardingsphere.driver.executor.StatementExecutor;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractStatementAdapter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.constant.SQLExceptionConstant;
-import org.apache.shardingsphere.driver.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.GeneratedKeysResultSet;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
-import org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen.GeneratedKeyContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
@@ -51,6 +44,14 @@ import org.apache.shardingsphere.infra.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.infra.route.DataNodeRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
+import org.apache.shardingsphere.kernal.context.SchemaContext;
+import org.apache.shardingsphere.kernal.context.SchemaContexts;
+import org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen.GeneratedKeyContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -70,6 +71,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     @Getter
     private final ShardingSphereConnection connection;
+    
+    private final SchemaContexts schemaContexts;
     
     private final List<Statement> statements;
     
@@ -94,10 +97,11 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     public ShardingSphereStatement(final ShardingSphereConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         super(Statement.class);
         this.connection = connection;
+        schemaContexts = connection.getSchemaContexts();
         statements = new LinkedList<>();
         statementOption = new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
-        statementExecutor = new StatementExecutor(connection.getDataSourceMap(), connection.getRuntimeContext(), 
-                new SQLExecutor(connection.getRuntimeContext().getExecutorKernel(), connection.isHoldTransaction()));
+        statementExecutor = new StatementExecutor(connection.getDataSourceMap(), schemaContexts, 
+                new SQLExecutor(schemaContexts.getDefaultSchemaContext().getRuntimeContext().getExecutorKernel(), connection.isHoldTransaction()));
     }
     
     @Override
@@ -109,7 +113,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         try {
             executionContext = createExecutionContext(sql);
             Collection<InputGroup<StatementExecuteUnit>> inputGroups = getInputGroups(
-                    connection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY));
+                    schemaContexts.getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY));
             cacheStatements(inputGroups);
             List<QueryResult> queryResults = statementExecutor.executeQuery(inputGroups);
             MergedResult mergedResult = mergeQuery(queryResults);
@@ -126,7 +130,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         try {
             executionContext = createExecutionContext(sql);
             Collection<InputGroup<StatementExecuteUnit>> inputGroups = getInputGroups(
-                    connection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY));
+                    schemaContexts.getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY));
             cacheStatements(inputGroups);
             return statementExecutor.executeUpdate(inputGroups, executionContext.getSqlStatementContext());
         } finally {
@@ -142,7 +146,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         try {
             executionContext = createExecutionContext(sql);
             Collection<InputGroup<StatementExecuteUnit>> inputGroups = getInputGroups(
-                    connection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY));
+                    schemaContexts.getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY));
             cacheStatements(inputGroups);
             return statementExecutor.executeUpdate(inputGroups, executionContext.getSqlStatementContext(), autoGeneratedKeys);
         } finally {
@@ -156,7 +160,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         try {
             executionContext = createExecutionContext(sql);
             Collection<InputGroup<StatementExecuteUnit>> inputGroups = getInputGroups(
-                    connection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY));
+                    schemaContexts.getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY));
             cacheStatements(inputGroups);
             return statementExecutor.executeUpdate(inputGroups, executionContext.getSqlStatementContext(), columnIndexes);
         } finally {
@@ -170,7 +174,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         try {
             executionContext = createExecutionContext(sql);
             Collection<InputGroup<StatementExecuteUnit>> inputGroups = getInputGroups(
-                    connection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY));
+                    schemaContexts.getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY));
             cacheStatements(inputGroups);
             return statementExecutor.executeUpdate(inputGroups, executionContext.getSqlStatementContext(), columnNames);
         } finally {
@@ -183,7 +187,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         try {
             executionContext = createExecutionContext(sql);
             Collection<InputGroup<StatementExecuteUnit>> inputGroups = getInputGroups(
-                    connection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY));
+                    schemaContexts.getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY));
             cacheStatements(inputGroups);
             return statementExecutor.execute(inputGroups, executionContext.getSqlStatementContext());
         } finally {
@@ -199,7 +203,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         try {
             executionContext = createExecutionContext(sql);
             Collection<InputGroup<StatementExecuteUnit>> inputGroups = getInputGroups(
-                    connection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY));
+                    schemaContexts.getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY));
             cacheStatements(inputGroups);
             return statementExecutor.execute(inputGroups, executionContext.getSqlStatementContext(), autoGeneratedKeys);
         } finally {
@@ -213,7 +217,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         try {
             executionContext = createExecutionContext(sql);
             Collection<InputGroup<StatementExecuteUnit>> inputGroups = getInputGroups(
-                    connection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY));
+                    schemaContexts.getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY));
             cacheStatements(inputGroups);
             return statementExecutor.execute(inputGroups, executionContext.getSqlStatementContext(), columnIndexes);
         } finally {
@@ -227,7 +231,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         try {
             executionContext = createExecutionContext(sql);
             Collection<InputGroup<StatementExecuteUnit>> inputGroups = getInputGroups(
-                    connection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY));
+                    schemaContexts.getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY));
             cacheStatements(inputGroups);
             return statementExecutor.execute(inputGroups, executionContext.getSqlStatementContext(), columnNames);
         } finally {
@@ -237,14 +241,14 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private ExecutionContext createExecutionContext(final String sql) throws SQLException {
         clearStatements();
-        RuntimeContext runtimeContext = connection.getRuntimeContext();
-        SQLStatement sqlStatement = runtimeContext.getSqlParserEngine().parse(sql, false);
+        SchemaContext schemaContext = schemaContexts.getDefaultSchemaContext();
+        SQLStatement sqlStatement = schemaContext.getRuntimeContext().getSqlParserEngine().parse(sql, false);
         RouteContext routeContext = new DataNodeRouter(
-                runtimeContext.getMetaData(), runtimeContext.getProperties(), runtimeContext.getRules()).route(sqlStatement, sql, Collections.emptyList());
-        SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(runtimeContext.getMetaData().getSchema().getConfiguredSchemaMetaData(),
-                runtimeContext.getProperties(), runtimeContext.getRules()).rewrite(sql, Collections.emptyList(), routeContext);
-        ExecutionContext result = new ExecutionContext(routeContext.getSqlStatementContext(), ExecutionContextBuilder.build(runtimeContext.getMetaData(), sqlRewriteResult));
-        logSQL(sql, runtimeContext.getProperties(), result);
+                schemaContext.getSchema().getMetaData(), schemaContexts.getProperties(), schemaContext.getSchema().getRules()).route(sqlStatement, sql, Collections.emptyList());
+        SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(schemaContext.getSchema().getMetaData().getSchema().getConfiguredSchemaMetaData(),
+                schemaContexts.getProperties(), schemaContext.getSchema().getRules()).rewrite(sql, Collections.emptyList(), routeContext);
+        ExecutionContext result = new ExecutionContext(routeContext.getSqlStatementContext(), ExecutionContextBuilder.build(schemaContext.getSchema().getMetaData(), sqlRewriteResult));
+        logSQL(sql, schemaContexts.getProperties(), result);
         return result;
     }
     
@@ -262,7 +266,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private Collection<InputGroup<StatementExecuteUnit>> getInputGroups(final int maxConnectionsSizePerQuery) throws SQLException {
-        return new StatementExecuteGroupEngine(maxConnectionsSizePerQuery, getConnection().getRuntimeContext().getRules()).generate(executionContext.getExecutionUnits(), connection, statementOption);
+        return new StatementExecuteGroupEngine(maxConnectionsSizePerQuery, 
+                schemaContexts.getDefaultSchemaContext().getSchema().getRules()).generate(executionContext.getExecutionUnits(), connection, statementOption);
     }
     
     private void cacheStatements(final Collection<InputGroup<StatementExecuteUnit>> inputGroups) {
@@ -312,9 +317,9 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {
-        RuntimeContext runtimeContext = connection.getRuntimeContext();
-        MergeEngine mergeEngine = new MergeEngine(runtimeContext.getDatabaseType(), 
-                runtimeContext.getMetaData().getSchema().getConfiguredSchemaMetaData(), runtimeContext.getProperties(), runtimeContext.getRules());
+        SchemaContext schemaContext = schemaContexts.getDefaultSchemaContext();
+        MergeEngine mergeEngine = new MergeEngine(schemaContext.getSchema().getDatabaseType(), 
+                schemaContext.getSchema().getMetaData().getSchema().getConfiguredSchemaMetaData(), schemaContexts.getProperties(), schemaContext.getSchema().getRules());
         return mergeEngine.merge(queryResults, executionContext.getSqlStatementContext());
     }
     
@@ -337,7 +342,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     @Override
     public boolean isAccumulate() {
-        return connection.getRuntimeContext().getRules().stream().anyMatch(
+        return schemaContexts.getDefaultSchemaContext().getSchema().getRules().stream().anyMatch(
             each -> ((DataNodeRoutedRule) each).isNeedAccumulate(executionContext.getSqlStatementContext().getTablesContext().getTableNames()));
     }
     

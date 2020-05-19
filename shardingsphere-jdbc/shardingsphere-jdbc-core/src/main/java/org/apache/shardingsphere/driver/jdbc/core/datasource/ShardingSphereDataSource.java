@@ -74,7 +74,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     private DatabaseType createDatabaseType(final DataSource dataSource) throws SQLException {
         if (dataSource instanceof ShardingSphereDataSource) {
-            return ((ShardingSphereDataSource) dataSource).getSchemaContexts().getSchemaContexts().get(DefaultSchema.LOGIC_NAME).getSchema().getDatabaseType();
+            return ((ShardingSphereDataSource) dataSource).schemaContexts.getSchemaContexts().get(DefaultSchema.LOGIC_NAME).getSchema().getDatabaseType();
         }
         try (Connection connection = dataSource.getConnection()) {
             return DatabaseTypes.getDatabaseTypeByURL(connection.getMetaData().getURL());
@@ -88,7 +88,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     @Override
     public ShardingSphereConnection getConnection() {
-        return new ShardingSphereConnection(getDataSourceMap(), runtimeContext, TransactionTypeHolder.get());
+        return new ShardingSphereConnection(getDataSourceMap(), schemaContexts, TransactionTypeHolder.get());
     }
     
     @Override
@@ -118,7 +118,6 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
      */
     public void close(final Collection<String> dataSourceNames) throws Exception {
         dataSourceNames.forEach(each -> close(getDataSourceMap().get(each)));
-        runtimeContext.close();
         schemaContexts.close();
     }
     

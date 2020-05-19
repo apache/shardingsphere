@@ -63,20 +63,20 @@ public class OrchestrationShardingSphereDataSource extends AbstractOrchestration
         Map<String, DataSourceConfiguration> dataSourceConfigurations = configService.loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME);
         dataSource = new ShardingSphereDataSource(DataSourceConverter.getDataSourceMap(dataSourceConfigurations), configurations, configService.loadProperties());
         initShardingOrchestrationFacade();
-        persistMetaData(dataSource.getRuntimeContext().getMetaData().getSchema());
+        persistMetaData(dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getMetaData().getSchema());
     }
     
     public OrchestrationShardingSphereDataSource(final ShardingSphereDataSource shardingSphereDataSource, final OrchestrationConfiguration orchestrationConfig) {
         super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(DefaultSchema.LOGIC_NAME)));
         dataSource = shardingSphereDataSource;
         initShardingOrchestrationFacade(Collections.singletonMap(DefaultSchema.LOGIC_NAME, DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap())),
-                getRuleConfigurationMap(), dataSource.getRuntimeContext().getProperties().getProps());
-        persistMetaData(dataSource.getRuntimeContext().getMetaData().getSchema());
+                getRuleConfigurationMap(), dataSource.getSchemaContexts().getProperties().getProps());
+        persistMetaData(dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getMetaData().getSchema());
     }
     
     private Map<String, Collection<RuleConfiguration>> getRuleConfigurationMap() {
         Map<String, Collection<RuleConfiguration>> result = new LinkedHashMap<>(1, 1);
-        result.put(DefaultSchema.LOGIC_NAME, dataSource.getRuntimeContext().getConfigurations());
+        result.put(DefaultSchema.LOGIC_NAME, dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getConfigurations());
         return result;
     }
     
@@ -89,7 +89,8 @@ public class OrchestrationShardingSphereDataSource extends AbstractOrchestration
     public final synchronized void renew(final MetaDataChangedEvent event) {
         for (String each : event.getSchemaNames()) {
             if (DefaultSchema.LOGIC_NAME.equals(each)) {
-                dataSource.getRuntimeContext().setMetaData(new ShardingSphereMetaData(dataSource.getRuntimeContext().getMetaData().getDataSources(), event.getRuleSchemaMetaData()));
+                dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().setMetaData(
+                        new ShardingSphereMetaData(dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getMetaData().getDataSources(), event.getRuleSchemaMetaData()));
             }
         }
     }
@@ -102,7 +103,8 @@ public class OrchestrationShardingSphereDataSource extends AbstractOrchestration
     @Subscribe
     @SneakyThrows
     public final synchronized void renew(final RuleConfigurationsChangedEvent ruleConfigurationsChangedEvent) {
-        dataSource = new ShardingSphereDataSource(dataSource.getDataSourceMap(), ruleConfigurationsChangedEvent.getRuleConfigurations(), dataSource.getRuntimeContext().getProperties().getProps());
+        dataSource = new ShardingSphereDataSource(dataSource.getDataSourceMap(), 
+                ruleConfigurationsChangedEvent.getRuleConfigurations(), dataSource.getSchemaContexts().getProperties().getProps());
     }
     
     /**
@@ -117,7 +119,7 @@ public class OrchestrationShardingSphereDataSource extends AbstractOrchestration
         dataSource.close(getDeletedDataSources(dataSourceConfigurations));
         dataSource.close(getModifiedDataSources(dataSourceConfigurations).keySet());
         dataSource = new ShardingSphereDataSource(getChangedDataSources(dataSource.getDataSourceMap(), dataSourceConfigurations), 
-                dataSource.getRuntimeContext().getConfigurations(), dataSource.getRuntimeContext().getProperties().getProps());
+                dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getConfigurations(), dataSource.getSchemaContexts().getProperties().getProps());
         getDataSourceConfigurations().clear();
         getDataSourceConfigurations().putAll(dataSourceConfigurations);
     }
@@ -130,7 +132,8 @@ public class OrchestrationShardingSphereDataSource extends AbstractOrchestration
     @SneakyThrows
     @Subscribe
     public final synchronized void renew(final PropertiesChangedEvent propertiesChangedEvent) {
-        dataSource = new ShardingSphereDataSource(dataSource.getDataSourceMap(), dataSource.getRuntimeContext().getConfigurations(), propertiesChangedEvent.getProps());
+        dataSource = new ShardingSphereDataSource(dataSource.getDataSourceMap(), 
+                dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getConfigurations(), propertiesChangedEvent.getProps());
     }
     
     /**
@@ -142,7 +145,7 @@ public class OrchestrationShardingSphereDataSource extends AbstractOrchestration
     public synchronized void renew(final DisabledStateChangedEvent disabledStateChangedEvent) {
         OrchestrationSchema orchestrationSchema = disabledStateChangedEvent.getOrchestrationSchema();
         if (DefaultSchema.LOGIC_NAME.equals(orchestrationSchema.getSchemaName())) {
-            for (ShardingSphereRule each : dataSource.getRuntimeContext().getRules()) {
+            for (ShardingSphereRule each : dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getRules()) {
                 if (each instanceof StatusContainedRule) {
                     ((StatusContainedRule) each).updateRuleStatus(new DataSourceNameDisabledEvent(orchestrationSchema.getDataSourceName(), disabledStateChangedEvent.isDisabled()));
                 }

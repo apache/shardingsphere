@@ -41,4 +41,3 @@ public final class ChannelCountGaugeMetricsTrackerTest extends AbstractPrometheu
         assertThat(dec, is(1.0));
     }
 }
-

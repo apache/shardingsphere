@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.driver.spring;
 
-import org.apache.shardingsphere.driver.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.spring.fixture.DecrementKeyGenerateAlgorithm;
 import org.apache.shardingsphere.driver.spring.fixture.IncrementKeyGenerateAlgorithm;
 import org.apache.shardingsphere.driver.spring.util.FieldValueUtil;
+import org.apache.shardingsphere.kernal.context.SchemaContexts;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.sharding.spi.keygen.KeyGenerateAlgorithm;
@@ -65,9 +65,9 @@ public class GenerateKeyJUnitTest extends AbstractSpringJUnitTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateKeyColumn() {
-        RuntimeContext runtimeContext = shardingSphereDataSource.getRuntimeContext();
-        assertNotNull(runtimeContext);
-        ShardingRule shardingRule = (ShardingRule) runtimeContext.getRules().iterator().next();
+        SchemaContexts schemaContexts = shardingSphereDataSource.getSchemaContexts();
+        assertNotNull(schemaContexts);
+        ShardingRule shardingRule = (ShardingRule) schemaContexts.getDefaultSchemaContext().getSchema().getRules().iterator().next();
         assertNotNull(shardingRule);
         KeyGenerateAlgorithm defaultKeyGenerateAlgorithm = shardingRule.getDefaultKeyGenerateAlgorithm();
         assertNotNull(defaultKeyGenerateAlgorithm);

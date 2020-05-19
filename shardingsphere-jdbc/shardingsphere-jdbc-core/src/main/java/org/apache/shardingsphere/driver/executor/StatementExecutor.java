@@ -17,18 +17,10 @@
 
 package org.apache.shardingsphere.driver.executor;
 
-import org.apache.shardingsphere.driver.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.driver.executor.callback.RuleExecuteExecutorCallback;
 import org.apache.shardingsphere.driver.executor.callback.RuleExecuteQueryExecutorCallback;
 import org.apache.shardingsphere.driver.executor.callback.RuleExecuteUpdateExecutorCallback;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
-import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategyFactory;
-import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaDataLoader;
-import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
@@ -39,6 +31,16 @@ import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.SQLExe
 import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.impl.DefaultSQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.queryresult.MemoryQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.queryresult.StreamQueryResult;
+import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
+import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategyFactory;
+import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaDataLoader;
+import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
+import org.apache.shardingsphere.kernal.context.SchemaContext;
+import org.apache.shardingsphere.kernal.context.SchemaContexts;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -63,13 +65,13 @@ public final class StatementExecutor {
     
     private final Map<String, DataSource> dataSourceMap;
     
-    private final RuntimeContext runtimeContext;
+    private final SchemaContexts schemaContexts;
     
     private final SQLExecutor sqlExecutor;
     
-    public StatementExecutor(final Map<String, DataSource> dataSourceMap, final RuntimeContext runtimeContext, final SQLExecutor sqlExecutor) {
+    public StatementExecutor(final Map<String, DataSource> dataSourceMap, final SchemaContexts schemaContexts, final SQLExecutor sqlExecutor) {
         this.dataSourceMap = dataSourceMap;
-        this.runtimeContext = runtimeContext;
+        this.schemaContexts = schemaContexts;
         this.sqlExecutor = sqlExecutor;
     }
     
@@ -83,7 +85,8 @@ public final class StatementExecutor {
     @SuppressWarnings("unchecked")
     public List<QueryResult> executeQuery(final Collection<InputGroup<StatementExecuteUnit>> inputGroups) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<QueryResult> sqlExecutorCallback = getExecuteQueryExecutorCallback(new DefaultSQLExecutorCallback<QueryResult>(runtimeContext.getDatabaseType(), isExceptionThrown) {
+        DatabaseType databaseType = schemaContexts.getDefaultSchemaContext().getSchema().getDatabaseType();
+        SQLExecutorCallback<QueryResult> sqlExecutorCallback = getExecuteQueryExecutorCallback(new DefaultSQLExecutorCallback<QueryResult>(databaseType, isExceptionThrown) {
             
             @Override
             protected QueryResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -94,7 +97,8 @@ public final class StatementExecutor {
     }
     
     private SQLExecutorCallback<QueryResult> getExecuteQueryExecutorCallback(final DefaultSQLExecutorCallback callback) {
-        Map<ShardingSphereRule, RuleExecuteQueryExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(runtimeContext.getRules(), RuleExecuteQueryExecutorCallback.class);
+        Map<ShardingSphereRule, RuleExecuteQueryExecutorCallback> callbackMap = 
+                OrderedSPIRegistry.getRegisteredServices(schemaContexts.getDefaultSchemaContext().getSchema().getRules(), RuleExecuteQueryExecutorCallback.class);
         return callbackMap.isEmpty() ? callback : callbackMap.values().iterator().next();
     }
     
@@ -157,7 +161,8 @@ public final class StatementExecutor {
     @SuppressWarnings("unchecked")
     private int executeUpdate(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final Updater updater, final SQLStatementContext sqlStatementContext) throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback sqlExecutorCallback = getExecuteUpdateExecutorCallback(new DefaultSQLExecutorCallback<Integer>(runtimeContext.getDatabaseType(), isExceptionThrown) {
+        DatabaseType databaseType = schemaContexts.getDefaultSchemaContext().getSchema().getDatabaseType();
+        SQLExecutorCallback sqlExecutorCallback = getExecuteUpdateExecutorCallback(new DefaultSQLExecutorCallback<Integer>(databaseType, isExceptionThrown) {
             
             @Override
             protected Integer executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -165,15 +170,17 @@ public final class StatementExecutor {
             }
         });
         List<Integer> results = sqlExecutor.execute(inputGroups, sqlExecutorCallback);
-        refreshTableMetaData(runtimeContext, sqlStatementContext);
-        if (isNeedAccumulate(runtimeContext.getRules().stream().filter(rule -> rule instanceof DataNodeRoutedRule).collect(Collectors.toList()), sqlStatementContext)) {
+        refreshTableMetaData(schemaContexts.getDefaultSchemaContext(), sqlStatementContext);
+        if (isNeedAccumulate(
+                schemaContexts.getDefaultSchemaContext().getSchema().getRules().stream().filter(rule -> rule instanceof DataNodeRoutedRule).collect(Collectors.toList()), sqlStatementContext)) {
             return accumulate(results);
         }
         return null == results.get(0) ? 0 : results.get(0);
     }
     
     private SQLExecutorCallback<Integer> getExecuteUpdateExecutorCallback(final DefaultSQLExecutorCallback callback) {
-        Map<ShardingSphereRule, RuleExecuteUpdateExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(runtimeContext.getRules(), RuleExecuteUpdateExecutorCallback.class);
+        Map<ShardingSphereRule, RuleExecuteUpdateExecutorCallback> callbackMap = 
+                OrderedSPIRegistry.getRegisteredServices(schemaContexts.getDefaultSchemaContext().getSchema().getRules(), RuleExecuteUpdateExecutorCallback.class);
         return callbackMap.isEmpty() ? callback : callbackMap.values().iterator().next();
     }
     
@@ -243,7 +250,8 @@ public final class StatementExecutor {
     @SuppressWarnings("unchecked")
     private boolean execute(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final Executor executor, final SQLStatementContext sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback sqlExecutorCallback = getExecuteExecutorCallback(new DefaultSQLExecutorCallback<Boolean>(runtimeContext.getDatabaseType(), isExceptionThrown) {
+        DatabaseType databaseType = schemaContexts.getDefaultSchemaContext().getSchema().getDatabaseType();
+        SQLExecutorCallback sqlExecutorCallback = getExecuteExecutorCallback(new DefaultSQLExecutorCallback<Boolean>(databaseType, isExceptionThrown) {
             
             @Override
             protected Boolean executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -251,7 +259,7 @@ public final class StatementExecutor {
             }
         });
         List<Boolean> result = sqlExecutor.execute(inputGroups, sqlExecutorCallback);
-        refreshTableMetaData(runtimeContext, sqlStatementContext);
+        refreshTableMetaData(schemaContexts.getDefaultSchemaContext(), sqlStatementContext);
         if (null == result || result.isEmpty() || null == result.get(0)) {
             return false;
         }
@@ -259,20 +267,21 @@ public final class StatementExecutor {
     }
     
     private SQLExecutorCallback<Boolean> getExecuteExecutorCallback(final DefaultSQLExecutorCallback callback) {
-        Map<ShardingSphereRule, RuleExecuteExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(runtimeContext.getRules(), RuleExecuteExecutorCallback.class);
+        Map<ShardingSphereRule, RuleExecuteExecutorCallback> callbackMap = 
+                OrderedSPIRegistry.getRegisteredServices(schemaContexts.getDefaultSchemaContext().getSchema().getRules(), RuleExecuteExecutorCallback.class);
         return callbackMap.isEmpty() ? callback : callbackMap.values().iterator().next();
     }
     
     @SuppressWarnings("unchecked")
-    private void refreshTableMetaData(final RuntimeContext runtimeContext, final SQLStatementContext sqlStatementContext) throws SQLException {
+    private void refreshTableMetaData(final SchemaContext schemaContext, final SQLStatementContext sqlStatementContext) throws SQLException {
         if (null == sqlStatementContext) {
             return;
         }
         Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
         if (refreshStrategy.isPresent()) {
-            RuleSchemaMetaDataLoader metaDataLoader = new RuleSchemaMetaDataLoader(runtimeContext.getRules());
-            refreshStrategy.get().refreshMetaData(runtimeContext.getMetaData(), runtimeContext.getDatabaseType(), dataSourceMap, sqlStatementContext,
-                tableName -> metaDataLoader.load(runtimeContext.getDatabaseType(), dataSourceMap, tableName, runtimeContext.getProperties()));
+            RuleSchemaMetaDataLoader metaDataLoader = new RuleSchemaMetaDataLoader(schemaContext.getSchema().getRules());
+            refreshStrategy.get().refreshMetaData(schemaContext.getSchema().getMetaData(), schemaContext.getSchema().getDatabaseType(), dataSourceMap, sqlStatementContext,
+                tableName -> metaDataLoader.load(schemaContext.getSchema().getDatabaseType(), dataSourceMap, tableName, schemaContexts.getProperties()));
         }
     }
     
@@ -286,4 +295,3 @@ public final class StatementExecutor {
         boolean execute(Statement statement, String sql) throws SQLException;
     }
 }
-

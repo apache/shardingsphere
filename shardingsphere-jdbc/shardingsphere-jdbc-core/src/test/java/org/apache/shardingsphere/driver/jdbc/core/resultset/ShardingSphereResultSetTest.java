@@ -23,6 +23,7 @@ import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatem
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.kernal.context.SchemaContexts;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.junit.Before;
@@ -90,9 +91,9 @@ public final class ShardingSphereResultSetTest {
     
     private ShardingSphereStatement getShardingSphereStatement() {
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class);
-        RuntimeContext runtimeContext = mock(RuntimeContext.class);
-        when(runtimeContext.getProperties()).thenReturn(new ConfigurationProperties(new Properties()));
-        when(connection.getRuntimeContext()).thenReturn(runtimeContext);
+        SchemaContexts schemaContexts = mock(SchemaContexts.class);
+        when(schemaContexts.getProperties()).thenReturn(new ConfigurationProperties(new Properties()));
+        when(connection.getSchemaContexts()).thenReturn(schemaContexts);
         ShardingSphereStatement result = mock(ShardingSphereStatement.class);
         when(result.getConnection()).thenReturn(connection);
         return result;
