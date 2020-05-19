@@ -46,6 +46,7 @@
             </xsd:all>
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="data-source-names" type="xsd:string" use="required" />
+            <xsd:attribute name="rule-refs" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>
     

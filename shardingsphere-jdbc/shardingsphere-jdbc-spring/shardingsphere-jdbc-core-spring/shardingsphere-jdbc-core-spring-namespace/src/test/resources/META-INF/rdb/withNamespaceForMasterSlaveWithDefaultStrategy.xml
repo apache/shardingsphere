@@ -57,14 +57,14 @@
         <prop key="algorithm.expression">t_order_item_${order_id % 4}</prop>
     </bean:properties>
     
-    <shardingsphere:data-source id="shardingDataSource" data-source-names="dbtbl_0_master,dbtbl_0_slave_0,dbtbl_0_slave_1,dbtbl_1_master,dbtbl_1_slave_0,dbtbl_1_slave_1">
-        <shardingsphere:sharding-rule>
+    <shardingsphere:data-source id="shardingDataSource" data-source-names="dbtbl_0_master,dbtbl_0_slave_0,dbtbl_0_slave_1,dbtbl_1_master,dbtbl_1_slave_0,dbtbl_1_slave_1" rule-refs="shardingRule, masterSlaveRule">
+        <shardingsphere:sharding-rule id="shardingRule">
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" />
                 <sharding:table-rule logic-table="t_order_item" actual-data-nodes="dbtbl_${0..1}.t_order_item_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" />
             </sharding:table-rules>
         </shardingsphere:sharding-rule>
-        <shardingsphere:master-slave-rule>
+        <shardingsphere:master-slave-rule id="masterSlaveRule">
             <master-slave:data-source-rule id="dbtbl_0" master-data-source-name="dbtbl_0_master" slave-data-source-names="dbtbl_0_slave_0,dbtbl_0_slave_1"/>
             <master-slave:data-source-rule id="dbtbl_1" master-data-source-name="dbtbl_1_master" slave-data-source-names="dbtbl_1_slave_0,dbtbl_1_slave_1"/>
         </shardingsphere:master-slave-rule>

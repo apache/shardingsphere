@@ -49,8 +49,8 @@
         <prop key="aes.key.value">123456</prop>
     </bean:properties>
     
-    <shardingsphere:data-source id="encryptDataSource" data-source-names="dbtbl_0">
-        <shardingsphere:encrypt-rule>
+    <shardingsphere:data-source id="encryptDataSource" data-source-names="dbtbl_0" rule-refs="encryptRule">
+        <shardingsphere:encrypt-rule id="encryptRule">
             <encrypt:tables>
                 <encrypt:table name="t_user">
                     <encrypt:column logic-column="user_name" plain-column="user_name_plain" cipher-column="user_name" encryptor-ref="name_encryptor" />

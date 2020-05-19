@@ -26,6 +26,7 @@
         <xsd:sequence>
             <xsd:element ref="data-source-rule" maxOccurs="unbounded" />
         </xsd:sequence>
+        <xsd:attribute name="id" type="xsd:string" use="required" />
     </xsd:complexType>
     
     <xsd:element name="data-source-rule">

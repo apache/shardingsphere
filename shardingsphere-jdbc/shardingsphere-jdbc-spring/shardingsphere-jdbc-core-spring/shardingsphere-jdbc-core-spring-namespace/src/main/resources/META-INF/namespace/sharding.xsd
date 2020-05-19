@@ -26,6 +26,7 @@
             <xsd:element ref="binding-table-rules" minOccurs="0" />
             <xsd:element ref="broadcast-table-rules" minOccurs="0" />
         </xsd:all>
+        <xsd:attribute name="id" type="xsd:string" use="required" />
         <xsd:attribute name="default-database-strategy-ref" type="xsd:string" />
         <xsd:attribute name="default-table-strategy-ref" type="xsd:string" />
         <xsd:attribute name="default-key-generator-ref" type="xsd:string" />
