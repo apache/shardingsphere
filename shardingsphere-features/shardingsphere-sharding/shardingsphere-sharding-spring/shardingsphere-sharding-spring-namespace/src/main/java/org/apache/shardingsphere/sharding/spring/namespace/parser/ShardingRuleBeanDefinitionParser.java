@@ -122,7 +122,7 @@ public final class ShardingRuleBeanDefinitionParser extends AbstractBeanDefiniti
     }
     
     private void parseLogicIndex(final Element tableElement, final BeanDefinitionBuilder factory) {
-        String logicIndex = tableElement.getAttribute(ShardingRuleBeanDefinitionTag.LOGIC_INDEX);
+        String logicIndex = tableElement.getAttribute(ShardingRuleBeanDefinitionTag.LOGIC_INDEX_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(logicIndex)) {
             factory.addPropertyValue("logicIndex", logicIndex);
         }

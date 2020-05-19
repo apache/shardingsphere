@@ -22,12 +22,9 @@
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
        xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
        xmlns:spi="http://shardingsphere.apache.org/schema/shardingsphere/spi"
-       xmlns:bean="http://www.springframework.org/schema/util"
        xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://www.springframework.org/schema/util 
-                           http://www.springframework.org/schema/util/spring-util.xsd 
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/sharding
@@ -46,7 +43,11 @@
     <spi:sharding-algorithm id="standardModuloTableShardingAlgorithm" type="STANDARD_TEST_TBL"/>
     <spi:sharding-algorithm id="defaultComplexKeysShardingAlgorithm" type="COMPLEX_TEST"/>
     <spi:sharding-algorithm id="defaultHintShardingAlgorithm" type="HINT_TEST"/>
-    <spi:sharding-algorithm id="inlineStrategyShardingAlgorithm" type="INLINE" props-ref="inlineProps"/>
+    <spi:sharding-algorithm id="inlineStrategyShardingAlgorithm" type="INLINE">
+        <props>
+            <prop key="algorithm.expression">t_order_${order_id % 4}</prop>
+        </props>
+    </spi:sharding-algorithm>
     
     <spi:key-generate-algorithm id="incrementAlgorithm" type="INCREMENT" />
     
@@ -61,14 +62,6 @@
     <sharding:key-generator id="orderKeyGenerator" column="order_id" algorithm-ref="incrementAlgorithm" />
     <master-slave:load-balance-algorithm id="randomLoadBalanceAlgorithm" type="RANDOM" />
     
-    <bean:properties id="props">
-        <prop key="appToken">business</prop>
-    </bean:properties>
-    
-    <bean:properties id="inlineProps">
-        <prop key="algorithm.expression">t_order_${order_id % 4}</prop>
-    </bean:properties>
-    
     <sharding:rule id="simpleShardingDataSourceShardingRule">
         <sharding:table-rules>
             <sharding:table-rule logic-table="t_order" />
@@ -82,7 +75,11 @@
             </encrypt:table>
         </encrypt:tables>
         <encrypt:encryptors>
-            <encrypt:encryptor id="encryptor_aes" type="AES" props-ref="props"/>
+            <encrypt:encryptor id="encryptor_aes" type="AES">
+                <props>
+                    <prop key="appToken">business</prop>
+                </props>
+            </encrypt:encryptor>
             <encrypt:encryptor id="encryptor_md5" type="MD5" />
         </encrypt:encryptors>
     </encrypt:rule>
@@ -201,11 +198,11 @@
     </sharding:rule>
     
     <shardingsphere:data-source id="propsDataSource" data-source-names="dbtbl_0,dbtbl_1" rule-refs="propsDataSourceShardingRule">
-        <shardingsphere:props>
+        <props>
             <prop key="sql.show">${sql_show}</prop>
             <prop key="executor.size">10</prop>
             <prop key="foo">bar</prop>
-        </shardingsphere:props>
+        </props>
     </shardingsphere:data-source>
     
     <shardingsphere:tx-type-annotation-driven />

@@ -32,8 +32,8 @@
                         ">
     <import resource="datasource/dataSource.xml" />
     
-    <spi:sharding-algorithm id="standardModuloDatabaseShardingAlgorithm" type="STANDARD_TEST_DB"/>
-    <spi:sharding-algorithm id="standardModuloTableShardingAlgorithm" type="STANDARD_TEST_TBL"/>
+    <spi:sharding-algorithm id="standardModuloDatabaseShardingAlgorithm" type="STANDARD_TEST_DB" />
+    <spi:sharding-algorithm id="standardModuloTableShardingAlgorithm" type="STANDARD_TEST_TBL" />
     
     <spi:key-generate-algorithm id="incrementAlgorithm" type="INCREMENT" />
     <spi:key-generate-algorithm id="decrementAlgorithm" type="DECREMENT" />
@@ -51,6 +51,6 @@
             <sharding:table-rule logic-table="t_order_item" actual-data-nodes="dbtbl_${0..1}.t_order_item_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="tableStrategy" key-generator-ref="itemKeyGenerator" />
         </sharding:table-rules>
     </sharding:rule>
-
+    
     <shardingsphere:data-source id="shardingDataSource" data-source-names="dbtbl_0,dbtbl_1" rule-refs="shardingRule" />
 </beans>

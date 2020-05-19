@@ -50,5 +50,5 @@ public final class EncryptRuleBeanDefinitionTag {
     
     public static final String ENCRYPTOR_TYPE_ATTRIBUTE = "type";
     
-    public static final String ENCRYPTOR_PROPERTY_REF_ATTRIBUTE = "props-ref";
+    public static final String ENCRYPTOR_PROPS_TAG = "props";
 }
