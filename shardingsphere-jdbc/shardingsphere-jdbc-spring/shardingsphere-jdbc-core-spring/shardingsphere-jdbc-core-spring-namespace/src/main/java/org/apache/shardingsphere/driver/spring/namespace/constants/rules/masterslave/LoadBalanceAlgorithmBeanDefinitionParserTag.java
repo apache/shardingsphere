@@ -15,19 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.namespace.handler;
-
-import org.apache.shardingsphere.driver.spring.namespace.constants.rules.masterslave.LoadBalanceAlgorithmBeanDefinitionParserTag;
-import org.apache.shardingsphere.driver.spring.namespace.parser.rule.masterslave.MasterSlaveLoadBalanceStrategyBeanDefinitionParser;
-import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
+package org.apache.shardingsphere.driver.spring.namespace.constants.rules.masterslave;
 
 /**
- * Spring namespace handler for master-slave.
+ * Load balance algorithm bean definition parser tag.
  */
-public final class MasterSlaveNamespaceHandler extends NamespaceHandlerSupport {
+public final class LoadBalanceAlgorithmBeanDefinitionParserTag {
     
-    @Override
-    public void init() {
-        registerBeanDefinitionParser(LoadBalanceAlgorithmBeanDefinitionParserTag.LOAD_BALANCE_ALGORITHM_TAG, new MasterSlaveLoadBalanceStrategyBeanDefinitionParser());
-    }
+    public static final String LOAD_BALANCE_ALGORITHM_TAG = "load-balance-algorithm";
+    
+    public static final String ALGORITHM_TYPE_ATTRIBUTE = "type";
+    
+    public static final String ALGORITHM_PROPERTY_REF_ATTRIBUTE = "props-ref";
 }

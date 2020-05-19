@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.spring.namespace.parser.rule.masterslav
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.masterslave.api.config.LoadBalanceStrategyConfiguration;
-import org.apache.shardingsphere.driver.spring.namespace.constants.LoadBalanceAlgorithmBeanDefinitionParserTag;
+import org.apache.shardingsphere.driver.spring.namespace.constants.rules.masterslave.LoadBalanceAlgorithmBeanDefinitionParserTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;

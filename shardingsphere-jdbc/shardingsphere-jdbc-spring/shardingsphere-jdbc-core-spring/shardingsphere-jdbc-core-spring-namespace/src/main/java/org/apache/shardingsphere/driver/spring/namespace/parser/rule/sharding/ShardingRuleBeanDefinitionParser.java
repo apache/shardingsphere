@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.spring.namespace.parser.rule.sharding;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.driver.spring.namespace.constants.ShardingRuleBeanDefinitionParserTag;
+import org.apache.shardingsphere.driver.spring.namespace.constants.rules.sharding.ShardingRuleBeanDefinitionParserTag;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
 import org.springframework.beans.factory.config.BeanDefinition;

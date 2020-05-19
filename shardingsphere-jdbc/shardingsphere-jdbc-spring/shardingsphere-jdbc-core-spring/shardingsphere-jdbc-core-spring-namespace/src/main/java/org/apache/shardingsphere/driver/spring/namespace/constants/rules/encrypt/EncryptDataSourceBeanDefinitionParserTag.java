@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.namespace.constants;
+package org.apache.shardingsphere.driver.spring.namespace.constants.rules.encrypt;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

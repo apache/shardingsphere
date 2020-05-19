@@ -15,16 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.namespace.constants;
+package org.apache.shardingsphere.driver.spring.namespace.constants.rules.sharding;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Load balance algorithm bean definition parser tag.
+ * SPI parser tag constants.
  */
-public final class LoadBalanceAlgorithmBeanDefinitionParserTag {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SPIBeanDefinitionParserTag {
     
-    public static final String LOAD_BALANCE_ALGORITHM_TAG = "load-balance-algorithm";
+    public static final String KEY_GENERATE_ALGORITHM_TAG = "key-generate-algorithm";
     
-    public static final String ALGORITHM_TYPE_ATTRIBUTE = "type";
+    public static final String KEY_GENERATE_ALGORITHM_TYPE_ATTRIBUTE = "type";
     
-    public static final String ALGORITHM_PROPERTY_REF_ATTRIBUTE = "props-ref";
+    public static final String KEY_GENERATE_ALGORITHM_PROPERTY_REF_ATTRIBUTE = "props-ref";
+
+    public static final String SHARDING_ALGORITHM_TAG = "sharding-algorithm";
+
+    public static final String SHARDING_ALGORITHM_TYPE_ATTRIBUTE = "type";
+
+    public static final String SHARDING_ALGORITHM_PROPERTY_REF_ATTRIBUTE = "props-ref";
 }

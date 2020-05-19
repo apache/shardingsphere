@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.spring.namespace.parser.rule.sharding;
 
 import com.google.common.base.Strings;
 import java.util.Properties;
-import org.apache.shardingsphere.driver.spring.namespace.constants.SPIBeanDefinitionParserTag;
+import org.apache.shardingsphere.driver.spring.namespace.constants.rules.sharding.SPIBeanDefinitionParserTag;
 import org.apache.shardingsphere.driver.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;

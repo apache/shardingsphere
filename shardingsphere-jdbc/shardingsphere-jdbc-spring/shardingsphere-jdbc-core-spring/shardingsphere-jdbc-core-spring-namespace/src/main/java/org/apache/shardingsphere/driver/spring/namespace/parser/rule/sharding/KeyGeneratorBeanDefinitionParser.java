@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.spring.namespace.parser.rule.sharding;
 
 import org.apache.shardingsphere.sharding.api.config.KeyGeneratorConfiguration;
-import org.apache.shardingsphere.driver.spring.namespace.constants.ShardingRuleBeanDefinitionParserTag;
+import org.apache.shardingsphere.driver.spring.namespace.constants.rules.sharding.ShardingRuleBeanDefinitionParserTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
