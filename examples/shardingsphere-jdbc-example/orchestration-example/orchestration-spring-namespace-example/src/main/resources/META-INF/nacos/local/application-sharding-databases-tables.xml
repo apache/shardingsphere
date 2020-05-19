@@ -18,7 +18,6 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:bean="http://www.springframework.org/schema/util"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
@@ -31,8 +30,6 @@
                            http://www.springframework.org/schema/tx/spring-tx.xsd
                            http://www.springframework.org/schema/context 
                            http://www.springframework.org/schema/context/spring-context.xsd
-                           http://www.springframework.org/schema/util
-                           http://www.springframework.org/schema/util/spring-util.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/sharding
@@ -58,31 +55,31 @@
         <property name="password" value=""/>
     </bean>
     
-    <bean:properties id="databaseInlineProps">
-        <prop key="algorithm.expression">demo_ds_${user_id % 2}</prop>
-    </bean:properties>
-    
-    <bean:properties id="orderInlineProps">
-        <prop key="algorithm.expression">t_order_${order_id % 2}</prop>
-    </bean:properties>
-    
-    <bean:properties id="orderItemInlineProps">
-        <prop key="algorithm.expression">t_order_item_${order_id % 2}</prop>
-    </bean:properties>
-    
-    <spi:sharding-algorithm id="databaseIineStrategyShardingAlgorithm" type="INLINE" props-ref="databaseInlineProps"/>
-    <spi:sharding-algorithm id="orderInlineStrategyShardingAlgorithm" type="INLINE" props-ref="orderInlineProps"/>
-    <spi:sharding-algorithm id="orderItemInlineStrategyShardingAlgorithm" type="INLINE" props-ref="orderItemInlineProps"/>
+    <spi:sharding-algorithm id="databaseIineStrategyShardingAlgorithm" type="INLINE">
+        <props>
+            <prop key="algorithm.expression">demo_ds_${user_id % 2}</prop>
+        </props>
+    </spi:sharding-algorithm>
+    <spi:sharding-algorithm id="orderInlineStrategyShardingAlgorithm" type="INLINE">
+        <props>
+            <prop key="algorithm.expression">t_order_${order_id % 2}</prop>
+        </props>
+    </spi:sharding-algorithm>
+    <spi:sharding-algorithm id="orderItemInlineStrategyShardingAlgorithm" type="INLINE">
+        <props>
+            <prop key="algorithm.expression">t_order_item_${order_id % 2}</prop>
+        </props>
+    </spi:sharding-algorithm>
     
     <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="databaseIineStrategyShardingAlgorithm"/>
     <sharding:standard-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-ref="orderInlineStrategyShardingAlgorithm"/>
     <sharding:standard-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-ref="orderItemInlineStrategyShardingAlgorithm"/>
     
-    <bean:properties id="properties">
-        <prop key="worker.id">123</prop>
-    </bean:properties>
-    
-    <spi:key-generate-algorithm id="snowflakeAlgorithm" type="SNOWFLAKE" props-ref="properties"/>
+    <spi:key-generate-algorithm id="snowflakeAlgorithm" type="SNOWFLAKE">
+        <props>
+            <prop key="worker.id">123</prop>
+        </props>
+    </spi:key-generate-algorithm>
     
     <sharding:key-generator id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
     <sharding:key-generator id="itemKeyGenerator" column="order_item_id" algorithm-ref="snowflakeAlgorithm" />
