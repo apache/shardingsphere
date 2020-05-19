@@ -21,16 +21,16 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.Getter;
-import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationConnection;
-import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
-import org.apache.shardingsphere.driver.jdbc.core.context.RuntimeContext;
-import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
-import org.apache.shardingsphere.infra.hook.RootInvokeHook;
-import org.apache.shardingsphere.infra.hook.SPIRootInvokeHook;
+import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.connection.JDBCExecutionConnection;
 import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.group.StatementOption;
+import org.apache.shardingsphere.infra.hook.RootInvokeHook;
+import org.apache.shardingsphere.infra.hook.SPIRootInvokeHook;
+import org.apache.shardingsphere.kernal.context.SchemaContexts;
+import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
+import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -55,7 +55,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     private final Map<String, DataSource> dataSourceMap;
     
     @Getter
-    private final RuntimeContext runtimeContext;
+    private final SchemaContexts schemaContexts;
     
     @Getter
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
@@ -75,9 +75,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     private int transactionIsolation = TRANSACTION_READ_UNCOMMITTED;
     
-    protected AbstractConnectionAdapter(final Map<String, DataSource> dataSourceMap, final RuntimeContext runtimeContext) {
+    protected AbstractConnectionAdapter(final Map<String, DataSource> dataSourceMap, final SchemaContexts schemaContexts) {
         this.dataSourceMap = dataSourceMap;
-        this.runtimeContext = runtimeContext;
+        this.schemaContexts = schemaContexts;
         rootInvokeHook.start();
     }
     

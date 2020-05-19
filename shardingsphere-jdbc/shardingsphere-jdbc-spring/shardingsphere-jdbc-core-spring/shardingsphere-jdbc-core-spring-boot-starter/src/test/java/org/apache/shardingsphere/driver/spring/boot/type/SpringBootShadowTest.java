@@ -45,7 +45,7 @@ public class SpringBootShadowTest {
     
     @Test
     public void assertSqlShow() {
-        assertTrue(((ShardingSphereDataSource) dataSource).getRuntimeContext().getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
+        assertTrue(((ShardingSphereDataSource) dataSource).getSchemaContexts().getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
     }
     
     @Test
@@ -55,7 +55,7 @@ public class SpringBootShadowTest {
     }
     
     private void assertShadowRule() {
-        ShadowRule shadowRule = (ShadowRule) ((ShardingSphereDataSource) dataSource).getRuntimeContext().getRules().iterator().next();
+        ShadowRule shadowRule = (ShadowRule) ((ShardingSphereDataSource) dataSource).getSchemaContexts().getDefaultSchemaContext().getSchema().getRules().iterator().next();
         assertThat(shadowRule.getColumn(), is("is_shadow"));
     }
 }

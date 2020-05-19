@@ -35,6 +35,8 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.kernal.context.runtime.CachedDatabaseMetaData;
 import org.apache.shardingsphere.kernal.context.runtime.RuntimeContext;
+import org.apache.shardingsphere.kernal.context.schema.DataSourceParameter;
+import org.apache.shardingsphere.kernal.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 
@@ -55,6 +57,8 @@ public final class SchemaContextsBuilder {
     
     private final Map<String, Map<String, DataSource>> dataSources;
     
+    private final Map<String, Map<String, DataSourceParameter>> dataSourceParameters = new LinkedHashMap<>();
+    
     private final Map<String, Collection<RuleConfiguration>> configurations;
     
     private final ConfigurationProperties properties;
@@ -62,13 +66,19 @@ public final class SchemaContextsBuilder {
     private final ExecutorKernel executorKernel;
     
     public SchemaContextsBuilder(final Map<String, Map<String, DataSource>> dataSources,
-                                 final DatabaseType databaseType, final Map<String, Collection<RuleConfiguration>> configurations, final Properties props) throws SQLException {
+                                 final DatabaseType databaseType, final Map<String, Collection<RuleConfiguration>> configurations, final Properties props) {
         this.dataSources = dataSources;
         this.databaseType = databaseType;
         this.configurations = configurations;
         properties = new ConfigurationProperties(null == props ? new Properties() : props);
         executorKernel = new ExecutorKernel(properties.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
         log(configurations, props);
+    }
+    
+    public SchemaContextsBuilder(final Map<String, Map<String, DataSource>> dataSources, final Map<String, Map<String, DataSourceParameter>> dataSourceParameters, 
+                                 final DatabaseType databaseType, final Map<String, Collection<RuleConfiguration>> configurations, final Properties props) {
+        this(dataSources, databaseType, configurations, props);
+        this.dataSourceParameters.putAll(dataSourceParameters);
     }
     
     /**
@@ -86,18 +96,26 @@ public final class SchemaContextsBuilder {
     }
     
     private SchemaContext createSchemaContext(final String schemaName) throws SQLException {
-        Collection<RuleConfiguration> configurations = this.configurations.get(schemaName);
         Map<String, DataSource> dataSources = this.dataSources.get(schemaName);
-        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(configurations, dataSources.keySet());
         RuntimeContext runtimeContext = new RuntimeContext(createCachedDatabaseMetaData(dataSources),
                 executorKernel, SQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(databaseType)), createShardingTransactionManagerEngine(dataSources));
-        return new SchemaContext(new ShardingSphereSchema(databaseType, configurations, rules, dataSources, createMetaData(dataSources, rules)), runtimeContext);
+        return new SchemaContext(createShardingSphereSchema(schemaName), runtimeContext);
     }
     
     private ShardingTransactionManagerEngine createShardingTransactionManagerEngine(final Map<String, DataSource> dataSources) {
         ShardingTransactionManagerEngine result = new ShardingTransactionManagerEngine();
         result.init(databaseType, dataSources);
         return result;
+    }
+    
+    private ShardingSphereSchema createShardingSphereSchema(final String schemaName) throws SQLException {
+        Map<String, DataSource> dataSources = this.dataSources.get(schemaName);
+        Collection<RuleConfiguration> configurations = this.configurations.get(schemaName);
+        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(configurations, dataSources.keySet());
+        if (dataSourceParameters.isEmpty()) {
+            return new ShardingSphereSchema(databaseType, configurations, rules, dataSources, createMetaData(dataSources, rules));
+        }
+        return new ShardingSphereSchema(databaseType, configurations, rules, dataSources, dataSourceParameters.get(schemaName), createMetaData(dataSources, rules));
     }
     
     private ShardingSphereMetaData createMetaData(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) throws SQLException {

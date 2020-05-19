@@ -62,7 +62,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
     public void setUp() throws SQLException {
         super.setUp();
         ShardingSphereConnection connection = getConnection();
-        actual = spy(new StatementExecutor(connection.getDataSourceMap(), connection.getRuntimeContext(), new SQLExecutor(getExecutorKernel(), false)));
+        actual = spy(new StatementExecutor(connection.getDataSourceMap(), connection.getSchemaContexts(), new SQLExecutor(getExecutorKernel(), false)));
     }
     
     @Test

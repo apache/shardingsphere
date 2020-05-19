@@ -17,18 +17,19 @@
 
 package org.apache.shardingsphere.driver.spring;
 
-import org.apache.shardingsphere.driver.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.driver.spring.algorithm.DefaultComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.driver.spring.algorithm.DefaultHintShardingAlgorithm;
 import org.apache.shardingsphere.driver.spring.algorithm.StandardModuloDatabaseShardingAlgorithm;
 import org.apache.shardingsphere.driver.spring.algorithm.StandardModuloTableShardingAlgorithm;
 import org.apache.shardingsphere.driver.spring.fixture.IncrementKeyGenerateAlgorithm;
+import org.apache.shardingsphere.driver.spring.transaction.ShardingTransactionTypeScanner;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.kernal.context.SchemaContexts;
 import org.apache.shardingsphere.sharding.api.config.strategy.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.NoneShardingStrategyConfiguration;
@@ -37,7 +38,6 @@ import org.apache.shardingsphere.sharding.rule.BindingTableRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.sharding.spi.keygen.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.driver.spring.transaction.ShardingTransactionTypeScanner;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -207,9 +207,9 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void assertPropsDataSource() {
         ShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean("propsDataSource", ShardingSphereDataSource.class);
-        RuntimeContext runtimeContext = shardingSphereDataSource.getRuntimeContext();
-        assertTrue(runtimeContext.getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
-        ConfigurationProperties properties = runtimeContext.getProperties();
+        SchemaContexts schemaContexts = shardingSphereDataSource.getSchemaContexts();
+        assertTrue(schemaContexts.getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
+        ConfigurationProperties properties = schemaContexts.getProperties();
         boolean showSql = properties.getValue(ConfigurationPropertyKey.SQL_SHOW);
         assertTrue(showSql);
         int executorSize = properties.getValue(ConfigurationPropertyKey.EXECUTOR_SIZE);
@@ -224,8 +224,8 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void assertDefaultActualDataNodes() {
         ShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean("multiTableRulesDataSource", ShardingSphereDataSource.class);
-        RuntimeContext runtimeContext = shardingSphereDataSource.getRuntimeContext();
-        ShardingRule shardingRule = (ShardingRule) runtimeContext.getRules().iterator().next();
+        SchemaContexts schemaContexts = shardingSphereDataSource.getSchemaContexts();
+        ShardingRule shardingRule = (ShardingRule) schemaContexts.getDefaultSchemaContext().getSchema().getRules().iterator().next();
         assertThat(shardingRule.getTableRules().size(), is(2));
         Iterator<TableRule> tableRules = shardingRule.getTableRules().iterator();
         TableRule orderRule = tableRules.next();
@@ -250,10 +250,10 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     private ShardingRule getShardingRule(final String dataSourceName) {
         ShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean(dataSourceName, ShardingSphereDataSource.class);
-        return (ShardingRule) shardingSphereDataSource.getRuntimeContext().getRules().iterator().next();
+        return (ShardingRule) shardingSphereDataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getRules().iterator().next();
     }
     
     private Collection<ShardingSphereRule> getRules(final String dataSourceName) {
-        return applicationContext.getBean(dataSourceName, ShardingSphereDataSource.class).getRuntimeContext().getRules();
+        return applicationContext.getBean(dataSourceName, ShardingSphereDataSource.class).getSchemaContexts().getDefaultSchemaContext().getSchema().getRules();
     }
 }

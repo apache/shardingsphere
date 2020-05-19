@@ -19,6 +19,7 @@ package org.apache.shardingsphere.kernal.context;
 
 import org.apache.shardingsphere.kernal.context.runtime.RuntimeContext;
 import lombok.Getter;
+import org.apache.shardingsphere.kernal.context.schema.ShardingSphereSchema;
 
 @Getter
 public final class SchemaContext {

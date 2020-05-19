@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.driver.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
@@ -48,8 +47,6 @@ import java.util.logging.Logger;
 @Getter
 public final class ShardingSphereDataSource extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
     
-    private final RuntimeContext runtimeContext;
-    
     private final SchemaContexts schemaContexts;
     
     @Setter
@@ -57,7 +54,6 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     public ShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
         DatabaseType databaseType = createDatabaseType(dataSourceMap);
-        runtimeContext = new RuntimeContext(dataSourceMap, databaseType, configurations, props);
         schemaContexts = new SchemaContextsBuilder(Collections.singletonMap(DefaultSchema.LOGIC_NAME, dataSourceMap), 
                 databaseType, Collections.singletonMap(DefaultSchema.LOGIC_NAME, configurations), props).build();
     }
@@ -74,7 +70,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     private DatabaseType createDatabaseType(final DataSource dataSource) throws SQLException {
         if (dataSource instanceof ShardingSphereDataSource) {
-            return ((ShardingSphereDataSource) dataSource).getSchemaContexts().getSchemaContexts().get(DefaultSchema.LOGIC_NAME).getSchema().getDatabaseType();
+            return ((ShardingSphereDataSource) dataSource).schemaContexts.getSchemaContexts().get(DefaultSchema.LOGIC_NAME).getSchema().getDatabaseType();
         }
         try (Connection connection = dataSource.getConnection()) {
             return DatabaseTypes.getDatabaseTypeByURL(connection.getMetaData().getURL());
@@ -88,7 +84,7 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
     
     @Override
     public ShardingSphereConnection getConnection() {
-        return new ShardingSphereConnection(getDataSourceMap(), runtimeContext, TransactionTypeHolder.get());
+        return new ShardingSphereConnection(getDataSourceMap(), schemaContexts, TransactionTypeHolder.get());
     }
     
     @Override
@@ -114,11 +110,9 @@ public final class ShardingSphereDataSource extends AbstractUnsupportedOperation
      * Close dataSources.
      * 
      * @param dataSourceNames data source names
-     * @throws Exception exception
      */
-    public void close(final Collection<String> dataSourceNames) throws Exception {
+    public void close(final Collection<String> dataSourceNames) {
         dataSourceNames.forEach(each -> close(getDataSourceMap().get(each)));
-        runtimeContext.close();
         schemaContexts.close();
     }
     

@@ -19,18 +19,21 @@ package org.apache.shardingsphere.driver.executor;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.driver.jdbc.core.context.RuntimeContext;
-import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
-import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.ExecutorExceptionHandler;
+import org.apache.shardingsphere.kernal.context.SchemaContext;
+import org.apache.shardingsphere.kernal.context.SchemaContexts;
+import org.apache.shardingsphere.kernal.context.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.kernal.context.runtime.RuntimeContext;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
+import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.After;
 import org.junit.Before;
 import org.mockito.MockitoAnnotations;
@@ -64,19 +67,25 @@ public abstract class AbstractBaseExecutorTest {
     }
     
     private void setConnection() throws SQLException {
+        SchemaContexts schemaContexts = mock(SchemaContexts.class);
+        SchemaContext schemaContext = mock(SchemaContext.class);
         RuntimeContext runtimeContext = mock(RuntimeContext.class);
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(schemaContexts.getDefaultSchemaContext()).thenReturn(schemaContext);
+        when(schemaContext.getRuntimeContext()).thenReturn(runtimeContext);
         when(runtimeContext.getExecutorKernel()).thenReturn(executorKernel);
-        when(runtimeContext.getProperties()).thenReturn(getProperties());
-        when(runtimeContext.getDatabaseType()).thenReturn(DatabaseTypes.getActualDatabaseType("H2"));
+        when(schemaContexts.getProperties()).thenReturn(getProperties());
+        when(schemaContext.getSchema()).thenReturn(schema);
+        when(schema.getDatabaseType()).thenReturn(DatabaseTypes.getActualDatabaseType("H2"));
         ShardingRule shardingRule = getShardingRule();
-        when(runtimeContext.getRules()).thenReturn(Collections.singletonList(shardingRule));
+        when(schema.getRules()).thenReturn(Collections.singletonList(shardingRule));
         when(runtimeContext.getShardingTransactionManagerEngine()).thenReturn(new ShardingTransactionManagerEngine());
         DataSource dataSource = mock(DataSource.class);
         when(dataSource.getConnection()).thenReturn(mock(Connection.class));
         Map<String, DataSource> dataSourceSourceMap = new LinkedHashMap<>();
         dataSourceSourceMap.put("ds_0", dataSource);
         dataSourceSourceMap.put("ds_1", dataSource);
-        connection = new ShardingSphereConnection(dataSourceSourceMap, runtimeContext, TransactionType.LOCAL);
+        connection = new ShardingSphereConnection(dataSourceSourceMap, schemaContexts, TransactionType.LOCAL);
     }
     
     private ShardingRule getShardingRule() {

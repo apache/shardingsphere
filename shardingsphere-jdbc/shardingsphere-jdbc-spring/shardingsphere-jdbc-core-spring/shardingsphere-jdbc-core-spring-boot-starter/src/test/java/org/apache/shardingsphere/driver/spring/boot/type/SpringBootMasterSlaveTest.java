@@ -52,7 +52,7 @@ public class SpringBootMasterSlaveTest {
         for (DataSource each : ((ShardingSphereDataSource) dataSource).getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(100));
         }
-        Collection<ShardingSphereRule> rules = ((ShardingSphereDataSource) dataSource).getRuntimeContext().getRules();
+        Collection<ShardingSphereRule> rules = ((ShardingSphereDataSource) dataSource).getSchemaContexts().getDefaultSchemaContext().getSchema().getRules();
         assertThat(rules.size(), is(1));
         assertMasterSlaveRule((MasterSlaveRule) rules.iterator().next());
     }

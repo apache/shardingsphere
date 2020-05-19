@@ -67,7 +67,7 @@ public class OrchestrationSpringBootMasterSlaveTest {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
             assertThat(((BasicDataSource) each).getUsername(), is("root"));
         }
-        Collection<ShardingSphereRule> rules = shardingSphereDataSource.getRuntimeContext().getRules();
+        Collection<ShardingSphereRule> rules = shardingSphereDataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getRules();
         assertThat(rules.size(), is(1));
         assertMasterSlaveRule((MasterSlaveRule) rules.iterator().next());
     }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.driver.spring;
 import static org.junit.Assert.assertEquals;
 
 import org.apache.shardingsphere.driver.spring.fixture.IncrementKeyGenerateAlgorithm;
-import org.apache.shardingsphere.driver.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean;
+import org.apache.shardingsphere.sharding.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean;
 import org.apache.shardingsphere.sharding.spi.keygen.KeyGenerateAlgorithm;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;

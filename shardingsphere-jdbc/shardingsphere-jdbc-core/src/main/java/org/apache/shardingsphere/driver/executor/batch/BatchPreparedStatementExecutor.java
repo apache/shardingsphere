@@ -19,13 +19,8 @@ package org.apache.shardingsphere.driver.executor.batch;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.driver.jdbc.core.context.RuntimeContext;
 import org.apache.shardingsphere.driver.executor.callback.RuleExecuteBatchExecutorCallback;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -34,6 +29,12 @@ import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.Execut
 import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.SQLExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.SQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.impl.DefaultSQLExecutorCallback;
+import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
+import org.apache.shardingsphere.kernal.context.SchemaContexts;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -55,7 +56,7 @@ public final class BatchPreparedStatementExecutor {
         ShardingSphereServiceLoader.register(RuleExecuteBatchExecutorCallback.class);
     }
     
-    private final RuntimeContext runtimeContext;
+    private final SchemaContexts schemaContexts;
     
     private final SQLExecutor sqlExecutor;
     
@@ -66,8 +67,8 @@ public final class BatchPreparedStatementExecutor {
     
     private int batchCount;
     
-    public BatchPreparedStatementExecutor(final RuntimeContext runtimeContext, final SQLExecutor sqlExecutor) {
-        this.runtimeContext = runtimeContext;
+    public BatchPreparedStatementExecutor(final SchemaContexts schemaContexts, final SQLExecutor sqlExecutor) {
+        this.schemaContexts = schemaContexts;
         this.sqlExecutor = sqlExecutor;
         inputGroups = new LinkedList<>();
         batchExecutionUnits = new LinkedList<>();
@@ -126,7 +127,8 @@ public final class BatchPreparedStatementExecutor {
      */
     public int[] executeBatch(final SQLStatementContext sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecutorCallback<int[]> callback = getExecuteBatchExecutorCallback(new DefaultSQLExecutorCallback<int[]>(runtimeContext.getDatabaseType(), isExceptionThrown) {
+        DatabaseType databaseType = schemaContexts.getDefaultSchemaContext().getSchema().getDatabaseType();
+        SQLExecutorCallback<int[]> callback = getExecuteBatchExecutorCallback(new DefaultSQLExecutorCallback<int[]>(databaseType, isExceptionThrown) {
             
             @Override
             protected int[] executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -134,12 +136,14 @@ public final class BatchPreparedStatementExecutor {
             }
         });
         List<int[]> results = sqlExecutor.execute(inputGroups, callback);
-        return isNeedAccumulate(runtimeContext.getRules().stream().filter(rule -> rule instanceof DataNodeRoutedRule).collect(Collectors.toList()), sqlStatementContext)
+        return isNeedAccumulate(
+                schemaContexts.getDefaultSchemaContext().getSchema().getRules().stream().filter(rule -> rule instanceof DataNodeRoutedRule).collect(Collectors.toList()), sqlStatementContext)
                 ? accumulate(results) : results.get(0);
     }
     
     private SQLExecutorCallback<int[]> getExecuteBatchExecutorCallback(final DefaultSQLExecutorCallback callback) {
-        Map<ShardingSphereRule, RuleExecuteBatchExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(runtimeContext.getRules(), RuleExecuteBatchExecutorCallback.class);
+        Map<ShardingSphereRule, RuleExecuteBatchExecutorCallback> callbackMap = 
+                OrderedSPIRegistry.getRegisteredServices(schemaContexts.getDefaultSchemaContext().getSchema().getRules(), RuleExecuteBatchExecutorCallback.class);
         return callbackMap.isEmpty() ? callback : callbackMap.values().iterator().next();
     }
     
