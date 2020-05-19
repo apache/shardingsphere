@@ -17,25 +17,10 @@
 
 package org.apache.shardingsphere.driver.spring.boot.rule;
 
-import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
 /**
- * Spring boot rules configuration.
+ * Default rule configuration.
  */
-@Configuration
-public class SpringBootRulesConfiguration {
-    
-    /**
-     * Default YAML rule configuration for no rule configuration.
-     *
-     * @return YAML rule configuration
-     */
-    @Bean
-    @ConditionalOnMissingBean(YamlRuleConfiguration.class)
-    public YamlRuleConfiguration noRules() {
-        return () -> DefaultRuleConfiguration.class;
-    }
+public final class DefaultRuleConfiguration implements RuleConfiguration {
 }

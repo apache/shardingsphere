@@ -15,27 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.boot.rule;
+package org.apache.shardingsphere.sharding.spring.boot;
 
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.apache.shardingsphere.sharding.spring.boot.condition.ShardingSpringBootCondition;
+import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Spring boot rules configuration.
+ * Sharding rule configuration for spring boot.
  */
 @Configuration
-public class SpringBootRulesConfiguration {
+public class ShardingRuleSpringBootConfiguration {
     
     /**
-     * Default YAML rule configuration for no rule configuration.
+     * Sharding YAML rule spring boot configuration .
      *
      * @return YAML rule configuration
      */
     @Bean
-    @ConditionalOnMissingBean(YamlRuleConfiguration.class)
-    public YamlRuleConfiguration noRules() {
-        return () -> DefaultRuleConfiguration.class;
+    @ConditionalOnClass(YamlShardingRuleConfiguration.class)
+    @ConfigurationProperties(prefix = "spring.shardingsphere.rules.sharding")
+    @Conditional(ShardingSpringBootCondition.class)
+    public YamlRuleConfiguration sharding() {
+        return new YamlShardingRuleConfiguration();
     }
 }
+

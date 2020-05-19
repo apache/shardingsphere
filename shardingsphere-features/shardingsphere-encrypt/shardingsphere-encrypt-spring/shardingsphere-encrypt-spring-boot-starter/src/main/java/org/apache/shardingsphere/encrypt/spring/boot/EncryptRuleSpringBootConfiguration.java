@@ -15,27 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.boot.rule;
+package org.apache.shardingsphere.encrypt.spring.boot;
 
+import org.apache.shardingsphere.encrypt.spring.boot.condition.EncryptSpringBootCondition;
+import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Spring boot rules configuration.
+ * Encrypt rule configuration for spring boot.
  */
 @Configuration
-public class SpringBootRulesConfiguration {
+public class EncryptRuleSpringBootConfiguration {
     
     /**
-     * Default YAML rule configuration for no rule configuration.
+     * Encrypt YAML rule spring boot configuration.
      *
      * @return YAML rule configuration
      */
     @Bean
-    @ConditionalOnMissingBean(YamlRuleConfiguration.class)
-    public YamlRuleConfiguration noRules() {
-        return () -> DefaultRuleConfiguration.class;
+    @ConfigurationProperties(prefix = "spring.shardingsphere.rules.encrypt")
+    @ConditionalOnClass(YamlEncryptRuleConfiguration.class)
+    @Conditional(EncryptSpringBootCondition.class)
+    public YamlRuleConfiguration encrypt() {
+        return new YamlEncryptRuleConfiguration();
     }
 }
+
