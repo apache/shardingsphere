@@ -21,10 +21,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.spring.boot.datasource.DataSourceMapSetter;
 import org.apache.shardingsphere.driver.spring.boot.prop.SpringBootPropertiesConfiguration;
-import org.apache.shardingsphere.driver.spring.boot.rule.SpringBootRulesConfiguration;
 import org.apache.shardingsphere.driver.spring.transaction.ShardingTransactionTypeScanner;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -39,8 +40,10 @@ import org.springframework.core.env.Environment;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Spring boot starter configuration.
@@ -49,7 +52,7 @@ import java.util.Map;
 @ComponentScan("org.apache.shardingsphere.driver.spring.boot.converter")
 @EnableConfigurationProperties(SpringBootPropertiesConfiguration.class)
 @ConditionalOnProperty(prefix = "spring.shardingsphere", name = "enabled", havingValue = "true", matchIfMissing = true)
-@AutoConfigureBefore({DataSourceAutoConfiguration.class, SpringBootRulesConfiguration.class})
+@AutoConfigureBefore(DataSourceAutoConfiguration.class)
 @RequiredArgsConstructor
 public class SpringBootConfiguration implements EnvironmentAware {
     
@@ -66,8 +69,10 @@ public class SpringBootConfiguration implements EnvironmentAware {
      */
     @Bean
     @Autowired(required = false)
-    public DataSource shardingSphereDataSource(final Collection<YamlRuleConfiguration> rules) throws SQLException {
-        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rules), props.getProps());
+    public DataSource shardingSphereDataSource(final ObjectProvider<Collection<YamlRuleConfiguration>> rules) throws SQLException {
+        Collection<RuleConfiguration> ruleConfigurations = new YamlRuleConfigurationSwapperEngine()
+                .swapToRuleConfigurations(Optional.ofNullable(rules.getIfAvailable()).orElse(Collections.emptyList()));
+        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, ruleConfigurations, props.getProps());
     }
     
     /**

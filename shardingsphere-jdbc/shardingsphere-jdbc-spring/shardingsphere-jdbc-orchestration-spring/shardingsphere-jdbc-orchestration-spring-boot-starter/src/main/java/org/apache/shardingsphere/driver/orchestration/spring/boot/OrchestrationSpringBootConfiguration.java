@@ -24,7 +24,6 @@ import org.apache.shardingsphere.driver.orchestration.internal.datasource.Orches
 import org.apache.shardingsphere.driver.orchestration.spring.boot.common.OrchestrationSpringBootRootConfiguration;
 import org.apache.shardingsphere.driver.orchestration.spring.boot.rule.LocalRulesCondition;
 import org.apache.shardingsphere.driver.spring.boot.datasource.DataSourceMapSetter;
-import org.apache.shardingsphere.driver.spring.boot.rule.SpringBootRulesConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -32,6 +31,7 @@ import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.swapper.CenterRepositoryConfigurationYamlSwapper;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -49,10 +49,12 @@ import org.springframework.util.CollectionUtils;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * Orchestration spring boot configuration.
@@ -62,7 +64,7 @@ import java.util.Map.Entry;
 @EnableConfigurationProperties(OrchestrationSpringBootRootConfiguration.class)
 @ConditionalOnProperty(prefix = "spring.shardingsphere", name = "enabled", havingValue = "true", matchIfMissing = true)
 @RequiredArgsConstructor
-@AutoConfigureBefore({DataSourceAutoConfiguration.class, SpringBootRulesConfiguration.class})
+@AutoConfigureBefore(DataSourceAutoConfiguration.class)
 public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     
     private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
@@ -101,8 +103,9 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @Bean
     @Conditional(LocalRulesCondition.class)
     @Autowired(required = false)
-    public DataSource localShardingSphereDataSource(final OrchestrationConfiguration orchestrationConfiguration, final Collection<YamlRuleConfiguration> rules) throws SQLException {
-        Collection<RuleConfiguration> ruleConfigurations = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rules);
+    public DataSource localShardingSphereDataSource(final OrchestrationConfiguration orchestrationConfiguration, final ObjectProvider<Collection<YamlRuleConfiguration>> rules) throws SQLException {
+        Collection<RuleConfiguration> ruleConfigurations = new YamlRuleConfigurationSwapperEngine()
+                .swapToRuleConfigurations(Optional.ofNullable(rules.getIfAvailable()).orElse(Collections.emptyList()));
         return new OrchestrationShardingSphereDataSource(new ShardingSphereDataSource(dataSourceMap, ruleConfigurations, root.getProps()), orchestrationConfiguration);
     }
     
