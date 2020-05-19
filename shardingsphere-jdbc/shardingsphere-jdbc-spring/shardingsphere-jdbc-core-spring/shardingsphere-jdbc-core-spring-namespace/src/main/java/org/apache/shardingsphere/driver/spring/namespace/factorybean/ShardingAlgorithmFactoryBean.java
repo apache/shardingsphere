@@ -28,7 +28,7 @@ import org.springframework.beans.factory.FactoryBean;
 import java.util.Properties;
 
 /**
- * Sharding algorithm FactoryBean.
+ * Sharding algorithm factory bean.
  */
 @Getter
 public final class ShardingAlgorithmFactoryBean implements FactoryBean<ShardingAlgorithm> {
