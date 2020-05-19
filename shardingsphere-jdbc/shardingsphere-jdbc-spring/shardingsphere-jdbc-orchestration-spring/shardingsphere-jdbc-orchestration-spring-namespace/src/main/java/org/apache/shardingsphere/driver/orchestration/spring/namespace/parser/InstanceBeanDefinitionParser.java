@@ -38,7 +38,7 @@ public final class InstanceBeanDefinitionParser extends AbstractBeanDefinitionPa
         addPropertiesArgReferenceIfNotEmpty(element, factory);
         addPropertyValueIfNotEmpty(InstanceBeanDefinitionParserTag.ORCHESTRATION_TYPE_TAG, "orchestrationType", element, factory);
         addPropertyValueIfNotEmpty(InstanceBeanDefinitionParserTag.SERVER_LISTS_TAG, "serverLists", element, factory);
-        addPropertyValueIfNotEmpty(InstanceBeanDefinitionParserTag.NAMESPACE_TAG, "namespace", element, factory);
+        addPropertyValueIfNotEmpty(InstanceBeanDefinitionParserTag.NAMESPACE_TAG, "META-INF/namespace", element, factory);
         return factory.getBeanDefinition();
     }
     

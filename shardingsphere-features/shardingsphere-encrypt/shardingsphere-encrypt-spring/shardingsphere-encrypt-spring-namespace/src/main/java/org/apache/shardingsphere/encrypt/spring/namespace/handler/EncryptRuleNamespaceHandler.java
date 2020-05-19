@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.namespace.handler;
+package org.apache.shardingsphere.encrypt.spring.namespace.handler;
 
-import org.apache.shardingsphere.driver.spring.namespace.constants.rules.encrypt.EncryptDataSourceBeanDefinitionParserTag;
-import org.apache.shardingsphere.driver.spring.namespace.parser.rule.encrypt.EncryptRuleBeanDefinitionParser;
+import org.apache.shardingsphere.encrypt.spring.namespace.tag.EncryptRuleBeanDefinitionTag;
+import org.apache.shardingsphere.encrypt.spring.namespace.parser.EncryptRuleBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
- * Spring namespace handler for encrypt.
+ * Encrypt rule namespace handler.
  */
-public final class EncryptNamespaceHandler extends NamespaceHandlerSupport {
+public final class EncryptRuleNamespaceHandler extends NamespaceHandlerSupport {
     
     @Override
     public void init() {
-        registerBeanDefinitionParser(EncryptDataSourceBeanDefinitionParserTag.ENCRYPT_RULE_TAG, new EncryptRuleBeanDefinitionParser());
+        registerBeanDefinitionParser(EncryptRuleBeanDefinitionTag.ROOT_TAG, new EncryptRuleBeanDefinitionParser());
     }
 }
