@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
  * Cluster configuration YAML swapper.
  */
 public final class ClusterConfigurationYamlSwapper implements YamlSwapper<YamlClusterConfiguration, ClusterConfiguration> {
+    
     @Override
     public YamlClusterConfiguration swap(final ClusterConfiguration clusterConfiguration) {
         final YamlClusterConfiguration yamlClusterConfiguration = new YamlClusterConfiguration();
