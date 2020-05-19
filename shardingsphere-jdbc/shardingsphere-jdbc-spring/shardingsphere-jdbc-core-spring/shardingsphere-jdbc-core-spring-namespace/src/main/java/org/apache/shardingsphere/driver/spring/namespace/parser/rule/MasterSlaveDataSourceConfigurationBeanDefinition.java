@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.namespace.parser;
+package org.apache.shardingsphere.driver.spring.namespace.parser.rule;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.spring.namespace.handler;
 
 import org.apache.shardingsphere.driver.spring.namespace.constants.LoadBalanceAlgorithmBeanDefinitionParserTag;
-import org.apache.shardingsphere.driver.spring.namespace.parser.MasterSlaveLoadBalanceStrategyBeanDefinitionParser;
+import org.apache.shardingsphere.driver.spring.namespace.parser.rule.MasterSlaveLoadBalanceStrategyBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**

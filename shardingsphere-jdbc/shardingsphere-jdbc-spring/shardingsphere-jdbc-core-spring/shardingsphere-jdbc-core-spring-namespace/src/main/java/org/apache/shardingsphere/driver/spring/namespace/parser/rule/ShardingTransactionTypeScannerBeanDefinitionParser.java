@@ -15,38 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.namespace.parser;
+package org.apache.shardingsphere.driver.spring.namespace.parser.rule;
 
-import com.google.common.base.Strings;
-import org.apache.shardingsphere.masterslave.api.config.LoadBalanceStrategyConfiguration;
-import org.apache.shardingsphere.driver.spring.namespace.constants.LoadBalanceAlgorithmBeanDefinitionParserTag;
+import org.apache.shardingsphere.driver.spring.transaction.ShardingTransactionTypeScanner;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
 
-import java.util.Properties;
-
 /**
- * Master slave load balance strategy bean parser for spring namespace.
+ * Sharding transaction type scanner bean definition parser.
  */
-public final class MasterSlaveLoadBalanceStrategyBeanDefinitionParser extends AbstractBeanDefinitionParser {
+public final class ShardingTransactionTypeScannerBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(LoadBalanceStrategyConfiguration.class);
-        factory.addConstructorArgValue(element.getAttribute(LoadBalanceAlgorithmBeanDefinitionParserTag.ALGORITHM_TYPE_ATTRIBUTE));
-        parseProperties(element, factory);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingTransactionTypeScanner.class);
         return factory.getBeanDefinition();
     }
     
-    private void parseProperties(final Element element, final BeanDefinitionBuilder factory) {
-        String properties = element.getAttribute(LoadBalanceAlgorithmBeanDefinitionParserTag.ALGORITHM_PROPERTY_REF_ATTRIBUTE);
-        if (!Strings.isNullOrEmpty(properties)) {
-            factory.addConstructorArgReference(properties);
-        } else {
-            factory.addConstructorArgValue(new Properties());
-        }
+    @Override
+    protected boolean shouldGenerateId() {
+        return true;
     }
 }

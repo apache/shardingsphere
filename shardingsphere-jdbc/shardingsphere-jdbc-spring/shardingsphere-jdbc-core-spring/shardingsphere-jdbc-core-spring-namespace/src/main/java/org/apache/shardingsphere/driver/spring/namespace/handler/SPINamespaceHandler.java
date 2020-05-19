@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.driver.spring.namespace.handler;
 
-import org.apache.shardingsphere.driver.spring.namespace.parser.KeyGenerateAlgorithmBeanDefinitionParser;
-import org.apache.shardingsphere.driver.spring.namespace.parser.ShardingAlgorithmBeanDefinitionParser;
+import org.apache.shardingsphere.driver.spring.namespace.parser.rule.KeyGenerateAlgorithmBeanDefinitionParser;
+import org.apache.shardingsphere.driver.spring.namespace.parser.rule.ShardingAlgorithmBeanDefinitionParser;
 import org.apache.shardingsphere.driver.spring.namespace.constants.SPIBeanDefinitionParserTag;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 

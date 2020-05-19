@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.namespace.parser;
+package org.apache.shardingsphere.driver.spring.namespace.parser.rule;
 
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
@@ -47,7 +47,7 @@ public final class EncryptRuleBeanDefinitionParser {
      * Parse encrypt rule element.
      * 
      * @param element element
-     * @return Bean definition of encrypt rule
+     * @return bean definition of encrypt rule
      */
     public static AbstractBeanDefinition parseEncryptRuleElement(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(EncryptRuleConfiguration.class);
