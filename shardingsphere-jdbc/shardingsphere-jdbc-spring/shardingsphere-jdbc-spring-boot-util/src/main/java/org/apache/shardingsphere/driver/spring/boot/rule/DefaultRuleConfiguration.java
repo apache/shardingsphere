@@ -22,5 +22,5 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 /**
  * Default rule configuration.
  */
-public class DefaultRuleConfiguration implements RuleConfiguration {
+public final class DefaultRuleConfiguration implements RuleConfiguration {
 }

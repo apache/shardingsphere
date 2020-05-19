@@ -26,7 +26,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 /**
  * Shadow spring boot condition.
  */
-public class ShadowSpringBootCondition extends SpringBootCondition {
+public final class ShadowSpringBootCondition extends SpringBootCondition {
     
     private static final String SHADOW_PREFIX = "spring.shardingsphere.rules.shadow";
     

@@ -26,7 +26,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 /**
  * Encrypt spring boot condition.
  */
-public class EncryptSpringBootCondition extends SpringBootCondition {
+public final class EncryptSpringBootCondition extends SpringBootCondition {
     
     private static final String ENCRYPT_PREFIX = "spring.shardingsphere.rules.encrypt";
     

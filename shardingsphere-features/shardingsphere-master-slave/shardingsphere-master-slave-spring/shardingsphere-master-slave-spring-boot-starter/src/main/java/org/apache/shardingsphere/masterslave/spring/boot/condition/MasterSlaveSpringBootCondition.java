@@ -26,7 +26,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 /**
  * Spring boot condition for master-slave .
  */
-public class MasterSlaveSpringBootCondition extends SpringBootCondition {
+public final class MasterSlaveSpringBootCondition extends SpringBootCondition {
     
     private static final String MASTER_SLAVE_PREFIX = "spring.shardingsphere.rules.master-slave";
     

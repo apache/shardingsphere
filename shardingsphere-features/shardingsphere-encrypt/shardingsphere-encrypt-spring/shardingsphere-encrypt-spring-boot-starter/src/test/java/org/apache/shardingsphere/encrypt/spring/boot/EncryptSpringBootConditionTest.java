@@ -32,7 +32,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class EncryptSpringBootConditionTest {
+public final class EncryptSpringBootConditionTest {
     
     @Test
     public void assertMatch() {

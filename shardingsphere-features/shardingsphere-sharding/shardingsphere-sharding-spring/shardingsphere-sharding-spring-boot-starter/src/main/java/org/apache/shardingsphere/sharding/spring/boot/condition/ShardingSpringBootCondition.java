@@ -26,7 +26,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 /**
  * Sharding spring boot condition.
  */
-public class ShardingSpringBootCondition extends SpringBootCondition {
+public final class ShardingSpringBootCondition extends SpringBootCondition {
     
     private static final String SHARDING_PREFIX = "spring.shardingsphere.rules.sharding";
     
