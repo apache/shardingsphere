@@ -21,7 +21,6 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.spring.boot.fixture.TestJndiInitialContextFactory;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -45,8 +44,6 @@ import static org.junit.Assert.assertTrue;
 @SpringBootTest(classes = SpringBootJNDITest.class)
 @SpringBootApplication
 @ActiveProfiles("jndi")
-@Ignore
-// TODO resume me
 public class SpringBootJNDITest {
     
     private static final String TEST_DATASOURCE_URL = "jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL";
