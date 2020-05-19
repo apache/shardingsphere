@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.masterslave.spring.namespace.parser;
 
-import org.apache.shardingsphere.masterslave.spring.namespace.tag.MasterSlaveRuleBeanDefinitionTag;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.masterslave.spring.namespace.tag.MasterSlaveRuleBeanDefinitionTag;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -28,6 +31,7 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -40,10 +44,33 @@ public final class MasterSlaveRuleBeanDefinitionParser extends AbstractBeanDefin
         List<Element> masterSlaveDataSourceElements = DomUtils.getChildElementsByTagName(element, MasterSlaveRuleBeanDefinitionTag.MASTER_SLAVE_DATA_SOURCE_TAG);
         List<BeanDefinition> masterSlaveDataSources = new ManagedList<>(masterSlaveDataSourceElements.size());
         for (Element each : masterSlaveDataSourceElements) {
-            masterSlaveDataSources.add(new MasterSlaveRuleConfigurationBeanDefinition(each).getBeanDefinition());
+            masterSlaveDataSources.add(parseMasterSlaveDataSourceConfiguration(each));
         }
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(MasterSlaveRuleConfiguration.class);
         factory.addConstructorArgValue(masterSlaveDataSources);
         return factory.getBeanDefinition();
+    }
+    
+    private BeanDefinition parseMasterSlaveDataSourceConfiguration(final Element element) {
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(MasterSlaveDataSourceConfiguration.class);
+        factory.addConstructorArgValue(element.getAttribute(MasterSlaveRuleBeanDefinitionTag.MASTER_SLAVE_DATA_SOURCE_ID_TAG));
+        factory.addConstructorArgValue(element.getAttribute(MasterSlaveRuleBeanDefinitionTag.MASTER_DATA_SOURCE_NAME_TAG));
+        factory.addConstructorArgValue(parseSlaveDataSourcesRef(element));
+        parseMasterSlaveRuleLoadBalanceConfiguration(element, factory);
+        return factory.getBeanDefinition();
+    }
+    
+    private void parseMasterSlaveRuleLoadBalanceConfiguration(final Element element, final BeanDefinitionBuilder factory) {
+        String loadBalanceStrategyConfiguration = element.getAttribute(MasterSlaveRuleBeanDefinitionTag.LOAD_BALANCE_ALGORITHM_REF_TAG);
+        if (!Strings.isNullOrEmpty(loadBalanceStrategyConfiguration)) {
+            factory.addConstructorArgReference(loadBalanceStrategyConfiguration);
+        }
+    }
+    
+    private Collection<String> parseSlaveDataSourcesRef(final Element element) {
+        List<String> slaveDataSources = Splitter.on(",").trimResults().splitToList(element.getAttribute(MasterSlaveRuleBeanDefinitionTag.SLAVE_DATA_SOURCE_NAMES_TAG));
+        Collection<String> result = new ManagedList<>(slaveDataSources.size());
+        result.addAll(slaveDataSources);
+        return result;
     }
 }

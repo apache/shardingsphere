@@ -29,4 +29,12 @@ public final class MasterSlaveRuleBeanDefinitionTag {
     public static final String ROOT_TAG = "rule";
     
     public static final String MASTER_SLAVE_DATA_SOURCE_TAG = "data-source-rule";
+    
+    public static final String MASTER_SLAVE_DATA_SOURCE_ID_TAG = "id";
+    
+    public static final String MASTER_DATA_SOURCE_NAME_TAG = "master-data-source-name";
+    
+    public static final String SLAVE_DATA_SOURCE_NAMES_TAG = "slave-data-source-names";
+    
+    public static final String LOAD_BALANCE_ALGORITHM_REF_TAG = "strategy-ref";
 }
