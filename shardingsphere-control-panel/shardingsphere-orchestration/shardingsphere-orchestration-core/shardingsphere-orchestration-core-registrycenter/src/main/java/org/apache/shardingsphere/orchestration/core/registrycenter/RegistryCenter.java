@@ -50,4 +50,20 @@ public final class RegistryCenter {
     public void persistDataSourcesNode() {
         repository.persist(node.getDataSourcesNodeFullRootPath(), "");
     }
+    
+    /**
+     * Persist instance data.
+     * @param instanceData instance data
+     */
+    public void persistInstanceData(final String instanceData) {
+        repository.persist(node.getInstancesNodeFullPath(instance.getInstanceId()), instanceData);
+    }
+    
+    /**
+     * Load instance data.
+     * @return
+     */
+    public String loadInstanceData() {
+        return repository.get(node.getInstancesNodeFullPath(instance.getInstanceId()));
+    }
 }
