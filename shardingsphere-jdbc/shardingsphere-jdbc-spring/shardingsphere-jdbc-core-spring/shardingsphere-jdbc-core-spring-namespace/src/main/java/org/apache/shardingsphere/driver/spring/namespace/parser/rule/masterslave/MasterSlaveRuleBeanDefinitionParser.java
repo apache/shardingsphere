@@ -1,0 +1,59 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.driver.spring.namespace.parser.rule.masterslave;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.driver.spring.namespace.constants.ShardingRuleBeanDefinitionParserTag;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.ManagedList;
+import org.springframework.util.xml.DomUtils;
+import org.w3c.dom.Element;
+
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * Master-slave rule parser for spring namespace.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class MasterSlaveRuleBeanDefinitionParser {
+    
+    /**
+     * Parse master-slave rule configuration.
+     * 
+     * @param element element
+     * @return bean definition of master-slave rule
+     */
+    public static Optional<BeanDefinition> parseMasterSlaveRuleConfiguration(final Element element) {
+        Element masterSlaveRuleElement = DomUtils.getChildElementByTagName(element, ShardingRuleBeanDefinitionParserTag.MASTER_SLAVE_RULE_TAG);
+        if (null == masterSlaveRuleElement) {
+            return Optional.empty();
+        }
+        List<Element> masterSlaveDataSourceElements = DomUtils.getChildElementsByTagName(masterSlaveRuleElement, ShardingRuleBeanDefinitionParserTag.MASTER_SLAVE_DATA_SOURCE_TAG);
+        List<BeanDefinition> masterSlaveDataSources = new ManagedList<>(masterSlaveDataSourceElements.size());
+        for (Element each : masterSlaveDataSourceElements) {
+            masterSlaveDataSources.add(new MasterSlaveDataSourceConfigurationBeanDefinition(each).getBeanDefinition());
+        }
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(MasterSlaveRuleConfiguration.class);
+        factory.addConstructorArgValue(masterSlaveDataSources);
+        return Optional.of(factory.getBeanDefinition());
+    }
+}

@@ -20,12 +20,9 @@ package org.apache.shardingsphere.driver.spring.namespace.parser;
 import com.google.common.base.Splitter;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.spring.namespace.constants.DataSourceBeanDefinitionParserTag;
-import org.apache.shardingsphere.driver.spring.namespace.constants.EncryptDataSourceBeanDefinitionParserTag;
-import org.apache.shardingsphere.driver.spring.namespace.constants.ShardingRuleBeanDefinitionParserTag;
 import org.apache.shardingsphere.driver.spring.namespace.parser.rule.encrypt.EncryptRuleBeanDefinitionParser;
-import org.apache.shardingsphere.driver.spring.namespace.parser.rule.masterslave.MasterSlaveDataSourceConfigurationBeanDefinition;
+import org.apache.shardingsphere.driver.spring.namespace.parser.rule.masterslave.MasterSlaveRuleBeanDefinitionParser;
 import org.apache.shardingsphere.driver.spring.namespace.parser.rule.sharding.ShardingRuleBeanDefinitionParser;
-import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -40,7 +37,6 @@ import org.w3c.dom.Element;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -69,34 +65,10 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     
     private Collection<BeanDefinition> parseRuleConfigurations(final Element element) {
         Collection<BeanDefinition> result = new ManagedList<>(3);
-        parseShardingRuleConfiguration(element).ifPresent(result::add);
-        parseMasterSlaveRuleConfiguration(element).ifPresent(result::add);
-        parseEncryptRuleConfiguration(element).ifPresent(result::add);
+        ShardingRuleBeanDefinitionParser.parseShardingRuleConfiguration(element).ifPresent(result::add);
+        MasterSlaveRuleBeanDefinitionParser.parseMasterSlaveRuleConfiguration(element).ifPresent(result::add);
+        EncryptRuleBeanDefinitionParser.parseEncryptRuleElement(element).ifPresent(result::add);
         return result;
-    }
-    
-    private Optional<BeanDefinition> parseShardingRuleConfiguration(final Element element) {
-        return ShardingRuleBeanDefinitionParser.parseShardingRuleConfiguration(element);
-    }
-    
-    private Optional<BeanDefinition> parseMasterSlaveRuleConfiguration(final Element element) {
-        Element masterSlaveRuleElement = DomUtils.getChildElementByTagName(element, ShardingRuleBeanDefinitionParserTag.MASTER_SLAVE_RULE_TAG);
-        if (null == masterSlaveRuleElement) {
-            return Optional.empty();
-        }
-        List<Element> masterSlaveDataSourceElements = DomUtils.getChildElementsByTagName(masterSlaveRuleElement, ShardingRuleBeanDefinitionParserTag.MASTER_SLAVE_DATA_SOURCE_TAG);
-        List<BeanDefinition> masterSlaveDataSources = new ManagedList<>(masterSlaveDataSourceElements.size());
-        for (Element each : masterSlaveDataSourceElements) {
-            masterSlaveDataSources.add(new MasterSlaveDataSourceConfigurationBeanDefinition(each).getBeanDefinition());
-        }
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(MasterSlaveRuleConfiguration.class);
-        factory.addConstructorArgValue(masterSlaveDataSources);
-        return Optional.of(factory.getBeanDefinition());
-    }
-    
-    private Optional<BeanDefinition> parseEncryptRuleConfiguration(final Element element) {
-        Element encryptRuleElement = DomUtils.getChildElementByTagName(element, EncryptDataSourceBeanDefinitionParserTag.ENCRYPT_RULE_TAG);
-        return null == encryptRuleElement ? Optional.empty() : Optional.of(EncryptRuleBeanDefinitionParser.parseEncryptRuleElement(encryptRuleElement));
     }
     
     private Properties parseProperties(final Element element, final ParserContext parserContext) {
