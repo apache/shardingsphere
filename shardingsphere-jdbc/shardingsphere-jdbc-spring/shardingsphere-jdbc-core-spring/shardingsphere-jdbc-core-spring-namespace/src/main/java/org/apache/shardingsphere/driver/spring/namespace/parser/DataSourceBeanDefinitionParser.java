@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.spring.namespace.parser;
 
 import com.google.common.base.Splitter;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.driver.spring.namespace.constants.DataSourceBeanDefinitionParserTag;
+import org.apache.shardingsphere.driver.spring.namespace.tag.DataSourceBeanDefinitionParserTag;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;

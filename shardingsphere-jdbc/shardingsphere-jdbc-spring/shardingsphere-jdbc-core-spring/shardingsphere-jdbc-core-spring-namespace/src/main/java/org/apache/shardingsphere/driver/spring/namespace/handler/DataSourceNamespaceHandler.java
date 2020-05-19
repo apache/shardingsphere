@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.driver.spring.namespace.handler;
 
-import org.apache.shardingsphere.driver.spring.namespace.constants.DataSourceBeanDefinitionParserTag;
-import org.apache.shardingsphere.driver.spring.namespace.constants.TransactionTypeScannerBeanDefinitionTag;
+import org.apache.shardingsphere.driver.spring.namespace.tag.DataSourceBeanDefinitionParserTag;
+import org.apache.shardingsphere.driver.spring.namespace.tag.TransactionTypeScannerBeanDefinitionTag;
 import org.apache.shardingsphere.driver.spring.namespace.parser.DataSourceBeanDefinitionParser;
 import org.apache.shardingsphere.driver.spring.namespace.parser.TransactionTypeScannerBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;

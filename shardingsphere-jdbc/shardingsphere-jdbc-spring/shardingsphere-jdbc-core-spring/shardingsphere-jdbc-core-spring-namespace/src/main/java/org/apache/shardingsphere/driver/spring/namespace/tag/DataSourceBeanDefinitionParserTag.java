@@ -15,16 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.namespace.constants;
+package org.apache.shardingsphere.driver.spring.namespace.tag;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Transaction type scanner bean definition tag.
+ * Sharding rule parser tag constants.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TransactionTypeScannerBeanDefinitionTag {
+public final class DataSourceBeanDefinitionParserTag {
     
-    public static final String ROOT_TAG = "tx-type-annotation-driven";
+    public static final String ROOT_TAG = "data-source";
+    
+    public static final String DATA_SOURCE_NAMES_TAG = "data-source-names";
+    
+    public static final String RULE_REFS_TAG = "rule-refs";
+    
+    public static final String PROPS_TAG = "props";
 }
