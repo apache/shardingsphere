@@ -29,4 +29,7 @@
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
     
+    <modules>
+        <module>shardingsphere-sharding-spring-namespace</module>
+    </modules>
 </project>

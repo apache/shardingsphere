@@ -22,14 +22,9 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-sharding</artifactId>
+        <artifactId>shardingsphere-shadow-spring</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-encrypt-spring</artifactId>
-    <name>${project.artifactId}</name>
+    <artifactId>shardingsphere-shadow-spring-namespace</artifactId>
     <packaging>pom</packaging>
-    
-    <modules>
-        <module>shardingsphere-encrypt-spring-namespace</module>
-    </modules>
 </project>
