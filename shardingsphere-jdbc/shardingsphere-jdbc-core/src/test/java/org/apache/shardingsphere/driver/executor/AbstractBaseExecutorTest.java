@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.ExecutorExceptionHandler;
 import org.apache.shardingsphere.kernal.context.SchemaContext;
 import org.apache.shardingsphere.kernal.context.SchemaContexts;
-import org.apache.shardingsphere.kernal.context.ShardingSphereSchema;
+import org.apache.shardingsphere.kernal.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.kernal.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;

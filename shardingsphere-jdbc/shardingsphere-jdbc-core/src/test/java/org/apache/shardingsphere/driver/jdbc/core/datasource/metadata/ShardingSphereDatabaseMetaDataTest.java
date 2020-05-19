@@ -22,7 +22,7 @@ import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConne
 import org.apache.shardingsphere.driver.jdbc.core.resultset.DatabaseMetaDataResultSet;
 import org.apache.shardingsphere.kernal.context.SchemaContext;
 import org.apache.shardingsphere.kernal.context.SchemaContexts;
-import org.apache.shardingsphere.kernal.context.ShardingSphereSchema;
+import org.apache.shardingsphere.kernal.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.kernal.context.runtime.CachedDatabaseMetaData;
 import org.apache.shardingsphere.kernal.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
