@@ -67,14 +67,37 @@ public final class ClusterStateInstance {
      * @param dataSourceName data source name
      * @param state state
      */
-    public void updateDataSourceState(final String dataSourceName, final NodeState state) {
+    public void updateState(final String dataSourceName, final NodeState state) {
         InstanceState instanceState = loadInstanceState();
-        Preconditions.checkNotNull(instanceState, "Can not load instance state from registry center");
-        DataSourceState dataSourceState = instanceState.getDataSources().get(dataSourceName);
-        Preconditions.checkNotNull(dataSourceState, "Can not load data source state of %s from registry center", dataSourceName);
+        DataSourceState dataSourceState = loadDataSourceState(dataSourceName, instanceState);
         dataSourceState.setState(state);
         // TODO handle different states
         ShardingOrchestrationFacade.getInstance().getRegistryCenter().persistInstanceData(YamlEngine.marshal(instanceState));
+    }
+    
+    /**
+     * Update retry count.
+     * @param dataSourceName data source name
+     * @param retryCount retry count
+     */
+    public void updateRetryCount(final String dataSourceName, final Integer retryCount) {
+        InstanceState instanceState = loadInstanceState();
+        DataSourceState dataSourceState = loadDataSourceState(dataSourceName, instanceState);
+        dataSourceState.setRetryCount(retryCount);
+        ShardingOrchestrationFacade.getInstance().getRegistryCenter().persistInstanceData(YamlEngine.marshal(instanceState));
+    }
+    
+    /**
+     * Load data source state.
+     * @param dataSourceName data source name
+     * @param instanceState instance state
+     * @return data source state
+     */
+    private DataSourceState loadDataSourceState(final String dataSourceName, final InstanceState instanceState) {
+        Preconditions.checkNotNull(instanceState, "Can not load instance state from registry center");
+        DataSourceState dataSourceState = instanceState.getDataSources().get(dataSourceName);
+        Preconditions.checkNotNull(dataSourceState, "Can not load data source state of %s from registry center", dataSourceName);
+        return dataSourceState;
     }
     
     private static class ClusterStateInstanceHolder {
