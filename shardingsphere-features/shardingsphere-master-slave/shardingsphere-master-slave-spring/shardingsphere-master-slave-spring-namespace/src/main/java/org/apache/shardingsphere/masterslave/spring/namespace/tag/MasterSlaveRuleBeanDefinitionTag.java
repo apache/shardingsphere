@@ -15,26 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.orchestration.spring.namespace.constants;
+package org.apache.shardingsphere.masterslave.spring.namespace.tag;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Orchestration instance parser tag constants.
+ * Master-slave rule bean definition tag.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class InstanceBeanDefinitionParserTag {
+public final class MasterSlaveRuleBeanDefinitionTag {
     
-    public static final String TYPE_TAG = "instance-type";
+    public static final String ROOT_TAG = "rule";
     
-    public static final String ROOT_TAG = "instance";
+    public static final String MASTER_SLAVE_DATA_SOURCE_TAG = "data-source-rule";
     
-    public static final String ORCHESTRATION_TYPE_TAG = "orchestration-type";
+    public static final String MASTER_SLAVE_DATA_SOURCE_ID_TAG = "id";
     
-    public static final String SERVER_LISTS_TAG = "server-lists";
+    public static final String MASTER_DATA_SOURCE_NAME_TAG = "master-data-source-name";
     
-    public static final String NAMESPACE_TAG = "META-INF/namespace";
+    public static final String SLAVE_DATA_SOURCE_NAMES_TAG = "slave-data-source-names";
     
-    public static final String PROPERTY_REF_TAG = "props-ref";
+    public static final String LOAD_BALANCE_ALGORITHM_REF_TAG = "strategy-ref";
 }

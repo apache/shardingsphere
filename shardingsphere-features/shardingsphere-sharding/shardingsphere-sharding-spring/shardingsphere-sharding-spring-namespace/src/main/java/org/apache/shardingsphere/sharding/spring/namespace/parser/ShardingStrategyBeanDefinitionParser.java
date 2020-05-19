@@ -15,26 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.orchestration.spring.namespace.constants;
+package org.apache.shardingsphere.sharding.spring.namespace.parser;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
+import org.springframework.beans.factory.xml.ParserContext;
+import org.w3c.dom.Element;
 
 /**
- * Orchestration instance parser tag constants.
+ * Sharding strategy bean parser for spring namespace.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class InstanceBeanDefinitionParserTag {
+public final class ShardingStrategyBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
-    public static final String TYPE_TAG = "instance-type";
-    
-    public static final String ROOT_TAG = "instance";
-    
-    public static final String ORCHESTRATION_TYPE_TAG = "orchestration-type";
-    
-    public static final String SERVER_LISTS_TAG = "server-lists";
-    
-    public static final String NAMESPACE_TAG = "META-INF/namespace";
-    
-    public static final String PROPERTY_REF_TAG = "props-ref";
+    @Override
+    protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
+        return ShardingStrategyBeanDefinition.getBeanDefinitionByElement(element);
+    }
 }

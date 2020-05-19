@@ -15,26 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.orchestration.spring.namespace.constants;
+package org.apache.shardingsphere.encrypt.spring.namespace.handler;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.encrypt.spring.namespace.tag.EncryptRuleBeanDefinitionTag;
+import org.apache.shardingsphere.encrypt.spring.namespace.parser.EncryptRuleBeanDefinitionParser;
+import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
- * Orchestration instance parser tag constants.
+ * Encrypt rule namespace handler.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class InstanceBeanDefinitionParserTag {
+public final class EncryptRuleNamespaceHandler extends NamespaceHandlerSupport {
     
-    public static final String TYPE_TAG = "instance-type";
-    
-    public static final String ROOT_TAG = "instance";
-    
-    public static final String ORCHESTRATION_TYPE_TAG = "orchestration-type";
-    
-    public static final String SERVER_LISTS_TAG = "server-lists";
-    
-    public static final String NAMESPACE_TAG = "META-INF/namespace";
-    
-    public static final String PROPERTY_REF_TAG = "props-ref";
+    @Override
+    public void init() {
+        registerBeanDefinitionParser(EncryptRuleBeanDefinitionTag.ROOT_TAG, new EncryptRuleBeanDefinitionParser());
+    }
 }

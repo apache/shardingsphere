@@ -15,26 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.orchestration.spring.namespace.constants;
-
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+package org.apache.shardingsphere.masterslave.spring.namespace.tag;
 
 /**
- * Orchestration instance parser tag constants.
+ * Load balance algorithm bean definition tag.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class InstanceBeanDefinitionParserTag {
+public final class LoadBalanceAlgorithmBeanDefinitionTag {
     
-    public static final String TYPE_TAG = "instance-type";
+    public static final String LOAD_BALANCE_ALGORITHM_TAG = "load-balance-algorithm";
     
-    public static final String ROOT_TAG = "instance";
+    public static final String ALGORITHM_TYPE_ATTRIBUTE = "type";
     
-    public static final String ORCHESTRATION_TYPE_TAG = "orchestration-type";
-    
-    public static final String SERVER_LISTS_TAG = "server-lists";
-    
-    public static final String NAMESPACE_TAG = "META-INF/namespace";
-    
-    public static final String PROPERTY_REF_TAG = "props-ref";
+    public static final String ALGORITHM_PROPERTY_REF_ATTRIBUTE = "props-ref";
 }

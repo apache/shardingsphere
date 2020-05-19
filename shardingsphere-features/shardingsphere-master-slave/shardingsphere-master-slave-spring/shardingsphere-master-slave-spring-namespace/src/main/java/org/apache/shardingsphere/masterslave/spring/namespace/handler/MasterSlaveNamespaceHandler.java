@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.namespace.handler;
+package org.apache.shardingsphere.masterslave.spring.namespace.handler;
 
-import org.apache.shardingsphere.driver.spring.namespace.tag.DataSourceBeanDefinitionParserTag;
-import org.apache.shardingsphere.driver.spring.namespace.tag.TransactionTypeScannerBeanDefinitionTag;
-import org.apache.shardingsphere.driver.spring.namespace.parser.DataSourceBeanDefinitionParser;
-import org.apache.shardingsphere.driver.spring.namespace.parser.TransactionTypeScannerBeanDefinitionParser;
+import org.apache.shardingsphere.masterslave.spring.namespace.tag.LoadBalanceAlgorithmBeanDefinitionTag;
+import org.apache.shardingsphere.masterslave.spring.namespace.tag.MasterSlaveRuleBeanDefinitionTag;
+import org.apache.shardingsphere.masterslave.spring.namespace.parser.MasterSlaveLoadBalanceStrategyBeanDefinitionParser;
+import org.apache.shardingsphere.masterslave.spring.namespace.parser.MasterSlaveRuleBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
- * Spring namespace handler for data source.
+ * Spring namespace handler for master-slave.
  */
-public final class DataSourceNamespaceHandler extends NamespaceHandlerSupport {
+public final class MasterSlaveNamespaceHandler extends NamespaceHandlerSupport {
     
     @Override
     public void init() {
-        registerBeanDefinitionParser(DataSourceBeanDefinitionParserTag.ROOT_TAG, new DataSourceBeanDefinitionParser());
-        registerBeanDefinitionParser(TransactionTypeScannerBeanDefinitionTag.ROOT_TAG, new TransactionTypeScannerBeanDefinitionParser());
+        registerBeanDefinitionParser(MasterSlaveRuleBeanDefinitionTag.ROOT_TAG, new MasterSlaveRuleBeanDefinitionParser());
+        registerBeanDefinitionParser(LoadBalanceAlgorithmBeanDefinitionTag.LOAD_BALANCE_ALGORITHM_TAG, new MasterSlaveLoadBalanceStrategyBeanDefinitionParser());
     }
 }

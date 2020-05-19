@@ -15,26 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.orchestration.spring.namespace.constants;
+package org.apache.shardingsphere.sharding.spring.namespace.tag;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Orchestration instance parser tag constants.
+ * Sharding strategy bean definition tag.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class InstanceBeanDefinitionParserTag {
+public final class ShardingStrategyBeanDefinitionTag {
     
-    public static final String TYPE_TAG = "instance-type";
+    public static final String STANDARD_STRATEGY_ROOT_TAG = "standard-strategy";
     
-    public static final String ROOT_TAG = "instance";
+    public static final String COMPLEX_STRATEGY_ROOT_TAG = "complex-strategy";
     
-    public static final String ORCHESTRATION_TYPE_TAG = "orchestration-type";
+    public static final String HINT_STRATEGY_ROOT_TAG = "hint-strategy";
     
-    public static final String SERVER_LISTS_TAG = "server-lists";
+    public static final String NONE_STRATEGY_ROOT_TAG = "none-strategy";
     
-    public static final String NAMESPACE_TAG = "META-INF/namespace";
+    public static final String SHARDING_COLUMN_ATTRIBUTE = "sharding-column";
     
-    public static final String PROPERTY_REF_TAG = "props-ref";
+    public static final String SHARDING_COLUMNS_ATTRIBUTE = "sharding-columns";
+    
+    public static final String ALGORITHM_REF_ATTRIBUTE = "algorithm-ref";
 }

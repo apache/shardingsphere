@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-http\://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd=META-INF/namespace/datasource.xsd
+http\://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd=META-INF/namespace/encrypt.xsd
