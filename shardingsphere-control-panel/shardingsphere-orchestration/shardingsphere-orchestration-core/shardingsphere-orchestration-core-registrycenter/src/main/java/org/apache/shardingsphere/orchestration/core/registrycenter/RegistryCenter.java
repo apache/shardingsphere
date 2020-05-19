@@ -61,7 +61,7 @@ public final class RegistryCenter {
     
     /**
      * Load instance data.
-     * @return
+     * @return instance data
      */
     public String loadInstanceData() {
         return repository.get(node.getInstancesNodeFullPath(instance.getInstanceId()));

@@ -68,4 +68,4 @@ public final class RegistryCenterTest {
         registryCenter.loadInstanceData();
         verify(registryCenterRepository).get(anyString());
     }
- }
+}
