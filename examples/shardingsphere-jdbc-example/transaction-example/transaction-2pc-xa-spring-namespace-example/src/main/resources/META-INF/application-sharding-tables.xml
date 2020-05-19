@@ -71,9 +71,9 @@
     </sharding:rule>
     
     <shardingsphere:data-source id="shardingDataSource" data-source-names="demo_ds" rule-refs="shardingRule">
-        <shardingsphere:props>
+        <props>
             <prop key="sql.show">false</prop>
-        </shardingsphere:props>
+        </props>
     </shardingsphere:data-source>
     
     <shardingsphere:tx-type-annotation-driven />

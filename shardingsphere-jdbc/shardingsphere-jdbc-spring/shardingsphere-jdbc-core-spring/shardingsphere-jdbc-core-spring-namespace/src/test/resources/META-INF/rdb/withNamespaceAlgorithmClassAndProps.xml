@@ -46,8 +46,8 @@
     </sharding:rule>
     
     <shardingsphere:data-source id="shardingDataSource" data-source-names="dbtbl_0,dbtbl_1" rule-refs="shardingRule">
-        <shardingsphere:props>
+        <props>
             <prop key="sql.show">${sql_show}</prop>
-        </shardingsphere:props>
+        </props>
     </shardingsphere:data-source>
 </beans>

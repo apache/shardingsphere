@@ -63,9 +63,9 @@
     </encrypt:rule>
     
     <shardingsphere:data-source id="encryptDataSource" data-source-names="dbtbl_0" rule-refs="encryptRule">
-        <shardingsphere:props>
+        <props>
             <prop key="query.with.cipher.column">true</prop>
-        </shardingsphere:props>
+        </props>
     </shardingsphere:data-source>
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">

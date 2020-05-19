@@ -26,7 +26,7 @@
     <xsd:element name="data-source">
         <xsd:complexType>
             <xsd:all>
-                <xsd:element ref="props" minOccurs="0" />
+                <xsd:element ref="beans:props" minOccurs="0" />
             </xsd:all>
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="data-source-names" type="xsd:string" use="required" />
@@ -34,12 +34,5 @@
         </xsd:complexType>
     </xsd:element>
     
-    <xsd:element name="props">
-        <xsd:complexType>
-            <xsd:complexContent>
-                <xsd:extension base="beans:propsType" />
-            </xsd:complexContent>
-        </xsd:complexType>
-    </xsd:element>
     <xsd:element name="tx-type-annotation-driven" />
 </xsd:schema>
