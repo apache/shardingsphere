@@ -19,11 +19,12 @@ package org.apache.shardingsphere.driver.spring.namespace.parser;
 
 import com.google.common.base.Splitter;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.driver.spring.namespace.constants.DataSourceBeanDefinitionParserTag;
 import org.apache.shardingsphere.driver.spring.namespace.constants.EncryptDataSourceBeanDefinitionParserTag;
-import org.apache.shardingsphere.driver.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
+import org.apache.shardingsphere.driver.spring.namespace.constants.ShardingRuleBeanDefinitionParserTag;
 import org.apache.shardingsphere.driver.spring.namespace.parser.rule.EncryptRuleBeanDefinitionParser;
 import org.apache.shardingsphere.driver.spring.namespace.parser.rule.MasterSlaveDataSourceConfigurationBeanDefinition;
-import org.apache.shardingsphere.driver.spring.namespace.parser.rule.ShardingDataSourceBeanDefinitionParser;
+import org.apache.shardingsphere.driver.spring.namespace.parser.rule.ShardingRuleBeanDefinitionParser;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
@@ -58,7 +59,7 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     }
     
     private Map<String, RuntimeBeanReference> parseDataSources(final Element element) {
-        List<String> dataSources = Splitter.on(",").trimResults().splitToList(element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.DATA_SOURCE_NAMES_TAG));
+        List<String> dataSources = Splitter.on(",").trimResults().splitToList(element.getAttribute(DataSourceBeanDefinitionParserTag.DATA_SOURCE_NAMES_TAG));
         Map<String, RuntimeBeanReference> result = new ManagedMap<>(dataSources.size());
         for (String each : dataSources) {
             result.put(each, new RuntimeBeanReference(each));
@@ -75,15 +76,15 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     }
     
     private Optional<BeanDefinition> parseShardingRuleConfiguration(final Element element) {
-        return ShardingDataSourceBeanDefinitionParser.parseShardingRuleConfiguration(element);
+        return ShardingRuleBeanDefinitionParser.parseShardingRuleConfiguration(element);
     }
     
     private Optional<BeanDefinition> parseMasterSlaveRuleConfiguration(final Element element) {
-        Element masterSlaveRuleElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.MASTER_SLAVE_RULE_TAG);
+        Element masterSlaveRuleElement = DomUtils.getChildElementByTagName(element, ShardingRuleBeanDefinitionParserTag.MASTER_SLAVE_RULE_TAG);
         if (null == masterSlaveRuleElement) {
             return Optional.empty();
         }
-        List<Element> masterSlaveDataSourceElements = DomUtils.getChildElementsByTagName(masterSlaveRuleElement, ShardingDataSourceBeanDefinitionParserTag.MASTER_SLAVE_DATA_SOURCE_TAG);
+        List<Element> masterSlaveDataSourceElements = DomUtils.getChildElementsByTagName(masterSlaveRuleElement, ShardingRuleBeanDefinitionParserTag.MASTER_SLAVE_DATA_SOURCE_TAG);
         List<BeanDefinition> masterSlaveDataSources = new ManagedList<>(masterSlaveDataSourceElements.size());
         for (Element each : masterSlaveDataSourceElements) {
             masterSlaveDataSources.add(new MasterSlaveDataSourceConfigurationBeanDefinition(each).getBeanDefinition());
@@ -99,7 +100,7 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     }
     
     private Properties parseProperties(final Element element, final ParserContext parserContext) {
-        Element propsElement = DomUtils.getChildElementByTagName(element, ShardingDataSourceBeanDefinitionParserTag.PROPS_TAG);
+        Element propsElement = DomUtils.getChildElementByTagName(element, DataSourceBeanDefinitionParserTag.PROPS_TAG);
         return null == propsElement ? new Properties() : parserContext.getDelegate().parsePropsElement(propsElement);
     }
 }

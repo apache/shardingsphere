@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver.spring.namespace.handler;
 
-import org.apache.shardingsphere.driver.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
+import org.apache.shardingsphere.driver.spring.namespace.constants.DataSourceBeanDefinitionParserTag;
 import org.apache.shardingsphere.driver.spring.namespace.constants.ShardingTransactionTypeScannerBeanDefinitionParserTag;
 import org.apache.shardingsphere.driver.spring.namespace.parser.DataSourceBeanDefinitionParser;
 import org.apache.shardingsphere.driver.spring.namespace.parser.rule.ShardingTransactionTypeScannerBeanDefinitionParser;
@@ -30,7 +30,7 @@ public final class DataSourceNamespaceHandler extends NamespaceHandlerSupport {
     
     @Override
     public void init() {
-        registerBeanDefinitionParser(ShardingDataSourceBeanDefinitionParserTag.ROOT_TAG, new DataSourceBeanDefinitionParser());
+        registerBeanDefinitionParser(DataSourceBeanDefinitionParserTag.ROOT_TAG, new DataSourceBeanDefinitionParser());
         registerBeanDefinitionParser(ShardingTransactionTypeScannerBeanDefinitionParserTag.ROOT_TAG, new ShardingTransactionTypeScannerBeanDefinitionParser());
     }
 }
