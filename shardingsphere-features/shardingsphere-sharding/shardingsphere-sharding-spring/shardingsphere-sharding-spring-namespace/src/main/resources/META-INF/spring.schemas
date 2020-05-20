@@ -16,4 +16,3 @@
 #
 
 http\://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd=META-INF/namespace/sharding.xsd
-http\://shardingsphere.apache.org/schema/shardingsphere/spi/spi.xsd=META-INF/namespace/spi.xsd

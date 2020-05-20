@@ -22,7 +22,6 @@
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
-       xmlns:spi="http://shardingsphere.apache.org/schema/shardingsphere/spi"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd 
                            http://www.springframework.org/schema/tx 
@@ -33,8 +32,6 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/sharding
                            http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/spi
-                           http://shardingsphere.apache.org/schema/shardingsphere/spi/spi.xsd
                            ">
     <context:component-scan base-package="org.apache.shardingsphere.example" />
     
@@ -52,19 +49,19 @@
         <property name="password" value=""/>
     </bean>
     
-    <spi:sharding-algorithm id="databaseIineStrategyShardingAlgorithm" type="INLINE">
+    <sharding:sharding-algorithm id="databaseIineStrategyShardingAlgorithm" type="INLINE">
         <props>
             <prop key="algorithm.expression">demo_ds_${user_id % 2}</prop>
         </props>
-    </spi:sharding-algorithm>
+    </sharding:sharding-algorithm>
     
     <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="databaseIineStrategyShardingAlgorithm"/>
     
-    <spi:key-generate-algorithm id="snowflakeAlgorithm" type="SNOWFLAKE">
+    <sharding:key-generate-algorithm id="snowflakeAlgorithm" type="SNOWFLAKE">
         <props>
             <prop key="worker.id">123</prop>
         </props>
-    </spi:key-generate-algorithm>
+    </sharding:key-generate-algorithm>
     
     <sharding:key-generator id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
     

@@ -16,4 +16,3 @@
 #
 
 http\://shardingsphere.apache.org/schema/shardingsphere/sharding=org.apache.shardingsphere.sharding.spring.namespace.handler.ShardingNamespaceHandler
-http\://shardingsphere.apache.org/schema/shardingsphere/spi=org.apache.shardingsphere.sharding.spring.namespace.handler.SPINamespaceHandler
