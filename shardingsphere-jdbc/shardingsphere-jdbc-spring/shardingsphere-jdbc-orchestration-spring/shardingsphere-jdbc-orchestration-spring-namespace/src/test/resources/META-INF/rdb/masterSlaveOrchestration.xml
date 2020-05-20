@@ -17,7 +17,7 @@
   -->
 
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:orchestraion="http://shardingsphere.apache.org/schema/shardingsphere/orchestration"
+       xmlns:orchestration="http://shardingsphere.apache.org/schema/shardingsphere/orchestration"
        xmlns="http://www.springframework.org/schema/beans"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
@@ -26,15 +26,15 @@
                            ">
     <import resource="namespace/masterSlaveDataSourceNamespace.xml" />
     
-    <orchestraion:instance id="regCenter" orchestration-type="registry_center,config_center,metadata_center" instance-type="TestRegistry" server-lists="localhost:3181" namespace="orchestration-spring-namespace-test">
+    <orchestration:instance id="regCenter" orchestration-type="registry_center,config_center,metadata_center" instance-type="TestRegistry" server-lists="localhost:3181" namespace="orchestration-spring-namespace-test">
         <props>
             <prop key="max-retries">3</prop>
             <prop key="operation-timeout-milliseconds">1000</prop>
         </props>
-    </orchestraion:instance>
+    </orchestration:instance>
     
-    <orchestraion:master-slave-data-source id="defaultMasterSlaveDataSourceOrchestration" data-source-ref="defaultMasterSlaveDataSource" instance-ref="regCenter" />
-    <orchestraion:master-slave-data-source id="randomMasterSlaveDataSourceOrchestration" data-source-ref="randomMasterSlaveDataSource" instance-ref="regCenter" />
-    <orchestraion:master-slave-data-source id="roundRobinMasterSlaveDataSourceOrchestration" data-source-ref="roundRobinMasterSlaveDataSource" instance-ref="regCenter" />
-    <orchestraion:master-slave-data-source id="refMasterSlaveDataSourceOrchestration" data-source-ref="refMasterSlaveDataSource" instance-ref="regCenter" />
+    <orchestration:data-source id="defaultMasterSlaveDataSourceOrchestration" data-source-ref="defaultMasterSlaveDataSource" instance-ref="regCenter" />
+    <orchestration:data-source id="randomMasterSlaveDataSourceOrchestration" data-source-ref="randomMasterSlaveDataSource" instance-ref="regCenter" />
+    <orchestration:data-source id="roundRobinMasterSlaveDataSourceOrchestration" data-source-ref="roundRobinMasterSlaveDataSource" instance-ref="regCenter" />
+    <orchestration:data-source id="refMasterSlaveDataSourceOrchestration" data-source-ref="refMasterSlaveDataSource" instance-ref="regCenter" />
 </beans>
