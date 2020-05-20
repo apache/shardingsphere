@@ -21,7 +21,7 @@
        xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
+       xmlns:shadow="http://shardingsphere.apache.org/schema/shardingsphere/shadow"
        xmlns:bean="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd 
@@ -33,8 +33,8 @@
                            http://www.springframework.org/schema/util/spring-util.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/encrypt
-                           http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd 
+                           http://shardingsphere.apache.org/schema/shardingsphere/shadow
+                           http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow.xsd
                            ">
     <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />
     
@@ -44,37 +44,33 @@
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>
-    
-    <encrypt:rule id="encryptRule">
-        <encrypt:tables>
-            <encrypt:table name="t_user">
-                <encrypt:column logic-column="user_name" plain-column="user_name_plain" cipher-column="user_name" encryptor-ref="name_encryptor" />
-                <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" encryptor-ref="pwd_encryptor"/>
-            </encrypt:table>
-        </encrypt:tables>
-        <encrypt:encryptors>
-            <encrypt:encryptor id="name_encryptor" type="AES">
-                <props>
-                    <prop key="aes.key.value">123456</prop>
-                </props>
-            </encrypt:encryptor>
-            <encrypt:encryptor id="pwd_encryptor" type="assistedTest" />
-        </encrypt:encryptors>
-    </encrypt:rule>
-    
-    <shardingsphere:data-source id="encryptDataSource" data-source-names="ds" rule-refs="encryptRule">
+
+    <bean id="shadow_ds" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/shadow_demo_ds?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
+        <property name="username" value="root"/>
+        <property name="password" value=""/>
+    </bean>
+
+    <shadow:rule id="shadowRule" column="shadow">
+        <shadow:mappings>
+            <shadow:mapping product-data-source-name="ds" shadow-data-source-name="shadow_ds"/>
+        </shadow:mappings>
+    </shadow:rule>
+
+    <shardingsphere:data-source id="shadowDataSource" data-source-names="ds,shadow_ds" rule-refs="shadowRule">
         <props>
-            <prop key="query.with.cipher.column">true</prop>
+            <prop key="sql.show">${sql_show}</prop>
         </props>
     </shardingsphere:data-source>
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="encryptDataSource" />
+        <property name="dataSource" ref="shadowDataSource" />
     </bean>
     <tx:annotation-driven />
     
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-        <property name="dataSource" ref="encryptDataSource"/>
+        <property name="dataSource" ref="shadowDataSource"/>
         <property name="mapperLocations" value="classpath*:META-INF/mappers/*.xml"/>
     </bean>
     
