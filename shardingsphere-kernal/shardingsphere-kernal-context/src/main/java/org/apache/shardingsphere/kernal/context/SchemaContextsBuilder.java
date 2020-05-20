@@ -65,6 +65,8 @@ public final class SchemaContextsBuilder {
     
     private final ExecutorKernel executorKernel;
     
+    private final Authentication authentication;
+    
     public SchemaContextsBuilder(final Map<String, Map<String, DataSource>> dataSources,
                                  final DatabaseType databaseType, final Map<String, Collection<RuleConfiguration>> configurations, final Properties props) {
         this.dataSources = dataSources;
@@ -72,13 +74,20 @@ public final class SchemaContextsBuilder {
         this.configurations = configurations;
         properties = new ConfigurationProperties(null == props ? new Properties() : props);
         executorKernel = new ExecutorKernel(properties.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
+        authentication = new Authentication();
         log(configurations, props);
     }
     
-    public SchemaContextsBuilder(final Map<String, Map<String, DataSource>> dataSources, final Map<String, Map<String, DataSourceParameter>> dataSourceParameters, 
+    public SchemaContextsBuilder(final Map<String, Map<String, DataSource>> dataSources, final Map<String, Map<String, DataSourceParameter>> dataSourceParameters, final Authentication authentication, 
                                  final DatabaseType databaseType, final Map<String, Collection<RuleConfiguration>> configurations, final Properties props) {
-        this(dataSources, databaseType, configurations, props);
+        this.dataSources = dataSources;
+        this.databaseType = databaseType;
+        this.configurations = configurations;
+        properties = new ConfigurationProperties(null == props ? new Properties() : props);
+        executorKernel = new ExecutorKernel(properties.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
         this.dataSourceParameters.putAll(dataSourceParameters);
+        this.authentication = authentication;
+        log(configurations, props);
     }
     
     /**
@@ -92,7 +101,7 @@ public final class SchemaContextsBuilder {
         for (String each : configurations.keySet()) {
             schemaContexts.put(each, createSchemaContext(each));
         }
-        return new SchemaContexts(schemaContexts, properties, new Authentication());
+        return new SchemaContexts(schemaContexts, properties, authentication);
     }
     
     private SchemaContext createSchemaContext(final String schemaName) throws SQLException {

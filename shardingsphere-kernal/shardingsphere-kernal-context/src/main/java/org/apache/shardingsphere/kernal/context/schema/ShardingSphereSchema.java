@@ -23,8 +23,10 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRulesBuilder;
 
 import javax.sql.DataSource;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -37,7 +39,7 @@ public final class ShardingSphereSchema {
     
     private final Collection<RuleConfiguration> configurations = new LinkedList<>();
     
-    private final Collection<ShardingSphereRule> rules;
+    private final Collection<ShardingSphereRule> rules = new LinkedList<>();
     
     private final Map<String, DataSource> dataSources = new LinkedHashMap<>();
     
@@ -50,7 +52,7 @@ public final class ShardingSphereSchema {
                                 final Map<String, DataSource> dataSourceMap, final ShardingSphereMetaData shardingSphereMetaData) {
         this.databaseType = databaseType;
         this.configurations.addAll(configurations);
-        this.rules = rules;
+        this.rules.addAll(rules);
         this.dataSources.putAll(dataSourceMap);
         metaData = shardingSphereMetaData;
     }
@@ -59,5 +61,37 @@ public final class ShardingSphereSchema {
                                 final Map<String, DataSource> dataSourceMap, final Map<String, DataSourceParameter> dataSourceParameters, final ShardingSphereMetaData shardingSphereMetaData) {
         this(databaseType, configurations, rules, dataSourceMap, shardingSphereMetaData);
         this.dataSourceParameters.putAll(dataSourceParameters);
+    }
+    
+    /**
+     * Set configurations.
+     *
+     * @param configurations rule configurations
+     */
+    public void setConfigurations(final Collection<RuleConfiguration> configurations) {
+        this.configurations.clear();
+        this.configurations.addAll(configurations);
+        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(configurations, dataSources.keySet());
+        this.rules.clear();
+        this.rules.addAll(rules);
+    }
+    
+    /**
+     * Close data sources.
+     * @param dataSources data sources
+     */
+    public void closeDataSources(final Collection<String> dataSources) {
+        for (String each :dataSources) {
+            close(this.dataSources.get(each));
+        }
+    }
+    
+    private void close(final DataSource dataSource) {
+        try {
+            Method method = dataSource.getClass().getDeclaredMethod("close");
+            method.setAccessible(true);
+            method.invoke(dataSource);
+        } catch (final ReflectiveOperationException ignored) {
+        }
     }
 }
