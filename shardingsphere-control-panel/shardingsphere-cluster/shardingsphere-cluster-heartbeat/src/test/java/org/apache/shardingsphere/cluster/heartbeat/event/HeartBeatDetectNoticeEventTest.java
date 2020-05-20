@@ -15,25 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cluster.heartbeat.eventbus;
+package org.apache.shardingsphere.cluster.heartbeat.event;
 
-import com.google.common.eventbus.EventBus;
+import org.junit.Test;
 
-/**
- * Heart beat event bus.
- */
-public final class HeartBeatEventBus {
+import static org.junit.Assert.assertTrue;
+
+public class HeartBeatDetectNoticeEventTest {
     
-    /**
-     * Get heart beat event bus instance.
-     *
-     * @return event bus
-     */
-    public static EventBus getInstance() {
-        return HeartBeatEventBusHolder.INSTANCE;
-    }
-    
-    private static final class HeartBeatEventBusHolder {
-        private static final EventBus INSTANCE = new EventBus();
+    @Test
+    public void assertHeartBeatEventType() {
+        HeartBeatDetectNoticeEvent event = new HeartBeatDetectNoticeEvent(HeartBeatEventType.NOTICE_DETECT);
+        assertTrue(event.getEventType() == HeartBeatEventType.NOTICE_DETECT);
     }
 }

@@ -17,9 +17,12 @@
 
 package org.apache.shardingsphere.cluster.heartbeat.event;
 
+import lombok.Getter;
+
 /**
  * Heart beat detect notice event.
  */
+@Getter
 public final class HeartBeatDetectNoticeEvent extends AbstractHeartBeatEvent{
     
     HeartBeatDetectNoticeEvent(HeartBeatEventType eventType) {

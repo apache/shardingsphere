@@ -17,23 +17,14 @@
 
 package org.apache.shardingsphere.cluster.heartbeat.eventbus;
 
-import com.google.common.eventbus.EventBus;
+import org.junit.Test;
 
-/**
- * Heart beat event bus.
- */
-public final class HeartBeatEventBus {
+import static org.junit.Assert.*;
+
+public class HeartBeatEventBusTest {
     
-    /**
-     * Get heart beat event bus instance.
-     *
-     * @return event bus
-     */
-    public static EventBus getInstance() {
-        return HeartBeatEventBusHolder.INSTANCE;
-    }
-    
-    private static final class HeartBeatEventBusHolder {
-        private static final EventBus INSTANCE = new EventBus();
+    @Test
+    public void getInstance() {
+        assertNotNull(HeartBeatEventBus.getInstance());
     }
 }
