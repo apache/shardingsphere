@@ -19,27 +19,12 @@ package org.apache.shardingsphere.proxy.backend.schema;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
-import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
-import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
-import org.apache.shardingsphere.orchestration.core.metadatacenter.event.MetaDataChangedEvent;
-import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
-import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationSchema;
-import org.apache.shardingsphere.infra.log.ConfigurationLogger;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
-import org.apache.shardingsphere.proxy.backend.executor.BackendExecutorContext;
-import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
-import org.apache.shardingsphere.proxy.context.ShardingSphereProxyContext;
-import org.apache.shardingsphere.proxy.util.DataSourceConverter;
-import org.apache.shardingsphere.sql.parser.SQLParserEngine;
-import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
+import org.apache.shardingsphere.infra.log.ConfigurationLogger;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategy;
@@ -50,7 +35,22 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.infra.rule.StatusContainedRule;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
+import org.apache.shardingsphere.kernal.context.schema.DataSourceParameter;
+import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurationsChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
+import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
+import org.apache.shardingsphere.orchestration.core.metadatacenter.event.MetaDataChangedEvent;
+import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
+import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationSchema;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
+import org.apache.shardingsphere.proxy.backend.executor.BackendExecutorContext;
+import org.apache.shardingsphere.proxy.backend.util.DataSourceConverter;
+import org.apache.shardingsphere.proxy.context.ShardingSphereProxyContext;
+import org.apache.shardingsphere.sql.parser.SQLParserEngine;
+import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -77,7 +77,7 @@ public final class ShardingSphereSchema {
     
     private ShardingSphereMetaData metaData;
     
-    public ShardingSphereSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources, final Collection<RuleConfiguration> configurations) throws SQLException {
+    public ShardingSphereSchema(final String name, final Map<String, DataSourceParameter> dataSources, final Collection<RuleConfiguration> configurations) throws SQLException {
         this.name = name;
         this.configurations = configurations;
         this.rules = ShardingSphereRulesBuilder.build(configurations, dataSources.keySet());
@@ -130,7 +130,7 @@ public final class ShardingSphereSchema {
      * 
      * @return data source parameters
      */
-    public Map<String, YamlDataSourceParameter> getDataSources() {
+    public Map<String, DataSourceParameter> getDataSources() {
         return backendDataSource.getDataSourceParameters();
     }
     

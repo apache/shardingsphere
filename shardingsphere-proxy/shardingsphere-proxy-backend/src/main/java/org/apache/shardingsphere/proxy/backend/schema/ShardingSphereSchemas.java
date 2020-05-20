@@ -20,15 +20,15 @@ package org.apache.shardingsphere.proxy.backend.schema;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.kernal.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.orchestration.core.common.event.SchemaAddedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.SchemaDeletedEvent;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.JDBCDriverURLRecognizerEngine;
-import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
-import org.apache.shardingsphere.proxy.util.DataSourceConverter;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.proxy.backend.util.DataSourceConverter;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -72,14 +72,14 @@ public final class ShardingSphereSchemas {
      * @param schemaRules schema rule map
      * @throws SQLException SQL exception
      */
-    public void init(final Collection<String> localSchemaNames, 
-                     final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources, final Map<String, Collection<RuleConfiguration>> schemaRules) throws SQLException {
+    public void init(final Collection<String> localSchemaNames,
+                     final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, Collection<RuleConfiguration>> schemaRules) throws SQLException {
         databaseType = DatabaseTypes.getActualDatabaseType(
                 JDBCDriverURLRecognizerEngine.getJDBCDriverURLRecognizer(schemaDataSources.values().iterator().next().values().iterator().next().getUrl()).getDatabaseType());
         initSchemas(localSchemaNames, schemaDataSources, schemaRules);
     }
     
-    private void initSchemas(final Collection<String> localSchemaNames, final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources, 
+    private void initSchemas(final Collection<String> localSchemaNames, final Map<String, Map<String, DataSourceParameter>> schemaDataSources, 
                              final Map<String, Collection<RuleConfiguration>> schemaRules) throws SQLException {
         if (schemaRules.isEmpty()) {
             String schema = schemaDataSources.keySet().iterator().next();

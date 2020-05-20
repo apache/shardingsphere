@@ -47,6 +47,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.net.InetSocketAddress;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * MySQL Connector.
@@ -193,7 +194,11 @@ public final class MySQLClient {
      * @return binlog event
      */
     public synchronized AbstractBinlogEvent poll() {
-        return blockingEventQueue.poll();
+        try {
+            return blockingEventQueue.poll(100, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException ignored) {
+            return null;
+        }
     }
     
     @SuppressWarnings("unchecked")

@@ -20,22 +20,22 @@ package org.apache.shardingsphere.ui.web.controller;
 import org.apache.shardingsphere.ui.servcie.ShardingPropertiesService;
 import org.apache.shardingsphere.ui.web.response.ResponseResult;
 import org.apache.shardingsphere.ui.web.response.ResponseResultUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import java.util.Map;
 
 /**
- * RESTful API of sharding properties.
+ * RESTFul API of sharding properties.
  */
 @RestController
 @RequestMapping("/api/props")
 public final class ShardingPropertiesController {
     
-    @Autowired
+    @Resource
     private ShardingPropertiesService shardingPropertiesService;
     
     /**

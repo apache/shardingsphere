@@ -19,7 +19,7 @@
   "groups": [
     {
       "name": "spring.shardingsphere.datasource",
-      "type": "org.apache.shardingsphere.driver.orchestration.spring.boot.OrchestrationSpringBootConfiguration"
+      "type": "org.apache.shardingsphere.spring.boot.orchestration.OrchestrationSpringBootConfiguration"
     },
     {
       "sourceType": "org.apache.shardingsphere.sharding.yaml.config.YamlShardingStrategyConfiguration",
@@ -72,24 +72,24 @@
     {
       "name": "spring.shardingsphere.props",
       "type": "java.util.Properties",
-      "sourceType": "org.apache.shardingsphere.driver.orchestration.spring.boot.common.OrchestrationSpringBootRootConfiguration",
+      "sourceType": "org.apache.shardingsphere.spring.boot.orchestration.common.OrchestrationSpringBootRootConfiguration",
       "description": "Customize shardingsphere properties."
     },
     {
       "name": "spring.shardingsphere.orchestration",
       "type": "java.util.Map<java.lang.String,org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration>",
-      "sourceType": "org.apache.shardingsphere.driver.orchestration.spring.boot.common.OrchestrationSpringBootRootConfiguration",
+      "sourceType": "org.apache.shardingsphere.spring.boot.orchestration.common.OrchestrationSpringBootRootConfiguration",
       "description": "Customize ShardingSphere orchestration instance."
     },
     {
       "name": "spring.shardingsphere.datasource.names",
       "type": "java.lang.String",
-      "sourceType": "org.apache.shardingsphere.driver.orchestration.spring.boot.OrchestrationSpringBootConfiguration"
+      "sourceType": "org.apache.shardingsphere.spring.boot.orchestration.OrchestrationSpringBootConfiguration"
     },
     {
       "name": "spring.shardingsphere.datasource",
       "type": "java.util.Map<java.lang.String,java.util.Map<java.lang.String,java.lang.Object>>",
-      "sourceType": "org.apache.shardingsphere.driver.spring.boot.util.DataSourceUtil"
+      "sourceType": "org.apache.shardingsphere.spring.boot.util.DataSourceUtil"
     },
     {
       "sourceType": "org.apache.shardingsphere.sharding.yaml.config.YamlShardingStrategyConfiguration",

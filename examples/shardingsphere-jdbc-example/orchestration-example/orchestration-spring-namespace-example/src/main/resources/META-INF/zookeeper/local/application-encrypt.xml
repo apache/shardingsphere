@@ -23,7 +23,7 @@
        xmlns:bean="http://www.springframework.org/schema/util"
        xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
        xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
-       xmlns:orchestraion="http://shardingsphere.apache.org/schema/shardingsphere/orchestration"
+       xmlns:orchestration="http://shardingsphere.apache.org/schema/shardingsphere/orchestration"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd 
                            http://www.springframework.org/schema/context 
@@ -72,7 +72,7 @@
         </props>
     </shardingsphere:data-source>
     
-    <orchestraion:encrypt-data-source id="encryptDataSource" data-source-ref="realEncryptDataSource" instance-ref="regCenter" overwrite="true" />
+    <orchestration:data-source id="encryptDataSource" data-source-ref="realEncryptDataSource" instance-ref="regCenter" overwrite="true" />
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="encryptDataSource" />

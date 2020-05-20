@@ -50,4 +50,9 @@ public final class PostgreSQLDataSourceChecker extends AbstractDataSourceChecker
             throw new PrepareFailedException("Datasources check failed!");
         }
     }
+    
+    @Override
+    public void checkVariable(final Collection<? extends DataSource> dataSources) {
+    
+    }
 }

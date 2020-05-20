@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.scaling.mysql;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.exception.PrepareFailedException;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +27,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -37,14 +35,13 @@ import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MySQLDataSourceCheckerTest {
-
-    private static final String CATALOG = "test";
 
     @Mock
     private Connection connection;
@@ -62,74 +59,57 @@ public class MySQLDataSourceCheckerTest {
     @Before
     public void setUp() throws SQLException {
         DataSource dataSource = mock(DataSource.class);
-        mockConnection();
-        mockResultSet();
         when(dataSource.getConnection()).thenReturn(connection);
         dataSources = new ArrayList<>();
         dataSources.add(dataSource);
         dataSourceChecker = new MySQLDataSourceChecker();
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
     }
-
-    @SneakyThrows
-    private void mockConnection() {
-        DatabaseMetaData metaData = mock(DatabaseMetaData.class);
-        when(connection.getMetaData()).thenReturn(metaData);
-        when(metaData.getTables(CATALOG, null, "%", new String[]{"TABLE"})).thenReturn(resultSet);
-        when(connection.getCatalog()).thenReturn(CATALOG);
-        when(connection.prepareStatement("SELECT * FROM test LIMIT 1")).thenReturn(preparedStatement);
-        when(connection.prepareStatement("SHOW MASTER STATUS")).thenReturn(preparedStatement);
-    }
-
-    @SneakyThrows
-    private void mockResultSet() {
+    
+    @Test
+    public void assertCheckPrivilegeWithParticularSuccess() throws SQLException {
         when(resultSet.next()).thenReturn(true);
-        when(resultSet.getString(3)).thenReturn("test");
-    }
-
-    @Test
-    public void assertCheckPrivilegeSuccess() throws SQLException {
+        when(resultSet.getString(1)).thenReturn("GRANT SELECT, REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO '%'@'%'");
         dataSourceChecker.checkPrivilege(dataSources);
-        verify(preparedStatement, Mockito.times(2)).executeQuery();
+        verify(preparedStatement, Mockito.times(1)).executeQuery();
+    }
+    
+    @Test
+    public void assertCheckPrivilegeWithAllSuccess() throws SQLException {
+        when(resultSet.next()).thenReturn(true);
+        when(resultSet.getString(1)).thenReturn("GRANT ALL PRIVILEGES CLIENT ON *.* TO '%'@'%'");
+        dataSourceChecker.checkPrivilege(dataSources);
+        verify(preparedStatement, Mockito.times(1)).executeQuery();
     }
 
     @Test
-    public void assertCheckPrivilegeWithGettingTableFailure() throws SQLException {
+    public void assertCheckPrivilegeFailure() throws SQLException {
         when(resultSet.next()).thenReturn(false);
         try {
             dataSourceChecker.checkPrivilege(dataSources);
         } catch (PrepareFailedException checkFailedEx) {
-            assertThat(checkFailedEx.getMessage(), is("No tables find in the source datasource."));
+            assertThat(checkFailedEx.getMessage(), is("Source datasource is lack of SELECT, REPLICATION SLAVE, REPLICATION CLIENT ON *.* privileges."));
         }
     }
     
     @Test
-    public void assertCheckPrivilegeWithNoQueryPrivilegeFailure() throws SQLException {
-        when(preparedStatement.executeQuery()).thenThrow(new SQLException());
-        try {
-            dataSourceChecker.checkPrivilege(dataSources);
-        } catch (PrepareFailedException checkFailedEx) {
-            assertThat(checkFailedEx.getMessage(), is("Source datasource is lack of query privileges."));
-        }
+    public void assertCheckVariableSuccess() throws SQLException {
+        when(resultSet.next()).thenReturn(true, true);
+        when(resultSet.getString(2)).thenReturn("ON", "ROW");
+        dataSourceChecker.checkVariable(dataSources);
+        verify(preparedStatement, Mockito.times(2)).executeQuery();
     }
     
     @Test
-    public void assertCheckPrivilegeWithNoReplicationPrivilegeFailure() throws SQLException {
-        when(connection.prepareStatement("SHOW MASTER STATUS")).thenThrow(new SQLException());
+    public void assertCheckVariableFailure() throws SQLException {
+        when(resultSet.next()).thenReturn(true, true);
+        when(resultSet.getString(2)).thenReturn("OFF", "ROW");
         try {
-            dataSourceChecker.checkPrivilege(dataSources);
+            dataSourceChecker.checkVariable(dataSources);
         } catch (PrepareFailedException checkFailedEx) {
-            assertThat(checkFailedEx.getMessage(), is("Source datasource is lack of replication(binlog) privileges."));
+            assertThat(checkFailedEx.getMessage(), is("Source datasource required LOG_BIN = ON, now is OFF"));
         }
     }
     
-    @Test
-    public void assertCheckPrivilegeWithNoBinlogFailure() throws SQLException {
-        when(resultSet.next()).thenReturn(true, false);
-        try {
-            dataSourceChecker.checkPrivilege(dataSources);
-        } catch (PrepareFailedException checkFailedEx) {
-            assertThat(checkFailedEx.getMessage(), is("Source datasource do not open binlog."));
-        }
-    }
 }

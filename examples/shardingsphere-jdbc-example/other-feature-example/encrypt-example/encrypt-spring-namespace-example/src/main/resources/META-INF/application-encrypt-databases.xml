@@ -62,7 +62,7 @@
         </encrypt:encryptors>
     </encrypt:rule>
     
-    <shardingsphere:data-source id="encryptDataSource" data-source-names="dbtbl_0" rule-refs="encryptRule">
+    <shardingsphere:data-source id="encryptDataSource" data-source-names="ds" rule-refs="encryptRule">
         <props>
             <prop key="query.with.cipher.column">true</prop>
         </props>
