@@ -32,5 +32,5 @@
         </props>
     </orchestraion:instance>
     
-    <orchestraion:encrypt-data-source id="encryptDataSourceOrchestration" data-source-ref="encryptDataSource" instance-ref="regCenter"/>
+    <orchestraion:data-source id="encryptDataSourceOrchestration" data-source-ref="encryptDataSource" instance-ref="regCenter" />
 </beans>

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.spring.namespace.orchestration.parser;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.spring.namespace.orchestration.OrchestrationSpringShardingSphereDataSource;
-import org.apache.shardingsphere.spring.namespace.orchestration.constants.ShardingDataSourceBeanDefinitionParserTag;
+import org.apache.shardingsphere.spring.namespace.orchestration.constants.DataSourceBeanDefinitionTag;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
@@ -47,7 +47,7 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     }
     
     private void configureFactory(final Element element, final BeanDefinitionBuilder factory) {
-        String dataSourceName = element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.DATA_SOURCE_REF_TAG);
+        String dataSourceName = element.getAttribute(DataSourceBeanDefinitionTag.DATA_SOURCE_REF_TAG);
         if (!Strings.isNullOrEmpty(dataSourceName)) {
             factory.addConstructorArgReference(dataSourceName);
         }
@@ -61,7 +61,7 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     }
     
     private Map<String, RuntimeBeanReference> parseInstances(final Element element) {
-        List<String> instances = Splitter.on(",").trimResults().splitToList(element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.INSTANCE_REF_TAG));
+        List<String> instances = Splitter.on(",").trimResults().splitToList(element.getAttribute(DataSourceBeanDefinitionTag.INSTANCE_REF_TAG));
         Map<String, RuntimeBeanReference> result = new ManagedMap<>(instances.size());
         for (String each : instances) {
             result.put(each, new RuntimeBeanReference(each));

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.spring.namespace.orchestration.parser;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.spring.namespace.orchestration.constants.InstanceBeanDefinitionParserTag;
+import org.apache.shardingsphere.spring.namespace.orchestration.constants.InstanceBeanDefinitionTag;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -37,11 +37,11 @@ public final class InstanceBeanDefinitionParser extends AbstractBeanDefinitionPa
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(CenterConfiguration.class);
-        factory.addConstructorArgValue(element.getAttribute(InstanceBeanDefinitionParserTag.TYPE_TAG));
+        factory.addConstructorArgValue(element.getAttribute(InstanceBeanDefinitionTag.TYPE_TAG));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
-        addPropertyValueIfNotEmpty(InstanceBeanDefinitionParserTag.ORCHESTRATION_TYPE_TAG, "orchestrationType", element, factory);
-        addPropertyValueIfNotEmpty(InstanceBeanDefinitionParserTag.SERVER_LISTS_TAG, "serverLists", element, factory);
-        addPropertyValueIfNotEmpty(InstanceBeanDefinitionParserTag.NAMESPACE_TAG, "META-INF/namespace", element, factory);
+        addPropertyValueIfNotEmpty(InstanceBeanDefinitionTag.ORCHESTRATION_TYPE_TAG, "orchestrationType", element, factory);
+        addPropertyValueIfNotEmpty(InstanceBeanDefinitionTag.SERVER_LISTS_TAG, "serverLists", element, factory);
+        addPropertyValueIfNotEmpty(InstanceBeanDefinitionTag.NAMESPACE_TAG, "META-INF/namespace", element, factory);
         return factory.getBeanDefinition();
     }
     
@@ -53,7 +53,7 @@ public final class InstanceBeanDefinitionParser extends AbstractBeanDefinitionPa
     }
     
     private Properties parseProperties(final Element element, final ParserContext parserContext) {
-        Element propsElement = DomUtils.getChildElementByTagName(element, InstanceBeanDefinitionParserTag.PROPERTY_REF_TAG);
+        Element propsElement = DomUtils.getChildElementByTagName(element, InstanceBeanDefinitionTag.PROP_TAG);
         return null == propsElement ? new Properties() : parserContext.getDelegate().parsePropsElement(propsElement);
     }
 }

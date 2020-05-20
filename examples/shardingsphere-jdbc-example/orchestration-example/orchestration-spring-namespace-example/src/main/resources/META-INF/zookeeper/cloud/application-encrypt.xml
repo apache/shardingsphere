@@ -30,9 +30,10 @@
                         http://shardingsphere.apache.org/schema/shardingsphere/orchestration
                         http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd">
     <import resource="classpath*:META-INF/zookeeper/registry-center.xml" />
+    
     <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />
-
-    <orchestraion:encrypt-data-source id="encryptDataSource" instance-ref="regCenter" overwrite="false" />
+    
+    <orchestraion:data-source id="encryptDataSource" instance-ref="regCenter" overwrite="false" />
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="encryptDataSource" />

@@ -21,20 +21,14 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Orchestration instance parser tag constants.
+ * Data source bean definition tag.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class InstanceBeanDefinitionParserTag {
+public final class DataSourceBeanDefinitionTag {
     
-    public static final String TYPE_TAG = "instance-type";
+    public static final String ROOT_TAG = "data-source";
     
-    public static final String ROOT_TAG = "instance";
+    public static final String DATA_SOURCE_REF_TAG = "data-source-ref";
     
-    public static final String ORCHESTRATION_TYPE_TAG = "orchestration-type";
-    
-    public static final String SERVER_LISTS_TAG = "server-lists";
-    
-    public static final String NAMESPACE_TAG = "META-INF/namespace";
-    
-    public static final String PROPERTY_REF_TAG = "props";
+    public static final String INSTANCE_REF_TAG = "instance-ref";
 }

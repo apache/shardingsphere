@@ -21,14 +21,20 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Sharding data source parser tag constants.
+ * Orchestration instance bean definition tag.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingDataSourceBeanDefinitionParserTag {
+public final class InstanceBeanDefinitionTag {
     
-    public static final String ROOT_TAG = "sharding-data-source";
+    public static final String ROOT_TAG = "instance";
     
-    public static final String DATA_SOURCE_REF_TAG = "data-source-ref";
+    public static final String TYPE_TAG = "instance-type";
     
-    public static final String INSTANCE_REF_TAG = "instance-ref";
+    public static final String ORCHESTRATION_TYPE_TAG = "orchestration-type";
+    
+    public static final String SERVER_LISTS_TAG = "server-lists";
+    
+    public static final String NAMESPACE_TAG = "META-INF/namespace";
+    
+    public static final String PROP_TAG = "props";
 }

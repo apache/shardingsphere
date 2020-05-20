@@ -30,20 +30,21 @@
                         http://shardingsphere.apache.org/schema/shardingsphere/orchestration
                         http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd">
     <import resource="classpath*:META-INF/nacos/registry-center.xml" />
+    
     <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />
-
-    <orchestraion:encrypt-data-source id="encryptDataSource" instance-ref="regCenter,confCenter" overwrite="false" />
-
+    
+    <orchestraion:data-source id="encryptDataSource" instance-ref="regCenter,confCenter" overwrite="false" />
+    
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="encryptDataSource" />
     </bean>
     <tx:annotation-driven />
-
+    
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="encryptDataSource"/>
         <property name="mapperLocations" value="classpath*:META-INF/mappers/*.xml"/>
     </bean>
-
+    
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="basePackage" value="org.apache.shardingsphere.example.core.mybatis.repository"/>
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>

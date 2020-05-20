@@ -33,6 +33,6 @@
         </props>
     </orchestraion:instance>
     
-    <orchestraion:sharding-data-source id="masterSlaveShardingDataSourceByDefaultStrategyOrchestration" data-source-ref="masterSlaveShardingDataSourceByDefaultStrategy" instance-ref="regCenter" />
-    <orchestraion:sharding-data-source id="masterSlaveShardingDataSourceByUserStrategyOrchestration" data-source-ref="masterSlaveShardingDataSourceByUserStrategy" instance-ref="regCenter" />
+    <orchestraion:data-source id="masterSlaveShardingDataSourceByDefaultStrategyOrchestration" data-source-ref="masterSlaveShardingDataSourceByDefaultStrategy" instance-ref="regCenter" />
+    <orchestraion:data-source id="masterSlaveShardingDataSourceByUserStrategyOrchestration" data-source-ref="masterSlaveShardingDataSourceByUserStrategy" instance-ref="regCenter" />
 </beans>
