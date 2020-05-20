@@ -15,30 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.yaml.config;
+package org.apache.shardingsphere.replica.api.config;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.Collection;
 
 /**
- * Master-slave data source configuration for YAML.
+ * Replica data source configuration.
  */
 @Getter
-@Setter
-public final class YamlMasterSlaveDataSourceConfiguration implements YamlConfiguration {
+public final class ReplicaDataSourceConfiguration implements RuleConfiguration {
     
-    private String name;
+    private final String name;
     
-    private String masterDataSourceName;
+    private final Collection<String> replicaSourceNames;
     
-    private List<String> slaveDataSourceNames = new ArrayList<>();
-    
-    private String loadBalanceAlgorithmType;
-    
-    private Properties props = new Properties();
+    public ReplicaDataSourceConfiguration(final String name, final Collection<String> replicaSourceNames) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(name), "Name is required.");
+        Preconditions.checkArgument(null != replicaSourceNames && !replicaSourceNames.isEmpty(), "replica source names are required.");
+        this.name = name;
+        this.replicaSourceNames = replicaSourceNames;
+    }
 }

@@ -15,30 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.yaml.config;
+package org.apache.shardingsphere.replica.rule;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRuleBuilder;
+import org.apache.shardingsphere.replica.api.config.ReplicaRuleConfiguration;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.Collection;
 
 /**
- * Master-slave data source configuration for YAML.
+ * Replica rule builder.
  */
-@Getter
-@Setter
-public final class YamlMasterSlaveDataSourceConfiguration implements YamlConfiguration {
+public final class ReplicaRuleBuilder implements ShardingSphereRuleBuilder<ReplicaRule, ReplicaRuleConfiguration> {
     
-    private String name;
+    @Override
+    public ReplicaRule build(final ReplicaRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
+        return new ReplicaRule(ruleConfiguration);
+    }
     
-    private String masterDataSourceName;
+    @Override
+    public int getOrder() {
+        return 5;
+    }
     
-    private List<String> slaveDataSourceNames = new ArrayList<>();
-    
-    private String loadBalanceAlgorithmType;
-    
-    private Properties props = new Properties();
+    @Override
+    public Class<ReplicaRuleConfiguration> getTypeClass() {
+        return ReplicaRuleConfiguration.class;
+    }
 }
