@@ -36,5 +36,5 @@ public final class InstanceBeanDefinitionParserTag {
     
     public static final String NAMESPACE_TAG = "META-INF/namespace";
     
-    public static final String PROPERTY_REF_TAG = "props-ref";
+    public static final String PROPERTY_REF_TAG = "props";
 }

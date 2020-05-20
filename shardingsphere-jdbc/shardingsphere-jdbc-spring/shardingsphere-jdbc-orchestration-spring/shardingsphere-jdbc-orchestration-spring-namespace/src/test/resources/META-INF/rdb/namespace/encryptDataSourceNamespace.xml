@@ -20,21 +20,14 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
        xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
-       xmlns:bean="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                            http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://www.springframework.org/schema/util 
-                           http://www.springframework.org/schema/util/spring-util.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt 
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd 
                            ">
     <import resource="../datasource/dataSource.xml" />
-    
-    <bean:properties id="props">
-        <prop key="aes.key.value">123456</prop>
-    </bean:properties>
     
     <encrypt:rule id="encryptRule">
         <encrypt:tables>
@@ -44,15 +37,19 @@
             </encrypt:table>
         </encrypt:tables>
         <encrypt:encryptors>
-            <encrypt:encryptor id="encryptor_aes" type="AES" props-ref="props"/>
+            <encrypt:encryptor id="encryptor_aes" type="AES">
+                <props>
+                    <prop key="aes.key.value">123456</prop>
+                </props>
+            </encrypt:encryptor>
             <encrypt:encryptor id="encryptor_md5" type="MD5" />
         </encrypt:encryptors>
     </encrypt:rule>
     
     <shardingsphere:data-source id="encryptDataSource" data-source-names="dbtbl_0" rule-refs="encryptRule">
-        <shardingsphere:props>
+        <props>
             <prop key="sql.show">${sql_show}</prop>
             <prop key="query.with.cipher.column">false</prop>
-        </shardingsphere:props>
+        </props>
     </shardingsphere:data-source>
 </beans>

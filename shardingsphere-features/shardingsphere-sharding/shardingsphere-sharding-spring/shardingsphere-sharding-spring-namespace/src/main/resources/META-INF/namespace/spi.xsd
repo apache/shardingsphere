@@ -17,22 +17,29 @@
   -->
 
 <xsd:schema xmlns="http://shardingsphere.apache.org/schema/shardingsphere/spi"
+            xmlns:beans="http://www.springframework.org/schema/beans"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             targetNamespace="http://shardingsphere.apache.org/schema/shardingsphere/spi"
             elementFormDefault="qualified">
+    <xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd" />
+    
     <xsd:element name="key-generate-algorithm">
         <xsd:complexType>
+            <xsd:all>
+                <xsd:element ref="beans:props" minOccurs="0" />
+            </xsd:all>
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="type" type="xsd:string" />
-            <xsd:attribute name="props-ref" type="xsd:string" />
         </xsd:complexType>
     </xsd:element>
     
     <xsd:element name="sharding-algorithm">
         <xsd:complexType>
+            <xsd:all>
+                <xsd:element ref="beans:props" minOccurs="0" />
+            </xsd:all>
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="type" type="xsd:string" />
-            <xsd:attribute name="props-ref" type="xsd:string" />
         </xsd:complexType>
     </xsd:element>
 </xsd:schema>

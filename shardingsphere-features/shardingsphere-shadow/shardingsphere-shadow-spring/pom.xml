@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-sharding</artifactId>
+        <artifactId>shardingsphere-shadow</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-shadow-spring</artifactId>
@@ -31,5 +31,6 @@
     
     <modules>
         <module>shardingsphere-shadow-spring-namespace</module>
+        <module>shardingsphere-shadow-spring-boot-starter</module>
     </modules>
 </project>

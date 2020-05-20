@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.masterslave.spring.namespace.parser;
 
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.masterslave.api.config.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.masterslave.spring.namespace.tag.LoadBalanceAlgorithmBeanDefinitionTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
+import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
 import java.util.Properties;
@@ -37,16 +37,12 @@ public final class MasterSlaveLoadBalanceStrategyBeanDefinitionParser extends Ab
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(LoadBalanceStrategyConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(LoadBalanceAlgorithmBeanDefinitionTag.ALGORITHM_TYPE_ATTRIBUTE));
-        parseProperties(element, factory);
+        factory.addConstructorArgValue(parseProperties(element, parserContext));
         return factory.getBeanDefinition();
     }
     
-    private void parseProperties(final Element element, final BeanDefinitionBuilder factory) {
-        String properties = element.getAttribute(LoadBalanceAlgorithmBeanDefinitionTag.ALGORITHM_PROPERTY_REF_ATTRIBUTE);
-        if (!Strings.isNullOrEmpty(properties)) {
-            factory.addConstructorArgReference(properties);
-        } else {
-            factory.addConstructorArgValue(new Properties());
-        }
+    private static Properties parseProperties(final Element element, final ParserContext parserContext) {
+        Element propsElement = DomUtils.getChildElementByTagName(element, LoadBalanceAlgorithmBeanDefinitionTag.ALGORITHM_PROPS_TAG);
+        return null == propsElement ? new Properties() : parserContext.getDelegate().parsePropsElement(propsElement);
     }
 }
