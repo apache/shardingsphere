@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.spring.boot.condition;
 
-import org.apache.shardingsphere.driver.spring.boot.util.PropertyUtil;
+import org.apache.shardingsphere.spring.boot.util.PropertyUtil;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.context.annotation.ConditionContext;

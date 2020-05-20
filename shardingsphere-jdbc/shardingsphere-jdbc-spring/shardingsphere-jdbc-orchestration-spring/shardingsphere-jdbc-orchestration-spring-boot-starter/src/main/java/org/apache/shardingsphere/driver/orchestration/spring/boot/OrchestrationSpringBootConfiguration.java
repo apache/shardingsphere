@@ -23,7 +23,6 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataS
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.driver.orchestration.spring.boot.common.OrchestrationSpringBootRootConfiguration;
 import org.apache.shardingsphere.driver.orchestration.spring.boot.rule.LocalRulesCondition;
-import org.apache.shardingsphere.driver.spring.boot.datasource.DataSourceMapSetter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -31,6 +30,7 @@ import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.swapper.CenterRepositoryConfigurationYamlSwapper;
+import org.apache.shardingsphere.spring.boot.datasource.DataSourceMapSetter;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -60,7 +60,7 @@ import java.util.Optional;
  * Orchestration spring boot configuration.
  */
 @Configuration
-@ComponentScan("org.apache.shardingsphere.driver.spring.boot.converter")
+@ComponentScan("org.apache.shardingsphere.spring.boot.converter")
 @EnableConfigurationProperties(OrchestrationSpringBootRootConfiguration.class)
 @ConditionalOnProperty(prefix = "spring.shardingsphere", name = "enabled", havingValue = "true", matchIfMissing = true)
 @RequiredArgsConstructor
