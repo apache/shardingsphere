@@ -38,4 +38,11 @@ public interface DataSourceChecker {
      * @param dataSources datasource connections
      */
     void checkPrivilege(Collection<? extends DataSource> dataSources);
+    
+    /**
+     * Check datasource variables.
+     *
+     * @param dataSources datasource connections
+     */
+    void checkVariable(Collection<? extends DataSource> dataSources);
 }

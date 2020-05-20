@@ -70,6 +70,7 @@ public final class ShardingScalingJobPreparer {
         DataSourceChecker dataSourceChecker = DataSourceCheckerCheckerFactory.newInstanceDataSourceChecker(databaseType);
         dataSourceChecker.checkConnection(dataSourceManager.getCachedDataSources().values());
         dataSourceChecker.checkPrivilege(dataSourceManager.getSourceDatasources().values());
+        dataSourceChecker.checkVariable(dataSourceManager.getSourceDatasources().values());
     }
     
     private void splitInventoryDataTasks(final ShardingScalingJob shardingScalingJob, final DataSourceManager dataSourceManager) {
