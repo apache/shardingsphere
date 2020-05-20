@@ -42,7 +42,7 @@ public final class HeartBeatTaskManager {
      *
      * @param heartBeatTask heart beat task
      */
-    public void startHeartBeatTask(final HeartBeatTask heartBeatTask) {
+    public void start(final HeartBeatTask heartBeatTask) {
         Preconditions.checkNotNull(heartBeatTask, "task can not be null");
         timer.schedule(heartBeatTask, interval*1000, interval*1000);
     }

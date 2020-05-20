@@ -25,7 +25,7 @@ public class HeartBeatDetectNoticeEventTest {
     
     @Test
     public void assertHeartBeatEventType() {
-        HeartBeatDetectNoticeEvent event = new HeartBeatDetectNoticeEvent(HeartBeatEventType.NOTICE_DETECT);
+        HeartBeatDetectNoticeEvent event = new HeartBeatDetectNoticeEvent();
         assertTrue(event.getEventType() == HeartBeatEventType.NOTICE_DETECT);
     }
 }
