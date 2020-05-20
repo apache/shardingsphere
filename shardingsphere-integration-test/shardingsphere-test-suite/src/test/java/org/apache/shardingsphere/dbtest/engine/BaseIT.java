@@ -76,12 +76,7 @@ public abstract class BaseIT {
     }
     
     private DataSource createDataSource() throws SQLException, IOException {
-        switch (ruleType) {
-            case "masterslave":
-                return YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRuleResourceFile(ruleType)));
-            default:
-                return YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRuleResourceFile(ruleType)));
-        }
+        return YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRuleResourceFile(ruleType)));
     }
     
     protected final String getExpectedDataFile(final String path, final String ruleType, final DatabaseType databaseType, final String expectedDataFile) {
