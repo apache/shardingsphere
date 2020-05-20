@@ -19,10 +19,13 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.te
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
+import java.sql.SQLException;
+import java.sql.SQLXML;
 import java.util.List;
 
 /**
@@ -30,6 +33,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
+@Slf4j
 public final class PostgreSQLDataRowPacket implements PostgreSQLPacket {
     
     private final char messageType = PostgreSQLCommandPacketType.DATA_ROW.getValue();
@@ -46,12 +50,23 @@ public final class PostgreSQLDataRowPacket implements PostgreSQLPacket {
                 if (each instanceof byte[]) {
                     payload.writeInt4(((byte[]) each).length);
                     payload.writeBytes((byte[]) each);
+                } else if (each instanceof SQLXML) {
+                    writeSQLXMLData(payload, each);
                 } else {
                     String columnData = each.toString();
                     payload.writeInt4(columnData.getBytes().length);
                     payload.writeStringEOF(columnData);
                 }
             }
+        }
+    }
+    
+    private void writeSQLXMLData(final PostgreSQLPacketPayload payload, final Object data) {
+        try {
+            payload.writeInt4(((SQLXML) data).getString().getBytes().length);
+            payload.writeStringEOF(((SQLXML) data).getString());
+        } catch (SQLException ex) {
+            log.error("PostgreSQL DataRowPacket write SQLXML type exception", ex);
         }
     }
 }
