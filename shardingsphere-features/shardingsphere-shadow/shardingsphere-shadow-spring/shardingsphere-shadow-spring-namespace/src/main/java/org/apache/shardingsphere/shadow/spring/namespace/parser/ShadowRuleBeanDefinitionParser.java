@@ -39,7 +39,7 @@ public final class ShadowRuleBeanDefinitionParser extends AbstractBeanDefinition
      * Parse shadow rule element.
      * 
      * @param element element
-     * @return Bean definition of shadow rule
+     * @return bean definition of shadow rule
      */
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
