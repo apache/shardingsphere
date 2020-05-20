@@ -45,8 +45,8 @@ public final class MasterSlaveDataSourceConfiguration implements RuleConfigurati
     public MasterSlaveDataSourceConfiguration(final String name,
                                               final String masterDataSourceName, final List<String> slaveDataSourceNames, final LoadBalanceStrategyConfiguration loadBalanceStrategyConfiguration) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(name), "Name is required.");
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(masterDataSourceName), "MasterDataSourceName is required.");
-        Preconditions.checkArgument(null != slaveDataSourceNames && !slaveDataSourceNames.isEmpty(), "SlaveDataSourceNames is required.");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(masterDataSourceName), "Master data source name is required.");
+        Preconditions.checkArgument(null != slaveDataSourceNames && !slaveDataSourceNames.isEmpty(), "Slave data source names are required.");
         this.name = name;
         this.masterDataSourceName = masterDataSourceName;
         this.slaveDataSourceNames = slaveDataSourceNames;
