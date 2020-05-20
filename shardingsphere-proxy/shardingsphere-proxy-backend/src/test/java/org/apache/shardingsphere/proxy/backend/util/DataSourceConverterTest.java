@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.util;
+package org.apache.shardingsphere.proxy.backend.util;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
+import org.apache.shardingsphere.kernal.context.schema.DataSourceParameter;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -39,7 +39,7 @@ public final class DataSourceConverterTest {
         DataSourceConfiguration dataSourceConfiguration1 = new DataSourceConfiguration(HikariDataSource.class.getName());
         dataSourceConfiguration1.getProperties().put("jdbcUrl", "jdbc:mysql://localhost:3306/demo_ds_1");
         dataSourceConfigurationMap.put("ds_1", dataSourceConfiguration1);
-        Map<String, YamlDataSourceParameter> actual = DataSourceConverter.getDataSourceParameterMap(dataSourceConfigurationMap);
+        Map<String, DataSourceParameter> actual = DataSourceConverter.getDataSourceParameterMap(dataSourceConfigurationMap);
         assertThat(actual.size(), is(2));
         assertThat(actual.get("ds_0").getUrl(), is("jdbc:mysql://localhost:3306/demo_ds_0"));
         assertThat(actual.get("ds_1").getUrl(), is("jdbc:mysql://localhost:3306/demo_ds_1"));
@@ -47,7 +47,7 @@ public final class DataSourceConverterTest {
     
     @Test
     public void assertGetDataSourceConfigurationMap() {
-        Map<String, YamlDataSourceParameter> dataSourceParameterMap = new HashMap<>(2, 1);
+        Map<String, DataSourceParameter> dataSourceParameterMap = new HashMap<>(2, 1);
         dataSourceParameterMap.put("ds_0", crateDataSourceParameter());
         dataSourceParameterMap.put("ds_1", crateDataSourceParameter());
         Map<String, DataSourceConfiguration> actual = DataSourceConverter.getDataSourceConfigurationMap(dataSourceParameterMap);
@@ -56,8 +56,8 @@ public final class DataSourceConverterTest {
         assertParameter(actual.get("ds_1"));
     }
     
-    private YamlDataSourceParameter crateDataSourceParameter() {
-        YamlDataSourceParameter result = new YamlDataSourceParameter();
+    private DataSourceParameter crateDataSourceParameter() {
+        DataSourceParameter result = new DataSourceParameter();
         result.setUrl("jdbc:mysql://localhost:3306/demo_ds");
         result.setUsername("root");
         result.setPassword("root");

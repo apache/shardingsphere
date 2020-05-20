@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource;
 
-import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
+import org.apache.shardingsphere.kernal.context.schema.DataSourceParameter;
 
 import javax.sql.DataSource;
 
@@ -34,5 +34,5 @@ public interface JDBCBackendDataSourceFactory {
      * @return data source for connect backend databases
      * @throws Exception when the data source can not be build
      */
-    DataSource build(String dataSourceName, YamlDataSourceParameter dataSourceParameter) throws Exception;
+    DataSource build(String dataSourceName, DataSourceParameter dataSourceParameter) throws Exception;
 }
