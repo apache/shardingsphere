@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.kernal.context;
 
-import org.apache.shardingsphere.kernal.context.runtime.RuntimeContext;
 import lombok.Getter;
+import org.apache.shardingsphere.kernal.context.runtime.RuntimeContext;
+import org.apache.shardingsphere.kernal.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.kernal.context.schema.ShardingSphereSchema;
+
+import javax.sql.DataSource;
+import java.util.Map;
 
 @Getter
 public final class SchemaContext {
@@ -31,5 +35,21 @@ public final class SchemaContext {
     public SchemaContext(final ShardingSphereSchema schema, final RuntimeContext runtimeContext) {
         this.schema = schema;
         this.runtimeContext = runtimeContext;
+    }
+    
+    /**
+     * Renew data sources.
+     *
+     * @param dataSourceParameters data source parameters
+     * @param dataSources data sources
+     * @throws Exception exception
+     */
+    public void renew(final Map<String, DataSourceParameter> dataSourceParameters, final Map<String, DataSource> dataSources) throws Exception {
+        schema.getDataSources().clear();
+        schema.getDataSources().putAll(dataSources);
+        schema.getDataSourceParameters().clear();
+        schema.getDataSourceParameters().putAll(dataSourceParameters);
+        runtimeContext.getShardingTransactionManagerEngine().close();
+        runtimeContext.getShardingTransactionManagerEngine().init(schema.getDatabaseType(), schema.getDataSources());
     }
 }
