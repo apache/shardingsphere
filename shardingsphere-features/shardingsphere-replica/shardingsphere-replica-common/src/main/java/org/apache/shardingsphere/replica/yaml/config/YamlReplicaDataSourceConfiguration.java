@@ -15,29 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.replica.api.config;
+package org.apache.shardingsphere.replica.yaml.config;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Replica data source configuration.
+ * Replica data source configuration for YAML.
  */
 @Getter
-public final class ReplicaDataSourceConfiguration implements RuleConfiguration {
+@Setter
+public final class YamlReplicaDataSourceConfiguration implements YamlConfiguration {
     
-    private final String name;
+    private String name;
     
-    private final Collection<String> replicaSourceNames;
-    
-    public ReplicaDataSourceConfiguration(final String name, final Collection<String> replicaSourceNames) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(name), "Name is required.");
-        Preconditions.checkArgument(null != replicaSourceNames && !replicaSourceNames.isEmpty(), "replica source names are required.");
-        this.name = name;
-        this.replicaSourceNames = replicaSourceNames;
-    }
+    private Collection<String> replicaDataSourceNames = new LinkedList<>();
 }
