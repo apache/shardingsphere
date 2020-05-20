@@ -20,20 +20,19 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <modules>
+        <module>shardingsphere-replica-api</module>
+        <module>shardingsphere-replica-common</module>
+        <module>shardingsphere-replica-route</module>
+        <module>shardingsphere-replica-execute</module>
+    </modules>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere</artifactId>
+        <artifactId>shardingsphere-features</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-features</artifactId>
+    <artifactId>shardingsphere-replica</artifactId>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
     
-    <modules>
-        <module>shardingsphere-sharding</module>
-        <module>shardingsphere-replica</module>
-        <module>shardingsphere-master-slave</module>
-        <module>shardingsphere-encrypt</module>
-        <module>shardingsphere-shadow</module>
-    </modules>
 </project>
