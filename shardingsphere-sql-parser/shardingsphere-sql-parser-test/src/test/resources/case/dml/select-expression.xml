@@ -77,4 +77,55 @@
             </and-predicate>
         </where>
     </select>
+
+    <select sql-case-id="select_with_case_expression" >
+        <projections start-index="7" stop-index="123">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner start-index="7" stop-index="7" name="t"/>
+            </shorthand-projection>
+            <column-projection start-index="11" stop-index="19" name="item_id" alias="itemid">
+                <owner start-index="11" stop-index="11" name="o"/>
+            </column-projection>
+            <expression-projection start-index="32" stop-index="109" alias="stateName" />
+        </projections>
+
+        <table-reference>
+            <table-factor>
+                <table start-index="134" stop-index="140" name="t_order" alias="t" />
+            </table-factor>
+            <join-table>
+                <table-factor>
+                    <table start-index="154" stop-index="165" name="t_order_item" alias="o" />
+                </table-factor>
+                <joinSpecification>
+                    <and-predicate>
+                        <predicate start-index="175" stop-index="196">
+                            <column-left-value name="order_id" start-index="175" stop-index="184">
+                                <owner name="o" start-index="175" stop-index="175" />
+                            </column-left-value>
+                            <column-right-value name="order_id" start-index="187" stop-index="196">
+                                <owner name="t" start-index="187" stop-index="187" />
+                            </column-right-value>
+                        </predicate>
+                    </and-predicate>
+                </joinSpecification>
+            </join-table>
+        </table-reference>
+        <where start-index="198" stop-index="218">
+            <and-predicate>
+                <predicate start-index="204" stop-index="218" >
+                    <operator type="="/>
+                    <column-left-value name="order_id" start-index="204" stop-index="213" >
+                        <owner name="t" start-index="204" stop-index="204" />
+                    </column-left-value>
+                    <compare-right-value operator="=">
+                        <literal-expression value="1000" start-index="215" stop-index="218"/>
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+        <limit start-index="220" stop-index="226">
+            <row-count value="1" start-index="226" stop-index="226" />
+        </limit>
+    </select>
 </sql-parser-test-cases>

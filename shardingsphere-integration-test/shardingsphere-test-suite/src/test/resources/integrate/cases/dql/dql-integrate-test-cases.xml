@@ -499,4 +499,9 @@
     <dql-test-case sql="SELECT * FROM t_order WHERE user_id = ? FOR UPDATE" lock-clause="true">
         <assertion parameters="10:int" expected-data-file="select_for_update.xml" />
     </dql-test-case>
+
+    <dql-test-case sql="select t.*,o.item_id as itemid,(case when t.status = 'init' then '已启用' when t.status = 'failed' then '已停用' end) as stateName
+    from t_order t left join t_order_item as o on o.order_id =t.order_id where t.order_id=1000 limit 1" db-types="MySQL,H2">
+        <assertion expected-data-file="select_with_case_expression.xml" />
+    </dql-test-case>
 </integrate-test-cases>
