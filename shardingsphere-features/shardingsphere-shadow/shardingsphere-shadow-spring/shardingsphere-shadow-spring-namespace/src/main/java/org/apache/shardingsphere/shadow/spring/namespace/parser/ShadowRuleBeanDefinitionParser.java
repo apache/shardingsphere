@@ -53,7 +53,8 @@ public final class ShadowRuleBeanDefinitionParser extends AbstractBeanDefinition
         List<Element> shadowMappingElements = DomUtils.getChildElementsByTagName(element, ShadowDataSourceBeanDefinitionParserTag.MAPPING_CONFIG_TAG);
         Map<String, String> result = new HashMap<>(shadowMappingElements.size());
         for (Element each : shadowMappingElements) {
-            result.put(each.getAttribute(ShadowDataSourceBeanDefinitionParserTag.PRODUCT_DATA_SOURCE_NAME), each.getAttribute(ShadowDataSourceBeanDefinitionParserTag.SHADOW_DATA_SOURCE_NAME));
+            result.put(each.getAttribute(ShadowDataSourceBeanDefinitionParserTag.PRODUCT_DATA_SOURCE_NAME_ATTRIBUTE), 
+                    each.getAttribute(ShadowDataSourceBeanDefinitionParserTag.SHADOW_DATA_SOURCE_NAME_ATTRIBUTE));
         }
         return result;
     }

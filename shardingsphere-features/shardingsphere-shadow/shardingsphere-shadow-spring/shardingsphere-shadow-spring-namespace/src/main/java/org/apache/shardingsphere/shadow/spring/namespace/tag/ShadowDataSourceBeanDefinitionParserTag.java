@@ -34,7 +34,7 @@ public final class ShadowDataSourceBeanDefinitionParserTag {
     
     public static final String COLUMN_CONFIG_TAG = "column";
     
-    public static final String PRODUCT_DATA_SOURCE_NAME = "product-data-source-name";
+    public static final String PRODUCT_DATA_SOURCE_NAME_ATTRIBUTE = "product-data-source-name";
     
-    public static final String SHADOW_DATA_SOURCE_NAME = "shadow-data-source-name";
+    public static final String SHADOW_DATA_SOURCE_NAME_ATTRIBUTE = "shadow-data-source-name";
 }
