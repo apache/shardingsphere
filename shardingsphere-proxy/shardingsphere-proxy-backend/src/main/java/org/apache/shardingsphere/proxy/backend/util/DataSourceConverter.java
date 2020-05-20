@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.util;
+package org.apache.shardingsphere.proxy.backend.util;
 
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
-import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
+import org.apache.shardingsphere.kernal.context.schema.DataSourceParameter;
 
 import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
@@ -40,17 +40,17 @@ public final class DataSourceConverter {
      * @param dataSourceConfigurationMap data source configuration map
      * @return data source parameter map
      */
-    public static Map<String, YamlDataSourceParameter> getDataSourceParameterMap(final Map<String, DataSourceConfiguration> dataSourceConfigurationMap) {
-        Map<String, YamlDataSourceParameter> result = new LinkedHashMap<>(dataSourceConfigurationMap.size(), 1);
+    public static Map<String, DataSourceParameter> getDataSourceParameterMap(final Map<String, DataSourceConfiguration> dataSourceConfigurationMap) {
+        Map<String, DataSourceParameter> result = new LinkedHashMap<>(dataSourceConfigurationMap.size(), 1);
         for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigurationMap.entrySet()) {
             result.put(entry.getKey(), createDataSourceParameter(entry.getValue()));
         }
         return result;
     }
     
-    private static YamlDataSourceParameter createDataSourceParameter(final DataSourceConfiguration dataSourceConfiguration) {
+    private static DataSourceParameter createDataSourceParameter(final DataSourceConfiguration dataSourceConfiguration) {
         bindAlias(dataSourceConfiguration);
-        YamlDataSourceParameter result = new YamlDataSourceParameter();
+        DataSourceParameter result = new DataSourceParameter();
         for (Field each : result.getClass().getDeclaredFields()) {
             try {
                 each.setAccessible(true);
@@ -77,15 +77,15 @@ public final class DataSourceConverter {
      * @param dataSourceParameterMap data source map
      * @return data source configuration map
      */
-    public static Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final Map<String, YamlDataSourceParameter> dataSourceParameterMap) {
+    public static Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final Map<String, DataSourceParameter> dataSourceParameterMap) {
         Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(dataSourceParameterMap.size());
-        for (Entry<String, YamlDataSourceParameter> entry : dataSourceParameterMap.entrySet()) {
+        for (Entry<String, DataSourceParameter> entry : dataSourceParameterMap.entrySet()) {
             result.put(entry.getKey(), createDataSourceConfiguration(entry.getValue()));
         }
         return result;
     }
     
-    private static DataSourceConfiguration createDataSourceConfiguration(final YamlDataSourceParameter dataSourceParameter) {
+    private static DataSourceConfiguration createDataSourceConfiguration(final DataSourceParameter dataSourceParameter) {
         DataSourceConfiguration result = new DataSourceConfiguration(HikariDataSource.class.getName());
         result.getProperties().put("jdbcUrl", dataSourceParameter.getUrl());
         result.getProperties().put("username", dataSourceParameter.getUsername());
