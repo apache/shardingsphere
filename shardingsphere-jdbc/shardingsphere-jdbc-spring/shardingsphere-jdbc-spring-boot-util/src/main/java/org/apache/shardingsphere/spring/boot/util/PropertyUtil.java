@@ -26,7 +26,6 @@ import org.springframework.core.env.PropertyResolver;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -102,7 +101,7 @@ public final class PropertyUtil {
                 propertiesWithPlaceholderResolved.put(key, value);
             }
         }
-        return Collections.unmodifiableMap(propertiesWithPlaceholderResolved);
+        return propertiesWithPlaceholderResolved;
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
