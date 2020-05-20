@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-http\://shardingsphere.apache.org/schema/shardingsphere/orchestration=org.apache.shardingsphere.driver.orchestration.spring.namespace.handler.OrchestrationNamespaceHandler
+http\://shardingsphere.apache.org/schema/shardingsphere/orchestration=org.apache.shardingsphere.spring.namespace.orchestration.handler.OrchestrationNamespaceHandler

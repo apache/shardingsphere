@@ -32,5 +32,6 @@
     <modules>
         <module>shadow-raw-jdbc-example</module>
         <module>shadow-spring-boot-example</module>
+        <module>shadow-spring-namespace-example</module>
     </modules>
 </project>

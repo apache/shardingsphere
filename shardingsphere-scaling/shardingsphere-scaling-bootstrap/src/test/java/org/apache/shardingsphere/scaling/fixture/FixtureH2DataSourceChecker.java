@@ -31,4 +31,8 @@ public final class FixtureH2DataSourceChecker implements DataSourceChecker {
     @Override
     public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
     }
+    
+    @Override
+    public void checkVariable(final Collection<? extends DataSource> dataSources) {
+    }
 }

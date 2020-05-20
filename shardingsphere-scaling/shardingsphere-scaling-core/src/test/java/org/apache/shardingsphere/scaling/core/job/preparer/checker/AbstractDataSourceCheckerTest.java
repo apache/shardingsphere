@@ -53,6 +53,11 @@ public final class AbstractDataSourceCheckerTest {
             public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
 
             }
+    
+            @Override
+            public void checkVariable(final Collection<? extends DataSource> dataSources) {
+        
+            }
         };
         dataSources = new ArrayList<>();
         dataSources.add(dataSource);

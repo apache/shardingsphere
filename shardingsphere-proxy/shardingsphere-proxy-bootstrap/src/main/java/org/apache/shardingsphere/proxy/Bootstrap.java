@@ -21,22 +21,6 @@ import com.google.common.primitives.Ints;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.shardingsphere.metrics.configuration.swapper.MetricsConfigurationYamlSwapper;
-import org.apache.shardingsphere.metrics.configuration.yaml.YamlMetricsConfiguration;
-import org.apache.shardingsphere.metrics.facade.MetricsTrackerFacade;
-import org.apache.shardingsphere.opentracing.ShardingTracer;
-import org.apache.shardingsphere.orchestration.center.yaml.config.YamlOrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.center.yaml.swapper.OrchestrationConfigurationYamlSwapper;
-import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
-import org.apache.shardingsphere.proxy.backend.schema.ShardingSphereSchemas;
-import org.apache.shardingsphere.proxy.config.ShardingConfiguration;
-import org.apache.shardingsphere.proxy.config.ShardingConfigurationLoader;
-import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
-import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
-import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
-import org.apache.shardingsphere.proxy.context.ShardingSphereProxyContext;
-import org.apache.shardingsphere.proxy.frontend.bootstrap.ShardingSphereProxy;
-import org.apache.shardingsphere.proxy.util.DataSourceConverter;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
@@ -47,6 +31,23 @@ import org.apache.shardingsphere.infra.log.ConfigurationLogger;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.kernal.context.schema.DataSourceParameter;
+import org.apache.shardingsphere.metrics.configuration.swapper.MetricsConfigurationYamlSwapper;
+import org.apache.shardingsphere.metrics.configuration.yaml.YamlMetricsConfiguration;
+import org.apache.shardingsphere.metrics.facade.MetricsTrackerFacade;
+import org.apache.shardingsphere.opentracing.ShardingTracer;
+import org.apache.shardingsphere.orchestration.center.yaml.config.YamlOrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.center.yaml.swapper.OrchestrationConfigurationYamlSwapper;
+import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
+import org.apache.shardingsphere.proxy.backend.schema.ShardingSphereSchemas;
+import org.apache.shardingsphere.proxy.backend.util.DataSourceConverter;
+import org.apache.shardingsphere.proxy.config.ShardingConfiguration;
+import org.apache.shardingsphere.proxy.config.ShardingConfigurationLoader;
+import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
+import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
+import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
+import org.apache.shardingsphere.proxy.context.ShardingSphereProxyContext;
+import org.apache.shardingsphere.proxy.frontend.bootstrap.ShardingSphereProxy;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -113,7 +114,7 @@ public final class Bootstrap {
         Authentication authentication = new AuthenticationYamlSwapper().swap(yamlAuthenticationConfig);
         logAndInitContext(authentication, properties);
         initMetrics(metricsConfiguration);
-        Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources = getDataSourceParameterMap(ruleConfigs);
+        Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap(ruleConfigs);
         startProxy(schemaDataSources.keySet(), port, schemaDataSources, getRuleConfigurations(ruleConfigs));
     }
     
@@ -126,7 +127,7 @@ public final class Bootstrap {
             Properties properties = shardingOrchestrationFacade.getConfigCenter().loadProperties();
             logAndInitContext(authentication, properties);
             initMetrics(serverConfig.getMetrics());
-            startProxy(shardingSchemaNames, port, getSchemaDataSourceParameterMap(shardingOrchestrationFacade), getSchemaRules(shardingOrchestrationFacade));
+            startProxy(shardingSchemaNames, port, getDataSourceParametersMap(shardingOrchestrationFacade), getSchemaRules(shardingOrchestrationFacade));
         }
     }
     
@@ -136,19 +137,11 @@ public final class Bootstrap {
         ShardingSphereProxyContext.getInstance().init(authentication, properties);
     }
 
-    private static void startProxy(final Collection<String> shardingSchemaNames, final int port, final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources,
+    private static void startProxy(final Collection<String> shardingSchemaNames, final int port, final Map<String, Map<String, DataSourceParameter>> schemaDataSources,
                                    final Map<String, Collection<RuleConfiguration>> schemaRules) throws SQLException {
         ShardingSphereSchemas.getInstance().init(shardingSchemaNames, schemaDataSources, schemaRules);
         initOpenTracing();
         ShardingSphereProxy.getInstance().start(port);
-    }
-    
-    private static Map<String, Map<String, YamlDataSourceParameter>> getSchemaDataSourceParameterMap(final ShardingOrchestrationFacade shardingOrchestrationFacade) {
-        Map<String, Map<String, YamlDataSourceParameter>> result = new LinkedHashMap<>();
-        for (String each : shardingOrchestrationFacade.getConfigCenter().getAllShardingSchemaNames()) {
-            result.put(each, DataSourceConverter.getDataSourceParameterMap(shardingOrchestrationFacade.getConfigCenter().loadDataSourceConfigurations(each)));
-        }
-        return result;
     }
     
     private static Map<String, Collection<RuleConfiguration>> getSchemaRules(final ShardingOrchestrationFacade shardingOrchestrationFacade) {
@@ -192,15 +185,7 @@ public final class Bootstrap {
     private static Map<String, Map<String, DataSourceConfiguration>> getDataSourceConfigurationMap(final Map<String, YamlProxyRuleConfiguration> ruleConfigs) {
         Map<String, Map<String, DataSourceConfiguration>> result = new LinkedHashMap<>();
         for (Entry<String, YamlProxyRuleConfiguration> entry : ruleConfigs.entrySet()) {
-            result.put(entry.getKey(), DataSourceConverter.getDataSourceConfigurationMap(entry.getValue().getDataSources()));
-        }
-        return result;
-    }
-    
-    private static Map<String, Map<String, YamlDataSourceParameter>> getDataSourceParameterMap(final Map<String, YamlProxyRuleConfiguration> localRuleConfigs) {
-        Map<String, Map<String, YamlDataSourceParameter>> result = new HashMap<>(localRuleConfigs.size(), 1);
-        for (Entry<String, YamlProxyRuleConfiguration> entry : localRuleConfigs.entrySet()) {
-            result.put(entry.getKey(), entry.getValue().getDataSources());
+            result.put(entry.getKey(), DataSourceConverter.getDataSourceConfigurationMap(getDataSourceParameters(entry.getValue().getDataSources())));
         }
         return result;
     }
@@ -215,6 +200,45 @@ public final class Bootstrap {
             }
             result.put(entry.getKey(), swapperEngine.swapToRuleConfigurations(configurations.getRules()));
         }
+        return result;
+    }
+    
+    private static Map<String, Map<String, DataSourceParameter>> getDataSourceParametersMap(final ShardingOrchestrationFacade shardingOrchestrationFacade) {
+        Map<String, Map<String, DataSourceParameter>> result = new LinkedHashMap<>();
+        for (String each : shardingOrchestrationFacade.getConfigCenter().getAllShardingSchemaNames()) {
+            result.put(each, DataSourceConverter.getDataSourceParameterMap(shardingOrchestrationFacade.getConfigCenter().loadDataSourceConfigurations(each)));
+        }
+        return result;
+    }
+    
+    private static Map<String, Map<String, DataSourceParameter>> getDataSourceParametersMap(final Map<String, YamlProxyRuleConfiguration> localRuleConfigs) {
+        Map<String, Map<String, DataSourceParameter>> result = new HashMap<>(localRuleConfigs.size(), 1);
+        for (Entry<String, YamlProxyRuleConfiguration> entry : localRuleConfigs.entrySet()) {
+            result.put(entry.getKey(), getDataSourceParameters(entry.getValue().getDataSources()));
+        }
+        return result;
+    }
+    
+    private static Map<String, DataSourceParameter> getDataSourceParameters(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
+        Map<String, DataSourceParameter> result = new LinkedHashMap<>();
+        for (Entry<String, YamlDataSourceParameter> entry : dataSourceParameters.entrySet()) {
+            result.put(entry.getKey(), createDataSourceParameter(entry.getValue()));
+        }
+        return result;
+    }
+    
+    private static DataSourceParameter createDataSourceParameter(final YamlDataSourceParameter yamlDataSourceParameter) {
+        DataSourceParameter result = new DataSourceParameter();
+        result.setConnectionTimeoutMilliseconds(yamlDataSourceParameter.getConnectionTimeoutMilliseconds());
+        result.setIdleTimeoutMilliseconds(yamlDataSourceParameter.getIdleTimeoutMilliseconds());
+        result.setMaintenanceIntervalMilliseconds(yamlDataSourceParameter.getMaintenanceIntervalMilliseconds());
+        result.setMaxLifetimeMilliseconds(yamlDataSourceParameter.getMaxLifetimeMilliseconds());
+        result.setMaxPoolSize(yamlDataSourceParameter.getMaxPoolSize());
+        result.setMinPoolSize(yamlDataSourceParameter.getMinPoolSize());
+        result.setUsername(yamlDataSourceParameter.getUsername());
+        result.setPassword(yamlDataSourceParameter.getPassword());
+        result.setReadOnly(yamlDataSourceParameter.isReadOnly());
+        result.setUrl(yamlDataSourceParameter.getUrl());
         return result;
     }
     

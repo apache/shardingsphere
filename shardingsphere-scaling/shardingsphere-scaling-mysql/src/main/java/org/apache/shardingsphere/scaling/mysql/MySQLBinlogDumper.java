@@ -88,20 +88,11 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor imp
         client.subscribe(binlogPosition.getFilename(), binlogPosition.getPosition());
         while (isRunning()) {
             AbstractBinlogEvent event = client.poll();
-            if (null == event) {
-                sleep();
-                continue;
+            if (null != event) {
+                handleEvent(channel, uri, event);
             }
-            handleEvent(channel, uri, event);
         }
         pushRecord(channel, new FinishedRecord(new NopLogPosition()));
-    }
-    
-    private void sleep() {
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException ignored) {
-        }
     }
     
     private void handleEvent(final Channel channel, final JdbcUri uri, final AbstractBinlogEvent event) {

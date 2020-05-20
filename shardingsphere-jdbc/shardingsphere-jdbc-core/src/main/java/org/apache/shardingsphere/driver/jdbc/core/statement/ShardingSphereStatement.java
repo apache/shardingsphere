@@ -343,7 +343,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     @Override
     public boolean isAccumulate() {
         return schemaContexts.getDefaultSchemaContext().getSchema().getRules().stream().anyMatch(
-            each -> ((DataNodeRoutedRule) each).isNeedAccumulate(executionContext.getSqlStatementContext().getTablesContext().getTableNames()));
+            each -> each instanceof DataNodeRoutedRule && ((DataNodeRoutedRule) each).isNeedAccumulate(executionContext.getSqlStatementContext().getTablesContext().getTableNames()));
     }
     
     @Override

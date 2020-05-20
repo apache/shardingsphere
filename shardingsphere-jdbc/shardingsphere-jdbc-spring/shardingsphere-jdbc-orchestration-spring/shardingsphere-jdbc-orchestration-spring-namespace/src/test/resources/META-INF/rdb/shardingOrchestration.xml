@@ -17,7 +17,7 @@
   -->
 
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:orchestraion="http://shardingsphere.apache.org/schema/shardingsphere/orchestration"
+       xmlns:orchestration="http://shardingsphere.apache.org/schema/shardingsphere/orchestration"
        xmlns="http://www.springframework.org/schema/beans" xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
@@ -33,20 +33,20 @@
         <prop key="operation-timeout-milliseconds">1000</prop>
     </util:properties>
     
-    <orchestraion:instance id="centerRepository" orchestration-type="registry_center,config_center,metadata_center" instance-type="TestRegistry" server-lists="localhost:3181" namespace="orchestration-spring-namespace-test">
+    <orchestration:instance id="centerRepository" orchestration-type="registry_center,config_center,metadata_center" instance-type="TestRegistry" server-lists="localhost:3181" namespace="orchestration-spring-namespace-test">
         <props>
             <prop key="max-retries">3</prop>
             <prop key="operation-timeout-milliseconds">1000</prop>
         </props>
-    </orchestraion:instance>
+    </orchestration:instance>
     
-    <orchestraion:sharding-data-source id="simpleShardingOrchestration" data-source-ref="simpleShardingDataSource" instance-ref="centerRepository" />
-    <orchestraion:sharding-data-source id="shardingRuleWithAttributesDataSourceOrchestration" data-source-ref="shardingRuleWithAttributesDataSource" instance-ref="centerRepository" />
-    <orchestraion:sharding-data-source id="multiTableRulesDataSourceOrchestration" data-source-ref="multiTableRulesDataSource" instance-ref="centerRepository" />
-    <orchestraion:sharding-data-source id="propsDataSourceOrchestration" data-source-ref="propsDataSource" instance-ref="centerRepository" />
-    <orchestraion:sharding-data-source id="tableRuleWithAttributesDataSourceOrchestration" data-source-ref="tableRuleWithAttributesDataSource" instance-ref="centerRepository" />
-    <orchestraion:sharding-data-source id="bindingTableRuleDatasourceOrchestration" data-source-ref="bindingTableRuleDatasource" instance-ref="centerRepository" />
-    <orchestraion:sharding-data-source id="multiBindingTableRulesDatasourceOrchestration" data-source-ref="multiBindingTableRulesDatasource" instance-ref="centerRepository" />
-    <orchestraion:sharding-data-source id="broadcastTableRuleDatasourceOrchestration" data-source-ref="broadcastTableRuleDatasource" instance-ref="centerRepository" />
-    <orchestraion:sharding-data-source id="multiBroadcastTableRulesDatasourceOrchestration" data-source-ref="multiBroadcastTableRulesDatasource" instance-ref="centerRepository" />
+    <orchestration:data-source id="simpleShardingOrchestration" data-source-ref="simpleShardingDataSource" instance-ref="centerRepository" />
+    <orchestration:data-source id="shardingRuleWithAttributesDataSourceOrchestration" data-source-ref="shardingRuleWithAttributesDataSource" instance-ref="centerRepository" />
+    <orchestration:data-source id="multiTableRulesDataSourceOrchestration" data-source-ref="multiTableRulesDataSource" instance-ref="centerRepository" />
+    <orchestration:data-source id="propsDataSourceOrchestration" data-source-ref="propsDataSource" instance-ref="centerRepository" />
+    <orchestration:data-source id="tableRuleWithAttributesDataSourceOrchestration" data-source-ref="tableRuleWithAttributesDataSource" instance-ref="centerRepository" />
+    <orchestration:data-source id="bindingTableRuleDatasourceOrchestration" data-source-ref="bindingTableRuleDatasource" instance-ref="centerRepository" />
+    <orchestration:data-source id="multiBindingTableRulesDatasourceOrchestration" data-source-ref="multiBindingTableRulesDatasource" instance-ref="centerRepository" />
+    <orchestration:data-source id="broadcastTableRuleDatasourceOrchestration" data-source-ref="broadcastTableRuleDatasource" instance-ref="centerRepository" />
+    <orchestration:data-source id="multiBroadcastTableRulesDatasourceOrchestration" data-source-ref="multiBroadcastTableRulesDatasource" instance-ref="centerRepository" />
 </beans>

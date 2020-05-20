@@ -56,4 +56,16 @@ public final class RegistryCenterTest {
         registryCenter.persistDataSourcesNode();
         verify(registryCenterRepository).persist("/test/registry/datasources", "");
     }
+    
+    @Test
+    public void assertPersistInstanceData() {
+        registryCenter.persistInstanceData("test");
+        verify(registryCenterRepository).persist(anyString(), anyString());
+    }
+    
+    @Test
+    public void assertLoadInstanceData() {
+        registryCenter.loadInstanceData();
+        verify(registryCenterRepository).get(anyString());
+    }
 }

@@ -71,6 +71,7 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
     @Getter
     private final ConfigCenter configCenter;
     
+    @Getter
     private final RegistryCenter registryCenter;
 
     @Getter
