@@ -15,7 +15,7 @@
 # limitations under the License.
 #
  
-org.apache.shardingsphere.driver.orchestration.spring.algorithm.DefaultComplexKeysShardingAlgorithm
-org.apache.shardingsphere.driver.orchestration.spring.algorithm.DefaultHintShardingAlgorithm
-org.apache.shardingsphere.driver.orchestration.spring.algorithm.StandardModuloDatabaseShardingAlgorithm
-org.apache.shardingsphere.driver.orchestration.spring.algorithm.StandardModuloTableShardingAlgorithm
+org.apache.shardingsphere.spring.namespace.orchestration.algorithm.DefaultComplexKeysShardingAlgorithm
+org.apache.shardingsphere.spring.namespace.orchestration.algorithm.DefaultHintShardingAlgorithm
+org.apache.shardingsphere.spring.namespace.orchestration.algorithm.StandardModuloDatabaseShardingAlgorithm
+org.apache.shardingsphere.spring.namespace.orchestration.algorithm.StandardModuloTableShardingAlgorithm

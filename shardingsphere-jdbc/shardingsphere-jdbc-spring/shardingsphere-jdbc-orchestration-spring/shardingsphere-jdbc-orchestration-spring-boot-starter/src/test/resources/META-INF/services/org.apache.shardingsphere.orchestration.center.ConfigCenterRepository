@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.driver.orchestration.spring.boot.registry.TestCenterRepository
+org.apache.shardingsphere.spring.boot.orchestration.registry.TestCenterRepository
