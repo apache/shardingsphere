@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.kernal.context;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.kernal.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernal.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.kernal.context.schema.ShardingSphereSchema;
@@ -27,7 +26,6 @@ import javax.sql.DataSource;
 import java.util.Map;
 
 @Getter
-@Setter
 public final class SchemaContext {
     
     private ShardingSphereSchema schema;
