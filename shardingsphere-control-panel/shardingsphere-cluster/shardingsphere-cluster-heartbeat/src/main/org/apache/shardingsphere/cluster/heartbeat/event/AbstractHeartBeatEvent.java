@@ -25,7 +25,7 @@ import lombok.Getter;
 @Getter
 public class AbstractHeartBeatEvent implements HeartBeatEvent{
     
-    private final HeartBeatEventType eventType;
+    protected final HeartBeatEventType eventType;
     
     AbstractHeartBeatEvent(final HeartBeatEventType eventType) {
         this.eventType = eventType;

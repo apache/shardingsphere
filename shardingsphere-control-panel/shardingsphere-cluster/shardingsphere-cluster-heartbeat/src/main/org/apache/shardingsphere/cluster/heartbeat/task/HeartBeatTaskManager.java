@@ -15,14 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cluster.heartbeat.event;
+package org.apache.shardingsphere.cluster.heartbeat.task;
+
+import com.google.common.base.Preconditions;
+
+import java.util.Timer;
 
 /**
- * Heart beat detect notice event.
+ * Heart beat task manager.
  */
-public final class HeartBeatDetectNoticeEvent extends AbstractHeartBeatEvent{
+public final class HeartBeatTaskManager {
     
-    public HeartBeatDetectNoticeEvent(final HeartBeatEventType eventType) {
-        super(eventType);
+    private static final String TIMER_NAME = "ShardingSphere-Cluster-HeartBeat";
+    
+    private Integer interval;
+    
+    private final Timer timer;
+    
+    public HeartBeatTaskManager(final Integer interval) {
+        this.interval = interval;
+        timer = new Timer(TIMER_NAME);
+    }
+    
+    /**
+     * Start heart beat task.
+     *
+     * @param heartBeatTask heart beat task
+     */
+    public void startHeartBeatTask(final HeartBeatTask heartBeatTask) {
+        Preconditions.checkNotNull(heartBeatTask, "task can not be null");
+        timer.schedule(heartBeatTask, interval*1000, interval*1000);
     }
 }
