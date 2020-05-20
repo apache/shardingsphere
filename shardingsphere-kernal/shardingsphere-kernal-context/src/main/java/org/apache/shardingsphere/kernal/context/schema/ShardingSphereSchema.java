@@ -68,7 +68,7 @@ public final class ShardingSphereSchema {
      *
      * @param configurations rule configurations
      */
-    public void setConfigurations(final Collection<RuleConfiguration> configurations) {
+    public void renew(final Collection<RuleConfiguration> configurations) {
         this.configurations.clear();
         this.configurations.addAll(configurations);
         Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(configurations, dataSources.keySet());
@@ -83,6 +83,7 @@ public final class ShardingSphereSchema {
     public void closeDataSources(final Collection<String> dataSources) {
         for (String each :dataSources) {
             close(this.dataSources.get(each));
+            dataSourceParameters.remove(each);
         }
     }
     
