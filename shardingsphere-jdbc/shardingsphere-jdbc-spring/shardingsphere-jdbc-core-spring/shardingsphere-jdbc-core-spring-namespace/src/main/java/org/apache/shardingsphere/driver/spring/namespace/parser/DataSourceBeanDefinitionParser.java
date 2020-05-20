@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.spring.namespace.parser;
 
 import com.google.common.base.Splitter;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.driver.spring.namespace.tag.DataSourceBeanDefinitionParserTag;
+import org.apache.shardingsphere.driver.spring.namespace.tag.DataSourceBeanDefinitionTag;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -51,7 +51,7 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     }
     
     private Map<String, RuntimeBeanReference> parseDataSources(final Element element) {
-        List<String> dataSources = Splitter.on(",").trimResults().splitToList(element.getAttribute(DataSourceBeanDefinitionParserTag.DATA_SOURCE_NAMES_TAG));
+        List<String> dataSources = Splitter.on(",").trimResults().splitToList(element.getAttribute(DataSourceBeanDefinitionTag.DATA_SOURCE_NAMES_TAG));
         Map<String, RuntimeBeanReference> result = new ManagedMap<>(dataSources.size());
         for (String each : dataSources) {
             result.put(each, new RuntimeBeanReference(each));
@@ -60,7 +60,7 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     }
     
     private Collection<RuntimeBeanReference> parseRuleConfigurations(final Element element) {
-        List<String> ruleIdList = Splitter.on(",").trimResults().splitToList(element.getAttribute(DataSourceBeanDefinitionParserTag.RULE_REFS_TAG));
+        List<String> ruleIdList = Splitter.on(",").trimResults().splitToList(element.getAttribute(DataSourceBeanDefinitionTag.RULE_REFS_TAG));
         Collection<RuntimeBeanReference> result = new ManagedList<>(ruleIdList.size());
         for (String each : ruleIdList) {
             result.add(new RuntimeBeanReference(each));
@@ -69,7 +69,7 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     }
     
     private Properties parseProperties(final Element element, final ParserContext parserContext) {
-        Element propsElement = DomUtils.getChildElementByTagName(element, DataSourceBeanDefinitionParserTag.PROPS_TAG);
+        Element propsElement = DomUtils.getChildElementByTagName(element, DataSourceBeanDefinitionTag.PROPS_TAG);
         return null == propsElement ? new Properties() : parserContext.getDelegate().parsePropsElement(propsElement);
     }
 }
