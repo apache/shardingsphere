@@ -28,9 +28,9 @@ import java.util.Map;
 @Getter
 public final class SchemaContext {
     
-    private ShardingSphereSchema schema;
+    private final ShardingSphereSchema schema;
     
-    private RuntimeContext runtimeContext;
+    private final RuntimeContext runtimeContext;
     
     public SchemaContext(final ShardingSphereSchema schema, final RuntimeContext runtimeContext) {
         this.schema = schema;
