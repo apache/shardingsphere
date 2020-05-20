@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.spring.boot.datasource;
+package org.apache.shardingsphere.spring.boot.datasource;
 
 import lombok.SneakyThrows;
 import org.junit.Test;
