@@ -18,6 +18,9 @@
 package org.apache.shardingsphere.cluster.state;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.cluster.state.enums.NodeState;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
@@ -28,13 +31,12 @@ import java.util.Optional;
 /**
  * Cluster state instance.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ClusterStateInstance {
-    
-    private ClusterStateInstance() {
-    }
     
     /**
      * Get cluster state instance.
+     *
      * @return cluster state instance
      */
     public static ClusterStateInstance getInstance() {
@@ -43,6 +45,7 @@ public final class ClusterStateInstance {
     
     /**
      * Persist data source state.
+     *
      * @param dataSourceName data source name
      * @param dataSourceState data source state
      */
@@ -55,15 +58,18 @@ public final class ClusterStateInstance {
     
     /**
      * Load instance state.
+     *
      * @return instance state
      */
     public InstanceState loadInstanceState() {
         String instanceData = ShardingOrchestrationFacade.getInstance().getRegistryCenter().loadInstanceData();
+        Preconditions.checkState(!Strings.isNullOrEmpty(instanceData), "Can not load instance state from registry center");
         return YamlEngine.unmarshal(instanceData, InstanceState.class);
     }
     
     /**
      * Update data source state.
+     *
      * @param dataSourceName data source name
      * @param state state
      */
@@ -77,6 +83,7 @@ public final class ClusterStateInstance {
     
     /**
      * Update retry count.
+     *
      * @param dataSourceName data source name
      * @param retryCount retry count
      */
@@ -89,12 +96,12 @@ public final class ClusterStateInstance {
     
     /**
      * Load data source state.
+     *
      * @param dataSourceName data source name
      * @param instanceState instance state
      * @return data source state
      */
     private DataSourceState loadDataSourceState(final String dataSourceName, final InstanceState instanceState) {
-        Preconditions.checkNotNull(instanceState, "Can not load instance state from registry center");
         DataSourceState dataSourceState = instanceState.getDataSources().get(dataSourceName);
         Preconditions.checkNotNull(dataSourceState, "Can not load data source state of %s from registry center", dataSourceName);
         return dataSourceState;
