@@ -39,8 +39,8 @@
     </shadow:rule>
 
     <shardingsphere:data-source id="shadowDataSource" data-source-names="dbtbl_0,dbtbl_1" rule-refs="shadowRule">
-        <shardingsphere:props>
+        <props>
             <prop key="sql.show">${sql_show}</prop>
-        </shardingsphere:props>
+        </props>
     </shardingsphere:data-source>
 </beans>
