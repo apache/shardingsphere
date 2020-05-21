@@ -39,6 +39,7 @@ import org.apache.shardingsphere.opentracing.ShardingTracer;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.swapper.OrchestrationConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
+import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.backend.schema.ShardingSphereSchemas;
 import org.apache.shardingsphere.proxy.backend.util.DataSourceConverter;
 import org.apache.shardingsphere.proxy.config.ShardingConfiguration;
@@ -115,7 +116,9 @@ public final class Bootstrap {
         logAndInitContext(authentication, properties);
         initMetrics(metricsConfiguration);
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap(ruleConfigs);
-        startProxy(schemaDataSources.keySet(), port, schemaDataSources, getRuleConfigurations(ruleConfigs));
+        Map<String, Collection<RuleConfiguration>> schemaRules = getRuleConfigurations(ruleConfigs);
+        ProxySchemaContexts.getInstance().init(schemaDataSources, schemaRules, authentication, properties);
+        startProxy(schemaDataSources.keySet(), port, schemaDataSources, schemaRules);
     }
     
     private static void startWithRegistryCenter(final YamlProxyServerConfiguration serverConfig, final Collection<String> shardingSchemaNames,
@@ -127,7 +130,10 @@ public final class Bootstrap {
             Properties properties = shardingOrchestrationFacade.getConfigCenter().loadProperties();
             logAndInitContext(authentication, properties);
             initMetrics(serverConfig.getMetrics());
-            startProxy(shardingSchemaNames, port, getDataSourceParametersMap(shardingOrchestrationFacade), getSchemaRules(shardingOrchestrationFacade));
+            Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap(shardingOrchestrationFacade);
+            Map<String, Collection<RuleConfiguration>> schemaRules = getSchemaRules(shardingOrchestrationFacade);
+            ProxySchemaContexts.getInstance().init(schemaDataSources, schemaRules, authentication, properties);
+            startProxy(shardingSchemaNames, port, schemaDataSources, schemaRules);
         }
     }
     
