@@ -79,6 +79,15 @@ public final class ProxySchemaContexts {
     }
     
     /**
+     * Get instance of proxy schema schemas.
+     *
+     * @return instance of ShardingSphere schemas.
+     */
+    public static ProxySchemaContexts getInstance() {
+        return INSTANCE;
+    }
+    
+    /**
      * Initialize proxy schema contexts.
      *
      * @param schemaDataSources data source map
