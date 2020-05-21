@@ -27,31 +27,23 @@
 #
 #schemaName: master_slave_db
 #
+#dataSourceCommon:
+#  username: postgres
+#  password: postgres
+#  connectionTimeoutMilliseconds: 30000
+#  idleTimeoutMilliseconds: 60000
+#  maxLifetimeMilliseconds: 1800000
+#  maxPoolSize: 50
+#  minPoolSize: 1
+#  maintenanceIntervalMilliseconds: 30000
+#
 #dataSources:
 #  master_ds:
 #    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_master?serverTimezone=UTC&useSSL=false
-#    username: postgres
-#    password: postgres
-#    connectionTimeoutMilliseconds: 30000
-#    idleTimeoutMilliseconds: 60000
-#    maxLifetimeMilliseconds: 1800000
-#    maxPoolSize: 50
 #  slave_ds_0:
 #    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_slave_0?serverTimezone=UTC&useSSL=false
-#    username: postgres
-#    password: postgres
-#    connectionTimeoutMilliseconds: 30000
-#    idleTimeoutMilliseconds: 60000
-#    maxLifetimeMilliseconds: 1800000
-#    maxPoolSize: 50
 #  slave_ds_1:
 #    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_slave_1?serverTimezone=UTC&useSSL=false
-#    username: postgres
-#    password: postgres
-#    connectionTimeoutMilliseconds: 30000
-#    idleTimeoutMilliseconds: 60000
-#    maxLifetimeMilliseconds: 1800000
-#    maxPoolSize: 50
 #
 #rules:
 #- !MASTER_SLAVE
@@ -71,31 +63,23 @@
 
 #schemaName: master_slave_db
 #
+#dataSourceCommon:
+#  username: root
+#  password:
+#  connectionTimeoutMilliseconds: 30000
+#  idleTimeoutMilliseconds: 60000
+#  maxLifetimeMilliseconds: 1800000
+#  maxPoolSize: 50
+#  minPoolSize: 1
+#  maintenanceIntervalMilliseconds: 30000
+#
 #dataSources:
 #  master_ds:
 #    url: jdbc:mysql://127.0.0.1:3306/demo_ds_master?serverTimezone=UTC&useSSL=false
-#    username: root
-#    password:
-#    connectionTimeoutMilliseconds: 30000
-#    idleTimeoutMilliseconds: 60000
-#    maxLifetimeMilliseconds: 1800000
-#    maxPoolSize: 50
 #  slave_ds_0:
 #    url: jdbc:mysql://127.0.0.1:3306/demo_ds_slave_0?serverTimezone=UTC&useSSL=false
-#    username: root
-#    password:
-#    connectionTimeoutMilliseconds: 30000
-#    idleTimeoutMilliseconds: 60000
-#    maxLifetimeMilliseconds: 1800000
-#    maxPoolSize: 50
 #  slave_ds_1:
 #    url: jdbc:mysql://127.0.0.1:3306/demo_ds_slave_1?serverTimezone=UTC&useSSL=false
-#    username: root
-#    password:
-#    connectionTimeoutMilliseconds: 30000
-#    idleTimeoutMilliseconds: 60000
-#    maxLifetimeMilliseconds: 1800000
-#    maxPoolSize: 50
 #
 #rules:
 #- !MASTER_SLAVE

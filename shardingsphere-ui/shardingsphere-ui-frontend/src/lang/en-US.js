@@ -170,6 +170,7 @@ export default {
       inputPlaceholder: 'Please enter content'
     },
     schema: {
+      title: 'Add Schema',
       name: 'Name',
       ruleConfig: 'Rule Config',
       dataSourceConfig: 'Data Source Config'

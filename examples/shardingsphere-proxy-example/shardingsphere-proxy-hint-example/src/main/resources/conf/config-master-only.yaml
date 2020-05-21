@@ -17,19 +17,23 @@
 
 schemaName: master_only
 
+dataSourceCommon:
+  username: root
+  password:
+  connectionTimeoutMilliseconds: 30000
+  idleTimeoutMilliseconds: 60000
+  maxLifetimeMilliseconds: 1800000
+  maxPoolSize: 50
+  minPoolSize: 1
+  maintenanceIntervalMilliseconds: 30000
+
 dataSources:
   ds_master:
     url: jdbc:mysql://localhost:3306/demo_ds_master
-    username: root
-    password:
   ds_slave_0:
     url: jdbc:mysql://localhost:3306/demo_ds_slave_0
-    username: root
-    password:
   ds_slave_1:
     url: jdbc:mysql://localhost:3306/demo_ds_slave_1
-    username: root
-    password:
 
 rules:
 - !MASTER_SLAVE

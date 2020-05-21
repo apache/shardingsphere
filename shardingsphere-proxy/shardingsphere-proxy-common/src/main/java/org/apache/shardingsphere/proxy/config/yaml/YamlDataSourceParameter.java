@@ -35,17 +35,17 @@ public final class YamlDataSourceParameter {
     
     private String password;
     
-    private long connectionTimeoutMilliseconds = 30 * 1000;
+    private long connectionTimeoutMilliseconds;
     
-    private long idleTimeoutMilliseconds = 60 * 1000;
+    private long idleTimeoutMilliseconds;
     
     private long maxLifetimeMilliseconds;
     
-    private int maxPoolSize = 50;
+    private int maxPoolSize;
     
-    private int minPoolSize = 1;
+    private int minPoolSize;
     
-    private long maintenanceIntervalMilliseconds = 30 * 1000;
+    private long maintenanceIntervalMilliseconds;
 
     private boolean readOnly;
 }

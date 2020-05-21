@@ -163,7 +163,7 @@ mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=
 mvn release:clean
 ```
 
-然后准备执行发布。
+然后准备执行发布。发布之前需要更新examples和shardingsphere-ui两个模块的pom，将版本由${CURRENT.VERSION}替换为${RELEASE.VERSION}。
 
 ```shell
 mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DpushChanges=false -Dusername=${Github用户名}

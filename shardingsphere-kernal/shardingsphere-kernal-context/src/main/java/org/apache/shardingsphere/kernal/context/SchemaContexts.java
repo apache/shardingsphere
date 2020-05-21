@@ -23,13 +23,13 @@ import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
 public final class SchemaContexts {
     
-    private final Map<String, SchemaContext> schemaContexts = new LinkedHashMap<>();
+    private final Map<String, SchemaContext> schemaContexts = new ConcurrentHashMap<>();
     
     @Setter
     private ConfigurationProperties properties;
