@@ -21,7 +21,6 @@
        xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
        xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
-       xmlns:spi="http://shardingsphere.apache.org/schema/shardingsphere/spi"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource
@@ -30,27 +29,25 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/masterslave
                            http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/spi
-                           http://shardingsphere.apache.org/schema/shardingsphere/spi/spi.xsd
                            ">
     <import resource="datasource/masterSlaveDataSource.xml" />
     <import resource="datasource/dataSource.xml" />
     
-    <spi:sharding-algorithm id="databaseStrategyShardingAlgorithm" type="INLINE">
+    <sharding:sharding-algorithm id="databaseStrategyShardingAlgorithm" type="INLINE">
         <props>
             <prop key="algorithm.expression">dbtbl_${user_id % 2}</prop>
         </props>
-    </spi:sharding-algorithm>
-    <spi:sharding-algorithm id="orderTableStrategyShardingAlgorithm" type="INLINE">
+    </sharding:sharding-algorithm>
+    <sharding:sharding-algorithm id="orderTableStrategyShardingAlgorithm" type="INLINE">
         <props>
             <prop key="algorithm.expression">t_order_${order_id % 4}</prop>
         </props>
-    </spi:sharding-algorithm>
-    <spi:sharding-algorithm id="orderItemTableStrategyShardingAlgorithm" type="INLINE">
+    </sharding:sharding-algorithm>
+    <sharding:sharding-algorithm id="orderItemTableStrategyShardingAlgorithm" type="INLINE">
         <props>
             <prop key="algorithm.expression">t_order_item_${order_id % 4}</prop>
         </props>
-    </spi:sharding-algorithm>
+    </sharding:sharding-algorithm>
     
     <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="databaseStrategyShardingAlgorithm" />
     <sharding:standard-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-ref="orderTableStrategyShardingAlgorithm" />

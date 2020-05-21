@@ -15,31 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.route.log;
+package org.apache.shardingsphere.replica.yaml.config;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
+import org.apache.shardingsphere.replica.api.config.ReplicaRuleConfiguration;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * SQL logger for master-slave.
+ * Replica rule configuration for YAML.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@Slf4j(topic = "ShardingSphere-SQL")
-public final class MasterSlaveSQLLogger {
+@Getter
+@Setter
+public final class YamlReplicaRuleConfiguration implements YamlRuleConfiguration {
     
-    /**
-     * Print SQL log for master slave rule.
-     *
-     * @param logicSQL logic SQL
-     * @param dataSourceName data source name
-     */
-    public static void logSQL(final String logicSQL, final String dataSourceName) {
-        log("Rule Type: master-slave");
-        log("SQL: {} ::: DataSource: {}", logicSQL, dataSourceName);
-    }
+    private Map<String, YamlReplicaDataSourceConfiguration> dataSources = new LinkedHashMap<>();
     
-    private static void log(final String pattern, final Object... arguments) {
-        log.info(pattern, arguments);
+    @Override
+    public Class<ReplicaRuleConfiguration> getRuleConfigurationType() {
+        return ReplicaRuleConfiguration.class;
     }
 }
