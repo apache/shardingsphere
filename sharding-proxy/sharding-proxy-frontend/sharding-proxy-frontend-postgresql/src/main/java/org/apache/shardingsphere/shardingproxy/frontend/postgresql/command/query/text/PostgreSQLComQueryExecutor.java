@@ -88,7 +88,7 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     }
     
     private PostgreSQLCommandCompletePacket createUpdatePacket(final UpdateResponse updateResponse) {
-        return new PostgreSQLCommandCompletePacket();
+        return new PostgreSQLCommandCompletePacket(updateResponse.getType(), updateResponse.getUpdateCount());
     }
     
     private Optional<PostgreSQLRowDescriptionPacket> createQueryPacket(final QueryResponse queryResponse) {
