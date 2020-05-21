@@ -164,7 +164,7 @@ First, clean local pre-release check information.
 mvn release:clean
 ```
 
-Then, prepare to execute the release.
+Then, prepare to execute the release. Before releasing, update the POM of the two modules of examples and shardingsphere-ui, changing the version from ${CURRENT.VERSION} to ${RELEASE.VERSION}.
 
 ```shell
 mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DpushChanges=false -Dusername=${Github username}
