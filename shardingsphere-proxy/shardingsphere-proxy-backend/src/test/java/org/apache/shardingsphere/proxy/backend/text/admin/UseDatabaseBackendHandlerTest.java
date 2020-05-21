@@ -17,22 +17,16 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin;
 
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseStatement;
-import org.apache.shardingsphere.infra.auth.Authentication;
-import org.apache.shardingsphere.infra.auth.ProxyUser;
 import org.apache.shardingsphere.proxy.backend.MockShardingSphereSchemasUtil;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.proxy.context.ShardingSphereProxyContext;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseStatement;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import java.util.Arrays;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -52,14 +46,6 @@ public final class UseDatabaseBackendHandlerTest {
         MockShardingSphereSchemasUtil.setSchemas("schema", 10);
         backendConnection = mock(BackendConnection.class);
         when(backendConnection.getUserName()).thenReturn("root");
-        ShardingSphereProxyContext.getInstance().init(getAuthentication(), new Properties());
-    }
-    
-    private Authentication getAuthentication() {
-        ProxyUser proxyUser = new ProxyUser("root", Arrays.asList("schema_0", "schema_1"));
-        Authentication result = new Authentication();
-        result.getUsers().put("root", proxyUser);
-        return result;
     }
     
     @Test

@@ -26,7 +26,6 @@ import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.context.ShardingSphereProxyContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseStatement;
 import org.apache.shardingsphere.sql.parser.sql.util.SQLUtil;
 
@@ -54,7 +53,7 @@ public final class UseDatabaseBackendHandler implements TextProtocolBackendHandl
     }
     
     private boolean isAuthorizedSchema(final String schema) {
-        Collection<String> authorizedSchemas = ShardingSphereProxyContext.getInstance().getAuthentication().getUsers().get(backendConnection.getUserName()).getAuthorizedSchemas();
+        Collection<String> authorizedSchemas = ProxySchemaContexts.getInstance().getSchemaContexts().getAuthentication().getUsers().get(backendConnection.getUserName()).getAuthorizedSchemas();
         return authorizedSchemas.isEmpty() || authorizedSchemas.contains(schema);
     }
     

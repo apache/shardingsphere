@@ -26,7 +26,6 @@ import org.apache.shardingsphere.proxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.context.ShardingSphereProxyContext;
 import org.apache.shardingsphere.sharding.merge.dal.common.SingleLocalDataMergedResult;
 
 import java.sql.SQLException;
@@ -54,7 +53,7 @@ public final class ShowDatabasesBackendHandler implements TextProtocolBackendHan
     
     private Collection getSchemaNames() {
         Collection<String> result = new LinkedList<>(ProxySchemaContexts.getInstance().getSchemaNames());
-        Collection<String> authorizedSchemas = ShardingSphereProxyContext.getInstance().getAuthentication().getUsers().get(backendConnection.getUserName()).getAuthorizedSchemas();
+        Collection<String> authorizedSchemas = ProxySchemaContexts.getInstance().getSchemaContexts().getAuthentication().getUsers().get(backendConnection.getUserName()).getAuthorizedSchemas();
         if (!authorizedSchemas.isEmpty()) {
             result.retainAll(authorizedSchemas);
         }
