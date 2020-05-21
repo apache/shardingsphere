@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.cluster.heartbeat;
 
 import org.junit.Test;
-import org.apache.shardingsphere.cluster.heartbeat.ClusterHeartBeatInstance;
 
 import static org.junit.Assert.assertNotNull;
 

@@ -18,9 +18,6 @@
 package org.apache.shardingsphere.cluster.heartbeat.event;
 
 import org.junit.Test;
-import org.apache.shardingsphere.cluster.heartbeat.event.HeartBeatDetectNoticeEvent;
-import org.apache.shardingsphere.cluster.heartbeat.event.HeartBeatEventType;
-import org.apache.shardingsphere.cluster.heartbeat.event.HeartBeatDetectNoticeEvent;
 
 import static org.junit.Assert.assertTrue;
 

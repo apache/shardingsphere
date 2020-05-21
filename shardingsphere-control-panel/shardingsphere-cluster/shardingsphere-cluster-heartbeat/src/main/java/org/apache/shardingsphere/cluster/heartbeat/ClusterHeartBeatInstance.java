@@ -30,12 +30,17 @@ public final class ClusterHeartBeatInstance {
     
     private HeartBeatTaskManager heartBeatTaskManager;
     
+    /**
+     * Get cluster heart beat instance.
+     *
+     * @return cluster heart beat instance
+     */
     public static ClusterHeartBeatInstance getInstance() {
         return ClusterHeartBeatInstanceHolder.INSTANCE;
     }
     
     /**
-     * Init heart beat task manager
+     * Init heart beat task manager.
      *
      * @param configuration heart beat configuration
      */

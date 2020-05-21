@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.cluster.heartbeat.eventbus;
 
 import org.junit.Test;
-import org.apache.shardingsphere.cluster.heartbeat.eventbus.HeartBeatEventBus;
 
 import static org.junit.Assert.assertNotNull;
 

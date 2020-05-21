@@ -15,19 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cluster.heartbeat.event;
+package org.apache.shardingsphere.cluster.heartbeat.task;
 
-import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.cluster.heartbeat.event.HeartBeatEvent;
+import org.apache.shardingsphere.cluster.heartbeat.eventbus.HeartBeatEventBus;
 
 /**
- * Abstract heart beat event.
+ * Heart beat task.
  */
-@Getter
-public abstract class AbstractHeartBeatEvent implements HeartBeatEvent {
+@Slf4j
+public final class HeartBeatTask implements Runnable {
     
-    protected final HeartBeatEventType eventType;
+    private final HeartBeatEvent heartBeatEvent;
     
-    AbstractHeartBeatEvent(final HeartBeatEventType eventType) {
-        this.eventType = eventType;
+    public HeartBeatTask(final HeartBeatEvent heartBeatEvent) {
+        this.heartBeatEvent = heartBeatEvent;
+    }
+    
+    @Override
+    public void run() {
+        HeartBeatEventBus.getInstance().post(heartBeatEvent);
+        log.info("heart beat detect running");
     }
 }
