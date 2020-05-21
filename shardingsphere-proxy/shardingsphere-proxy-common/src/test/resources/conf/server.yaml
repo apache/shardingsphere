@@ -17,10 +17,12 @@
 
 orchestration:
   test_name_1:
-    orchestrationType: configuration_center
+    orchestrationType: registry_center,config_center,metadata_center
     instanceType: zookeeper
     serverLists: localhost:2181
     namespace: test_namespace_1
+    props:
+      overwrite: false
 
 authentication:
   users:

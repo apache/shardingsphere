@@ -17,31 +17,23 @@
 
 schemaName: master_slave_db
 
+dataSourceCommon:
+  username: root
+  password:
+  connectionTimeoutMilliseconds: 30000
+  idleTimeoutMilliseconds: 60000
+  maxLifetimeMilliseconds: 1800000
+  maxPoolSize: 50
+  minPoolSize: 1
+  maintenanceIntervalMilliseconds: 30000
+
 dataSources:
   master_ds:
     url: jdbc:mysql://127.0.0.1:3306/master_ds
-    username: root
-    password:
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 50
   slave_ds_0:
     url: jdbc:mysql://127.0.0.1:3306/slave_ds_0
-    username: root
-    password:
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 50
   slave_ds_1:
     url: jdbc:mysql://127.0.0.1:3306/slave_ds_1
-    username: root
-    password:
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 50
 
 rules:
 - !MASTER_SLAVE
