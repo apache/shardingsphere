@@ -20,7 +20,7 @@ package org.apache.shardingsphere.cluster.heartbeat.event;
 /**
  * Heart beat detect notice event.
  */
-public final class HeartBeatDetectNoticeEvent extends AbstractHeartBeatEvent{
+public final class HeartBeatDetectNoticeEvent extends AbstractHeartBeatEvent {
     
     public HeartBeatDetectNoticeEvent() {
         super(HeartBeatEventType.NOTICE_DETECT);

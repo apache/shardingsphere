@@ -24,7 +24,7 @@ import static org.junit.Assert.assertNotNull;
 public final class HeartBeatEventBusTest {
     
     @Test
-    public void getInstance() {
+    public void assertGetInstance() {
         assertNotNull(HeartBeatEventBus.getInstance());
     }
 }

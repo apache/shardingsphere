@@ -18,23 +18,22 @@
 package org.apache.shardingsphere.cluster.heartbeat.task;
 
 import com.google.common.base.Preconditions;
-
-import java.util.Timer;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Heart beat task manager.
  */
 public final class HeartBeatTaskManager {
     
-    private static final String TIMER_NAME = "ShardingSphere-Cluster-HeartBeat";
-    
     private Integer interval;
     
-    private final Timer timer;
+    private final ScheduledExecutorService executorService;
     
-    public HeartBeatTaskManager(final Integer interval) {
+    public HeartBeatTaskManager(final Integer interval, final Integer threadCount) {
         this.interval = interval;
-        timer = new Timer(TIMER_NAME);
+        executorService = Executors.newScheduledThreadPool(threadCount);
     }
     
     /**
@@ -44,6 +43,6 @@ public final class HeartBeatTaskManager {
      */
     public void start(final HeartBeatTask heartBeatTask) {
         Preconditions.checkNotNull(heartBeatTask, "task can not be null");
-        timer.schedule(heartBeatTask, interval*1000, interval*1000);
+        executorService.scheduleAtFixedRate(heartBeatTask, interval, interval, TimeUnit.SECONDS);
     }
 }

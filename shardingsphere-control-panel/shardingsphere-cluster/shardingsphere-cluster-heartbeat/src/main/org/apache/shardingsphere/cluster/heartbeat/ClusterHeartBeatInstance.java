@@ -31,7 +31,7 @@ public final class ClusterHeartBeatInstance {
     private HeartBeatTaskManager heartBeatTaskManager;
     
     public static ClusterHeartBeatInstance getInstance() {
-        return ClusterHeartBeatInstance.getInstance();
+        return ClusterHeartBeatInstanceHolder.INSTANCE;
     }
     
     /**
@@ -41,7 +41,7 @@ public final class ClusterHeartBeatInstance {
      */
     public void init(final HeartBeatConfiguration configuration) {
         Preconditions.checkNotNull(configuration, "heart beat configuration can not be null.");
-        heartBeatTaskManager = new HeartBeatTaskManager(configuration.getInterval());
+        heartBeatTaskManager = new HeartBeatTaskManager(configuration.getInterval(), configuration.getThreadCount());
         HeartBeatTask task = new HeartBeatTask(new HeartBeatDetectNoticeEvent());
         heartBeatTaskManager.start(task);
     }

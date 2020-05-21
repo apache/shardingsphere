@@ -35,4 +35,6 @@ public final class YamlHeartBeatConfiguration implements YamlConfiguration {
     private Boolean retryEnable;
     
     private Integer retryMaximum;
+    
+    private Integer threadCount;
 }

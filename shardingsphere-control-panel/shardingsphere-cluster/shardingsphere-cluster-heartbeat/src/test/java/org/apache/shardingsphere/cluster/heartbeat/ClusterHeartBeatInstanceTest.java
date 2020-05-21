@@ -15,27 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cluster.heartbeat.task;
+package org.apache.shardingsphere.cluster.heartbeat;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.cluster.heartbeat.event.HeartBeatEvent;
-import org.apache.shardingsphere.cluster.heartbeat.eventbus.HeartBeatEventBus;
+import org.junit.Test;
 
-/**
- * Heart beat task
- */
-@Slf4j
-public final class HeartBeatTask implements Runnable {
+import static org.junit.Assert.assertNotNull;
+
+public final class ClusterHeartBeatInstanceTest {
     
-    private final HeartBeatEvent heartBeatEvent;
-    
-    public HeartBeatTask(final HeartBeatEvent heartBeatEvent) {
-        this.heartBeatEvent = heartBeatEvent;
-    }
-    
-    @Override
-    public void run() {
-        HeartBeatEventBus.getInstance().post(heartBeatEvent);
-        log.info("heart beat detect running");
+    @Test
+    public void assertGetInstance() {
+        assertNotNull(ClusterHeartBeatInstance.getInstance());
     }
 }

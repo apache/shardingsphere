@@ -23,7 +23,7 @@ import lombok.Getter;
  * Abstract heart beat event.
  */
 @Getter
-public class AbstractHeartBeatEvent implements HeartBeatEvent{
+public abstract class AbstractHeartBeatEvent implements HeartBeatEvent {
     
     protected final HeartBeatEventType eventType;
     
