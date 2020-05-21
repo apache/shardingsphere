@@ -30,13 +30,22 @@ public final class PostgreSQLCommandCompletePacket implements PostgreSQLPacket {
     @Getter
     private final char messageType = PostgreSQLCommandPacketType.COMMAND_COMPLETE.getValue();
     
-    private final String sqlCommand = "";
+    private final String sqlCommand;
     
-    private final int rowCount = 0;
+    private final long rowCount;
+    
+    public PostgreSQLCommandCompletePacket() {
+        sqlCommand = "";
+        rowCount = 0;
+    }
+    
+    public PostgreSQLCommandCompletePacket(final String sqlCommand, final long rowCount) {
+        this.sqlCommand = sqlCommand;
+        this.rowCount = rowCount;
+    }
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
-        // TODO payload.writeStringNul(sqlCommand + " " + rowCount);
-        payload.writeStringNul("");
+        payload.writeStringNul(sqlCommand + " " + rowCount);
     }
 }
