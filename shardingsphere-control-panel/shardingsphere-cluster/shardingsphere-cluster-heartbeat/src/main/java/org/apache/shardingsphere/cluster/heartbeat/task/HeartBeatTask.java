@@ -15,25 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cluster.configuration.config;
+package org.apache.shardingsphere.cluster.heartbeat.task;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.cluster.heartbeat.event.HeartBeatEvent;
+import org.apache.shardingsphere.cluster.heartbeat.eventbus.HeartBeatEventBus;
 
 /**
- * Heart beat configuration.
+ * Heart beat task.
  */
-@Getter
-@Setter
-public final class HeartBeatConfiguration {
+@Slf4j
+public final class HeartBeatTask implements Runnable {
     
-    private String sql;
+    private final HeartBeatEvent heartBeatEvent;
     
-    private Integer interval;
+    public HeartBeatTask(final HeartBeatEvent heartBeatEvent) {
+        this.heartBeatEvent = heartBeatEvent;
+    }
     
-    private Boolean retryEnable;
-    
-    private Integer retryMaximum;
-    
-    private Integer threadCount;
+    @Override
+    public void run() {
+        HeartBeatEventBus.getInstance().post(heartBeatEvent);
+        log.info("heart beat detect running");
+    }
 }

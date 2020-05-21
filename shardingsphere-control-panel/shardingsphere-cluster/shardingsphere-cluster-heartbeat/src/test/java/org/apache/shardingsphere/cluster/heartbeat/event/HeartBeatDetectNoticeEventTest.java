@@ -15,25 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cluster.configuration.config;
+package org.apache.shardingsphere.cluster.heartbeat.event;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.junit.Test;
 
-/**
- * Heart beat configuration.
- */
-@Getter
-@Setter
-public final class HeartBeatConfiguration {
+import static org.junit.Assert.assertTrue;
+
+public final class HeartBeatDetectNoticeEventTest {
     
-    private String sql;
-    
-    private Integer interval;
-    
-    private Boolean retryEnable;
-    
-    private Integer retryMaximum;
-    
-    private Integer threadCount;
+    @Test
+    public void assertHeartBeatEventType() {
+        HeartBeatDetectNoticeEvent event = new HeartBeatDetectNoticeEvent();
+        assertTrue(event.getEventType() == HeartBeatEventType.NOTICE_DETECT);
+    }
 }

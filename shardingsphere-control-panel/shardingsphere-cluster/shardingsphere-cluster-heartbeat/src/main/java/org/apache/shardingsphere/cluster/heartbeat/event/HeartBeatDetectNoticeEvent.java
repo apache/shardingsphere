@@ -15,25 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cluster.configuration.config;
-
-import lombok.Getter;
-import lombok.Setter;
+package org.apache.shardingsphere.cluster.heartbeat.event;
 
 /**
- * Heart beat configuration.
+ * Heart beat detect notice event.
  */
-@Getter
-@Setter
-public final class HeartBeatConfiguration {
+public final class HeartBeatDetectNoticeEvent extends AbstractHeartBeatEvent {
     
-    private String sql;
-    
-    private Integer interval;
-    
-    private Boolean retryEnable;
-    
-    private Integer retryMaximum;
-    
-    private Integer threadCount;
+    public HeartBeatDetectNoticeEvent() {
+        super(HeartBeatEventType.NOTICE_DETECT);
+    }
 }

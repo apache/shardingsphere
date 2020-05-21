@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cluster.configuration.config;
+package org.apache.shardingsphere.cluster.heartbeat.eventbus;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.google.common.eventbus.EventBus;
 
 /**
- * Heart beat configuration.
+ * Heart beat event bus.
  */
-@Getter
-@Setter
-public final class HeartBeatConfiguration {
+public final class HeartBeatEventBus {
     
-    private String sql;
+    /**
+     * Get heart beat event bus instance.
+     *
+     * @return event bus
+     */
+    public static EventBus getInstance() {
+        return HeartBeatEventBusHolder.INSTANCE;
+    }
     
-    private Integer interval;
-    
-    private Boolean retryEnable;
-    
-    private Integer retryMaximum;
-    
-    private Integer threadCount;
+    private static final class HeartBeatEventBusHolder {
+        private static final EventBus INSTANCE = new EventBus();
+    }
 }
