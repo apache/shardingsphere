@@ -25,15 +25,19 @@ import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jdbc.repository.ShadowUserRepositoryImpl;
 import org.apache.shardingsphere.example.core.jdbc.service.ShadowUserServiceImpl;
-import org.apache.shardingsphere.example.shadow.table.raw.jdbc.config.ShadowDatabasesConfiguration;
+import org.apache.shardingsphere.example.shadow.table.raw.jdbc.factory.DataSourceFactory;
+import org.apache.shardingsphere.example.type.ShardingType;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
 public class JavaConfigurationExampleMain {
     
+    private static ShardingType shardingType = ShardingType.SHADOW;
+//    private static ShardingType shardingType = ShardingType.SHARDING_SHADOW_DATABASES;
+    
     public static void main(final String[] args) throws SQLException {
-        DataSource dataSource = new ShadowDatabasesConfiguration().getDataSource();
+        DataSource dataSource = DataSourceFactory.newInstance(shardingType);
         ExampleExecuteTemplate.run(getExampleService(dataSource));
     }
     
