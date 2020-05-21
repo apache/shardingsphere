@@ -25,7 +25,6 @@ import org.apache.shardingsphere.example.shadow.table.raw.jdbc.factory.YamlDataS
 import org.apache.shardingsphere.example.type.ShardingType;
 
 import javax.sql.DataSource;
-import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
