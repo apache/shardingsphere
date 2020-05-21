@@ -67,3 +67,4 @@ rules:
       none:
 props:
   sql.show: true
+  
