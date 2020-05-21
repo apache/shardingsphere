@@ -77,7 +77,6 @@ public final class ShowDatabasesBackendHandlerTest {
         return result;
     }
     
-    
     private static Authentication getAuthentication() {
         ProxyUser proxyUser = new ProxyUser("root", Arrays.asList("schema_0", "schema_1"));
         Authentication result = new Authentication();
