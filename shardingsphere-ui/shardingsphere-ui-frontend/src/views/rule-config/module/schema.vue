@@ -72,7 +72,10 @@
         <el-button type="primary" @click="onConfirm">{{ $t('btn.submit') }}</el-button>
       </span>
     </el-dialog>
-    <el-dialog :visible.sync="addSchemaDialogVisible" title="Add Schema" width="80%" top="3vh">
+    <el-dialog 
+      :visible.sync="addSchemaDialogVisible" 
+      :title="$t('ruleConfig.schema.title')"
+      width="80%" top="3vh">
       <el-form ref="form" :model="form" :rules="rules" label-width="170px">
         <el-form-item :label="$t('ruleConfig.schema.name')" prop="name">
           <el-input
