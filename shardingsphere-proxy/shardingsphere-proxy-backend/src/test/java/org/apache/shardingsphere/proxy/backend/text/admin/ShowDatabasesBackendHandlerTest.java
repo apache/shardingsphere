@@ -62,14 +62,14 @@ public final class ShowDatabasesBackendHandlerTest {
         schemaContexts.set(ProxySchemaContexts.getInstance(), mockSchemaContexts());
     }
     
-    private static SchemaContexts mockSchemaContexts() {
+    private SchemaContexts mockSchemaContexts() {
         SchemaContexts result = mock(SchemaContexts.class);
         when(result.getAuthentication()).thenReturn(getAuthentication());
         when(result.getSchemaContexts()).thenReturn(mockSchemaContextMap());
         return result;
     }
     
-    private static Map<String, SchemaContext> mockSchemaContextMap() {
+    private Map<String, SchemaContext> mockSchemaContextMap() {
         Map<String, SchemaContext> result = new HashMap<>(10);
         for (int i = 0; i < 10; i++) {
             result.put("schema_" + i, mock(SchemaContext.class));
@@ -77,7 +77,7 @@ public final class ShowDatabasesBackendHandlerTest {
         return result;
     }
     
-    private static Authentication getAuthentication() {
+    private Authentication getAuthentication() {
         ProxyUser proxyUser = new ProxyUser("root", Arrays.asList("schema_0", "schema_1"));
         Authentication result = new Authentication();
         result.getUsers().put("root", proxyUser);

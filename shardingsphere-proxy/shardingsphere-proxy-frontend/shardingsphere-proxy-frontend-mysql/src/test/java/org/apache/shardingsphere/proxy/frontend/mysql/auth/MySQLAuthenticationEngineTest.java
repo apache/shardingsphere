@@ -129,12 +129,12 @@ public final class MySQLAuthenticationEngineTest {
     }
     
     private void setSchemas(final Map<String, ShardingSphereSchema> schemas) throws NoSuchFieldException, IllegalAccessException {
-        Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
-        schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxySchemaContexts.getInstance(), mockSchemaContexts());
+        Field field = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
+        field.setAccessible(true);
+        field.set(ProxySchemaContexts.getInstance(), mockSchemaContexts());
     }
     
-    private static SchemaContexts mockSchemaContexts() {
+    private SchemaContexts mockSchemaContexts() {
         SchemaContexts result = mock(SchemaContexts.class);
         when(result.getSchemaContexts()).thenReturn(Collections.singletonMap("sharding_db", mock(SchemaContext.class)));
         return result;
