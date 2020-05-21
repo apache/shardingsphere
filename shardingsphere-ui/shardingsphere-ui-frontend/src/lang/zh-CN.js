@@ -224,9 +224,11 @@ export default {
       delFailMessage: '删除失败'
     },
     serviceDialog: {
-      serviceName: '请输入服务名称',
-      serviceType: '请输入服务类型',
-      serviceUrl: '请输入服务地址'
+      title: '数据扩容配置',
+      serviceName: '服务名称',
+      serviceUrl: '服务地址',
+      serviceNamePlaceholder: '请输入服务名称',
+      serviceUrlPlaceholder: '请输入服务地址'
     }
   }
 }
