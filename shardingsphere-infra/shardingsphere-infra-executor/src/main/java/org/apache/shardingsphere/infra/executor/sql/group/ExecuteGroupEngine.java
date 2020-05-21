@@ -81,7 +81,7 @@ public abstract class ExecuteGroupEngine<U extends StorageResourceExecuteUnit, E
     private Collection<InputGroup<U>> decorate(final Collection<InputGroup<U>> inputGroups) {
         Collection<InputGroup<U>> result = inputGroups;
         for (Entry<ShardingSphereRule, ExecuteGroupDecorator> each : decorators.entrySet()) {
-            result = each.getValue().decorate(result);
+            result = each.getValue().decorate(each.getKey(), result);
         }
         return result;
     }
