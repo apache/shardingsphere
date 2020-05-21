@@ -28,6 +28,8 @@ import java.util.Map;
  */
 public final class YamlDataSourceParameterMerger {
     
+    private static final String IGNORE = "$";
+    
     /**
      * Merged datasource parameter.
      *
@@ -42,7 +44,7 @@ public final class YamlDataSourceParameterMerger {
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
             Object value = getValue(field, clazz, source);
-            if (isDefaultValue(field, value)) {
+            if (!IGNORE.equals(value) && isDefaultValue(field, value)) {
                 setValue(field, clazz, source, commonProps);
             }
         }
@@ -52,6 +54,9 @@ public final class YamlDataSourceParameterMerger {
     private static Object getValue(final Field field, final Class<?> clazz, final Object source) {
         String fieldName = field.getName();
         String firstLetter = fieldName.substring(0, 1).toUpperCase();
+        if (IGNORE.equals(firstLetter)) {
+            return IGNORE;
+        }
         String getMethodName;
         if (boolean.class.equals(field.getType()) || Boolean.class.equals(field.getType())) {
             getMethodName = "is" + firstLetter + fieldName.substring(1);
