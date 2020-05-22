@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.StatementExecut
 import org.apache.shardingsphere.replica.execute.executor.ReplicaSQLExecutorCallback;
 import org.apache.shardingsphere.replica.rule.ReplicaRule;
 
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -35,7 +36,16 @@ public final class ReplicaExecuteExecutorCallback extends ReplicaSQLExecutorCall
     @Override
     public Collection<Boolean> execute(final Collection<StatementExecuteUnit> inputs, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
         Collection<Boolean> result = new LinkedList<>();
-        // TODO
+        for (StatementExecuteUnit each : inputs) {
+            if (each.getStorageResource() instanceof PreparedStatement) {
+                result.add(((PreparedStatement) each.getStorageResource()).execute());
+            } else {
+                result.add(each.getStorageResource().execute(each.getExecutionUnit().getSqlUnit().getSql()));
+            }
+        }
+        if (result.contains(false)) {
+            // TODO refresh metadata
+        }
         return result;
     }
 }
