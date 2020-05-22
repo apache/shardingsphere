@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.route.engine;
+package org.apache.shardingsphere.replica.route.engine;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
@@ -25,9 +25,7 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.decorator.RouteDecorator;
-import org.apache.shardingsphere.masterslave.route.engine.impl.MasterSlaveDataSourceRouter;
-import org.apache.shardingsphere.masterslave.rule.MasterSlaveDataSourceRule;
-import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
+import org.apache.shardingsphere.replica.rule.ReplicaRule;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -35,27 +33,30 @@ import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * Route decorator for master-slave.
+ * Route decorator for replica.
  */
-public final class MasterSlaveRouteDecorator implements RouteDecorator<MasterSlaveRule> {
+public final class ReplicaRouteDecorator implements RouteDecorator<ReplicaRule> {
     
     @Override
-    public RouteContext decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final MasterSlaveRule masterSlaveRule, final ConfigurationProperties properties) {
+    public RouteContext decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final ReplicaRule replicaRule, final ConfigurationProperties properties) {
         if (routeContext.getRouteResult().getRouteUnits().isEmpty()) {
-            String dataSourceName = new MasterSlaveDataSourceRouter(masterSlaveRule.getSingleDataSourceRule()).route(routeContext.getSqlStatementContext().getSqlStatement());
             RouteResult routeResult = new RouteResult();
-            routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(DefaultSchema.LOGIC_NAME, dataSourceName), Collections.emptyList()));
+            for (String each : replicaRule.getSingleReplicaDataSources()) {
+                routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(DefaultSchema.LOGIC_NAME, each), Collections.emptyList()));
+            }
             return new RouteContext(routeContext.getSqlStatementContext(), Collections.emptyList(), routeResult);
         }
         Collection<RouteUnit> toBeRemoved = new LinkedList<>();
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
         for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
             String dataSourceName = each.getDataSourceMapper().getLogicName();
-            Optional<MasterSlaveDataSourceRule> dataSourceRule = masterSlaveRule.findDataSourceRule(dataSourceName);
-            if (dataSourceRule.isPresent() && dataSourceRule.get().getName().equalsIgnoreCase(each.getDataSourceMapper().getActualName())) {
-                toBeRemoved.add(each);
-                String actualDataSourceName = new MasterSlaveDataSourceRouter(dataSourceRule.get()).route(routeContext.getSqlStatementContext().getSqlStatement());
-                toBeAdded.add(new RouteUnit(new RouteMapper(each.getDataSourceMapper().getLogicName(), actualDataSourceName), each.getTableMappers()));
+            Optional<Collection<String>> replicaDataSources = replicaRule.findReplicaDataSources(dataSourceName);
+            if (!replicaDataSources.isPresent()) {
+                continue;
+            }
+            toBeRemoved.add(each);
+            for (String replicaDataSource : replicaDataSources.get()) {
+                toBeAdded.add(new RouteUnit(new RouteMapper(dataSourceName, replicaDataSource), each.getTableMappers()));
             }
         }
         routeContext.getRouteResult().getRouteUnits().removeAll(toBeRemoved);
@@ -69,7 +70,7 @@ public final class MasterSlaveRouteDecorator implements RouteDecorator<MasterSla
     }
     
     @Override
-    public Class<MasterSlaveRule> getTypeClass() {
-        return MasterSlaveRule.class;
+    public Class<ReplicaRule> getTypeClass() {
+        return ReplicaRule.class;
     }
 }

@@ -50,12 +50,12 @@ public final class ReplicaRule implements DataSourceRoutedRule {
     }
     
     /**
-     * Find data replica data sources.
+     * Find replica data sources.
      * 
      * @param dataSourceName data source name
      * @return replica data source names
      */
-    public Optional<Collection<String>> findDataSourceRule(final String dataSourceName) {
+    public Optional<Collection<String>> findReplicaDataSources(final String dataSourceName) {
         return Optional.ofNullable(dataSourceRules.get(dataSourceName));
     }
     
