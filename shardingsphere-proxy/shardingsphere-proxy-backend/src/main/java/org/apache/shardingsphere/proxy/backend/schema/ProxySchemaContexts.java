@@ -70,7 +70,7 @@ public final class ProxySchemaContexts {
     
     private final JDBCBackendDataSourceFactory dataSourceFactory = JDBCRawBackendDataSourceFactory.getInstance();
     
-    private SchemaContexts schemaContexts;
+    private SchemaContexts schemaContexts = new SchemaContexts();
     
     private boolean isCircuitBreak;
     

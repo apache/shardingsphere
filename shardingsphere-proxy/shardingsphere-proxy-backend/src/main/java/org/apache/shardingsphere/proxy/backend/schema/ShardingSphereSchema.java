@@ -46,7 +46,6 @@ import org.apache.shardingsphere.orchestration.core.registrycenter.schema.Orches
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.proxy.backend.executor.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.util.DataSourceConverter;
-import org.apache.shardingsphere.proxy.context.ShardingSphereProxyContext;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
@@ -106,7 +105,7 @@ public final class ShardingSphereSchema {
     
     private RuleSchemaMetaData loadRuleSchemaMetaData(final DatabaseType databaseType, final Collection<ShardingSphereRule> rules) throws SQLException {
         ExecutorKernel executorKernel = BackendExecutorContext.getInstance().getExecutorKernel();
-        return new RuleSchemaMetaDataLoader(rules).load(databaseType, getBackendDataSource().getDataSources(), ShardingSphereProxyContext.getInstance().getProperties(),
+        return new RuleSchemaMetaDataLoader(rules).load(databaseType, getBackendDataSource().getDataSources(), ProxySchemaContexts.getInstance().getSchemaContexts().getProperties(),
                 executorKernel.getExecutorService().getExecutorService());
     }
     
@@ -214,6 +213,7 @@ public final class ShardingSphereSchema {
     
     private Optional<TableMetaData> loadTableMetaData(final String tableName) throws SQLException {
         RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(getRules());
-        return loader.load(ShardingSphereSchemas.getInstance().getDatabaseType(), getBackendDataSource().getDataSources(), tableName, ShardingSphereProxyContext.getInstance().getProperties());
+        return loader.load(ShardingSphereSchemas.getInstance().getDatabaseType(), 
+                getBackendDataSource().getDataSources(), tableName, ProxySchemaContexts.getInstance().getSchemaContexts().getProperties());
     }
 }

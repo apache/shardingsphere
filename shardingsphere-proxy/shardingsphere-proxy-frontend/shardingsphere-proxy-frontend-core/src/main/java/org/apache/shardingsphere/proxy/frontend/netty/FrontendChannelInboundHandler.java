@@ -23,16 +23,16 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.metrics.enums.MetricsLabelEnum;
 import org.apache.shardingsphere.metrics.facade.MetricsTrackerFacade;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.context.ShardingSphereProxyContext;
+import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
 import org.apache.shardingsphere.proxy.frontend.executor.ChannelThreadExecutorGroup;
 import org.apache.shardingsphere.proxy.frontend.executor.CommandExecutorSelector;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 
 import java.sql.SQLException;
 
@@ -48,8 +48,8 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     private volatile boolean authorized;
     
     private final BackendConnection backendConnection = new BackendConnection(
-            TransactionType.valueOf(ShardingSphereProxyContext.getInstance().getProperties().getValue(ConfigurationPropertyKey.PROXY_TRANSACTION_TYPE)),
-            ShardingSphereProxyContext.getInstance().getProperties().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED));
+            TransactionType.valueOf(ProxySchemaContexts.getInstance().getSchemaContexts().getProperties().getValue(ConfigurationPropertyKey.PROXY_TRANSACTION_TYPE)),
+            ProxySchemaContexts.getInstance().getSchemaContexts().getProperties().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED));
     
     @Override
     public void channelActive(final ChannelHandlerContext context) {

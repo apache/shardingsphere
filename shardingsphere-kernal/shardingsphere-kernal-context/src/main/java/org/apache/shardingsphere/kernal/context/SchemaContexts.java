@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
@@ -36,6 +37,11 @@ public final class SchemaContexts {
     
     @Setter
     private Authentication authentication;
+    
+    public SchemaContexts() {
+        properties = new ConfigurationProperties(new Properties());
+        authentication = new Authentication();
+    }
     
     public SchemaContexts(final Map<String, SchemaContext> schemaContexts, final ConfigurationProperties properties, final Authentication authentication) {
         this.schemaContexts.putAll(schemaContexts);
