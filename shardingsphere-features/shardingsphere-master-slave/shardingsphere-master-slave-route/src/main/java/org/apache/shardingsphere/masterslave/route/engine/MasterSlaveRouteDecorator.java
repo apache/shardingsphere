@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.masterslave.route.engine;
 
-import org.apache.shardingsphere.masterslave.rule.MasterSlaveDataSourceRule;
-import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
-import org.apache.shardingsphere.masterslave.route.engine.impl.MasterSlaveDataSourceRouter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -47,8 +45,6 @@ public final class MasterSlaveRouteDecorator implements RouteDecorator<MasterSla
             String dataSourceName = new MasterSlaveDataSourceRouter(masterSlaveRule.getSingleDataSourceRule()).route(routeContext.getSqlStatementContext().getSqlStatement());
             RouteResult routeResult = new RouteResult();
             routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(DefaultSchema.LOGIC_NAME, dataSourceName), Collections.emptyList()));
-            return new RouteContext(routeContext.getSqlStatementContext(), Collections.emptyList(), routeResult);
-            routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.emptyList()));
             return new RouteContext(routeContext.getSqlStatementContext(), routeContext.getParameters(), routeResult);
         }
         Collection<RouteUnit> toBeRemoved = new LinkedList<>();
