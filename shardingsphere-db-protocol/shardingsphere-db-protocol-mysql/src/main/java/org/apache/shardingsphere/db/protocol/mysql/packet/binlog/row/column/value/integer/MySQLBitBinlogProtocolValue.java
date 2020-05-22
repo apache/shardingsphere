@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.integer;
 
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
+import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.MySQLBinlogProtocolValue;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 
 import java.io.Serializable;
@@ -25,7 +26,7 @@ import java.io.Serializable;
 /**
  * BIT type value of MySQL binlog protocol.
  */
-public class MySQLBitBinlogProtocolValue implements org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.MySQLBinlogProtocolValue {
+public class MySQLBitBinlogProtocolValue implements MySQLBinlogProtocolValue {
     
     @Override
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
