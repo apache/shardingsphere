@@ -1505,4 +1505,24 @@
             <expression-projection start-index="7" stop-index="18" />
         </projections>
     </select>
+
+    <select sql-case-id="select_with_uuid" >
+        <tables>
+            <simple-table name="t_order" start-index="17" stop-index="23" />
+        </tables>
+        <projections start-index="7" stop-index="10">
+            <column-projection name="uuid" start-index="7" stop-index="10" />
+        </projections>
+        <where start-index="25" stop-index="75">
+            <and-predicate>
+                <predicate start-index="31" stop-index="75">
+                    <column-left-value name="uuid" start-index="31" stop-index="34"/>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <literal-expression value="15c2c185-9068-4db9-aad7-6c0d52713f28" start-index="38" stop-index="75" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
 </sql-parser-test-cases>
