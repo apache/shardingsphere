@@ -24,6 +24,7 @@ import org.apache.shardingsphere.replica.api.config.ReplicaRuleConfiguration;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -57,6 +58,21 @@ public final class ReplicaRule implements DataSourceRoutedRule {
      */
     public Optional<Collection<String>> findReplicaDataSources(final String dataSourceName) {
         return Optional.ofNullable(dataSourceRules.get(dataSourceName));
+    }
+    
+    /**
+     * Find logic data source name.
+     * 
+     * @param replicaDataSourceName replica data source name
+     * @return logic data source name
+     */
+    public Optional<String> findLogicDataSource(final String replicaDataSourceName) {
+        for (Entry<String, Collection<String>> entry : dataSourceRules.entrySet()) {
+            if (entry.getValue().contains(replicaDataSourceName)) {
+                return Optional.of(entry.getKey());
+            }
+        }
+        return Optional.empty();
     }
     
     @Override
