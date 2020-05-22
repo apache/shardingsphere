@@ -71,13 +71,13 @@ public abstract class ExecuteGroupEngine<U extends StorageResourceExecuteUnit, E
      */
     public Collection<InputGroup<U>> generate(final Collection<ExecutionUnit> executionUnits, final E executionConnection, final O option) throws SQLException {
         Collection<InputGroup<U>> result = new LinkedList<>();
-        for (Entry<String, List<SQLUnit>> entry : generateSQLUnitGroups(executionUnits).entrySet()) {
+        for (Entry<String, List<SQLUnit>> entry : getSQLUnitGroups(executionUnits).entrySet()) {
             result.addAll(generateSQLExecuteGroups(entry.getKey(), entry.getValue(), executionConnection, option));
         }
         return decorate(result);
     }
     
-    private Map<String, List<SQLUnit>> generateSQLUnitGroups(final Collection<ExecutionUnit> executionUnits) {
+    private Map<String, List<SQLUnit>> getSQLUnitGroups(final Collection<ExecutionUnit> executionUnits) {
         Map<String, List<SQLUnit>> result = new LinkedHashMap<>(executionUnits.size(), 1);
         for (ExecutionUnit each : executionUnits) {
             if (!result.containsKey(each.getDataSourceName())) {
