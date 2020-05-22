@@ -33,6 +33,8 @@ public class YamlDataSourceFactory {
                 return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/sharding-shadow-databases.yaml"));
             case SHADOW:
                 return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/shadow-databases.yaml"));
+            case ENCRYPT_SHADOW:
+                return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/encrypt-shadow-databases.yaml"));
             default:
                 throw new UnsupportedOperationException(shardingType.name());
         }
