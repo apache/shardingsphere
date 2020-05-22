@@ -15,5 +15,25 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.dbtest.fixture.ConstantKeyGenerateAlgorithm
+version: '3.7'
+services:
+  mysql:
+    image: "mysql/mysql-server:5.7"
+    container_name: mysql-5.7
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ./mysql:/docker-entrypoint-initdb.d/
+    ports:
+      - "3336:3306"
+  sharding-proxy:
+      image: apache/shardingsphere-proxy-test
+      container_name: sharding-proxy
+      depends_on:
+        - mysql
+      ports:
+        - "3337:3307"
+      links:
+        - "mysql:db.mysql"
+      entrypoint: >
+        /bin/sh -c 'sleep 10s'
 

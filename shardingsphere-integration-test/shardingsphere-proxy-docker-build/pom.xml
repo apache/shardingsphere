@@ -99,6 +99,7 @@
                         <configuration>
                             <repository>apache/shardingsphere-proxy-test</repository>
                             <tag>${project.version}</tag>
+                            <tag>latest</tag>
                             <buildArgs>
                                 <APP_NAME>${project.build.finalName}</APP_NAME>
                             </buildArgs>
