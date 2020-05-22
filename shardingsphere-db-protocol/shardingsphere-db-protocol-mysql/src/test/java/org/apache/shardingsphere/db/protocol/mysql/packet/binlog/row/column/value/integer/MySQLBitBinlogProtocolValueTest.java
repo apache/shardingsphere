@@ -41,7 +41,7 @@ public final class MySQLBitBinlogProtocolValueTest {
     private MySQLBitBinlogProtocolValue actual;
     
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         actual = new MySQLBitBinlogProtocolValue();
     }
     

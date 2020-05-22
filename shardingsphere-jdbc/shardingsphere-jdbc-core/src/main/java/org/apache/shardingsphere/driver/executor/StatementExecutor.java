@@ -160,7 +160,7 @@ public final class StatementExecutor {
     
     @SuppressWarnings("unchecked")
     private int executeUpdate(final Collection<InputGroup<StatementExecuteUnit>> inputGroups, final Updater updater, final SQLStatementContext sqlStatementContext) throws SQLException {
-        final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
+        boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         DatabaseType databaseType = schemaContexts.getDefaultSchemaContext().getSchema().getDatabaseType();
         SQLExecutorCallback sqlExecutorCallback = getExecuteUpdateExecutorCallback(new DefaultSQLExecutorCallback<Integer>(databaseType, isExceptionThrown) {
             

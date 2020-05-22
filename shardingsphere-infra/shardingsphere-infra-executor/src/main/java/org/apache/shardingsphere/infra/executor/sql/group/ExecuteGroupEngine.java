@@ -70,20 +70,11 @@ public abstract class ExecuteGroupEngine<U extends StorageResourceExecuteUnit, E
      * @throws SQLException SQL exception
      */
     public Collection<InputGroup<U>> generate(final Collection<ExecutionUnit> executionUnits, final E executionConnection, final O option) throws SQLException {
-        Collection<InputGroup<U>> inputGroups = new LinkedList<>();
+        Collection<InputGroup<U>> result = new LinkedList<>();
         for (Entry<String, List<SQLUnit>> entry : generateSQLUnitGroups(executionUnits).entrySet()) {
-            inputGroups.addAll(generateSQLExecuteGroups(entry.getKey(), entry.getValue(), executionConnection, option));
+            result.addAll(generateSQLExecuteGroups(entry.getKey(), entry.getValue(), executionConnection, option));
         }
-        return decorate(inputGroups);
-    }
-    
-    @SuppressWarnings("unchecked")
-    private Collection<InputGroup<U>> decorate(final Collection<InputGroup<U>> inputGroups) {
-        Collection<InputGroup<U>> result = inputGroups;
-        for (Entry<ShardingSphereRule, ExecuteGroupDecorator> each : decorators.entrySet()) {
-            result = each.getValue().decorate(result);
-        }
-        return result;
+        return decorate(result);
     }
     
     private Map<String, List<SQLUnit>> generateSQLUnitGroups(final Collection<ExecutionUnit> executionUnits) {
@@ -120,4 +111,13 @@ public abstract class ExecuteGroupEngine<U extends StorageResourceExecuteUnit, E
     }
     
     protected abstract U createStorageResourceExecuteUnit(ExecutionUnit executionUnit, E executionConnection, C connection, ConnectionMode connectionMode, O option) throws SQLException;
+    
+    @SuppressWarnings("unchecked")
+    private Collection<InputGroup<U>> decorate(final Collection<InputGroup<U>> inputGroups) {
+        Collection<InputGroup<U>> result = inputGroups;
+        for (Entry<ShardingSphereRule, ExecuteGroupDecorator> each : decorators.entrySet()) {
+            result = each.getValue().decorate(each.getKey(), result);
+        }
+        return result;
+    }
 }

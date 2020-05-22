@@ -93,7 +93,7 @@ public final class PreparedStatementExecutor {
             
             @Override
             protected QueryResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException { 
-                return getQueryResult(statement, connectionMode);
+                return createQueryResult(statement, connectionMode);
             }
         };
     }
@@ -104,7 +104,7 @@ public final class PreparedStatementExecutor {
         return callbackMap.isEmpty() ? callback : callbackMap.values().iterator().next();
     }
     
-    private QueryResult getQueryResult(final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+    private QueryResult createQueryResult(final Statement statement, final ConnectionMode connectionMode) throws SQLException {
         PreparedStatement preparedStatement = (PreparedStatement) statement;
         ResultSet resultSet = preparedStatement.executeQuery();
         return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);

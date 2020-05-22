@@ -35,16 +35,19 @@ public final class MasterSlaveShadowDatabasesConfiguration implements ExampleCon
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration("shadow", new HashMap<String, String>(){{
-            put("ds_master", "shadow_ds_master");
-            put("ds_slave", "shadow_ds_slave");
-        }});
         Map<String, DataSource> dataSourceMap = new HashMap<>();
         dataSourceMap.put("ds_master", DataSourceUtil.createDataSource("demo_ds_master"));
         dataSourceMap.put("ds_slave", DataSourceUtil.createDataSource("demo_ds_slave"));
         dataSourceMap.put("shadow_ds_master", DataSourceUtil.createDataSource("demo_shadow_ds_master"));
         dataSourceMap.put("shadow_ds_slave", DataSourceUtil.createDataSource("demo_shadow_ds_slave"));
-        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Arrays.asList(shadowRuleConfiguration, getMasterSlaveRuleConfiguration()), null);
+        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Arrays.asList(new ShadowRuleConfiguration("shadow", createShadowMappings()), getMasterSlaveRuleConfiguration()), null);
+    }
+    
+    private Map<String, String> createShadowMappings() {
+        Map<String, String> result = new HashMap<>();
+        result.put("ds_master", "shadow_ds_master");
+        result.put("ds_slave", "shadow_ds_slave");
+        return result;
     }
     
     private MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() {

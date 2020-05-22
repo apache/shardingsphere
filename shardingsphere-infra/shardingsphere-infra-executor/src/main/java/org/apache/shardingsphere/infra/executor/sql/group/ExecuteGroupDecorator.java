@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.group;
 
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.order.OrderedSPI;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 
@@ -25,15 +26,17 @@ import java.util.Collection;
 /**
  * Execute group decorator.
  * 
- * @param <T> type of input value 
+ * @param <T> type of input value
+ * @param <R> type of ShardingSphere rule
  */
-public interface ExecuteGroupDecorator<T> extends OrderedSPI {
+public interface ExecuteGroupDecorator<T, R extends ShardingSphereRule> extends OrderedSPI<R> {
     
     /**
      * Decorate input groups.
      * 
+     * @param rule ShardingSphere rule
      * @param inputGroups input groups to be decorated
      * @return decorated input groups.
      */
-    Collection<InputGroup<T>> decorate(Collection<InputGroup<T>> inputGroups);
+    Collection<InputGroup<T>> decorate(R rule, Collection<InputGroup<T>> inputGroups);
 }

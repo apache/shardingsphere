@@ -23,6 +23,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.SQLExe
 
 /**
  * Rule based SQL executor callback for execute.
+ * 
+ * @param <T> type of sharding sphere rule
  */
-public interface RuleExecuteExecutorCallback extends SQLExecutorCallback<Boolean>, OrderedSPI<ShardingSphereRule> {
+public interface RuleExecuteExecutorCallback<T extends ShardingSphereRule> extends SQLExecutorCallback<Boolean>, OrderedSPI<T> {
 }

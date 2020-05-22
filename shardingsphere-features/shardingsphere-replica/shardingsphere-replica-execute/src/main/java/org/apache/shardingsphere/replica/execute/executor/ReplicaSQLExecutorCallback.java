@@ -15,30 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.replica.rule;
+package org.apache.shardingsphere.replica.execute.executor;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRuleBuilder;
-import org.apache.shardingsphere.replica.api.config.ReplicaRuleConfiguration;
-
-import java.util.Collection;
+import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.SQLExecutorCallback;
+import org.apache.shardingsphere.infra.spi.order.OrderedSPI;
+import org.apache.shardingsphere.replica.rule.ReplicaRule;
 
 /**
- * Replica rule builder.
+ * SQL executor callback for replica.
+ * 
+ * @param <T> class type of return value
  */
-public final class ReplicaRuleBuilder implements ShardingSphereRuleBuilder<ReplicaRule, ReplicaRuleConfiguration> {
+public abstract class ReplicaSQLExecutorCallback<T> implements SQLExecutorCallback<T>, OrderedSPI<ReplicaRule> {
     
     @Override
-    public ReplicaRule build(final ReplicaRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
-        return new ReplicaRule(ruleConfiguration);
+    public final int getOrder() {
+        return 5;
     }
     
     @Override
-    public int getOrder() {
-        return 7;
-    }
-    
-    @Override
-    public Class<ReplicaRuleConfiguration> getTypeClass() {
-        return ReplicaRuleConfiguration.class;
+    public final Class<ReplicaRule> getTypeClass() {
+        return ReplicaRule.class;
     }
 }

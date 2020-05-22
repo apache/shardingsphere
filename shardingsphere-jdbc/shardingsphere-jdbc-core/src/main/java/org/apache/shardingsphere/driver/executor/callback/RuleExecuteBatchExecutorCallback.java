@@ -23,6 +23,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.SQLExe
 
 /**
  * Rule based SQL executor callback for execute batch.
+ * 
+ * @param <T> type of sharding sphere rule
  */
-public interface RuleExecuteBatchExecutorCallback extends SQLExecutorCallback<int[]>, OrderedSPI<ShardingSphereRule> {
+public interface RuleExecuteBatchExecutorCallback<T extends ShardingSphereRule> extends SQLExecutorCallback<int[]>, OrderedSPI<T> {
 }
