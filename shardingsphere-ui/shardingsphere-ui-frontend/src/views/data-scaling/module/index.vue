@@ -329,15 +329,17 @@
       :close-on-click-modal="false"
       :close-on-press-escape="false"
       :show-close="false"
-      title="Data Scaling Setting"
+      :title="$t('dataScaling.serviceDialog.title')"
       width="480px"
       center>
       <el-form label-width="110px">
-        <el-form-item label="Service Name:">
-          <el-input v-model="serviceForm.serviceName" :placeholder="$t('dataScaling.serviceDialog.serviceName')"/>
+        <el-form-item
+        :label="$t('dataScaling.serviceDialog.serviceName')">
+          <el-input v-model="serviceForm.serviceName" :placeholder="$t('dataScaling.serviceDialog.serviceNamePlaceholder')"/>
         </el-form-item>
-        <el-form-item label="Service Url:">
-          <el-input v-model="serviceForm.serviceUrl" :placeholder="$t('dataScaling.serviceDialog.serviceUrl')"/>
+        <el-form-item
+        :label="$t('dataScaling.serviceDialog.serviceUrl')">
+          <el-input v-model="serviceForm.serviceUrl" :placeholder="$t('dataScaling.serviceDialog.serviceUrlPlaceholder')"/>
         </el-form-item>
         <el-form-item>
           <el-button @click="serverDialogVisible = false">{{
@@ -516,7 +518,43 @@ export default {
           }
         }
       )
-      const DS_SCHEMA = yaml.Schema.create(dsYamlType)
+      const shardingYamlType = new yaml.Type(
+        '!SHARDING',
+        {
+          kind: 'mapping',
+          construct(data) {
+            return data !== null ? data : {}
+          }
+        }
+      )
+      const encryptYamlType = new yaml.Type(
+        '!ENCRYPT',
+        {
+          kind: 'mapping',
+          construct(data) {
+            return data !== null ? data : {}
+          }
+        }
+      )
+      const masterSlaveYamlType = new yaml.Type(
+        '!MASTER_SLAVE',
+        {
+          kind: 'mapping',
+          construct(data) {
+            return data !== null ? data : {}
+          }
+        }
+      )
+      const shadowYamlType = new yaml.Type(
+        '!SHADOW',
+        {
+          kind: 'mapping',
+          construct(data) {
+            return data !== null ? data : {}
+          }
+        }
+      )
+      const DS_SCHEMA = yaml.Schema.create([dsYamlType, shardingYamlType, encryptYamlType, masterSlaveYamlType, shadowYamlType])
       return JSON.stringify(
         yaml.load(this.textareaRule, { schema: DS_SCHEMA }),
         null,

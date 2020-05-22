@@ -19,9 +19,9 @@ package org.apache.shardingsphere.dbtest.env;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.dbtest.env.datasource.DatabaseEnvironment;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -46,10 +46,13 @@ public final class IntegrateTestEnvironment {
     
     private final Map<DatabaseType, DatabaseEnvironment> databaseEnvironments;
     
+    private final String activeProfile;
+    
     private IntegrateTestEnvironment() {
+        activeProfile = loadActiveProfile();
         Properties prop = new Properties();
         try {
-            prop.load(IntegrateTestEnvironment.class.getClassLoader().getResourceAsStream("integrate/env.properties"));
+            prop.load(IntegrateTestEnvironment.class.getClassLoader().getResourceAsStream("proxy".equals(activeProfile) ? "integrate/env-proxy.properties" : "integrate/env.properties"));
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
@@ -85,6 +88,16 @@ public final class IntegrateTestEnvironment {
                     break;
             }
         }
+    }
+    
+    private String loadActiveProfile() {
+        Properties prop = new Properties();
+        try {
+            prop.load(IntegrateTestEnvironment.class.getClassLoader().getResourceAsStream("integrate/profile.properties"));
+        } catch (final IOException ex) {
+            ex.printStackTrace();
+        }
+        return prop.getProperty("mode");
     }
     
     /**

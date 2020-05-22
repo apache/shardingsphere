@@ -22,9 +22,8 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.cache.SQLParseResultCache;
 import org.apache.shardingsphere.sql.parser.core.parser.SQLParserExecutor;
 import org.apache.shardingsphere.sql.parser.core.visitor.ParseTreeVisitorFactory;
-import org.apache.shardingsphere.sql.parser.hook.ParsingHook;
-import org.apache.shardingsphere.sql.parser.hook.SPIParsingHook;
 import org.apache.shardingsphere.sql.parser.core.visitor.VisitorRule;
+import org.apache.shardingsphere.sql.parser.hook.ParsingHookRegistry;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 import java.util.Optional;
@@ -39,13 +38,14 @@ public final class SQLParserEngine {
     
     private final SQLParseResultCache cache = new SQLParseResultCache();
     
+    private ParsingHookRegistry parsingHookRegistry = ParsingHookRegistry.getInstance();
+    
     // TODO check skywalking plugin
     /*
      * To make sure SkyWalking will be available at the next release of ShardingSphere,
      * a new plugin should be provided to SkyWalking project if this API changed.
      *
      * @see <a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/Java-Plugin-Development-Guide.md#user-content-plugin-development-guide">Plugin Development Guide</a>
-     *
      */
     /**
      * Parse SQL.
@@ -55,16 +55,15 @@ public final class SQLParserEngine {
      * @return SQL statement
      */
     public SQLStatement parse(final String sql, final boolean useCache) {
-        ParsingHook parsingHook = new SPIParsingHook();
-        parsingHook.start(sql);
+        parsingHookRegistry.start(sql);
         try {
             SQLStatement result = parse0(sql, useCache);
-            parsingHook.finishSuccess(result);
+            parsingHookRegistry.finishSuccess(result);
             return result;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            parsingHook.finishFailure(ex);
+            parsingHookRegistry.finishFailure(ex);
             throw ex;
         }
     }

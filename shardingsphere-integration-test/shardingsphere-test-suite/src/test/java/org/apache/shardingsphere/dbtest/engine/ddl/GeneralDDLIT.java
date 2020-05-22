@@ -23,7 +23,7 @@ import org.apache.shardingsphere.dbtest.cases.assertion.ddl.DDLIntegrateTestCase
 import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLCaseType;
 import org.apache.shardingsphere.dbtest.engine.SQLType;
 import org.apache.shardingsphere.dbtest.engine.util.IntegrateTestParameters;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 

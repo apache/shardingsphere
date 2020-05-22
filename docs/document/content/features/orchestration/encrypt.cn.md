@@ -14,7 +14,7 @@ Apache ShardingSphere根据业界对脱敏的需求及业务改造痛点，提�
 
 ## 前序
 
-Apache ShardingSphere是一套开源的分布式数据库中间件解决方案组成的生态圈，它由Sharding-JDBC、Sharding-Proxy和Sharding-Sidecar（规划中）这3款相互独立，却又能够混合部署配合使用的产品组成。它们均能够提供标准化的数据分片、分布式事务和分布式治理功能，可适用于如Java同构、异构语言、容器、云原生等各种多样化的应用场景。
+Apache ShardingSphere是一套开源的分布式数据库中间件解决方案组成的生态圈，它由ShardingSphere-JDBC、ShardingSphere-Proxy和ShardingSphere-Sidecar（规划中）这3款相互独立，却又能够混合部署配合使用的产品组成。它们均能够提供标准化的数据分片、分布式事务和分布式治理功能，可适用于如Java同构、异构语言、容器、云原生等各种多样化的应用场景。
 
 数据脱敏模块属于ShardingSphere分布式治理这一核心功能下的子功能模块。它通过对用户输入的SQL进行解析，并依据用户提供的脱敏配置对SQL进行改写，从而实现对原文数据进行加密，并将原文数据(可选)及密文数据同时存储到底层数据库。在用户查询数据时，它又从数据库中取出密文数据，并对其解密，最终将解密后的原始数据返回给用户。Apache ShardingSphere分布式数据库中间件自动化&透明化了数据脱敏过程，让用户无需关注数据脱敏的实现细节，像使用普通数据那样使用脱敏数据。此外，无论是已在线业务进行脱敏改造，还是新上线业务使用脱敏功能，ShardingSphere都可以提供一套相对完善的解决方案。
 
@@ -232,4 +232,4 @@ ShardingSphere提供了两种加密策略用于数据脱敏，该两种策略分
 
 本篇文章介绍了如何使用ShardingSphere产品之一的Encrypt-JDBC进行接入，接入形式还可以选择使用SpringBoot、SpringNameSpace等，这种形态的接入端主要面向JAVA同构，并与业务代码共同部署在生产环境中。面向异构语言，ShardingSphere还提供Encrypt-Proxy客户端。Encrypt-Proxy是一款实现MySQL、PostgreSQL的二进制协议的服务器端产品，用户可独立部署Encrypt-Proxy服务，并且像使用普通MySQL、PostgreSQL数据库一样，使用例如Navicat第三方数据库管理工具、JAVA连接池、命令行的方式访问这台具有脱敏功能的`虚拟数据库服务器`。
 
-脱敏功能属于Apache ShardingSphere分布式治理的功能范畴。事实上，Apache ShardingSphere这个生态还拥有其他更强大的能力，例如数据分片、读写分离、分布式事务、监控治理等。您甚至可以选择任意多种功能模块进行叠加使用，例如同时使用数据脱敏+数据分片，或是数据分片+读写分离，再或者是监控治理+数据分片等。除了在功能层面的叠加选择，ShardingSphere还提供了各种接入端形式，例如Sharding-JDBC或Sharding-Proxy等以满足大家不同场景需求。
+脱敏功能属于Apache ShardingSphere分布式治理的功能范畴。事实上，Apache ShardingSphere这个生态还拥有其他更强大的能力，例如数据分片、读写分离、分布式事务、监控治理等。您甚至可以选择任意多种功能模块进行叠加使用，例如同时使用数据脱敏+数据分片，或是数据分片+读写分离，再或者是监控治理+数据分片等。除了在功能层面的叠加选择，ShardingSphere还提供了各种接入端形式，例如ShardingSphere-JDBC或ShardingSphere-Proxy等以满足大家不同场景需求。

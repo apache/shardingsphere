@@ -363,7 +363,7 @@ GET /api/reg-center/activated
 {"success":true,"errorCode":0,"errorMsg":null,"model":null}
 ```
 
-## 4.Sharding-Proxy Authentication
+## 4.ShardingSphere-Proxy Authentication
 
 ### 4.1 Get the authentication configuration of sharding proxy
 

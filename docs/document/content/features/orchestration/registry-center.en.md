@@ -25,7 +25,7 @@ datasources
     ├──....
 ```
 
-Sharding-Proxy can support multiple logical data sources, so `datasources` sub-nodes are named `schema_name.data_source_name`.
+ShardingSphere-Proxy can support multiple logical data sources, so `datasources` sub-nodes are named `schema_name.data_source_name`.
 
 ```
 instances

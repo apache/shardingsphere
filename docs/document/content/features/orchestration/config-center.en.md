@@ -16,7 +16,7 @@ Under defined name space config, configuration center stores data sources, shard
 
 ```
 config
-    ├──authentication                            # Sharding-Proxy authentication configuration
+    ├──authentication                            # ShardingSphere-Proxy authentication configuration
     ├──props                                     # Properties configuration
     ├──schema                                    # Schema configuration
     ├      ├──sharding_db                        # SchemaName configuration

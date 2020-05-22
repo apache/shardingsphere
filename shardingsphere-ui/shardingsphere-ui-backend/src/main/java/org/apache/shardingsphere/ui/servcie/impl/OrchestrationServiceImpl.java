@@ -26,7 +26,7 @@ import org.apache.shardingsphere.ui.servcie.OrchestrationService;
 import org.apache.shardingsphere.ui.servcie.RegistryCenterService;
 import org.apache.shardingsphere.ui.servcie.ShardingSchemaService;
 import org.apache.shardingsphere.ui.util.ConfigurationYamlConverter;
-import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

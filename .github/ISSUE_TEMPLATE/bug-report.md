@@ -19,7 +19,7 @@ Please answer these questions before submitting your issue. Thanks!
 
 ### Which version of ShardingSphere did you use?
 
-### Which project did you use? Sharding-JDBC or Sharding-Proxy?
+### Which project did you use? ShardingSphere-JDBC or ShardingSphere-Proxy?
 
 ### Expected behavior
 

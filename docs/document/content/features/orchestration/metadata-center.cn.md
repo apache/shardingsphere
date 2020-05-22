@@ -6,7 +6,7 @@ weight = 3
 
 ## 实现动机
 
-- 元数据是Sharding-JDBC/Sharding-Proxy所使用的数据源的表、列和索引等核心数据，元数据保障ShardingSphere各个组件能够正确运行。
+- 元数据是ShardingSphere-JDBC/ShardingSphere-Proxy所使用的数据源的表、列和索引等核心数据，元数据保障ShardingSphere各个组件能够正确运行。
 
 - 元数据中心对元数据进行统一组织和管理，实现元数据的统一加载、变更通知和数据同步。
 

@@ -53,12 +53,12 @@ shardingsphere
   │  │  │      ├─function
   │  │  │      └─principle
   │  │  ├─manual
-  │  │  │  ├─sharding-jdbc
+  │  │  │  ├─shardingsphere-jdbc
   │  │  │  │  ├─configuration
   │  │  │  │  └─usage
-  │  │  │  ├─sharding-proxy
-  │  │  │  ├─sharding-sidecar
-  │  │  │  └─sharding-ui
+  │  │  │  ├─shardingsphere-proxy
+  │  │  │  ├─shardingsphere-sidecar
+  │  │  │  └─shardingsphere-ui
   │  │  ├─overview
   │  │  └─quick-start
   │  ├─i18n

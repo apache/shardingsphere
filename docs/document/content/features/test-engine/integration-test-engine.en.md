@@ -12,12 +12,12 @@ The `Parameterized` in JUnit will collect all test data, and pass to test method
 ### Configuration
  
   - environment type
-    - /sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env.properties
-    - /sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/`SQL-TYPE`/dataset.xml
-    - /sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/`SQL-TYPE`/schema.xml
+    - /shardingsphere-test-suite/src/test/resources/integrate/env.properties
+    - /shardingsphere-test-suite/src/test/resources/integrate/env/`SQL-TYPE`/dataset.xml
+    - /shardingsphere-test-suite/src/test/resources/integrate/env/`SQL-TYPE`/schema.xml
   - test case type
-    - /sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/`SQL-TYPE`/`SQL-TYPE`-integrate-test-cases.xml
-    - /sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/`SQL-TYPE`/dataset/`SHARDING-TYPE`/*.xml
+    - /shardingsphere-test-suite/src/test/resources/integrate/cases/`SQL-TYPE`/`SQL-TYPE`-integrate-test-cases.xml
+    - /shardingsphere-test-suite/src/test/resources/integrate/cases/`SQL-TYPE`/dataset/`FEATURE-TYPE`/*.xml
   - sql-case 
     - /sharding-sql-test/src/main/resources/sql/sharding/`SQL-TYPE`/*.xml
 
@@ -25,7 +25,7 @@ The `Parameterized` in JUnit will collect all test data, and pass to test method
 
 Integration test depends on existed database environment, developer need to setup the configuration file for corresponding database to test: 
 
-Firstly, setup configuration file `/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env.properties`, for example: 
+Firstly, setup configuration file `/shardingsphere-test-suite/src/test/resources/integrate/env.properties`, for example: 
 
 ```properties
 # the switch for PK, concurrent, column index testing and so on
@@ -62,7 +62,7 @@ oracle.username=jdbc
 oracle.password=jdbc
 ```
 
-Secondly, setup configuration file `/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/SQL-TYPE/dataset.xml`. 
+Secondly, setup configuration file `/shardingsphere-test-suite/src/test/resources/integrate/env/SQL-TYPE/dataset.xml`. 
 Developer can set up metadata and expected data to start the data initialization in `dataset.xml`. For example: 
 
 ```xml
@@ -90,7 +90,7 @@ Developer can customize DDL to create databases and tables in `schema.xml`.
 ### Assertion Configuration
 
 So far have confirmed what kind of sql execute in which environment in upon config, here define the data for assert.
-There are two kinds of config for assert, one is at `/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/SQL-TYPE/SQL-TYPE-integrate-test-cases.xml`.
+There are two kinds of config for assert, one is at `/shardingsphere-test-suite/src/test/resources/integrate/cases/SQL-TYPE/SQL-TYPE-integrate-test-cases.xml`.
 This file just like an index, defined the sql, parameters and expected index position for execution. the SQL is the value for `sql-case-id`. For example: 
 
 ```xml
@@ -102,7 +102,7 @@ This file just like an index, defined the sql, parameters and expected index pos
 </integrate-test-cases>
 ```
 
-Another kind of config for assert is the data, as known as the corresponding expected-data-file in SQL-TYPE-integrate-test-cases.xml, which is at `/sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/SQL-TYPE/dataset/SHARDING-TYPE/*.xml`.  
+Another kind of config for assert is the data, as known as the corresponding expected-data-file in SQL-TYPE-integrate-test-cases.xml, which is at `/shardingsphere-test-suite/src/test/resources/integrate/cases/SQL-TYPE/dataset/FEATURE-TYPE/*.xml`.  
 This file is very like the dataset.xml mentioned before, and the difference is that expected-data-file contains some other assert data, such as the return value after a sql execution. For examples:  
 
 ```xml
