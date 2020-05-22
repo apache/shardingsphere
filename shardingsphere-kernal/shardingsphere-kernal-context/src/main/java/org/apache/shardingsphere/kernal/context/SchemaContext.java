@@ -49,7 +49,7 @@ public final class SchemaContext {
         schema.getDataSources().putAll(dataSources);
         schema.getDataSourceParameters().clear();
         schema.getDataSourceParameters().putAll(dataSourceParameters);
-        runtimeContext.getShardingTransactionManagerEngine().close();
-        runtimeContext.getShardingTransactionManagerEngine().init(schema.getDatabaseType(), schema.getDataSources());
+        runtimeContext.getTransactionManagerEngine().close();
+        runtimeContext.getTransactionManagerEngine().init(schema.getDatabaseType(), schema.getDataSources());
     }
 }

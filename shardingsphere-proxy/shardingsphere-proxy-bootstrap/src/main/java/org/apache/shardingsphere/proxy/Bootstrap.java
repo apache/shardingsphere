@@ -47,7 +47,6 @@ import org.apache.shardingsphere.proxy.config.ShardingConfigurationLoader;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
-import org.apache.shardingsphere.proxy.context.ShardingSphereProxyContext;
 import org.apache.shardingsphere.proxy.frontend.bootstrap.ShardingSphereProxy;
 
 import java.io.IOException;
@@ -116,7 +115,7 @@ public final class Bootstrap {
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap(ruleConfigs);
         Map<String, Collection<RuleConfiguration>> schemaRules = getRuleConfigurations(ruleConfigs);
         ProxySchemaContexts.getInstance().init(schemaDataSources, schemaRules, authentication, properties);
-        logAndInitContext(authentication, properties);
+        log(authentication, properties);
         initMetrics(metricsConfiguration);
         startProxy(schemaDataSources.keySet(), port, schemaDataSources, schemaRules);
     }
@@ -131,16 +130,15 @@ public final class Bootstrap {
             Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap(shardingOrchestrationFacade);
             Map<String, Collection<RuleConfiguration>> schemaRules = getSchemaRules(shardingOrchestrationFacade);
             ProxySchemaContexts.getInstance().init(schemaDataSources, schemaRules, authentication, properties);
-            logAndInitContext(authentication, properties);
+            log(authentication, properties);
             initMetrics(serverConfig.getMetrics());
             startProxy(shardingSchemaNames, port, schemaDataSources, schemaRules);
         }
     }
     
-    private static void logAndInitContext(final Authentication authentication, final Properties properties) {
+    private static void log(final Authentication authentication, final Properties properties) {
         ConfigurationLogger.log(authentication);
         ConfigurationLogger.log(properties);
-        ShardingSphereProxyContext.getInstance().init(authentication, properties);
     }
 
     private static void startProxy(final Collection<String> shardingSchemaNames, final int port, final Map<String, Map<String, DataSourceParameter>> schemaDataSources,
