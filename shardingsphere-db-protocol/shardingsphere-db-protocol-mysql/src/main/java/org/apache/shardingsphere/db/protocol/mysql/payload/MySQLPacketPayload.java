@@ -223,6 +223,21 @@ public final class MySQLPacketPayload implements PacketPayload {
     }
     
     /**
+     * Read fixed length long from byte buffers.
+     *
+     * @param length length read from byte buffers
+     *
+     * @return fixed length long
+     */
+    public long readLong(final int length) {
+        long result = 0;
+        for (int i = 0; i < length; i++) {
+            result = result << 8 | readInt1();
+        }
+        return result;
+    }
+    
+    /**
      * Read lenenc string from byte buffers.
      * 
      * @see <a href="https://dev.mysql.com/doc/internals/en/string.html#packet-Protocol::FixedLengthString">FixedLengthString</a>
