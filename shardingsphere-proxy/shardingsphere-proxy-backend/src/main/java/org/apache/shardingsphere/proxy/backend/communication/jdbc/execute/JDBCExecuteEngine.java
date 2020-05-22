@@ -77,7 +77,6 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         this.jdbcExecutorWrapper = jdbcExecutorWrapper;
         executeGroupEngine = jdbcExecutorWrapper.getExecuteGroupEngine();
         sqlExecutor = new SQLExecutor(BackendExecutorContext.getInstance().getExecutorKernel(), backendConnection.isSerialExecute());
-    
     }
     
     @SuppressWarnings("unchecked")
