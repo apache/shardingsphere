@@ -40,10 +40,14 @@ import java.util.Properties;
 public final class AESEncryptor implements Encryptor {
 
     private static final String AES_KEY = "aes.key.value";
+
     private static final String ENCRYPTOR_TYPE = "AES";
+
     private Properties properties = new Properties();
-    private static Cipher encryptCipher = null;
-    private static Cipher decryptCipher = null;
+
+    private Cipher encryptCipher;
+
+    private Cipher decryptCipher;
 
     @Override
     public String getType() {
