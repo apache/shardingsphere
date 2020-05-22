@@ -21,14 +21,14 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.kernel.impl.ShardingSphereExecutorService;
-import org.apache.shardingsphere.proxy.context.ShardingSphereProxyContext;
+import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 
 /**
  * Command execute engine.
  */
 public final class UserExecutorGroup implements AutoCloseable {
     
-    private static final ShardingSphereProxyContext SHARDING_PROXY_CONTEXT = ShardingSphereProxyContext.getInstance();
+    private static final ProxySchemaContexts PROXY_SCHEMA_CONTEXTS = ProxySchemaContexts.getInstance();
     
     private static final String NAME_FORMAT = "Command-%d";
     
@@ -40,7 +40,8 @@ public final class UserExecutorGroup implements AutoCloseable {
     private final ListeningExecutorService executorService;
     
     private UserExecutorGroup() {
-        shardingSphereExecutorService = new ShardingSphereExecutorService(SHARDING_PROXY_CONTEXT.getProperties().<Integer>getValue(ConfigurationPropertyKey.ACCEPTOR_SIZE), NAME_FORMAT);
+        shardingSphereExecutorService = 
+                new ShardingSphereExecutorService(PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProperties().<Integer>getValue(ConfigurationPropertyKey.ACCEPTOR_SIZE), NAME_FORMAT);
         executorService = shardingSphereExecutorService.getExecutorService();
     }
     

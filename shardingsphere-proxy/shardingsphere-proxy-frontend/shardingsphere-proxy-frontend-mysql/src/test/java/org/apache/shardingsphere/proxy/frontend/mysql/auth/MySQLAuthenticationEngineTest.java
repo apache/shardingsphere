@@ -27,6 +27,8 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.kernal.context.SchemaContext;
 import org.apache.shardingsphere.kernal.context.SchemaContexts;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -40,6 +42,7 @@ import java.net.SocketAddress;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -131,13 +134,8 @@ public final class MySQLAuthenticationEngineTest {
     private void setSchemas(final Map<String, ShardingSphereSchema> schemas) throws NoSuchFieldException, IllegalAccessException {
         Field field = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
         field.setAccessible(true);
-        field.set(ProxySchemaContexts.getInstance(), mockSchemaContexts());
-    }
-    
-    private SchemaContexts mockSchemaContexts() {
-        SchemaContexts result = mock(SchemaContexts.class);
-        when(result.getSchemaContexts()).thenReturn(Collections.singletonMap("sharding_db", mock(SchemaContext.class)));
-        return result;
+        field.set(ProxySchemaContexts.getInstance(), 
+                new SchemaContexts(Collections.singletonMap("sharding_db", mock(SchemaContext.class)), new ConfigurationProperties(new Properties()), new Authentication()));
     }
     
     private MySQLPacketPayload getPayload(final String userName, final String database, final byte[] authResponse) {
