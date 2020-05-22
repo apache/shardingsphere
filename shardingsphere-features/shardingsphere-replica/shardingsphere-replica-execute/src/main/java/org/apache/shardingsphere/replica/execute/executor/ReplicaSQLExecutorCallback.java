@@ -15,17 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.executor.callback;
+package org.apache.shardingsphere.replica.execute.executor;
 
-import org.apache.shardingsphere.infra.spi.order.OrderedSPI;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.SQLExecutorCallback;
+import org.apache.shardingsphere.infra.spi.order.OrderedSPI;
+import org.apache.shardingsphere.replica.rule.ReplicaRule;
 
 /**
- * Rule based SQL executor callback for execute query.
+ * SQL executor callback for replica.
  * 
- * @param <T> type of sharding sphere rule
+ * @param <T> class type of return value
  */
-public interface RuleExecuteQueryExecutorCallback<T extends ShardingSphereRule> extends SQLExecutorCallback<QueryResult>, OrderedSPI<T> {
+public abstract class ReplicaSQLExecutorCallback<T> implements SQLExecutorCallback<T>, OrderedSPI<ReplicaRule> {
+    
+    @Override
+    public final int getOrder() {
+        return 5;
+    }
+    
+    @Override
+    public final Class<ReplicaRule> getTypeClass() {
+        return ReplicaRule.class;
+    }
 }
