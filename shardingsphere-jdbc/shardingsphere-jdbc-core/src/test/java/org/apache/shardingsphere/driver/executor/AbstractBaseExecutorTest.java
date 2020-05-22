@@ -79,7 +79,7 @@ public abstract class AbstractBaseExecutorTest {
         when(schema.getDatabaseType()).thenReturn(DatabaseTypes.getActualDatabaseType("H2"));
         ShardingRule shardingRule = getShardingRule();
         when(schema.getRules()).thenReturn(Collections.singletonList(shardingRule));
-        when(runtimeContext.getShardingTransactionManagerEngine()).thenReturn(new ShardingTransactionManagerEngine());
+        when(runtimeContext.getTransactionManagerEngine()).thenReturn(new ShardingTransactionManagerEngine());
         DataSource dataSource = mock(DataSource.class);
         when(dataSource.getConnection()).thenReturn(mock(Connection.class));
         Map<String, DataSource> dataSourceSourceMap = new LinkedHashMap<>();
