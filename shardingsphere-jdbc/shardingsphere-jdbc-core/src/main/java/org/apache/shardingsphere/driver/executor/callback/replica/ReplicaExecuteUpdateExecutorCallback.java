@@ -43,6 +43,7 @@ public final class ReplicaExecuteUpdateExecutorCallback extends ReplicaSQLExecut
                 result.add(each.getStorageResource().executeUpdate(each.getExecutionUnit().getSqlUnit().getSql()));
             }
         }
+        // TODO refresh metadata
         return result;
     }
 }
