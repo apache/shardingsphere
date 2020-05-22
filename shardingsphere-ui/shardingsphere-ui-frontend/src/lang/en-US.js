@@ -224,9 +224,11 @@ export default {
       delFailMessage: 'Delete Failed'
     },
     serviceDialog: {
-      serviceName: 'Please enter serviceName',
-      serviceType: 'Please enter serviceType',
-      serviceUrl: 'Please enter serviceUrl'
+      title: 'Data Scaling Setting',
+      serviceName: 'Service Name',
+      serviceUrl: 'Service Url',
+      serviceNamePlaceholder: 'Please enter serviceName',
+      serviceUrlPlaceholder: 'Please enter serviceUrl'
     }
   }
 }

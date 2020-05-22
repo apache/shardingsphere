@@ -25,6 +25,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.valu
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.decimal.MySQLDecimalBinlogProtocolValue;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.decimal.MySQLDoubleBinlogProtocolValue;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.decimal.MySQLFloatBinlogProtocolValue;
+import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.integer.MySQLBitBinlogProtocolValue;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.integer.MySQLInt24BinlogProtocolValue;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.integer.MySQLLongBinlogProtocolValue;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.integer.MySQLLongLongBinlogProtocolValue;
@@ -62,6 +63,7 @@ public final class MySQLBinlogProtocolValueFactory {
     }
     
     private static void registerIntegerTypeValue() {
+        BINLOG_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_BIT, new MySQLBitBinlogProtocolValue());
         BINLOG_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_TINY, new MySQLTinyBinlogProtocolValue());
         BINLOG_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_SHORT, new MySQLShortBinlogProtocolValue());
         BINLOG_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_INT24, new MySQLInt24BinlogProtocolValue());

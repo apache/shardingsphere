@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.log.ConfigurationLogger;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -47,13 +48,18 @@ import org.apache.shardingsphere.orchestration.core.metadatacenter.event.MetaDat
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.CircuitStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationSchema;
+import org.apache.shardingsphere.proxy.backend.BackendDataSource;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSourceFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCRawBackendDataSourceFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.JDBCDriverURLRecognizerEngine;
 import org.apache.shardingsphere.proxy.backend.util.DataSourceConverter;
+import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -70,7 +76,7 @@ public final class ProxySchemaContexts {
     
     private final JDBCBackendDataSourceFactory dataSourceFactory = JDBCRawBackendDataSourceFactory.getInstance();
     
-    private SchemaContexts schemaContexts;
+    private SchemaContexts schemaContexts = new SchemaContexts();
     
     private boolean isCircuitBreak;
     
@@ -263,9 +269,13 @@ public final class ProxySchemaContexts {
      */
     @Subscribe
     public synchronized void renew(final DataSourceChangedEvent dataSourceChangedEvent) throws Exception {
-        SchemaContext schemaContext = schemaContexts.getSchemaContexts().get(dataSourceChangedEvent.getShardingSchemaName());
-        Map<String, DataSourceParameter> oldDataSourceParameters = schemaContext.getSchema().getDataSourceParameters();
         Map<String, DataSourceParameter> newDataSourceParameters = DataSourceConverter.getDataSourceParameterMap(dataSourceChangedEvent.getDataSourceConfigurations());
+        renew(dataSourceChangedEvent.getShardingSchemaName(), newDataSourceParameters);
+    }
+    
+    private void renew(final String schemaName, final Map<String, DataSourceParameter> newDataSourceParameters) throws Exception {
+        SchemaContext schemaContext = schemaContexts.getSchemaContexts().get(schemaName);
+        Map<String, DataSourceParameter> oldDataSourceParameters = schemaContext.getSchema().getDataSourceParameters();
         List<String> deletedDataSourceParameters = getDeletedDataSources(oldDataSourceParameters, newDataSourceParameters);
         Map<String, DataSourceParameter> modifiedDataSourceParameters = getModifiedDataSources(oldDataSourceParameters, newDataSourceParameters);
         Map<String, DataSource> newDataSources = getNewDataSources(schemaContext.getSchema().getDataSources(), 
@@ -309,5 +319,93 @@ public final class ProxySchemaContexts {
         result.putAll(createDataSources(modifiedDataSources));
         result.putAll(createDataSources(addedDataSources));
         return result;
+    }
+    
+    private final class JDBCBackendDataSource implements BackendDataSource {
+    
+        /**
+         * Get connection.
+         *
+         * @param dataSourceName data source name
+         * @return connection
+         * @throws SQLException SQL exception
+         */
+        public Connection getConnection(final String schemaName, final String dataSourceName) throws SQLException {
+            return getConnections(schemaName, dataSourceName, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
+        }
+    
+        /**
+         * Get connections.
+         *
+         * @param dataSourceName data source name
+         * @param connectionSize size of connections to get
+         * @param connectionMode connection mode
+         * @return connections
+         * @throws SQLException SQL exception
+         */
+        public List<Connection> getConnections(final String schemaName, final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
+            return getConnections(schemaName, dataSourceName, connectionSize, connectionMode, TransactionType.LOCAL);
+        }
+    
+        /**
+         * Get connections.
+         *
+         * @param dataSourceName data source name
+         * @param connectionSize size of connections to be get
+         * @param connectionMode connection mode
+         * @param transactionType transaction type
+         * @return connections
+         * @throws SQLException SQL exception
+         */
+        @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
+        public List<Connection> getConnections(final String schemaName, final String dataSourceName, 
+                                               final int connectionSize, final ConnectionMode connectionMode, final TransactionType transactionType) throws SQLException {
+            DataSource dataSource = schemaContexts.getSchemaContexts().get(schemaName).getSchema().getDataSources().get(dataSourceName);
+            if (1 == connectionSize) {
+                return Collections.singletonList(createConnection(schemaName, dataSourceName, dataSource, transactionType));
+            }
+            if (ConnectionMode.CONNECTION_STRICTLY == connectionMode) {
+                return createConnections(schemaName, dataSourceName, dataSource, connectionSize, transactionType);
+            }
+            synchronized (dataSource) {
+                return createConnections(schemaName, dataSourceName, dataSource, connectionSize, transactionType);
+            }
+        }
+    
+        private List<Connection> createConnections(final String schemaName, final String dataSourceName, 
+                                                   final DataSource dataSource, final int connectionSize, final TransactionType transactionType) throws SQLException {
+            List<Connection> result = new ArrayList<>(connectionSize);
+            for (int i = 0; i < connectionSize; i++) {
+                try {
+                    result.add(createConnection(schemaName, dataSourceName, dataSource, transactionType));
+                } catch (final SQLException ex) {
+                    for (Connection each : result) {
+                        each.close();
+                    }
+                    throw new SQLException(String.format("Could't get %d connections one time, partition succeed connection(%d) have released!", connectionSize, result.size()), ex);
+                }
+            }
+            return result;
+        }
+    
+        private Connection createConnection(final String schemaName, final String dataSourceName, final DataSource dataSource, final TransactionType transactionType) throws SQLException {
+            ShardingTransactionManager shardingTransactionManager = 
+                    schemaContexts.getSchemaContexts().get(schemaName).getRuntimeContext().getTransactionManagerEngine().getTransactionManager(transactionType);
+            return isInShardingTransaction(shardingTransactionManager) ? shardingTransactionManager.getConnection(dataSourceName) : dataSource.getConnection();
+        }
+    
+        private boolean isInShardingTransaction(final ShardingTransactionManager shardingTransactionManager) {
+            return null != shardingTransactionManager && shardingTransactionManager.isInTransaction();
+        }
+    
+        /**
+         * Renew data source.
+         *
+         * @param dataSourceParameters data source parameters
+         * @throws Exception exception
+         */
+        public void renew(final String schemaName, final Map<String, DataSourceParameter> dataSourceParameters) throws Exception {
+            ProxySchemaContexts.this.renew(schemaName, dataSourceParameters);
+        }
     }
 }

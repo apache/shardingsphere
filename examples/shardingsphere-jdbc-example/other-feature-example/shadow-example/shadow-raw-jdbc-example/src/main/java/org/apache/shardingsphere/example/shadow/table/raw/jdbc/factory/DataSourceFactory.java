@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.example.shadow.table.raw.jdbc.factory;
 
 import org.apache.shardingsphere.example.shadow.table.raw.jdbc.config.EncryptShadowDatabasesConfiguration;
+import org.apache.shardingsphere.example.shadow.table.raw.jdbc.config.MasterSlaveShadowDatabasesConfiguration;
 import org.apache.shardingsphere.example.shadow.table.raw.jdbc.config.ShadowDatabasesConfiguration;
 import org.apache.shardingsphere.example.shadow.table.raw.jdbc.config.ShardingShadowDatabasesConfiguration;
 import org.apache.shardingsphere.example.type.ShardingType;
@@ -35,6 +36,8 @@ public class DataSourceFactory {
                 return new ShardingShadowDatabasesConfiguration().getDataSource();
             case ENCRYPT_SHADOW:
                 return new EncryptShadowDatabasesConfiguration().getDataSource();
+            case MASTER_SLAVE_SHADOW:
+                return new MasterSlaveShadowDatabasesConfiguration().getDataSource();
             default:
                 throw new UnsupportedOperationException(shardingType.name());
         }

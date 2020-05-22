@@ -31,13 +31,13 @@ public final class RuntimeContext {
     
     private final SQLParserEngine sqlParserEngine;
     
-    private final ShardingTransactionManagerEngine shardingTransactionManagerEngine;
+    private final ShardingTransactionManagerEngine transactionManagerEngine;
     
     public RuntimeContext(final CachedDatabaseMetaData cachedDatabaseMetaData, 
-                          final ExecutorKernel executorKernel, final SQLParserEngine sqlParserEngine, final ShardingTransactionManagerEngine shardingTransactionManagerEngine) {
+                          final ExecutorKernel executorKernel, final SQLParserEngine sqlParserEngine, final ShardingTransactionManagerEngine transactionManagerEngine) {
         this.cachedDatabaseMetaData = cachedDatabaseMetaData;
         this.executorKernel = executorKernel;
         this.sqlParserEngine = sqlParserEngine;
-        this.shardingTransactionManagerEngine = shardingTransactionManagerEngine;
+        this.transactionManagerEngine = transactionManagerEngine;
     }
 }

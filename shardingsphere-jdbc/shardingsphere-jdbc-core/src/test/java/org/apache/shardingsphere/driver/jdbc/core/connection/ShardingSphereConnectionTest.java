@@ -80,7 +80,7 @@ public final class ShardingSphereConnectionTest {
         when(schemaContext.getSchema()).thenReturn(schema);
         when(schema.getDatabaseType()).thenReturn(DatabaseTypes.getActualDatabaseType("H2"));
         when(schemaContext.getRuntimeContext()).thenReturn(runtimeContext);
-        when(runtimeContext.getShardingTransactionManagerEngine()).thenReturn(new ShardingTransactionManagerEngine());
+        when(runtimeContext.getTransactionManagerEngine()).thenReturn(new ShardingTransactionManagerEngine());
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(new TableRuleConfiguration("test"));
         connection = new ShardingSphereConnection(dataSourceMap, schemaContexts, TransactionType.LOCAL);

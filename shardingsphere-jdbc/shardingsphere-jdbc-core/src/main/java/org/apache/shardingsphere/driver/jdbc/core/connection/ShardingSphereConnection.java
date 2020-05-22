@@ -47,7 +47,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     public ShardingSphereConnection(final Map<String, DataSource> dataSourceMap, final SchemaContexts schemaContexts, final TransactionType transactionType) {
         super(dataSourceMap, schemaContexts);
         this.transactionType = transactionType;
-        shardingTransactionManager = schemaContexts.getDefaultSchemaContext().getRuntimeContext().getShardingTransactionManagerEngine().getTransactionManager(transactionType);
+        shardingTransactionManager = schemaContexts.getDefaultSchemaContext().getRuntimeContext().getTransactionManagerEngine().getTransactionManager(transactionType);
     }
     
     /**
