@@ -41,11 +41,7 @@ public final class ReplicaExecuteGroupDecorator<T extends StorageResourceExecute
             T sample = each.getInputs().get(0);
             String dataSourceName = sample.getExecutionUnit().getDataSourceName();
             Optional<String> logicDataSource = rule.findLogicDataSource(dataSourceName);
-            if (!logicDataSource.isPresent()) {
-                result.put(dataSourceName, each);
-                continue;
-            }
-            if (result.containsKey(dataSourceName)) {
+            if (logicDataSource.isPresent() && result.containsKey(dataSourceName)) {
                 result.get(dataSourceName).getInputs().addAll(each.getInputs());
             } else {
                 result.put(dataSourceName, each);
