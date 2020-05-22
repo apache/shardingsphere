@@ -31,16 +31,11 @@ import java.util.Map;
 public final class ShadowDatabasesConfiguration implements ExampleConfiguration {
     
     @Override
-    public DataSource getDataSource() {
+    public DataSource getDataSource() throws SQLException {
         ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration("shadow", Collections.singletonMap("ds", "ds_0"));
         Map<String, DataSource> dataSourceMap = new HashMap<>();
         dataSourceMap.put("ds", DataSourceUtil.createDataSource("demo_ds"));
         dataSourceMap.put("ds_0", DataSourceUtil.createDataSource("shadow_demo_ds"));
-        try {
-            return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Collections.singleton(shadowRuleConfiguration), null);
-        } catch (final SQLException ex) {
-            ex.printStackTrace();
-            return null;
-        }
+        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Collections.singleton(shadowRuleConfiguration), null);
     }
 }

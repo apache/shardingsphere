@@ -27,6 +27,8 @@ public enum ShardingType {
     
     SHARDING_SHADOW_DATABASES,
     
+    ENCRYPT_SHADOW,
+    
     MASTER_SLAVE,
     
     MASTER_SLAVE_SHADOW,
