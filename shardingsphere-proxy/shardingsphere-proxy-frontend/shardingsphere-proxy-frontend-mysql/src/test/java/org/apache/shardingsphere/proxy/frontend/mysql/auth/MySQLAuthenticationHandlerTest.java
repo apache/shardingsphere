@@ -19,11 +19,12 @@ package org.apache.shardingsphere.proxy.frontend.mysql.auth;
 
 import com.google.common.primitives.Bytes;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.auth.Authentication;
-import org.apache.shardingsphere.infra.auth.ProxyUser;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
-import org.apache.shardingsphere.proxy.context.ShardingSphereProxyContext;
+import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.auth.ProxyUser;
+import org.apache.shardingsphere.orchestration.core.common.event.AuthenticationChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -94,9 +95,7 @@ public final class MySQLAuthenticationHandlerTest {
     private void setAuthentication(final ProxyUser proxyUser) {
         Authentication authentication = new Authentication();
         authentication.getUsers().put("root", proxyUser);
-        Field field = ShardingSphereProxyContext.class.getDeclaredField("authentication");
-        field.setAccessible(true);
-        field.set(ShardingSphereProxyContext.getInstance(), authentication);
+        ShardingOrchestrationEventBus.getInstance().post(new AuthenticationChangedEvent(authentication));
     }
     
     @Test
