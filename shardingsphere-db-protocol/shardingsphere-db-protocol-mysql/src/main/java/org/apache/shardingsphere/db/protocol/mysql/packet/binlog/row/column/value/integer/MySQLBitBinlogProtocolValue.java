@@ -26,7 +26,7 @@ import java.io.Serializable;
 /**
  * BIT type value of MySQL binlog protocol.
  */
-public class MySQLBitBinlogProtocolValue implements MySQLBinlogProtocolValue {
+public final class MySQLBitBinlogProtocolValue implements MySQLBinlogProtocolValue {
     
     @Override
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {

@@ -224,7 +224,9 @@ public final class MySQLPacketPayload implements PacketPayload {
     
     /**
      * Read fixed length long from byte buffers.
+     *
      * @param length length read from byte buffers
+     *
      * @return fixed length long
      */
     public long readLong(final int length) {

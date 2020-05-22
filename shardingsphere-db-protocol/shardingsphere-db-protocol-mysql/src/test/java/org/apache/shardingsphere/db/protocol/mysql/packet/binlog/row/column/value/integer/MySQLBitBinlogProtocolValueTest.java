@@ -30,7 +30,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MySQLBitBinlogProtocolValueTest {
+public final class MySQLBitBinlogProtocolValueTest {
     
     @Mock
     private MySQLBinlogColumnDef columnDef;
