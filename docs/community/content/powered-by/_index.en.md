@@ -146,5 +146,11 @@ The list here will be shown according to the registration date.
 1. <a href="https://www.can-dao.com/" rel="nofollow">can-dao</a>
 1. <a href="https://www.yy.com/" rel="nofollow">YY</a>
 1. <a href="https://www.ddky.com/" rel="nofollow">DDKY</a>
+1. China Mobile Financial Technology
+1. <a href="https://www.idengyun.com/" rel="nofollow">DengYun</a>
+1. <a href="http://www.aicmonitor.com/" rel="nofollow">AIC Monitor</a>
+1. <a href="https://www.tansun.com/" rel="nofollow">TANSUN</a>
+1. <a href="https://www.keking.com" rel="nofollow">KeKing</a>
+1. <a href="http://www.dzzd.com" rel="nofollow">dzzd</a>
 
 <img src="https://shardingsphere.apache.org/community/image/powered-by.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />

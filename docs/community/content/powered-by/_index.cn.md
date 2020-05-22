@@ -146,5 +146,11 @@ chapter = true
 1. <a href="https://www.can-dao.com/" rel="nofollow">餐道</a>
 1. <a href="https://www.yy.com/" rel="nofollow">欢聚时代(YY)</a>
 1. <a href="https://www.ddky.com/" rel="nofollow">叮当快药</a>
+1. 中移动金融科技
+1. <a href="https://www.idengyun.com/" rel="nofollow">登云</a>
+1. <a href="http://www.aicmonitor.com/" rel="nofollow">航天智控</a>
+1. <a href="https://www.tansun.com/" rel="nofollow">天阳宏业</a>
+1. <a href="https://www.keking.com" rel="nofollow">凯京科技</a>
+1. <a href="http://www.dzzd.com" rel="nofollow">玺信阳光</a>
 
 <img src="https://shardingsphere.apache.org/community/image/powered-by.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />
