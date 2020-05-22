@@ -128,6 +128,7 @@
         <taglist-maven-plugin.version>2.4</taglist-maven-plugin.version>
         <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
         <dockerfile-maven.version>1.4.6</dockerfile-maven.version>
+        <docker-compose-maven-plugin.version>2.3.0</docker-compose-maven-plugin.version>
         
         <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
         <maven.deploy.skip>false</maven.deploy.skip>
@@ -645,6 +646,11 @@
                     <groupId>com.spotify</groupId>
                     <artifactId>dockerfile-maven-plugin</artifactId>
                     <version>${dockerfile-maven.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.dkanejs.maven.plugins</groupId>
+                    <artifactId>docker-compose-maven-plugin</artifactId>
+                    <version>${docker-compose-maven-plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>

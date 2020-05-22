@@ -35,6 +35,12 @@
             <artifactId>shardingsphere-proxy-bootstrap</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-test-fixture</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+        </dependency>
         
         <dependency>
             <groupId>com.zaxxer</groupId>
@@ -99,6 +105,7 @@
                         <configuration>
                             <repository>apache/shardingsphere-proxy-test</repository>
                             <tag>${project.version}</tag>
+                            <tag>latest</tag>
                             <buildArgs>
                                 <APP_NAME>${project.build.finalName}</APP_NAME>
                             </buildArgs>

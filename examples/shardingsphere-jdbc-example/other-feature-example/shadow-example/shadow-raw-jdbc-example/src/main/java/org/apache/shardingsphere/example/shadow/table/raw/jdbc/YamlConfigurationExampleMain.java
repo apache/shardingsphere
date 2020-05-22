@@ -21,22 +21,22 @@ import org.apache.shardingsphere.example.core.api.ExampleExecuteTemplate;
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jdbc.repository.ShadowUserRepositoryImpl;
 import org.apache.shardingsphere.example.core.jdbc.service.ShadowUserServiceImpl;
-import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.example.shadow.table.raw.jdbc.factory.YamlDataSourceFactory;
+import org.apache.shardingsphere.example.type.ShardingType;
 
 import javax.sql.DataSource;
-import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
 public class YamlConfigurationExampleMain {
     
-    public static void main(final String[] args) throws SQLException, IOException {
-        DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(getFile());
-        ExampleExecuteTemplate.run(getExampleService(dataSource));
-    }
+    private static ShardingType shardingType = ShardingType.SHADOW;
+//    private static ShardingType shardingType = ShardingType.ENCRYPT_SHADOW;
+//    private static ShardingType shardingType = ShardingType.SHARDING_SHADOW_DATABASES;
     
-    private static File getFile() {
-        return new File(YamlConfigurationExampleMain.class.getResource("/META-INF/shadow-databases.yaml").getFile());
+    public static void main(final String[] args) throws SQLException, IOException {
+        DataSource dataSource = YamlDataSourceFactory.newInstance(shardingType);
+        ExampleExecuteTemplate.run(getExampleService(dataSource));
     }
     
     private static ExampleService getExampleService(final DataSource dataSource) {

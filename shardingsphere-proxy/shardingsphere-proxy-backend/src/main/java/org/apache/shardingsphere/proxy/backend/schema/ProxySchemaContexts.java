@@ -79,6 +79,15 @@ public final class ProxySchemaContexts {
     }
     
     /**
+     * Get instance of proxy schema schemas.
+     *
+     * @return instance of ShardingSphere schemas.
+     */
+    public static ProxySchemaContexts getInstance() {
+        return INSTANCE;
+    }
+    
+    /**
      * Initialize proxy schema contexts.
      *
      * @param schemaDataSources data source map
@@ -125,7 +134,7 @@ public final class ProxySchemaContexts {
      * @return schema exists or not
      */
     public boolean schemaExists(final String schema) {
-        return schemaContexts.getSchemaContexts().containsKey(schema);
+        return null != schemaContexts && schemaContexts.getSchemaContexts().containsKey(schema);
     }
     
     /**

@@ -29,7 +29,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.Postgre
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLSSLNegativePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.schema.ShardingSphereSchemas;
+import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.frontend.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.engine.AuthenticationEngine;
 
@@ -60,7 +60,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
         payload.getByteBuf().resetReaderIndex();
         PostgreSQLComStartupPacket comStartupPacket = new PostgreSQLComStartupPacket((PostgreSQLPacketPayload) payload);
         String databaseName = comStartupPacket.getParametersMap().get(DATABASE_NAME_KEYWORD);
-        if (!Strings.isNullOrEmpty(databaseName) && !ShardingSphereSchemas.getInstance().schemaExists(databaseName)) {
+        if (!Strings.isNullOrEmpty(databaseName) && !ProxySchemaContexts.getInstance().schemaExists(databaseName)) {
             PostgreSQLErrorResponsePacket responsePacket = new PostgreSQLErrorResponsePacket();
             responsePacket.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_SEVERITY, "FATAL");
             responsePacket.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_CODE, "3D000");
@@ -71,7 +71,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
         backendConnection.setCurrentSchema(databaseName);
         // TODO send a md5 authentication request message
         context.write(new PostgreSQLAuthenticationOKPacket(true));
-        context.write(new PostgreSQLParameterStatusPacket("server_version", "8.4"));
+        context.write(new PostgreSQLParameterStatusPacket("server_version", "12.3"));
         context.write(new PostgreSQLParameterStatusPacket("client_encoding", "UTF8"));
         context.write(new PostgreSQLParameterStatusPacket("server_encoding", "UTF8"));
         context.writeAndFlush(new PostgreSQLReadyForQueryPacket());

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.schema.ShardingSphereSchemas;
+import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.context.ShardingSphereProxyContext;
 import org.apache.shardingsphere.proxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.sql.parser.sql.util.SQLUtil;
@@ -45,7 +45,7 @@ public final class MySQLComInitDbExecutor implements CommandExecutor {
     @Override
     public Collection<DatabasePacket> execute() {
         String schema = SQLUtil.getExactlyValue(packet.getSchema());
-        if (ShardingSphereSchemas.getInstance().schemaExists(schema) && isAuthorizedSchema(schema)) {
+        if (ProxySchemaContexts.getInstance().schemaExists(schema) && isAuthorizedSchema(schema)) {
             backendConnection.setCurrentSchema(packet.getSchema());
             return Collections.singletonList(new MySQLOKPacket(1));
         }
