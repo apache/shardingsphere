@@ -34,7 +34,7 @@ public final class ReplicaRuleBuilder implements ShardingSphereRuleBuilder<Repli
     
     @Override
     public int getOrder() {
-        return 5;
+        return 7;
     }
     
     @Override

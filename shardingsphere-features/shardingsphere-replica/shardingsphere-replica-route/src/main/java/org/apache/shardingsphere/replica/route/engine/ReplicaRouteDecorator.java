@@ -66,7 +66,7 @@ public final class ReplicaRouteDecorator implements RouteDecorator<ReplicaRule> 
     
     @Override
     public int getOrder() {
-        return 10;
+        return 12;
     }
     
     @Override

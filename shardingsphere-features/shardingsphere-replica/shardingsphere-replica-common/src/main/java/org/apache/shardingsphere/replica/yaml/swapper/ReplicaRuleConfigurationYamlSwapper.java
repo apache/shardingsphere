@@ -73,6 +73,6 @@ public final class ReplicaRuleConfigurationYamlSwapper implements YamlRuleConfig
     
     @Override
     public int getOrder() {
-        return 10;
+        return 12;
     }
 }
