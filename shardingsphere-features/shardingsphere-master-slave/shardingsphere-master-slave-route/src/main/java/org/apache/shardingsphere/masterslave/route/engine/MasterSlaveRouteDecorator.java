@@ -44,7 +44,7 @@ public final class MasterSlaveRouteDecorator implements RouteDecorator<MasterSla
             String dataSourceName = new MasterSlaveDataSourceRouter(masterSlaveRule.getSingleDataSourceRule()).route(routeContext.getSqlStatementContext().getSqlStatement());
             RouteResult routeResult = new RouteResult();
             routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.emptyList()));
-            return new RouteContext(routeContext.getSqlStatementContext(), Collections.emptyList(), routeResult);
+            return new RouteContext(routeContext.getSqlStatementContext(), routeContext.getParameters(), routeResult);
         }
         Collection<RouteUnit> toBeRemoved = new LinkedList<>();
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
