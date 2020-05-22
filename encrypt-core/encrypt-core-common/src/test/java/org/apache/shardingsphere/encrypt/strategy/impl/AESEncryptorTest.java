@@ -27,50 +27,53 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public final class AESEncryptorTest {
-    
+
     private final AESEncryptor encryptor = new AESEncryptor();
-    
+
     @Before
     public void setUp() {
         Properties properties = new Properties();
         properties.setProperty("aes.key.value", "test");
         encryptor.setProperties(properties);
+        encryptor.init();
     }
-    
+
     @Test
     public void assertGetType() {
         assertThat(encryptor.getType(), is("AES"));
     }
-    
+
     @Test
     public void assertEncode() {
         assertThat(encryptor.encrypt("test"), is("dSpPiyENQGDUXMKFMJPGWA=="));
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void assertEncodeWithoutKey() {
         Properties properties = new Properties();
         encryptor.setProperties(properties);
+        encryptor.init();
         assertThat(encryptor.encrypt("test"), is("dSpPiyENQGDUXMKFMJPGWA=="));
     }
-    
+
     @Test
     public void assertDecode() {
         assertThat(encryptor.decrypt("dSpPiyENQGDUXMKFMJPGWA==").toString(), is("test"));
     }
-    
+
     @Test
     public void assertDecodeWithNull() {
         assertNull(encryptor.decrypt(null));
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void assertDecodeWithoutKey() {
         Properties properties = new Properties();
         encryptor.setProperties(properties);
+        encryptor.init();
         assertThat(encryptor.decrypt("dSpPiyENQGDUXMKFMJPGWA==").toString(), is("test"));
     }
-    
+
     @Test
     public void assertGetProperties() {
         assertThat(encryptor.getProperties().get("aes.key.value").toString(), is("test"));
