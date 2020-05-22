@@ -15,30 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cluster.state;
+package org.apache.shardingsphere.cluster.heartbeat.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.cluster.state.enums.NodeState;
-
-import java.util.Map;
 
 /**
- * Instance state.
+ * Heart beat result.
  */
+@AllArgsConstructor
 @Getter
-@Setter
-public final class InstanceState {
+public final class HeartBeatResult {
     
-    private NodeState state;
+    private String dataSourceName;
     
-    private Map<String, DataSourceState> dataSources;
+    private Boolean enable;
     
-    public InstanceState(final Map<String, DataSourceState> dataSources) {
-        this.dataSources = dataSources;
-    }
-    
-    public InstanceState(final NodeState state) {
-        this.state = state;
-    }
+    private Long detectTimeStamp;
 }
