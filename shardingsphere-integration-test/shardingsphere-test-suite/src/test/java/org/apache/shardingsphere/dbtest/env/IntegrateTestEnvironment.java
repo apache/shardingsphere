@@ -52,7 +52,7 @@ public final class IntegrateTestEnvironment {
         activeProfile = loadActiveProfile();
         Properties prop = new Properties();
         try {
-            prop.load(IntegrateTestEnvironment.class.getClassLoader().getResourceAsStream("proxy".equals(activeProfile) ? "integrate/env-proxy.properties" : "integrate/env.properties"));
+            prop.load(IntegrateTestEnvironment.class.getClassLoader().getResourceAsStream(isProxyEnvironment() ? "integrate/env-proxy.properties" : "integrate/env.properties"));
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
@@ -98,6 +98,15 @@ public final class IntegrateTestEnvironment {
             ex.printStackTrace();
         }
         return prop.getProperty("mode");
+    }
+    
+    /**
+     * Is proxy environment.
+     *
+     * @return true or false
+     */
+    public boolean isProxyEnvironment() {
+        return "proxy".equals(activeProfile);
     }
     
     /**
