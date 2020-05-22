@@ -19,6 +19,7 @@ package org.apache.shardingsphere.cluster.heartbeat.response;
 
 import lombok.Getter;
 
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -27,9 +28,9 @@ import java.util.Map;
 @Getter
 public final class HeartBeatResponse {
     
-    private Map<String, HeartBeatResult> heartBeatResultMap;
+    private Map<String, Collection<HeartBeatResult>> heartBeatResultMap;
     
-    public HeartBeatResponse(final Map<String, HeartBeatResult> heartBeatResultMap) {
+    public HeartBeatResponse(final Map<String, Collection<HeartBeatResult>> heartBeatResultMap) {
         this.heartBeatResultMap = heartBeatResultMap;
     }
 }
