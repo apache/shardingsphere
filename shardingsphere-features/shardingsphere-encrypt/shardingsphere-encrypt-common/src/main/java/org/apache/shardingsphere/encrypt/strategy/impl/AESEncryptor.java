@@ -27,11 +27,8 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 
 import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Properties;
 
@@ -45,14 +42,26 @@ public final class AESEncryptor implements Encryptor {
     private static final String AES_KEY = "aes.key.value";
     
     private Properties properties = new Properties();
+
+    private Cipher encryptCipher;
+
+    private Cipher decryptCipher;
     
     @Override
     public String getType() {
         return "AES";
     }
-    
+
+    @SneakyThrows
     @Override
     public void init() {
+        Preconditions.checkArgument(properties.containsKey(AES_KEY), "No available secret key for `%s`.", AESEncryptor.class.getName());
+        SecretKeySpec skeySpec = new SecretKeySpec(createSecretKey(), getType());
+        encryptCipher = Cipher.getInstance(getType());
+        encryptCipher.init(Cipher.ENCRYPT_MODE, skeySpec);
+
+        decryptCipher = Cipher.getInstance(getType());
+        decryptCipher.init(Cipher.DECRYPT_MODE, skeySpec);
     }
     
     @SneakyThrows
@@ -61,7 +70,7 @@ public final class AESEncryptor implements Encryptor {
         if (null == plaintext) {
             return null;
         }
-        byte[] result = getCipher(Cipher.ENCRYPT_MODE).doFinal(StringUtils.getBytesUtf8(String.valueOf(plaintext)));
+        byte[] result = encryptCipher.doFinal(StringUtils.getBytesUtf8(String.valueOf(plaintext)));
         return Base64.encodeBase64String(result);
     }
     
@@ -71,15 +80,8 @@ public final class AESEncryptor implements Encryptor {
         if (null == ciphertext) {
             return null;
         }
-        byte[] result = getCipher(Cipher.DECRYPT_MODE).doFinal(Base64.decodeBase64(ciphertext));
+        byte[] result = decryptCipher.doFinal(Base64.decodeBase64(ciphertext));
         return new String(result, StandardCharsets.UTF_8);
-    }
-    
-    private Cipher getCipher(final int decryptMode) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
-        Preconditions.checkArgument(properties.containsKey(AES_KEY), "No available secret key for `%s`.", AESEncryptor.class.getName());
-        Cipher result = Cipher.getInstance(getType());
-        result.init(decryptMode, new SecretKeySpec(createSecretKey(), getType()));
-        return result;
     }
     
     private byte[] createSecretKey() {

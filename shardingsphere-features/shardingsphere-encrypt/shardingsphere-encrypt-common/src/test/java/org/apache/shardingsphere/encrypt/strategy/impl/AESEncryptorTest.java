@@ -35,6 +35,7 @@ public final class AESEncryptorTest {
         Properties properties = new Properties();
         properties.setProperty("aes.key.value", "test");
         encryptor.setProperties(properties);
+        encryptor.init();
     }
     
     @Test
@@ -51,6 +52,7 @@ public final class AESEncryptorTest {
     public void assertEncodeWithoutKey() {
         Properties properties = new Properties();
         encryptor.setProperties(properties);
+        encryptor.init();
         assertThat(encryptor.encrypt("test"), is("dSpPiyENQGDUXMKFMJPGWA=="));
     }
     
@@ -68,6 +70,7 @@ public final class AESEncryptorTest {
     public void assertDecodeWithoutKey() {
         Properties properties = new Properties();
         encryptor.setProperties(properties);
+        encryptor.init();
         assertThat(encryptor.decrypt("dSpPiyENQGDUXMKFMJPGWA==").toString(), is("test"));
     }
     
