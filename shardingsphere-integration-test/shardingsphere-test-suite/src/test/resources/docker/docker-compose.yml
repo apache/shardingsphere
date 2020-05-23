@@ -24,16 +24,17 @@ services:
     volumes:
       - ./mysql:/docker-entrypoint-initdb.d/
     ports:
-      - "3336:3306"
+      - "33060:3306"
   sharding-proxy:
       image: apache/shardingsphere-proxy-test
-      container_name: sharding-proxy
+      container_name: shardingsphere-proxy
       depends_on:
         - mysql
       ports:
-        - "3337:3307"
+        - "33070:3307"
       links:
         - "mysql:db.mysql"
       entrypoint: >
-        /bin/sh -c 'sleep 10s'
-
+           /bin/sh -c "/opt/wait-for-it.sh mysql:3306 --timeout=20 --strict --
+           && /opt/shardingsphere-proxy/bin/start.sh 3307
+           && tail -f /opt/shardingsphere-proxy/logs/stdout.log"

@@ -15,9 +15,11 @@
 # limitations under the License.
 #
 
-FROM openjdk:8-jdk-alpine
+# FIXME for compatible with wait-for-it.sh, change from openjdk:8-jdk-alpine to java:8
+FROM java:8
 
 ARG APP_NAME
-ADD target/${APP_NAME}.tar.gz /export
-RUN mv /export/${APP_NAME} /export/shardingsphere-proxy
-ENTRYPOINT /export/shardingsphere-proxy/bin/start.sh && tail -f /export/shardingsphere-proxy/logs/stdout.log
+ADD target/${APP_NAME}.tar.gz /opt
+ADD src/main/resources/tool/wait-for-it.sh /opt
+RUN chmod +x /opt/wait-for-it.sh
+RUN mv /opt/${APP_NAME} /opt/shardingsphere-proxy
