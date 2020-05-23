@@ -584,7 +584,7 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public final ASTNode visitCaseExpression(final CaseExpressionContext ctx) {
-        return visit(ctx.simpleExpr());
+        return new OtherLiteralValue(ctx.getText());
     }
     
     @Override
