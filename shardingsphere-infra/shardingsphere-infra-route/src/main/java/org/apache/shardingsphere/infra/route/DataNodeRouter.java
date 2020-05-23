@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.infra.route;
 
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
+import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -30,6 +33,7 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.decorator.RouteDecorator;
 import org.apache.shardingsphere.infra.route.hook.SPIRoutingHook;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 
 import java.util.Collection;
 import java.util.List;
@@ -94,6 +98,21 @@ public final class DataNodeRouter {
     private RouteContext createRouteContext(final SQLStatement sqlStatement, final String sql, final List<Object> parameters) {
         try {
             SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getSchema().getSchemaMetaData(), sql, parameters, sqlStatement);
+            if (sqlStatement instanceof InsertStatement) {
+                InsertStatementContext insertStatementContext = (InsertStatementContext) sqlStatementContext;
+                InsertStatement insertStatement = (InsertStatement) sqlStatement;
+                int count = 0;
+                boolean insertWithColumn = insertStatement.getInsertColumns().isPresent() && insertStatement.getInsertColumns().get().getColumns().size() > 0;
+                int countColumn = insertStatementContext.getColumnNames().size() - (insertWithColumn ? 0 : (insertStatementContext.getGeneratedKeyContext().isPresent()
+                        && insertStatementContext.getGeneratedKeyContext().get().isGenerated()
+                        && insertStatementContext.getColumnNames().contains(insertStatementContext.getGeneratedKeyContext().get().getColumnName()) ? 1 : 0));
+                for (InsertValueContext each:insertStatementContext.getInsertValueContexts()) {
+                    count++;
+                    if (each.getValueExpressions().size() != countColumn) {
+                        throw new ShardingSphereException("Column count doesn't match value count at row %s", count);
+                    }
+                }
+            }
             return new RouteContext(sqlStatementContext, parameters, new RouteResult());
             // TODO should pass parameters for master-slave
         } catch (final IndexOutOfBoundsException ex) {
