@@ -20,6 +20,6 @@ FROM java:8
 
 ARG APP_NAME
 ADD target/${APP_NAME}.tar.gz /opt
-ADD src/main/resources/tool/wait-for-it.sh /opt
+ADD https://github.com/vishnubob/wait-for-it/blob/master/wait-for-it.sh /opt
 RUN chmod +x /opt/wait-for-it.sh
 RUN mv /opt/${APP_NAME} /opt/shardingsphere-proxy
