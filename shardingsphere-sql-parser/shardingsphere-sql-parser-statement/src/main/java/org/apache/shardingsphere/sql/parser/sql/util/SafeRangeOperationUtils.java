@@ -40,7 +40,7 @@ public final class SafeRangeOperationUtils {
     /**
      * Execute intersection method by safe mode.
      *
-     * @param range          range
+     * @param range range
      * @param connectedRange connected range
      * @return the intersection result of two ranges
      */
@@ -84,7 +84,7 @@ public final class SafeRangeOperationUtils {
     /**
      * Execute contains method by safe mode.
      *
-     * @param range    range
+     * @param range range
      * @param endpoint endpoint
      * @return whether the endpoint is included in the range
      */
