@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.cluster.state;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.cluster.state.enums.NodeState;
 
@@ -28,6 +30,8 @@ import java.util.Map;
  */
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public final class InstanceState {
     
     private NodeState state;
@@ -36,9 +40,5 @@ public final class InstanceState {
     
     public InstanceState(final Map<String, DataSourceState> dataSources) {
         this.dataSources = dataSources;
-    }
-    
-    public InstanceState(final NodeState state) {
-        this.state = state;
     }
 }
