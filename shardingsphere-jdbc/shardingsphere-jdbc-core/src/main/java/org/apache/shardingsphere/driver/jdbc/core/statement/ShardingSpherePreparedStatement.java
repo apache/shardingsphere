@@ -97,7 +97,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private final PreparedStatementExecutor preparedStatementExecutor;
     
-    private final RawJDBCExecutor rawSQLExecutor;
+    private final RawJDBCExecutor rawExecutor;
     
     private final BatchPreparedStatementExecutor batchPreparedStatementExecutor;
     
@@ -139,7 +139,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         statementOption = returnGeneratedKeys ? new StatementOption(true) : new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         SQLExecutor sqlExecutor = new SQLExecutor(schemaContexts.getDefaultSchemaContext().getRuntimeContext().getExecutorKernel(), connection.isHoldTransaction());
         preparedStatementExecutor = new PreparedStatementExecutor(connection.getDataSourceMap(), schemaContexts, sqlExecutor);
-        rawSQLExecutor = new RawJDBCExecutor(schemaContexts.getDefaultSchemaContext().getRuntimeContext().getExecutorKernel(), connection.isHoldTransaction());
+        rawExecutor = new RawJDBCExecutor(schemaContexts.getDefaultSchemaContext().getRuntimeContext().getExecutorKernel(), connection.isHoldTransaction());
         batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(schemaContexts, sqlExecutor);
     }
     
@@ -156,7 +156,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 reply();
                 queryResults = preparedStatementExecutor.executeQuery(inputGroups);
             } else {
-                queryResults = rawSQLExecutor.executeQuery(getRawInputGroups(), new DefaultRawSQLExecutorCallback());
+                queryResults = rawExecutor.executeQuery(getRawInputGroups(), new DefaultRawSQLExecutorCallback());
             }
             MergedResult mergedResult = mergeQuery(queryResults);
             result = new ShardingSphereResultSet(statements.stream().map(this::getResultSet).collect(Collectors.toList()), mergedResult, this, executionContext);
@@ -178,7 +178,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 reply();
                 return preparedStatementExecutor.executeUpdate(inputGroups, executionContext.getSqlStatementContext());
             } else {
-                return rawSQLExecutor.executeUpdate(getRawInputGroups(), new DefaultRawSQLExecutorCallback());
+                return rawExecutor.executeUpdate(getRawInputGroups(), new DefaultRawSQLExecutorCallback());
             }
         } finally {
             clearBatch();
@@ -197,7 +197,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 return preparedStatementExecutor.execute(inputGroups, executionContext.getSqlStatementContext());
             } else {
                 // TODO process getStatement
-                return rawSQLExecutor.execute(getRawInputGroups(), new DefaultRawSQLExecutorCallback());
+                return rawExecutor.execute(getRawInputGroups(), new DefaultRawSQLExecutorCallback());
             }
         } finally {
             clearBatch();
