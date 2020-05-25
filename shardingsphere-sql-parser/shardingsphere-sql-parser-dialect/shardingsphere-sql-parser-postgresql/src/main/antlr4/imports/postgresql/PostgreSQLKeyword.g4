@@ -587,6 +587,10 @@ TSQUERY
     : T S Q U E R Y
     ;
 
+UUID
+    : U U I D
+    ;
+
 XML
     : X M L
     ;
