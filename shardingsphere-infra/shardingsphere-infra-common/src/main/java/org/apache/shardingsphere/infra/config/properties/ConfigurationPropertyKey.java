@@ -123,6 +123,11 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
      */
     PROXY_HINT_ENABLED("proxy.hint.enabled", String.valueOf(Boolean.FALSE), boolean.class),
     
+    /**
+     * Enable cluster for ShardingSphere-Proxy.
+     */
+    PROXY_CLUSTER_ENABLED("proxy.cluster.enabled", String.valueOf(Boolean.FALSE), boolean.class),
+    
     PROXY_BACKEND_MAX_CONNECTIONS("proxy.backend.max.connections", String.valueOf(8), int.class),
     
     PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS("proxy.backend.connection.timeout.seconds", String.valueOf(60), int.class),
