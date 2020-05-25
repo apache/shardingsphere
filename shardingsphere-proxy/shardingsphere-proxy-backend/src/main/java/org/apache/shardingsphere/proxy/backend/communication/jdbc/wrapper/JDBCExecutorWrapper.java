@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper;
 
-import org.apache.shardingsphere.proxy.backend.metrics.MetricsUtils;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
+import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.group.StatementOption;
 import org.apache.shardingsphere.infra.executor.sql.group.ExecuteGroupEngine;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.metrics.MetricsUtils;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -44,9 +46,11 @@ public interface JDBCExecutorWrapper {
     /**
      * Get execute group engine.
      * 
+     * @param backendConnection backend connection
+     * @param option statement option
      * @return execute group engine
      */
-    ExecuteGroupEngine getExecuteGroupEngine();
+    ExecuteGroupEngine getExecuteGroupEngine(BackendConnection backendConnection, StatementOption option);
     
     /**
      * Execute SQL.

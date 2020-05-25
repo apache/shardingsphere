@@ -35,7 +35,9 @@ public final class ReplicaExecuteBatchExecutorCallback extends ReplicaSQLExecuto
     @Override
     public Collection<int[]> execute(final Collection<StatementExecuteUnit> inputs, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
         Collection<int[]> result = new LinkedList<>();
-        // TODO
+        for (StatementExecuteUnit each : inputs) {
+            result.add(each.getStorageResource().executeBatch());
+        }
         return result;
     }
 }

@@ -15,27 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.group;
+package org.apache.shardingsphere.infra.executor.sql;
 
-import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 
-import java.sql.SQLException;
-import java.util.Collection;
-
 /**
- * Execute group engine.
- * 
- * @param <T> type of input value
+ * Raw SQL execute unit.
  */
-public interface ExecuteGroupEngine<T> {
+@RequiredArgsConstructor
+@Getter
+public final class RawSQLExecuteUnit {
     
-    /**
-     * Generate storage resource execute unit groups.
-     *
-     * @param executionUnits execution units
-     * @return storage resource execute unit groups
-     * @throws SQLException SQL exception
-     */
-    Collection<InputGroup<T>> generate(Collection<ExecutionUnit> executionUnits) throws SQLException;
+    private final ExecutionUnit executionUnit;
+    
+    private final ConnectionMode connectionMode;
 }

@@ -61,7 +61,7 @@ public final class MySQLProtocolFrontendEngineTest {
     
     @Mock
     private MySQLPacketPayload payload;
-
+    
     @Mock
     private Channel channel;
     

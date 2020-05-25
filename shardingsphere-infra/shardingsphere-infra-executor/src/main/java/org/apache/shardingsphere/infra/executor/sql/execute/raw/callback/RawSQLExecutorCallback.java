@@ -15,27 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.group;
+package org.apache.shardingsphere.infra.executor.sql.execute.raw.callback;
 
-import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
-
-import java.sql.SQLException;
-import java.util.Collection;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.RawSQLExecuteUnit;
 
 /**
- * Execute group engine.
- * 
- * @param <T> type of input value
+ * Raw SQL executor callback.
+ *
+ * @param <T> class type of return value
  */
-public interface ExecuteGroupEngine<T> {
-    
-    /**
-     * Generate storage resource execute unit groups.
-     *
-     * @param executionUnits execution units
-     * @return storage resource execute unit groups
-     * @throws SQLException SQL exception
-     */
-    Collection<InputGroup<T>> generate(Collection<ExecutionUnit> executionUnits) throws SQLException;
+public interface RawSQLExecutorCallback<T> extends ExecutorCallback<RawSQLExecuteUnit, T> {
 }

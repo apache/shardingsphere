@@ -15,27 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.group;
+package org.apache.shardingsphere.infra.executor.sql.execute.raw.callback.impl;
 
-import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.RawSQLExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.raw.callback.RawSQLExecutorCallback;
 
-import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Map;
 
 /**
- * Execute group engine.
- * 
- * @param <T> type of input value
+ * Raw SQL execute query executor callback.
  */
-public interface ExecuteGroupEngine<T> {
+public final class RawSQLExecuteQueryExecutorCallback implements RawSQLExecutorCallback<QueryResult> {
     
-    /**
-     * Generate storage resource execute unit groups.
-     *
-     * @param executionUnits execution units
-     * @return storage resource execute unit groups
-     * @throws SQLException SQL exception
-     */
-    Collection<InputGroup<T>> generate(Collection<ExecutionUnit> executionUnits) throws SQLException;
+    @Override
+    public Collection<QueryResult> execute(final Collection<RawSQLExecuteUnit> inputs, final boolean isTrunkThread, final Map<String, Object> dataMap) {
+        // TODO
+        return null;
+    }
 }
