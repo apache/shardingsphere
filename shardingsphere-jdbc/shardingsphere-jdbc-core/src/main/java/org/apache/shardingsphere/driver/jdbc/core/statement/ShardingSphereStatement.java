@@ -257,8 +257,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private Collection<InputGroup<StatementExecuteUnit>> getInputGroups(final int maxConnectionsSizePerQuery) throws SQLException {
-        return new StatementExecuteGroupEngine(maxConnectionsSizePerQuery, 
-                schemaContexts.getDefaultSchemaContext().getSchema().getRules()).generate(executionContext.getExecutionUnits(), connection, statementOption);
+        return new StatementExecuteGroupEngine(maxConnectionsSizePerQuery, connection, statementOption, 
+                schemaContexts.getDefaultSchemaContext().getSchema().getRules()).generate(executionContext.getExecutionUnits());
     }
     
     private void cacheStatements(final Collection<InputGroup<StatementExecuteUnit>> inputGroups) {

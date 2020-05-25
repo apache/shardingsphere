@@ -54,7 +54,6 @@ public class MySQLComStmtExecuteExecutorTest {
     public void assertIsErrorResponse() {
         BackendConnection backendConnection = mock(BackendConnection.class);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.getRules()).thenReturn(Collections.emptyList());
         when(backendConnection.getSchema()).thenReturn(schema);
         MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(mock(MySQLComStmtExecutePacket.class), backendConnection);
         FieldSetter.setField(mysqlComStmtExecuteExecutor, MySQLComStmtExecuteExecutor.class.getDeclaredField("databaseCommunicationEngine"), databaseCommunicationEngine);
@@ -69,7 +68,6 @@ public class MySQLComStmtExecuteExecutorTest {
     public void assertIsUpdateResponse() {
         BackendConnection backendConnection = mock(BackendConnection.class);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.getRules()).thenReturn(Collections.emptyList());
         when(backendConnection.getSchema()).thenReturn(schema);
         MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(mock(MySQLComStmtExecutePacket.class), backendConnection);
         FieldSetter.setField(mysqlComStmtExecuteExecutor, MySQLComStmtExecuteExecutor.class.getDeclaredField("databaseCommunicationEngine"), databaseCommunicationEngine);
@@ -83,7 +81,6 @@ public class MySQLComStmtExecuteExecutorTest {
     public void assertIsQuery() {
         BackendConnection backendConnection = mock(BackendConnection.class);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.getRules()).thenReturn(Collections.emptyList());
         when(backendConnection.getSchema()).thenReturn(schema);
         MySQLComStmtExecuteExecutor mysqlComStmtExecuteExecutor = new MySQLComStmtExecuteExecutor(mock(MySQLComStmtExecutePacket.class), backendConnection);
         FieldSetter.setField(mysqlComStmtExecuteExecutor, MySQLComStmtExecuteExecutor.class.getDeclaredField("databaseCommunicationEngine"), databaseCommunicationEngine);

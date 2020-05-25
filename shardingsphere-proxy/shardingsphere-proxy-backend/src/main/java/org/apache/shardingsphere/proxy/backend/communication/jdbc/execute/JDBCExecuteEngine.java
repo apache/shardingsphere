@@ -68,14 +68,11 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     @Getter
     private final JDBCExecutorWrapper jdbcExecutorWrapper;
     
-    private final ExecuteGroupEngine executeGroupEngine;
-    
     private final SQLExecutor sqlExecutor;
     
     public JDBCExecuteEngine(final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper) {
         this.backendConnection = backendConnection;
         this.jdbcExecutorWrapper = jdbcExecutorWrapper;
-        executeGroupEngine = jdbcExecutorWrapper.getExecuteGroupEngine();
         sqlExecutor = new SQLExecutor(BackendExecutorContext.getInstance().getExecutorKernel(), backendConnection.isSerialExecute());
     }
     
@@ -85,7 +82,8 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         SQLStatementContext sqlStatementContext = executionContext.getSqlStatementContext();
         boolean isReturnGeneratedKeys = sqlStatementContext.getSqlStatement() instanceof InsertStatement;
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        Collection<InputGroup<StatementExecuteUnit>> inputGroups = executeGroupEngine.generate(executionContext.getExecutionUnits(), backendConnection, new StatementOption(isReturnGeneratedKeys));
+        ExecuteGroupEngine executeGroupEngine = jdbcExecutorWrapper.getExecuteGroupEngine(backendConnection, new StatementOption(isReturnGeneratedKeys));
+        Collection<InputGroup<StatementExecuteUnit>> inputGroups = executeGroupEngine.generate(executionContext.getExecutionUnits());
         Collection<ExecuteResponse> executeResponses = sqlExecutor.execute(inputGroups,
                 getSQLExecutorCallback(new ProxySQLExecutorCallback(sqlStatementContext, backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, true)),
                 getSQLExecutorCallback(new ProxySQLExecutorCallback(sqlStatementContext, backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, false)));

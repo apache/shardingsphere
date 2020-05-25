@@ -24,12 +24,14 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContextBuil
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.group.StatementExecuteGroupEngine;
+import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.group.StatementOption;
 import org.apache.shardingsphere.infra.executor.sql.group.ExecuteGroupEngine;
 import org.apache.shardingsphere.infra.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.infra.route.DataNodeRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.backend.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
@@ -67,9 +69,9 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     }
     
     @Override
-    public ExecuteGroupEngine getExecuteGroupEngine() {
+    public ExecuteGroupEngine getExecuteGroupEngine(final BackendConnection backendConnection, final StatementOption option) {
         int maxConnectionsSizePerQuery = PROXY_SCHEMA_CONTEXTS.getSchemaContexts().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new StatementExecuteGroupEngine(maxConnectionsSizePerQuery, schema.getRules());
+        return new StatementExecuteGroupEngine(maxConnectionsSizePerQuery, backendConnection, option, schema.getRules());
     }
     
     @Override
