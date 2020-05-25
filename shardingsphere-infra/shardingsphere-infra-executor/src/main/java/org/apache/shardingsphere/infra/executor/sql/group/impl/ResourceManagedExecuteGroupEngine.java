@@ -21,7 +21,7 @@ import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.ExecutionConnection;
-import org.apache.shardingsphere.infra.executor.sql.StorageResourceExecuteUnit;
+import org.apache.shardingsphere.infra.executor.unit.ResourceManagedExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.StorageResourceOption;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
@@ -41,7 +41,7 @@ import java.util.List;
  * @param <O> type of storage resource option
  */
 public abstract class ResourceManagedExecuteGroupEngine
-        <U extends StorageResourceExecuteUnit, E extends ExecutionConnection<C, ?, O>, C, O extends StorageResourceOption> extends AbstractExecuteGroupEngine<U> {
+        <U extends ResourceManagedExecuteUnit, E extends ExecutionConnection<C, ?, O>, C, O extends StorageResourceOption> extends AbstractExecuteGroupEngine<U> {
     
     private final int maxConnectionsSizePerQuery;
     

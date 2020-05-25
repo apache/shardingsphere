@@ -42,7 +42,7 @@ public final class StatementExecuteGroupEngine extends ResourceManagedExecuteGro
     @Override
     protected StatementExecuteUnit createStorageResourceExecuteUnit(final ExecutionUnit executionUnit, final JDBCExecutionConnection executionConnection, final Connection connection, 
                                                                     final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
-        return new StatementExecuteUnit(executionUnit, createStatement(executionConnection, connection, connectionMode, option), connectionMode);
+        return new StatementExecuteUnit(executionUnit, connectionMode, createStatement(executionConnection, connection, connectionMode, option));
     }
     
     private Statement createStatement(final JDBCExecutionConnection executionConnection, final Connection connection,

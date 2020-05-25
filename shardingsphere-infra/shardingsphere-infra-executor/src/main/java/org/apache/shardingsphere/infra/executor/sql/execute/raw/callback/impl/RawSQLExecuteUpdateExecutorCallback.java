@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.raw.callback.impl;
 
-import org.apache.shardingsphere.infra.executor.sql.RawSQLExecuteUnit;
+import org.apache.shardingsphere.infra.executor.unit.RawSQLExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.raw.callback.RawSQLExecutorCallback;
 
 import java.util.Collection;

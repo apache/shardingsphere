@@ -45,7 +45,7 @@ public final class PreparedStatementExecuteGroupEngine extends ResourceManagedEx
                                                                     final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
         PreparedStatement preparedStatement = createPreparedStatement(
                 executionUnit.getSqlUnit().getSql(), executionUnit.getSqlUnit().getParameters(), executionConnection, connection, connectionMode, option);
-        return new StatementExecuteUnit(executionUnit, preparedStatement, connectionMode);
+        return new StatementExecuteUnit(executionUnit, connectionMode, preparedStatement);
     }
     
     private PreparedStatement createPreparedStatement(final String sql, final List<Object> parameters, final JDBCExecutionConnection executionConnection, final Connection connection,

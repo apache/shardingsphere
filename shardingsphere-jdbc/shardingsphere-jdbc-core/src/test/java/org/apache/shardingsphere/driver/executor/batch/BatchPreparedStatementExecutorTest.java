@@ -137,7 +137,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
             batchExecutionUnit.mapAddBatchCount(0);
             batchExecutionUnit.mapAddBatchCount(1);
             routeUnits.add(batchExecutionUnit);
-            preparedStatementExecuteUnits.add(new StatementExecuteUnit(new ExecutionUnit("ds_0", new SQLUnit(SQL, Collections.singletonList(1))), each, ConnectionMode.MEMORY_STRICTLY));
+            preparedStatementExecuteUnits.add(new StatementExecuteUnit(new ExecutionUnit("ds_0", new SQLUnit(SQL, Collections.singletonList(1))), ConnectionMode.MEMORY_STRICTLY, each));
         }
         setFields(executeGroups, routeUnits);
     }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.execute.jdbc;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.StorageResourceExecuteUnit;
+import org.apache.shardingsphere.infra.executor.unit.ResourceManagedExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 
 import java.sql.Statement;
@@ -30,11 +30,11 @@ import java.sql.Statement;
  */
 @RequiredArgsConstructor
 @Getter
-public final class StatementExecuteUnit implements StorageResourceExecuteUnit<Statement> {
+public final class StatementExecuteUnit implements ResourceManagedExecuteUnit<Statement> {
     
     private final ExecutionUnit executionUnit;
     
-    private final Statement storageResource;
-    
     private final ConnectionMode connectionMode;
+    
+    private final Statement storageResource;
 }
