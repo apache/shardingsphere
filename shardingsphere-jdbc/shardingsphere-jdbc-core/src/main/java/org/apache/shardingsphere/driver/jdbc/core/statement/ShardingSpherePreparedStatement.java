@@ -198,6 +198,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 reply();
                 return preparedStatementExecutor.execute(inputGroups, executionContext.getSqlStatementContext());
             } else {
+                // TODO process getStatement
                 return rawSQLExecutor.execute(getRawInputGroups(), new RawSQLExecuteExecutorCallback());
             }
         } finally {
