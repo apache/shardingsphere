@@ -15,20 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql;
+package org.apache.shardingsphere.infra.executor.sql.execute.raw.callback;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.RawSQLExecuteUnit;
 
 /**
- * SQL execute unit.
+ * Raw SQL executor callback.
+ *
+ * @param <T> class type of return value
  */
-@RequiredArgsConstructor
-@Getter
-public final class SQLExecuteUnit {
-    
-    private final ExecutionUnit executionUnit;
-    
-    private final ConnectionMode connectionMode;
+public interface RawSQLExecutorCallback<T> extends ExecutorCallback<RawSQLExecuteUnit, T> {
 }

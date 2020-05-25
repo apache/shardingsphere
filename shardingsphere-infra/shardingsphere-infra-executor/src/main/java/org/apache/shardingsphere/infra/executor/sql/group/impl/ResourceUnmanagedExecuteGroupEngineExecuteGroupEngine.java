@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.group.impl;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.SQLExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.RawSQLExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * Resource unmanaged execute group engine.
  */
-public final class ResourceUnmanagedExecuteGroupEngineExecuteGroupEngine extends AbstractExecuteGroupEngine<SQLExecuteUnit> {
+public final class ResourceUnmanagedExecuteGroupEngineExecuteGroupEngine extends AbstractExecuteGroupEngine<RawSQLExecuteUnit> {
     
     private final int maxConnectionsSizePerQuery;
     
@@ -42,8 +42,8 @@ public final class ResourceUnmanagedExecuteGroupEngineExecuteGroupEngine extends
     }
     
     @Override
-    protected List<InputGroup<SQLExecuteUnit>> generateSQLExecuteGroups(final String dataSourceName, final List<SQLUnit> sqlUnits) {
-        List<InputGroup<SQLExecuteUnit>> result = new LinkedList<>();
+    protected List<InputGroup<RawSQLExecuteUnit>> generateSQLExecuteGroups(final String dataSourceName, final List<SQLUnit> sqlUnits) {
+        List<InputGroup<RawSQLExecuteUnit>> result = new LinkedList<>();
         int desiredPartitionSize = Math.max(0 == sqlUnits.size() % maxConnectionsSizePerQuery ? sqlUnits.size() / maxConnectionsSizePerQuery : sqlUnits.size() / maxConnectionsSizePerQuery + 1, 1);
         List<List<SQLUnit>> sqlUnitPartitions = Lists.partition(sqlUnits, desiredPartitionSize);
         ConnectionMode connectionMode = maxConnectionsSizePerQuery < sqlUnits.size() ? ConnectionMode.CONNECTION_STRICTLY : ConnectionMode.MEMORY_STRICTLY;
@@ -53,11 +53,11 @@ public final class ResourceUnmanagedExecuteGroupEngineExecuteGroupEngine extends
         return result;
     }
     
-    private InputGroup<SQLExecuteUnit> generateSQLExecuteGroup(final String dataSourceName, final List<SQLUnit> sqlUnitGroup, final ConnectionMode connectionMode) {
-        List<SQLExecuteUnit> sqlExecuteUnits = new LinkedList<>();
+    private InputGroup<RawSQLExecuteUnit> generateSQLExecuteGroup(final String dataSourceName, final List<SQLUnit> sqlUnitGroup, final ConnectionMode connectionMode) {
+        List<RawSQLExecuteUnit> rawSQLExecuteUnits = new LinkedList<>();
         for (SQLUnit each : sqlUnitGroup) {
-            sqlExecuteUnits.add(new SQLExecuteUnit(new ExecutionUnit(dataSourceName, each), connectionMode));
+            rawSQLExecuteUnits.add(new RawSQLExecuteUnit(new ExecutionUnit(dataSourceName, each), connectionMode));
         }
-        return new InputGroup<>(sqlExecuteUnits);
+        return new InputGroup<>(rawSQLExecuteUnits);
     }
 }
