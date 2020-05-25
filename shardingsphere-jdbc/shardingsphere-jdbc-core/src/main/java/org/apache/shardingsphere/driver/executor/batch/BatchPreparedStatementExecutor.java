@@ -19,7 +19,6 @@ package org.apache.shardingsphere.driver.executor.batch;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.driver.executor.callback.RuleExecuteBatchExecutorCallback;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
@@ -31,8 +30,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.SQLExe
 import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.impl.DefaultSQLExecutorCallback;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.kernal.context.SchemaContexts;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
@@ -51,10 +48,6 @@ import java.util.stream.Collectors;
  * Prepared statement executor to process add batch.
  */
 public final class BatchPreparedStatementExecutor {
-    
-    static {
-        ShardingSphereServiceLoader.register(RuleExecuteBatchExecutorCallback.class);
-    }
     
     private final SchemaContexts schemaContexts;
     
@@ -128,23 +121,17 @@ public final class BatchPreparedStatementExecutor {
     public int[] executeBatch(final SQLStatementContext sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         DatabaseType databaseType = schemaContexts.getDefaultSchemaContext().getSchema().getDatabaseType();
-        SQLExecutorCallback<int[]> callback = getExecuteBatchExecutorCallback(new DefaultSQLExecutorCallback<int[]>(databaseType, isExceptionThrown) {
+        SQLExecutorCallback<int[]> callback = new DefaultSQLExecutorCallback<int[]>(databaseType, isExceptionThrown) {
             
             @Override
             protected int[] executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 return statement.executeBatch();
             }
-        });
+        };
         List<int[]> results = sqlExecutor.execute(inputGroups, callback);
         return isNeedAccumulate(
                 schemaContexts.getDefaultSchemaContext().getSchema().getRules().stream().filter(rule -> rule instanceof DataNodeRoutedRule).collect(Collectors.toList()), sqlStatementContext)
                 ? accumulate(results) : results.get(0);
-    }
-    
-    private SQLExecutorCallback<int[]> getExecuteBatchExecutorCallback(final DefaultSQLExecutorCallback callback) {
-        Map<ShardingSphereRule, RuleExecuteBatchExecutorCallback> callbackMap = 
-                OrderedSPIRegistry.getRegisteredServices(schemaContexts.getDefaultSchemaContext().getSchema().getRules(), RuleExecuteBatchExecutorCallback.class);
-        return callbackMap.isEmpty() ? callback : callbackMap.values().iterator().next();
     }
     
     private boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext sqlStatementContext) {
