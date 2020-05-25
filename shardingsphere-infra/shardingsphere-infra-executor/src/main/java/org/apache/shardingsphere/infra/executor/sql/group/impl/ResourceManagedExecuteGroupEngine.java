@@ -33,14 +33,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Resourced execute group engine.
+ * Resource managed execute group engine.
  * 
  * @param <U> type of storage resource execute unit
  * @param <E> type of execution connection
  * @param <C> type of resource connection
  * @param <O> type of storage resource option
  */
-public abstract class ResourcedExecuteGroupEngine
+public abstract class ResourceManagedExecuteGroupEngine
         <U extends StorageResourceExecuteUnit, E extends ExecutionConnection<C, ?, O>, C, O extends StorageResourceOption> extends AbstractExecuteGroupEngine<U> {
     
     private final int maxConnectionsSizePerQuery;
@@ -49,7 +49,7 @@ public abstract class ResourcedExecuteGroupEngine
     
     private final O option;
     
-    public ResourcedExecuteGroupEngine(final int maxConnectionsSizePerQuery, final E executionConnection, final O option, final Collection<ShardingSphereRule> rules) {
+    public ResourceManagedExecuteGroupEngine(final int maxConnectionsSizePerQuery, final E executionConnection, final O option, final Collection<ShardingSphereRule> rules) {
         super(rules);
         this.maxConnectionsSizePerQuery = maxConnectionsSizePerQuery;
         this.executionConnection = executionConnection;

@@ -30,13 +30,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Named execute group engine.
+ * Resource unmanaged execute group engine.
  */
-public final class NamedExecuteGroupEngine extends AbstractExecuteGroupEngine<SQLExecuteUnit> {
+public final class ResourceUnmanagedExecuteGroupEngineExecuteGroupEngine extends AbstractExecuteGroupEngine<SQLExecuteUnit> {
     
     private final int maxConnectionsSizePerQuery;
     
-    public NamedExecuteGroupEngine(final int maxConnectionsSizePerQuery, final Collection<ShardingSphereRule> rules) {
+    public ResourceUnmanagedExecuteGroupEngineExecuteGroupEngine(final int maxConnectionsSizePerQuery, final Collection<ShardingSphereRule> rules) {
         super(rules);
         this.maxConnectionsSizePerQuery = maxConnectionsSizePerQuery;
     }
