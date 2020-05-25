@@ -23,9 +23,9 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.StatementExecuteUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.SQLExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.impl.DefaultSQLExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.impl.DefaultSQLExecutorCallback;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -66,7 +66,7 @@ public final class DefaultSQLExecutorCallbackTest {
         when(connection.getMetaData()).thenReturn(metaData);
         when(metaData.getURL()).thenReturn("jdbc:mysql://localhost:3306/test");
         units = Collections.singletonList(
-                new StatementExecuteUnit(new ExecutionUnit("ds", new SQLUnit("SELECT now()", Collections.emptyList())), preparedStatement, ConnectionMode.CONNECTION_STRICTLY));
+                new StatementExecuteUnit(new ExecutionUnit("ds", new SQLUnit("SELECT now()", Collections.emptyList())), ConnectionMode.CONNECTION_STRICTLY, preparedStatement));
     }
     
     @Test
