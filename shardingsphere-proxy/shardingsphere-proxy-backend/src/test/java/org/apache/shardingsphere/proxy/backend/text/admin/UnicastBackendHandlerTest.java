@@ -18,12 +18,16 @@
 package org.apache.shardingsphere.proxy.backend.text.admin;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.proxy.backend.MockShardingSphereSchemasUtil;
+import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.kernal.context.SchemaContext;
+import org.apache.shardingsphere.kernal.context.SchemaContexts;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
+import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,6 +37,9 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -52,9 +59,20 @@ public final class UnicastBackendHandlerTest {
     private DatabaseCommunicationEngineFactory databaseCommunicationEngineFactory;
     
     @Before
+    @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
-        MockShardingSphereSchemasUtil.setSchemas("schema", 10);
+        Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
+        schemaContexts.setAccessible(true);
+        schemaContexts.set(ProxySchemaContexts.getInstance(), new SchemaContexts(getSchemaContextMap(), new ConfigurationProperties(new Properties()), new Authentication()));
         setUnderlyingHandler(new UpdateResponse());
+    }
+    
+    private Map<String, SchemaContext> getSchemaContextMap() {
+        Map<String, SchemaContext> result = new HashMap<>(10);
+        for (int i = 0; i < 10; i++) {
+            result.put("schema_" + i, mock(SchemaContext.class));
+        }
+        return result;
     }
     
     @Test
@@ -63,7 +81,7 @@ public final class UnicastBackendHandlerTest {
         setDatabaseCommunicationEngine(backendHandler);
         BackendResponse actual = backendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponse.class));
-        verify(backendConnection).setCurrentSchema(null);
+        verify(backendConnection).setCurrentSchema("schema_8");
         backendHandler.execute();
     }
     

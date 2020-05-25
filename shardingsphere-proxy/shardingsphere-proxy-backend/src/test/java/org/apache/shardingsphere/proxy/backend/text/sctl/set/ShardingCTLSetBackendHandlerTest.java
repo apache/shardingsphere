@@ -17,24 +17,53 @@
 
 package org.apache.shardingsphere.proxy.backend.text.sctl.set;
 
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.kernal.context.SchemaContext;
+import org.apache.shardingsphere.kernal.context.SchemaContexts;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
+import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.junit.Before;
 import org.junit.Test;
+
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class ShardingCTLSetBackendHandlerTest {
     
     private final BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
     
+    @Before
+    @SneakyThrows(ReflectiveOperationException.class)
+    public void setUp() {
+        Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
+        schemaContexts.setAccessible(true);
+        schemaContexts.set(ProxySchemaContexts.getInstance(), new SchemaContexts(getSchemaContextMap(), new ConfigurationProperties(new Properties()), new Authentication()));
+    }
+    
+    private Map<String, SchemaContext> getSchemaContextMap() {
+        Map<String, SchemaContext> result = new HashMap<>(10);
+        for (int i = 0; i < 10; i++) {
+            result.put("schema_" + i, mock(SchemaContext.class));
+        }
+        return result;
+    }
+    
     @Test
     public void assertSwitchTransactionTypeXA() {
-        backendConnection.setCurrentSchema("schema");
+        backendConnection.setCurrentSchema("schema_0");
         ShardingCTLSetBackendHandler shardingCTLBackendHandler = new ShardingCTLSetBackendHandler("sctl:set transaction_type=XA", backendConnection);
         BackendResponse actual = shardingCTLBackendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponse.class));
@@ -43,7 +72,7 @@ public final class ShardingCTLSetBackendHandlerTest {
     
     @Test
     public void assertSwitchTransactionTypeBASE() {
-        backendConnection.setCurrentSchema("schema");
+        backendConnection.setCurrentSchema("schema_0");
         ShardingCTLSetBackendHandler shardingCTLBackendHandler = new ShardingCTLSetBackendHandler("sctl:set  transaction_type=BASE", backendConnection);
         BackendResponse actual = shardingCTLBackendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponse.class));
@@ -52,7 +81,7 @@ public final class ShardingCTLSetBackendHandlerTest {
     
     @Test
     public void assertSwitchTransactionTypeLOCAL() {
-        backendConnection.setCurrentSchema("schema");
+        backendConnection.setCurrentSchema("schema_0");
         ShardingCTLSetBackendHandler shardingCTLBackendHandler = new ShardingCTLSetBackendHandler("sctl:set transaction_type=LOCAL", backendConnection);
         BackendResponse actual = shardingCTLBackendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponse.class));
@@ -61,7 +90,7 @@ public final class ShardingCTLSetBackendHandlerTest {
     
     @Test
     public void assertSwitchTransactionTypeFailed() {
-        backendConnection.setCurrentSchema("schema");
+        backendConnection.setCurrentSchema("schema_0");
         ShardingCTLSetBackendHandler shardingCTLBackendHandler = new ShardingCTLSetBackendHandler("sctl:set transaction_type=XXX", backendConnection);
         BackendResponse actual = shardingCTLBackendHandler.execute();
         assertThat(actual, instanceOf(ErrorResponse.class));

@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
+import org.apache.shardingsphere.kernal.context.SchemaContext;
+import org.apache.shardingsphere.kernal.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionStateHandler;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
-import org.apache.shardingsphere.proxy.backend.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.admin.BroadcastBackendHandler;
@@ -33,7 +34,6 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.set.ShardingCTLSetBacke
 import org.apache.shardingsphere.proxy.backend.text.sctl.show.ShardingCTLShowBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.transaction.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionBackendHandler;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
@@ -59,10 +59,10 @@ public final class TextProtocolBackendHandlerFactoryTest {
     @Before
     public void setUp() {
         when(backendConnection.getTransactionType()).thenReturn(TransactionType.LOCAL);
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        JDBCBackendDataSource backendDataSource = mock(JDBCBackendDataSource.class);
-        when(backendDataSource.getShardingTransactionManagerEngine()).thenReturn(mock(ShardingTransactionManagerEngine.class));
-        when(schema.getBackendDataSource()).thenReturn(backendDataSource);
+        RuntimeContext runtimeContext = mock(RuntimeContext.class);
+        SchemaContext schema = mock(SchemaContext.class);
+        when(runtimeContext.getTransactionManagerEngine()).thenReturn(mock(ShardingTransactionManagerEngine.class));
+        when(schema.getRuntimeContext()).thenReturn(runtimeContext);
         when(backendConnection.getSchema()).thenReturn(schema);
     }
     

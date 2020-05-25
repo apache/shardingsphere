@@ -26,8 +26,8 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.p
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.kernal.context.SchemaContext;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
@@ -44,7 +44,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     
     private final MySQLComStmtPreparePacket packet;
     
-    private final ShardingSphereSchema schema;
+    private final SchemaContext schema;
     
     public MySQLComStmtPrepareExecutor(final MySQLComStmtPreparePacket packet, final BackendConnection backendConnection) {
         this.packet = packet;
@@ -59,7 +59,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     public Collection<DatabasePacket> execute() {
         Collection<DatabasePacket> result = new LinkedList<>();
         int currentSequenceId = 0;
-        SQLStatement sqlStatement = schema.getSqlParserEngine().parse(packet.getSql(), true);
+        SQLStatement sqlStatement = schema.getRuntimeContext().getSqlParserEngine().parse(packet.getSql(), true);
         if (!MySQLComStmtPrepareChecker.isStatementAllowed(sqlStatement)) {
             result.add(new MySQLErrPacket(++currentSequenceId, MySQLServerErrorCode.ER_UNSUPPORTED_PS));
             return result;

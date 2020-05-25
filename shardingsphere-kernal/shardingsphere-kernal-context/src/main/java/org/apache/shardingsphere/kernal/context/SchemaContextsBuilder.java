@@ -108,7 +108,7 @@ public final class SchemaContextsBuilder {
         Map<String, DataSource> dataSources = this.dataSources.get(schemaName);
         RuntimeContext runtimeContext = new RuntimeContext(createCachedDatabaseMetaData(dataSources),
                 executorKernel, SQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(databaseType)), createShardingTransactionManagerEngine(dataSources));
-        return new SchemaContext(createShardingSphereSchema(schemaName), runtimeContext);
+        return new SchemaContext(schemaName, createShardingSphereSchema(schemaName), runtimeContext);
     }
     
     private ShardingTransactionManagerEngine createShardingTransactionManagerEngine(final Map<String, DataSource> dataSources) {

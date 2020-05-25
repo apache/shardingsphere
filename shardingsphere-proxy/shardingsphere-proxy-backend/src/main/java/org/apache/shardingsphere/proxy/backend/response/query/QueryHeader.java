@@ -19,12 +19,12 @@ package org.apache.shardingsphere.proxy.backend.response.query;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.apache.shardingsphere.proxy.backend.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
+import org.apache.shardingsphere.kernal.context.SchemaContext;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.ColumnProjection;
-import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -59,15 +59,15 @@ public final class QueryHeader {
 
     private final boolean autoIncrement;
     
-    public QueryHeader(final ResultSetMetaData resultSetMetaData, final ShardingSphereSchema schema, final int columnIndex) throws SQLException {
+    public QueryHeader(final ResultSetMetaData resultSetMetaData, final SchemaContext schema, final int columnIndex) throws SQLException {
         this(resultSetMetaData, schema, resultSetMetaData.getColumnName(columnIndex), columnIndex);
     }
     
-    public QueryHeader(final ProjectionsContext projectionsContext, final ResultSetMetaData resultSetMetaData, final ShardingSphereSchema schema, final int columnIndex) throws SQLException {
+    public QueryHeader(final ProjectionsContext projectionsContext, final ResultSetMetaData resultSetMetaData, final SchemaContext schema, final int columnIndex) throws SQLException {
         this(resultSetMetaData, schema, getColumnName(projectionsContext, resultSetMetaData, columnIndex), columnIndex);
     }
     
-    private QueryHeader(final ResultSetMetaData resultSetMetaData, final ShardingSphereSchema schema, final String columnName, final int columnIndex) throws SQLException {
+    private QueryHeader(final ResultSetMetaData resultSetMetaData, final SchemaContext schema, final String columnName, final int columnIndex) throws SQLException {
         this.columnName = columnName;
         this.schema = schema.getName();
         columnLabel = resultSetMetaData.getColumnLabel(columnIndex);
@@ -78,10 +78,10 @@ public final class QueryHeader {
         notNull = resultSetMetaData.isNullable(columnIndex) == ResultSetMetaData.columnNoNulls;
         autoIncrement = resultSetMetaData.isAutoIncrement(columnIndex);
         String actualTableName = resultSetMetaData.getTableName(columnIndex);
-        Optional<DataNodeRoutedRule> dataNodeRoutedRule = schema.getRules().stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
+        Optional<DataNodeRoutedRule> dataNodeRoutedRule = schema.getSchema().getRules().stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
         if (null != actualTableName && dataNodeRoutedRule.isPresent()) {
             table = dataNodeRoutedRule.get().findLogicTableByActualTable(actualTableName).orElse("");
-            TableMetaData tableMetaData = schema.getMetaData().getSchema().getConfiguredSchemaMetaData().get(table);
+            TableMetaData tableMetaData = schema.getSchema().getMetaData().getSchema().getConfiguredSchemaMetaData().get(table);
             primaryKey = null != tableMetaData && tableMetaData.getColumns().get(resultSetMetaData.getColumnName(columnIndex).toLowerCase()).isPrimaryKey();
         } else {
             table = actualTableName;

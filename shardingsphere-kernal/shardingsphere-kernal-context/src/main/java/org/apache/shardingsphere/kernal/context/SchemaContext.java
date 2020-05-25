@@ -28,11 +28,14 @@ import java.util.Map;
 @Getter
 public final class SchemaContext {
     
+    private final String name;
+    
     private final ShardingSphereSchema schema;
     
     private final RuntimeContext runtimeContext;
     
-    public SchemaContext(final ShardingSphereSchema schema, final RuntimeContext runtimeContext) {
+    public SchemaContext(final String name, final ShardingSphereSchema schema, final RuntimeContext runtimeContext) {
+        this.name = name;
         this.schema = schema;
         this.runtimeContext = runtimeContext;
     }

@@ -24,8 +24,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.kernal.context.SchemaContext;
 import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
-import org.apache.shardingsphere.proxy.backend.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.backend.schema.ShardingSphereSchemas;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -59,9 +60,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     
     private static final int POSTGRESQL_MEMORY_FETCH_ONE_ROW_A_TIME = 1;
     
-    private volatile String schemaName;
-    
-    private ShardingSphereSchema schema;
+    private volatile SchemaContext schema;
     
     private TransactionType transactionType;
     
@@ -102,7 +101,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
      * @param transactionType transaction type
      */
     public void setTransactionType(final TransactionType transactionType) {
-        if (null == schemaName) {
+        if (null == schema) {
             throw new ShardingSphereException("Please select database, then switch transaction type.");
         }
         if (isSwitchFailed()) {
@@ -120,8 +119,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
         if (isSwitchFailed()) {
             throw new ShardingSphereException("Failed to switch schema, please terminate current transaction.");
         }
-        this.schemaName = schemaName;
-        this.schema = ShardingSphereSchemas.getInstance().getSchema(schemaName);
+        this.schema = ProxySchemaContexts.getInstance().getSchema(schemaName);
     }
     
     @SneakyThrows(InterruptedException.class)
@@ -189,7 +187,7 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     }
     
     private List<Connection> getConnectionFromUnderlying(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        return schema.getBackendDataSource().getConnections(dataSourceName, connectionSize, connectionMode, transactionType);
+        return ProxySchemaContexts.getInstance().getBackendDataSource().getConnections(schema.getName(), dataSourceName, connectionSize, connectionMode);
     }
     
     @Override

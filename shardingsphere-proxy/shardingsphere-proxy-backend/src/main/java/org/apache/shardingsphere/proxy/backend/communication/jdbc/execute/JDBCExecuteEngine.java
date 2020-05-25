@@ -19,6 +19,17 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
+import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.ExecutorExceptionHandler;
+import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.SQLExecutor;
+import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.SQLExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.group.StatementOption;
+import org.apache.shardingsphere.infra.executor.sql.group.ExecuteGroupEngine;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.metrics.enums.MetricsLabelEnum;
 import org.apache.shardingsphere.metrics.facade.MetricsTrackerFacade;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -32,21 +43,10 @@ import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
-import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.StatementExecuteUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.ExecutorExceptionHandler;
-import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.SQLExecutor;
-import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.SQLExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.group.StatementOption;
-import org.apache.shardingsphere.infra.executor.sql.group.ExecuteGroupEngine;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -110,7 +110,8 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     }
     
     private SQLExecutorCallback<ExecuteResponse> getSQLExecutorCallback(final ProxySQLExecutorCallback callback) {
-        Map<ShardingSphereRule, RuleProxySQLExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(backendConnection.getSchema().getRules(), RuleProxySQLExecutorCallback.class);
+        Collection<ShardingSphereRule> rules = backendConnection.getSchema().getSchema().getRules();
+        Map<ShardingSphereRule, RuleProxySQLExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(rules, RuleProxySQLExecutorCallback.class);
         return callbackMap.isEmpty() ? callback : callbackMap.values().iterator().next();
     }
     
