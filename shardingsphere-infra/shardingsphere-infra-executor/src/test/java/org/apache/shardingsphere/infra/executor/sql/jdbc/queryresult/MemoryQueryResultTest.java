@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.jdbc.queryresult;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.queryresult.MemoryQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.MemoryQueryResult;
 import org.hamcrest.core.Is;
 import org.junit.Test;
 

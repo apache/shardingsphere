@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.replica.execute.executor;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.SQLExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutorCallback;
 import org.apache.shardingsphere.infra.spi.order.OrderedSPI;
 import org.apache.shardingsphere.replica.rule.ReplicaRule;
 
