@@ -36,7 +36,7 @@ public class ExampleMain {
     @Deprecated
     public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = SpringApplication.run(ExampleMain.class, args)) {
-            ExampleExecuteTemplate.run(applicationContext.getBean("encrypt", ExampleService.class));
+            ExampleExecuteTemplate.run(applicationContext.getBean("encryptExample", ExampleService.class));
         }
     }
 }

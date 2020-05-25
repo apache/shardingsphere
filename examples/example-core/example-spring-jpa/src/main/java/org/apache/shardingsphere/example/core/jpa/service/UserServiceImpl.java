@@ -28,7 +28,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service("encrypt")
+@Service("encryptExample")
 public class UserServiceImpl implements ExampleService {
     
     @Resource
