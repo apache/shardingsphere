@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.execute.raw.executor;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
+import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.RawSQLExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.ExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.raw.callback.RawSQLExecutorCallback;
@@ -40,31 +41,60 @@ public final class RawSQLExecutor {
     private final boolean serial;
     
     /**
-     * Execute.
+     * Execute query.
      *
      * @param inputGroups input groups
      * @param callback SQL execute callback
-     * @param <T> class type of return value
-     * @return execute result
+     * @return Query results
      * @throws SQLException SQL exception
      */
-    public <T> List<T> execute(final Collection<InputGroup<RawSQLExecuteUnit>> inputGroups, final RawSQLExecutorCallback<T> callback) throws SQLException {
-        return execute(inputGroups, null, callback);
+    public List<QueryResult> executeQuery(final Collection<InputGroup<RawSQLExecuteUnit>> inputGroups, final RawSQLExecutorCallback<QueryResult> callback) throws SQLException {
+        return doExecute(inputGroups, null, callback);
+    }
+    
+    /**
+     * Execute update.
+     *
+     * @param inputGroups input groups
+     * @param callback SQL execute callback
+     * @return update count
+     * @throws SQLException SQL exception
+     */
+    public int executeUpdate(final Collection<InputGroup<RawSQLExecuteUnit>> inputGroups, final RawSQLExecutorCallback<Integer> callback) throws SQLException {
+        List<Integer> results = doExecute(inputGroups, null, callback);
+        // TODO check is need to accumulate
+        // TODO refresh metadata
+        return accumulate(results);
+    }
+    
+    private int accumulate(final List<Integer> results) {
+        int result = 0;
+        for (Integer each : results) {
+            result += null == each ? 0 : each;
+        }
+        return result;
     }
     
     /**
      * Execute.
      *
      * @param inputGroups input groups
-     * @param firstCallback first SQL execute callback
      * @param callback SQL execute callback
-     * @param <T> class type of return value
-     * @return execute result
+     * @return return true if is DQL, false if is DML
      * @throws SQLException SQL exception
      */
+    public boolean execute(final Collection<InputGroup<RawSQLExecuteUnit>> inputGroups, final RawSQLExecutorCallback<Boolean> callback) throws SQLException {
+        List<Boolean> results = doExecute(inputGroups, null, callback);
+        // TODO refresh metadata
+        if (null == results || results.isEmpty() || null == results.get(0)) {
+            return false;
+        }
+        return results.get(0);
+    }
+    
     @SuppressWarnings("unchecked")
-    public <T> List<T> execute(final Collection<InputGroup<RawSQLExecuteUnit>> inputGroups, 
-                               final RawSQLExecutorCallback<T> firstCallback, final RawSQLExecutorCallback<T> callback) throws SQLException {
+    private <T> List<T> doExecute(final Collection<InputGroup<RawSQLExecuteUnit>> inputGroups,
+                                   final RawSQLExecutorCallback<T> firstCallback, final RawSQLExecutorCallback<T> callback) throws SQLException {
         try {
             return executorKernel.execute((Collection) inputGroups, firstCallback, callback, serial);
         } catch (final SQLException ex) {
