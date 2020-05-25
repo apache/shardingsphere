@@ -20,6 +20,8 @@ package org.apache.shardingsphere.proxy.backend.schema;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
+import org.apache.shardingsphere.cluster.heartbeat.event.HeartBeatDetectNoticeEvent;
+import org.apache.shardingsphere.cluster.heartbeat.eventbus.HeartBeatEventBus;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
@@ -27,6 +29,7 @@ import org.apache.shardingsphere.kernal.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.orchestration.core.common.event.SchemaAddedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
+import org.apache.shardingsphere.proxy.backend.cluster.HeartBeatHandler;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.JDBCDriverURLRecognizerEngine;
 import org.apache.shardingsphere.proxy.backend.util.DataSourceConverter;
 
@@ -53,6 +56,7 @@ public final class ShardingSphereSchemas {
     
     private ShardingSphereSchemas() {
         ShardingOrchestrationEventBus.getInstance().register(this);
+        HeartBeatEventBus.getInstance().register(this);
     }
     
     /**
@@ -141,5 +145,15 @@ public final class ShardingSphereSchemas {
     @Subscribe
     public synchronized void renew(final SchemaDeletedEvent schemaDeletedEvent) {
         schemas.remove(schemaDeletedEvent.getShardingSchemaName());
+    }
+    
+    /**
+     * Heart beat detect.
+     *
+     * @param event heart beat detect notice event
+     */
+    @Subscribe
+    public synchronized void heartBeat(final HeartBeatDetectNoticeEvent event) {
+        HeartBeatHandler.getInstance().handle(schemas);
     }
 }
