@@ -15,19 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor;
+package org.apache.shardingsphere.infra.executor.sql.unit;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 
 /**
- * Executor constant.
+ * Resource managed execute unit.
+ * 
+ * @param <T> type of storage resource
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ExecutorConstant {
+public interface ResourceManagedExecuteUnit<T> {
     
     /**
-     * Use ShardingSphere to manage resource or not.
+     * Get execution unit.
+     * 
+     * @return execution unit
      */
-    public static final boolean MANAGED_RESOURCE = true;
+    ExecutionUnit getExecutionUnit();
+    
+    /**
+     * Get connection mode.
+     *
+     * @return connection mode
+     */
+    ConnectionMode getConnectionMode();
+    
+    /**
+     * Get storage resource.
+     * 
+     * @return storage resource
+     */
+    T getStorageResource();
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.execute.jdbc;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.infra.executor.unit.ResourceManagedExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.unit.ResourceManagedExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 
 import java.sql.Statement;

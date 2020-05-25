@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.group.impl;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.unit.RawSQLExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.unit.RawSQLExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.replica.execute.group;
 
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
-import org.apache.shardingsphere.infra.executor.unit.ResourceManagedExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.unit.ResourceManagedExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.group.ExecuteGroupDecorator;
 import org.apache.shardingsphere.replica.rule.ReplicaRule;
 

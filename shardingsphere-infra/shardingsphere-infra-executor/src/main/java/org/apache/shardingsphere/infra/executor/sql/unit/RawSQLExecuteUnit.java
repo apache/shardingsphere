@@ -15,36 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.unit;
+package org.apache.shardingsphere.infra.executor.sql.unit;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 
 /**
- * Resource managed execute unit.
- * 
- * @param <T> type of storage resource
+ * Raw SQL execute unit.
  */
-public interface ResourceManagedExecuteUnit<T> {
+@RequiredArgsConstructor
+@Getter
+public final class RawSQLExecuteUnit {
     
-    /**
-     * Get execution unit.
-     * 
-     * @return execution unit
-     */
-    ExecutionUnit getExecutionUnit();
+    private final ExecutionUnit executionUnit;
     
-    /**
-     * Get connection mode.
-     *
-     * @return connection mode
-     */
-    ConnectionMode getConnectionMode();
-    
-    /**
-     * Get storage resource.
-     * 
-     * @return storage resource
-     */
-    T getStorageResource();
+    private final ConnectionMode connectionMode;
 }

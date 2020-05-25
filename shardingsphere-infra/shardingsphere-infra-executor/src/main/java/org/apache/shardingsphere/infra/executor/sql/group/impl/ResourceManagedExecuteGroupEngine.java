@@ -21,7 +21,7 @@ import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.ExecutionConnection;
-import org.apache.shardingsphere.infra.executor.unit.ResourceManagedExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.unit.ResourceManagedExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.StorageResourceOption;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;

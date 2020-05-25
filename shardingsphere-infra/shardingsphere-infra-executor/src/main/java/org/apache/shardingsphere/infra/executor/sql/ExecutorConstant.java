@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.unit;
+package org.apache.shardingsphere.infra.executor.sql;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Raw SQL execute unit.
+ * Executor constant.
  */
-@RequiredArgsConstructor
-@Getter
-public final class RawSQLExecuteUnit {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ExecutorConstant {
     
-    private final ExecutionUnit executionUnit;
-    
-    private final ConnectionMode connectionMode;
+    /**
+     * Use ShardingSphere to manage resource or not.
+     */
+    public static final boolean MANAGED_RESOURCE = true;
 }
