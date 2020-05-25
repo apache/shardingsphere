@@ -30,8 +30,10 @@ import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResult
 import org.apache.shardingsphere.driver.jdbc.core.statement.metadata.ShardingSphereParameterMetaData;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.executor.ExecutorConstant;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.RawSQLExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContextBuilder;
 import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.StatementExecuteUnit;
@@ -39,6 +41,11 @@ import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.SQLExe
 import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.group.PreparedStatementExecuteGroupEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.group.StatementOption;
 import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.queryresult.StreamQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.raw.callback.impl.RawSQLExecuteExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.execute.raw.callback.impl.RawSQLExecuteQueryExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.execute.raw.callback.impl.RawSQLExecuteUpdateExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.execute.raw.executor.RawSQLExecutor;
+import org.apache.shardingsphere.infra.executor.sql.group.impl.RawExecuteGroupEngine;
 import org.apache.shardingsphere.infra.executor.sql.log.SQLLogger;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -92,6 +99,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private final PreparedStatementExecutor preparedStatementExecutor;
     
+    private final RawSQLExecutor rawSQLExecutor;
+    
     private final BatchPreparedStatementExecutor batchPreparedStatementExecutor;
     
     private final Collection<Comparable<?>> generatedValues = new LinkedList<>();
@@ -132,6 +141,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         statementOption = returnGeneratedKeys ? new StatementOption(true) : new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         SQLExecutor sqlExecutor = new SQLExecutor(schemaContexts.getDefaultSchemaContext().getRuntimeContext().getExecutorKernel(), connection.isHoldTransaction());
         preparedStatementExecutor = new PreparedStatementExecutor(connection.getDataSourceMap(), schemaContexts, sqlExecutor);
+        rawSQLExecutor = new RawSQLExecutor(schemaContexts.getDefaultSchemaContext().getRuntimeContext().getExecutorKernel(), connection.isHoldTransaction());
         batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(schemaContexts, sqlExecutor);
     }
     
@@ -141,13 +151,16 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         try {
             clearPrevious();
             executionContext = createExecutionContext();
-            PreparedStatementExecuteGroupEngine executeGroupEngine = new PreparedStatementExecuteGroupEngine(
-                    schemaContexts.getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), 
-                    connection, statementOption, schemaContexts.getDefaultSchemaContext().getSchema().getRules());
-            Collection<InputGroup<StatementExecuteUnit>> inputGroups = executeGroupEngine.generate(executionContext.getExecutionUnits());
-            cacheStatements(inputGroups);
-            reply();
-            MergedResult mergedResult = mergeQuery(preparedStatementExecutor.executeQuery(inputGroups));
+            List<QueryResult> queryResults;
+            if (ExecutorConstant.MANAGED_RESOURCE) {
+                Collection<InputGroup<StatementExecuteUnit>> inputGroups = getInputGroups();
+                cacheStatements(inputGroups);
+                reply();
+                queryResults = preparedStatementExecutor.executeQuery(inputGroups);
+            } else {
+                queryResults = rawSQLExecutor.executeQuery(getRawInputGroups(), new RawSQLExecuteQueryExecutorCallback());
+            }
+            MergedResult mergedResult = mergeQuery(queryResults);
             result = new ShardingSphereResultSet(statements.stream().map(this::getResultSet).collect(Collectors.toList()), mergedResult, this, executionContext);
         } finally {
             clearBatch();
@@ -161,13 +174,14 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         try {
             clearPrevious();
             executionContext = createExecutionContext();
-            PreparedStatementExecuteGroupEngine executeGroupEngine = new PreparedStatementExecuteGroupEngine(
-                    schemaContexts.getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), 
-                    connection, statementOption, schemaContexts.getDefaultSchemaContext().getSchema().getRules());
-            Collection<InputGroup<StatementExecuteUnit>> inputGroups = executeGroupEngine.generate(executionContext.getExecutionUnits());
-            cacheStatements(inputGroups);
-            reply();
-            return preparedStatementExecutor.executeUpdate(inputGroups, executionContext.getSqlStatementContext());
+            if (ExecutorConstant.MANAGED_RESOURCE) {
+                Collection<InputGroup<StatementExecuteUnit>> inputGroups = getInputGroups();
+                cacheStatements(inputGroups);
+                reply();
+                return preparedStatementExecutor.executeUpdate(inputGroups, executionContext.getSqlStatementContext());
+            } else {
+                return rawSQLExecutor.executeUpdate(getRawInputGroups(), new RawSQLExecuteUpdateExecutorCallback());
+            }
         } finally {
             clearBatch();
         }
@@ -178,16 +192,28 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         try {
             clearPrevious();
             executionContext = createExecutionContext();
-            PreparedStatementExecuteGroupEngine executeGroupEngine = new PreparedStatementExecuteGroupEngine(
-                    schemaContexts.getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), 
-                    connection, statementOption, schemaContexts.getDefaultSchemaContext().getSchema().getRules());
-            Collection<InputGroup<StatementExecuteUnit>> inputGroups = executeGroupEngine.generate(executionContext.getExecutionUnits());
-            cacheStatements(inputGroups);
-            reply();
-            return preparedStatementExecutor.execute(inputGroups, executionContext.getSqlStatementContext());
+            if (ExecutorConstant.MANAGED_RESOURCE) {
+                Collection<InputGroup<StatementExecuteUnit>> inputGroups = getInputGroups();
+                cacheStatements(inputGroups);
+                reply();
+                return preparedStatementExecutor.execute(inputGroups, executionContext.getSqlStatementContext());
+            } else {
+                return rawSQLExecutor.execute(getRawInputGroups(), new RawSQLExecuteExecutorCallback());
+            }
         } finally {
             clearBatch();
         }
+    }
+    
+    private Collection<InputGroup<StatementExecuteUnit>> getInputGroups() throws SQLException {
+        int maxConnectionsSizePerQuery = schemaContexts.getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        return new PreparedStatementExecuteGroupEngine(maxConnectionsSizePerQuery, connection, statementOption, 
+                schemaContexts.getDefaultSchemaContext().getSchema().getRules()).generate(executionContext.getExecutionUnits());
+    }
+    
+    private Collection<InputGroup<RawSQLExecuteUnit>> getRawInputGroups() throws SQLException {
+        int maxConnectionsSizePerQuery = schemaContexts.getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        return new RawExecuteGroupEngine(maxConnectionsSizePerQuery, schemaContexts.getDefaultSchemaContext().getSchema().getRules()).generate(executionContext.getExecutionUnits());
     }
     
     @Override
@@ -312,6 +338,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     @Override
     public int[] executeBatch() throws SQLException {
         try {
+            // TODO add raw SQL executor
             initBatchPreparedStatementExecutor();
             return batchPreparedStatementExecutor.executeBatch(executionContext.getSqlStatementContext());
         } finally {
