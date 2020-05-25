@@ -22,12 +22,16 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.ExecuteResult;
 
+import java.util.List;
+
 /**
  * Execute query result.
  */
 @RequiredArgsConstructor
 @Getter
 public final class ExecuteQueryResult implements ExecuteResult {
+    
+    private final List<ExecuteQueryHeader> queryHeaders;
     
     private final QueryResult queryResult;
 }

@@ -15,23 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.callback;
+package org.apache.shardingsphere.infra.executor.sql.raw.execute.result.impl;
 
-import org.apache.shardingsphere.infra.executor.sql.raw.RawSQLExecuteUnit;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.callback.RawSQLExecutorCallback;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.response.ExecuteResponse;
-
-import java.util.Collection;
-import java.util.Map;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Raw SQL executor callback for Proxy.
+ * Query header.
  */
-public final class ProxyRawSQLExecutorCallback implements RawSQLExecutorCallback<ExecuteResponse> {
+@RequiredArgsConstructor
+@Getter
+public final class ExecuteQueryHeader {
     
-    @Override
-    public Collection<ExecuteResponse> execute(final Collection<RawSQLExecuteUnit> inputs, final boolean isTrunkThread, final Map<String, Object> dataMap) {
-        // TODO
-        return null;
-    }
+    private final String schema;
+    
+    private final String table;
+    
+    private final String columnLabel;
+    
+    private final String columnName;
+    
+    private final int columnLength;
+    
+    private final Integer columnType;
+    
+    private final int decimals;
+
+    private final boolean signed;
+
+    private final boolean primaryKey;
+
+    private final boolean notNull;
+
+    private final boolean autoIncrement;
 }

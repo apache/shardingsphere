@@ -15,70 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.raw.execute;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
-import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.raw.RawSQLExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.callback.RawSQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.callback.impl.DefaultRawSQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.impl.ExecuteQueryResult;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.impl.ExecuteUpdateResult;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.ExecutorExceptionHandler;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.response.ExecuteResponse;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.response.ExecuteUpdateResponse;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
- * Raw SQL executor.
+ * Raw Proxy executor.
  */
 @RequiredArgsConstructor
-public final class RawSQLExecutor {
+public final class RawProxyExecutor {
     
     private final ExecutorKernel executorKernel;
     
     private final boolean serial;
-    
-    /**
-     * Execute query.
-     *
-     * @param inputGroups input groups
-     * @param callback SQL execute callback
-     * @return Query results
-     * @throws SQLException SQL exception
-     */
-    public List<QueryResult> executeQuery(final Collection<InputGroup<RawSQLExecuteUnit>> inputGroups, final DefaultRawSQLExecutorCallback callback) throws SQLException {
-        return doExecute(inputGroups, null, callback).stream().map(each -> ((ExecuteQueryResult) each).getQueryResult()).collect(Collectors.toList());
-    }
-    
-    /**
-     * Execute update.
-     *
-     * @param inputGroups input groups
-     * @param callback SQL execute callback
-     * @return update count
-     * @throws SQLException SQL exception
-     */
-    public int executeUpdate(final Collection<InputGroup<RawSQLExecuteUnit>> inputGroups, final DefaultRawSQLExecutorCallback callback) throws SQLException {
-        List<Integer> results = doExecute(inputGroups, null, callback).stream().map(each -> ((ExecuteUpdateResult) each).getUpdateCount()).collect(Collectors.toList());
-        // TODO check is need to accumulate
-        // TODO refresh metadata
-        return accumulate(results);
-    }
-    
-    private int accumulate(final List<Integer> results) {
-        int result = 0;
-        for (Integer each : results) {
-            result += null == each ? 0 : each;
-        }
-        return result;
-    }
     
     /**
      * Execute.
@@ -88,13 +52,20 @@ public final class RawSQLExecutor {
      * @return return true if is DQL, false if is DML
      * @throws SQLException SQL exception
      */
-    public boolean execute(final Collection<InputGroup<RawSQLExecuteUnit>> inputGroups, final DefaultRawSQLExecutorCallback callback) throws SQLException {
+    public Collection<ExecuteResponse> execute(final Collection<InputGroup<RawSQLExecuteUnit>> inputGroups, final DefaultRawSQLExecutorCallback callback) throws SQLException {
+        // TODO Load query header for first query
         List<ExecuteResult> results = doExecute(inputGroups, null, callback);
         // TODO refresh metadata
         if (null == results || results.isEmpty() || null == results.get(0)) {
-            return false;
+            return Collections.singleton(new ExecuteUpdateResponse(0, 0L));
         }
-        return results.get(0) instanceof ExecuteQueryResult;
+        if (results.get(0) instanceof ExecuteQueryResult) {
+            // TODO convert to ExecuteResponse
+            return Collections.emptyList();
+        }
+        // TODO convert to ExecuteResponse
+        // TODO refresh metadata
+        return Collections.emptyList();
     }
     
     @SuppressWarnings("unchecked")
