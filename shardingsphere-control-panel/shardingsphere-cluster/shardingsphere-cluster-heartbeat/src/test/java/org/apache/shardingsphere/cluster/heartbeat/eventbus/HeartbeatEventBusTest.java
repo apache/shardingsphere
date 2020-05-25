@@ -15,21 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cluster.heartbeat.response;
+package org.apache.shardingsphere.cluster.heartbeat.eventbus;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import org.junit.Test;
 
-/**
- * Heart beat result.
- */
-@AllArgsConstructor
-@Getter
-public final class HeartBeatResult {
+import static org.junit.Assert.assertNotNull;
+
+public final class HeartbeatEventBusTest {
     
-    private String dataSourceName;
-    
-    private Boolean enable;
-    
-    private Long detectTimeStamp;
+    @Test
+    public void assertGetInstance() {
+        assertNotNull(HeartbeatEventBus.getInstance());
+    }
 }

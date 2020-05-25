@@ -27,5 +27,5 @@ import lombok.Setter;
 @Setter
 public final class ClusterConfiguration {
 
-    private HeartBeatConfiguration heartBeat;
+    private HeartbeatConfiguration heartbeat;
 }

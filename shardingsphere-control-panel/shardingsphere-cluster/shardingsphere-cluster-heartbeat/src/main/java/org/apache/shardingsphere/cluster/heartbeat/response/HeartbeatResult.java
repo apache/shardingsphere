@@ -15,26 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cluster.heartbeat.event;
+package org.apache.shardingsphere.cluster.heartbeat.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * Heart beat detect notice event.
+ * Heartbeat result.
  */
+@AllArgsConstructor
 @Getter
-public final class HeartBeatDetectNoticeEvent extends AbstractHeartBeatEvent {
+public final class HeartbeatResult {
     
-    private String detectSQL;
+    private String dataSourceName;
     
-    private Boolean retryEnable;
+    private Boolean enable;
     
-    private Integer retryMaximum;
-    
-    public HeartBeatDetectNoticeEvent(final String detectSQL, final Boolean retryEnable, final Integer retryMaximum) {
-        super(HeartBeatEventType.NOTICE_DETECT);
-        this.detectSQL = detectSQL;
-        this.retryEnable = retryEnable;
-        this.retryMaximum = retryMaximum;
-    }
+    private Long detectTimeStamp;
 }

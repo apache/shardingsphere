@@ -23,14 +23,14 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Heart beat response.
+ * Heartbeat response.
  */
 @Getter
-public final class HeartBeatResponse {
+public final class HeartbeatResponse {
     
-    private Map<String, Collection<HeartBeatResult>> heartBeatResultMap;
+    private Map<String, Collection<HeartbeatResult>> heartbeatResultMap;
     
-    public HeartBeatResponse(final Map<String, Collection<HeartBeatResult>> heartBeatResultMap) {
-        this.heartBeatResultMap = heartBeatResultMap;
+    public HeartbeatResponse(final Map<String, Collection<HeartbeatResult>> heartbeatResultMap) {
+        this.heartbeatResultMap = heartbeatResultMap;
     }
 }

@@ -22,11 +22,11 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 
 /**
- * Heart beat configuration for YAML.
+ * Heartbeat configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlHeartBeatConfiguration implements YamlConfiguration {
+public final class YamlHeartbeatConfiguration implements YamlConfiguration {
     
     private String sql;
     

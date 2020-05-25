@@ -15,12 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cluster.heartbeat.event;
+package org.apache.shardingsphere.cluster.heartbeat.eventbus;
+
+import com.google.common.eventbus.EventBus;
 
 /**
- * Heart beat event type.
+ * Heartbeat event bus.
  */
-public enum HeartBeatEventType {
+public final class HeartbeatEventBus {
     
-    NOTICE_DETECT;
+    /**
+     * Get heartbeat event bus instance.
+     *
+     * @return event bus
+     */
+    public static EventBus getInstance() {
+        return HeartbeatEventBusHolder.INSTANCE;
+    }
+    
+    private static final class HeartbeatEventBusHolder {
+        private static final EventBus INSTANCE = new EventBus();
+    }
 }

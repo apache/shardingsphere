@@ -15,16 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cluster.heartbeat.eventbus;
+package org.apache.shardingsphere.cluster.heartbeat.event;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertNotNull;
-
-public final class HeartBeatEventBusTest {
+/**
+ * Heartbeat event type.
+ */
+public enum HeartbeatEventType {
     
-    @Test
-    public void assertGetInstance() {
-        assertNotNull(HeartBeatEventBus.getInstance());
-    }
+    NOTICE_DETECT;
 }

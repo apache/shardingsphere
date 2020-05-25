@@ -15,27 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cluster.heartbeat.task;
+package org.apache.shardingsphere.cluster.heartbeat.event;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.cluster.heartbeat.event.HeartBeatEvent;
-import org.apache.shardingsphere.cluster.heartbeat.eventbus.HeartBeatEventBus;
+import lombok.Getter;
 
 /**
- * Heart beat task.
+ * Heartbeat detect notice event.
  */
-@Slf4j
-public final class HeartBeatTask implements Runnable {
+@Getter
+public final class HeartbeatDetectNoticeEvent extends AbstractHeartbeatEvent {
     
-    private final HeartBeatEvent heartBeatEvent;
+    private String detectSQL;
     
-    public HeartBeatTask(final HeartBeatEvent heartBeatEvent) {
-        this.heartBeatEvent = heartBeatEvent;
-    }
+    private Boolean retryEnable;
     
-    @Override
-    public void run() {
-        HeartBeatEventBus.getInstance().post(heartBeatEvent);
-        log.info("heart beat detect running");
+    private Integer retryMaximum;
+    
+    public HeartbeatDetectNoticeEvent(final String detectSQL, final Boolean retryEnable, final Integer retryMaximum) {
+        super(HeartbeatEventType.NOTICE_DETECT);
+        this.detectSQL = detectSQL;
+        this.retryEnable = retryEnable;
+        this.retryMaximum = retryMaximum;
     }
 }
