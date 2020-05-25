@@ -33,7 +33,6 @@ import org.apache.shardingsphere.cluster.state.enums.NodeState;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Cluster facade.
@@ -79,12 +78,14 @@ public final class ClusterFacade {
     
     private void buildDataSourceState(final String schemaName, final Collection<HeartBeatResult> heartBeatResults,
                        final Map<String, DataSourceState> dataSourceStateMap, final InstanceState instanceState) {
-        heartBeatResults.stream().forEach(heartBeatResult -> {
-            String dataSourceName = Joiner.on(".").join(schemaName, heartBeatResult.getDataSourceName());
-            DataSourceState dataSourceState = Optional.ofNullable(instanceState.getDataSources().get(dataSourceName)).orElse(new DataSourceState());
-            if (heartBeatResult.getEnable()) {
+        heartBeatResults.stream().forEach(each -> {
+            String dataSourceName = Joiner.on(".").join(schemaName, each.getDataSourceName());
+            DataSourceState dataSourceState = null == instanceState.getDataSources()
+                    || null == instanceState.getDataSources().get(dataSourceName) ? new DataSourceState()
+                    : instanceState.getDataSources().get(dataSourceName);
+            if (each.getEnable()) {
                 dataSourceState.setState(NodeState.ONLINE);
-                dataSourceState.setLastConnect(heartBeatResult.getDetectTimeStamp());
+                dataSourceState.setLastConnect(each.getDetectTimeStamp());
             } else {
                 dataSourceState.setState(NodeState.OFFLINE);
             }
