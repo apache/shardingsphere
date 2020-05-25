@@ -22,6 +22,7 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:shadow="http://shardingsphere.apache.org/schema/shardingsphere/shadow"
+       xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
        xmlns:bean="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd 
@@ -35,6 +36,8 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/shadow
                            http://shardingsphere.apache.org/schema/shardingsphere/shadow/shadow.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/encrypt
+                           http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd
                            ">
     <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />
     
@@ -58,19 +61,37 @@
         </shadow:mappings>
     </shadow:rule>
 
-    <shardingsphere:data-source id="shadowDataSource" data-source-names="ds,shadow_ds" rule-refs="shadowRule">
+    <encrypt:rule id="encryptRule">
+        <encrypt:tables>
+            <encrypt:table name="t_user">
+                <encrypt:column logic-column="user_name" plain-column="user_name_plain" cipher-column="user_name" encryptor-ref="name_encryptor" />
+                <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" encryptor-ref="pwd_encryptor"/>
+            </encrypt:table>
+        </encrypt:tables>
+        <encrypt:encryptors>
+            <encrypt:encryptor id="name_encryptor" type="AES">
+                <props>
+                    <prop key="aes.key.value">123456</prop>
+                </props>
+            </encrypt:encryptor>
+            <encrypt:encryptor id="pwd_encryptor" type="assistedTest" />
+        </encrypt:encryptors>
+    </encrypt:rule>
+
+    <shardingsphere:data-source id="encryptShadowDataSource" data-source-names="ds,shadow_ds" rule-refs="shadowRule,encryptRule">
         <props>
             <prop key="sql.show">true</prop>
+            <prop key="query.with.cipher.column">true</prop>
         </props>
     </shardingsphere:data-source>
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="shadowDataSource" />
+        <property name="dataSource" ref="encryptShadowDataSource" />
     </bean>
     <tx:annotation-driven />
     
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-        <property name="dataSource" ref="shadowDataSource"/>
+        <property name="dataSource" ref="encryptShadowDataSource"/>
         <property name="mapperLocations" value="classpath*:META-INF/mappers/*.xml"/>
     </bean>
     
