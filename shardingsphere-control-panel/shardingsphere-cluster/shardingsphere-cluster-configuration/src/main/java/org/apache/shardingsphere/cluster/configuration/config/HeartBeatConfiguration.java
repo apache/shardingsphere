@@ -35,5 +35,7 @@ public final class HeartBeatConfiguration {
     
     private Integer retryMaximum;
     
+    private Integer retryInterval;
+    
     private Integer threadCount;
 }

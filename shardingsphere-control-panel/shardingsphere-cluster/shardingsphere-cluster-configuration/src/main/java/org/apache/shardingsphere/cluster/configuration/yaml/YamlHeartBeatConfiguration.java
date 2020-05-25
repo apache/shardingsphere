@@ -36,5 +36,7 @@ public final class YamlHeartBeatConfiguration implements YamlConfiguration {
     
     private Integer retryMaximum;
     
+    private Integer retryInterval;
+    
     private Integer threadCount;
 }
