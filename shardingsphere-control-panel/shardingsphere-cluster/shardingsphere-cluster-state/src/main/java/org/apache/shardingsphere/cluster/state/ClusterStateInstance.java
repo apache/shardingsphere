@@ -44,6 +44,16 @@ public final class ClusterStateInstance {
     }
     
     /**
+     * Persist instance state.
+     *
+     * @param instanceState instance state
+     */
+    public void persistInstanceState(final InstanceState instanceState) {
+        Preconditions.checkNotNull(instanceState, "instance state can not be null.");
+        ShardingOrchestrationFacade.getInstance().getRegistryCenter().persistInstanceData(YamlEngine.marshal(instanceState));
+    }
+    
+    /**
      * Persist data source state.
      *
      * @param dataSourceName data source name
