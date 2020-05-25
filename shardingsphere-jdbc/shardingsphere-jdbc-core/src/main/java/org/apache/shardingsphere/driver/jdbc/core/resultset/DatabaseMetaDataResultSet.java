@@ -151,6 +151,16 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     public String getString(final String columnLabel) throws SQLException {
         return getString(findColumn(columnLabel));
     }
+
+    @Override
+    public String getNString(final int columnIndex) throws SQLException {
+        return getString(columnIndex);
+    }
+
+    @Override
+    public String getNString(final String columnLabel) throws SQLException {
+        return getString(columnLabel);
+    }
     
     @Override
     public boolean getBoolean(final int columnIndex) throws SQLException {
