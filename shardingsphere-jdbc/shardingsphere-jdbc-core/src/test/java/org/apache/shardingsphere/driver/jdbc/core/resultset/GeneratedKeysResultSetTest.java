@@ -80,6 +80,15 @@ public final class GeneratedKeysResultSetTest {
         assertThat(actualResultSet.getString("order_id"), is("2"));
         assertFalse(actualResultSet.next());
     }
+
+    @Test
+    public void assertGetNString() {
+        assertTrue(actualResultSet.next());
+        assertThat(actualResultSet.getNString(1), is("1"));
+        assertTrue(actualResultSet.next());
+        assertThat(actualResultSet.getNString("order_id"), is("2"));
+        assertFalse(actualResultSet.next());
+    }
     
     @Test
     public void assertGetByte() {
