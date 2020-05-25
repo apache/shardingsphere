@@ -32,11 +32,11 @@ import java.util.List;
 /**
  * Raw execute group engine.
  */
-public final class RawExecuteGroupEngineExecuteGroupEngine extends AbstractExecuteGroupEngine<RawSQLExecuteUnit> {
+public final class RawExecuteGroupEngine extends AbstractExecuteGroupEngine<RawSQLExecuteUnit> {
     
     private final int maxConnectionsSizePerQuery;
     
-    public RawExecuteGroupEngineExecuteGroupEngine(final int maxConnectionsSizePerQuery, final Collection<ShardingSphereRule> rules) {
+    public RawExecuteGroupEngine(final int maxConnectionsSizePerQuery, final Collection<ShardingSphereRule> rules) {
         super(rules);
         this.maxConnectionsSizePerQuery = maxConnectionsSizePerQuery;
     }
