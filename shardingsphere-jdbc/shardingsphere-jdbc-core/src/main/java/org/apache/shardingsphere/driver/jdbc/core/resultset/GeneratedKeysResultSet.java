@@ -23,6 +23,7 @@ import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedGene
 
 import java.math.BigDecimal;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
 import java.util.Iterator;
@@ -90,6 +91,16 @@ public final class GeneratedKeysResultSet extends AbstractUnsupportedGeneratedKe
     @Override
     public String getString(final String columnLabel) {
         return getString(1);
+    }
+
+    @Override
+    public String getNString(final int columnIndex) throws SQLException {
+        return getString(columnIndex);
+    }
+
+    @Override
+    public String getNString(final String columnLabel) throws SQLException {
+        return getString(columnLabel);
     }
     
     @Override

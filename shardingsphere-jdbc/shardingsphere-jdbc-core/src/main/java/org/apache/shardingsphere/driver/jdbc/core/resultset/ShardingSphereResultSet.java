@@ -160,6 +160,16 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
         int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (String) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, String.class), String.class);
     }
+
+    @Override
+    public String getNString(final int columnIndex) throws SQLException {
+        return getString(columnIndex);
+    }
+
+    @Override
+    public String getNString(final String columnLabel) throws SQLException {
+        return getString(columnLabel);
+    }
     
     @Override
     public BigDecimal getBigDecimal(final int columnIndex) throws SQLException {
