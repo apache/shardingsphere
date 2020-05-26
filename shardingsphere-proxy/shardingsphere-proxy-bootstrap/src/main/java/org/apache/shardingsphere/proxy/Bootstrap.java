@@ -44,7 +44,6 @@ import org.apache.shardingsphere.orchestration.center.yaml.swapper.Orchestration
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.proxy.backend.cluster.HeartbeatHandler;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
-import org.apache.shardingsphere.proxy.backend.schema.ShardingSphereSchemas;
 import org.apache.shardingsphere.proxy.backend.util.DataSourceConverter;
 import org.apache.shardingsphere.proxy.config.ShardingConfiguration;
 import org.apache.shardingsphere.proxy.config.ShardingConfigurationLoader;
@@ -118,10 +117,7 @@ public final class Bootstrap {
         Authentication authentication = new AuthenticationYamlSwapper().swap(yamlAuthenticationConfig);
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap(ruleConfigs);
         Map<String, Collection<RuleConfiguration>> schemaRules = getRuleConfigurations(ruleConfigs);
-        ProxySchemaContexts.getInstance().init(schemaDataSources, schemaRules, authentication, properties);
-        log(authentication, properties);
-        initMetrics(metricsConfiguration);
-        startProxy(schemaDataSources.keySet(), port, schemaDataSources, schemaRules);
+        startProxy(port, authentication, properties, schemaDataSources, schemaRules, metricsConfiguration);
     }
     
     private static void startWithRegistryCenter(final YamlProxyServerConfiguration serverConfig, final Collection<String> shardingSchemaNames,
@@ -133,24 +129,23 @@ public final class Bootstrap {
             Properties properties = shardingOrchestrationFacade.getConfigCenter().loadProperties();
             Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap(shardingOrchestrationFacade);
             Map<String, Collection<RuleConfiguration>> schemaRules = getSchemaRules(shardingOrchestrationFacade);
-            ProxySchemaContexts.getInstance().init(schemaDataSources, schemaRules, authentication, properties);
-            log(authentication, properties);
-            initMetrics(serverConfig.getMetrics());
             initCluster(serverConfig.getCluster());
-            startProxy(shardingSchemaNames, port, schemaDataSources, schemaRules);
+            startProxy(port, authentication, properties, schemaDataSources, schemaRules, serverConfig.getMetrics());
         }
+    }
+    
+    private static void startProxy(final int port, final Authentication authentication, final Properties properties, final Map<String, Map<String, DataSourceParameter>> schemaDataSources, 
+                                   final Map<String, Collection<RuleConfiguration>> schemaRules, final YamlMetricsConfiguration metrics) throws SQLException {
+        ProxySchemaContexts.getInstance().init(schemaDataSources, schemaRules, authentication, properties);
+        log(authentication, properties);
+        initMetrics(metrics);
+        initOpenTracing();
+        ShardingSphereProxy.getInstance().start(port);
     }
     
     private static void log(final Authentication authentication, final Properties properties) {
         ConfigurationLogger.log(authentication);
         ConfigurationLogger.log(properties);
-    }
-
-    private static void startProxy(final Collection<String> shardingSchemaNames, final int port, final Map<String, Map<String, DataSourceParameter>> schemaDataSources,
-                                   final Map<String, Collection<RuleConfiguration>> schemaRules) throws SQLException {
-        ShardingSphereSchemas.getInstance().init(shardingSchemaNames, schemaDataSources, schemaRules);
-        initOpenTracing();
-        ShardingSphereProxy.getInstance().start(port);
     }
     
     private static Map<String, Collection<RuleConfiguration>> getSchemaRules(final ShardingOrchestrationFacade shardingOrchestrationFacade) {
