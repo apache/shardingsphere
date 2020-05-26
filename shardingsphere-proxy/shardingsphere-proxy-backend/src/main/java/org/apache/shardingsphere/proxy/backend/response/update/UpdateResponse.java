@@ -49,17 +49,17 @@ public final class UpdateResponse implements BackendResponse {
         this(Collections.emptyList());
     }
     
-    public UpdateResponse(final Collection<ExecuteResult> responseUnits) {
-        for (ExecuteResult each : responseUnits) {
+    public UpdateResponse(final Collection<ExecuteResult> executeResults) {
+        for (ExecuteResult each : executeResults) {
             updateCount = ((ExecuteUpdateResult) each).getUpdateCount();
             updateCounts.add(((ExecuteUpdateResult) each).getUpdateCount());
         }
-        lastInsertId = getLastInsertId(responseUnits);
+        lastInsertId = getLastInsertId(executeResults);
     }
     
-    private long getLastInsertId(final Collection<ExecuteResult> responseUnits) {
+    private long getLastInsertId(final Collection<ExecuteResult> executeResults) {
         long result = 0;
-        for (ExecuteResult each : responseUnits) {
+        for (ExecuteResult each : executeResults) {
             result = Math.max(result, ((ExecuteUpdateResult) each).getLastInsertId());
         }
         return result;
