@@ -23,26 +23,26 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Heart beat task manager.
+ * Heartbeat task manager.
  */
-public final class HeartBeatTaskManager {
+public final class HeartbeatTaskManager {
     
     private Integer interval;
     
     private final ScheduledExecutorService executorService;
     
-    public HeartBeatTaskManager(final Integer interval, final Integer threadCount) {
+    public HeartbeatTaskManager(final Integer interval, final Integer threadCount) {
         this.interval = interval;
         executorService = Executors.newScheduledThreadPool(threadCount);
     }
     
     /**
-     * Start heart beat task.
+     * Start heartbeat task.
      *
-     * @param heartBeatTask heart beat task
+     * @param heartbeatTask heartbeat task
      */
-    public void start(final HeartBeatTask heartBeatTask) {
-        Preconditions.checkNotNull(heartBeatTask, "task can not be null");
-        executorService.scheduleAtFixedRate(heartBeatTask, interval, interval, TimeUnit.SECONDS);
+    public void start(final HeartbeatTask heartbeatTask) {
+        Preconditions.checkNotNull(heartbeatTask, "task can not be null");
+        executorService.scheduleAtFixedRate(heartbeatTask, interval, interval, TimeUnit.SECONDS);
     }
 }

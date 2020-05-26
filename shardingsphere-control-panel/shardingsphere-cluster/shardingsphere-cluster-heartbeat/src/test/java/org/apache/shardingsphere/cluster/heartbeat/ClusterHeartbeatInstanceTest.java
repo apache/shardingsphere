@@ -15,19 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cluster.heartbeat.event;
+package org.apache.shardingsphere.cluster.heartbeat;
 
-import lombok.Getter;
+import org.junit.Test;
 
-/**
- * Abstract heart beat event.
- */
-@Getter
-public abstract class AbstractHeartBeatEvent implements HeartBeatEvent {
+import static org.junit.Assert.assertNotNull;
+
+public final class ClusterHeartbeatInstanceTest {
     
-    private final HeartBeatEventType eventType;
-    
-    AbstractHeartBeatEvent(final HeartBeatEventType eventType) {
-        this.eventType = eventType;
+    @Test
+    public void assertGetInstance() {
+        assertNotNull(ClusterHeartbeatInstance.getInstance());
     }
 }
