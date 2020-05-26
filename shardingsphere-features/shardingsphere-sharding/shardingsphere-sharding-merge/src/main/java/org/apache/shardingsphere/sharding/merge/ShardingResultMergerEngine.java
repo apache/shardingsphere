@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.merge;
 
+import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.merge.dal.ShardingDALResultMerger;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
@@ -47,7 +48,7 @@ public final class ShardingResultMergerEngine implements ResultMergerEngine<Shar
     
     @Override
     public int getOrder() {
-        return 0;
+        return ShardingOrder.ORDER;
     }
     
     @Override
