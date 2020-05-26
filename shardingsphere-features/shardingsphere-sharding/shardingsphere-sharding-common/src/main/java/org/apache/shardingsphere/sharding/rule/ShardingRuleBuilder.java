@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.rule;
 
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRuleBuilder;
+import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 
 import java.util.Collection;
 
@@ -34,7 +35,7 @@ public final class ShardingRuleBuilder implements ShardingSphereRuleBuilder<Shar
     
     @Override
     public int getOrder() {
-        return 1;
+        return ShardingOrder.ORDER;
     }
     
     @Override
