@@ -64,6 +64,11 @@ public final class HeartbeatHandler {
         return HeartbeatHandlerHolder.INSTANCE;
     }
     
+    /**
+     * Handle heart beat detect event.
+     *
+     * @param schemas ShardingSphere schemas
+     */
     public void handle(final Map<String, ShardingSphereSchema> schemas) {
         ExecutorService executorService = Executors.newFixedThreadPool(countDataSource(schemas));
         List<FutureTask<Map<String, HeartbeatResult>>> futureTasks = new ArrayList<>();
@@ -73,8 +78,8 @@ public final class HeartbeatHandler {
             futureTasks.add(futureTask);
             executorService.submit(futureTask);
         }));
-        reportHeartBeat(futureTasks);
-        executorService.shutdown();
+        reportHeartbeat(futureTasks);
+        closeExecutor(executorService);
     }
     
     private Integer countDataSource(final Map<String, ShardingSphereSchema> schemas) {
@@ -83,15 +88,15 @@ public final class HeartbeatHandler {
                         getDataSources().keySet().size())).getSum()).intValue();
     }
     
-    private void reportHeartBeat(final List<FutureTask<Map<String, HeartbeatResult>>> futureTasks) {
-        Map<String, Collection<HeartbeatResult>> heartBeatResultMap = new HashMap<>();
+    private void reportHeartbeat(final List<FutureTask<Map<String, HeartbeatResult>>> futureTasks) {
+        Map<String, Collection<HeartbeatResult>> heartbeatResultMap = new HashMap<>();
         futureTasks.stream().forEach(each -> {
             try {
                 each.get().entrySet().forEach(entry -> {
-                    if (Objects.isNull(heartBeatResultMap.get(entry.getKey()))) {
-                        heartBeatResultMap.put(entry.getKey(), new ArrayList<>(Arrays.asList(entry.getValue())));
+                    if (Objects.isNull(heartbeatResultMap.get(entry.getKey()))) {
+                        heartbeatResultMap.put(entry.getKey(), new ArrayList<>(Arrays.asList(entry.getValue())));
                     } else {
-                        heartBeatResultMap.get(entry.getKey()).add(entry.getValue());
+                        heartbeatResultMap.get(entry.getKey()).add(entry.getValue());
                     }
                 });
             } catch (InterruptedException ex) {
@@ -100,7 +105,13 @@ public final class HeartbeatHandler {
             
             }
         });
-        ClusterFacade.getInstance().reportHeartbeat(new HeartbeatResponse(heartBeatResultMap));
+        ClusterFacade.getInstance().reportHeartbeat(new HeartbeatResponse(heartbeatResultMap));
+    }
+    
+    private void closeExecutor(final ExecutorService executorService) {
+        if (null != executorService && !executorService.isShutdown()) {
+            executorService.shutdown();
+        }
     }
     
     private static final class HeartbeatHandlerHolder {
