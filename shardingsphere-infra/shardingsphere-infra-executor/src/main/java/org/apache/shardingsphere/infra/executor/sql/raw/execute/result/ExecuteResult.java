@@ -15,23 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.raw.execute.callback.impl;
-
-import org.apache.shardingsphere.infra.executor.sql.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.raw.RawSQLExecuteUnit;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.callback.RawSQLExecutorCallback;
-
-import java.util.Collection;
-import java.util.Map;
+package org.apache.shardingsphere.infra.executor.sql.raw.execute.result;
 
 /**
- * Raw SQL execute query executor callback.
+ * Execute result.
  */
-public final class RawSQLExecuteQueryExecutorCallback implements RawSQLExecutorCallback<QueryResult> {
-    
-    @Override
-    public Collection<QueryResult> execute(final Collection<RawSQLExecuteUnit> inputs, final boolean isTrunkThread, final Map<String, Object> dataMap) {
-        // TODO
-        return null;
-    }
+public interface ExecuteResult {
 }

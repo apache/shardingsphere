@@ -19,11 +19,19 @@ package org.apache.shardingsphere.infra.executor.sql.raw.execute.callback;
 
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.raw.RawSQLExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.ExecuteResult;
+
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Raw SQL executor callback.
- *
- * @param <T> class type of return value
  */
-public interface RawSQLExecutorCallback<T> extends ExecutorCallback<RawSQLExecuteUnit, T> {
+public final class RawSQLExecutorCallback implements ExecutorCallback<RawSQLExecuteUnit, ExecuteResult> {
+    
+    @Override
+    public Collection<ExecuteResult> execute(final Collection<RawSQLExecuteUnit> inputs, final boolean isTrunkThread, final Map<String, Object> dataMap) {
+        // TODO
+        return null;
+    }
 }

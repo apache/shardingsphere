@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.executor;
 
+import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.infra.hint.HintManager;
-import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryHeader;
+import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.HintShardingType;
 import org.apache.shardingsphere.proxy.backend.text.sctl.hint.internal.command.HintShowStatusCommand;
-import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
 
 import java.sql.Types;
 import java.util.ArrayList;

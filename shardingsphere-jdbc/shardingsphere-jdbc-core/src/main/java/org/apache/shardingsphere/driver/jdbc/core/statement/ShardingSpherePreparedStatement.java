@@ -30,23 +30,21 @@ import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResult
 import org.apache.shardingsphere.driver.jdbc.core.statement.metadata.ShardingSphereParameterMetaData;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.executor.sql.ExecutorConstant;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
+import org.apache.shardingsphere.infra.executor.sql.ExecutorConstant;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.raw.RawSQLExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContextBuilder;
+import org.apache.shardingsphere.infra.executor.sql.log.SQLLogger;
+import org.apache.shardingsphere.infra.executor.sql.raw.RawSQLExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.raw.execute.RawJDBCExecutor;
+import org.apache.shardingsphere.infra.executor.sql.raw.execute.callback.impl.DefaultRawSQLExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.raw.group.RawExecuteGroupEngine;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutor;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.PreparedStatementExecuteGroupEngine;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.StatementOption;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.StreamQueryResult;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.callback.impl.RawSQLExecuteExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.callback.impl.RawSQLExecuteQueryExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.callback.impl.RawSQLExecuteUpdateExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.RawSQLExecutor;
-import org.apache.shardingsphere.infra.executor.sql.raw.group.RawExecuteGroupEngine;
-import org.apache.shardingsphere.infra.executor.sql.log.SQLLogger;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.rewrite.SQLRewriteEntry;
@@ -99,7 +97,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private final PreparedStatementExecutor preparedStatementExecutor;
     
-    private final RawSQLExecutor rawSQLExecutor;
+    private final RawJDBCExecutor rawExecutor;
     
     private final BatchPreparedStatementExecutor batchPreparedStatementExecutor;
     
@@ -141,7 +139,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         statementOption = returnGeneratedKeys ? new StatementOption(true) : new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         SQLExecutor sqlExecutor = new SQLExecutor(schemaContexts.getDefaultSchemaContext().getRuntimeContext().getExecutorKernel(), connection.isHoldTransaction());
         preparedStatementExecutor = new PreparedStatementExecutor(connection.getDataSourceMap(), schemaContexts, sqlExecutor);
-        rawSQLExecutor = new RawSQLExecutor(schemaContexts.getDefaultSchemaContext().getRuntimeContext().getExecutorKernel(), connection.isHoldTransaction());
+        rawExecutor = new RawJDBCExecutor(schemaContexts.getDefaultSchemaContext().getRuntimeContext().getExecutorKernel(), connection.isHoldTransaction());
         batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(schemaContexts, sqlExecutor);
     }
     
@@ -158,7 +156,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 reply();
                 queryResults = preparedStatementExecutor.executeQuery(inputGroups);
             } else {
-                queryResults = rawSQLExecutor.executeQuery(getRawInputGroups(), new RawSQLExecuteQueryExecutorCallback());
+                queryResults = rawExecutor.executeQuery(getRawInputGroups(), new DefaultRawSQLExecutorCallback());
             }
             MergedResult mergedResult = mergeQuery(queryResults);
             result = new ShardingSphereResultSet(statements.stream().map(this::getResultSet).collect(Collectors.toList()), mergedResult, this, executionContext);
@@ -180,7 +178,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 reply();
                 return preparedStatementExecutor.executeUpdate(inputGroups, executionContext.getSqlStatementContext());
             } else {
-                return rawSQLExecutor.executeUpdate(getRawInputGroups(), new RawSQLExecuteUpdateExecutorCallback());
+                return rawExecutor.executeUpdate(getRawInputGroups(), new DefaultRawSQLExecutorCallback());
             }
         } finally {
             clearBatch();
@@ -199,7 +197,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 return preparedStatementExecutor.execute(inputGroups, executionContext.getSqlStatementContext());
             } else {
                 // TODO process getStatement
-                return rawSQLExecutor.execute(getRawInputGroups(), new RawSQLExecuteExecutorCallback());
+                return rawExecutor.execute(getRawInputGroups(), new DefaultRawSQLExecutorCallback());
             }
         } finally {
             clearBatch();
