@@ -48,7 +48,7 @@
 #   port:  9190
 #
 #cluster:
-#  heartBeat:
+#  heartbeat:
 #    sql: select 1
 #    threadCount: 1
 #    interval: 60

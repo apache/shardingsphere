@@ -28,5 +28,5 @@ import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 @Setter
 public final class YamlClusterConfiguration implements YamlConfiguration {
     
-    private YamlHeartBeatConfiguration heartBeat;
+    private YamlHeartbeatConfiguration heartbeat;
 }

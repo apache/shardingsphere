@@ -42,8 +42,19 @@
         <property name="password" value=""/>
     </bean>
     
-    <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order_${order_id % 2}" />
-    <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item_${order_id % 2}" />
+    <sharding:standard-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-ref="inlineOrderTableStrategyAlgorithm" />
+    <sharding:standard-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-ref="inlineOrderItemTableStrategyAlgorithm" />
+
+    <sharding:sharding-algorithm id="inlineOrderTableStrategyAlgorithm" type="INLINE">
+        <props>
+            <prop key="algorithm.expression">t_order_${order_id % 2}</prop>
+        </props>
+    </sharding:sharding-algorithm>
+    <sharding:sharding-algorithm id="inlineOrderItemTableStrategyAlgorithm" type="INLINE">
+        <props>
+            <prop key="algorithm.expression">t_order_item_${order_id % 2}</prop>
+        </props>
+    </sharding:sharding-algorithm>
     
     <sharding:key-generate-algorithm id="snowflakeAlgorithm" type="SNOWFLAKE">
         <props>
