@@ -17,24 +17,17 @@
 
 package org.apache.shardingsphere.cluster.state;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.cluster.state.enums.NodeState;
+import org.junit.Test;
 
-import java.util.Map;
+import static org.junit.Assert.assertNotNull;
 
-/**
- * Instance state.
- */
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public final class InstanceState {
+public final class ClusterStateInstanceTest {
     
-    private NodeState state;
+    private ClusterStateInstance clusterStateInstance;
     
-    private Map<String, DataSourceState> dataSources;
+    @Test
+    public void assertGetInstance() {
+        clusterStateInstance = ClusterStateInstance.getInstance();
+        assertNotNull(clusterStateInstance);
+    }
 }
