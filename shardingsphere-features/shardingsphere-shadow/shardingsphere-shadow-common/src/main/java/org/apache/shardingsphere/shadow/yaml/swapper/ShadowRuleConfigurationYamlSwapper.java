@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.shadow.yaml.swapper;
 
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.constant.ShadowOrder;
+import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
 
 /**
  * Shadow rule configuration yaml swapper.
@@ -51,6 +52,6 @@ public final class ShadowRuleConfigurationYamlSwapper implements YamlRuleConfigu
     
     @Override
     public int getOrder() {
-        return -5;
+        return ShadowOrder.ORDER;
     }
 }

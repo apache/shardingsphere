@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.context;
 
+import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriterBuilder;
 import org.apache.shardingsphere.encrypt.rewrite.token.EncryptTokenGenerateBuilder;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
@@ -46,7 +47,7 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
     
     @Override
     public int getOrder() {
-        return 20;
+        return EncryptOrder.ORDER;
     }
     
     @Override

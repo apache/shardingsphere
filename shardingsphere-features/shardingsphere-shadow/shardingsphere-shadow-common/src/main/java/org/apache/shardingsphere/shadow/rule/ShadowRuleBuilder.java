@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.shadow.rule;
 
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRuleBuilder;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 
 import java.util.Collection;
 
@@ -34,7 +35,7 @@ public final class ShadowRuleBuilder implements ShardingSphereRuleBuilder<Shadow
     
     @Override
     public int getOrder() {
-        return 20;
+        return ShadowOrder.ORDER;
     }
     
     @Override

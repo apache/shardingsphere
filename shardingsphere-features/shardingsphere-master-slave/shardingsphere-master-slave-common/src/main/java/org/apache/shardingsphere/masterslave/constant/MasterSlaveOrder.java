@@ -15,27 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.context;
+package org.apache.shardingsphere.masterslave.constant;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-
-import java.util.Collection;
-import java.util.Collections;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Execution context.
+ * Master-slave order.
  */
-@RequiredArgsConstructor
-@Getter
-public class ExecutionContext {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class MasterSlaveOrder {
     
-    private final SQLStatementContext sqlStatementContext;
-    
-    private final Collection<ExecutionUnit> executionUnits;
-    
-    public ExecutionContext(final SQLStatementContext sqlStatementContext, final ExecutionUnit executionUnit) {
-        this(sqlStatementContext, Collections.singletonList(executionUnit));
-    }
+    /**
+     * Master-slave order.
+     */
+    public static final int ORDER = 10;
 }

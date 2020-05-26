@@ -19,6 +19,7 @@ package org.apache.shardingsphere.masterslave.rule;
 
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRuleBuilder;
+import org.apache.shardingsphere.masterslave.constant.MasterSlaveOrder;
 
 import java.util.Collection;
 
@@ -34,7 +35,7 @@ public final class MasterSlaveRuleBuilder implements ShardingSphereRuleBuilder<M
     
     @Override
     public int getOrder() {
-        return 5;
+        return MasterSlaveOrder.ORDER;
     }
     
     @Override

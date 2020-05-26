@@ -20,6 +20,7 @@ package org.apache.shardingsphere.replica.execute.group;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.resourced.ResourceManagedExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.group.ExecuteGroupDecorator;
+import org.apache.shardingsphere.replica.constant.ReplicaOrder;
 import org.apache.shardingsphere.replica.rule.ReplicaRule;
 
 import java.util.Collection;
@@ -52,7 +53,7 @@ public final class ReplicaExecuteGroupDecorator<T extends ResourceManagedExecute
     
     @Override
     public int getOrder() {
-        return 5;
+        return ReplicaOrder.ORDER;
     }
     
     @Override

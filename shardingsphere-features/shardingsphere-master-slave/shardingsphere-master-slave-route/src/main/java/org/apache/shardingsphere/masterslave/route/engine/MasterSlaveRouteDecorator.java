@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.decorator.RouteDecorator;
+import org.apache.shardingsphere.masterslave.constant.MasterSlaveOrder;
 import org.apache.shardingsphere.masterslave.route.engine.impl.MasterSlaveDataSourceRouter;
 import org.apache.shardingsphere.masterslave.rule.MasterSlaveDataSourceRule;
 import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
@@ -65,7 +66,7 @@ public final class MasterSlaveRouteDecorator implements RouteDecorator<MasterSla
     
     @Override
     public int getOrder() {
-        return 10;
+        return MasterSlaveOrder.ORDER;
     }
     
     @Override

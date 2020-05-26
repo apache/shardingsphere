@@ -19,6 +19,7 @@ package org.apache.shardingsphere.replica.rule;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRuleBuilder;
 import org.apache.shardingsphere.replica.api.config.ReplicaRuleConfiguration;
+import org.apache.shardingsphere.replica.constant.ReplicaOrder;
 
 import java.util.Collection;
 
@@ -34,7 +35,7 @@ public final class ReplicaRuleBuilder implements ShardingSphereRuleBuilder<Repli
     
     @Override
     public int getOrder() {
-        return 7;
+        return ReplicaOrder.ORDER;
     }
     
     @Override

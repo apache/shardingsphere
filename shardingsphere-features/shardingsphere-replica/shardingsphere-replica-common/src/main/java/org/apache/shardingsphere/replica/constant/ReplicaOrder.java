@@ -15,26 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.replica.execute.executor;
+package org.apache.shardingsphere.replica.constant;
 
-import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutorCallback;
-import org.apache.shardingsphere.infra.spi.order.OrderedSPI;
-import org.apache.shardingsphere.replica.rule.ReplicaRule;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * SQL executor callback for replica.
- * 
- * @param <T> class type of return value
+ * Replica order.
  */
-public abstract class ReplicaSQLExecutorCallback<T> implements SQLExecutorCallback<T>, OrderedSPI<ReplicaRule> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ReplicaOrder {
     
-    @Override
-    public final int getOrder() {
-        return 5;
-    }
-    
-    @Override
-    public final Class<ReplicaRule> getTypeClass() {
-        return ReplicaRule.class;
-    }
+    /**
+     * Replica order.
+     */
+    public static final int ORDER = 20;
 }

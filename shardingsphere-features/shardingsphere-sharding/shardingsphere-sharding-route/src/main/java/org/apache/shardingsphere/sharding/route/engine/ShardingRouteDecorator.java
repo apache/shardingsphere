@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.sharding.route.engine;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintManager;
-import org.apache.shardingsphere.sharding.rule.BindingTableRule;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
-import org.apache.shardingsphere.sharding.strategy.route.hint.HintShardingStrategy;
-import org.apache.shardingsphere.sharding.strategy.route.value.ListRouteValue;
-import org.apache.shardingsphere.sharding.strategy.route.value.RouteValue;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteResult;
+import org.apache.shardingsphere.infra.route.decorator.RouteDecorator;
+import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.InsertClauseShardingConditionEngine;
@@ -32,16 +32,17 @@ import org.apache.shardingsphere.sharding.route.engine.condition.engine.WhereCla
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngineFactory;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidatorFactory;
+import org.apache.shardingsphere.sharding.rule.BindingTableRule;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.TableRule;
+import org.apache.shardingsphere.sharding.strategy.route.hint.HintShardingStrategy;
+import org.apache.shardingsphere.sharding.strategy.route.value.ListRouteValue;
+import org.apache.shardingsphere.sharding.strategy.route.value.RouteValue;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DMLStatement;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.context.RouteResult;
-import org.apache.shardingsphere.infra.route.decorator.RouteDecorator;
 
 import java.util.Collections;
 import java.util.List;
@@ -154,7 +155,7 @@ public final class ShardingRouteDecorator implements RouteDecorator<ShardingRule
     
     @Override
     public int getOrder() {
-        return 0;
+        return ShardingOrder.ORDER;
     }
     
     @Override

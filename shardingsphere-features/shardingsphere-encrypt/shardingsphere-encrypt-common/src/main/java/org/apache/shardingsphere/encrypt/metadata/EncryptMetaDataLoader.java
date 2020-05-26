@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.encrypt.metadata;
 
+import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.datanode.DataNodes;
+import org.apache.shardingsphere.infra.metadata.schema.spi.RuleMetaDataLoader;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaDataLoader;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.spi.RuleMetaDataLoader;
-import org.apache.shardingsphere.infra.datanode.DataNodes;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -61,7 +62,7 @@ public final class EncryptMetaDataLoader implements RuleMetaDataLoader<EncryptRu
     
     @Override
     public int getOrder() {
-        return 10;
+        return EncryptOrder.ORDER;
     }
     
     @Override

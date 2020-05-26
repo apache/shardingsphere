@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.sharding.yaml.swapper;
 
+import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
+import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlTableRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
 
 import java.util.Map.Entry;
 
@@ -90,6 +91,6 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
     
     @Override
     public int getOrder() {
-        return 0;
+        return ShardingOrder.ORDER;
     }
 }

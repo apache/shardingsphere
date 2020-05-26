@@ -15,27 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.context;
+package org.apache.shardingsphere.encrypt.constant;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-
-import java.util.Collection;
-import java.util.Collections;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Execution context.
+ * Encrypt order.
  */
-@RequiredArgsConstructor
-@Getter
-public class ExecutionContext {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class EncryptOrder {
     
-    private final SQLStatementContext sqlStatementContext;
-    
-    private final Collection<ExecutionUnit> executionUnits;
-    
-    public ExecutionContext(final SQLStatementContext sqlStatementContext, final ExecutionUnit executionUnit) {
-        this(sqlStatementContext, Collections.singletonList(executionUnit));
-    }
+    /**
+     * Encrypt order.
+     */
+    public static final int ORDER = 50;
 }

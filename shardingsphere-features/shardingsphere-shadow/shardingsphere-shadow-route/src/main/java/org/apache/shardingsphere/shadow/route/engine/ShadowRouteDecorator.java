@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shadow.route.engine;
 
+import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.route.engine.impl.PreparedShadowDataSourceRouter;
 import org.apache.shardingsphere.shadow.route.engine.impl.SimpleShadowDataSourceRouter;
@@ -100,7 +101,7 @@ public final class ShadowRouteDecorator implements RouteDecorator<ShadowRule> {
     
     @Override
     public int getOrder() {
-        return 20;
+        return ShadowOrder.ORDER;
     }
     
     @Override
