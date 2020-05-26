@@ -19,7 +19,16 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
+import org.apache.shardingsphere.kernal.context.SchemaContext;
+import org.apache.shardingsphere.kernal.context.SchemaContexts;
+import org.apache.shardingsphere.kernal.context.runtime.RuntimeContext;
+import org.apache.shardingsphere.kernal.context.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
+import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
+import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -32,6 +41,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -43,10 +53,10 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class JDBCBackendDataSourceTest {
-    
-    private final JDBCBackendDataSource jdbcBackendDataSource = new JDBCBackendDataSource(Collections.emptyMap());
     
     @Before
     public void setUp() {
@@ -55,9 +65,23 @@ public final class JDBCBackendDataSourceTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setDataSource() {
-        Field field = jdbcBackendDataSource.getClass().getDeclaredField("dataSources");
-        field.setAccessible(true);
-        field.set(jdbcBackendDataSource, mockDataSources(2));
+        Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
+        schemaContexts.setAccessible(true);
+        schemaContexts.set(ProxySchemaContexts.getInstance(), new SchemaContexts(getSchemaContextMap(), new ConfigurationProperties(new Properties()), new Authentication()));
+    }
+    
+    private Map<String, SchemaContext> getSchemaContextMap() {
+        SchemaContext schemaContext = mock(SchemaContext.class);
+        ShardingSphereSchema shardingSphereSchema = mock(ShardingSphereSchema.class);
+        RuntimeContext runtimeContext = mock(RuntimeContext.class);
+        ShardingTransactionManagerEngine transactionManagerEngine = mock(ShardingTransactionManagerEngine.class);
+        when(transactionManagerEngine.getTransactionManager(TransactionType.LOCAL)).thenReturn(null);
+        when(runtimeContext.getTransactionManagerEngine()).thenReturn(transactionManagerEngine);
+        when(shardingSphereSchema.getDataSources()).thenReturn(mockDataSources(2));
+        when(schemaContext.getName()).thenReturn("schema");
+        when(schemaContext.getSchema()).thenReturn(shardingSphereSchema);
+        when(schemaContext.getRuntimeContext()).thenReturn(runtimeContext);
+        return Collections.singletonMap("schema", schemaContext);
     }
     
     private Map<String, DataSource> mockDataSources(final int size) {
@@ -70,19 +94,19 @@ public final class JDBCBackendDataSourceTest {
     
     @Test
     public void assertGetConnectionFixedOne() throws SQLException {
-        Connection actual = jdbcBackendDataSource.getConnection("ds_1");
+        Connection actual = ProxySchemaContexts.getInstance().getBackendDataSource().getConnection("schema", "ds_1");
         assertThat(actual, instanceOf(Connection.class));
     }
     
     @Test
     public void assertGetConnectionsSucceed() throws SQLException {
-        List<Connection> actual = jdbcBackendDataSource.getConnections("ds_1", 5, ConnectionMode.MEMORY_STRICTLY);
+        List<Connection> actual = ProxySchemaContexts.getInstance().getBackendDataSource().getConnections("schema", "ds_1", 5, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actual.size(), is(5));
     }
     
     @Test(expected = SQLException.class)
     public void assertGetConnectionsFailed() throws SQLException {
-        jdbcBackendDataSource.getConnections("ds_1", 6, ConnectionMode.MEMORY_STRICTLY);
+        ProxySchemaContexts.getInstance().getBackendDataSource().getConnections("schema", "ds_1", 6, ConnectionMode.MEMORY_STRICTLY);
     }
     
     @Test
@@ -115,7 +139,7 @@ public final class JDBCBackendDataSourceTest {
         
         @Override
         public List<Connection> call() throws SQLException {
-            return jdbcBackendDataSource.getConnections(datasourceName, connectionSize, connectionMode);
+            return ProxySchemaContexts.getInstance().getBackendDataSource().getConnections("schema", datasourceName, connectionSize, connectionMode);
         }
     }
 }
