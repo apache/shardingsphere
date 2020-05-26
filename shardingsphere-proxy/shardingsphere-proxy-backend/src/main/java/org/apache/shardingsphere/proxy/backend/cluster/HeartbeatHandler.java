@@ -20,23 +20,22 @@ package org.apache.shardingsphere.proxy.backend.cluster;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.cluster.configuration.config.HeartbeatConfiguration;
-
 import org.apache.shardingsphere.cluster.facade.ClusterFacade;
 import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResponse;
 import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResult;
-import org.apache.shardingsphere.proxy.backend.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.kernal.context.schema.ShardingSphereSchema;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.Collection;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 /**
@@ -74,9 +73,8 @@ public final class HeartbeatHandler {
     public void handle(final Map<String, ShardingSphereSchema> schemas) {
         ExecutorService executorService = Executors.newFixedThreadPool(countDataSource(schemas));
         List<FutureTask<Map<String, HeartbeatResult>>> futureTasks = new ArrayList<>();
-        schemas.values().forEach(value -> value.getBackendDataSource().getDataSources().entrySet().forEach(entry -> {
-            FutureTask<Map<String, HeartbeatResult>> futureTask = new FutureTask<>(new HeartbeatDetect(value.getName(), entry.getKey(),
-                    entry.getValue(), configuration));
+        schemas.forEach((key, value) -> value.getDataSources().forEach((innerKey, innerValue) -> {
+            FutureTask<Map<String, HeartbeatResult>> futureTask = new FutureTask<>(new HeartbeatDetect(key, innerKey, innerValue, configuration));
             futureTasks.add(futureTask);
             executorService.submit(futureTask);
         }));
@@ -86,8 +84,7 @@ public final class HeartbeatHandler {
     
     private Integer countDataSource(final Map<String, ShardingSphereSchema> schemas) {
         return Long.valueOf(schemas.values().stream()
-                .collect(Collectors.summarizingInt(entry -> entry.getBackendDataSource()
-                        .getDataSources().keySet().size())).getSum()).intValue();
+                .collect(Collectors.summarizingInt(entry -> entry.getDataSources().keySet().size())).getSum()).intValue();
     }
     
     private void reportHeartbeat(final List<FutureTask<Map<String, HeartbeatResult>>> futureTasks) {
