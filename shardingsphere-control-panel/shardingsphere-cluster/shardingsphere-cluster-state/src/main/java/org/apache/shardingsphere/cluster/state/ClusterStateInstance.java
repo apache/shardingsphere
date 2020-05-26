@@ -24,6 +24,10 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Cluster state instance.
  */
@@ -58,6 +62,32 @@ public final class ClusterStateInstance {
         String instanceData = ShardingOrchestrationFacade.getInstance().getRegistryCenter().loadInstanceData();
         Preconditions.checkState(!Strings.isNullOrEmpty(instanceData), "Can not load instance state from registry center");
         return YamlEngine.unmarshal(instanceData, InstanceState.class);
+    }
+    
+    /**
+     * Load instance state by instance id.
+     *
+     * @param instanceId instance id
+     * @return instance state
+     */
+    private InstanceState loadInstanceState(final String instanceId) {
+        String instanceData = ShardingOrchestrationFacade.getInstance().getRegistryCenter().loadInstanceData(instanceId);
+        Preconditions.checkState(!Strings.isNullOrEmpty(instanceData), "Can not load instance state of '%s' from registry center", instanceId);
+        return YamlEngine.unmarshal(instanceData, InstanceState.class);
+    }
+    
+    /**
+     * Load all instance states.
+     *
+     * @return all instance states
+     */
+    public Map<String, InstanceState> loadAllInstanceStates() {
+        Collection<String> instances = ShardingOrchestrationFacade.getInstance().getRegistryCenter().loadAllInstances();
+        Map<String, InstanceState> instanceStateMap = new HashMap<>();
+        instances.forEach(each -> {
+            instanceStateMap.put(each, loadInstanceState(each));
+        });
+        return instanceStateMap;
     }
     
     private static class ClusterStateInstanceHolder {
