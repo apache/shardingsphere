@@ -81,11 +81,11 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         SQLStatementContext sqlStatementContext = executionContext.getSqlStatementContext();
         boolean isReturnGeneratedKeys = sqlStatementContext.getSqlStatement() instanceof InsertStatement;
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        Collection<ExecuteResult> executeResponses;
+        Collection<ExecuteResult> executeResults;
         if (ExecutorConstant.MANAGED_RESOURCE) {
             ExecuteGroupEngine executeGroupEngine = jdbcExecutorWrapper.getExecuteGroupEngine(backendConnection, new StatementOption(isReturnGeneratedKeys));
             Collection<InputGroup<StatementExecuteUnit>> inputGroups = executeGroupEngine.generate(executionContext.getExecutionUnits());
-            executeResponses = sqlExecutor.execute(inputGroups,
+            executeResults = sqlExecutor.execute(inputGroups,
                     new ProxySQLExecutorCallback(sqlStatementContext, backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, true),
                     new ProxySQLExecutorCallback(sqlStatementContext, backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, false));
         } else {
@@ -93,14 +93,14 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
             Collection<InputGroup<RawSQLExecuteUnit>> inputGroups = new RawExecuteGroupEngine(
                     maxConnectionsSizePerQuery, backendConnection.getSchema().getRules()).generate(executionContext.getExecutionUnits());
             // TODO handle query header
-            executeResponses = rawExecutor.execute(inputGroups, new DefaultRawSQLExecutorCallback());
+            executeResults = rawExecutor.execute(inputGroups, new DefaultRawSQLExecutorCallback());
         }
-        ExecuteResult executeResponse = executeResponses.iterator().next();
-        if (executeResponse instanceof ExecuteQueryResult) {
+        ExecuteResult executeResult = executeResults.iterator().next();
+        if (executeResult instanceof ExecuteQueryResult) {
             MetricsTrackerFacade.getInstance().counterInc(MetricsLabelEnum.SQL_STATEMENT_COUNT.getName(), "SELECT");
-            return getExecuteQueryResponse(((ExecuteQueryResult) executeResponse).getQueryHeaders(), executeResponses);
+            return getExecuteQueryResponse(((ExecuteQueryResult) executeResult).getQueryHeaders(), executeResults);
         } else {
-            UpdateResponse updateResponse = new UpdateResponse(executeResponses);
+            UpdateResponse updateResponse = new UpdateResponse(executeResults);
             if (sqlStatementContext.getSqlStatement() instanceof InsertStatement) {
                 updateResponse.setType("INSERT");
             } else if (sqlStatementContext.getSqlStatement() instanceof DeleteStatement) {
@@ -115,9 +115,9 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         }
     }
     
-    private BackendResponse getExecuteQueryResponse(final List<QueryHeader> queryHeaders, final Collection<ExecuteResult> executeResponses) {
+    private BackendResponse getExecuteQueryResponse(final List<QueryHeader> queryHeaders, final Collection<ExecuteResult> executeResults) {
         QueryResponse result = new QueryResponse(queryHeaders);
-        for (ExecuteResult each : executeResponses) {
+        for (ExecuteResult each : executeResults) {
             result.getQueryResults().add(((ExecuteQueryResult) each).getQueryResult());
         }
         return result;
