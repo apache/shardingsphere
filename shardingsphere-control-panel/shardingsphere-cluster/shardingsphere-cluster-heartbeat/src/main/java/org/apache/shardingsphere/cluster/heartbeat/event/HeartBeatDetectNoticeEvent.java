@@ -27,8 +27,14 @@ public final class HeartBeatDetectNoticeEvent extends AbstractHeartBeatEvent {
     
     private String detectSQL;
     
-    public HeartBeatDetectNoticeEvent(final String detectSQL) {
+    private Boolean retryEnable;
+    
+    private Integer retryMaximum;
+    
+    public HeartBeatDetectNoticeEvent(final String detectSQL, final Boolean retryEnable, final Integer retryMaximum) {
         super(HeartBeatEventType.NOTICE_DETECT);
         this.detectSQL = detectSQL;
+        this.retryEnable = retryEnable;
+        this.retryMaximum = retryMaximum;
     }
 }

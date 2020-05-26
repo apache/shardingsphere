@@ -15,27 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cluster.configuration.config;
+package org.apache.shardingsphere.infra.executor.sql.execute.raw.callback.impl;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.infra.executor.sql.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.RawSQLExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.raw.callback.RawSQLExecutorCallback;
+
+import java.util.Collection;
+import java.util.Map;
 
 /**
- * Heart beat configuration.
+ * Raw SQL execute query executor callback.
  */
-@Getter
-@Setter
-public final class HeartBeatConfiguration {
+public final class RawSQLExecuteQueryExecutorCallback implements RawSQLExecutorCallback<QueryResult> {
     
-    private String sql;
-    
-    private Integer interval;
-    
-    private Boolean retryEnable;
-    
-    private Integer retryMaximum;
-    
-    private Integer retryInterval;
-    
-    private Integer threadCount;
+    @Override
+    public Collection<QueryResult> execute(final Collection<RawSQLExecuteUnit> inputs, final boolean isTrunkThread, final Map<String, Object> dataMap) {
+        // TODO
+        return null;
+    }
 }

@@ -15,27 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cluster.configuration.config;
+package org.apache.shardingsphere.infra.executor;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Heart beat configuration.
+ * Executor constant.
  */
-@Getter
-@Setter
-public final class HeartBeatConfiguration {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ExecutorConstant {
     
-    private String sql;
-    
-    private Integer interval;
-    
-    private Boolean retryEnable;
-    
-    private Integer retryMaximum;
-    
-    private Integer retryInterval;
-    
-    private Integer threadCount;
+    /**
+     * Use ShardingSphere to manage resource or not.
+     */
+    public static final boolean MANAGED_RESOURCE = true;
 }

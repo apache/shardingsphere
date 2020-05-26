@@ -39,13 +39,22 @@
 #    root:
 #      password: root
 #    sharding:
-#      password: sharding 
+#      password: sharding
 #      authorizedSchemas: sharding_db
 #
 #metrics:
 #   name: prometheus
 #   host:  127.0.0.1
 #   port:  9190
+#
+#cluster:
+#  heartBeat:
+#    sql: select 1
+#    threadCount: 1
+#    interval: 60
+#    retryEnable: false
+#    retryMaximum: 3
+#    retryInterval: 3
 #
 #props:
 #  max.connections.size.per.query: 1
@@ -58,6 +67,7 @@
 #  proxy.transaction.type: LOCAL
 #  proxy.opentracing.enabled: false
 #  proxy.metrics.enabled: false
+#  proxy.cluster.enabled: false
 #  proxy.hint.enabled: false
 #  query.with.cipher.column: true
 #  sql.show: false

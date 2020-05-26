@@ -15,27 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cluster.configuration.config;
+package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.callback;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.infra.executor.sql.RawSQLExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.raw.callback.RawSQLExecutorCallback;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.response.ExecuteResponse;
+
+import java.util.Collection;
+import java.util.Map;
 
 /**
- * Heart beat configuration.
+ * Raw SQL executor callback for Proxy.
  */
-@Getter
-@Setter
-public final class HeartBeatConfiguration {
+public final class ProxyRawSQLExecutorCallback implements RawSQLExecutorCallback<ExecuteResponse> {
     
-    private String sql;
-    
-    private Integer interval;
-    
-    private Boolean retryEnable;
-    
-    private Integer retryMaximum;
-    
-    private Integer retryInterval;
-    
-    private Integer threadCount;
+    @Override
+    public Collection<ExecuteResponse> execute(final Collection<RawSQLExecuteUnit> inputs, final boolean isTrunkThread, final Map<String, Object> dataMap) {
+        // TODO
+        return null;
+    }
 }

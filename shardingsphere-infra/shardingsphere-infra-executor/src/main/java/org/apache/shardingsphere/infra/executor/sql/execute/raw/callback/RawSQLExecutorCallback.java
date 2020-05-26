@@ -15,27 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cluster.configuration.config;
+package org.apache.shardingsphere.infra.executor.sql.execute.raw.callback;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.RawSQLExecuteUnit;
 
 /**
- * Heart beat configuration.
+ * Raw SQL executor callback.
+ *
+ * @param <T> class type of return value
  */
-@Getter
-@Setter
-public final class HeartBeatConfiguration {
-    
-    private String sql;
-    
-    private Integer interval;
-    
-    private Boolean retryEnable;
-    
-    private Integer retryMaximum;
-    
-    private Integer retryInterval;
-    
-    private Integer threadCount;
+public interface RawSQLExecutorCallback<T> extends ExecutorCallback<RawSQLExecuteUnit, T> {
 }

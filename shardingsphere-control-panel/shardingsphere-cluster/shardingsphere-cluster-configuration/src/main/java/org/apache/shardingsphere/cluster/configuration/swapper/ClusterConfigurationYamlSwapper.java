@@ -36,6 +36,7 @@ public final class ClusterConfigurationYamlSwapper implements YamlSwapper<YamlCl
         yamlHeartBeatConfiguration.setInterval(clusterConfiguration.getHeartBeat().getInterval());
         yamlHeartBeatConfiguration.setRetryEnable(clusterConfiguration.getHeartBeat().getRetryEnable());
         yamlHeartBeatConfiguration.setRetryMaximum(clusterConfiguration.getHeartBeat().getRetryMaximum());
+        yamlHeartBeatConfiguration.setRetryInterval(clusterConfiguration.getHeartBeat().getRetryInterval());
         yamlHeartBeatConfiguration.setThreadCount(clusterConfiguration.getHeartBeat().getThreadCount());
         yamlClusterConfiguration.setHeartBeat(yamlHeartBeatConfiguration);
         return yamlClusterConfiguration;
@@ -49,6 +50,7 @@ public final class ClusterConfigurationYamlSwapper implements YamlSwapper<YamlCl
         heartBeatConfiguration.setInterval(yamlConfiguration.getHeartBeat().getInterval());
         heartBeatConfiguration.setRetryEnable(yamlConfiguration.getHeartBeat().getRetryEnable());
         heartBeatConfiguration.setRetryMaximum(yamlConfiguration.getHeartBeat().getRetryMaximum());
+        heartBeatConfiguration.setRetryInterval(yamlConfiguration.getHeartBeat().getRetryInterval());
         heartBeatConfiguration.setThreadCount(yamlConfiguration.getHeartBeat().getThreadCount());
         clusterConfiguration.setHeartBeat(heartBeatConfiguration);
         return clusterConfiguration;

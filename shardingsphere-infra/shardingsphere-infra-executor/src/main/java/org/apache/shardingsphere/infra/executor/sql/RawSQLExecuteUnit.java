@@ -15,27 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cluster.configuration.config;
+package org.apache.shardingsphere.infra.executor.sql;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 
 /**
- * Heart beat configuration.
+ * Raw SQL execute unit.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class HeartBeatConfiguration {
+public final class RawSQLExecuteUnit {
     
-    private String sql;
+    private final ExecutionUnit executionUnit;
     
-    private Integer interval;
-    
-    private Boolean retryEnable;
-    
-    private Integer retryMaximum;
-    
-    private Integer retryInterval;
-    
-    private Integer threadCount;
+    private final ConnectionMode connectionMode;
 }

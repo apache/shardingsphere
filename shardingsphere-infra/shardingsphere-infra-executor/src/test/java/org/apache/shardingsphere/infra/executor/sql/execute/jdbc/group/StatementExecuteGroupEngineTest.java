@@ -49,9 +49,9 @@ public final class StatementExecuteGroupEngineTest {
     
     @Test
     public void assertGetExecuteUnitGroupForOneShardMemoryStrictly() throws SQLException {
-        executeGroupEngine = new StatementExecuteGroupEngine(2, Collections.singletonList(mock(ShardingSphereRule.class)));
-        Collection<InputGroup<StatementExecuteUnit>> actual = executeGroupEngine.generate(
-                mockShardRouteUnit(1, 1), mockExecutionConnection(1, ConnectionMode.MEMORY_STRICTLY), new StatementOption(true));
+        executeGroupEngine = new StatementExecuteGroupEngine(
+                2, mockExecutionConnection(1, ConnectionMode.MEMORY_STRICTLY), new StatementOption(true), Collections.singletonList(mock(ShardingSphereRule.class)));
+        Collection<InputGroup<StatementExecuteUnit>> actual = executeGroupEngine.generate(mockShardRouteUnit(1, 1));
         assertThat(actual.size(), is(1));
         for (InputGroup<StatementExecuteUnit> each : actual) {
             assertThat(each.getInputs().size(), is(1));
@@ -60,9 +60,9 @@ public final class StatementExecuteGroupEngineTest {
     
     @Test
     public void assertGetExecuteUnitGroupForMultiShardConnectionStrictly() throws SQLException {
-        executeGroupEngine = new StatementExecuteGroupEngine(1, Collections.singletonList(mock(ShardingSphereRule.class)));
-        Collection<InputGroup<StatementExecuteUnit>> actual = executeGroupEngine.generate(
-                mockShardRouteUnit(10, 2), mockExecutionConnection(1, ConnectionMode.CONNECTION_STRICTLY), new StatementOption(true));
+        executeGroupEngine = new StatementExecuteGroupEngine(
+                1, mockExecutionConnection(1, ConnectionMode.CONNECTION_STRICTLY), new StatementOption(true), Collections.singletonList(mock(ShardingSphereRule.class)));
+        Collection<InputGroup<StatementExecuteUnit>> actual = executeGroupEngine.generate(mockShardRouteUnit(10, 2));
         assertThat(actual.size(), is(10));
         for (InputGroup<StatementExecuteUnit> each : actual) {
             assertThat(each.getInputs().size(), is(2));
