@@ -23,11 +23,9 @@ import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.raw.RawSQLExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.callback.RawSQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.callback.impl.DefaultRawSQLExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.ExecuteResult;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.impl.ExecuteQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.ExecuteResponse;
+import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.impl.ExecuteUpdateResponse;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.ExecutorExceptionHandler;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.response.ExecuteResponse;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.response.ExecuteUpdateResponse;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -54,18 +52,18 @@ public final class RawProxyExecutor {
      */
     public Collection<ExecuteResponse> execute(final Collection<InputGroup<RawSQLExecuteUnit>> inputGroups, final DefaultRawSQLExecutorCallback callback) throws SQLException {
         // TODO Load query header for first query
-        List<ExecuteResult> results = doExecute(inputGroups, null, callback);
+        List<ExecuteResponse> results = doExecute(inputGroups, null, callback);
         // TODO refresh metadata
         if (null == results || results.isEmpty() || null == results.get(0)) {
             return Collections.singleton(new ExecuteUpdateResponse(0, 0L));
         }
-        if (results.get(0) instanceof ExecuteQueryResult) {
-            // TODO convert to ExecuteResponse
-            return Collections.emptyList();
+        // CHECKSTYLE:OFF
+        if (results.get(0) instanceof ExecuteUpdateResponse) {
+            // TODO refresh metadata
+            
         }
-        // TODO convert to ExecuteResponse
-        // TODO refresh metadata
-        return Collections.emptyList();
+        // CHECKSTYLE:ON
+        return results;
     }
     
     @SuppressWarnings("unchecked")

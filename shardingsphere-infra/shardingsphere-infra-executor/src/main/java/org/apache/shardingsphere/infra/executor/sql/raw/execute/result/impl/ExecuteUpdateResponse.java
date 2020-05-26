@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.response;
+package org.apache.shardingsphere.infra.executor.sql.raw.execute.result.impl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.ExecuteResponse;
 
 /**
  * Execute update response.

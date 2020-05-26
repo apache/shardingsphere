@@ -15,10 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.response;
+package org.apache.shardingsphere.infra.executor.sql.raw.execute.result.impl;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.executor.sql.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.ExecuteResponse;
+
+import java.util.List;
 
 /**
- * Execute response.
+ * Execute query response.
  */
-public interface ExecuteResponse {
+@RequiredArgsConstructor
+@Getter
+public final class ExecuteQueryResponse implements ExecuteResponse {
+    
+    private final List<QueryHeader> queryHeaders;
+    
+    private final QueryResult queryResult;
 }
