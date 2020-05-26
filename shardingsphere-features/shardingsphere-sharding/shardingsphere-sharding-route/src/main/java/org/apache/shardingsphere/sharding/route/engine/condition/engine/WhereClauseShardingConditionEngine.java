@@ -19,22 +19,23 @@ package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.strategy.route.value.ListRouteValue;
-import org.apache.shardingsphere.sharding.strategy.route.value.RangeRouteValue;
-import org.apache.shardingsphere.sharding.strategy.route.value.RouteValue;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.sharding.route.engine.condition.AlwaysFalseRouteValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.AlwaysFalseShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValueGeneratorFactory;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.strategy.route.value.ListRouteValue;
+import org.apache.shardingsphere.sharding.strategy.route.value.RangeRouteValue;
+import org.apache.shardingsphere.sharding.strategy.route.value.RouteValue;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.WhereAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.sql.parser.sql.util.SafeRangeOperationUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -168,13 +169,13 @@ public final class WhereClauseShardingConditionEngine {
     }
     
     private Range<Comparable<?>> mergeRangeRouteValues(final Range<Comparable<?>> value1, final Range<Comparable<?>> value2) {
-        return null == value2 ? value1 : value1.intersection(value2);
+        return null == value2 ? value1 : SafeRangeOperationUtils.safeIntersection(value1, value2);
     }
     
     private Collection<Comparable<?>> mergeListAndRangeRouteValues(final Collection<Comparable<?>> listValue, final Range<Comparable<?>> rangeValue) {
         Collection<Comparable<?>> result = new LinkedList<>();
         for (Comparable<?> each : listValue) {
-            if (rangeValue.contains(each)) {
+            if (SafeRangeOperationUtils.safeContains(rangeValue, each)) {
                 result.add(each);
             }
         }
