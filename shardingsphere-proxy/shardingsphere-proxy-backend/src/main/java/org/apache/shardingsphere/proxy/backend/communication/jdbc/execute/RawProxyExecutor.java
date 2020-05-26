@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.raw.RawSQLExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.callback.RawSQLExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.callback.impl.DefaultRawSQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.update.ExecuteUpdateResult;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.ExecutorExceptionHandler;
@@ -46,11 +45,11 @@ public final class RawProxyExecutor {
      * Execute.
      *
      * @param inputGroups input groups
-     * @param callback SQL execute callback
+     * @param callback raw SQL execute callback
      * @return return true if is DQL, false if is DML
      * @throws SQLException SQL exception
      */
-    public Collection<ExecuteResult> execute(final Collection<InputGroup<RawSQLExecuteUnit>> inputGroups, final DefaultRawSQLExecutorCallback callback) throws SQLException {
+    public Collection<ExecuteResult> execute(final Collection<InputGroup<RawSQLExecuteUnit>> inputGroups, final RawSQLExecutorCallback callback) throws SQLException {
         // TODO Load query header for first query
         List<ExecuteResult> results = doExecute(inputGroups, null, callback);
         // TODO refresh metadata
@@ -67,8 +66,7 @@ public final class RawProxyExecutor {
     }
     
     @SuppressWarnings("unchecked")
-    private <T> List<T> doExecute(final Collection<InputGroup<RawSQLExecuteUnit>> inputGroups,
-                                   final RawSQLExecutorCallback<T> firstCallback, final RawSQLExecutorCallback<T> callback) throws SQLException {
+    private <T> List<T> doExecute(final Collection<InputGroup<RawSQLExecuteUnit>> inputGroups, final RawSQLExecutorCallback firstCallback, final RawSQLExecutorCallback callback) throws SQLException {
         try {
             return executorKernel.execute((Collection) inputGroups, firstCallback, callback, serial);
         } catch (final SQLException ex) {
