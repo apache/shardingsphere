@@ -40,8 +40,8 @@ public final class BackendTransactionManager implements TransactionManager {
         connection = backendConnection;
         transactionType = connection.getTransactionType();
         localTransactionManager = new LocalTransactionManager(backendConnection);
-        shardingTransactionManager = null == connection.getSchema() ? null
-                : connection.getSchema().getBackendDataSource().getShardingTransactionManagerEngine().getTransactionManager(transactionType);
+        shardingTransactionManager = null == connection.getSchema() ? null 
+                : connection.getSchema().getRuntimeContext().getTransactionManagerEngine().getTransactionManager(transactionType);
     }
     
     @Override

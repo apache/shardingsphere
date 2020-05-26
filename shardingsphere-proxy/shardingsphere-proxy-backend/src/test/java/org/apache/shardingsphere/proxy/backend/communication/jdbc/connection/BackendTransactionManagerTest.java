@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
-import org.apache.shardingsphere.proxy.backend.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.kernal.context.SchemaContext;
+import org.apache.shardingsphere.kernal.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
 public final class BackendTransactionManagerTest {
     
     @Mock
-    private ShardingSphereSchema schema;
+    private SchemaContext schema;
     
     @Mock
     private BackendConnection backendConnection;
@@ -59,11 +59,11 @@ public final class BackendTransactionManagerTest {
     
     @Before
     public void setUp() {
+        RuntimeContext runtimeContext = mock(RuntimeContext.class);
         ShardingTransactionManagerEngine shardingTransactionManagerEngine = mock(ShardingTransactionManagerEngine.class);
+        when(runtimeContext.getTransactionManagerEngine()).thenReturn(shardingTransactionManagerEngine);
         when(shardingTransactionManagerEngine.getTransactionManager(TransactionType.XA)).thenReturn(shardingTransactionManager);
-        JDBCBackendDataSource backendDataSource = mock(JDBCBackendDataSource.class);
-        when(backendDataSource.getShardingTransactionManagerEngine()).thenReturn(shardingTransactionManagerEngine);
-        when(schema.getBackendDataSource()).thenReturn(backendDataSource);
+        when(schema.getRuntimeContext()).thenReturn(runtimeContext);
         when(backendConnection.getSchema()).thenReturn(schema);
         when(backendConnection.getStateHandler()).thenReturn(stateHandler);
     }

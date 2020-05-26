@@ -91,7 +91,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         } else {
             int maxConnectionsSizePerQuery = ProxySchemaContexts.getInstance().getSchemaContexts().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
             Collection<InputGroup<RawSQLExecuteUnit>> inputGroups = new RawExecuteGroupEngine(
-                    maxConnectionsSizePerQuery, backendConnection.getSchema().getRules()).generate(executionContext.getExecutionUnits());
+                    maxConnectionsSizePerQuery, backendConnection.getSchema().getSchema().getRules()).generate(executionContext.getExecutionUnits());
             // TODO handle query header
             executeResults = rawExecutor.execute(inputGroups, new RawSQLExecutorCallback());
         }

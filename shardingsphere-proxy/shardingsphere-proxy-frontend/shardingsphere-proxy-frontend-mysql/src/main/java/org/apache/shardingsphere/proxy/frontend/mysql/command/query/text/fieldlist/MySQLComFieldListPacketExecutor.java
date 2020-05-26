@@ -50,7 +50,7 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
     
     public MySQLComFieldListPacketExecutor(final MySQLComFieldListPacket packet, final BackendConnection backendConnection) {
         this.packet = packet;
-        schemaName = backendConnection.getSchemaName();
+        schemaName = backendConnection.getSchema().getName();
         databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newTextProtocolInstance(backendConnection.getSchema(), getShowColumnsSQL(), backendConnection);
     }
     

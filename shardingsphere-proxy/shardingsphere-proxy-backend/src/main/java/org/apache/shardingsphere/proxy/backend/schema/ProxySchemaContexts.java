@@ -78,6 +78,8 @@ public final class ProxySchemaContexts {
     
     private SchemaContexts schemaContexts = new SchemaContexts();
     
+    private final JDBCBackendDataSource backendDataSource = new JDBCBackendDataSource();
+    
     private boolean isCircuitBreak;
     
     private ProxySchemaContexts() {
@@ -321,11 +323,12 @@ public final class ProxySchemaContexts {
         return result;
     }
     
-    private final class JDBCBackendDataSource implements BackendDataSource {
+    public final class JDBCBackendDataSource implements BackendDataSource {
     
         /**
          * Get connection.
          *
+         * @param schemaName scheme name
          * @param dataSourceName data source name
          * @return connection
          * @throws SQLException SQL exception
@@ -337,6 +340,7 @@ public final class ProxySchemaContexts {
         /**
          * Get connections.
          *
+         * @param schemaName scheme name
          * @param dataSourceName data source name
          * @param connectionSize size of connections to get
          * @param connectionMode connection mode
@@ -350,6 +354,7 @@ public final class ProxySchemaContexts {
         /**
          * Get connections.
          *
+         * @param schemaName scheme name
          * @param dataSourceName data source name
          * @param connectionSize size of connections to be get
          * @param connectionMode connection mode
@@ -396,16 +401,6 @@ public final class ProxySchemaContexts {
     
         private boolean isInShardingTransaction(final ShardingTransactionManager shardingTransactionManager) {
             return null != shardingTransactionManager && shardingTransactionManager.isInTransaction();
-        }
-    
-        /**
-         * Renew data source.
-         *
-         * @param dataSourceParameters data source parameters
-         * @throws Exception exception
-         */
-        public void renew(final String schemaName, final Map<String, DataSourceParameter> dataSourceParameters) throws Exception {
-            ProxySchemaContexts.this.renew(schemaName, dataSourceParameters);
         }
     }
 }

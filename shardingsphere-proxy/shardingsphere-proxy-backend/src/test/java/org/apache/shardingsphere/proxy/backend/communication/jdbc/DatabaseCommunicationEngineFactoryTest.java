@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc;
 
+import org.apache.shardingsphere.kernal.context.SchemaContext;
+import org.apache.shardingsphere.kernal.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.schema.ShardingSphereSchema;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -29,12 +31,23 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class DatabaseCommunicationEngineFactoryTest {
     
+    private SchemaContext schemaContext;
+    
+    @Before
+    public void setUp() {
+        schemaContext = mock(SchemaContext.class);
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(schema.getRules()).thenReturn(Collections.emptyList());
+        when(schemaContext.getSchema()).thenReturn(schema);
+    }
+    
     @Test
     public void assertNewTextProtocolInstance() {
-        DatabaseCommunicationEngine engine = DatabaseCommunicationEngineFactory.getInstance().newTextProtocolInstance(mock(ShardingSphereSchema.class), "schemaName", mock(BackendConnection.class));
+        DatabaseCommunicationEngine engine = DatabaseCommunicationEngineFactory.getInstance().newTextProtocolInstance(schemaContext, "schemaName", mock(BackendConnection.class));
         assertNotNull(engine);
         assertThat(engine, instanceOf(JDBCDatabaseCommunicationEngine.class));
     }
@@ -42,7 +55,7 @@ public final class DatabaseCommunicationEngineFactoryTest {
     @Test
     public void assertNewBinaryProtocolInstance() {
         DatabaseCommunicationEngine engine = DatabaseCommunicationEngineFactory.getInstance()
-                .newBinaryProtocolInstance(mock(ShardingSphereSchema.class), "schemaName", Collections.emptyList(), mock(BackendConnection.class));
+                .newBinaryProtocolInstance(schemaContext, "schemaName", Collections.emptyList(), mock(BackendConnection.class));
         assertNotNull(engine);
         assertThat(engine, instanceOf(JDBCDatabaseCommunicationEngine.class));
     }

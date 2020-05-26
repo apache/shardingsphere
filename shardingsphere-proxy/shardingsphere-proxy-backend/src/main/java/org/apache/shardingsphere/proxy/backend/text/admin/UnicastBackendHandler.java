@@ -23,8 +23,7 @@ import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicati
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
-import org.apache.shardingsphere.proxy.backend.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.proxy.backend.schema.ShardingSphereSchemas;
+import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 
 import java.sql.SQLException;
@@ -46,12 +45,10 @@ public final class UnicastBackendHandler implements TextProtocolBackendHandler {
     @Override
     public BackendResponse execute() {
         // TODO we should remove set default ShardingSphere schema after parser can recognize all DAL broadcast SQL.
-        ShardingSphereSchema schema = backendConnection.getSchema();
-        if (null == schema) {
-            schema = ShardingSphereSchemas.getInstance().getSchemas().values().iterator().next();
-            backendConnection.setCurrentSchema(schema.getName());
+        if (null == backendConnection.getSchema()) {
+            backendConnection.setCurrentSchema(ProxySchemaContexts.getInstance().getSchemaContexts().getSchemaContexts().keySet().iterator().next());
         }
-        databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(schema, sql, backendConnection);
+        databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(backendConnection.getSchema(), sql, backendConnection);
         return databaseCommunicationEngine.execute();
     }
     
