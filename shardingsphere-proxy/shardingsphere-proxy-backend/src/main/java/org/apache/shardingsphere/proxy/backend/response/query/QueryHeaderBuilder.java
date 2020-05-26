@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
-import org.apache.shardingsphere.proxy.backend.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.kernal.context.SchemaContext;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
@@ -46,7 +46,7 @@ public final class QueryHeaderBuilder {
      * @return query header
      * @throws SQLException SQL exception
      */
-    public static QueryHeader build(final ResultSetMetaData resultSetMetaData, final ShardingSphereSchema schema, final int columnIndex) throws SQLException {
+    public static QueryHeader build(final ResultSetMetaData resultSetMetaData, final SchemaContext schema, final int columnIndex) throws SQLException {
         return build(resultSetMetaData, schema, resultSetMetaData.getColumnName(columnIndex), columnIndex);
     }
     
@@ -61,19 +61,19 @@ public final class QueryHeaderBuilder {
      * @throws SQLException SQL exception
      */
     public static QueryHeader build(final ProjectionsContext projectionsContext, 
-                                    final ResultSetMetaData resultSetMetaData, final ShardingSphereSchema schema, final int columnIndex) throws SQLException {
+                                    final ResultSetMetaData resultSetMetaData, final SchemaContext schema, final int columnIndex) throws SQLException {
         return build(resultSetMetaData, schema, getColumnName(projectionsContext, resultSetMetaData, columnIndex), columnIndex);
     }
     
-    private static QueryHeader build(final ResultSetMetaData resultSetMetaData, final ShardingSphereSchema schema, final String columnName, final int columnIndex) throws SQLException {
+    private static QueryHeader build(final ResultSetMetaData resultSetMetaData, final SchemaContext schema, final String columnName, final int columnIndex) throws SQLException {
         String schemaName = schema.getName();
         String actualTableName = resultSetMetaData.getTableName(columnIndex);
-        Optional<DataNodeRoutedRule> dataNodeRoutedRule = schema.getRules().stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
+        Optional<DataNodeRoutedRule> dataNodeRoutedRule = schema.getSchema().getRules().stream().filter(each -> each instanceof DataNodeRoutedRule).findFirst().map(rule -> (DataNodeRoutedRule) rule);
         String tableName;
         boolean primaryKey;
         if (null != actualTableName && dataNodeRoutedRule.isPresent()) {
             tableName = dataNodeRoutedRule.get().findLogicTableByActualTable(actualTableName).orElse("");
-            TableMetaData tableMetaData = schema.getMetaData().getSchema().getConfiguredSchemaMetaData().get(tableName);
+            TableMetaData tableMetaData = schema.getSchema().getMetaData().getSchema().getConfiguredSchemaMetaData().get(tableName);
             primaryKey = null != tableMetaData && tableMetaData.getColumns().get(resultSetMetaData.getColumnName(columnIndex).toLowerCase()).isPrimaryKey();
         } else {
             tableName = actualTableName;
