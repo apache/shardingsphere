@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.cluster;
 
-import org.apache.shardingsphere.cluster.heartbeat.response.HeartBeatResult;
+import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResult;
 
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -25,7 +25,7 @@ import java.util.concurrent.Callable;
 /**
  * Abstract heart beat detect.
  */
-public abstract class AbstractHeartBeatDetect implements Callable<Map<String, HeartBeatResult>> {
+public abstract class AbstractHeartbeatDetect implements Callable<Map<String, HeartbeatResult>> {
     
     private Boolean retryEnable;
     
@@ -33,7 +33,7 @@ public abstract class AbstractHeartBeatDetect implements Callable<Map<String, He
     
     private Integer retryInterval;
     
-    public AbstractHeartBeatDetect(final Boolean retryEnable, final Integer retryMaximum, final Integer retryInterval) {
+    public AbstractHeartbeatDetect(final Boolean retryEnable, final Integer retryMaximum, final Integer retryInterval) {
         this.retryEnable = retryEnable;
         this.retryMaximum = retryMaximum;
         this.retryInterval = retryInterval;
@@ -52,10 +52,10 @@ public abstract class AbstractHeartBeatDetect implements Callable<Map<String, He
      * @param result heart beat result
      * @return heart beat result
      */
-    protected abstract Map<String, HeartBeatResult> buildResult(final Boolean result);
+    protected abstract Map<String, HeartbeatResult> buildResult(final Boolean result);
     
     @Override
-    public Map<String, HeartBeatResult> call() {
+    public Map<String, HeartbeatResult> call() {
         if (retryEnable && retryMaximum > 0) {
             Boolean result = Boolean.FALSE;
             for (int i = 0; i < retryMaximum; i++) {

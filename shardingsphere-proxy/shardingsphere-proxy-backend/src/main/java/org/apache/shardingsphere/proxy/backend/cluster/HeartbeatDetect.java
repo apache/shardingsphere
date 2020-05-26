@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.cluster;
 
-import org.apache.shardingsphere.cluster.configuration.config.HeartBeatConfiguration;
-import org.apache.shardingsphere.cluster.heartbeat.response.HeartBeatResult;
+import org.apache.shardingsphere.cluster.configuration.config.HeartbeatConfiguration;
+import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResult;
 
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
@@ -31,7 +31,7 @@ import java.util.Objects;
 /**
  * Heart beat detect.
  */
-public final class HeartBeatDetect extends AbstractHeartBeatDetect{
+public final class HeartbeatDetect extends AbstractHeartbeatDetect{
     
     private String sql;
     
@@ -41,7 +41,7 @@ public final class HeartBeatDetect extends AbstractHeartBeatDetect{
     
     private DataSource dataSource;
     
-    public HeartBeatDetect(final String schemaName, final String dataSourceName, final DataSource dataSource, final HeartBeatConfiguration configuration) {
+    public HeartbeatDetect(final String schemaName, final String dataSourceName, final DataSource dataSource, final HeartbeatConfiguration configuration) {
         super(configuration.getRetryEnable(), configuration.getRetryMaximum(), configuration.getRetryInterval());
         this.sql = configuration.getSql();
         this.schemaName = schemaName;
@@ -62,9 +62,9 @@ public final class HeartBeatDetect extends AbstractHeartBeatDetect{
     }
     
     @Override
-    protected Map<String, HeartBeatResult> buildResult(final Boolean result) {
-        Map<String, HeartBeatResult> heartBeatResultMap = new HashMap<>(1, 1);
-        heartBeatResultMap.put(schemaName, new HeartBeatResult(dataSourceName, result, System.currentTimeMillis()));
+    protected Map<String, HeartbeatResult> buildResult(final Boolean result) {
+        Map<String, HeartbeatResult> heartBeatResultMap = new HashMap<>(1, 1);
+        heartBeatResultMap.put(schemaName, new HeartbeatResult(dataSourceName, result, System.currentTimeMillis()));
         return heartBeatResultMap;
     }
 }

@@ -18,17 +18,13 @@
 package org.apache.shardingsphere.proxy.backend.cluster;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.cluster.configuration.config.HeartBeatConfiguration;
+import org.apache.shardingsphere.cluster.configuration.config.HeartbeatConfiguration;
+
 import org.apache.shardingsphere.cluster.facade.ClusterFacade;
-import org.apache.shardingsphere.cluster.heartbeat.event.HeartBeatDetectNoticeEvent;
-import org.apache.shardingsphere.cluster.heartbeat.response.HeartBeatResponse;
-import org.apache.shardingsphere.cluster.heartbeat.response.HeartBeatResult;
+import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResponse;
+import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResult;
 import org.apache.shardingsphere.proxy.backend.schema.ShardingSphereSchema;
 
-import javax.sql.DataSource;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,23 +35,22 @@ import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 /**
  * Heart beat handler.
  */
-public final class HeartBeatHandler {
+public final class HeartbeatHandler {
     
-    private HeartBeatConfiguration configuration;
+    private HeartbeatConfiguration configuration;
     
     /**
      * Init heart beat handler.
      *
      * @param configuration heart beat configuration
      */
-    public void init(final HeartBeatConfiguration configuration) {
+    public void init(final HeartbeatConfiguration configuration) {
         Preconditions.checkNotNull(configuration, "heart beat configuration can not be null.");
         this.configuration = configuration;
     }
@@ -65,15 +60,15 @@ public final class HeartBeatHandler {
      *
      * @return heart beat handler instance
      */
-    public static HeartBeatHandler getInstance() {
-        return HeartBeatHandlerHolder.INSTANCE;
+    public static HeartbeatHandler getInstance() {
+        return HeartbeatHandlerHolder.INSTANCE;
     }
     
     public void handle(final Map<String, ShardingSphereSchema> schemas) {
         ExecutorService executorService = Executors.newFixedThreadPool(countDataSource(schemas));
-        List<FutureTask<Map<String, HeartBeatResult>>> futureTasks = new ArrayList<>();
+        List<FutureTask<Map<String, HeartbeatResult>>> futureTasks = new ArrayList<>();
         schemas.values().forEach(value -> value.getBackendDataSource().getDataSources().entrySet().forEach(entry -> {
-            FutureTask<Map<String, HeartBeatResult>> futureTask = new FutureTask<>(new HeartBeatDetect(value.getName(), entry.getKey(),
+            FutureTask<Map<String, HeartbeatResult>> futureTask = new FutureTask<>(new HeartbeatDetect(value.getName(), entry.getKey(),
                     entry.getValue(), configuration));
             futureTasks.add(futureTask);
             executorService.submit(futureTask);
@@ -88,8 +83,8 @@ public final class HeartBeatHandler {
                         getDataSources().keySet().size())).getSum()).intValue();
     }
     
-    private void reportHeartBeat(final List<FutureTask<Map<String, HeartBeatResult>>> futureTasks) {
-        Map<String, Collection<HeartBeatResult>> heartBeatResultMap = new HashMap<>();
+    private void reportHeartBeat(final List<FutureTask<Map<String, HeartbeatResult>>> futureTasks) {
+        Map<String, Collection<HeartbeatResult>> heartBeatResultMap = new HashMap<>();
         futureTasks.stream().forEach(each -> {
             try {
                 each.get().entrySet().forEach(entry -> {
@@ -105,12 +100,11 @@ public final class HeartBeatHandler {
             
             }
         });
-        ClusterFacade.getInstance().reportHeartBeat(new HeartBeatResponse(heartBeatResultMap));
+        ClusterFacade.getInstance().reportHeartbeat(new HeartbeatResponse(heartBeatResultMap));
     }
     
-    private static final class HeartBeatHandlerHolder {
+    private static final class HeartbeatHandlerHolder {
         
-        public static final HeartBeatHandler INSTANCE = new HeartBeatHandler();
+        public static final HeartbeatHandler INSTANCE = new HeartbeatHandler();
     }
-    
 }
