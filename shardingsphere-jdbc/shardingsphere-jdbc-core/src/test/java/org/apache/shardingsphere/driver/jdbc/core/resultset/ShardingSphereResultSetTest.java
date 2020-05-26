@@ -205,6 +205,18 @@ public final class ShardingSphereResultSetTest {
         when(mergeResultSet.getValue(1, String.class)).thenReturn("value");
         assertThat(shardingSphereResultSet.getString("label"), is("value"));
     }
+
+    @Test
+    public void assertGetNStringWithColumnIndex() throws SQLException {
+        when(mergeResultSet.getValue(1, String.class)).thenReturn("value");
+        assertThat(shardingSphereResultSet.getNString(1), is("value"));
+    }
+
+    @Test
+    public void assertGetNStringWithColumnLabel() throws SQLException {
+        when(mergeResultSet.getValue(1, String.class)).thenReturn("value");
+        assertThat(shardingSphereResultSet.getNString("label"), is("value"));
+    }
     
     @Test
     public void assertGetBigDecimalWithColumnIndex() throws SQLException {

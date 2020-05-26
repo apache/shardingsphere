@@ -152,16 +152,6 @@ public abstract class AbstractUnsupportedOperationResultSet extends AbstractUnsu
     }
     
     @Override
-    public final String getNString(final int columnIndex) throws SQLException {
-        throw new SQLFeatureNotSupportedException("getNString");
-    }
-    
-    @Override
-    public final String getNString(final String columnLabel) throws SQLException {
-        throw new SQLFeatureNotSupportedException("getNString");
-    }
-    
-    @Override
     public final NClob getNClob(final int columnIndex) throws SQLException {
         throw new SQLFeatureNotSupportedException("getNClob");
     }

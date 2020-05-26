@@ -20,26 +20,21 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.executor.ExecutorConstant;
+import org.apache.shardingsphere.infra.executor.sql.ExecutorConstant;
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
-import org.apache.shardingsphere.infra.executor.sql.RawSQLExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.raw.RawSQLExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
-import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.StatementExecuteUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.ExecutorExceptionHandler;
-import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.SQLExecutor;
-import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.SQLExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.group.StatementOption;
+import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.ExecutorExceptionHandler;
+import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.SQLExecutor;
+import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.StatementOption;
 import org.apache.shardingsphere.infra.executor.sql.group.ExecuteGroupEngine;
-import org.apache.shardingsphere.infra.executor.sql.group.impl.RawExecuteGroupEngine;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.order.OrderedSPIRegistry;
+import org.apache.shardingsphere.infra.executor.sql.raw.group.RawExecuteGroupEngine;
 import org.apache.shardingsphere.metrics.enums.MetricsLabelEnum;
 import org.apache.shardingsphere.metrics.facade.MetricsTrackerFacade;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.callback.ProxyRawSQLExecutorCallback;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.callback.ProxySQLExecutorCallback;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.callback.RuleProxySQLExecutorCallback;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.response.ExecuteQueryResponse;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.response.ExecuteResponse;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
@@ -57,16 +52,11 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 /**
  * SQL Execute engine for JDBC.
  */
 public final class JDBCExecuteEngine implements SQLExecuteEngine {
-    
-    static {
-        ShardingSphereServiceLoader.register(RuleProxySQLExecutorCallback.class);
-    }
     
     @Getter
     private final BackendConnection backendConnection;
@@ -93,8 +83,8 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
             ExecuteGroupEngine executeGroupEngine = jdbcExecutorWrapper.getExecuteGroupEngine(backendConnection, new StatementOption(isReturnGeneratedKeys));
             Collection<InputGroup<StatementExecuteUnit>> inputGroups = executeGroupEngine.generate(executionContext.getExecutionUnits());
             executeResponses = sqlExecutor.execute(inputGroups,
-                    getSQLExecutorCallback(new ProxySQLExecutorCallback(sqlStatementContext, backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, true)),
-                    getSQLExecutorCallback(new ProxySQLExecutorCallback(sqlStatementContext, backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, false)));
+                    new ProxySQLExecutorCallback(sqlStatementContext, backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, true),
+                    new ProxySQLExecutorCallback(sqlStatementContext, backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, false));
         } else {
             int maxConnectionsSizePerQuery = ProxySchemaContexts.getInstance().getSchemaContexts().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
             Collection<InputGroup<RawSQLExecuteUnit>> inputGroups = new RawExecuteGroupEngine(
@@ -120,11 +110,6 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
             }
             return updateResponse;
         }
-    }
-    
-    private SQLExecutorCallback<ExecuteResponse> getSQLExecutorCallback(final ProxySQLExecutorCallback callback) {
-        Map<ShardingSphereRule, RuleProxySQLExecutorCallback> callbackMap = OrderedSPIRegistry.getRegisteredServices(backendConnection.getSchema().getRules(), RuleProxySQLExecutorCallback.class);
-        return callbackMap.isEmpty() ? callback : callbackMap.values().iterator().next();
     }
     
     private BackendResponse getExecuteQueryResponse(final List<QueryHeader> queryHeaders, final Collection<ExecuteResponse> executeResponses) {

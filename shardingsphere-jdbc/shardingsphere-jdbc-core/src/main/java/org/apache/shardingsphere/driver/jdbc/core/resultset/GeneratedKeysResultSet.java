@@ -91,6 +91,16 @@ public final class GeneratedKeysResultSet extends AbstractUnsupportedGeneratedKe
     public String getString(final String columnLabel) {
         return getString(1);
     }
+
+    @Override
+    public String getNString(final int columnIndex) {
+        return getString(columnIndex);
+    }
+
+    @Override
+    public String getNString(final String columnLabel) {
+        return getString(columnLabel);
+    }
     
     @Override
     public byte getByte(final int columnIndex) {

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.jdbc.executor;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.executor.sql.execute.jdbc.executor.ExecutorExceptionHandler;
+import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.ExecutorExceptionHandler;
 import org.junit.After;
 import org.junit.Test;
 

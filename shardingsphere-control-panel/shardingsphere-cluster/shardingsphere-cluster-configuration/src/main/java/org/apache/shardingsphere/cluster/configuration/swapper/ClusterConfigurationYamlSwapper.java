@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.cluster.configuration.swapper;
 
 import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
-import org.apache.shardingsphere.cluster.configuration.config.HeartBeatConfiguration;
+import org.apache.shardingsphere.cluster.configuration.config.HeartbeatConfiguration;
 import org.apache.shardingsphere.cluster.configuration.yaml.YamlClusterConfiguration;
-import org.apache.shardingsphere.cluster.configuration.yaml.YamlHeartBeatConfiguration;
+import org.apache.shardingsphere.cluster.configuration.yaml.YamlHeartbeatConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 
 /**
@@ -31,28 +31,28 @@ public final class ClusterConfigurationYamlSwapper implements YamlSwapper<YamlCl
     @Override
     public YamlClusterConfiguration swap(final ClusterConfiguration clusterConfiguration) {
         final YamlClusterConfiguration yamlClusterConfiguration = new YamlClusterConfiguration();
-        final YamlHeartBeatConfiguration yamlHeartBeatConfiguration = new YamlHeartBeatConfiguration();
-        yamlHeartBeatConfiguration.setSql(clusterConfiguration.getHeartBeat().getSql());
-        yamlHeartBeatConfiguration.setInterval(clusterConfiguration.getHeartBeat().getInterval());
-        yamlHeartBeatConfiguration.setRetryEnable(clusterConfiguration.getHeartBeat().getRetryEnable());
-        yamlHeartBeatConfiguration.setRetryMaximum(clusterConfiguration.getHeartBeat().getRetryMaximum());
-        yamlHeartBeatConfiguration.setRetryInterval(clusterConfiguration.getHeartBeat().getRetryInterval());
-        yamlHeartBeatConfiguration.setThreadCount(clusterConfiguration.getHeartBeat().getThreadCount());
-        yamlClusterConfiguration.setHeartBeat(yamlHeartBeatConfiguration);
+        final YamlHeartbeatConfiguration yamlHeartBeatConfiguration = new YamlHeartbeatConfiguration();
+        yamlHeartBeatConfiguration.setSql(clusterConfiguration.getHeartbeat().getSql());
+        yamlHeartBeatConfiguration.setInterval(clusterConfiguration.getHeartbeat().getInterval());
+        yamlHeartBeatConfiguration.setRetryEnable(clusterConfiguration.getHeartbeat().getRetryEnable());
+        yamlHeartBeatConfiguration.setRetryMaximum(clusterConfiguration.getHeartbeat().getRetryMaximum());
+        yamlHeartBeatConfiguration.setRetryInterval(clusterConfiguration.getHeartbeat().getRetryInterval());
+        yamlHeartBeatConfiguration.setThreadCount(clusterConfiguration.getHeartbeat().getThreadCount());
+        yamlClusterConfiguration.setHeartbeat(yamlHeartBeatConfiguration);
         return yamlClusterConfiguration;
     }
     
     @Override
     public ClusterConfiguration swap(final YamlClusterConfiguration yamlConfiguration) {
         final ClusterConfiguration clusterConfiguration = new ClusterConfiguration();
-        final HeartBeatConfiguration heartBeatConfiguration = new HeartBeatConfiguration();
-        heartBeatConfiguration.setSql(yamlConfiguration.getHeartBeat().getSql());
-        heartBeatConfiguration.setInterval(yamlConfiguration.getHeartBeat().getInterval());
-        heartBeatConfiguration.setRetryEnable(yamlConfiguration.getHeartBeat().getRetryEnable());
-        heartBeatConfiguration.setRetryMaximum(yamlConfiguration.getHeartBeat().getRetryMaximum());
-        heartBeatConfiguration.setRetryInterval(yamlConfiguration.getHeartBeat().getRetryInterval());
-        heartBeatConfiguration.setThreadCount(yamlConfiguration.getHeartBeat().getThreadCount());
-        clusterConfiguration.setHeartBeat(heartBeatConfiguration);
+        final HeartbeatConfiguration heartBeatConfiguration = new HeartbeatConfiguration();
+        heartBeatConfiguration.setSql(yamlConfiguration.getHeartbeat().getSql());
+        heartBeatConfiguration.setInterval(yamlConfiguration.getHeartbeat().getInterval());
+        heartBeatConfiguration.setRetryEnable(yamlConfiguration.getHeartbeat().getRetryEnable());
+        heartBeatConfiguration.setRetryMaximum(yamlConfiguration.getHeartbeat().getRetryMaximum());
+        heartBeatConfiguration.setRetryInterval(yamlConfiguration.getHeartbeat().getRetryInterval());
+        heartBeatConfiguration.setThreadCount(yamlConfiguration.getHeartbeat().getThreadCount());
+        clusterConfiguration.setHeartbeat(heartBeatConfiguration);
         return clusterConfiguration;
     }
 }

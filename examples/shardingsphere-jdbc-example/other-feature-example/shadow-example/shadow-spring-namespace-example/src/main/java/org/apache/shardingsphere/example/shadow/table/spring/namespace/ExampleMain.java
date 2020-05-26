@@ -27,6 +27,9 @@ import java.sql.SQLException;
 public class ExampleMain {
     
     private static final String CONFIG_FILE = "META-INF/application-shadow-databases.xml";
+//    private static final String CONFIG_FILE = "META-INF/application-sharding-shadow-databases.xml";
+//    private static final String CONFIG_FILE = "META-INF/application-master-slave-shadow-databases.xml";
+//    private static final String CONFIG_FILE = "META-INF/application-encrypt-shadow-databases.xml";
     
     public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(CONFIG_FILE)) {

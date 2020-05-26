@@ -232,20 +232,6 @@ public final class UnsupportedOperationResultSetTest extends AbstractShardingSph
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getNStringForColumnIndex() throws SQLException {
-        for (ResultSet each : resultSets) {
-            each.getNString(1);
-        }
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void getNStringForColumnLabel() throws SQLException {
-        for (ResultSet each : resultSets) {
-            each.getNString("label");
-        }
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetNClobForColumnIndex() throws SQLException {
         for (ResultSet each : resultSets) {
             each.getNClob(1);

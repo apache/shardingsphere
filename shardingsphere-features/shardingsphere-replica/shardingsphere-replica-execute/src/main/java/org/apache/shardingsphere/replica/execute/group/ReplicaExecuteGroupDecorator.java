@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.replica.execute.group;
 
 import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
-import org.apache.shardingsphere.infra.executor.sql.StorageResourceExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.resourced.ResourceManagedExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.group.ExecuteGroupDecorator;
 import org.apache.shardingsphere.replica.rule.ReplicaRule;
 
@@ -32,7 +32,7 @@ import java.util.Optional;
  * 
  * @param <T> type of input value 
  */
-public final class ReplicaExecuteGroupDecorator<T extends StorageResourceExecuteUnit> implements ExecuteGroupDecorator<T, ReplicaRule> {
+public final class ReplicaExecuteGroupDecorator<T extends ResourceManagedExecuteUnit> implements ExecuteGroupDecorator<T, ReplicaRule> {
     
     @Override
     public Collection<InputGroup<T>> decorate(final ReplicaRule rule, final Collection<InputGroup<T>> inputGroups) {

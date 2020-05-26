@@ -22,9 +22,9 @@ import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
-import org.apache.shardingsphere.cluster.heartbeat.ClusterHeartBeatInstance;
-import org.apache.shardingsphere.cluster.heartbeat.response.HeartBeatResponse;
-import org.apache.shardingsphere.cluster.heartbeat.response.HeartBeatResult;
+import org.apache.shardingsphere.cluster.heartbeat.ClusterHeartbeatInstance;
+import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResponse;
+import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResult;
 import org.apache.shardingsphere.cluster.state.ClusterStateInstance;
 import org.apache.shardingsphere.cluster.state.DataSourceState;
 import org.apache.shardingsphere.cluster.state.InstanceState;
@@ -40,7 +40,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ClusterFacade {
     
-    private ClusterHeartBeatInstance clusterHeartBeatInstance;
+    private ClusterHeartbeatInstance clusterHeartbeatInstance;
     
     private ClusterStateInstance clusterStateInstance;
     
@@ -51,34 +51,34 @@ public final class ClusterFacade {
      */
     public void init(final ClusterConfiguration clusterConfiguration) {
         Preconditions.checkNotNull(clusterConfiguration, "cluster configuration can not be null.");
-        clusterHeartBeatInstance = ClusterHeartBeatInstance.getInstance();
-        clusterHeartBeatInstance.init(clusterConfiguration.getHeartBeat());
+        clusterHeartbeatInstance = ClusterHeartbeatInstance.getInstance();
+        clusterHeartbeatInstance.init(clusterConfiguration.getHeartbeat());
         clusterStateInstance = ClusterStateInstance.getInstance();
     }
     
     /**
-     * Report heart beat.
+     * Report heartbeat.
      *
-     * @param heartBeatResponse heart beat response
+     * @param heartBeatResponse heartbeat response
      */
-    public void reportHeartBeat(final HeartBeatResponse heartBeatResponse) {
+    public void reportHeartbeat(final HeartbeatResponse heartBeatResponse) {
         clusterStateInstance.persistInstanceState(buildInstanceState(heartBeatResponse));
     }
     
-    private InstanceState buildInstanceState(final HeartBeatResponse heartBeatResponse) {
+    private InstanceState buildInstanceState(final HeartbeatResponse heartbeatResponse) {
         InstanceState instanceState = clusterStateInstance.loadInstanceState();
-        return new InstanceState(instanceState.getState(), buildDataSourceStateMap(instanceState, heartBeatResponse));
+        return new InstanceState(instanceState.getState(), buildDataSourceStateMap(instanceState, heartbeatResponse));
     }
     
-    private Map<String, DataSourceState> buildDataSourceStateMap(final InstanceState instanceState, final HeartBeatResponse heartBeatResponse) {
+    private Map<String, DataSourceState> buildDataSourceStateMap(final InstanceState instanceState, final HeartbeatResponse heartbeatResponse) {
         Map<String, DataSourceState> dataSourceStateMap = new HashMap<>();
-        heartBeatResponse.getHeartBeatResultMap().forEach((key, value) -> buildDataSourceState(key, value, dataSourceStateMap, instanceState));
+        heartbeatResponse.getHeartbeatResultMap().forEach((key, value) -> buildDataSourceState(key, value, dataSourceStateMap, instanceState));
         return dataSourceStateMap;
     }
     
-    private void buildDataSourceState(final String schemaName, final Collection<HeartBeatResult> heartBeatResults,
+    private void buildDataSourceState(final String schemaName, final Collection<HeartbeatResult> heartbeatResults,
                        final Map<String, DataSourceState> dataSourceStateMap, final InstanceState instanceState) {
-        heartBeatResults.stream().forEach(each -> {
+        heartbeatResults.stream().forEach(each -> {
             String dataSourceName = Joiner.on(".").join(schemaName, each.getDataSourceName());
             DataSourceState dataSourceState = null == instanceState.getDataSources()
                     || null == instanceState.getDataSources().get(dataSourceName) ? new DataSourceState()
