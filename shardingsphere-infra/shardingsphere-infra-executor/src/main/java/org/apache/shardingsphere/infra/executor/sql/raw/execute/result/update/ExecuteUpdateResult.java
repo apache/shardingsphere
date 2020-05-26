@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.raw.execute.callback.impl;
+package org.apache.shardingsphere.infra.executor.sql.raw.execute.result.update;
 
-import org.apache.shardingsphere.infra.executor.sql.raw.RawSQLExecuteUnit;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.callback.RawSQLExecutorCallback;
-
-import java.util.Collection;
-import java.util.Map;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.ExecuteResult;
 
 /**
- * Raw SQL execute update executor callback.
+ * Execute update result.
  */
-public final class RawSQLExecuteUpdateExecutorCallback implements RawSQLExecutorCallback<Integer> {
+@RequiredArgsConstructor
+@Getter
+public final class ExecuteUpdateResult implements ExecuteResult {
     
-    @Override
-    public Collection<Integer> execute(final Collection<RawSQLExecuteUnit> inputs, final boolean isTrunkThread, final Map<String, Object> dataMap) {
-        // TODO
-        return null;
-    }
+    private final int updateCount;
+    
+    private final long lastInsertId;
 }

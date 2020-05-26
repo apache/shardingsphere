@@ -17,9 +17,14 @@
 
 package org.apache.shardingsphere.proxy.backend.response.query;
 
+import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.kernal.context.SchemaContext;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.kernal.context.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
@@ -27,10 +32,6 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.ExpressionProjection;
-import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.junit.Test;
 
 import java.sql.ResultSetMetaData;
@@ -46,83 +47,83 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class QueryHeaderTest {
+public final class QueryHeaderBuilderTest {
     
     @Test
     public void assertQueryHeaderSchema() throws Exception {
-        QueryHeader header = new QueryHeader(createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
         assertThat(header.getSchema(), is("sharding_schema"));
     }
     
     @Test
     public void assertQueryHeaderTable() throws Exception {
-        QueryHeader header = new QueryHeader(createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
         assertThat(header.getTable(), is("t_logic_order"));
     }
     
     @Test
     public void assertQueryHeaderColumnLabel() throws Exception {
-        QueryHeader header = new QueryHeader(createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
         assertThat(header.getColumnLabel(), is("order_id"));
     }
     
     @Test
     public void assertQueryHeaderColumnNameWithoutProjectionsContext() throws Exception {
-        QueryHeader header = new QueryHeader(createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
         assertThat(header.getColumnName(), is("order_id"));
     }
     
     @Test
     public void assertQueryHeaderColumnNameFromProjectionsContext() throws Exception {
-        QueryHeader header = new QueryHeader(createProjectionsContext(), createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createProjectionsContext(), createResultSetMetaData(), getSchemaContext(), 1);
         assertThat(header.getColumnName(), is("order_id"));
     }
     
     @Test
     public void assertQueryHeaderColumnNameFromMetaData() throws Exception {
-        QueryHeader header = new QueryHeader(createProjectionsContext(), createResultSetMetaData(), getSchemaContext(), 2);
+        QueryHeader header = QueryHeaderBuilder.build(createProjectionsContext(), createResultSetMetaData(), getSchemaContext(), 2);
         assertThat(header.getColumnName(), is("expr"));
     }
     
     @Test
     public void assertQueryHeaderColumnLength() throws Exception {
-        QueryHeader header = new QueryHeader(createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
         assertThat(header.getColumnLength(), is(1));
     }
     
     @Test
     public void assertQueryHeaderColumnType() throws Exception {
-        QueryHeader header = new QueryHeader(createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
         assertThat(header.getColumnType(), is(Types.INTEGER));
     }
     
     @Test
     public void assertQueryHeaderDecimals() throws Exception {
-        QueryHeader header = new QueryHeader(createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
         assertThat(header.getDecimals(), is(1));
     }
     
     @Test
     public void assertQueryHeaderSigned() throws Exception {
-        QueryHeader header = new QueryHeader(createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
         assertTrue(header.isSigned());
     }
     
     @Test
     public void assertQueryHeaderPrimaryKey() throws Exception {
-        QueryHeader header = new QueryHeader(createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
         assertTrue(header.isPrimaryKey());
     }
     
     @Test
     public void assertQueryHeaderNotNull() throws Exception {
-        QueryHeader header = new QueryHeader(createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
         assertTrue(header.isNotNull());
     }
     
     @Test
     public void assertQueryHeaderAutoIncrement() throws Exception {
-        QueryHeader header = new QueryHeader(createResultSetMetaData(), getSchemaContext(), 1);
+        QueryHeader header = QueryHeaderBuilder.build(createResultSetMetaData(), getSchemaContext(), 1);
         assertTrue(header.isAutoIncrement());
     }
     

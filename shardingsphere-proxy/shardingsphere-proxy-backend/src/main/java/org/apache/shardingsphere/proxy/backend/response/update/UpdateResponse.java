@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.backend.response.update;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.response.ExecuteResponse;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.response.ExecuteUpdateResponse;
+import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.ExecuteResult;
+import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.update.ExecuteUpdateResult;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
 
 import java.util.Collection;
@@ -49,18 +49,18 @@ public final class UpdateResponse implements BackendResponse {
         this(Collections.emptyList());
     }
     
-    public UpdateResponse(final Collection<ExecuteResponse> responseUnits) {
-        for (ExecuteResponse each : responseUnits) {
-            updateCount = ((ExecuteUpdateResponse) each).getUpdateCount();
-            updateCounts.add(((ExecuteUpdateResponse) each).getUpdateCount());
+    public UpdateResponse(final Collection<ExecuteResult> executeResults) {
+        for (ExecuteResult each : executeResults) {
+            updateCount = ((ExecuteUpdateResult) each).getUpdateCount();
+            updateCounts.add(((ExecuteUpdateResult) each).getUpdateCount());
         }
-        lastInsertId = getLastInsertId(responseUnits);
+        lastInsertId = getLastInsertId(executeResults);
     }
     
-    private long getLastInsertId(final Collection<ExecuteResponse> responseUnits) {
+    private long getLastInsertId(final Collection<ExecuteResult> executeResults) {
         long result = 0;
-        for (ExecuteResponse each : responseUnits) {
-            result = Math.max(result, ((ExecuteUpdateResponse) each).getLastInsertId());
+        for (ExecuteResult each : executeResults) {
+            result = Math.max(result, ((ExecuteUpdateResult) each).getLastInsertId());
         }
         return result;
     }

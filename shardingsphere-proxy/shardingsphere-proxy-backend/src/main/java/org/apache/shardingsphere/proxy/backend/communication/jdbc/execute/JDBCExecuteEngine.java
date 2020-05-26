@@ -25,6 +25,10 @@ import org.apache.shardingsphere.infra.executor.sql.ExecutorConstant;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.group.ExecuteGroupEngine;
 import org.apache.shardingsphere.infra.executor.sql.raw.RawSQLExecuteUnit;
+import org.apache.shardingsphere.infra.executor.sql.raw.execute.callback.RawSQLExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.ExecuteResult;
+import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.ExecuteQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.infra.executor.sql.raw.group.RawExecuteGroupEngine;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.StatementExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.ExecutorExceptionHandler;
@@ -33,14 +37,10 @@ import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.Stateme
 import org.apache.shardingsphere.metrics.enums.MetricsLabelEnum;
 import org.apache.shardingsphere.metrics.facade.MetricsTrackerFacade;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.callback.ProxyRawSQLExecutorCallback;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.callback.ProxySQLExecutorCallback;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.response.ExecuteQueryResponse;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.response.ExecuteResponse;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
 import org.apache.shardingsphere.proxy.backend.executor.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
@@ -66,10 +66,13 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     
     private final SQLExecutor sqlExecutor;
     
+    private final RawProxyExecutor rawExecutor;
+    
     public JDBCExecuteEngine(final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper) {
         this.backendConnection = backendConnection;
         this.jdbcExecutorWrapper = jdbcExecutorWrapper;
         sqlExecutor = new SQLExecutor(BackendExecutorContext.getInstance().getExecutorKernel(), backendConnection.isSerialExecute());
+        rawExecutor = new RawProxyExecutor(BackendExecutorContext.getInstance().getExecutorKernel(), backendConnection.isSerialExecute());
     }
     
     @SuppressWarnings("unchecked")
@@ -78,11 +81,11 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         SQLStatementContext sqlStatementContext = executionContext.getSqlStatementContext();
         boolean isReturnGeneratedKeys = sqlStatementContext.getSqlStatement() instanceof InsertStatement;
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        Collection<ExecuteResponse> executeResponses;
+        Collection<ExecuteResult> executeResults;
         if (ExecutorConstant.MANAGED_RESOURCE) {
             ExecuteGroupEngine executeGroupEngine = jdbcExecutorWrapper.getExecuteGroupEngine(backendConnection, new StatementOption(isReturnGeneratedKeys));
             Collection<InputGroup<StatementExecuteUnit>> inputGroups = executeGroupEngine.generate(executionContext.getExecutionUnits());
-            executeResponses = sqlExecutor.execute(inputGroups,
+            executeResults = sqlExecutor.execute(inputGroups,
                     new ProxySQLExecutorCallback(sqlStatementContext, backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, true),
                     new ProxySQLExecutorCallback(sqlStatementContext, backendConnection, jdbcExecutorWrapper, isExceptionThrown, isReturnGeneratedKeys, false));
         } else {
@@ -90,14 +93,14 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
             Collection<InputGroup<RawSQLExecuteUnit>> inputGroups = new RawExecuteGroupEngine(
                     maxConnectionsSizePerQuery, backendConnection.getSchema().getSchema().getRules()).generate(executionContext.getExecutionUnits());
             // TODO handle query header
-            executeResponses = BackendExecutorContext.getInstance().getExecutorKernel().execute(inputGroups, new ProxyRawSQLExecutorCallback());
+            executeResults = rawExecutor.execute(inputGroups, new RawSQLExecutorCallback());
         }
-        ExecuteResponse executeResponse = executeResponses.iterator().next();
-        if (executeResponse instanceof ExecuteQueryResponse) {
+        ExecuteResult executeResult = executeResults.iterator().next();
+        if (executeResult instanceof ExecuteQueryResult) {
             MetricsTrackerFacade.getInstance().counterInc(MetricsLabelEnum.SQL_STATEMENT_COUNT.getName(), "SELECT");
-            return getExecuteQueryResponse(((ExecuteQueryResponse) executeResponse).getQueryHeaders(), executeResponses);
+            return getExecuteQueryResponse(((ExecuteQueryResult) executeResult).getQueryHeaders(), executeResults);
         } else {
-            UpdateResponse updateResponse = new UpdateResponse(executeResponses);
+            UpdateResponse updateResponse = new UpdateResponse(executeResults);
             if (sqlStatementContext.getSqlStatement() instanceof InsertStatement) {
                 updateResponse.setType("INSERT");
             } else if (sqlStatementContext.getSqlStatement() instanceof DeleteStatement) {
@@ -112,10 +115,10 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         }
     }
     
-    private BackendResponse getExecuteQueryResponse(final List<QueryHeader> queryHeaders, final Collection<ExecuteResponse> executeResponses) {
+    private BackendResponse getExecuteQueryResponse(final List<QueryHeader> queryHeaders, final Collection<ExecuteResult> executeResults) {
         QueryResponse result = new QueryResponse(queryHeaders);
-        for (ExecuteResponse each : executeResponses) {
-            result.getQueryResults().add(((ExecuteQueryResponse) each).getQueryResult());
+        for (ExecuteResult each : executeResults) {
+            result.getQueryResults().add(((ExecuteQueryResult) each).getQueryResult());
         }
         return result;
     }
