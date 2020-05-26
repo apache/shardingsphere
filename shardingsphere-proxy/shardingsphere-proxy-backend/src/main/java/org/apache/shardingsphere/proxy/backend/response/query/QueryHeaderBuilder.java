@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.response.query;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.impl.QueryHeader;
+import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.proxy.backend.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;

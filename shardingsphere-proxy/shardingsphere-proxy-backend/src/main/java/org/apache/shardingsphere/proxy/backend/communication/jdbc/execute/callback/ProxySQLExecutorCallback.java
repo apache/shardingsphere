@@ -19,14 +19,14 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.callb
 
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.impl.QueryHeader;
+import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.QueryHeader;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.impl.DefaultSQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.MemoryQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.StreamQueryResult;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.impl.ExecuteQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.query.ExecuteQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.ExecuteResult;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.impl.ExecuteUpdateResult;
+import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.update.ExecuteUpdateResult;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.backend.schema.ShardingSphereSchemas;
