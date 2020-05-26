@@ -25,16 +25,7 @@ import lombok.Getter;
 @Getter
 public final class HeartbeatDetectNoticeEvent extends AbstractHeartbeatEvent {
     
-    private String detectSQL;
-    
-    private Boolean retryEnable;
-    
-    private Integer retryMaximum;
-    
-    public HeartbeatDetectNoticeEvent(final String detectSQL, final Boolean retryEnable, final Integer retryMaximum) {
+    public HeartbeatDetectNoticeEvent() {
         super(HeartbeatEventType.NOTICE_DETECT);
-        this.detectSQL = detectSQL;
-        this.retryEnable = retryEnable;
-        this.retryMaximum = retryMaximum;
     }
 }
