@@ -36,7 +36,6 @@ public class ExecutionContext {
     private final Collection<ExecutionUnit> executionUnits;
     
     public ExecutionContext(final SQLStatementContext sqlStatementContext, final ExecutionUnit executionUnit) {
-        this.sqlStatementContext = sqlStatementContext;
-        executionUnits = Collections.singletonList(executionUnit);
+        this(sqlStatementContext, Collections.singletonList(executionUnit));
     }
 }
