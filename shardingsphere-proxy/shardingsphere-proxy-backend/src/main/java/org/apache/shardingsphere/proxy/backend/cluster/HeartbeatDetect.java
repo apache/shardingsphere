@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.cluster;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.cluster.configuration.config.HeartbeatConfiguration;
 import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResult;
 
@@ -31,7 +32,8 @@ import java.util.Objects;
 /**
  * Heart beat detect.
  */
-public final class HeartbeatDetect extends AbstractHeartbeatDetect{
+@Slf4j
+public final class HeartbeatDetect extends AbstractHeartbeatDetect {
     
     private String sql;
     
@@ -56,7 +58,7 @@ public final class HeartbeatDetect extends AbstractHeartbeatDetect{
             ResultSet result = preparedStatement.executeQuery();
             return Objects.nonNull(result) && result.next();
         } catch (SQLException ex) {
-        
+            log.error("Heart beat detect error", ex);
         }
         return Boolean.FALSE;
     }

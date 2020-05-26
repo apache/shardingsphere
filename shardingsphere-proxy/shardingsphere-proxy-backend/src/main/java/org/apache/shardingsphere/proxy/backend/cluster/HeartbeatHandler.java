@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.cluster;
 
 import com.google.common.base.Preconditions;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.cluster.configuration.config.HeartbeatConfiguration;
 
 import org.apache.shardingsphere.cluster.facade.ClusterFacade;
@@ -41,6 +42,7 @@ import java.util.stream.Collectors;
 /**
  * Heart beat handler.
  */
+@Slf4j
 public final class HeartbeatHandler {
     
     private HeartbeatConfiguration configuration;
@@ -83,9 +85,9 @@ public final class HeartbeatHandler {
     }
     
     private Integer countDataSource(final Map<String, ShardingSphereSchema> schemas) {
-        return Long.valueOf(schemas.values().stream().
-                collect(Collectors.summarizingInt(entry -> entry.getBackendDataSource().
-                        getDataSources().keySet().size())).getSum()).intValue();
+        return Long.valueOf(schemas.values().stream()
+                .collect(Collectors.summarizingInt(entry -> entry.getBackendDataSource()
+                        .getDataSources().keySet().size())).getSum()).intValue();
     }
     
     private void reportHeartbeat(final List<FutureTask<Map<String, HeartbeatResult>>> futureTasks) {
@@ -99,10 +101,8 @@ public final class HeartbeatHandler {
                         heartbeatResultMap.get(entry.getKey()).add(entry.getValue());
                     }
                 });
-            } catch (InterruptedException ex) {
-            
-            } catch (ExecutionException ex) {
-            
+            } catch (InterruptedException | ExecutionException ex) {
+                log.error("Heart beat report error", ex);
             }
         });
         ClusterFacade.getInstance().reportHeartbeat(new HeartbeatResponse(heartbeatResultMap));

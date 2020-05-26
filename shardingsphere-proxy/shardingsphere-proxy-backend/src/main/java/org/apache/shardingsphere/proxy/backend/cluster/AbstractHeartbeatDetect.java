@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.cluster;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResult;
 
 import java.util.Map;
@@ -25,6 +26,7 @@ import java.util.concurrent.Callable;
 /**
  * Abstract heart beat detect.
  */
+@Slf4j
 public abstract class AbstractHeartbeatDetect implements Callable<Map<String, HeartbeatResult>> {
     
     private Boolean retryEnable;
@@ -52,7 +54,7 @@ public abstract class AbstractHeartbeatDetect implements Callable<Map<String, He
      * @param result heart beat result
      * @return heart beat result
      */
-    protected abstract Map<String, HeartbeatResult> buildResult(final Boolean result);
+    protected abstract Map<String, HeartbeatResult> buildResult(Boolean result);
     
     @Override
     public Map<String, HeartbeatResult> call() {
@@ -66,7 +68,7 @@ public abstract class AbstractHeartbeatDetect implements Callable<Map<String, He
                 try {
                     Thread.sleep(retryInterval * 1000);
                 } catch (InterruptedException ex) {
-                
+                    log.warn("Retry heart beat detect sleep error", ex);
                 }
             }
             return buildResult(result);

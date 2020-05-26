@@ -153,7 +153,7 @@ public final class ShardingSphereSchemas {
      * @param event heart beat detect notice event
      */
     @Subscribe
-    public synchronized void heartBeat(final HeartbeatDetectNoticeEvent event) {
+    public synchronized void heartbeat(final HeartbeatDetectNoticeEvent event) {
         HeartbeatHandler.getInstance().handle(schemas);
     }
 }
