@@ -21,6 +21,9 @@ import com.google.common.primitives.Ints;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.shardingsphere.cluster.configuration.swapper.ClusterConfigurationYamlSwapper;
+import org.apache.shardingsphere.cluster.configuration.yaml.YamlClusterConfiguration;
+import org.apache.shardingsphere.cluster.facade.ClusterFacade;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
@@ -39,6 +42,7 @@ import org.apache.shardingsphere.opentracing.ShardingTracer;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.swapper.OrchestrationConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
+import org.apache.shardingsphere.proxy.backend.cluster.HeartbeatHandler;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.backend.schema.ShardingSphereSchemas;
 import org.apache.shardingsphere.proxy.backend.util.DataSourceConverter;
@@ -132,6 +136,7 @@ public final class Bootstrap {
             ProxySchemaContexts.getInstance().init(schemaDataSources, schemaRules, authentication, properties);
             log(authentication, properties);
             initMetrics(serverConfig.getMetrics());
+            initCluster(serverConfig.getCluster());
             startProxy(shardingSchemaNames, port, schemaDataSources, schemaRules);
         }
     }
@@ -183,6 +188,13 @@ public final class Bootstrap {
     private static void initMetrics(final YamlMetricsConfiguration metricsConfiguration) {
         if (ProxySchemaContexts.getInstance().getSchemaContexts().getProperties().<Boolean>getValue(ConfigurationPropertyKey.PROXY_METRICS_ENABLED)) {
             MetricsTrackerFacade.getInstance().init(new MetricsConfigurationYamlSwapper().swap(metricsConfiguration));
+        }
+    }
+    
+    private static void initCluster(final YamlClusterConfiguration clusterConfiguration) {
+        if (ProxySchemaContexts.getInstance().getSchemaContexts().getProperties().<Boolean>getValue(ConfigurationPropertyKey.PROXY_CLUSTER_ENABLED)) {
+            ClusterFacade.getInstance().init(new ClusterConfigurationYamlSwapper().swap(clusterConfiguration));
+            HeartbeatHandler.getInstance().init(new ClusterConfigurationYamlSwapper().swap(clusterConfiguration).getHeartbeat());
         }
     }
     

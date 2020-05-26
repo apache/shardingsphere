@@ -35,7 +35,7 @@ public final class HeartbeatTask implements Runnable {
     
     @Override
     public void run() {
-        HeartbeatEventBus.getInstance().post(heartbeatEvent);
         log.info("heart beat detect running");
+        HeartbeatEventBus.getInstance().post(heartbeatEvent);
     }
 }

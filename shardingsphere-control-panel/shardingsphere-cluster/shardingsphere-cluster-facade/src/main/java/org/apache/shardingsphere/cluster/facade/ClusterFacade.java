@@ -83,12 +83,8 @@ public final class ClusterFacade {
             DataSourceState dataSourceState = null == instanceState.getDataSources()
                     || null == instanceState.getDataSources().get(dataSourceName) ? new DataSourceState()
                     : instanceState.getDataSources().get(dataSourceName);
-            if (each.getEnable()) {
-                dataSourceState.setState(NodeState.ONLINE);
-                dataSourceState.setLastConnect(each.getDetectTimeStamp());
-            } else {
-                dataSourceState.setState(NodeState.OFFLINE);
-            }
+            dataSourceState.setState(each.getEnable() ? NodeState.ONLINE : NodeState.OFFLINE);
+            dataSourceState.setLastConnect(each.getDetectTimeStamp());
             dataSourceStateMap.put(dataSourceName, dataSourceState);
         });
     }
