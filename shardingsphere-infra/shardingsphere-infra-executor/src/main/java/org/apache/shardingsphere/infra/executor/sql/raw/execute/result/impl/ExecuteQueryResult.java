@@ -20,16 +20,16 @@ package org.apache.shardingsphere.infra.executor.sql.raw.execute.result.impl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.ExecuteResponse;
+import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.ExecuteResult;
 
 import java.util.List;
 
 /**
- * Execute query response.
+ * Execute query result.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ExecuteQueryResponse implements ExecuteResponse {
+public final class ExecuteQueryResult implements ExecuteResult {
     
     private final List<QueryHeader> queryHeaders;
     

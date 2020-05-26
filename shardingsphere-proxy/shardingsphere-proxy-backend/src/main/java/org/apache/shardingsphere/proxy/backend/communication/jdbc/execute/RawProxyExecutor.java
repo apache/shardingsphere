@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.executor.kernel.InputGroup;
 import org.apache.shardingsphere.infra.executor.sql.raw.RawSQLExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.callback.RawSQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.callback.impl.DefaultRawSQLExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.ExecuteResponse;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.impl.ExecuteUpdateResponse;
+import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.ExecuteResult;
+import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.impl.ExecuteUpdateResult;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.ExecutorExceptionHandler;
 
 import java.sql.SQLException;
@@ -50,15 +50,15 @@ public final class RawProxyExecutor {
      * @return return true if is DQL, false if is DML
      * @throws SQLException SQL exception
      */
-    public Collection<ExecuteResponse> execute(final Collection<InputGroup<RawSQLExecuteUnit>> inputGroups, final DefaultRawSQLExecutorCallback callback) throws SQLException {
+    public Collection<ExecuteResult> execute(final Collection<InputGroup<RawSQLExecuteUnit>> inputGroups, final DefaultRawSQLExecutorCallback callback) throws SQLException {
         // TODO Load query header for first query
-        List<ExecuteResponse> results = doExecute(inputGroups, null, callback);
+        List<ExecuteResult> results = doExecute(inputGroups, null, callback);
         // TODO refresh metadata
         if (null == results || results.isEmpty() || null == results.get(0)) {
-            return Collections.singleton(new ExecuteUpdateResponse(0, 0L));
+            return Collections.singleton(new ExecuteUpdateResult(0, 0L));
         }
         // CHECKSTYLE:OFF
-        if (results.get(0) instanceof ExecuteUpdateResponse) {
+        if (results.get(0) instanceof ExecuteUpdateResult) {
             // TODO refresh metadata
             
         }

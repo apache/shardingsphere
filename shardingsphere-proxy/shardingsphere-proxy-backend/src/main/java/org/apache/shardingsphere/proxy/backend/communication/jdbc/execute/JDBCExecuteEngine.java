@@ -36,8 +36,8 @@ import org.apache.shardingsphere.metrics.enums.MetricsLabelEnum;
 import org.apache.shardingsphere.metrics.facade.MetricsTrackerFacade;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.callback.ProxySQLExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.impl.ExecuteQueryResponse;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.ExecuteResponse;
+import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.impl.ExecuteQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.ExecuteResult;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
 import org.apache.shardingsphere.proxy.backend.executor.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
@@ -81,7 +81,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         SQLStatementContext sqlStatementContext = executionContext.getSqlStatementContext();
         boolean isReturnGeneratedKeys = sqlStatementContext.getSqlStatement() instanceof InsertStatement;
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        Collection<ExecuteResponse> executeResponses;
+        Collection<ExecuteResult> executeResponses;
         if (ExecutorConstant.MANAGED_RESOURCE) {
             ExecuteGroupEngine executeGroupEngine = jdbcExecutorWrapper.getExecuteGroupEngine(backendConnection, new StatementOption(isReturnGeneratedKeys));
             Collection<InputGroup<StatementExecuteUnit>> inputGroups = executeGroupEngine.generate(executionContext.getExecutionUnits());
@@ -95,10 +95,10 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
             // TODO handle query header
             executeResponses = rawExecutor.execute(inputGroups, new DefaultRawSQLExecutorCallback());
         }
-        ExecuteResponse executeResponse = executeResponses.iterator().next();
-        if (executeResponse instanceof ExecuteQueryResponse) {
+        ExecuteResult executeResponse = executeResponses.iterator().next();
+        if (executeResponse instanceof ExecuteQueryResult) {
             MetricsTrackerFacade.getInstance().counterInc(MetricsLabelEnum.SQL_STATEMENT_COUNT.getName(), "SELECT");
-            return getExecuteQueryResponse(((ExecuteQueryResponse) executeResponse).getQueryHeaders(), executeResponses);
+            return getExecuteQueryResponse(((ExecuteQueryResult) executeResponse).getQueryHeaders(), executeResponses);
         } else {
             UpdateResponse updateResponse = new UpdateResponse(executeResponses);
             if (sqlStatementContext.getSqlStatement() instanceof InsertStatement) {
@@ -115,10 +115,10 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         }
     }
     
-    private BackendResponse getExecuteQueryResponse(final List<QueryHeader> queryHeaders, final Collection<ExecuteResponse> executeResponses) {
+    private BackendResponse getExecuteQueryResponse(final List<QueryHeader> queryHeaders, final Collection<ExecuteResult> executeResponses) {
         QueryResponse result = new QueryResponse(queryHeaders);
-        for (ExecuteResponse each : executeResponses) {
-            result.getQueryResults().add(((ExecuteQueryResponse) each).getQueryResult());
+        for (ExecuteResult each : executeResponses) {
+            result.getQueryResults().add(((ExecuteQueryResult) each).getQueryResult());
         }
         return result;
     }

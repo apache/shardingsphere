@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.executor.sql.raw.execute.callback.impl;
 
 import org.apache.shardingsphere.infra.executor.sql.raw.RawSQLExecuteUnit;
 import org.apache.shardingsphere.infra.executor.sql.raw.execute.callback.RawSQLExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.ExecuteResponse;
+import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.ExecuteResult;
 
 import java.util.Collection;
 import java.util.Map;
@@ -27,10 +27,10 @@ import java.util.Map;
 /**
  * Default raw SQL executor callback.
  */
-public final class DefaultRawSQLExecutorCallback implements RawSQLExecutorCallback<ExecuteResponse> {
+public final class DefaultRawSQLExecutorCallback implements RawSQLExecutorCallback<ExecuteResult> {
     
     @Override
-    public Collection<ExecuteResponse> execute(final Collection<RawSQLExecuteUnit> inputs, final boolean isTrunkThread, final Map<String, Object> dataMap) {
+    public Collection<ExecuteResult> execute(final Collection<RawSQLExecuteUnit> inputs, final boolean isTrunkThread, final Map<String, Object> dataMap) {
         // TODO
         return null;
     }
