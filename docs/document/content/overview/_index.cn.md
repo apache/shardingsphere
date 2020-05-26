@@ -43,12 +43,12 @@ ShardingSphere 已于2020年4月16日成为 [Apache 软件基金会](https://apa
 
 [![Maven Status](https://maven-badges.herokuapp.com/maven-central/org.apache.shardingsphere/sharding-jdbc/badge.svg)](https://mvnrepository.com/artifact/org.apache.shardingsphere/sharding-jdbc)
 
-定位为轻量级Java框架，在Java的JDBC层提供的额外服务。
-它使用客户端直连数据库，以jar包形式提供服务，无需额外部署和依赖，可理解为增强版的JDBC驱动，完全兼容JDBC和各种ORM框架。
+定位为轻量级 Java 框架，在 Java 的 JDBC 层提供的额外服务。
+它使用客户端直连数据库，以 jar 包形式提供服务，无需额外部署和依赖，可理解为增强版的 JDBC 驱动，完全兼容 JDBC 和各种 ORM 框架。
 
-* 适用于任何基于JDBC的ORM框架，如：JPA, Hibernate, Mybatis, Spring JDBC Template或直接使用JDBC。
-* 支持任何第三方的数据库连接池，如：DBCP, C3P0, BoneCP, Druid, HikariCP等。
-* 支持任意实现JDBC规范的数据库。目前支持MySQL，Oracle，SQLServer，PostgreSQL以及任何遵循SQL92标准的数据库。
+* 适用于任何基于 JDBC 的 ORM 框架，如：JPA, Hibernate, Mybatis, Spring JDBC Template 或直接使用 JDBC。
+* 支持任何第三方的数据库连接池，如：DBCP, C3P0, BoneCP, Druid, HikariCP 等。
+* 支持任意实现JDBC规范的数据库。目前支持 MySQL，Oracle，SQLServer，PostgreSQL 以及任何遵循 SQL92 标准的数据库。
 
 ![ShardingSphere-JDBC Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-jdbc-brief.png)
 
@@ -58,19 +58,20 @@ ShardingSphere 已于2020年4月16日成为 [Apache 软件基金会](https://apa
 [![Docker Pulls](https://img.shields.io/docker/pulls/shardingsphere/sharding-proxy.svg)](https://store.docker.com/community/images/shardingsphere/sharding-proxy)
 
 定位为透明化的数据库代理端，提供封装了数据库二进制协议的服务端版本，用于完成对异构语言的支持。
-目前先提供MySQL/PostgreSQL版本，它可以使用任何兼容MySQL/PostgreSQL协议的访问客户端(如：MySQL Command Client, MySQL Workbench, Navicat等)操作数据，对DBA更加友好。
+目前提供 MySQL 和 PostgreSQL 版本，它可以使用任何兼容 MySQL/PostgreSQL 协议的访问客户端(如：MySQL Command Client, MySQL Workbench, Navicat 等)操作数据，对 DBA 更加友好。
 
-* 向应用程序完全透明，可直接当做MySQL/PostgreSQL使用。
-* 适用于任何兼容MySQL/PostgreSQL协议的的客户端。
+* 向应用程序完全透明，可直接当做 MySQL/PostgreSQL 使用。
+* 适用于任何兼容 MySQL/PostgreSQL 协议的的客户端。
 
 ![ShardingSphere-Proxy Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-proxy-brief.png)
 
 ### ShardingSphere-Sidecar（TODO）
 
-定位为Kubernetes的云原生数据库代理，以Sidecar的形式代理所有对数据库的访问。
-通过无中心、零侵入的方案提供与数据库交互的的啮合层，即Database Mesh，又可称数据网格。
+定位为 Kubernetes 的云原生数据库代理，以 Sidecar 的形式代理所有对数据库的访问。
+通过无中心、零侵入的方案提供与数据库交互的的啮合层，即 Database Mesh，又可称数据库网格。
 
-Database Mesh的关注重点在于如何将分布式的数据访问应用与数据库有机串联起来，它更加关注的是交互，是将杂乱无章的应用与数据库之间的交互有效的梳理。使用Database Mesh，访问数据库的应用和数据库终将形成一个巨大的网格体系，应用和数据库只需在网格体系中对号入座即可，它们都是被啮合层所治理的对象。
+Database Mesh 的关注重点在于如何将分布式的数据访问应用与数据库有机串联起来，它更加关注的是交互，是将杂乱无章的应用与数据库之间的交互有效的梳理。
+使用 Database Mesh，访问数据库的应用和数据库终将形成一个巨大的网格体系，应用和数据库只需在网格体系中对号入座即可，它们都是被啮合层所治理的对象。
 
 ![ShardingSphere-Sidecar Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-sidecar-brief.png)
 
@@ -78,17 +79,17 @@ Database Mesh的关注重点在于如何将分布式的数据访问应用与数�
 | --------- | --------------------- | ---------------------- | ------------------------ |
 | 数据库     | 任意                  | MySQL                  | MySQL                    |
 | 连接消耗数 | 高                    | 低                     | 高                        |
-| 异构语言   | 仅Java                | 任意                   | 任意                      |
+| 异构语言   | 仅 Java               | 任意                   | 任意                      |
 | 性能       | 损耗低                | 损耗略高                | 损耗低                    |
 | 无中心化   | 是                    | 否                     | 是                        |
 | 静态入口   | 无                    | 有                     | 无                        |
 
 ### 混合架构
 
-ShardingSphere-JDBC采用无中心化架构，适用于Java开发的高性能的轻量级OLTP应用；ShardingSphere-Proxy提供静态入口以及异构语言的支持，适用于OLAP应用以及对分片数据库进行管理和运维的场景。
+ShardingSphere-JDBC 采用无中心化架构，适用于 Java 开发的高性能的轻量级 OLTP 应用；ShardingSphere-Proxy 提供静态入口以及异构语言的支持，适用于 OLAP 应用以及对分片数据库进行管理和运维的场景。
 
-ShardingSphere是多接入端共同组成的生态圈。
-通过混合使用ShardingSphere-JDBC和ShardingSphere-Proxy，并采用同一注册中心统一配置分片策略，能够灵活的搭建适用于各种场景的应用系统，架构师可以更加自由的调整适合于当前业务的最佳系统架构。
+Apache ShardingSphere 是多接入端共同组成的生态圈。
+通过混合使用 ShardingSphere-JDBC 和 ShardingSphere-Proxy，并采用同一注册中心统一配置分片策略，能够灵活的搭建适用于各种场景的应用系统，使得架构师更加自由的调整适合与当前业务的最佳系统架构。
 
 ![ShardingSphere Hybrid Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-hybrid.png)
 
@@ -104,17 +105,12 @@ ShardingSphere是多接入端共同组成的生态圈。
 ### 分布式事务
 
 * 标准化事务接口
-* XA强一致事务
+* XA 强一致事务
 * 柔性事务
 
 ### 数据库治理
 
-* 配置动态化
-* 编排 & 治理
-* 数据脱敏
+* 分布式治理
+* 弹性伸缩
 * 可视化链路追踪
-* 弹性伸缩(规划中)
-
-## 项目状态
-
-![Status](https://shardingsphere.apache.org/document/current/img/shardingsphere-status_cn.png)
+* 数据脱敏

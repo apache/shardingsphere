@@ -116,12 +116,7 @@ Architects can adjust the system architecture to the most applicable one to curr
 
 ### Database Orchestration
 
-* Dynamic Configuration
-* Orchestration & Governance
+* Distributed Governance
+* Data migration & Scale out
+* Tracing & Observability Supported
 * Data Encryption
-* Tracing & Observability
-* Elastic scaling out (Planing)
-
-## Project Status
-
-![Status](https://shardingsphere.apache.org/document/current/img/shardingsphere-status_en.png)
