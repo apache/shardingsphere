@@ -14,8 +14,6 @@ ShardingSphere has made the encryption and decryption processes totally transpar
 
 ## Preface
 
-Apache ShardingSphere is an ecosystem of open source distributed database middleware solutions. It consists of ShardingSphere-JDBC, ShardingSphere-Proxy, and ShardingSphere-Sidecar (in planning) which are independent of each other, but can be used in mixed deployment. All of these can provide standardized data sharding, distributed transactions, and distributed governance functions, and can be applied to various situation such as Java homogeneous, heterogeneous languages, containers, cloud native, and so on.
-
 The data encryption module belongs to the sub-function module under the core function of ShardingSphere distributed governance. It parses the SQL input by the user and rewrites the SQL according to the encryption configuration provided by the user, thereby encrypting the original data and storing the original data and store the original data (optional) and cipher data to database at the same time. When the user queries the data, it takes the cipher data from the database and decrypts it, and finally returns the decrypted original data to the user. Apache ShardingSphere distributed database middleware automates and transparentizes the process of data encryption, so that users do not need to pay attention to the details of data decryption and use decrypted data like ordinary data.  In addition, ShardingSphere can provide a relatively complete set of solutions for the encryption of online services or the encryption function of new services.
 
 ## Demand Analysis
@@ -37,6 +35,7 @@ The demand for data encryption is generally divided into two situations in real 
 ### Overall Architecture
 
 Encrypt-JDBC provided by ShardingSphere are deployed with business codes. Business parties need to perform JDBC programming for Encrypt-JDBC. Since Encrypt-JDBC implements all JDBC standard interfaces, business codes can be used without additional modification. At this time, Encrypt-JDBC is responsible for all interactions between the business code and the database. Business only needs to provide encryption rules. ** As a bridge between the business code and the underlying database, Encrypt-JDBC can intercept user behavior and interact with the database after transforming the user behavior. **
+
 ![1](https://shardingsphere.apache.org/document/current/img/encrypt/1_en.png)
 
 Encrypt-JDBC intercepts SQL initiated by user, analyzes and understands SQL behavior through the SQL syntax parser.According to the encryption rules passed by the user, find out the fields that need to be encrypted/decrypt and the encryptor/decryptor  used to encrypt/decrypt the target fields, and then interact with the underlying database.ShardingSphere will encrypt the plaintext requested by the user and store it in the underlying database; and when the user queries, the ciphertext will be taken out of the database for decryption and returned to the end user.ShardingSphere shields the encryption of data, so that users do not need to perceive the process of parsing SQL, data encryption, and data decryption, just like using ordinary data.
@@ -44,6 +43,7 @@ Encrypt-JDBC intercepts SQL initiated by user, analyzes and understands SQL beha
 ### Encryption Rule
 
 Before explaining the whole process in detail, we need to understand the encryption rules and configuration, which is the basis of understanding the whole process. The encryption configuration is mainly divided into four parts: data source configuration, encryptor configuration, encryption table configuration, and query attribute configuration. The details are shown in the following figure:
+
 ![2](https://shardingsphere.apache.org/document/current/img/encrypt/2_en.png)
 
 **Datasource Configuration**：The configuration of DataSource.
@@ -69,6 +69,7 @@ For example, if there is a table in the database called t_user, there are actual
 ** This is also the core meaning of Encrypt-JDBC, which is to separate user SQL from the underlying data table structure according to the encryption rules provided by the user, so that the SQL writter by user no longer depends on the actual database table structure. The connection, mapping, and conversion between the user and the underlying database are handled by ShardingSphere. ** Why should we do this? It is still the same : in order to enable the online business to seamlessly, transparently and safely perform data encryption migration.
 
 In order to make the reader more clearly understand the core processing flow of Encrypt-JDBC, the following picture shows the processing flow and conversion logic when using Encrypt-JDBC to add, delete, modify and check, as shown in the following figure.
+
 ![4](https://shardingsphere.apache.org/document/current/img/encrypt/4_en.png)
 
 ## Detailed Solution

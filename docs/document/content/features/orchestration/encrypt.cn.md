@@ -14,8 +14,6 @@ Apache ShardingSphere根据业界对脱敏的需求及业务改造痛点，提�
 
 ## 前序
 
-Apache ShardingSphere是一套开源的分布式数据库中间件解决方案组成的生态圈，它由ShardingSphere-JDBC、ShardingSphere-Proxy和ShardingSphere-Sidecar（规划中）这3款相互独立，却又能够混合部署配合使用的产品组成。它们均能够提供标准化的数据分片、分布式事务和分布式治理功能，可适用于如Java同构、异构语言、容器、云原生等各种多样化的应用场景。
-
 数据脱敏模块属于ShardingSphere分布式治理这一核心功能下的子功能模块。它通过对用户输入的SQL进行解析，并依据用户提供的脱敏配置对SQL进行改写，从而实现对原文数据进行加密，并将原文数据(可选)及密文数据同时存储到底层数据库。在用户查询数据时，它又从数据库中取出密文数据，并对其解密，最终将解密后的原始数据返回给用户。Apache ShardingSphere分布式数据库中间件自动化&透明化了数据脱敏过程，让用户无需关注数据脱敏的实现细节，像使用普通数据那样使用脱敏数据。此外，无论是已在线业务进行脱敏改造，还是新上线业务使用脱敏功能，ShardingSphere都可以提供一套相对完善的解决方案。
 
 ## 需求场景分析
@@ -64,7 +62,7 @@ Encrypt-JDBC将用户发起的SQL进行拦截，并通过SQL语法解析器进�
 
 ### 脱敏处理过程
 
-举个栗子，假如数据库里有一张表叫做t_user，这张表里实际有两个字段pwd_plain，用于存放明文数据、pwd_cipher，用于存放密文数据，同时定义logicColumn为pwd。那么，用户在编写SQL时应该面向logicColumn进行编写，即INSERT INTO t_user SET pwd = '123'。ShardingSphere接收到该SQL，通过用户提供的脱敏配置，发现pwd是logicColumn，于是便对逻辑列及其对应的明文数据进行脱敏处理。可以看出**ShardingSphere将面向用户的逻辑列与面向底层数据库的明文列和密文列进行了列名以及数据的脱敏映射转换。**如下图所示：
+举例说明，假如数据库里有一张表叫做t_user，这张表里实际有两个字段pwd_plain，用于存放明文数据、pwd_cipher，用于存放密文数据，同时定义logicColumn为pwd。那么，用户在编写SQL时应该面向logicColumn进行编写，即INSERT INTO t_user SET pwd = '123'。ShardingSphere接收到该SQL，通过用户提供的脱敏配置，发现pwd是logicColumn，于是便对逻辑列及其对应的明文数据进行脱敏处理。可以看出**ShardingSphere将面向用户的逻辑列与面向底层数据库的明文列和密文列进行了列名以及数据的脱敏映射转换。**如下图所示：
 
 ![3](https://shardingsphere.apache.org/document/current/img/encrypt/3.png)
 
