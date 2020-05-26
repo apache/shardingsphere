@@ -19,10 +19,10 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.exec
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.MySQLComStmtExecutePacket;
+import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.error.ErrorResponse;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.schema.ShardingSphereSchema;

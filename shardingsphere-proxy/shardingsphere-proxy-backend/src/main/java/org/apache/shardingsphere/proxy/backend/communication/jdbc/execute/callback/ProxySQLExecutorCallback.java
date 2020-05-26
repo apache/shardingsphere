@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.callb
 
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.impl.QueryHeader;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.impl.DefaultSQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.MemoryQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.queryresult.StreamQueryResult;
@@ -27,7 +28,6 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.respon
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.response.ExecuteResponse;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.response.ExecuteUpdateResponse;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.backend.schema.ShardingSphereSchemas;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;

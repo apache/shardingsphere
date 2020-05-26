@@ -31,7 +31,7 @@ import java.util.List;
 @Getter
 public final class ExecuteQueryResult implements ExecuteResult {
     
-    private final List<ExecuteQueryHeader> queryHeaders;
+    private final List<QueryHeader> queryHeaders;
     
     private final QueryResult queryResult;
 }

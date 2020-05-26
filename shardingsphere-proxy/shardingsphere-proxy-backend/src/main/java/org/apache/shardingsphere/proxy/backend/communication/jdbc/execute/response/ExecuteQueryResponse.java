@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.execute.respo
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
-import org.apache.shardingsphere.proxy.backend.response.query.QueryHeader;
+import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.impl.QueryHeader;
 
 import java.util.List;
 

@@ -17,8 +17,13 @@
 
 package org.apache.shardingsphere.proxy.backend.response.query;
 
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.infra.executor.sql.raw.execute.result.impl.QueryHeader;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.proxy.backend.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
@@ -26,10 +31,6 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.ExpressionProjection;
-import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.junit.Test;
 
 import java.sql.ResultSetMetaData;

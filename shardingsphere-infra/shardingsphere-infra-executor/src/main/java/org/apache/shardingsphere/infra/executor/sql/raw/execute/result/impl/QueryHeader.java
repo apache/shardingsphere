@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ExecuteQueryHeader {
+public final class QueryHeader {
     
     private final String schema;
     
@@ -40,12 +40,12 @@ public final class ExecuteQueryHeader {
     private final Integer columnType;
     
     private final int decimals;
-
+    
     private final boolean signed;
-
+    
     private final boolean primaryKey;
-
+    
     private final boolean notNull;
-
+    
     private final boolean autoIncrement;
 }
