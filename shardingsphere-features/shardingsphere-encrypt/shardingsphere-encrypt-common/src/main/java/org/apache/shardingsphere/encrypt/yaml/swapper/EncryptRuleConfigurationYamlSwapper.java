@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.yaml.swapper;
 
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
 
@@ -57,6 +58,6 @@ public final class EncryptRuleConfigurationYamlSwapper implements YamlRuleConfig
     
     @Override
     public int getOrder() {
-        return 20;
+        return EncryptOrder.ORDER;
     }
 }

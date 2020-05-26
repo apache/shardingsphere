@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.decorator.RouteDecorator;
+import org.apache.shardingsphere.replica.constant.ReplicaOrder;
 import org.apache.shardingsphere.replica.rule.ReplicaRule;
 
 import java.util.Collection;
@@ -66,7 +67,7 @@ public final class ReplicaRouteDecorator implements RouteDecorator<ReplicaRule> 
     
     @Override
     public int getOrder() {
-        return 12;
+        return ReplicaOrder.ORDER;
     }
     
     @Override

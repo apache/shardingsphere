@@ -20,6 +20,7 @@ package org.apache.shardingsphere.replica.yaml.swapper;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.replica.api.config.ReplicaDataSourceConfiguration;
 import org.apache.shardingsphere.replica.api.config.ReplicaRuleConfiguration;
+import org.apache.shardingsphere.replica.constant.ReplicaOrder;
 import org.apache.shardingsphere.replica.yaml.config.YamlReplicaDataSourceConfiguration;
 import org.apache.shardingsphere.replica.yaml.config.YamlReplicaRuleConfiguration;
 
@@ -73,6 +74,6 @@ public final class ReplicaRuleConfigurationYamlSwapper implements YamlRuleConfig
     
     @Override
     public int getOrder() {
-        return 12;
+        return ReplicaOrder.ORDER;
     }
 }

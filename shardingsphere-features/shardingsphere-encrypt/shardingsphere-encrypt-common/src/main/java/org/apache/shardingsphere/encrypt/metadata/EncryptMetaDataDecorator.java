@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.metadata;
 
+import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
@@ -60,7 +61,7 @@ public final class EncryptMetaDataDecorator implements RuleMetaDataDecorator<Enc
     
     @Override
     public int getOrder() {
-        return 5;
+        return EncryptOrder.ORDER;
     }
     
     @Override

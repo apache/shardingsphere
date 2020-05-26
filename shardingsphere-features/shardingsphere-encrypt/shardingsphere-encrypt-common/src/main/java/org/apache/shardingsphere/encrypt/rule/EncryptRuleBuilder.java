@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.rule;
 
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRuleBuilder;
 
 import java.util.Collection;
@@ -34,7 +35,7 @@ public final class EncryptRuleBuilder implements ShardingSphereRuleBuilder<Encry
     
     @Override
     public int getOrder() {
-        return 10;
+        return EncryptOrder.ORDER;
     }
     
     @Override

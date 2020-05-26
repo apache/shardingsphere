@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.masterslave.api.config.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.masterslave.constant.MasterSlaveOrder;
 import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveDataSourceConfiguration;
 import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
@@ -83,6 +84,6 @@ public final class MasterSlaveRuleConfigurationYamlSwapper implements YamlRuleCo
     
     @Override
     public int getOrder() {
-        return 10;
+        return MasterSlaveOrder.ORDER;
     }
 }
