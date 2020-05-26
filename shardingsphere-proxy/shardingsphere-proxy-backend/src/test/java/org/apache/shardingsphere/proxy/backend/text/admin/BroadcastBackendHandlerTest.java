@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.kernal.context.SchemaContext;
 import org.apache.shardingsphere.kernal.context.SchemaContexts;
-import org.apache.shardingsphere.proxy.backend.MockShardingSphereSchemasUtil;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -95,7 +94,6 @@ public final class BroadcastBackendHandlerTest {
     
     @Test
     public void assertExecuteFailure() {
-        MockShardingSphereSchemasUtil.setSchemas("schema", 10);
         ErrorResponse errorResponse = new ErrorResponse(new SQLException("no reason", "X999", -1));
         mockDatabaseCommunicationEngine(errorResponse);
         BroadcastBackendHandler broadcastBackendHandler = new BroadcastBackendHandler("SET timeout = 1000", backendConnection);

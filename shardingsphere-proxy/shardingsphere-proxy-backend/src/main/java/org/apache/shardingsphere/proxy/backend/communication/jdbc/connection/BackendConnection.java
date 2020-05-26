@@ -24,17 +24,16 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.kernal.context.SchemaContext;
-import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
-import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
-import org.apache.shardingsphere.proxy.backend.schema.ShardingSphereSchemas;
-import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.connection.JDBCExecutionConnection;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.StatementOption;
+import org.apache.shardingsphere.kernal.context.SchemaContext;
+import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
+import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
+import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -214,9 +213,9 @@ public final class BackendConnection implements JDBCExecutionConnection, AutoClo
     }
     
     private void setFetchSize(final Statement statement) throws SQLException {
-        if (ShardingSphereSchemas.getInstance().getDatabaseType() instanceof MySQLDatabaseType) {
+        if (schema.getSchema().getDatabaseType() instanceof MySQLDatabaseType) {
             statement.setFetchSize(MYSQL_MEMORY_FETCH_ONE_ROW_A_TIME);
-        } else if (ShardingSphereSchemas.getInstance().getDatabaseType() instanceof PostgreSQLDatabaseType) {
+        } else if (schema.getSchema().getDatabaseType() instanceof PostgreSQLDatabaseType) {
             statement.setFetchSize(POSTGRESQL_MEMORY_FETCH_ONE_ROW_A_TIME);
         }
     }

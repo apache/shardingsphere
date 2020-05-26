@@ -42,7 +42,6 @@ import org.apache.shardingsphere.proxy.backend.response.query.QueryData;
 import org.apache.shardingsphere.proxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.proxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
-import org.apache.shardingsphere.proxy.backend.schema.ShardingSphereSchemas;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
@@ -120,7 +119,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
         if (refreshStrategy.isPresent()) {
             refreshStrategy.get().refreshMetaData(schema.getSchema().getMetaData(),
-                    ShardingSphereSchemas.getInstance().getDatabaseType(), schema.getSchema().getDataSources(), sqlStatementContext, this::loadTableMetaData);
+                    schema.getSchema().getDatabaseType(), schema.getSchema().getDataSources(), sqlStatementContext, this::loadTableMetaData);
             if (null != ShardingOrchestrationFacade.getInstance()) {
                 ShardingOrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(schema.getName(), schema.getSchema().getMetaData().getSchema());
             }
@@ -129,7 +128,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private Optional<TableMetaData> loadTableMetaData(final String tableName) throws SQLException {
         RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(schema.getSchema().getRules());
-        return loader.load(ShardingSphereSchemas.getInstance().getDatabaseType(),
+        return loader.load(schema.getSchema().getDatabaseType(),
                 schema.getSchema().getDataSources(), tableName, ProxySchemaContexts.getInstance().getSchemaContexts().getProperties());
     }
     
@@ -154,7 +153,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private MergedResult mergeQuery(final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
-        MergeEngine mergeEngine = new MergeEngine(ShardingSphereSchemas.getInstance().getDatabaseType(), 
+        MergeEngine mergeEngine = new MergeEngine(schema.getSchema().getDatabaseType(), 
                 schema.getSchema().getMetaData().getSchema().getConfiguredSchemaMetaData(), ProxySchemaContexts.getInstance().getSchemaContexts().getProperties(), schema.getSchema().getRules());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
