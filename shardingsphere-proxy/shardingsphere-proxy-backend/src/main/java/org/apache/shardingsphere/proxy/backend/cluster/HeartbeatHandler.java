@@ -39,7 +39,7 @@ import java.util.concurrent.FutureTask;
 import java.util.stream.Collectors;
 
 /**
- * Heart beat handler.
+ * Heartbeat handler.
  */
 @Slf4j
 public final class HeartbeatHandler {
@@ -47,26 +47,26 @@ public final class HeartbeatHandler {
     private HeartbeatConfiguration configuration;
     
     /**
-     * Init heart beat handler.
+     * Init heartbeat handler.
      *
-     * @param configuration heart beat configuration
+     * @param configuration heartbeat configuration
      */
     public void init(final HeartbeatConfiguration configuration) {
-        Preconditions.checkNotNull(configuration, "heart beat configuration can not be null.");
+        Preconditions.checkNotNull(configuration, "heartbeat configuration can not be null.");
         this.configuration = configuration;
     }
     
     /**
-     * Get heart beat handler instance.
+     * Get heartbeat handler instance.
      *
-     * @return heart beat handler instance
+     * @return heartbeat handler instance
      */
     public static HeartbeatHandler getInstance() {
         return HeartbeatHandlerHolder.INSTANCE;
     }
     
     /**
-     * Handle heart beat detect event.
+     * Handle heartbeat detect event.
      *
      * @param schemas ShardingSphere schemas
      */
@@ -99,7 +99,7 @@ public final class HeartbeatHandler {
                     }
                 });
             } catch (InterruptedException | ExecutionException ex) {
-                log.error("Heart beat report error", ex);
+                log.error("Heartbeat report error", ex);
             }
         });
         ClusterFacade.getInstance().reportHeartbeat(new HeartbeatResponse(heartbeatResultMap));
