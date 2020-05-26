@@ -37,11 +37,11 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class ConditionValueBetweenOperatorGeneratorTest {
-
+    
     private final ConditionValueBetweenOperatorGenerator generator = new ConditionValueBetweenOperatorGenerator();
-
+    
     private final Column column = new Column("id", "tbl");
-
+    
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateConditionValue() {
@@ -58,7 +58,7 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
         assertTrue(rangeRouteValue.getValueRange().contains(between));
         assertTrue(rangeRouteValue.getValueRange().contains(and));
     }
-
+    
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateConditionValueWithDifferentNumericType() {
@@ -75,7 +75,7 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
         assertTrue(SafeRangeOperationUtils.safeContains(rangeRouteValue.getValueRange(), between));
         assertTrue(SafeRangeOperationUtils.safeContains(rangeRouteValue.getValueRange(), and));
     }
-
+    
     @Test(expected = ClassCastException.class)
     public void assertGenerateErrorConditionValue() {
         int between = 1;
@@ -84,7 +84,7 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
         PredicateBetweenRightValue value = new PredicateBetweenRightValue(betweenSegment, andSegment);
         generator.generate(value, column, new LinkedList<>());
     }
-
+    
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateOneNowConditionValue() {
@@ -99,7 +99,7 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
         assertThat(rangeRouteValue.getTableName(), is(column.getTableName()));
         assertThat(rangeRouteValue.getValueRange().lowerEndpoint(), is(date));
     }
-
+    
     @SuppressWarnings("unchecked")
     @Test
     public void assertGenerateNowConditionValue() {

@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SafeRangeOperationUtils {
-
+    
     /**
      * Execute intersection method by safe mode.
      *
@@ -61,7 +61,7 @@ public final class SafeRangeOperationUtils {
             return newRange.intersection(newConnectedRange);
         }
     }
-
+    
     /**
      * Execute closed method by safe mode.
      *
@@ -80,7 +80,7 @@ public final class SafeRangeOperationUtils {
             return Range.closed(parseNumberByClazz(lowerEndpoint.toString(), clazz), parseNumberByClazz(upperEndpoint.toString(), clazz));
         }
     }
-
+    
     /**
      * Execute contains method by safe mode.
      *
@@ -102,7 +102,7 @@ public final class SafeRangeOperationUtils {
             return newRange.contains(parseNumberByClazz(endpoint.toString(), clazz));
         }
     }
-
+    
     private static Range<Comparable<?>> createTargetNumericTypeRange(final Range<Comparable<?>> range, final Class<?> clazz) {
         if (range.hasLowerBound() && range.hasUpperBound()) {
             Comparable<?> lowerEndpoint = parseNumberByClazz(range.lowerEndpoint().toString(), clazz);
@@ -119,7 +119,7 @@ public final class SafeRangeOperationUtils {
         Comparable<?> upperEndpoint = parseNumberByClazz(range.upperEndpoint().toString(), clazz);
         return Range.upTo(upperEndpoint, range.upperBoundType());
     }
-
+    
     private static Class<?> getTargetNumericType(final List<Comparable<?>> endpoints) {
         Preconditions.checkNotNull(endpoints, "getTargetNumericType param endpoints can not be null.");
         Set<Class<?>> clazzSet = endpoints.stream().filter(Objects::nonNull).map(Comparable::getClass).collect(Collectors.toSet());
@@ -143,7 +143,7 @@ public final class SafeRangeOperationUtils {
         }
         return null;
     }
-
+    
     @SneakyThrows
     private static Comparable<?> parseNumberByClazz(final String number, final Class<?> clazz) {
         return (Comparable<?>) clazz.getConstructor(String.class).newInstance(number);

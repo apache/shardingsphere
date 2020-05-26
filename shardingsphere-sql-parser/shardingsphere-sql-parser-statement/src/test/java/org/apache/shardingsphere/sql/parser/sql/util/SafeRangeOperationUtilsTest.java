@@ -28,7 +28,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class SafeRangeOperationUtilsTest {
-
+    
     @Test
     public void assertSafeIntersectionForInteger() {
         Range<Comparable<?>> range = Range.closed(10, 2000);
@@ -39,7 +39,7 @@ public class SafeRangeOperationUtilsTest {
         assertThat(newRange.upperEndpoint(), is(2000));
         assertThat(newRange.upperBoundType(), is(BoundType.CLOSED));
     }
-
+    
     @Test
     public void assertSafeIntersectionForLong() {
         Range<Comparable<?>> range = Range.upTo(3147483647L, BoundType.OPEN);
@@ -50,7 +50,7 @@ public class SafeRangeOperationUtilsTest {
         assertThat(newRange.upperEndpoint(), is(3147483647L));
         assertThat(newRange.upperBoundType(), is(BoundType.OPEN));
     }
-
+    
     @Test
     public void assertSafeIntersectionForBigInteger() {
         Range<Comparable<?>> range = Range.upTo(new BigInteger("131323233123211"), BoundType.CLOSED);
@@ -61,7 +61,7 @@ public class SafeRangeOperationUtilsTest {
         assertThat(newRange.upperEndpoint(), is(new BigInteger("131323233123211")));
         assertThat(newRange.upperBoundType(), is(BoundType.CLOSED));
     }
-
+    
     @Test
     public void assertSafeIntersectionForFloat() {
         Range<Comparable<?>> range = Range.closed(5.5F, 13.8F);
@@ -72,7 +72,7 @@ public class SafeRangeOperationUtilsTest {
         assertThat(newRange.upperEndpoint(), is(11.3F));
         assertThat(newRange.upperBoundType(), is(BoundType.CLOSED));
     }
-
+    
     @Test
     public void assertSafeIntersectionForDouble() {
         Range<Comparable<?>> range = Range.closed(1242.114, 31474836.12);
@@ -83,7 +83,7 @@ public class SafeRangeOperationUtilsTest {
         assertThat(newRange.upperEndpoint(), is(31474836.12));
         assertThat(newRange.upperBoundType(), is(BoundType.CLOSED));
     }
-
+    
     @Test
     public void assertSafeIntersectionForBigDecimal() {
         Range<Comparable<?>> range = Range.upTo(new BigDecimal("2331.23211"), BoundType.CLOSED);
@@ -94,79 +94,79 @@ public class SafeRangeOperationUtilsTest {
         assertThat(newRange.upperEndpoint(), is(new BigDecimal("2331.23211")));
         assertThat(newRange.upperBoundType(), is(BoundType.CLOSED));
     }
-
+    
     @Test
     public void assertSafeClosedForInteger() {
         Range<Comparable<?>> range = SafeRangeOperationUtils.safeClosed(12, 500);
         assertThat(range.lowerEndpoint(), is(12));
         assertThat(range.upperEndpoint(), is(500));
     }
-
+    
     @Test
     public void assertSafeClosedForLong() {
         Range<Comparable<?>> range = SafeRangeOperationUtils.safeClosed(12, 5001L);
         assertThat(range.lowerEndpoint(), is(12L));
         assertThat(range.upperEndpoint(), is(5001L));
     }
-
+    
     @Test
     public void assertSafeClosedForBigInteger() {
         Range<Comparable<?>> range = SafeRangeOperationUtils.safeClosed(12L, new BigInteger("12344"));
         assertThat(range.lowerEndpoint(), is(new BigInteger("12")));
         assertThat(range.upperEndpoint(), is(new BigInteger("12344")));
     }
-
+    
     @Test
     public void assertSafeClosedForFloat() {
         Range<Comparable<?>> range = SafeRangeOperationUtils.safeClosed(4.5F, 11.13F);
         assertThat(range.lowerEndpoint(), is(4.5F));
         assertThat(range.upperEndpoint(), is(11.13F));
     }
-
+    
     @Test
     public void assertSafeClosedForDouble() {
         Range<Comparable<?>> range = SafeRangeOperationUtils.safeClosed(5.12F, 13.75);
         assertThat(range.lowerEndpoint(), is(5.12));
         assertThat(range.upperEndpoint(), is(13.75));
     }
-
+    
     @Test
     public void assertSafeClosedForBigDecimal() {
         Range<Comparable<?>> range = SafeRangeOperationUtils.safeClosed(5.1F, new BigDecimal("17.666"));
         assertThat(range.lowerEndpoint(), is(new BigDecimal("5.1")));
         assertThat(range.upperEndpoint(), is(new BigDecimal("17.666")));
     }
-
+    
     @Test
     public void assertSafeContainsForInteger() {
         Range<Comparable<?>> range = Range.closed(12, 100);
         assertThat(SafeRangeOperationUtils.safeContains(range, 500), is(false));
     }
-
+    
     @Test
     public void assertSafeContainsForLong() {
         Range<Comparable<?>> range = Range.closed(12L, 1000L);
         assertThat(SafeRangeOperationUtils.safeContains(range, 500), is(true));
     }
-
+    
     @Test
     public void assertSafeContainsForBigInteger() {
         Range<Comparable<?>> range = Range.closed(new BigInteger("123"), new BigInteger("1000"));
         assertThat(SafeRangeOperationUtils.safeContains(range, 510), is(true));
     }
-
+    
     @Test
     public void assertSafeContainsForFloat() {
         Range<Comparable<?>> range = Range.closed(123.11F, 9999.123F);
         assertThat(SafeRangeOperationUtils.safeContains(range, 510.12), is(true));
     }
-
+    
     @Test
     public void assertSafeContainsForDouble() {
         Range<Comparable<?>> range = Range.closed(11.11, 9999.99);
         assertThat(SafeRangeOperationUtils.safeContains(range, new BigDecimal("510.12")), is(true));
     }
-
+    
     @Test
     public void assertSafeContainsForBigDecimal() {
         Range<Comparable<?>> range = Range.closed(new BigDecimal("123.11"), new BigDecimal("9999.123"));
