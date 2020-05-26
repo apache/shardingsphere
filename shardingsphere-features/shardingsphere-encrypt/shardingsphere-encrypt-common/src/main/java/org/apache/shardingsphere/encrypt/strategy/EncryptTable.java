@@ -119,7 +119,8 @@ public final class EncryptTable {
      * @return assisted query column
      */
     public Optional<String> findAssistedQueryColumn(final String logicColumn) {
-        return columns.containsKey(logicColumn) ? columns.get(logicColumn).getAssistedQueryColumn() : Optional.empty();
+        Optional<String> originalColumn = findOriginLogicColumnName(logicColumn);
+        return originalColumn.isPresent() ? columns.get(originalColumn.get()).getAssistedQueryColumn() : Optional.empty();
     }
     
     /**
