@@ -21,17 +21,19 @@
 
 ## Overview
 
-ShardingSphere is an open-source ecosystem consisted of a set of distributed database middleware solutions, including 2 independent products, ShardingSphere-JDBC & ShardingSphere-Proxy & ShardingSphere-Sidecar (todo). 
-They all provide functions of data sharding, distributed transaction and database orchestration, applicable in a variety of situations such as Java isomorphism, heterogeneous language and cloud native. 
+Apache ShardingSphere is an open-source ecosystem consisted of a set of distributed database middleware solutions, including 3 independent products, JDBC, Proxy & Sidecar (Planning). 
+They all provide functions of data sharding, distributed transaction and database orchestration,applicable in a variety of situations such as Java isomorphism, heterogeneous language and cloud native.
 
-Aiming at reasonably making full use of the computation and storage capacity of the database in a distributed system, ShardingSphere defines itself as a middleware, rather than a totally new type of database. 
-As the cornerstone of many enterprises, relational database still takes a huge market share. 
-Therefore, at the current stage, we prefer to focus on its increment instead of a total overturn.
+Aiming at reasonably making full use of the computation and storage capacity of database in distributed system, ShardingSphere defines itself as a middleware, rather than a totally new type of database.
+As the cornerstone of many enterprises, relational database still takes a huge market share. Therefore, at current stage, we prefer to focus on its increment instead of a total overturn.
 
-ShardingSphere had graduated from [Apache Incubator](http://incubator.apache.org/projects/shardingsphere.html) on April 16 2020, is now officially an Apache Project!
-Welcome discuss with community via [shardingsphere dev mail list](mailto:dev@shardingsphere.apache.org).
+Apache ShardingSphere begin to focus on pluggable architecture from version 5.x, features can be embedded into project flexibility.
+Currently, the features such as data sharding, read-write splitting, multi replica, data encrypt, shadow test, and SQL dialects / database protocols such as MySQL, PostgreSQL, SQLServer, Oracle supported are all weaved by plugins.
+Developers can customize their own ShardingSphere just like building lego blocks. There are lots of SPI extensions for Apache ShardingSphere now and increase continuously.
 
-__Apache releases are beginning from version 4.0.0__
+ShardingSphere became an [Apache](https://apache.org/index.html#projects-list) Top Level Project on April 16 2020.
+
+Welcome communicate with community via [mail list](mailto:dev@shardingsphere.apache.org).
 
 ![ShardingSphere Scope](https://shardingsphere.apache.org/document/current/img/shardingsphere-scope_en.png)
 
@@ -111,19 +113,14 @@ Architects can adjust the system architecture to the most applicable one to curr
 
 ### Database Orchestration
 
-* Dynamic Configuration
-* Orchestration & Governance
+* Distributed Governance
+* Data migration & Scale out
+* Tracing & Observability Supported
 * Data Encryption
-* Tracing & Observability
-* Elastic scaling out (Planning)
-
-## Project Status
-
-![Status](https://shardingsphere.apache.org/document/current/img/shardingsphere-status_en.png)
 
 ## How to Build
 
-### Build ShardingSphere
+### Build Apache ShardingSphere
 
 ```bash
 ./mvnw clean install -Prelease
@@ -132,9 +129,9 @@ Architects can adjust the system architecture to the most applicable one to curr
 Artifact:
 
 ```
-shardingsphere-distribution/shardingsphere-jdbc-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-jdbc-bin.tar.gz: Binary package of ShardingSphere-JDBC
-shardingsphere-distribution/shardingsphere-proxy-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-proxy-bin.tar.gz: Binary package of ShardingSphere-Proxy
-shardingsphere-distribution/shardingsphere-src-distribution/target/apache-shardingsphere-${latest.release.version}-src.zip: Source code package of ShardingSphere
+shardingsphere-distribution/shardingsphere-src-distribution/target/apache-shardingsphere-${latest.release.version}-src.zip  # Source code package of Apache ShardingSphere
+shardingsphere-distribution/shardingsphere-jdbc-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-jdbc-bin.tar.gz  # Binary package of ShardingSphere-JDBC
+shardingsphere-distribution/shardingsphere-proxy-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-proxy-bin.tar.gz  # Binary package of ShardingSphere-Proxy
 ```
 
 ### Build ShardingSphere-UI
@@ -147,7 +144,7 @@ cd shardingsphere-ui
 Artifact:
 
 ```
-shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-ui-bin.tar.gz: Binary package of ShardingSphere-UI
+shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-ui-bin.tar.gz  # Binary package of ShardingSphere-UI
 ```
 
 ## Landscapes
@@ -156,5 +153,5 @@ shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-distribut
 <br/><br/>
 <img src="https://landscape.cncf.io/images/left-logo.svg" width="150"/>&nbsp;&nbsp;<img src="https://landscape.cncf.io/images/right-logo.svg" width="200"/>
 <br/><br/>
-ShardingSphere enriches the <a href="https://landscape.cncf.io/landscape=observability-and-analysis&license=apache-license-2-0">CNCF CLOUD NATIVE Landscape.</a>
+Apache ShardingSphere enriches the <a href="https://landscape.cncf.io/landscape=observability-and-analysis&license=apache-license-2-0">CNCF CLOUD NATIVE Landscape</a>.
 </p>
