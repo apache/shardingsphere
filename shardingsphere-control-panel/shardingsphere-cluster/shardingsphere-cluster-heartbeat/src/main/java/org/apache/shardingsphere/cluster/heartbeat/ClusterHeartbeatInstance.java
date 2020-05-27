@@ -47,7 +47,7 @@ public final class ClusterHeartbeatInstance {
     public void init(final HeartbeatConfiguration configuration) {
         Preconditions.checkNotNull(configuration, "heartbeat configuration can not be null.");
         heartbeatTaskManager = new HeartbeatTaskManager(configuration.getInterval(), configuration.getThreadCount());
-        HeartbeatTask task = new HeartbeatTask(new HeartbeatDetectNoticeEvent(configuration.getSql(), configuration.getRetryEnable(), configuration.getRetryMaximum()));
+        HeartbeatTask task = new HeartbeatTask(new HeartbeatDetectNoticeEvent());
         heartbeatTaskManager.start(task);
     }
     

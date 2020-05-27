@@ -29,7 +29,7 @@ public final class HeartbeatTaskManager {
     
     private Integer interval;
     
-    private final ScheduledExecutorService executorService;
+    private ScheduledExecutorService executorService;
     
     public HeartbeatTaskManager(final Integer interval, final Integer threadCount) {
         this.interval = interval;

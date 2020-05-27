@@ -20,6 +20,8 @@ package org.apache.shardingsphere.orchestration.core.registrycenter;
 import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.core.registrycenter.instance.OrchestrationInstance;
 
+import java.util.Collection;
+
 /**
  * RegistryCenter hold and persist instance state.
  */
@@ -65,5 +67,24 @@ public final class RegistryCenter {
      */
     public String loadInstanceData() {
         return repository.get(node.getInstancesNodeFullPath(instance.getInstanceId()));
+    }
+    
+    /**
+     * Load instance data.
+     *
+     * @param instanceId instance id
+     * @return instance data
+     */
+    public String loadInstanceData(final String instanceId) {
+        return repository.get(node.getInstancesNodeFullPath(instanceId));
+    }
+    
+    /**
+     * Load all instances.
+     *
+     * @return Collection of all instances
+     */
+    public Collection<String> loadAllInstances() {
+        return repository.getChildrenKeys(node.getInstanceNodeRootPath());
     }
 }

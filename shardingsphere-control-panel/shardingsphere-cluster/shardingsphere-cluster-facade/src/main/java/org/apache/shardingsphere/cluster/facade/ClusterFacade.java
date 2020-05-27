@@ -65,6 +65,15 @@ public final class ClusterFacade {
         clusterStateInstance.persistInstanceState(buildInstanceState(heartBeatResponse));
     }
     
+    /**
+     * Load all instance states.
+     *
+     * @return all instance states.
+     */
+    public Map<String, InstanceState> loadAllInstanceStates() {
+        return clusterStateInstance.loadAllInstanceStates();
+    }
+    
     private InstanceState buildInstanceState(final HeartbeatResponse heartbeatResponse) {
         InstanceState instanceState = clusterStateInstance.loadInstanceState();
         return new InstanceState(instanceState.getState(), buildDataSourceStateMap(instanceState, heartbeatResponse));
