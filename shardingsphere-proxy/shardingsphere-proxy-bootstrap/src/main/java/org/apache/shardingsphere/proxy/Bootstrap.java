@@ -129,7 +129,7 @@ public final class Bootstrap {
             Properties properties = shardingOrchestrationFacade.getConfigCenter().loadProperties();
             Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap(shardingOrchestrationFacade);
             Map<String, Collection<RuleConfiguration>> schemaRules = getSchemaRules(shardingOrchestrationFacade);
-            initCluster(serverConfig.getCluster());
+            initCluster(serverConfig.getCluster(), (Boolean) properties.getOrDefault(ConfigurationPropertyKey.PROXY_CLUSTER_ENABLED.getKey(), Boolean.FALSE));
             startProxy(port, authentication, properties, schemaDataSources, schemaRules, serverConfig.getMetrics());
         }
     }
@@ -186,8 +186,8 @@ public final class Bootstrap {
         }
     }
     
-    private static void initCluster(final YamlClusterConfiguration clusterConfiguration) {
-        if (ProxySchemaContexts.getInstance().getSchemaContexts().getProperties().<Boolean>getValue(ConfigurationPropertyKey.PROXY_CLUSTER_ENABLED)) {
+    private static void initCluster(final YamlClusterConfiguration clusterConfiguration, final Boolean enabled) {
+        if (enabled) {
             ClusterFacade.getInstance().init(new ClusterConfigurationYamlSwapper().swap(clusterConfiguration));
             HeartbeatHandler.getInstance().init(new ClusterConfigurationYamlSwapper().swap(clusterConfiguration).getHeartbeat());
         }

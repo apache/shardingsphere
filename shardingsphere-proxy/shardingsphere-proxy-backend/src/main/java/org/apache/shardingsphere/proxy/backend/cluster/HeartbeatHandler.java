@@ -23,7 +23,7 @@ import org.apache.shardingsphere.cluster.configuration.config.HeartbeatConfigura
 import org.apache.shardingsphere.cluster.facade.ClusterFacade;
 import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResponse;
 import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResult;
-import org.apache.shardingsphere.kernal.context.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.kernal.context.SchemaContext;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,12 +68,12 @@ public final class HeartbeatHandler {
     /**
      * Handle heartbeat detect event.
      *
-     * @param schemas ShardingSphere schemas
+     * @param schemaContexts schema contexts
      */
-    public void handle(final Map<String, ShardingSphereSchema> schemas) {
-        ExecutorService executorService = Executors.newFixedThreadPool(countDataSource(schemas));
+    public void handle(final Map<String, SchemaContext> schemaContexts) {
+        ExecutorService executorService = Executors.newFixedThreadPool(countDataSource(schemaContexts));
         List<FutureTask<Map<String, HeartbeatResult>>> futureTasks = new ArrayList<>();
-        schemas.forEach((key, value) -> value.getDataSources().forEach((innerKey, innerValue) -> {
+        schemaContexts.forEach((key, value) -> value.getSchema().getDataSources().forEach((innerKey, innerValue) -> {
             FutureTask<Map<String, HeartbeatResult>> futureTask = new FutureTask<>(new HeartbeatDetect(key, innerKey, innerValue, configuration));
             futureTasks.add(futureTask);
             executorService.submit(futureTask);
@@ -82,9 +82,9 @@ public final class HeartbeatHandler {
         closeExecutor(executorService);
     }
     
-    private Integer countDataSource(final Map<String, ShardingSphereSchema> schemas) {
-        return Long.valueOf(schemas.values().stream()
-                .collect(Collectors.summarizingInt(entry -> entry.getDataSources().keySet().size())).getSum()).intValue();
+    private Integer countDataSource(final Map<String, SchemaContext> schemaContexts) {
+        return Long.valueOf(schemaContexts.values().stream()
+                .collect(Collectors.summarizingInt(entry -> entry.getSchema().getDataSources().keySet().size())).getSum()).intValue();
     }
     
     private void reportHeartbeat(final List<FutureTask<Map<String, HeartbeatResult>>> futureTasks) {
