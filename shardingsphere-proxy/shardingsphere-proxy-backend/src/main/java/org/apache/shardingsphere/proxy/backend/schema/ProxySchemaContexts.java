@@ -21,6 +21,8 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
+import org.apache.shardingsphere.cluster.heartbeat.event.HeartbeatDetectNoticeEvent;
+import org.apache.shardingsphere.cluster.heartbeat.eventbus.HeartbeatEventBus;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -49,6 +51,7 @@ import org.apache.shardingsphere.orchestration.core.registrycenter.event.Circuit
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationSchema;
 import org.apache.shardingsphere.proxy.backend.BackendDataSource;
+import org.apache.shardingsphere.proxy.backend.cluster.HeartbeatHandler;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSourceFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCRawBackendDataSourceFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.JDBCDriverURLRecognizerEngine;
@@ -84,6 +87,7 @@ public final class ProxySchemaContexts {
     
     private ProxySchemaContexts() {
         ShardingOrchestrationEventBus.getInstance().register(this);
+        HeartbeatEventBus.getInstance().register(this);
     }
     
     /**
@@ -285,6 +289,16 @@ public final class ProxySchemaContexts {
         schemaContext.getSchema().closeDataSources(deletedDataSourceParameters);
         schemaContext.getSchema().closeDataSources(modifiedDataSourceParameters.keySet());
         schemaContext.renew(newDataSourceParameters, newDataSources);
+    }
+    
+    /**
+     * Heart beat detect.
+     *
+     * @param event heart beat detect notice event
+     */
+    @Subscribe
+    public synchronized void heartbeat(final HeartbeatDetectNoticeEvent event) {
+        HeartbeatHandler.getInstance().handle(schemaContexts.getSchemaContexts());
     }
     
     private synchronized List<String> getDeletedDataSources(final Map<String, DataSourceParameter> oldDataSourceParameters, final Map<String, DataSourceParameter> newDataSourceParameters) {
