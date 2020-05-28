@@ -45,7 +45,7 @@ public final class HeartbeatTaskManagerTest {
     @Before
     @SneakyThrows({NoSuchFieldException.class, SecurityException.class})
     public void init() {
-        heartbeatTaskManager = new HeartbeatTaskManager(60, 1);
+        heartbeatTaskManager = new HeartbeatTaskManager(60);
         FieldSetter.setField(heartbeatTaskManager, heartbeatTaskManager.getClass().getDeclaredField("executorService"), executorService);
     }
     

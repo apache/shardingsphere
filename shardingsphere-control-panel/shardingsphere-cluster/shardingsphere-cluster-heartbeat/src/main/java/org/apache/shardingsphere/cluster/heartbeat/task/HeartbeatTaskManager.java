@@ -31,9 +31,9 @@ public final class HeartbeatTaskManager {
     
     private ScheduledExecutorService executorService;
     
-    public HeartbeatTaskManager(final Integer interval, final Integer threadCount) {
+    public HeartbeatTaskManager(final Integer interval) {
         this.interval = interval;
-        executorService = Executors.newScheduledThreadPool(threadCount);
+        executorService = Executors.newScheduledThreadPool(1);
     }
     
     /**

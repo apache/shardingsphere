@@ -26,23 +26,26 @@ import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResult;
 import org.apache.shardingsphere.kernal.context.SchemaContext;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.FutureTask;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
+
 
 /**
  * Heartbeat handler.
  */
 @Slf4j
 public final class HeartbeatHandler {
+    
+    private static final int FUTURE_GET_TIME_OUT_MILLISECONDS = 1000;
     
     private HeartbeatConfiguration configuration;
     
@@ -71,37 +74,24 @@ public final class HeartbeatHandler {
      * @param schemaContexts schema contexts
      */
     public void handle(final Map<String, SchemaContext> schemaContexts) {
-        ExecutorService executorService = Executors.newFixedThreadPool(countDataSource(schemaContexts));
-        List<FutureTask<Map<String, HeartbeatResult>>> futureTasks = new ArrayList<>();
+        ExecutorService executorService = Executors.newFixedThreadPool(configuration.getThreadCount());
+        List<Future<Map<String, HeartbeatResult>>> futureTasks = new ArrayList<>();
         schemaContexts.forEach((key, value) -> value.getSchema().getDataSources().forEach((innerKey, innerValue) -> {
-            FutureTask<Map<String, HeartbeatResult>> futureTask = new FutureTask<>(new HeartbeatDetect(key, innerKey, innerValue, configuration));
-            futureTasks.add(futureTask);
-            executorService.submit(futureTask);
+            futureTasks.add(executorService.submit(new HeartbeatDetect(key, innerKey, innerValue, configuration)));
         }));
         reportHeartbeat(futureTasks);
         closeExecutor(executorService);
     }
     
-    private Integer countDataSource(final Map<String, SchemaContext> schemaContexts) {
-        return Long.valueOf(schemaContexts.values().stream()
-                .collect(Collectors.summarizingInt(entry -> entry.getSchema().getDataSources().keySet().size())).getSum()).intValue();
-    }
-    
-    private void reportHeartbeat(final List<FutureTask<Map<String, HeartbeatResult>>> futureTasks) {
-        Map<String, Collection<HeartbeatResult>> heartbeatResultMap = new HashMap<>();
-        futureTasks.stream().forEach(each -> {
+    private void reportHeartbeat(final List<Future<Map<String, HeartbeatResult>>> futureTasks) {
+        Map<String, Collection<HeartbeatResult>> heartbeatResultMap = futureTasks.stream().map(e -> {
             try {
-                each.get().entrySet().forEach(entry -> {
-                    if (Objects.isNull(heartbeatResultMap.get(entry.getKey()))) {
-                        heartbeatResultMap.put(entry.getKey(), new ArrayList<>(Arrays.asList(entry.getValue())));
-                    } else {
-                        heartbeatResultMap.get(entry.getKey()).add(entry.getValue());
-                    }
-                });
-            } catch (InterruptedException | ExecutionException ex) {
+                return e.get(FUTURE_GET_TIME_OUT_MILLISECONDS, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException | ExecutionException | TimeoutException ex) {
                 log.error("Heartbeat report error", ex);
+                return new HashMap<String, HeartbeatResult>();
             }
-        });
+        }).flatMap(map -> map.entrySet().stream()).collect(Collectors.groupingBy(Map.Entry::getKey, HashMap::new, Collectors.mapping(Map.Entry::getValue, Collectors.toCollection(ArrayList::new))));
         ClusterFacade.getInstance().reportHeartbeat(new HeartbeatResponse(heartbeatResultMap));
     }
     
