@@ -46,9 +46,7 @@ public final class ClusterServiceImpl implements ClusterService {
                 .getChildrenKeys(registryCenterService.getActivatedStateNode().getInstanceNodeRootPath());
         Map<String, InstanceState> instanceStateMap = new HashMap<>();
         try {
-            instanceIds.forEach(each -> {
-                instanceStateMap.put(each, loadInstanceState(each));
-            });
+            instanceIds.forEach(each -> instanceStateMap.put(each, loadInstanceState(each)));
         } catch (Exception ex) {
             log.error("Load all instance states error", ex);
         }
