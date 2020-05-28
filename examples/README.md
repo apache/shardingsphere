@@ -101,22 +101,17 @@ You can get more detail from **[orchestration-example](shardingsphere-jdbc-examp
 * 2pc-xa transaction
 * base-seata transaction
 
-You can get more detail from **[transaction-example](shardingsphere-jdbc-example/transaction-example)**
+## Available Examples
 
-### Best Practice for hint routing
-
-You can get more detail from **[hint-example](shardingsphere-jdbc-example/other-feature-example/hint-example)**
-
-### Best Practice for data encrypt
-
-You can get more detail from **[encrypt-example](shardingsphere-jdbc-example/other-feature-example/encrypt-example)**
-
-### Best Practice for APM Integration
-
-We will add APM integration example recently.
-
-### Best Practice for ShardingSphere-Proxy
-
-We prefer to add a docker base example recently.
-
-### [how to use docker to config ShardingSphere-JDBC & ShardingSphere-Proxy](./docker/docker-compose.md) (Optional)
+| Example | Description |
+|---------|-------------|
+| [raw JDBC](shardingsphere-jdbc-example/sharding-example/sharding-raw-jdbc-example) | show how to use shardingsphere-jdbc through raw JDBC |
+| [springBoot JPA](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-jpa-example) | show how to use shardingsphere through SpringBoot JPA |
+| [springBoot mybatis](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-mybatis-example) | use shardingsphere through SpringBoot Mybatis |
+| [orchestration](shardingsphere-jdbc-example/orchestration-example) | show how to use shardingsphere orchestration |
+| [transaction](shardingsphere-jdbc-example/transaction-example) | show how to use shardingsphere transaction |
+| [hint](shardingsphere-jdbc-example/other-feature-example/hint-example) | show how to use shardingsphere hint |
+| [encryption](shardingsphere-jdbc-example/other-feature-example/encrypt-example) | show how to use shardingsphere encryption |
+| APM(Pending) | show how to use APM in shardingsphere |
+| proxy(Pending) | show how to use sharding proxy |
+| [docker](./docker/docker-compose.md) | show how to use docker to setup the environment for shardingsphere |
