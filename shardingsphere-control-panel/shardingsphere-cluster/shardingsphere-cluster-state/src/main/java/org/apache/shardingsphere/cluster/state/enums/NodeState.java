@@ -22,5 +22,5 @@ package org.apache.shardingsphere.cluster.state.enums;
  */
 public enum NodeState {
     
-    ONLINE, INTERRUPT, OFFLINE, DISABLED;
+    ONLINE, INTERRUPT, OFFLINE, DISABLED, UNKNOWN;
 }

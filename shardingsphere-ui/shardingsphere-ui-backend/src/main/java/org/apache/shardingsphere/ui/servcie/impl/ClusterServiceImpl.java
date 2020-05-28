@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.ui.servcie.impl;
 
-import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.cluster.state.InstanceState;
+import org.apache.shardingsphere.cluster.state.enums.NodeState;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.ui.servcie.ClusterService;
 import org.apache.shardingsphere.ui.servcie.RegistryCenterService;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -45,18 +46,17 @@ public final class ClusterServiceImpl implements ClusterService {
         List<String> instanceIds = registryCenterService.getActivatedRegistryCenter()
                 .getChildrenKeys(registryCenterService.getActivatedStateNode().getInstanceNodeRootPath());
         Map<String, InstanceState> instanceStateMap = new HashMap<>();
-        try {
-            instanceIds.forEach(each -> instanceStateMap.put(each, loadInstanceState(each)));
-        } catch (Exception ex) {
-            log.error("Load all instance states error", ex);
-        }
+        instanceIds.forEach(each -> instanceStateMap.put(each, loadInstanceState(each)));
         return instanceStateMap;
     }
     
     private InstanceState loadInstanceState(final String instanceId) {
         String instanceStateData = registryCenterService.getActivatedRegistryCenter()
                 .get(registryCenterService.getActivatedStateNode().getInstancesNodeFullPath(instanceId));
-        Preconditions.checkNotNull(instanceStateData, "can not load instance '%s' state data", instanceId);
+        if (StringUtils.isEmpty(instanceStateData)) {
+            log.error("can not load instance '{}' state data", instanceId);
+            return new InstanceState(NodeState.UNKNOWN, new HashMap<>());
+        }
         return YamlEngine.unmarshal(instanceStateData, InstanceState.class);
     }
 }
