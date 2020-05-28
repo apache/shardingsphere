@@ -272,8 +272,8 @@ public final class BackendConnectionTest {
     public void clean() {
         Field field = ProxySchemaContexts.getInstance().getClass().getDeclaredField("backendDataSource");
         field.setAccessible(true);
-        Object datasource = Class.forName("org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts$JDBCBackendDataSource")
-                .getDeclaredConstructors()[0].newInstance(ProxySchemaContexts.getInstance());
+        Class<?> clazz = field.getType();
+        Object datasource = clazz.getDeclaredConstructors()[0].newInstance(ProxySchemaContexts.getInstance());
         field.set(ProxySchemaContexts.getInstance(), datasource);
     }
 }
