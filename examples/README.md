@@ -79,33 +79,9 @@ shardingsphere-example
         └── manual_schema.sql
 ```
 
-### Best practice for sharding data
-
-* sharding databases
-* sharding tables
-* sharding databases and tables
-* master-slave
-* sharding & master-slave
-
-You can get more detail from **[shardingsphere-example](shardingsphere-jdbc-example/sharding-example)**
-
-### Best practice for sharding + orchestration
-
-* using local configuration file for zookeeper/etcd & sharding
-* using register center(zookeeper/etcd)'s configuration for sharding
-
-You can get more detail from **[orchestration-example](shardingsphere-jdbc-example/orchestration-example)**
-
-### Best Practice for sharding + distribution-transaction
-
-* 2pc-xa transaction
-* base-seata transaction
-
-## Available Examples
-
 | Example | Description |
 |---------|-------------|
-| [raw JDBC](shardingsphere-jdbc-example/sharding-example/sharding-raw-jdbc-example) | show how to use raw JDBC with shardingsphere-jdbc |
+| [sharding](shardingsphere-jdbc-example/sharding-example) | show how to use sharding-table\sharding-database\master-slave with shardingsphere-jdbc |
 | [springBoot JPA](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-jpa-example) | show how to use SpringBoot JPA with shardingsphere |
 | [springBoot mybatis](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-mybatis-example) | show how to use SpringBoot Mybatis with shardingsphere |
 | [orchestration](shardingsphere-jdbc-example/orchestration-example) | show how to use shardingsphere orchestration |
