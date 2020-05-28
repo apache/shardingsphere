@@ -1,19 +1,20 @@
 +++
-pre = "<b>3.4.2.3 </b>"
+pre = "<b>3.4.3.3 </b>"
 title = "Seata BASE transaction"
 weight = 3
 +++
 
-## Features
+## Supported Items
 
+* Support cross-database transactions after sharding.
 * Support RC isolation level.
 * Rollback transaction according to undo log.
 * Support recovery committing transaction automatically after the service is down.
 
-## Dependency
+## Unsupported Items
 
-* Need to deploy seata-server process to do transaction coordination.
+* Do not support other isolation level except RC.
 
-## Need to Optimize
+## To Be Optimized Items
 
 * SQL will be parsed twice by Apache ShardingSphere and Seata.

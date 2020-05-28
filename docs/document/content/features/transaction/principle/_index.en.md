@@ -1,7 +1,7 @@
 +++
-pre = "<b>3.4.3. </b>"
+pre = "<b>3.4.2. </b>"
 title = "Principle"
-weight = 3
+weight = 2
 chapter = true
 +++
 
