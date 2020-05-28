@@ -1,6 +1,6 @@
 +++
 title = "Inline Expression"
-weight = 1
+weight = 4
 +++
 
 ## Motivation
@@ -134,13 +134,13 @@ db1
 Users can configure separately, data nodes with prefixes first, those without prefixes later, and automatically combine them with the cartesian product feature of inline expressions. 
 The example above can be simplified by inline expression as:
 
-```groovy
+```
 db${0..1}.t_order_0${0..9}, db${0..1}.t_order_${10..20}
 ```
 
 Or
 
-```groovy
+```
 db->${0..1}.t_order_0$->{0..9}, db$->{0..1}.t_order_$->{10..20}
 ```
 
@@ -153,12 +153,12 @@ Inline expression is a piece of Groovy code in essence, which can return the cor
 For example, sharding keys with the last number 0 are routed to the data source with the suffix of 0, those with the last number 1 are routed to the data source with the suffix of 1, the rest goes on in the same way. 
 The inline expression used to indicate sharding algorithm is:
 
-```groovy
+```
 ds${id % 10}
 ```
 
 Or
 
-```groovy
+```
 ds$->{id % 10}
 ```
