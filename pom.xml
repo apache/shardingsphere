@@ -137,6 +137,7 @@
         <docker-maven-plugin.version>0.4.14</docker-maven-plugin.version>
         
         <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
+        <maven.test.skip>true</maven.test.skip>
         <maven.deploy.skip>false</maven.deploy.skip>
         <argLine>-Xmx1024m -XX:MaxMetaspaceSize=256m</argLine>
     </properties>
