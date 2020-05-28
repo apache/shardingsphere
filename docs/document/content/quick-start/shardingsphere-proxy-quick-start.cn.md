@@ -21,7 +21,7 @@ weight = 2
 
 * 使用默认配置项
 
-```sh
+```bash
 sh %SHARDINGSPHERE_PROXY_HOME%\bin\start.sh
 ```
 
@@ -29,14 +29,14 @@ sh %SHARDINGSPHERE_PROXY_HOME%\bin\start.sh
 
 * 自定义端口
 
-```sh
-sh %SHARDINGSPHERE_PROXY_HOME%\bin\start.sh ${port}
+```bash
+sh %SHARDINGSPHERE_PROXY_HOME%\bin\start.sh ${proxy_port}
 ```
 
 ## 4. 使用ShardingSphere-Proxy
 
 执行 MySQL 或 PostgreSQL的客户端命令直接操作 ShardingSphere-Proxy 即可。以 MySQL 举例：
 
-```sh
+```bash
 mysql -u${proxy_username} -p${proxy_password} -h${proxy_host} -P${proxy_port}
 ```
