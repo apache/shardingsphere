@@ -1,7 +1,7 @@
 +++
-pre = "<b>3.7. </b>"
-title = "Scaling(Alpha)"
-weight = 7
+pre = "<b>3.5. </b>"
+title = "Scaling"
+weight = 5
 chapter = true
 +++
 

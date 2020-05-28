@@ -1,7 +1,7 @@
 +++
-pre = "<b>3.7. </b>"
-title = "弹性伸缩(Alpha)"
-weight = 7
+pre = "<b>3.5. </b>"
+title = "弹性伸缩"
+weight = 5
 chapter = true
 +++
 
