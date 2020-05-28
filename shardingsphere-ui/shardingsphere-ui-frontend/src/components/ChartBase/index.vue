@@ -292,7 +292,8 @@ export default {
   registerTheme(name, theme) {
     echarts.registerTheme(name, theme)
   },
-  graphic: echarts.graphic
+  graphic: echarts.graphic,
+  format: echarts.format
 }
 </script>
 
