@@ -1,10 +1,10 @@
 +++
-pre = "<b>3.3. </b>"
-title = "Orchestration"
-weight = 3
+pre = "<b>3.4. </b>"
+title = "Governance"
+weight = 4
 chapter = true
 +++
 
 ## Navigation
 
-Provide orchestration of config/registry/metadata center, dynamic configuration, database & application disabling, and APM.
+Provide governance of config/registry/metadata center, dynamic configuration, database & application disabling, and APM.
