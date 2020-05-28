@@ -9,5 +9,5 @@ chapter = true
 
 This chapter mainly introduces the core concepts of distributed transactions, including:
 
-* 2PC transaction-XA
-* Seata BASE transaction
+* 2PC transaction with XA
+* BASE transaction with Seata

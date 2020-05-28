@@ -4,14 +4,14 @@ title = "2PC transaction-XA"
 weight = 2
 +++
 
-## Function
+## Features
 
 * Support cross-database XA transactions after sharding.
 * Operation atomicity and high data consistency in 2PC transactions.
 * When service is down and restarted, commit and rollback transactions can be recovered automatically.
 * An SPI mechanism that integrates mainstream XA managers: Atomikos default and Narayana and Bitronix optional.
 * Support XA and non-XA connection pool in the same time.
-* Provide spring-boot and namespace access.
+* Provide spring-boot start and spring namespace.
 
 ## Not Support
 
