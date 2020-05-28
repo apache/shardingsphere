@@ -79,44 +79,17 @@ shardingsphere-example
         └── manual_schema.sql
 ```
 
-### Best practice for sharding data
+## Available Examples
 
-* sharding databases
-* sharding tables
-* sharding databases and tables
-* master-slave
-* sharding & master-slave
-
-You can get more detail from **[shardingsphere-example](shardingsphere-jdbc-example/sharding-example)**
-
-### Best practice for sharding + orchestration
-
-* using local configuration file for zookeeper/etcd & sharding
-* using register center(zookeeper/etcd)'s configuration for sharding
-
-You can get more detail from **[orchestration-example](shardingsphere-jdbc-example/orchestration-example)**
-
-### Best Practice for sharding + distribution-transaction
-
-* 2pc-xa transaction
-* base-seata transaction
-
-You can get more detail from **[transaction-example](shardingsphere-jdbc-example/transaction-example)**
-
-### Best Practice for hint routing
-
-You can get more detail from **[hint-example](shardingsphere-jdbc-example/other-feature-example/hint-example)**
-
-### Best Practice for data encrypt
-
-You can get more detail from **[encrypt-example](shardingsphere-jdbc-example/other-feature-example/encrypt-example)**
-
-### Best Practice for APM Integration
-
-We will add APM integration example recently.
-
-### Best Practice for ShardingSphere-Proxy
-
-We prefer to add a docker base example recently.
-
-### [how to use docker to config ShardingSphere-JDBC & ShardingSphere-Proxy](./docker/docker-compose.md) (Optional)
+| Example | Description |
+|---------|-------------|
+| [sharding](shardingsphere-jdbc-example/sharding-example) | show how to use sharding-table\sharding-database\master-slave with ShardingSphere-JDBC |
+| [springboot jpa](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-jpa-example) | show how to use SpringBoot JPA with ShardingSphere |
+| [springboot mybatis](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-mybatis-example) | show how to use SpringBoot Mybatis with ShardingSphere |
+| [orchestration](shardingsphere-jdbc-example/orchestration-example) | show how to use ShardingSphere orchestration |
+| [transaction](shardingsphere-jdbc-example/transaction-example) | show how to use ShardingSphere transaction |
+| [hint](shardingsphere-jdbc-example/other-feature-example/hint-example) | show how to use ShardingSphere hint |
+| [encryption](shardingsphere-jdbc-example/other-feature-example/encrypt-example) | show how to use ShardingSphere encryption |
+| APM(Pending) | show how to use APM in ShardingSphere |
+| proxy(Pending) | show how to use sharding proxy |
+| [docker](./docker/docker-compose.md) | show how to use docker to setup the environment for ShardingSphere |
