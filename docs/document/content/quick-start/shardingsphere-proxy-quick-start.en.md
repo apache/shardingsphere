@@ -22,11 +22,21 @@ and decompress, then copy `mysql-connector-java-5.1.47.jar` to `%SHARDINGSPHERE_
 * Use default configuration to start
 
 ```sh
-%SHARDINGSPHERE_PROXY_HOME%\bin\start.sh
+sh %SHARDINGSPHERE_PROXY_HOME%\bin\start.sh
 ```
+
+Default port is `3307`
 
 * Customize port
 
 ```sh
-%SHARDINGSPHERE_PROXY_HOME%\bin\start.sh ${port}
+sh %SHARDINGSPHERE_PROXY_HOME%\bin\start.sh ${port}
+```
+
+## 4. Use ShardingSphere-Proxy
+
+Use MySQL or PostgreSQL client to connect ShardingSphere-Proxy. For example with MySQL:
+
+```sh
+mysql -u${proxy_username} -p${proxy_password} -h${proxy_host} -P${proxy_port}
 ```
