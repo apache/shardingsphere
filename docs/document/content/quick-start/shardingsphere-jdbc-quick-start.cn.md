@@ -4,7 +4,7 @@ title = "ShardingSphere-JDBC"
 weight = 1
 +++
 
-## 1. 引入maven依赖
+## 1. 引入 maven 依赖
 
 ```xml
 <dependency>
@@ -18,12 +18,14 @@ weight = 1
 
 ## 2. 规则配置
 
-ShardingSphere-JDBC可以通过`Java`，`YAML`，`Spring命名空间`和`Spring Boot Starter`四种方式配置，开发者可根据场景选择适合的配置方式。详情请参见[配置手册](/cn/manual/shardingsphere-jdbc/configuration/)。
+ShardingSphere-JDBC 可以通过 `Java`，`YAML`，`Spring 命名空间`和 `Spring Boot Starter` 这 4 种方式进行配置，开发者可根据场景选择适合的配置方式。
+详情请参见[配置手册](/cn/manual/shardingsphere-jdbc/configuration/)。
 
-## 3. 创建DataSource
+## 3. 创建数据源
 
-通过ShardingDataSourceFactory工厂和规则配置对象获取ShardingDataSource，ShardingDataSource实现自JDBC的标准接口DataSource。然后即可通过DataSource选择使用原生JDBC开发，或者使用JPA, MyBatis等ORM工具。
+通过 `ShardingSphereDataSourceFactory` 工厂和规则配置对象获取 `ShardingSphereDataSource`。
+该对象实现自 JDBC 的标准 DataSource 接口，可用于原生 JDBC 开发，或使用 JPA, MyBatis 等 ORM 类库。
 
 ```java
-DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, props);
+DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, configurations, props);
 ```

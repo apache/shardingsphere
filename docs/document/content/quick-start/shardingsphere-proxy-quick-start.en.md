@@ -6,27 +6,37 @@ weight = 2
 
 ## 1. Rule Configuration
 
-Edit `%SHARDING_PROXY_HOME%\conf\config-xxx.yaml`. Please refer to [Configuration Manual](/en/manual/shardingsphere-proxy/configuration/) for more details.
+Edit `%SHARDINGSPHERE_PROXY_HOME%\conf\config-xxx.yaml`. Please refer to [Configuration Manual](/en/manual/shardingsphere-proxy/configuration/) for more details.
 
-Edit `%SHARDING_PROXY_HOME%\conf\server.yaml`. Please refer to [Configuration Manual](/en/manual/shardingsphere-proxy/configuration/) for more details.
+Edit `%SHARDINGSPHERE_PROXY_HOME%\conf\server.yaml`. Please refer to [Configuration Manual](/en/manual/shardingsphere-proxy/configuration/) for more details.
 
-## 2. Introduce Dependencies
+## 2. Import Dependencies
 
 If the backend database is PostgreSQL, there's no need for additional dependencies.
 
 If the backend database is MySQL, download [MySQL Connector/J](https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.47.tar.gz) 
-and decompress, then copy mysql-connector-java-5.1.47.jar to ${shardingsphere-proxy}\lib directory.
+and decompress, then copy `mysql-connector-java-5.1.47.jar` to `%SHARDINGSPHERE_PROXY_HOME%\lib` directory.
 
 ## 3. Start Server
 
 * Use default configuration to start
 
-```sh
-${shardingsphere-proxy}\bin\start.sh
+```bash
+sh %SHARDINGSPHERE_PROXY_HOME%\bin\start.sh
 ```
 
-* Configure the port
+Default port is `3307`
 
-```sh
-${shardingsphere-proxy}\bin\start.sh ${port}
+* Customize port
+
+```bash
+sh %SHARDINGSPHERE_PROXY_HOME%\bin\start.sh ${port}
+```
+
+## 4. Use ShardingSphere-Proxy
+
+Use MySQL or PostgreSQL client to connect ShardingSphere-Proxy. For example with MySQL:
+
+```bash
+mysql -u${proxy_username} -p${proxy_password} -h${proxy_host} -P${proxy_port}
 ```

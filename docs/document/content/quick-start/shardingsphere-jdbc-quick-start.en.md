@@ -4,7 +4,7 @@ title = "ShardingSphere-JDBC"
 weight = 1
 +++
 
-## 1. Import maven dependency
+## 1. Import Maven Dependency
 
 ```xml
 <dependency>
@@ -16,14 +16,17 @@ weight = 1
 
 Notice: Please change `${latest.release.version}` to the actual version.
 
-## 2. Sharding Rule Configuration
+## 2. Rules Configuration
 
-ShardingSphere-JDBC can be configured by four methods, `Java`, `YAML`, `Spring namespace` and `Spring boot starter`. Developers can choose the suitable method according to different situations. Please refer to [Configuration Manual](/en/manual/shardingsphere-jdbc/configuration/) for more details.
+ShardingSphere-JDBC can be configured by four methods, `Java`, `YAML`, `Spring namespace` and `Spring boot starter`. 
+Developers can choose the suitable method according to different situations. 
+Please refer to [Configuration Manual](/en/manual/shardingsphere-jdbc/configuration/) for more details.
 
-## 3. Create DataSource
+## 3. Create Data Source
 
-Use ShardingDataSourceFactory and rule configuration objects to create ShardingDataSource, which is realized from DataSource,  a standard JDBC interface. Then, users can use native JDBC or JPA, MyBatis and other ORM frameworks to develop.
+Use `ShardingSphereDataSourceFactory` and rule configurations to create `ShardingSphereDataSource`, which implements DataSource interface of JDBC. 
+It can used for native JDBC or JPA, MyBatis and other ORM frameworks.
 
 ```java
-DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, props);
+DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, configurations, props);
 ```
