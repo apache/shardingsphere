@@ -105,9 +105,9 @@ You can get more detail from **[orchestration-example](shardingsphere-jdbc-examp
 
 | Example | Description |
 |---------|-------------|
-| [raw JDBC](shardingsphere-jdbc-example/sharding-example/sharding-raw-jdbc-example) | show how to use shardingsphere-jdbc through raw JDBC |
-| [springBoot JPA](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-jpa-example) | show how to use shardingsphere through SpringBoot JPA |
-| [springBoot mybatis](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-mybatis-example) | use shardingsphere through SpringBoot Mybatis |
+| [raw JDBC](shardingsphere-jdbc-example/sharding-example/sharding-raw-jdbc-example) | show how to use raw JDBC with shardingsphere-jdbc |
+| [springBoot JPA](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-jpa-example) | show how to use SpringBoot JPA with shardingsphere |
+| [springBoot mybatis](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-mybatis-example) | show how to use SpringBoot Mybatis with shardingsphere |
 | [orchestration](shardingsphere-jdbc-example/orchestration-example) | show how to use shardingsphere orchestration |
 | [transaction](shardingsphere-jdbc-example/transaction-example) | show how to use shardingsphere transaction |
 | [hint](shardingsphere-jdbc-example/other-feature-example/hint-example) | show how to use shardingsphere hint |
