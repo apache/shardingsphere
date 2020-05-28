@@ -59,7 +59,7 @@ public class OrchestrationShardingSphereDataSource extends AbstractOrchestration
         super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(DefaultSchema.LOGIC_NAME)));
         ConfigCenter configService = getShardingOrchestrationFacade().getConfigCenter();
         Collection<RuleConfiguration> configurations = configService.loadRuleConfigurations(DefaultSchema.LOGIC_NAME);
-        Preconditions.checkState(null != configurations && !configurations.isEmpty(), "Missing the sharding rule configuration on registry center");
+        Preconditions.checkState(!configurations.isEmpty(), "Missing the sharding rule configuration on registry center");
         Map<String, DataSourceConfiguration> dataSourceConfigurations = configService.loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME);
         dataSource = new ShardingSphereDataSource(DataSourceConverter.getDataSourceMap(dataSourceConfigurations), configurations, configService.loadProperties());
         initShardingOrchestrationFacade();

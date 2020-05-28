@@ -44,7 +44,6 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
@@ -109,7 +108,7 @@ public final class SchemaChangedListener extends PostShardingCenterRepositoryEve
     }
     
     private ShardingOrchestrationEvent createUpdatedEventForExistedSchema(final DataChangedEvent event, final String shardingSchemaName) {
-        return event.getKey().equals(configurationNode.getDataSourcePath(shardingSchemaName)) 
+        return event.getKey().equals(configurationNode.getDataSourcePath(shardingSchemaName))
                 ? createDataSourceChangedEvent(shardingSchemaName, event) : createRuleChangedEvent(shardingSchemaName, event);
     }
     
@@ -124,7 +123,7 @@ public final class SchemaChangedListener extends PostShardingCenterRepositoryEve
     private ShardingOrchestrationEvent createRuleChangedEvent(final String shardingSchemaName, final DataChangedEvent event) {
         return isEncryptRule(event)
                 ? createEncryptRuleChangedEvent(shardingSchemaName, event.getValue()) : isShardingRule(event)
-                    ? createRuleConfigurationsChangedEvent(shardingSchemaName, event.getValue()) : createMasterSlaveRuleChangedEvent(shardingSchemaName, event.getValue());
+                ? createRuleConfigurationsChangedEvent(shardingSchemaName, event.getValue()) : createMasterSlaveRuleChangedEvent(shardingSchemaName, event.getValue());
     }
     
     private boolean isShardingRule(final DataChangedEvent event) {
@@ -166,13 +165,7 @@ public final class SchemaChangedListener extends PostShardingCenterRepositoryEve
     }
     
     private Collection<RuleConfiguration> createRuleConfigurations(final String shardingSchemaName) {
-        if (configurationService.isEncryptRule(shardingSchemaName)) {
-            return Collections.singletonList(configurationService.loadEncryptRuleConfiguration(shardingSchemaName));
-        }
-        if (configurationService.isShardingRule(shardingSchemaName)) {
-            return configurationService.loadRuleConfigurations(shardingSchemaName);
-        }
-        return Collections.singletonList(configurationService.loadMasterSlaveRuleConfiguration(shardingSchemaName));
+        return configurationService.loadRuleConfigurations(shardingSchemaName);
     }
     
     private ShardingOrchestrationEvent createDeletedEvent(final String shardingSchemaName) {
