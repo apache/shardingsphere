@@ -1,7 +1,7 @@
 +++
-pre = "<b>3.3. </b>"
-title = "编排治理"
-weight = 3
+pre = "<b>3.4. </b>"
+title = "分布式治理"
+weight = 4
 chapter = true
 +++
 

@@ -23,7 +23,7 @@ sh %SHARDINGSPHERE_SCALING_HOME%\bin\start.sh
 
 ## 4. 创建迁移任务
 
-通过相应的HTTP接口管理迁移任务。
+通过相应的 HTTP 接口管理迁移任务。
 
 创建迁移任务：
 

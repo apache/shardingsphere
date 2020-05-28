@@ -1,7 +1,7 @@
 +++
-pre = "<b>3.5. </b>"
-title = "SPI"
-weight = 5
+pre = "<b>3.8. </b>"
+title = "Pluggable Architecture"
+weight = 8
 chapter = true
 +++
 
