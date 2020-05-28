@@ -84,8 +84,8 @@ shardingsphere-example
 | Example | Description |
 |---------|-------------|
 | [sharding](shardingsphere-jdbc-example/sharding-example) | show how to use sharding-table\sharding-database\master-slave with shardingsphere-jdbc |
-| [springBoot JPA](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-jpa-example) | show how to use SpringBoot JPA with shardingsphere |
-| [springBoot mybatis](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-mybatis-example) | show how to use SpringBoot Mybatis with shardingsphere |
+| [springboot JPA](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-jpa-example) | show how to use SpringBoot JPA with shardingsphere |
+| [springboot mybatis](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-mybatis-example) | show how to use SpringBoot Mybatis with shardingsphere |
 | [orchestration](shardingsphere-jdbc-example/orchestration-example) | show how to use shardingsphere orchestration |
 | [transaction](shardingsphere-jdbc-example/transaction-example) | show how to use shardingsphere transaction |
 | [hint](shardingsphere-jdbc-example/other-feature-example/hint-example) | show how to use shardingsphere hint |
