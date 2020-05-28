@@ -9,7 +9,7 @@ weight = 2
 
 ![XA事务实现原理](https://shardingsphere.apache.org/document/current/img/transaction/2pc-xa-transaction-design.png)
 
-## 开启XA全局事务
+## 开启全局事务
 
 收到接入端的 `set autoCommit=0` 时，`XAShardingTransactionManager` 将调用具体的 XA 事务管理器开启 XA 全局事务，以 XID 的形式进行标记。
 
@@ -29,7 +29,7 @@ XAResource1.end               ## 提交阶段执行
 
 示例中的 `sql1` 和 `sql2` 将会被标记为 XA 事务。
 
-## 提交或回滚 XA 事务
+## 提交或回滚事务
 
 `XAShardingTransactionManager` 在接收到接入端的提交命令后，会委托实际的 XA 事务管理进行提交动作，
 事务管理器将收集到的当前线程中所有注册的 XAResource，并发送 `XAResource.end` 指令，用以标记此 XA 事务边界。
