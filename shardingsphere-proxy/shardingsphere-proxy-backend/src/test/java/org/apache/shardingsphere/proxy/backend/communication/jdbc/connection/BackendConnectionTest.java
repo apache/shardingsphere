@@ -30,6 +30,7 @@ import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts.JDBCBackendDataSource;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -263,5 +264,15 @@ public final class BackendConnectionTest {
         BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
         transactionManager.begin();
         backendConnection.setCurrentSchema("newSchema");
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    @After
+    public void clean() {
+        Field field = ProxySchemaContexts.getInstance().getClass().getDeclaredField("backendDataSource");
+        field.setAccessible(true);
+        Class<?> clazz = field.getType();
+        Object datasource = clazz.getDeclaredConstructors()[0].newInstance(ProxySchemaContexts.getInstance());
+        field.set(ProxySchemaContexts.getInstance(), datasource);
     }
 }
