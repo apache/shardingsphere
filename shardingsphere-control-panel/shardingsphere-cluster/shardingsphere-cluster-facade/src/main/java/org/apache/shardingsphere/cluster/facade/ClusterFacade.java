@@ -87,7 +87,7 @@ public final class ClusterFacade {
     
     private void buildDataSourceState(final String schemaName, final Collection<HeartbeatResult> heartbeatResults,
                        final Map<String, DataSourceState> dataSourceStateMap, final InstanceState instanceState) {
-        heartbeatResults.stream().forEach(each -> {
+        heartbeatResults.forEach(each -> {
             String dataSourceName = Joiner.on(".").join(schemaName, each.getDataSourceName());
             DataSourceState dataSourceState = null == instanceState.getDataSources()
                     || null == instanceState.getDataSources().get(dataSourceName) ? new DataSourceState()

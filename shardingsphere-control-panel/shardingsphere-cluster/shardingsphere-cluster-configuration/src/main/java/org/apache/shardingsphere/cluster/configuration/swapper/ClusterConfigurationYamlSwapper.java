@@ -32,12 +32,13 @@ public final class ClusterConfigurationYamlSwapper implements YamlSwapper<YamlCl
     public YamlClusterConfiguration swap(final ClusterConfiguration clusterConfiguration) {
         final YamlClusterConfiguration yamlClusterConfiguration = new YamlClusterConfiguration();
         final YamlHeartbeatConfiguration yamlHeartBeatConfiguration = new YamlHeartbeatConfiguration();
-        yamlHeartBeatConfiguration.setSql(clusterConfiguration.getHeartbeat().getSql());
-        yamlHeartBeatConfiguration.setInterval(clusterConfiguration.getHeartbeat().getInterval());
-        yamlHeartBeatConfiguration.setRetryEnable(clusterConfiguration.getHeartbeat().getRetryEnable());
-        yamlHeartBeatConfiguration.setRetryMaximum(clusterConfiguration.getHeartbeat().getRetryMaximum());
-        yamlHeartBeatConfiguration.setRetryInterval(clusterConfiguration.getHeartbeat().getRetryInterval());
-        yamlHeartBeatConfiguration.setThreadCount(clusterConfiguration.getHeartbeat().getThreadCount());
+        HeartbeatConfiguration heartbeat = clusterConfiguration.getHeartbeat();
+        yamlHeartBeatConfiguration.setSql(heartbeat.getSql());
+        yamlHeartBeatConfiguration.setInterval(heartbeat.getInterval());
+        yamlHeartBeatConfiguration.setRetryEnable(heartbeat.getRetryEnable());
+        yamlHeartBeatConfiguration.setRetryMaximum(heartbeat.getRetryMaximum());
+        yamlHeartBeatConfiguration.setRetryInterval(heartbeat.getRetryInterval());
+        yamlHeartBeatConfiguration.setThreadCount(heartbeat.getThreadCount());
         yamlClusterConfiguration.setHeartbeat(yamlHeartBeatConfiguration);
         return yamlClusterConfiguration;
     }
@@ -46,12 +47,13 @@ public final class ClusterConfigurationYamlSwapper implements YamlSwapper<YamlCl
     public ClusterConfiguration swap(final YamlClusterConfiguration yamlConfiguration) {
         final ClusterConfiguration clusterConfiguration = new ClusterConfiguration();
         final HeartbeatConfiguration heartBeatConfiguration = new HeartbeatConfiguration();
-        heartBeatConfiguration.setSql(yamlConfiguration.getHeartbeat().getSql());
-        heartBeatConfiguration.setInterval(yamlConfiguration.getHeartbeat().getInterval());
-        heartBeatConfiguration.setRetryEnable(yamlConfiguration.getHeartbeat().getRetryEnable());
-        heartBeatConfiguration.setRetryMaximum(yamlConfiguration.getHeartbeat().getRetryMaximum());
-        heartBeatConfiguration.setRetryInterval(yamlConfiguration.getHeartbeat().getRetryInterval());
-        heartBeatConfiguration.setThreadCount(yamlConfiguration.getHeartbeat().getThreadCount());
+        YamlHeartbeatConfiguration heartbeat = yamlConfiguration.getHeartbeat();
+        heartBeatConfiguration.setSql(heartbeat.getSql());
+        heartBeatConfiguration.setInterval(heartbeat.getInterval());
+        heartBeatConfiguration.setRetryEnable(heartbeat.getRetryEnable());
+        heartBeatConfiguration.setRetryMaximum(heartbeat.getRetryMaximum());
+        heartBeatConfiguration.setRetryInterval(heartbeat.getRetryInterval());
+        heartBeatConfiguration.setThreadCount(null == heartbeat.getThreadCount() ? Runtime.getRuntime().availableProcessors() << 1 : heartbeat.getThreadCount());
         clusterConfiguration.setHeartbeat(heartBeatConfiguration);
         return clusterConfiguration;
     }
