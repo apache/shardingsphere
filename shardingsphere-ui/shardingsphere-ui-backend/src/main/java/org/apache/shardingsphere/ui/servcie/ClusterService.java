@@ -15,12 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cluster.state.enums;
+package org.apache.shardingsphere.ui.servcie;
+
+import org.apache.shardingsphere.cluster.state.InstanceState;
+
+import java.util.Map;
 
 /**
- * Node state.
+ * Cluster service.
  */
-public enum NodeState {
+public interface ClusterService {
     
-    ONLINE, INTERRUPT, OFFLINE, DISABLED, UNKNOWN;
+    /**
+     * Load all instance states.
+     *
+     * @return all instance states
+     */
+    Map<String, InstanceState> loadAllInstanceStates();
 }
