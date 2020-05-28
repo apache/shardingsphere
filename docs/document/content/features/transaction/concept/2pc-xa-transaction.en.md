@@ -5,10 +5,10 @@ weight = 1
 +++
 
 2PC transaction submit uses the [DTP Model](http://pubs.opengroup.org/onlinepubs/009680699/toc.pdf) defined by X/OPEN, 
-in which created `AP`(Application Program), `TM`(Transaction Manager) and `RM`(Resource Manager) can guarantee a high transaction consistency.
-`TM` and `RM` use XA protocol for bidirectional streaming. 
+in which created AP (Application Program), TM (Transaction Manager) and RM (Resource Manager) can guarantee a high transaction consistency.
+TM and RM use XA protocol for bidirectional streaming. 
 Compared with traditional local transactions, XA transactions have a prepare phase, where the database can not only passively receive commands, but also notify the submitter whether the transaction can be accepted. 
-`TM` can collect all the prepare results of branch transactions before submitting all of them together, which has guaranteed the distributed consistency.
+TM can collect all the prepare results of branch transactions before submitting all of them together, which has guaranteed the distributed consistency.
 
 ![2PC XA model](https://shardingsphere.apache.org/document/current/img/transaction/2pc-tansaction-modle.png)
 
