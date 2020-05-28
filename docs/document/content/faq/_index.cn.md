@@ -9,7 +9,7 @@ chapter = true
 
 回答：
 
-在Sharding-Proxy以及Sharding-JDBC 1.5.0版本之后提供了`sql.show`的配置，可以将解析上下文和改写后的SQL以及最终路由至的数据源的细节信息全部打印至info日志。
+在ShardingSphere-Proxy以及ShardingSphere-JDBC 1.5.0版本之后提供了`sql.show`的配置，可以将解析上下文和改写后的SQL以及最终路由至的数据源的细节信息全部打印至info日志。
 `sql.show`配置默认关闭，如果需要请通过配置开启。
 
 ## 2. 阅读源码时为什么会出现编译错误?
@@ -18,7 +18,7 @@ chapter = true
 
 ShardingSphere使用lombok实现极简代码。关于更多使用和安装细节，请参考[lombok官网](https://projectlombok.org/download.html)。
 
-sharding-orchestration-reg模块需要先执行`mvn install`命令，根据protobuf文件生成gRPC相关的java文件。
+shardingsphere-orchestration-reg模块需要先执行`mvn install`命令，根据protobuf文件生成gRPC相关的java文件。
 
 ## 3. 使用Spring命名空间时找不到xsd?
 
@@ -26,7 +26,7 @@ sharding-orchestration-reg模块需要先执行`mvn install`命令，根据proto
 
 Spring命名空间使用规范并未强制要求将xsd文件部署至公网地址，但考虑到部分用户的需求，我们也将相关xsd文件部署至ShardingSphere官网。
 
-实际上sharding-jdbc-spring-namespace的jar包中META-INF\spring.schemas配置了xsd文件的位置：META-INF\namespace\sharding.xsd和META-INF\namespace\master-slave.xsd，只需确保jar包中该文件存在即可。
+实际上shardingsphere-jdbc-spring-namespace的jar包中META-INF\spring.schemas配置了xsd文件的位置：META-INF\namespace\sharding.xsd和META-INF\namespace\master-slave.xsd，只需确保jar包中该文件存在即可。
 
 ## 4. Cloud not resolve placeholder ... in string value ...异常的解决方法?
 
@@ -166,7 +166,7 @@ ShardingSphere采用snowflake算法作为默认的分布式自增主键策略，
 
 而snowflake算法的最后4位是在同一毫秒内的访问递增值。因此，如果毫秒内并发度不高，最后4位为零的几率则很大。因此并发度不高的应用生成偶数主键的几率会更高。
 
-在3.1.0版本中，尾数大多为偶数的问题已彻底解决，参见：https://github.com/sharding-sphere/sharding-sphere/issues/1617
+在3.1.0版本中，尾数大多为偶数的问题已彻底解决，参见：https://github.com/apache/shardingsphere/issues/1617
 
 ## 13. Windows环境下，通过Git克隆ShardingSphere源码时为什么提示文件名过长，如何解决？
 
@@ -189,17 +189,17 @@ git config --global core.longpaths true
 https://docs.microsoft.com/zh-cn/windows/desktop/FileIO/naming-a-file
 https://ourcodeworld.com/articles/read/109/how-to-solve-filename-too-long-error-in-git-powershell-and-github-application-for-windows
 
-## 14. Windows环境下，运行Sharding-Proxy，找不到或无法加载主类 org.apache.shardingshpere.shardingproxy.Bootstrap，如何解决？
+## 14. Windows环境下，运行ShardingSphere-Proxy，找不到或无法加载主类 org.apache.shardingsphere.proxy.Bootstrap，如何解决？
 
 回答：
 
-某些解压缩工具在解压Sharding-Proxy二进制包时可能将文件名截断，导致找不到某些类。
+某些解压缩工具在解压ShardingSphere-Proxy二进制包时可能将文件名截断，导致找不到某些类。
 
 解决方案：
 
 打开cmd.exe并执行下面的命令：
 ```
-tar zxvf apache-shardingsphere-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz
+tar zxvf apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz
 ```
 
 ## 15. Type is required 异常的解决方法?
@@ -245,28 +245,28 @@ ShardingSphere中很多功能实现类的加载方式是通过[SPI](https://shar
 2. 将配置项`allow.range.query.with.inline.sharding`设置为true即可（默认为false）。
 3. 需要注意的是，此时所有的范围查询将会使用广播的方式查询每一个分表。
 
-## 20. 为什么配置了某个数据连接池的spring-boot-starter（比如druid）和sharding-jdbc-spring-boot-starter时，系统启动会报错？
+## 20. 为什么配置了某个数据连接池的spring-boot-starter（比如druid）和shardingsphere-jdbc-spring-boot-starter时，系统启动会报错？
 
 回答：
 
-1. 因为数据连接池的starter（比如druid）可能会先加载并且其创建一个默认数据源，这将会使得sharding-jdbc创建数据源时发生冲突。
+1. 因为数据连接池的starter（比如druid）可能会先加载并且其创建一个默认数据源，这将会使得ShardingSphere-JDBC创建数据源时发生冲突。
 2. 解决办法为，去掉数据连接池的starter即可，sharing-jdbc自己会创建数据连接池。
 
-## 21. 在使用sharing-proxy的时候，如何动态在sharding-ui上添加新的logic schema？
+## 21. 在使用sharing-proxy的时候，如何动态在ShardingSphere-UI上添加新的logic schema？
 
 回答：
 
 1. 4.1.0之前的版本不支持动态添加或删除logic schema的功能，例如一个proxy启动的时候有2个logic schema，就会一直持有这2个schema，只能感知这两个schema内部的表和rule的变更事件。
-2. 4.1.0版本支持在sharding-ui或直接在zookeeper上增加新的logic schema，删除logic schema的功能计划在5.0.0版本支持。
+2. 4.1.0版本支持在ShardingSphere-UI或直接在zookeeper上增加新的logic schema，删除logic schema的功能计划在5.0.0版本支持。
 
-## 22. 在使用sharing-proxy时，怎么使用合适的工具连接到proxy？
+## 22. 在使用ShardingSphere-Proxy时，怎么使用合适的工具连接到ShardingSphere-Proxy？
 
 回答：
 
-1. sharding-proxy可以看做是一个mysql server，所以首选支持mysql命令连接和操作。
+1. ShardingSphere-Proxy可以看做是一个mysql server，所以首选支持mysql命令连接和操作。
 2. 如果使用其他第三方数据库工具，可能由于不同工具的特定实现导致出现异常。建议选择特定版本的工具或者打开特定参数，例如使用Navicat 11.1.13版本(不建议12.x)，使用IDEA/DataGrip时打开`introspect using JDBC metadata`选项。
 
-## 23. 引入`sharding-transaction-xa-core`后，如何避免spring-boot自动加载默认的JtaTransactionManager？
+## 23. 引入`shardingsphere-transaction-xa-core`后，如何避免spring-boot自动加载默认的JtaTransactionManager？
 
 回答:
 

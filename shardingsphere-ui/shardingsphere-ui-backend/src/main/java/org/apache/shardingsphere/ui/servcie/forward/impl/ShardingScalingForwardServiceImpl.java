@@ -36,13 +36,13 @@ import org.springframework.stereotype.Service;
 @Service
 public final class ShardingScalingForwardServiceImpl implements ShardingScalingForwardService {
     
-    private static final String LIST_JOBS_FORWARD_URL = "http://%s/shardingscaling/job/list";
+    private static final String LIST_JOBS_FORWARD_URL = "http://%s/scaling/job/list";
     
-    private static final String START_JOB_FORWARD_URL = "http://%s/shardingscaling/job/start";
+    private static final String START_JOB_FORWARD_URL = "http://%s/scaling/job/start";
     
-    private static final String PROGRESS_JOB_FORWARD_URL = "http://%s/shardingscaling/job/progress/%d";
+    private static final String PROGRESS_JOB_FORWARD_URL = "http://%s/scaling/job/progress/%d";
     
-    private static final String STOP_JOB_FORWARD_URL = "http://%s/shardingscaling/job/stop";
+    private static final String STOP_JOB_FORWARD_URL = "http://%s/scaling/job/stop";
     
     @Autowired
     private ForwardServiceConfigsRepository forwardServiceConfigsRepository;

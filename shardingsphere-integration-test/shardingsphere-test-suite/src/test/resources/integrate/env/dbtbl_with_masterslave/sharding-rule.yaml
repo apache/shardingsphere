@@ -15,7 +15,8 @@
 # limitations under the License.
 #
 
-shardingRule:
+rules:
+- !SHARDING
   tables:
     config:
       actualDataNodes: db_ms_${0..9}.t_config
@@ -49,7 +50,7 @@ shardingRule:
   bindingTables:
     - t_order,t_order_item
 
-masterSlaveRule:
+- !MASTER_SLAVE
   dataSources:
     db_ms_0:
       masterDataSourceName: master_db_0

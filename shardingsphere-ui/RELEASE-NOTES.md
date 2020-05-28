@@ -3,12 +3,12 @@
 ### New Features
 
 1. Add a start.bat to launch for shardingsphere-ui distribution module in Windows
-1. The work flow and roadmap of sharding-scaling
+1. The work flow and roadmap of ShardingSphere-Scaling
 
 ### Enhancements
 
-1. sharding-ui-frontend config file problem
-1. The enhancement for the first version sharding-scaling-ui
+1. shardingsphere-ui-frontend config file problem
+1. The enhancement for the first version shardingsphere-scaling-UI
 1. Fix link of build status
 1. Fix ui login Chinese text
 1. Add sharding scaling API document
@@ -25,7 +25,7 @@
 
 ### New Features
 
-1. Sharding-ui-frontend multilingual support
+1. shardingsphere-ui-frontend multilingual support
 1. Optimize the running time of UI unit test
 1. Support data migration function
 
@@ -44,15 +44,15 @@
 ### New Features
 
 1. Merge OpenShardingUI features
-1. Sharding-ui-backend support spring-boot-maven-plugin plugin
+1. shardingsphere-ui-backend support spring-boot-maven-plugin plugin
 
 ### Enhancements
 
 1. Solving npm run build error reporting problem
-1. Improving sharding-ui-frontend details modification
-1. Sharding-ui-frontend optimization
-1. Check Sharding-UI License
-1. Remove unnecessary checkstate & refactor code
+1. Improving shardingsphere-ui-frontend details modification
+1. shardingsphere-ui-frontend optimization
+1. Check shardingsphere-UI License
+1. Remove unnecessary check state & refactor code
 
 ### Bug Fixes
 

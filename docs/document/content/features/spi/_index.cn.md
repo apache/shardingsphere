@@ -27,7 +27,7 @@ SQL解析的接口用于规定用于解析SQL的ANTLR语法文件。
 
 ### 数据库协议
 
-数据库协议的接口用于Sharding-Proxy解析与适配访问数据库的协议。
+数据库协议的接口用于ShardingSphere-Proxy解析与适配访问数据库的协议。
 
 主要接口是`DatabaseProtocolFrontendEngine`，其内置实现类有`MySQLProtocolFrontendEngine`和`PostgreSQLProtocolFrontendEngine`。
 

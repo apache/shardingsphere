@@ -30,30 +30,21 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>shardingsphere-spi</module>
-        
         <module>shardingsphere-sql-parser</module>
-        <module>shardingsphere-database-protocol</module>
-        <module>shardingsphere-underlying</module>
+        <module>shardingsphere-db-protocol</module>
+        <module>shardingsphere-infra</module>
+        <module>shardingsphere-kernal</module>
         
-        <module>sharding-core</module>
-        <module>encrypt-core</module>
+        <module>shardingsphere-jdbc</module>
+        <module>shardingsphere-proxy</module>
         
-        <module>sharding-jdbc</module>
-        <module>sharding-proxy</module>
-        <module>sharding-scaling</module>
+        <module>shardingsphere-features</module>
+        <module>shardingsphere-scaling</module>
+        <module>shardingsphere-transaction</module>
+        <module>shardingsphere-control-panel</module>
         
-        <module>sharding-transaction</module>
-        <module>sharding-orchestration</module> 
-        <module>sharding-opentracing</module>
-        <module>sharding-metrics</module>
-        
-        <module>sharding-spring</module>
-        
-        <module>sharding-distribution</module>
         <module>shardingsphere-integration-test</module>
-        <module>shadow-core</module>
-        <module>master-slave-core</module>
+        <module>shardingsphere-distribution</module>
     </modules>
     
     <properties>
@@ -137,6 +128,7 @@
         <taglist-maven-plugin.version>2.4</taglist-maven-plugin.version>
         <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
         <dockerfile-maven.version>1.4.6</dockerfile-maven.version>
+        <docker-compose-maven-plugin.version>2.3.0</docker-compose-maven-plugin.version>
         
         <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
         <maven.deploy.skip>false</maven.deploy.skip>
@@ -654,6 +646,11 @@
                     <groupId>com.spotify</groupId>
                     <artifactId>dockerfile-maven-plugin</artifactId>
                     <version>${dockerfile-maven.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.dkanejs.maven.plugins</groupId>
+                    <artifactId>docker-compose-maven-plugin</artifactId>
+                    <version>${docker-compose-maven-plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>

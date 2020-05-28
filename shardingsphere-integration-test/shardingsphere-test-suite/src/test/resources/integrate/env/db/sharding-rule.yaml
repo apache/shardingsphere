@@ -15,7 +15,8 @@
 # limitations under the License.
 #
 
-shardingRule:
+rules:
+- !SHARDING
   tables:
     t_order:
       actualDataNodes: db_${0..9}.t_order

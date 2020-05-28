@@ -170,6 +170,7 @@ export default {
       inputPlaceholder: '请输入内容'
     },
     schema: {
+      title: '添加Schema',
       name: '名称',
       ruleConfig: '分片配置规则',
       dataSourceConfig: '数据源配置规则'
@@ -193,7 +194,7 @@ export default {
       status: '状态',
       operate: '操作',
       operateStop: '停止',
-      operateSee: 'see'
+      operateSee: '查看'
     },
     registDialog: {
       title: '添加一个任务',
@@ -201,9 +202,9 @@ export default {
       target: '目标',
       jobCount: '任务数量',
       jobCountPlaceholder: '请输入任务数量',
-      username: 'Username',
+      username: '用户名',
       usernamePlaceholder: '请输入用户名',
-      password: 'Password',
+      password: '密码',
       passwordPlaceholder: '请输入密码',
       url: '地址',
       urlPlaceholder: '请输入 url',
@@ -223,9 +224,11 @@ export default {
       delFailMessage: '删除失败'
     },
     serviceDialog: {
-      serviceName: '请输入服务名称',
-      serviceType: '请输入服务类型',
-      serviceUrl: '请输入服务地址'
+      title: '数据扩容配置',
+      serviceName: '服务名称',
+      serviceUrl: '服务地址',
+      serviceNamePlaceholder: '请输入服务名称',
+      serviceUrlPlaceholder: '请输入服务地址'
     }
   }
 }

@@ -384,7 +384,6 @@ explainableStatement
     : select | tableStatement | delete | insert | replace | update
     ;
 
-
 formatName
     : 'TRADITIONAL' | JSON | 'TREE'
     ;

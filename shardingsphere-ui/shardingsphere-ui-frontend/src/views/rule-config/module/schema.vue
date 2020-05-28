@@ -72,7 +72,10 @@
         <el-button type="primary" @click="onConfirm">{{ $t('btn.submit') }}</el-button>
       </span>
     </el-dialog>
-    <el-dialog :visible.sync="addSchemaDialogVisible" title="Add Schema" width="80%" top="3vh">
+    <el-dialog 
+      :visible.sync="addSchemaDialogVisible" 
+      :title="$t('ruleConfig.schema.title')"
+      width="80%" top="3vh">
       <el-form ref="form" :model="form" :rules="rules" label-width="170px">
         <el-form-item :label="$t('ruleConfig.schema.name')" prop="name">
           <el-input
@@ -180,7 +183,43 @@ export default {
           }
         }
       )
-      const DS_SCHEMA = yaml.Schema.create(dsYamlType)
+      const shardingYamlType = new yaml.Type(
+        '!SHARDING',
+        {
+          kind: 'mapping',
+          construct(data) {
+            return data !== null ? data : {}
+          }
+        }
+      )
+      const encryptYamlType = new yaml.Type(
+        '!ENCRYPT',
+        {
+          kind: 'mapping',
+          construct(data) {
+            return data !== null ? data : {}
+          }
+        }
+      )
+      const masterSlaveYamlType = new yaml.Type(
+        '!MASTER_SLAVE',
+        {
+          kind: 'mapping',
+          construct(data) {
+            return data !== null ? data : {}
+          }
+        }
+      )
+      const shadowYamlType = new yaml.Type(
+        '!SHADOW',
+        {
+          kind: 'mapping',
+          construct(data) {
+            return data !== null ? data : {}
+          }
+        }
+      )
+      const DS_SCHEMA = yaml.Schema.create([dsYamlType, shardingYamlType, encryptYamlType, masterSlaveYamlType, shadowYamlType])
       return JSON.stringify(
         yaml.load(this.textarea, { schema: DS_SCHEMA }),
         null,

@@ -15,30 +15,32 @@
 # limitations under the License.
 #
 
-shadowRule:
+rules:
+- !SHADOW
   column: shadow
   shadowMappings:
     db: shadow_db
-  shardingRule:
-    tables:
-      t_order_item:
-        actualDataNodes: db.t_order_item
-        databaseStrategy:
-          standard:
-            shardingColumn: item_id
-            shardingAlgorithm:
-              type: INLINE
-              props:
-                algorithm.expression: db
-        tableStrategy:
-          standard:
-            shardingColumn: item_id
-            shardingAlgorithm:
-              type: INLINE
-              props:
-                algorithm.expression: t_order_item
-        keyGenerator:
-          type: Constant
-          column: item_id
-    defaultTableStrategy:
-      none:
+
+- !SHARDING
+  tables:
+    t_order_item:
+      actualDataNodes: db.t_order_item
+      databaseStrategy:
+        standard:
+          shardingColumn: item_id
+          shardingAlgorithm:
+            type: INLINE
+            props:
+              algorithm.expression: db
+      tableStrategy:
+        standard:
+          shardingColumn: item_id
+          shardingAlgorithm:
+            type: INLINE
+            props:
+              algorithm.expression: t_order_item
+      keyGenerator:
+        type: Constant
+        column: item_id
+  defaultTableStrategy:
+    none:

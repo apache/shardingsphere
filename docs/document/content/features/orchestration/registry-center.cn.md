@@ -24,7 +24,7 @@ datasources
     ├──ds1
     ├──....
 ```
-Sharding-Proxy支持多逻辑数据源，因此datasources子节点的名称采用schema_name.data_source_name的形式。
+ShardingSphere-Proxy支持多逻辑数据源，因此datasources子节点的名称采用schema_name.data_source_name的形式。
 ```
 instances
     ├──your_instance_ip_a@-@your_instance_pid_x

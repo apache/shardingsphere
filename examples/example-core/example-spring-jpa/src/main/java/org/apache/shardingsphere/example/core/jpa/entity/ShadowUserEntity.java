@@ -25,7 +25,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "t_user")
+@Table(name = "t_shadow_user")
 public final class ShadowUserEntity extends ShadowUser {
     
     private static final long serialVersionUID = -3708998745561667721L;
@@ -43,23 +43,12 @@ public final class ShadowUserEntity extends ShadowUser {
         return super.getUserName();
     }
     
-    @Column(name = "user_name_plain")
-    @Override
-    public String getUserNamePlain() {
-        return super.getUserNamePlain();
-    }
-    
     @Column(name = "pwd")
     @Override
     public String getPwd() {
         return super.getPwd();
     }
     
-    @Column(name = "assisted_query_pwd")
-    @Override
-    public String getAssistedQueryPwd() {
-        return super.getAssistedQueryPwd();
-    }
     
     @Column(name = "shadow")
     @Override

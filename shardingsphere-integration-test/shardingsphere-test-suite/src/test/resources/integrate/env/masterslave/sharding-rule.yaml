@@ -15,7 +15,8 @@
 # limitations under the License.
 #
 
-masterSlaveRule:
+rules:
+- !MASTER_SLAVE
   dataSources:
     master-slave-ds: 
       name: master-slave-ds

@@ -21,8 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.core.SQLParserConfigurationRegistry;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatementType;
@@ -41,12 +41,7 @@ public final class ParseTreeVisitorFactory {
      * @return parse tree visitor
      */
     public static ParseTreeVisitor newInstance(final String databaseTypeName, final VisitorRule visitorRule) {
-        for (SQLParserConfiguration each : ShardingSphereServiceLoader.newServiceInstances(SQLParserConfiguration.class)) {
-            if (each.getDatabaseTypeName().equals(databaseTypeName)) {
-                return createParseTreeVisitor(each, visitorRule.getType());
-            }
-        }
-        throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseTypeName));
+        return createParseTreeVisitor(SQLParserConfigurationRegistry.getInstance().getSQLParserConfiguration(databaseTypeName), visitorRule.getType());
     }
     
     @SneakyThrows

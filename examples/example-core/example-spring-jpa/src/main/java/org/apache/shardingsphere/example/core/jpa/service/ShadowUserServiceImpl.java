@@ -28,7 +28,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service("shadow")
+@Service("shadowExample")
 public class ShadowUserServiceImpl implements ExampleService {
     
     @Resource

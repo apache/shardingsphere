@@ -1,7 +1,7 @@
 +++
-pre = "<b>3.3.4. </b>"
+pre = "<b>3.3.5. </b>"
 title = "APM Integration"
-weight = 4
+weight = 5
 +++
 
 ## Background
@@ -55,13 +55,13 @@ No matter in which way, it is convenient to demonstrate APM information in the  
 
 ### Application Architecture
 
-Use `Sharding-Proxy` to visit two databases, `192.168.0.1:3306` and `192.168.0.2:3306`, and there are two tables in each one of them.
+Use `ShardingSphere-Proxy` to visit two databases, `192.168.0.1:3306` and `192.168.0.2:3306`, and there are two tables in each one of them.
 
 ### Topology
 
 ![The topology diagram](https://shardingsphere.apache.org/document/current/img/apm/5x_topology.png)
 
-It can be seen from the picture that the user has accessed Sharding-Proxy 18 times, with each database twice each time. It is because two tables in each database are accessed each time, so there are totally four tables accessed each time.
+It can be seen from the picture that the user has accessed ShardingSphere-Proxy 18 times, with each database twice each time. It is because two tables in each database are accessed each time, so there are totally four tables accessed each time.
 
 ### Tracking Data
 
