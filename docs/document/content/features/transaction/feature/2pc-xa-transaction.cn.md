@@ -1,6 +1,6 @@
 +++
 pre = "<b>3.4.2.2 </b>"
-title = "两阶段事务-XA"
+title = "XA两阶段事务"
 weight = 2
 +++
 

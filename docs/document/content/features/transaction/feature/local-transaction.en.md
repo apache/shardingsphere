@@ -4,7 +4,7 @@ title = "Local Transaction"
 weight = 1
 +++
 
-## Function
+## Features
 
 * Fully support none-cross-database transactions, for example,  sharding table or sharding database with its route result in one database.
 
