@@ -347,4 +347,32 @@
             </and-predicate>
         </where>
     </update>
+
+    <update sql-case-id="update_with_column_equal_column" >
+        <table name="t_order" start-index="7" stop-index="13" />
+        <set start-index="15" stop-index="33" literal-stop-index="33">
+            <assignment start-index="19" stop-index="33" literal-stop-index="33">
+                <column name="status" start-index="19" stop-index="24" />
+                <assignment-value>
+                    <common-expression text="status" literal-text="status" start-index="28" stop-index="33" literal-start-index="28" literal-stop-index="33"/>
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="35" stop-index="79" literal-start-index="35" literal-stop-index="79">
+            <and-predicate>
+                <predicate start-index="41" stop-index="59" literal-start-index="41" literal-stop-index="59">
+                    <column-left-value name="order_id" start-index="41" stop-index="48" literal-start-index="41" literal-stop-index="48" />
+                    <operator type="=" />
+                    <column-right-value start-index="52" stop-index="59" name="order_id" />
+                </predicate>
+                <predicate start-index="65" stop-index="79" literal-start-index="65" literal-stop-index="79">
+                    <column-left-value name="order_id" start-index="65" stop-index="72" literal-start-index="65" literal-stop-index="72" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <literal-expression value="1000" start-index="76" stop-index="79" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </update>
 </sql-parser-test-cases>
