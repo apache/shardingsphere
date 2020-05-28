@@ -4,11 +4,9 @@ title = "ShardingSphere-Scaling(Alpha)"
 weight = 3
 +++
 
-## 快速开始
+## 部署启动
 
-### 部署启动
-
-#### 1. 执行以下命令，编译生成ShardingSphere-Scaling二进制包：
+### 1. 执行以下命令，编译生成ShardingSphere-Scaling二进制包：
 
 ```
 
@@ -19,7 +17,7 @@ mvn clean install -Prelease;
 
 发布包所在目录为：`/shardingsphere-distribution/shardingsphere-scaling-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-scaling-bin.tar.gz`。
 
-#### 2. 解压缩发布包，修改配置文件`conf/server.yaml`，这里主要修改启动端口，保证不与本机其他端口冲突，其他值保持默认即可：
+### 2. 解压缩发布包，修改配置文件`conf/server.yaml`，这里主要修改启动端口，保证不与本机其他端口冲突，其他值保持默认即可：
 
 ```
 port: 8888
@@ -28,7 +26,7 @@ pushTimeout: 1000
 workerThread: 30
 ```
 
-#### 3. 启动ShardingSphere-Scaling：
+### 3. 启动ShardingSphere-Scaling：
 
 ```
 sh bin/start.sh
@@ -39,9 +37,9 @@ sh bin/start.sh
 如果后端连接MySQL数据库，需要下载[MySQL Connector/J](https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.47.tar.gz)，
 解压缩后，将mysql-connector-java-5.1.47.jar拷贝到${shardingsphere-scaling}\lib目录。
 
-#### 4. 查看日志`logs/stdout.log`，确保启动成功。
+### 4. 查看日志`logs/stdout.log`，确保启动成功。
 
-### 创建迁移任务
+## 创建迁移任务
 
 ShardingSphere-Scaling提供相应的HTTP接口来管理迁移任务，部署启动成功后，我们可以调用相应的接口来启动迁移任务。
 
@@ -85,7 +83,7 @@ curl -X POST \
 
 需要注意的是，目前ShardingSphere-Scaling任务创建成功后，便会自动运行，进行数据的迁移。
 
-### 查询任务进度
+## 查询任务进度
 
 执行如下命令获取当前所有迁移任务：
 
@@ -170,7 +168,7 @@ curl -X GET \
 }
 ```
 
-### 结束任务
+## 结束任务
 
 数据迁移完成后，我们可以调用接口结束任务：
 
@@ -194,7 +192,7 @@ curl -X POST \
 }
 ```
 
-### 结束ShardingSphere-Scaling
+## 结束ShardingSphere-Scaling
 
 ```
 sh bin/stop.sh

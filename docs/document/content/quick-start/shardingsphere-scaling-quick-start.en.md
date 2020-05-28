@@ -4,11 +4,9 @@ title = "ShardingSphere-Scaling(Alpha)"
 weight = 3
 +++
 
-## Quick Start
+## Deployment
 
-### Deployment
-
-#### 1. Execute the following command to compile and generate the shardingsphere-scaling binary package:
+### 1. Execute the following command to compile and generate the shardingsphere-scaling binary package:
 
 ```
 git clone https://github.com/apache/shardingsphere.git；
@@ -18,7 +16,7 @@ mvn clean install -Prelease;
 
 The binary package's directory is:`/shardingsphere-distribution/shardingsphere-scaling-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-scaling-bin.tar.gz`。
 
-#### 2. Unzip the distribution package, modify the configuration file `conf/server.yaml`, we should ensure the port does not conflict with others, and other values can be left as default:
+### 2. Unzip the distribution package, modify the configuration file `conf/server.yaml`, we should ensure the port does not conflict with others, and other values can be left as default:
 
 ```
 port: 8888
@@ -27,7 +25,7 @@ pushTimeout: 1000
 workerThread: 30
 ```
 
-#### 3. start up ShardingSphere-Scaling:
+### 3. start up ShardingSphere-Scaling:
 
 ```
 sh bin/start.sh
@@ -38,9 +36,9 @@ sh bin/start.sh
 If the backend database is MySQL, download [MySQL Connector/J](https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.47.tar.gz) 
 and decompress, then copy mysql-connector-java-5.1.47.jar to ${shardingsphere-scaling}\lib directory.
 
-#### 4. See the log file `logs/stdout.log`，ensure successful startup.
+### 4. See the log file `logs/stdout.log`，ensure successful startup.
 
-### Start scaling job
+## Start scaling job
 
 ShardingSphere-Scaling provides a corresponding HTTP interface to manage the migration jobs. We can invoke the appropriate interface to start the migration job.
 
@@ -84,7 +82,7 @@ The following information is returned, indicating that the job was successfully 
 
 It should be noted that, after the ShardingSphere-Scaling's job is successfully created, it will automatically run.
 
-### Get scaling progress
+## Get scaling progress
 
 Run the following command to get all current migration jobs:
 
@@ -169,7 +167,7 @@ Response：
 }
 ```
 
-### Stop scaling job
+## Stop scaling job
 
 After the data migration is over, we can call the interface to end the job:
 
@@ -193,7 +191,7 @@ Response：
 }
 ```
 
-### Shutdown ShardingSphere-Scaling
+## Shutdown ShardingSphere-Scaling
 
 ```
 sh bin/stop.sh
