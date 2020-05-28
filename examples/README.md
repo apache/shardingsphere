@@ -83,13 +83,13 @@ shardingsphere-example
 
 | Example | Description |
 |---------|-------------|
-| [sharding](shardingsphere-jdbc-example/sharding-example) | show how to use sharding-table\sharding-database\master-slave with shardingsphere-jdbc |
-| [springboot JPA](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-jpa-example) | show how to use SpringBoot JPA with shardingsphere |
-| [springboot mybatis](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-mybatis-example) | show how to use SpringBoot Mybatis with shardingsphere |
-| [orchestration](shardingsphere-jdbc-example/orchestration-example) | show how to use shardingsphere orchestration |
-| [transaction](shardingsphere-jdbc-example/transaction-example) | show how to use shardingsphere transaction |
-| [hint](shardingsphere-jdbc-example/other-feature-example/hint-example) | show how to use shardingsphere hint |
-| [encryption](shardingsphere-jdbc-example/other-feature-example/encrypt-example) | show how to use shardingsphere encryption |
-| APM(Pending) | show how to use APM in shardingsphere |
+| [sharding](shardingsphere-jdbc-example/sharding-example) | show how to use sharding-table\sharding-database\master-slave with ShardingSphere-JDBC |
+| [springboot jpa](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-jpa-example) | show how to use SpringBoot JPA with ShardingSphere |
+| [springboot mybatis](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-mybatis-example) | show how to use SpringBoot Mybatis with ShardingSphere |
+| [orchestration](shardingsphere-jdbc-example/orchestration-example) | show how to use ShardingSphere orchestration |
+| [transaction](shardingsphere-jdbc-example/transaction-example) | show how to use ShardingSphere transaction |
+| [hint](shardingsphere-jdbc-example/other-feature-example/hint-example) | show how to use ShardingSphere hint |
+| [encryption](shardingsphere-jdbc-example/other-feature-example/encrypt-example) | show how to use ShardingSphere encryption |
+| APM(Pending) | show how to use APM in ShardingSphere |
 | proxy(Pending) | show how to use sharding proxy |
-| [docker](./docker/docker-compose.md) | show how to use docker to setup the environment for shardingsphere |
+| [docker](./docker/docker-compose.md) | show how to use docker to setup the environment for ShardingSphere |
