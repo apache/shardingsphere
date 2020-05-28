@@ -411,4 +411,40 @@
             </and-predicate>
         </where>
     </update>
+
+    <update sql-case-id="update_with_column_equal_column" parameters="1">
+        <table name="t_order" start-index="7" stop-index="13" />
+        <set start-index="15" stop-index="54" literal-stop-index="54">
+            <assignment start-index="19" stop-index="37" literal-stop-index="37">
+                <column name="order_id" start-index="19" stop-index="26" />
+                <assignment-value>
+                    <common-expression text="order_id" literal-text="order_id" start-index="30" stop-index="37" literal-start-index="30" literal-stop-index="37"/>
+                </assignment-value>
+            </assignment>
+            <assignment start-index="40" stop-index="54" literal-stop-index="54">
+                <column name="status" start-index="40" stop-index="45" />
+                <assignment-value>
+                    <literal-expression value="init" start-index="49" stop-index="54" />
+                    <common-expression text="init" start-index="49" stop-index="54" literal-start-index="49" literal-stop-index="54"/>
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="56" stop-index="97" literal-start-index="56" literal-stop-index="97">
+            <and-predicate>
+                <predicate start-index="62" stop-index="80" literal-start-index="62" literal-stop-index="80">
+                    <column-left-value name="order_id" start-index="62" stop-index="69" literal-start-index="62" literal-stop-index="69" />
+                    <operator type="=" />
+                    <column-right-value start-index="73" stop-index="80" name="order_id" />
+                </predicate>
+                <predicate start-index="86" stop-index="97" literal-start-index="86" literal-stop-index="97">
+                    <column-left-value name="order_id" start-index="86" stop-index="93" literal-start-index="86" literal-stop-index="93" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" start-index="97" stop-index="97" />
+                        <literal-expression value="1" start-index="97" stop-index="97" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </update>
 </sql-parser-test-cases>
