@@ -22,9 +22,11 @@ import org.apache.shardingsphere.cluster.configuration.config.HeartbeatConfigura
 import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResult;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -53,10 +55,11 @@ public final class HeartbeatDetect extends AbstractHeartbeatDetect {
     
     @Override
     protected Boolean detect() {
-        try {
-            PreparedStatement preparedStatement = dataSource.getConnection().prepareStatement(sql);
-            ResultSet result = preparedStatement.executeQuery();
-            return Objects.nonNull(result) && result.next();
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            try (ResultSet result = preparedStatement.executeQuery()) {
+                return Objects.nonNull(result) && result.next();
+            }
         } catch (SQLException ex) {
             log.error("Heart beat detect error", ex);
         }
