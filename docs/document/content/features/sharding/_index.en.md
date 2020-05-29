@@ -51,4 +51,4 @@ Troubles brought by distributed transactions can be avoided by the wise use of d
 
 ## Goal
 
-**The main design goal of the data sharding modular of ShardingSphere is to try to reduce the influence of sharding, in order to let users use horizontal sharding database group like one database.**
+**The main design goal of the data sharding modular of Apache ShardingSphere is to try to reduce the influence of sharding, in order to let users use horizontal sharding database group like one database.**
