@@ -5,6 +5,14 @@ weight = 4
 chapter = true
 +++
 
-## Navigation
+## Background
 
-Provide governance of config/registry/metadata center, dynamic configuration, database & application disabling, and APM.
+TODO
+
+## Challenges
+
+TODO
+
+## Goal
+
+TODO 
