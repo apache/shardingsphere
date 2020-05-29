@@ -7,13 +7,10 @@ ShardingSphere supports multiple dialects of SQL using different parsers. For sp
 
 ## Specific SQL dialect parser
 
-- PostgreSQL parser
-
-- MySQL parser
-
-- Oracle parser
-
-- SQLServer parser
+* PostgreSQL parser
+* MySQL parser
+* Oracle parser
+* SQLServer parser
 
 Note: MySQL parser supports MySQL, H2, and MariDB dialect.
 

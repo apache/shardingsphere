@@ -6,23 +6,22 @@ chapter = true
 +++
 
 ## Background
+ 
+Apache ShardingSphere provides data sharding capability, which can split data to different databases.
 
-The storage and computing ability of stand-alone database is limited. For improving these abilities, ShardingSphere provides sharding capability, which can distribute data across different databases.
-
-For applications that have been running with stand-alone database, there is a problem how to migrate data to sharding data nodes safely and simply.
-
-And for some applications which have used ShardingSphere, the rapid growth of data may also cause a single data node or even the entire data nodes to reach a bottleneck.
-How to expand their data nodes for ShardingSphere cluster also became a problem.
+For applications that have been running with stand-alone database, there is a problem how to migrate data to sharding data nodes safely and simply;
+For some applications which have used Apache ShardingSphere, the rapid growth of data may also cause a single data node or even the entire data nodes to reach a bottleneck.
+How to expand their data nodes for Apache ShardingSphere cluster also became a problem.
 
 ## Introduction
 
-ShardingSphere-Scaling is a common solution for migrating data to ShardingSphere or scaling data in ShardingSphere since **4.1.0**.
+ShardingSphere-Scaling is a common solution for migrating or scaling data in Apache ShardingSphere since **4.1.0**.
 
 ![Scaling Overview](https://shardingsphere.apache.org/document/current/img/scaling/scaling-overview.en.png)
 
 ## Challenges
 
-ShardingSphere provides users with great freedom in sharding strategies and algorithms, but it gives a great challenge to scaling.
+Apache ShardingSphere provides users with great freedom in sharding strategies and algorithms, but it gives a great challenge to scaling.
 So it's the first challenge that how to find a way can support kinds of sharding strategies and algorithms and scale data nodes efficiently.
 
 What's more, During the scaling process, it should not affect the running applications. 
@@ -32,10 +31,10 @@ Finally, scaling should not affect the existing data. How to ensure the availabi
 
 ## Goal
 
-The main design goal of sharding scaling is providing a common ShardingSphere scaling solution which can support kinds of sharding strategies and reduce the impact as much as possible during scaling.
+The main design goal of sharding scaling is providing a common Apache ShardingSphere scaling solution which can support kinds of sharding strategies and reduce the impact as much as possible during scaling.
 
 ## Status
 
-current is in alpha development.
+current is in **alpha** development.
 
-![Roadmap](https://shardingsphere.apache.org/document/current/img/scaling/roadmap.en.png) 
+![Roadmap](https://shardingsphere.apache.org/document/current/img/scaling/roadmap.en.png)
