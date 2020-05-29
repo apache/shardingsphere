@@ -24,6 +24,8 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.kernal.context.SchemaContext;
 import org.apache.shardingsphere.kernal.context.SchemaContexts;
+import org.apache.shardingsphere.kernal.context.runtime.RuntimeContext;
+import org.apache.shardingsphere.kernal.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.orchestration.core.common.event.AuthenticationChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
@@ -57,7 +59,10 @@ public final class ShardingSphereProxyContextTest {
     private Map<String, SchemaContext> getSchemaContextMap() {
         Map<String, SchemaContext> result = new HashMap<>(10);
         for (int i = 0; i < 10; i++) {
-            result.put("schema_" + i, mock(SchemaContext.class));
+            String name = "schema_" + i;
+            ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+            RuntimeContext runtimeContext = mock(RuntimeContext.class);
+            result.put(name, new SchemaContext(name, schema, runtimeContext));
         }
         return result;
     }
