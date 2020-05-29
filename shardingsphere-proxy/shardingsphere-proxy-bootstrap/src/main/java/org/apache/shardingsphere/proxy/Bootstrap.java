@@ -75,7 +75,7 @@ public final class Bootstrap {
      * Main entrance.
      *
      * @param args startup arguments
-     * @throws IOException  IO exception
+     * @throws IOException IO exception
      * @throws SQLException SQL exception
      */
     public static void main(final String[] args) throws IOException, SQLException {
