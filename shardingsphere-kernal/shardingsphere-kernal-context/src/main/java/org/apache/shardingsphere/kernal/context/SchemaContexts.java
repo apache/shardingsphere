@@ -21,18 +21,19 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
 public final class SchemaContexts {
     
-    private final Map<String, SchemaContext> schemaContexts = new ConcurrentHashMap<>();
+    private final Map<String, SchemaContext> schemaContexts = new HashMap<>();
     
-    @Setter
     private ConfigurationProperties properties;
     
     @Setter
@@ -56,6 +57,16 @@ public final class SchemaContexts {
      */
     public SchemaContext getDefaultSchemaContext() {
         return schemaContexts.get(DefaultSchema.LOGIC_NAME);
+    }
+    
+    /**
+     * Renew.
+     * 
+     * @param properties properties
+     */
+    public void renew(final ConfigurationProperties properties) {
+        this.properties = properties;
+        new ExecutorKernel(properties.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
     }
     
     /**
