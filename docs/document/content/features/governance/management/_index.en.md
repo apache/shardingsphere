@@ -1,6 +1,6 @@
 +++
 pre = "<b>3.4.1 </b>"
-title = "Governance"
+title = "Management"
 weight = 1
 chapter = true
 +++
@@ -11,5 +11,5 @@ This chapter mainly introduces the features of the distributed governance:
 
 * Config center
 * Registry center
-* Meta data center
+* Metadata center
 * Third-party components dependency

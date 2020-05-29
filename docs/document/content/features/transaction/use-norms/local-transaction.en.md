@@ -1,5 +1,4 @@
 +++
-pre = "<b>3.2.3.1 </b>"
 title = "Local Transaction"
 weight = 1
 +++
