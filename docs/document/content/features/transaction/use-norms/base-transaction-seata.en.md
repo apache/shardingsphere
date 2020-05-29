@@ -5,9 +5,9 @@ weight = 3
 
 ## Supported Items
 
-* Support cross-database transactions after sharding.
-* Support RC isolation level.
-* Rollback transaction according to undo log.
+* Support cross-database transactions after sharding;
+* Support RC isolation level;
+* Rollback transaction according to undo log;
 * Support recovery committing transaction automatically after the service is down.
 
 ## Unsupported Items

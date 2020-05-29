@@ -7,13 +7,10 @@ ShardingSphere使用不同解析器支持SQL多种方言。对于未实现解析
 
 ## 特定SQL方言解析器
 
-- PostgreSQL解析器
-
-- MySQL解析器
-
-- Oracle解析器
-
-- SQLServer解析器
+* PostgreSQL解析器
+* MySQL解析器
+* Oracle解析器
+* SQLServer解析器
 
 注：MySQL解析器支持的方言包括MySQL、H2和MariaDB。
 
