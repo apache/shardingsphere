@@ -105,9 +105,7 @@ GitHub：https://github.com/apache/incubator-shardingsphere
   
 
   
-
-![](https://user-gold-cdn.xitu.io/2020/5/22/1723acc9b1c7d8b9?w=978&h=833&f=webp&s=37366)
-
+![](https://github.com/wubingting/shardingsphere/blob/master/docs/blog/static/img/logo.jpg)
 
 
 
