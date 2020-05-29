@@ -1,6 +1,6 @@
 +++
-pre = "<b>3.4.4. </b>"
-title = "Available Config/Registry/Metadata Center"
+pre = "<b>3.4.1.4. </b>"
+title = "Third-party Components Dependency"
 weight = 4
 +++
 

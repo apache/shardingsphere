@@ -1,10 +1,8 @@
 +++
-pre = "<b>3.4.4. </b>"
-title = "支持的配置/注册/元数据中心"
+pre = "<b>3.4.1.4. </b>"
+title = "第三方组件依赖"
 weight = 4
 +++
-
-## SPI
 
 Apache ShardingSphere 在数据库治理模块使用 SPI 方式载入数据到配置中心/注册/元数据中心，进行实例熔断和数据库禁用。
 目前，Apache ShardingSphere 内部支持 ZooKeeper，Etcd，Apollo 和 Nacos 等常用的配置中心/注册中心。
