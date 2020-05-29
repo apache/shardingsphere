@@ -45,11 +45,11 @@ import java.util.logging.Logger;
  * ShardingSphere data source.
  */
 @Getter
+@Setter
 public final class ShardingSphereDataSource extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
     
-    private final SchemaContexts schemaContexts;
+    private SchemaContexts schemaContexts;
     
-    @Setter
     private PrintWriter logWriter = new PrintWriter(System.out);
     
     public ShardingSphereDataSource(final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configurations, final Properties props) throws SQLException {
