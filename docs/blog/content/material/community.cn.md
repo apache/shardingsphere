@@ -43,11 +43,6 @@ Apache ShardingSphere是19个来自中国的Apache软件基金会项目之一，
 
 Apache ShardingSphere开源将近4年了，它的外部使用相当广泛，目前有100+公司明确的声明正在使用中，并未声明的公司不计其数，无法准确的统计。已经记录在册的公司涵盖了各行各业，有互联网、互联网金融、在线教育、企业服务，甚至还包括政府机关。Apache ShardingSphere和纯粹从社区兴起的项目略有不同，它是由公司捐助到Apache软件基金会的，在公司内部已经被十分广泛的使用，涵盖京东白条、超级账户、城市计算、秒级监控、京东金融云、京东大数据、京东海外商城等很多系统。相对于自由发展的社区，Apache ShardingSphere也需要承载的稳定性的枷锁。
 
-![](data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==)
-
-![](https://user-gold-cdn.xitu.io/2020/5/22/1723acc992511632?w=1080&h=699&f=png&s=57378)
-
-![](https://user-gold-cdn.xitu.io/2020/5/22/1723acc9927ea88c?w=580&h=20&f=gif&s=14741)
 
 ### 04 Apache ShardingSphere 社区数据统计 ###
 
