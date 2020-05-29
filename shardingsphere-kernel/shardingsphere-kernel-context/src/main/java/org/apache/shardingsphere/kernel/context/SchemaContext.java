@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.kernal.context;
+package org.apache.shardingsphere.kernel.context;
 
 import lombok.Getter;
-import org.apache.shardingsphere.kernal.context.runtime.RuntimeContext;
-import org.apache.shardingsphere.kernal.context.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
+import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 
 @Getter
 public final class SchemaContext {

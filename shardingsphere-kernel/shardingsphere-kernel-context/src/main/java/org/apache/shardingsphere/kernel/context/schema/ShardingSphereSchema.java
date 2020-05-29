@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.kernal.context.schema;
+package org.apache.shardingsphere.kernel.context.schema;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;

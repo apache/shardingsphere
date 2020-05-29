@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.kernal.context;
+package org.apache.shardingsphere.kernel.context;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.auth.Authentication;
