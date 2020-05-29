@@ -83,7 +83,7 @@ export default {
       for (const key in data) {
         this.datasource.push({
           name: key,
-          category: this.getCategorie(data[key]),
+          category: 0,
           state: data[key].state,
           speed: '',
           value: [x, 20]
