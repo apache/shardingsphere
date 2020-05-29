@@ -119,3 +119,18 @@ shardingsphere-example
 我们希望最近添加一个docker基础示例。
 
 ### [如何使用docker配置ShardingSphere-JDBC和ShardingSphere-Proxy](./docker/docker-compose.md) (可选)
+
+## 用例列表
+
+| 例子 | 描述 |
+|---------|-------------|
+| [分片](shardingsphere-jdbc-example/sharding-example) | 演示了如何通过 ShardingSphere-JDBC 进行分库、分表、主从等 |
+| [springboot jpa](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-jpa-example) | 演示了如何通过 SpringBoot JPA 对接 ShardingSphere |
+| [springboot mybatis](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-mybatis-example) | 演示了如何通过 SpringBoot Mybatis 对接 ShardingSphere |
+| [orchestration](shardingsphere-jdbc-example/orchestration-example) | 演示了如何在 ShardingSphere 中使用 orchestration |
+| [事务](shardingsphere-jdbc-example/transaction-example) | 演示了如何在 ShardingSphere 中使用事务 |
+| [hint](shardingsphere-jdbc-example/other-feature-example/hint-example) | 演示了如何在 ShardingSphere 中使用 hint |
+| [脱敏](shardingsphere-jdbc-example/other-feature-example/encrypt-example) | 演示了如何在 ShardingSphere 中使用脱敏 |
+| APM监控(Pending) | 演示了如何在 ShardingSphere 中使用 APM 监控 |
+| proxy(Pending) | 演示了如何使用 sharding proxy |
+| [docker](./docker/docker-compose.md) | 演示了如何通过 docker 创建 ShardingSphere 所依赖的环境 |
