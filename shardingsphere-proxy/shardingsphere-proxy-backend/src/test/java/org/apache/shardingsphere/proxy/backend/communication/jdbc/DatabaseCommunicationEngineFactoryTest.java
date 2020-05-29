@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc;
 
-import org.apache.shardingsphere.kernal.context.SchemaContext;
-import org.apache.shardingsphere.kernal.context.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.kernel.context.SchemaContext;
+import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;

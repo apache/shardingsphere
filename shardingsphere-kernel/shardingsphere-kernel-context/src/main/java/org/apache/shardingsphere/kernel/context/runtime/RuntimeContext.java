@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.kernal.context.runtime;
+package org.apache.shardingsphere.kernel.context.runtime;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;

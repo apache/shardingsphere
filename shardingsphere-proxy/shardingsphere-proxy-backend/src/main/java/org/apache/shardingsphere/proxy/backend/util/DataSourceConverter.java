@@ -21,7 +21,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
-import org.apache.shardingsphere.kernal.context.schema.DataSourceParameter;
+import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 
 import java.lang.reflect.Field;
 import java.util.LinkedHashMap;

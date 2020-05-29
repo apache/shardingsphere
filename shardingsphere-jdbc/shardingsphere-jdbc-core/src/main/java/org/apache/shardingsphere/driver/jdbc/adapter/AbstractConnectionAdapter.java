@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.connection.JD
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.group.StatementOption;
 import org.apache.shardingsphere.infra.hook.RootInvokeHook;
 import org.apache.shardingsphere.infra.hook.SPIRootInvokeHook;
-import org.apache.shardingsphere.kernal.context.SchemaContexts;
+import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 

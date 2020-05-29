@@ -25,10 +25,10 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKe
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorKernel;
 import org.apache.shardingsphere.infra.executor.sql.resourced.jdbc.executor.ExecutorExceptionHandler;
-import org.apache.shardingsphere.kernal.context.SchemaContext;
-import org.apache.shardingsphere.kernal.context.SchemaContexts;
-import org.apache.shardingsphere.kernal.context.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.kernal.context.runtime.RuntimeContext;
+import org.apache.shardingsphere.kernel.context.SchemaContext;
+import org.apache.shardingsphere.kernel.context.SchemaContexts;
+import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;

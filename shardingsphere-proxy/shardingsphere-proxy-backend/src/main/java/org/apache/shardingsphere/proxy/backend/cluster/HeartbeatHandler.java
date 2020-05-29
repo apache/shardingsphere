@@ -23,7 +23,7 @@ import org.apache.shardingsphere.cluster.configuration.config.HeartbeatConfigura
 import org.apache.shardingsphere.cluster.facade.ClusterFacade;
 import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResponse;
 import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResult;
-import org.apache.shardingsphere.kernal.context.SchemaContext;
+import org.apache.shardingsphere.kernel.context.SchemaContext;
 
 import java.util.ArrayList;
 import java.util.Collection;

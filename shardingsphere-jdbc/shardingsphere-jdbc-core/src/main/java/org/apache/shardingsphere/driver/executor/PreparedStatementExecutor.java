@@ -32,8 +32,8 @@ import org.apache.shardingsphere.infra.metadata.refresh.MetaDataRefreshStrategyF
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.kernal.context.SchemaContext;
-import org.apache.shardingsphere.kernal.context.SchemaContexts;
+import org.apache.shardingsphere.kernel.context.SchemaContext;
+import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 
 import javax.sql.DataSource;

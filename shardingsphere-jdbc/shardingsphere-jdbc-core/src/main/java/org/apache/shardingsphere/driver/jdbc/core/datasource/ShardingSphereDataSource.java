@@ -27,8 +27,8 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
-import org.apache.shardingsphere.kernal.context.SchemaContexts;
-import org.apache.shardingsphere.kernal.context.SchemaContextsBuilder;
+import org.apache.shardingsphere.kernel.context.SchemaContexts;
+import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 import javax.sql.DataSource;

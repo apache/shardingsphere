@@ -24,7 +24,7 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataS
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.kernal.context.SchemaContextsBuilder;
+import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
 import org.h2.tools.RunScript;
 import org.junit.Before;
 import org.springframework.test.context.TestExecutionListeners;

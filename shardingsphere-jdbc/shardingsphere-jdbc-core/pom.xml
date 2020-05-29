@@ -59,7 +59,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-kernal-context</artifactId>
+            <artifactId>shardingsphere-kernel-context</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
