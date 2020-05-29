@@ -102,12 +102,6 @@ public class OrchestrationShardingSphereDataSource extends AbstractOrchestration
         dataSource.setSchemaContexts(new SchemaContexts(schemaContexts, dataSource.getSchemaContexts().getProperties(), dataSource.getSchemaContexts().getAuthentication()));
     }
     
-    private ShardingSphereSchema getChangedShardingSphereSchema(final ShardingSphereSchema oldShardingSphereSchema, final RuleSchemaMetaData newRuleSchemaMetaData) {
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(oldShardingSphereSchema.getMetaData().getDataSources(), newRuleSchemaMetaData);
-        return new ShardingSphereSchema(oldShardingSphereSchema.getDatabaseType(), oldShardingSphereSchema.getConfigurations(),
-                oldShardingSphereSchema.getRules(), oldShardingSphereSchema.getDataSources(), metaData);
-    }
-    
     /**
      * Renew sharding rule.
      *
@@ -164,5 +158,11 @@ public class OrchestrationShardingSphereDataSource extends AbstractOrchestration
                 }
             }
         }
+    }
+    
+    private ShardingSphereSchema getChangedShardingSphereSchema(final ShardingSphereSchema oldShardingSphereSchema, final RuleSchemaMetaData newRuleSchemaMetaData) {
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(oldShardingSphereSchema.getMetaData().getDataSources(), newRuleSchemaMetaData);
+        return new ShardingSphereSchema(oldShardingSphereSchema.getDatabaseType(), oldShardingSphereSchema.getConfigurations(),
+                oldShardingSphereSchema.getRules(), oldShardingSphereSchema.getDataSources(), metaData);
     }
 }
