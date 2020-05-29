@@ -25,12 +25,33 @@
     </parent>
     <artifactId>shardingsphere-executor</artifactId>
     <name>${project.artifactId}</name>
-    
+    <version>4.1.0.1-SNAPSHOT</version>
+    <properties>
+        <prarent.version>4.1.0</prarent.version>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-common</artifactId>
-            <version>${project.version}</version>
+            <version>${prarent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>transmittable-thread-local</artifactId>
+            <version>2.11.4</version>
         </dependency>
     </dependencies>
+    <!-- 配置远程发布到私服，mvn deploy -->
+    <distributionManagement>
+        <repository>
+            <id>maven-releases</id>
+            <name>Nexus Release Repository</name>
+            <url>http://192.168.150.59:8081/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>nexus-snapshots</id>
+            <url>http://192.168.150.59:8081/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
 </project>

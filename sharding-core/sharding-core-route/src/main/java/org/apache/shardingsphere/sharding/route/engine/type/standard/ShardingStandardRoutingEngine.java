@@ -18,9 +18,15 @@
 package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
 import com.google.common.base.Preconditions;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.underlying.common.config.inline.InlineExpressionParser;
 import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
@@ -209,14 +215,42 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     }
     
     private Collection<DataNode> routeTables(final ShardingRule shardingRule, final TableRule tableRule, final String routedDataSource, final List<RouteValue> tableShardingValues) {
-        Collection<String> availableTargetTables = tableRule.getActualTableNames(routedDataSource);
-        Collection<String> routedTables = new LinkedHashSet<>(tableShardingValues.isEmpty() ? availableTargetTables
-                : shardingRule.getTableShardingStrategy(tableRule).doSharding(availableTargetTables, tableShardingValues, this.properties));
-        Preconditions.checkState(!routedTables.isEmpty(), "no table route info");
         Collection<DataNode> result = new LinkedList<>();
-        for (String each : routedTables) {
-            result.add(new DataNode(routedDataSource, each));
+//        add by ccg
+        //只有查询操作按分表执行，其他操作之执行逻辑表，业务系统是这个表示热点表
+        if(this.sqlStatementContext instanceof SelectStatementContext) {
+            Collection<String> availableTargetTables = tableRule.getActualTableNames(routedDataSource);
+            Collection<String> routedTables = new LinkedHashSet<>(tableShardingValues.isEmpty() ? this.getAllAvailableTargetTables(shardingRule)
+                : shardingRule.getTableShardingStrategy(tableRule).doSharding(availableTargetTables, tableShardingValues, this.properties));
+            Preconditions.checkState(!routedTables.isEmpty(), "no table route info");
+            for (String each : routedTables) {
+                result.add(new DataNode(routedDataSource, each));
+            }
+        } else {
+            //访问逻辑表，热点表
+            result.add(new DataNode(routedDataSource, this.logicTableName));
         }
         return result;
+    }
+
+    private Set<String> getAllAvailableTargetTables(ShardingRule shardingRule) {
+        String inlineExpression = "";
+        Iterator<TableRuleConfiguration> it = shardingRule.getRuleConfiguration().getTableRuleConfigs().iterator();
+        while (it.hasNext()) {
+            TableRuleConfiguration tc = it.next();
+            if(tc.getLogicTable().toUpperCase().equals(this.logicTableName.toUpperCase())) {
+                inlineExpression =  tc.getActualDataNodes();
+            }
+        }
+
+        List<String> actionDataNodes = (new InlineExpressionParser(inlineExpression)).splitAndEvaluate();
+        List<DataNode> dataNodes = new ArrayList<>();
+        Iterator<String> itd = actionDataNodes.iterator();
+        while (itd.hasNext()) {
+            DataNode dn  = new DataNode(itd.next());
+            dataNodes.add(dn);
+        }
+
+        return (Set)dataNodes.stream().map(DataNode::getTableName).collect(Collectors.toSet());
     }
 }

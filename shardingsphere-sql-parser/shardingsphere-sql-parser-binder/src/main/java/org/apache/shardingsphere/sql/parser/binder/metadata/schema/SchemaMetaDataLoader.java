@@ -17,7 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.binder.metadata.schema;
 
+import co.faao.plugin.bean.EwellBean;
+import co.faao.plugin.starter.shardingJdbc.ShardingExtensionConfigurationProperties;
 import com.google.common.collect.Lists;
+import java.util.ArrayList;
+import java.util.Arrays;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,7 +56,8 @@ public final class SchemaMetaDataLoader {
     private static final String TABLE_TYPE = "TABLE";
     
     private static final String TABLE_NAME = "TABLE_NAME";
-    
+
+    private static List<String> exclusionTables = new ArrayList<>();
     /**
      * Load schema meta data.
      *
@@ -89,10 +94,19 @@ public final class SchemaMetaDataLoader {
     
     private static List<String> loadAllTableNames(final Connection connection) throws SQLException {
         List<String> result = new LinkedList<>();
+        try {
+            //add by ccg 去掉指定的表读取元数据
+            ShardingExtensionConfigurationProperties scp = (ShardingExtensionConfigurationProperties) EwellBean.getBean("spring.shardingsphere.sharding-co.faao.plugin.starter.shardingJdbc.ShardingExtensionConfigurationProperties");
+            if(scp!=null && scp.getExclusionTables()!=null && scp.getExclusionTables().length()>0) {
+                exclusionTables = Arrays.asList(scp.getExclusionTables().toUpperCase().split(","));
+            }
+        } catch (Throwable t) {
+            log.info("ShardingExtensionConfigurationProperties 对象属性没有配置");
+        }
         try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), JdbcUtil.getSchema(connection), null, new String[]{TABLE_TYPE})) {
             while (resultSet.next()) {
                 String table = resultSet.getString(TABLE_NAME);
-                if (!isSystemTable(table)) {
+                if (!isSystemTable(table) && !exclusionTables.contains(table.toUpperCase())) {
                     result.add(table);
                 }
             }

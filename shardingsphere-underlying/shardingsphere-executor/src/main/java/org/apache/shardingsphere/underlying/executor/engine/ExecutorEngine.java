@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.underlying.executor.engine;
 
+import com.alibaba.ttl.TtlCallable;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
@@ -107,7 +108,12 @@ public final class ExecutorEngine implements AutoCloseable {
     
     private <I, O> ListenableFuture<Collection<O>> asyncExecute(final InputGroup<I> inputGroup, final GroupedCallback<I, O> callback) {
         final Map<String, Object> dataMap = ExecutorDataMap.getValue();
-        return executorService.getExecutorService().submit(() -> callback.execute(inputGroup.getInputs(), false, dataMap));
+
+        //add by ccg  多线程执行sql ，和seata 兼容，父子线程之间xid传递，用TransmittableThreadLocal线程变量
+        return this.executorService.getExecutorService().submit(TtlCallable.get(() -> {
+            return callback.execute(inputGroup.getInputs(), false, dataMap);
+        }));
+//        return executorService.getExecutorService().submit(() -> callback.execute(inputGroup.getInputs(), false, dataMap));
     }
     
     private <O> List<O> getGroupResults(final Collection<O> firstResults, final Collection<ListenableFuture<Collection<O>>> restFutures) throws SQLException {

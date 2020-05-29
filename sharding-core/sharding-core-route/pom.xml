@@ -24,49 +24,53 @@
         <version>4.1.0</version>
     </parent>
     <artifactId>sharding-core-route</artifactId>
+
     <name>${project.artifactId}</name>
-    
+    <version>4.1.0.1-SNAPSHOT</version>
+    <properties>
+        <prarent.version>4.1.0</prarent.version>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>sharding-core-common</artifactId>
-            <version>${project.version}</version>
+            <version>${prarent.version}</version>
         </dependency>
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-route</artifactId>
-            <version>${project.version}</version>
+            <version>${prarent.version}</version>
         </dependency>
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-sql-parser-sql92</artifactId>
-            <version>${project.version}</version>
+            <version>${prarent.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-sql-parser-mysql</artifactId>
-            <version>${project.version}</version>
+            <version>${prarent.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-sql-parser-postgresql</artifactId>
-            <version>${project.version}</version>
+            <version>${prarent.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-sql-parser-oracle</artifactId>
-            <version>${project.version}</version>
+            <version>${prarent.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-sql-parser-sqlserver</artifactId>
-            <version>${project.version}</version>
+            <version>${prarent.version}</version>
             <scope>test</scope>
         </dependency>
         
@@ -79,4 +83,17 @@
             <artifactId>HikariCP</artifactId>
         </dependency>
     </dependencies>
+    <!-- 配置远程发布到私服，mvn deploy -->
+    <distributionManagement>
+        <repository>
+            <id>maven-releases</id>
+            <name>Nexus Release Repository</name>
+            <url>http://192.168.150.59:8081/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>nexus-snapshots</id>
+            <url>http://192.168.150.59:8081/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
 </project>

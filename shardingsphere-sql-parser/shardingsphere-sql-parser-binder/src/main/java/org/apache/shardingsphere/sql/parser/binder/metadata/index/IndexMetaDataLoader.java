@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.binder.metadata.index;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.sql.parser.binder.metadata.util.JdbcUtil;
 
 import java.sql.Connection;
@@ -31,6 +32,7 @@ import java.util.HashSet;
  * Index meta data loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
 public final class IndexMetaDataLoader {
     
     private static final String INDEX_NAME = "INDEX_NAME";
@@ -44,11 +46,15 @@ public final class IndexMetaDataLoader {
      * @throws SQLException SQL exception
      */
     public static Collection<IndexMetaData> load(final Connection connection, final String table) throws SQLException {
+        log.info("shareding jdbc loadding table............."+table+"..............");
         Collection<IndexMetaData> result = new HashSet<>();
         try (ResultSet resultSet = connection.getMetaData().getIndexInfo(connection.getCatalog(), JdbcUtil.getSchema(connection), table, false, false)) {
             while (resultSet.next()) {
                 String indexName = resultSet.getString(INDEX_NAME);
-                result.add(new IndexMetaData(indexName));
+                //add by ccg
+                if(indexName!=null&&!"".equals(indexName)) {
+                    result.add(new IndexMetaData(indexName));
+                }
             }
         }
         return result;
