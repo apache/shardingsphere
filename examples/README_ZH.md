@@ -78,48 +78,6 @@ shardingsphere-example
         └── manual_schema.sql
 ```
 
-### 分片数据的最佳实践
-
-* 分片数据库
-* 分片表
-* 分片数据库和表
-* 主从
-* 分片和主从
-
-您可以从[shardingsphere-example](shardingsphere-jdbc-example/sharding-example)中获取更多详细信息
-
-### 分片与编排的最佳实践
-
-* 使用本地配置文件和zookeeper/etcd配置分片
-* 使用注册中心（zookeeper/etcd）的配置进行分片
-
-您可以从业务[orchestration-example](shardingsphere-jdbc-example/orchestration-example)中获取更多细节
-
-### 分片+分布式事务的最佳实践
-
-* 2pc-xa事务
-* base-seata事务
-
-您可以从[transaction-example](shardingsphere-jdbc-example/transaction-example)中获取更多详细信息
-
-### 提示路由的最佳实践
-
-您可以从[hint-example](shardingsphere-jdbc-example/other-feature-example/hint-example)中获取更多细节
-
-### 数据加密的最佳实践
-
-您可以从[encrypt-example](shardingsphere-jdbc-example/other-feature-example/encrypt-example)中获取更多详细信息
-
-### APM集成的最佳实践
-
-我们将在最近添加APM集成示例。
-
-### 分片代理的最佳实践
-
-我们希望最近添加一个docker基础示例。
-
-### [如何使用docker配置ShardingSphere-JDBC和ShardingSphere-Proxy](./docker/docker-compose.md) (可选)
-
 ## 用例列表
 
 | 例子 | 描述 |
