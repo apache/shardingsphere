@@ -101,11 +101,3 @@ Apache软件基金会提供了一个社区成熟度的评估模型，从代码�
 GitHub：https://github.com/apache/incubator-shardingsphere
 
 订阅邮箱：dev-subscribe@shardingsphere.apache.org
-
-  
-
-  
-![](https://github.com/wubingting/shardingsphere/blob/master/docs/blog/static/img/logo.jpg)
-
-
-
