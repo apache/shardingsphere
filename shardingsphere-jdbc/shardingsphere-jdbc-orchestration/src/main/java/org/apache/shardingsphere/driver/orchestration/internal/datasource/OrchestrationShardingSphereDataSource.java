@@ -110,9 +110,6 @@ public class OrchestrationShardingSphereDataSource extends AbstractOrchestration
     @Subscribe
     @SneakyThrows
     public final synchronized void renew(final RuleConfigurationsChangedEvent ruleConfigurationsChangedEvent) {
-        if (!ruleConfigurationsChangedEvent.getShardingSchemaName().contains(DefaultSchema.LOGIC_NAME)) {
-            return;
-        }
         dataSource = new ShardingSphereDataSource(dataSource.getDataSourceMap(), 
                 ruleConfigurationsChangedEvent.getRuleConfigurations(), dataSource.getSchemaContexts().getProperties().getProps());
     }
@@ -125,9 +122,6 @@ public class OrchestrationShardingSphereDataSource extends AbstractOrchestration
     @Subscribe
     @SneakyThrows
     public final synchronized void renew(final DataSourceChangedEvent dataSourceChangedEvent) {
-        if (!dataSourceChangedEvent.getShardingSchemaName().contains(DefaultSchema.LOGIC_NAME)) {
-            return;
-        }
         Map<String, DataSourceConfiguration> dataSourceConfigurations = dataSourceChangedEvent.getDataSourceConfigurations();
         dataSource.close(getDeletedDataSources(dataSourceConfigurations));
         dataSource.close(getModifiedDataSources(dataSourceConfigurations).keySet());
