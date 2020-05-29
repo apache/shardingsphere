@@ -19,6 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.core.datasource;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
@@ -44,6 +45,7 @@ import java.util.logging.Logger;
 /**
  * ShardingSphere data source.
  */
+@RequiredArgsConstructor
 @Getter
 public final class ShardingSphereDataSource extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
     

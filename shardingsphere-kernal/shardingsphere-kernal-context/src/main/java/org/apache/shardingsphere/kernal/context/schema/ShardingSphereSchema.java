@@ -18,12 +18,10 @@
 package org.apache.shardingsphere.kernal.context.schema;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRulesBuilder;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
@@ -45,8 +43,7 @@ public final class ShardingSphereSchema {
     
     private final Map<String, DataSourceParameter> dataSourceParameters = new LinkedHashMap<>();
     
-    @Setter
-    private ShardingSphereMetaData metaData;
+    private final ShardingSphereMetaData metaData;
     
     public ShardingSphereSchema(final DatabaseType databaseType, final Collection<RuleConfiguration> configurations, final Collection<ShardingSphereRule> rules, 
                                 final Map<String, DataSource> dataSourceMap, final ShardingSphereMetaData shardingSphereMetaData) {
@@ -61,19 +58,6 @@ public final class ShardingSphereSchema {
                                 final Map<String, DataSource> dataSourceMap, final Map<String, DataSourceParameter> dataSourceParameters, final ShardingSphereMetaData shardingSphereMetaData) {
         this(databaseType, configurations, rules, dataSourceMap, shardingSphereMetaData);
         this.dataSourceParameters.putAll(dataSourceParameters);
-    }
-    
-    /**
-     * Set configurations.
-     *
-     * @param configurations rule configurations
-     */
-    public void renew(final Collection<RuleConfiguration> configurations) {
-        this.configurations.clear();
-        this.configurations.addAll(configurations);
-        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(configurations, dataSources.keySet());
-        this.rules.clear();
-        this.rules.addAll(rules);
     }
     
     /**
