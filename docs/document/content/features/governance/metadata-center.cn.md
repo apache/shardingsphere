@@ -6,22 +6,22 @@ weight = 3
 
 ## 实现动机
 
-- 元数据是ShardingSphere-JDBC/ShardingSphere-Proxy所使用的数据源的表、列和索引等核心数据，元数据保障ShardingSphere各个组件能够正确运行。
+- 元数据是 ShardingSphere 所使用的数据源的表、列和索引等核心数据，元数据保障 ShardingSphere 各个组件能够正确运行。
 
 - 元数据中心对元数据进行统一组织和管理，实现元数据的统一加载、变更通知和数据同步。
 
 ## 元数据中心数据结构
 
-元数据中心在定义的命名空间和治理节点的metadata节点下，以YAML格式存储，每个逻辑数据源独立存储。
+元数据中心在定义的命名空间和治理节点的 `metadata` 节点下，以 YAML 格式存储，每个逻辑数据源独立存储。
 
 ```
 ├─orchestration-namespace
 │   ├─orchestration-name
 │   │   ├──metadata
-│   │   │    ├──schema1
-│   │   │    │    ├── [YAML text contents]     
-│   │   │    ├──schema2
-│   │   │    │    ├── [YAML text contents]    
+│   │   │    ├──schema_1
+│   │   │    │    ├── [YAML text contents]
+│   │   │    ├──schema_2
+│   │   │    │    ├── [YAML text contents]
 │   │   │    ├──....
 ```
 
@@ -101,4 +101,5 @@ unconfiguredSchemaMetaDataMap:
 
 ## 变更通知
 
-通过某一个Proxy实例执行DDL以后，ShardingSphere先将新的元数据存储到元数据中心，然后通过事件广播机制，通知其它Proxy实例从元数据中心同步元数据，保证元数据一致。
+通过某一个 ShardingSphere 实例执行 DDL 之后，
+ShardingSphere 先将新的元数据存储到元数据中心，然后通过事件广播机制，通知其它 ShardingSphere 实例从元数据中心同步元数据，保证元数据一致。
