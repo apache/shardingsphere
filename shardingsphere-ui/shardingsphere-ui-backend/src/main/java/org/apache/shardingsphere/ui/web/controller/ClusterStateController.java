@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.ui.web.controller;
 
+import org.apache.shardingsphere.cluster.state.DataSourceState;
 import org.apache.shardingsphere.cluster.state.InstanceState;
 import org.apache.shardingsphere.ui.servcie.ClusterService;
 import org.apache.shardingsphere.ui.web.response.ResponseResult;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -39,7 +41,18 @@ public final class ClusterStateController {
     private ClusterService clusterService;
     
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseResult<Map<String, InstanceState>> loadAllInstanceStates() {
-        return ResponseResultUtil.build(clusterService.loadAllInstanceStates());
+    public ResponseResult<Map<String, Object>> loadAllInstanceStates() {
+        return ResponseResultUtil.build(mergeDataSources(clusterService.loadAllInstanceStates()));
+    }
+    
+    private Map<String, Object> mergeDataSources(final Map<String, InstanceState> instanceStateMap) {
+        Map<String, Object> result = new HashMap<>();
+        Map<String, DataSourceState> dataSourceStateMap = new HashMap<>();
+        result.put("instanceStates", instanceStateMap);
+        result.put("dataSourceStates", dataSourceStateMap);
+        instanceStateMap.values().forEach(each ->
+            each.getDataSources().entrySet().forEach(entry -> dataSourceStateMap.put(entry.getKey(), entry.getValue()))
+        );
+        return result;
     }
 }

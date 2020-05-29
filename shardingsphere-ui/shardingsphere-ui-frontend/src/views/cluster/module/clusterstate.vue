@@ -31,9 +31,9 @@ export default {
   },
   data() {
     return {
+      instanceData: {},
       proxy: [],
       datasource: [],
-      proxyName: '',
       categories: [],
       linesData: [],
       chartData: [],
@@ -54,7 +54,68 @@ export default {
     loadAllInstanceStates() {
       API.loadInstanceStates().then(res => {
         const data = res.model
-        this.handleProxy(data)
+        const instanceStates = data.instanceStates
+        const dataSources = data.dataSourceStates
+        this.instanceData = instanceStates
+        this.initDatasource(dataSources)
+        this.initProxy(instanceStates)
+        this.initLines()
+        this.setChartData()
+      })
+    },
+    initProxy(data) {
+      let x = 20
+      for (const key in data) {
+        this.proxy.push({
+          name: key,
+          value: [x, 130],
+          category: this.getCategorie(data[key]),
+          symbolSize: 100,
+          label: {
+            position: 'top'
+          }
+        })
+        x += 50
+      }
+    },
+    initDatasource(data) {
+      let x = 0
+      for (const key in data) {
+        this.datasource.push({
+          name: key,
+          category: this.getCategorie(data[key]),
+          state: data[key].state,
+          speed: '',
+          value: [x, 20]
+        })
+        x += 20
+      }
+    },
+    initLines() {
+      this.datasource.forEach((el) => {
+        this.proxy.forEach((e2) => {
+          const e3 = this.instanceData[e2.name].dataSources[el.name]
+          if (e3) {
+            if (e3.state === 'ONLINE') {
+              this.linesData.push([{
+                coord: e2.value
+              }, {
+                coord: el.value
+              }])
+            }
+            this.links.push({
+              source: e2.name,
+              target: el.name,
+              speed: el.speed,
+              lineStyle: {
+                normal: {
+                  color: this.state[e3.state],
+                  curveness: 0
+                }
+              }
+            })
+          }
+        })
       })
     },
     initCategories() {
@@ -132,36 +193,6 @@ export default {
         }
       }]
     },
-    handleProxy(data) {
-      let x = 10
-      for (const key in data) {
-        this.proxy.push({
-          name: key,
-          value: [x, 130],
-          category: this.getCategorie(data[key]),
-          symbolSize: 100,
-          label: {
-            position: 'top'
-          }
-        })
-        x += 20
-        this.handleDatasource(data[key].dataSources)
-      }
-      this.handleData()
-    },
-    handleDatasource(data) {
-      let x = 0
-      for (const key in data) {
-        this.datasource.push({
-          name: key,
-          category: this.getCategorie(data[key]),
-          state: data[key].state,
-          speed: '',
-          value: [x, 20]
-        })
-        x += 20
-      }
-    },
     getCategorie(nodeState) {
       if (nodeState.state === 'ONLINE') {
         return 0
@@ -172,34 +203,8 @@ export default {
       }
       return 3
     },
-    handleData() {
-      console.log(this.proxy)
-      console.log(this.datasource)
+    setChartData() {
       this.option.series[0].data = this.proxy.concat(this.datasource)
-      this.datasource.forEach((el) => {
-        this.proxy.forEach((e2) => {
-          if (el.state === 'ONLINE') {
-            this.linesData.push([{
-              coord: e2.value
-            }, {
-              coord: el.value
-            }])
-          }
-          this.links.push({
-            source: e2.name,
-            target: el.name,
-            speed: el.speed,
-            lineStyle: {
-              normal: {
-                color: this.state[el.state],
-                curveness: 0
-              }
-            }
-          })
-        })
-      })
-      console.log(this.linesData)
-      console.log(this.links)
       this.option.series[1].data = this.linesData
       this.option.series[0].links = this.links
     },
