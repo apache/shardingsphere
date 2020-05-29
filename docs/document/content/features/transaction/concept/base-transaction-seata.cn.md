@@ -1,5 +1,4 @@
 +++
-pre = "<b>3.2.1.2 </b>"
 title = "Seata 柔性事务"
 weight = 3
 +++

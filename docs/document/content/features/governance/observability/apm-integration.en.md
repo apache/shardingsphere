@@ -1,19 +1,27 @@
 +++
-pre = "<b>3.4.5. </b>"
 title = "APM Integration"
-weight = 5
+weight = 1
 +++
 
 ## Background
 
-`APM` is the abbreviation for application performance monitoring. Currently, main `APM` functions lie in the performance diagnosis of distributed systems, including chain demonstration, application topology analysis and so on.
+APM is the abbreviation for application performance monitoring. 
+Currently, main APM functions lie in the performance diagnosis of distributed systems, including chain demonstration, application topology analysis and so on.
 
-ShardingSphere is not responsible for gathering, storing and demonstrating APM data, but sends the core information of SQL parsing and enforcement to APM to process. In other words, ShardingSphere is only responsible for generating valuable data and submitting it to relevant systems through standard protocol. 
+Apache ShardingSphere is not responsible for gathering, storing and demonstrating APM data, but sends the core information of SQL parsing and enforcement to APM to process. 
+In other words, Apache ShardingSphere is only responsible for generating valuable data and submitting it to relevant systems through standard protocol. 
 It can connect to APM systems in two ways.
 
-The first way is to send performance tracing data by OpenTracing API. APM products facing OpenTracing protocol can all automatically connect to ShardingSphere, like SkyWalking, Zipkin and Jaeger. In this way, users only need to configure the implementation of OpenTracing protocol at the start. Its advantage is the compatibility of all the products compatible of OpenTracing protocol, such as the APM demonstration system. If companies intend to implement their own APM systems, they only need to implement the OpenTracing protocol, and they can  automatically show the chain tracing information of ShardingSphere. Its disadvantage is that OpenTracing protocol is not stable in its development, has only a few new versions, and is too neutral to support customized products as native ones do.
+The first way is to send performance tracing data by OpenTracing API. 
+APM products facing OpenTracing protocol can all automatically connect to Apache ShardingSphere, like SkyWalking, Zipkin and Jaeger. 
+In this way, users only need to configure the implementation of OpenTracing protocol at the start. 
+Its advantage is the compatibility of all the products compatible of OpenTracing protocol, such as the APM demonstration system. 
+If companies intend to implement their own APM systems, they only need to implement the OpenTracing protocol, and they can automatically show the chain tracing information of Apache ShardingSphere. 
+Its disadvantage is that OpenTracing protocol is not stable in its development, has only a few new versions, and is too neutral to support customized products as native ones do.
 
-The second way is to use SkyWalking's automatic monitor agent. Cooperating with [SkyWalking](https://skywalking.apache.org/) team, ShardingSphere team has realized `ShardingSphere` automatic monitor agent to automatically send application performance data to `SkyWalking`.
+The second way is to use SkyWalking's automatic monitor agent. 
+Cooperating with [Apache SkyWalking](https://skywalking.apache.org/) team, 
+Apache ShardingSphere team has realized `ShardingSphere` automatic monitor agent to automatically send application performance data to `SkyWalking`.
 
 ## Usage
 
@@ -24,23 +32,19 @@ The second way is to use SkyWalking's automatic monitor agent. Cooperating with 
 Add startup arguments
 
 ```
-    -Dorg.apache.shardingsphere.opentracing.tracer.class=org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer
+-Dorg.apache.shardingsphere.opentracing.tracer.class=org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer
 ```
 
 Call initialization method
 
 ```java
-    ShardingTracer.init();
-```
-
-```
-    ShardingTracer.init();
+ShardingTracer.init();
 ```
 
 * Method 2: inject Tracer provided by APM through parameter
 
 ```java
-    ShardingTracer.init(new SkywalkingTracer());
+ShardingTracer.init(new SkywalkingTracer());
 ```
 
 *Notice: when using SkyWalking OpenTracing agent, you should disable the former ShardingSphere agent plug-in to avoid the conflict between them.*
@@ -51,7 +55,7 @@ Please refer to [SkyWalking Manual](https://github.com/apache/skywalking/blob/5.
 
 ## Result Demonstration
 
-No matter in which way, it is convenient to demonstrate APM information in the  connected system. Take SkyWalking for example:
+No matter in which way, it is convenient to demonstrate APM information in the connected system. Take SkyWalking for example:
 
 ### Application Architecture
 

@@ -1,12 +1,11 @@
 +++
-pre = "<b>3.4.3. </b>"
 title = "Metadata Center"
 weight = 3
 +++
 
 ## Motivation
 
-- Metadata is the core data of the data source used by ShardingSphere-JDBC/ShardingSphere-Proxy, which contains tables, columns, and indexes, etc. Metadata ensures that each component of ShardingSphere can run correctly.
+- Metadata is the core data of the data source used by ShardingSphere, which contains tables, columns, and indexes, etc. Metadata ensures that each component of ShardingSphere can run correctly.
 
 - The metadata center organizes and manages the metadata in a unified manner to realize the unified loading of metadata, change notifications and data synchronization.
 

@@ -1,5 +1,4 @@
 +++
-pre = "<b>3.4.2. </b>"
 title = "Registry Center"
 weight = 2
 +++
@@ -12,7 +11,7 @@ weight = 2
 
 ## Data Structure in Registry Center
 
-The registry center can create running node of database access object under `state` in defined name space, to distinguish different database access instances, including `instances` and `datasources` nodes.
+The registry center can create running node of database access object under `state` in defined namespace, to distinguish different database access instances, including `instances` and `datasources` nodes.
 
 ```
 instances
@@ -50,7 +49,7 @@ It is able to orchestrate read-write split slave database, delete or disable dat
 
 ### Circuit Breaker
 
-Write `DISABLED` (case insensitive) to @-@PID in IP to disable that instance; delete `DISABLED` to enable the instance.
+Write `DISABLED` (case insensitive) to `IP@-@PID` to disable that instance; delete `DISABLED` to enable the instance.
 
 Zookeeper command is as follow:
 
@@ -60,7 +59,7 @@ Zookeeper command is as follow:
 
 ### Disable Slave Database
 
-Under read-write split (or shardinng + read-write split) scenarios, users can write `DISABLED` (case insensitive) to sub-nodes of data source name to disable slave database sources. Delete `DISABLED` or the node to enable it.
+Under read-write split scenarios, users can write `DISABLED` (case insensitive) to sub-nodes of data source name to disable slave database sources. Delete `DISABLED` or the node to enable it.
 
 Zookeeper command is as follow:
 
