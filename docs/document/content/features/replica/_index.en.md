@@ -1,7 +1,7 @@
 +++
-pre = "<b>3.7. </b>"
+pre = "<b>3.8. </b>"
 title = "Multi replica"
-weight = 7
+weight = 8
 chapter = true
 +++
 
