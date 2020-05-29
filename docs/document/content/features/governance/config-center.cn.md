@@ -8,35 +8,37 @@ weight = 1
 
 - 配置集中化：越来越多的运行时实例，使得散落的配置难于管理，配置不同步导致的问题十分严重。将配置集中于配置中心，可以更加有效进行管理。
 
-- 配置动态化：配置修改后的分发，是配置中心可以提供的另一个重要能力。它可支持数据源、表与分片及读写分离策略的动态切换。
+- 配置动态化：配置修改后的分发，是配置中心可以提供的另一个重要能力。它可支持数据源和规则的动态切换。
 
 ## 配置中心数据结构
 
-配置中心在定义的命名空间的config下，以YAML格式存储，包括数据源，数据分片，读写分离、Properties配置，可通过修改节点来实现对于配置的动态管理。
+配置中心在定义的命名空间的 `config` 节点下，以 YAML 格式存储，包括数据源信息，规则信息、权限配置和属性配置，可通过修改节点来实现对于配置的动态管理。
 
 ```
 config
-    ├──authentication                            # ShardingSphere-Proxy权限配置
+    ├──authentication                            # 权限配置
     ├──props                                     # 属性配置
     ├──schema                                    # Schema配置
-    ├      ├──sharding_db                        # SchemaName配置
+    ├      ├──schema_1                           # Schema名称1
     ├      ├      ├──datasource                  # 数据源配置
-    ├      ├      ├──rule                        # 数据分片规则配置
-    ├      ├──masterslave_db                     # SchemaName配置
+    ├      ├      ├──rule                        # 规则配置
+    ├      ├──schema_2                           # Schema名称2
     ├      ├      ├──datasource                  # 数据源配置
-    ├      ├      ├──rule                        # 读写分离规则
+    ├      ├      ├──rule                        # 规则配置
 ```
 
 ### config/authentication
 
+权限配置，可配置访问ShardingSphere-Proxy的用户名和密码。
+
 ```yaml
-password: root
 username: root
+password: root
 ```
 
-### config/sharding/props
+### config/props
 
-相对于shardingsphere配置里面的Sharding Properties。
+属性配置，详情请参见[配置手册](/cn/manual/shardingsphere-jdbc/configuration/)。
 
 ```yaml
 executor.size: 20
@@ -76,58 +78,20 @@ ds_1: !!org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourc
 
 ### config/schema/sharding_db/rule
 
-数据分片配置，包括数据分片 + 读写分离配置。
+规则配置，可包括数据分片、读写分离、数据加密、影子库压测、多副本等配置。
 
 ```yaml
-tables:
-  t_order:
-    actualDataNodes: ds_$->{0..1}.t_order_$->{0..1}
-    databaseStrategy:
-      inline:
-        shardingColumn: user_id
-        algorithmExpression: ds_$->{user_id % 2}
-    keyGenerator:
-      column: order_id
-    logicTable: t_order
-    tableStrategy:
-      inline:
-        shardingColumn: order_id
-        algorithmExpression: t_order_$->{order_id % 2}
-  t_order_item:
-    actualDataNodes: ds_$->{0..1}.t_order_item_$->{0..1}
-    databaseStrategy:
-      inline:
-        shardingColumn: user_id
-        algorithmExpression: ds_$->{user_id % 2}
-    keyGenerator:
-      column: order_item_id
-    logicTable: t_order_item
-    tableStrategy:
-      inline:
-        shardingColumn: order_id
-        algorithmExpression: t_order_item_$->{order_id % 2}
-bindingTables:
-  - t_order,t_order_item
-broadcastTables:
-  - t_config
+rules:
+- !SHARDING
+  xxx
   
-defaultDataSourceName: ds_0
-    
-masterSlaveRules: {}
-```
-
-### config/schema/masterslave/rule
-
-读写分离独立使用时使用该配置。
-
-```yaml
-name: ds_ms
-masterDataSourceName: ds_master 
-slaveDataSourceNames:
-  - ds_slave0
-  - ds_slave1
-loadBalanceAlgorithmType: ROUND_ROBIN
+- !MASTERSLAVE
+  xxx
+  
+- !ENCRYPT
+  xxx
 ```
 
 ## 动态生效
+
 在注册中心上修改、删除、新增相关配置，会动态推送到生产环境并立即生效。

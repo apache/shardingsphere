@@ -8,35 +8,37 @@ weight = 1
 
 - Centralized configuration: more and more running examples have made it hard to manage separate configurations and asynchronized configurations can cause serious problems. Concentrating them in the configuration center can make the management more effective.
 
-- Dynamic configuration: distribution after configuration modification is another important capability of configuration center. It can support dynamic switch between data sources, tables, shards and the read-write split strategy.
+- Dynamic configuration: distribution after configuration modification is another important capability of configuration center. It can support dynamic switch between data sources and rule configurations.
 
-## Data Structure in Configuration Center
+## Structure in Configuration Center
 
-Under defined name space config, configuration center stores data sources, sharding databases, sharding tables, read-write split, and properties in YAML. Modifying nodes can dynamically manage configuration.
+Under defined namespace `config` node, configuration center stores data sources, rule configurations, authentication configuration, and properties in YAML. Modifying nodes can dynamically refresh configurations.
 
 ```
 config
-    ├──authentication                            # ShardingSphere-Proxy authentication configuration
+    ├──authentication                            # Authentication configuration
     ├──props                                     # Properties configuration
     ├──schema                                    # Schema configuration
-    ├      ├──sharding_db                        # SchemaName configuration
+    ├      ├──schema_1                           # Schema name 1
     ├      ├      ├──datasource                  # Datasource configuration
-    ├      ├      ├──rule                        # Sharding rule configuration
-    ├      ├──masterslave_db                     # SchemaName configuration
+    ├      ├      ├──rule                        # Rule configuration
+    ├      ├──schema_2                           # Schema name 2
     ├      ├      ├──datasource                  # Datasource configuration
-    ├      ├      ├──rule                        # Master-slave rule configuration
+    ├      ├      ├──rule                        # Rule configuration
 ```
 
 ### config/authentication
 
+Authentication configuration. Can configure username and password for ShardingSphere-Proxy.
+
 ```yaml
-password: root
 username: root
+password: root
 ```
 
-### config/sharding/props
+### config/props
 
-It corresponds to Sharding Properties in ShardingSphere configuration.
+Properties configuration. Please refer to [Configuration Manual](/en/manual/shardingsphere-jdbc/configuration/) for more details.
 
 ```yaml
 executor.size: 20
@@ -76,59 +78,20 @@ ds_1: !!org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourc
 
 ### config/schema/sharding_db/rule
 
-It refers to sharding configuration, including sharding + read-write split configuration.
+Rule configurations, including sharding, read-write split, data encryption, shadow DB, multi replica configurations.
 
 ```yaml
-tables:
-  t_order:
-    actualDataNodes: ds_$->{0..1}.t_order_$->{0..1}
-    databaseStrategy:
-      inline:
-        shardingColumn: user_id
-        algorithmExpression: ds_$->{user_id % 2}
-    keyGenerator:
-      column: order_id
-    logicTable: t_order
-    tableStrategy:
-      inline:
-        shardingColumn: order_id
-        algorithmExpression: t_order_$->{order_id % 2}
-  t_order_item:
-    actualDataNodes: ds_$->{0..1}.t_order_item_$->{0..1}
-    databaseStrategy:
-      inline:
-        shardingColumn: user_id
-        algorithmExpression: ds_$->{user_id % 2}
-    keyGenerator:
-      column: order_item_id
-    logicTable: t_order_item
-    tableStrategy:
-      inline:
-        shardingColumn: order_id
-        algorithmExpression: t_order_item_$->{order_id % 2}
-bindingTables:
-  - t_order,t_order_item
-broadcastTables:
-  - t_config
-
-defaultDataSourceName: ds_0
-
-masterSlaveRules: {}
-```
-
-### config/schema/masterslave/rule
-
-This configuration is used when read-write split is used alone.
-
-```yaml
-name: ds_ms
-masterDataSourceName: ds_master 
-slaveDataSourceNames:
-  - ds_slave0
-  - ds_slave1
-loadBalanceAlgorithmType: ROUND_ROBIN
+rules:
+- !SHARDING
+  xxx
+  
+- !MASTERSLAVE
+  xxx
+  
+- !ENCRYPT
+  xxx
 ```
 
 ## Dynamic Effectiveness
 
-Modification, deletion and insertion of relevant configurations in the registry center will  immediately take effect in the producing environment.
+Modification, deletion and insertion of relevant configurations in the registry center will immediately take effect in the producing environment.
