@@ -55,7 +55,6 @@ import org.apache.shardingsphere.proxy.frontend.bootstrap.ShardingSphereProxy;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -134,7 +133,7 @@ public final class Bootstrap {
         }
     }
     
-    private static void startProxy(final int port, final Authentication authentication, final Properties properties, final Map<String, Map<String, DataSourceParameter>> schemaDataSources, 
+    private static void startProxy(final int port, final Authentication authentication, final Properties properties, final Map<String, Map<String, DataSourceParameter>> schemaDataSources,
                                    final Map<String, Collection<RuleConfiguration>> schemaRules, final YamlMetricsConfiguration metrics) throws SQLException {
         ProxySchemaContexts.getInstance().init(schemaDataSources, schemaRules, authentication, properties);
         log(authentication, properties);
@@ -151,15 +150,7 @@ public final class Bootstrap {
     private static Map<String, Collection<RuleConfiguration>> getSchemaRules(final ShardingOrchestrationFacade shardingOrchestrationFacade) {
         Map<String, Collection<RuleConfiguration>> result = new LinkedHashMap<>();
         for (String each : shardingOrchestrationFacade.getConfigCenter().getAllShardingSchemaNames()) {
-            if (shardingOrchestrationFacade.getConfigCenter().isShardingRule(each)) {
-                result.put(each, shardingOrchestrationFacade.getConfigCenter().loadRuleConfigurations(each));
-            } else if (shardingOrchestrationFacade.getConfigCenter().isEncryptRule(each)) {
-                result.put(each, Collections.singletonList(shardingOrchestrationFacade.getConfigCenter().loadEncryptRuleConfiguration(each)));
-            } else if (shardingOrchestrationFacade.getConfigCenter().isShadowRule(each)) {
-                result.put(each, Collections.singletonList(shardingOrchestrationFacade.getConfigCenter().loadShadowRuleConfiguration(each)));
-            } else {
-                result.put(each, Collections.singletonList(shardingOrchestrationFacade.getConfigCenter().loadMasterSlaveRuleConfiguration(each)));
-            }
+            result.put(each, shardingOrchestrationFacade.getConfigCenter().loadRuleConfigurations(each));
         }
         return result;
     }
