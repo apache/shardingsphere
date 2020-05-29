@@ -5,8 +5,8 @@ weight = 1
 
 ## Background
 
-`APM` is the abbreviation for application performance monitoring. 
-Currently, main `APM` functions lie in the performance diagnosis of distributed systems, including chain demonstration, application topology analysis and so on.
+APM is the abbreviation for application performance monitoring. 
+Currently, main APM functions lie in the performance diagnosis of distributed systems, including chain demonstration, application topology analysis and so on.
 
 Apache ShardingSphere is not responsible for gathering, storing and demonstrating APM data, but sends the core information of SQL parsing and enforcement to APM to process. 
 In other words, Apache ShardingSphere is only responsible for generating valuable data and submitting it to relevant systems through standard protocol. 
@@ -32,23 +32,19 @@ Apache ShardingSphere team has realized `ShardingSphere` automatic monitor agent
 Add startup arguments
 
 ```
-    -Dorg.apache.shardingsphere.opentracing.tracer.class=org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer
+-Dorg.apache.shardingsphere.opentracing.tracer.class=org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer
 ```
 
 Call initialization method
 
 ```java
-    ShardingTracer.init();
-```
-
-```
-    ShardingTracer.init();
+ShardingTracer.init();
 ```
 
 * Method 2: inject Tracer provided by APM through parameter
 
 ```java
-    ShardingTracer.init(new SkywalkingTracer());
+ShardingTracer.init(new SkywalkingTracer());
 ```
 
 *Notice: when using SkyWalking OpenTracing agent, you should disable the former ShardingSphere agent plug-in to avoid the conflict between them.*

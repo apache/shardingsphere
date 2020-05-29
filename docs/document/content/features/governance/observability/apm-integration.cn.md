@@ -5,7 +5,7 @@ weight = 1
 
 ## 背景
 
-`APM` 是应用性能监控的缩写。目前 `APM` 的主要功能着眼于分布式系统的性能诊断，其主要功能包括调用链展示，应用拓扑分析等。
+APM 是应用性能监控的缩写。目前 APM 的主要功能着眼于分布式系统的性能诊断，其主要功能包括调用链展示，应用拓扑分析等。
 
 Apache ShardingSphere 并不负责如何采集、存储以及展示应用性能监控的相关数据，而是将 SQL 解析与 SQL 执行这两块数据分片的最核心的相关信息发送至应用性能监控系统，并交由其处理。
 换句话说，Apache ShardingSphere 仅负责产生具有价值的数据，并通过标准协议递交至相关系统。Apache ShardingSphere 可以通过两种方式对接应用性能监控系统。
@@ -27,19 +27,19 @@ Apache ShardingSphere 并不负责如何采集、存储以及展示应用性能�
 启动时添加参数
 
 ```
-    -Dorg.apache.shardingsphere.opentracing.tracer.class=org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer
+-Dorg.apache.shardingsphere.opentracing.tracer.class=org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer
 ```
 
 调用初始化方法
 
 ```java
-    ShardingTracer.init();
+ShardingTracer.init();
 ```
 
 * 方法2：通过参数注入APM系统提供的 Tracer 实现类
 
 ```java
-    ShardingTracer.init(new SkywalkingTracer());
+ShardingTracer.init(new SkywalkingTracer());
 ```
 
 *注意:使用 SkyWalking 的 OpenTracing 探针时，应将原 Apache ShardingSphere 探针插件禁用，以防止两种插件互相冲突*
