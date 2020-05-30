@@ -1,10 +1,10 @@
 +++
-title = "数据脱敏"
+title = "数据加密"
 weight = 6
 +++
 
-该章节主要介绍如何使用数据脱敏功能，如何进行相关配置。数据脱敏功能即可与数据分片功能共同使用，又可作为单独功能组件，独立使用。
-与数据分片功能共同使用时，会创建ShardingDataSource；单独使用时，会创建EncryptDataSource来完成数据脱敏功能。
+该章节主要介绍如何使用数据加密功能，如何进行相关配置。数据加密功能即可与数据分片功能共同使用，又可作为单独功能组件，独立使用。
+与数据分片功能共同使用时，会创建ShardingDataSource；单独使用时，会创建EncryptDataSource来完成数据加密功能。
 
 ## 不使用Spring
 
@@ -28,7 +28,7 @@ weight = 6
        dataSource.setUsername("root");
        dataSource.setPassword("");
        
-       // 配置脱敏规则
+       // 配置加密规则
        Properties props = new Properties();
        props.setProperty("aes.key.value", "123456");
        EncryptorRuleConfiguration encryptorConfig = new EncryptorRuleConfiguration("AES", props);

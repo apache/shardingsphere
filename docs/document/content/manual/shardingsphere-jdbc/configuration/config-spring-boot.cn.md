@@ -74,7 +74,7 @@ spring.shardingsphere.masterslave.slave-data-source-names=slave0,slave1
 spring.shardingsphere.props.sql.show=true
 ```
 
-### 数据脱敏
+### 数据加密
 
 ```properties
 spring.shardingsphere.datasource.name=ds
@@ -158,7 +158,7 @@ spring.shardingsphere.sharding.master-slave-rules.ds1.master-data-source-name=ma
 spring.shardingsphere.sharding.master-slave-rules.ds1.slave-data-source-names=master1slave0, master1slave1
 ```
 
-### 数据分片 + 数据脱敏
+### 数据分片 + 数据加密
 
 ```properties
 spring.shardingsphere.datasource.names=ds_0,ds_1
@@ -348,7 +348,7 @@ spring.shardingsphere.props.executor.size= #工作线程数量，默认值: CPU�
 spring.shardingsphere.props.check.table.metadata.enabled= #是否在启动时检查分表元数据一致性，默认值: false
 ```
 
-### 数据脱敏
+### 数据加密
 ```properties
 #省略数据源配置，与数据分片一致
 
@@ -362,7 +362,7 @@ spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.en
 ### 治理
 
 ```properties
-#省略数据源、数据分片、读写分离和数据脱敏配置
+#省略数据源、数据分片、读写分离和数据加密配置
 
 spring.shardingsphere.orchestration.spring_boot_ds_sharding.orchestration-type= #治理类型，例如config_center/registry_center/metadata_center
 spring.shardingsphere.orchestration.spring_boot_ds_sharding.instance-type= #配置/注册/元数据中心实例类型。如：zookeeper

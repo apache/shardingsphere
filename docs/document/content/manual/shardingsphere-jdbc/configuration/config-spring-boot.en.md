@@ -73,7 +73,7 @@ spring.shardingsphere.masterslave.slave-data-source-names=slave0,slave1
 
 spring.shardingsphere.props.sql.show=true
 ```
-### Data Masking
+### data encryption
 
 ```properties
 spring.shardingsphere.datasource.name=ds
@@ -157,7 +157,7 @@ spring.shardingsphere.sharding.master-slave-rules.ds1.master-data-source-name=ma
 spring.shardingsphere.sharding.master-slave-rules.ds1.slave-data-source-names=master1slave0, master1slave1
 ```
 
-### Data Sharding + Data Masking
+### Data Sharding + data encryption
 
 ```properties
 spring.shardingsphere.datasource.names=ds_0,ds_1
@@ -346,7 +346,7 @@ spring.shardingsphere.props.executor.size= #Executing thread number; default val
 spring.shardingsphere.props.check.table.metadata.enabled= #Whether to check meta-data consistency of sharding table when it initializes; default value: false
 ```
 
-### Data Masking
+### data encryption
 
 ```properties
 #Omit data source configurations; keep it consistent with data sharding
@@ -362,7 +362,7 @@ spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.en
 ### Orchestration
 
 ```properties
-#Omit data source, data sharding, read-write split and data masking configurations
+#Omit data source, data sharding, read-write split and data encryption configurations
 
 spring.shardingsphere.orchestration.spring_boot_ds_sharding.orchestration-type= The type of orchestration center: config_center or registry_center or metadata_center
 spring.shardingsphere.orchestration.spring_boot_ds_sharding.instance-type= #Center instance type. Example:zookeeper#Registry center type. Example:zookeeper

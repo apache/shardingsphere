@@ -60,7 +60,7 @@ weight = 1
      }
 ```
 
-### Data Masking
+### data encryption
 
 ```java
     DataSource getEncryptDataSource() throws SQLException {
@@ -128,7 +128,7 @@ weight = 1
         return result;
     }
 ```
-### Data Sharding + Data Masking
+### Data Sharding + data encryption
 
 ```java
     public DataSource getDataSource() throws SQLException {
@@ -374,7 +374,7 @@ Property configuration items, can be of the following properties.
 | max.connections.size.per.query (?) | int         | The maximum connection number allocated by each query of each physical database, default value: 1 |
 | check.table.metadata.enabled (?)   | boolean     | Check meta-data consistency or not in initialization, default value: false |
 
-### Data Masking
+### data encryption
 
 #### EncryptDataSourceFactory
 

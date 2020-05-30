@@ -106,7 +106,7 @@ masterSlaveRule:
     - ds_slave1
 ```
 
-### Data Masking
+### data encryption
 
 ```yaml
 schemaName: encrypt_db
@@ -246,7 +246,7 @@ shardingRule:
       loadBalanceAlgorithmType: ROUND_ROBIN
 ```
 
-### Data Sharding + Data Masking
+### Data Sharding + data encryption
 
 dataSources:
 
@@ -392,7 +392,7 @@ dataSources: #Omit data source configurations; keep it consistent with data shar
 masterSlaveRule: #Omit data source configurations; keep it consistent with ShardingSphere-JDBC
 ```
 
-### Data Masking
+### data encryption
 ```yaml
 dataSource: #Ignore data sources configuration
 

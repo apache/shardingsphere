@@ -27,13 +27,13 @@ The database protocol interface is used to regulate parse and adapter protocol o
 
 Its main interface is `DatabaseProtocolFrontendEngine` and built-in implementation types are `MySQLProtocolFrontendEngine` and `PostgreSQLProtocolFrontendEngine`.
 
-### Data Masking
+### data encryption
 
-The Data masking interface is used to regulate the encryption, decryption, access type, property configuration and other methods of the encryptor.
+The data encryption interface is used to regulate the encryption, decryption, access type, property configuration and other methods of the encryptor.
 
 There are mainly two interfaces, `ShardingEncryptor` and `ShardingQueryAssistedEncryptor` and built-in implementation types are `AESShardingEncryptor` and `MD5ShardingEncryptor`. 
 
-Please refer to [Data Masking](/en/features/orchestration/encrypt/) for the introduction.
+Please refer to [data encryption](/en/features/orchestration/encrypt/) for the introduction.
 
 ### Distributed Primary Key
 
