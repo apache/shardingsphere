@@ -88,7 +88,7 @@ shardingsphere-example
 | [orchestration](shardingsphere-jdbc-example/orchestration-example) | 演示了如何在 ShardingSphere 中使用 orchestration |
 | [事务](shardingsphere-jdbc-example/transaction-example) | 演示了如何在 ShardingSphere 中使用事务 |
 | [hint](shardingsphere-jdbc-example/other-feature-example/hint-example) | 演示了如何在 ShardingSphere 中使用 hint |
-| [脱敏](shardingsphere-jdbc-example/other-feature-example/encrypt-example) | 演示了如何在 ShardingSphere 中使用脱敏 |
+| [加密](shardingsphere-jdbc-example/other-feature-example/encrypt-example) | 演示了如何在 ShardingSphere 中使用加密 |
 | APM监控(Pending) | 演示了如何在 ShardingSphere 中使用 APM 监控 |
 | proxy(Pending) | 演示了如何使用 sharding proxy |
 | [docker](./docker/docker-compose.md) | 演示了如何通过 docker 创建 ShardingSphere 所依赖的环境 |

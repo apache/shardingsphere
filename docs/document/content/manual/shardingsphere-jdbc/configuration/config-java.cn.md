@@ -60,7 +60,7 @@ weight = 1
      }
 ```
 
-### 数据脱敏
+### 数据加密
 
 ```java
     DataSource getEncryptDataSource() throws SQLException {
@@ -129,7 +129,7 @@ weight = 1
     }
 ```
 
-### 数据分片 + 数据脱敏
+### 数据分片 + 数据加密
 
 ```java
     public DataSource getDataSource() throws SQLException {
@@ -384,14 +384,14 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | max.connections.size.per.query (?) | int       | 每个物理数据库为每次查询分配的最大连接数量。默认值: 1    |
 | check.table.metadata.enabled (?)   | boolean   | 是否在启动时检查分表元数据一致性，默认值: false         |
 
-### 数据脱敏
+### 数据加密
 
 #### EncryptDataSourceFactory
 
 | *名称*                 | *数据类型*                    | *说明*             |
 | --------------------- | ---------------------------- | ------------------ |
 | dataSource            | DataSource                   | 数据源，任意连接池    |
-| encryptRuleConfig     | EncryptRuleConfiguration     | 数据脱敏规则         |
+| encryptRuleConfig     | EncryptRuleConfiguration     | 数据加密规则         |
 | props (?)             | Properties                   | 属性配置            |
 
 #### EncryptRuleConfiguration
@@ -436,7 +436,7 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 
 #### OrchestrationEncryptDataSourceFactory
 
-数据脱敏 + 治理的数据源工厂。
+数据加密 + 治理的数据源工厂。
 
 | *名称*                 | *数据类型*                    | *说明*                         |
 | --------------------- | ---------------------------- | ------------------------------ |

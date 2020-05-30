@@ -163,7 +163,7 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
 </beans>
 ```
 
-### Data Masking
+### data encryption
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -331,7 +331,7 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
 </beans>
 ```
 
-### Sharding + Data Masking
+### Sharding + data encryption
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -647,7 +647,7 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/masterslave/ma
 | type                               | Attribute | Type of load balance algorithm, 'RANDOM'或'ROUND_ROBIN', support custom extension|
 | props-ref (?)                      | Attribute | Properties of load balance algorithm                         |
 
-### Data Masking
+### data encryption
 
 Namespace: http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd
 
@@ -727,7 +727,7 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/orchestration/
 | instance-ref        | Attribute | The id of orchestration instance                                   |
 | overwrite           | Attribute | Use local configuration to overwrite config center or not |
 
-### Data Masking + Orchestration
+### data encryption + Orchestration
 
 Namespace: http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd
 

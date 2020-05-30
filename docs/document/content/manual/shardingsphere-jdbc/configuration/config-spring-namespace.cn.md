@@ -161,7 +161,7 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
 </beans>
 ```
 
-### 数据脱敏
+### 数据加密
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -325,7 +325,7 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
 </beans>
 ```
 
-### 数据分片 + 数据脱敏
+### 数据分片 + 数据加密
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -478,7 +478,7 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
 | default-database-strategy-ref (?) | 属性  | 默认数据库分片策略，对应\<sharding:xxx-strategy>中的策略Id，缺省表示不分库                                    |
 | default-table-strategy-ref (?)    | 属性  | 默认表分片策略，对应\<sharding:xxx-strategy>中的策略Id，缺省表示不分表                                       |
 | default-key-generator-ref (?)     | 属性  | 默认自增列值生成器引用，缺省使用`org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator` |
-| encrypt-rule (?)                  | 标签  | 脱敏规则                                                                                                  |
+| encrypt-rule (?)                  | 标签  | 加密规则                                                                                                  |
 
 #### \<sharding:table-rules />
 
@@ -628,7 +628,7 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
 | type                               |  属性  | 负载均衡算法类型，'RANDOM'或'ROUND_ROBIN'，支持自定义拓展|
 | props-ref (?)                      |  属性  | 负载均衡算法配置参数                               |
 
-### 数据脱敏
+### 数据加密
 
 命名空间：http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd
 
@@ -708,7 +708,7 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
 | instance-ref        | 属性   | 治理实例id                                                              |
 | overwrite           | 属性   | 本地配置是否覆盖配置中心配置。如果可覆盖，每次启动都以本地配置为准。缺省为不覆盖 |
 
-### 数据脱敏 + 治理
+### 数据加密 + 治理
 
 命名空间：http://shardingsphere.apache.org/schema/shardingsphere/orchestration/orchestration.xsd
 

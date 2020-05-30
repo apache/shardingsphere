@@ -92,7 +92,7 @@ props:
   sql.show: true
 ```
 
-### Data Masking
+### data encryption
 
 ```yaml
 dataSource:  !!org.apache.commons.dbcp2.BasicDataSource
@@ -212,7 +212,7 @@ props:
   sql.show: true
 ```
 
-### Data Sharding + Data Masking
+### Data Sharding + data encryption
 
 ```yaml
 dataSources:
@@ -384,7 +384,7 @@ props: #Property configuration
   max.connections.size.per.query: #The maximum connection number allocated by each query of each physical database. default value: 1
 ```
 
-### Data Masking
+### data encryption
 ```yaml
 dataSource: #Ignore data sources configuration
 

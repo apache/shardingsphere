@@ -106,7 +106,7 @@ masterSlaveRule:
     - ds_slave1
 ```
 
-### 数据脱敏
+### 数据加密
 
 ```yaml
 schemaName: encrypt_db
@@ -247,7 +247,7 @@ shardingRule:
       loadBalanceAlgorithmType: ROUND_ROBIN
 ```
 
-### 数据分片 + 数据脱敏
+### 数据分片 + 数据加密
 
 dataSources:
 
@@ -393,7 +393,7 @@ dataSources: #省略数据源配置，与数据分片一致
 masterSlaveRule: #省略读写分离配置，与ShardingSphere-JDBC配置一致
 ```
 
-### 数据脱敏
+### 数据加密
 ```yaml
 dataSource: #省略数据源配置
 

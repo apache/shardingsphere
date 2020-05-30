@@ -31,13 +31,13 @@ SQL解析的接口用于规定用于解析SQL的ANTLR语法文件。
 
 主要接口是`DatabaseProtocolFrontendEngine`，其内置实现类有`MySQLProtocolFrontendEngine`和`PostgreSQLProtocolFrontendEngine`。
 
-### 数据脱敏
+### 数据加密
 
-数据脱敏的接口用于规定加解密器的加密、解密、类型获取、属性设置等方式。
+数据加密的接口用于规定加解密器的加密、解密、类型获取、属性设置等方式。
 
 主要接口有两个：`ShardingEncryptor`和`ShardingQueryAssistedEncryptor`，其中`ShardingEncryptor`的内置实现类有`AESShardingEncryptor`和`MD5ShardingEncryptor`。
 
-有关加解密介绍，请参考[数据脱敏](/cn/features/orchestration/encrypt/)。
+有关加解密介绍，请参考[数据加密](/cn/features/orchestration/encrypt/)。
 
 ### 分布式主键
 

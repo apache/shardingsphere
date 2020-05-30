@@ -92,7 +92,7 @@ props:
     sql.show: true
 ```
 
-### 数据脱敏
+### 数据加密
 ```yaml
 dataSource:  !!org.apache.commons.dbcp2.BasicDataSource
   driverClassName: com.mysql.jdbc.Driver
@@ -211,7 +211,7 @@ props:
   sql.show: true
 ```
 
-### 数据分片 + 数据脱敏
+### 数据分片 + 数据加密
 
 ```yaml
 dataSources:
@@ -278,7 +278,7 @@ props:
 ### 治理
 
 ```yaml
-#省略数据分片、读写分离和数据脱敏配置
+#省略数据分片、读写分离和数据加密配置
 
 orchestration:
   orchestration_ds:
@@ -378,7 +378,7 @@ masterSlaveRule:
     <property-name>: #属性值
 ```
 
-### 数据脱敏
+### 数据加密
 
 ```yaml
 dataSource: #省略数据源配置
@@ -405,7 +405,7 @@ encryptRule:
 dataSources: #省略数据源配置
 shardingRule: #省略分片规则配置
 masterSlaveRule: #省略读写分离规则配置
-encryptRule: #省略数据脱敏规则配置
+encryptRule: #省略数据加密规则配置
 
 orchestration:
   orchestration_ds: #治理实例名称

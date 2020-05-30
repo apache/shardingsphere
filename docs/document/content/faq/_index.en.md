@@ -215,11 +215,11 @@ More detail for SPI usage, please search by yourself.
 
 Other ShardingSphere [functionality implementation](https://shardingsphere.apache.org/document/current/en/features/spi/) will take effect in the same way.
 
-## 17. How to solve that `DATA MASKING` can't work with JPA?
+## 17. How to solve that `data encryption` can't work with JPA?
 
 Answer:
 
-Because DDL for data masking has not yet finished, JPA Entity cannot meet the DDL and DML at the same time, when JPA that automatically generates DDL is used with data masking.
+Because DDL for data encryption has not yet finished, JPA Entity cannot meet the DDL and DML at the same time, when JPA that automatically generates DDL is used with data encryption.
 
 The solutions are as follows: 
 
