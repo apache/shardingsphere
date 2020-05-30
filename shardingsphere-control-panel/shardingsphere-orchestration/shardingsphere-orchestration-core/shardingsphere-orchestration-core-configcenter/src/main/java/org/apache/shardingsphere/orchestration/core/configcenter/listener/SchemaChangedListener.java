@@ -20,15 +20,11 @@ package org.apache.shardingsphere.orchestration.core.configcenter.listener;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.commons.collections4.SetUtils;
-import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.ChangedType;
 import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.EncryptRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.IgnoredShardingOrchestrationEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.MasterSlaveRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.SchemaAddedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.SchemaDeletedEvent;
@@ -121,34 +117,8 @@ public final class SchemaChangedListener extends PostShardingCenterRepositoryEve
     }
     
     private ShardingOrchestrationEvent createRuleChangedEvent(final String shardingSchemaName, final DataChangedEvent event) {
-        return isEncryptRule(event)
-                ? createEncryptRuleChangedEvent(shardingSchemaName, event.getValue()) : isShardingRule(event)
-                ? createRuleConfigurationsChangedEvent(shardingSchemaName, event.getValue()) : createMasterSlaveRuleChangedEvent(shardingSchemaName, event.getValue());
-    }
-    
-    private boolean isShardingRule(final DataChangedEvent event) {
-        return event.getValue().contains("- !SHARDING");
-    }
-    
-    private boolean isEncryptRule(final DataChangedEvent event) {
-        return event.getValue().contains("- !ENCRYPT");
-    }
-    
-    private RuleConfigurationsChangedEvent createRuleConfigurationsChangedEvent(final String shardingSchemaName, final String ruleValue) {
         return new RuleConfigurationsChangedEvent(
-                shardingSchemaName, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(ruleValue, YamlRootRuleConfigurations.class).getRules()));
-    }
-    
-    private EncryptRuleChangedEvent createEncryptRuleChangedEvent(final String shardingSchemaName, final String ruleValue) {
-        Collection<RuleConfiguration> ruleConfigurations = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
-                YamlEngine.unmarshal(ruleValue, YamlRootRuleConfigurations.class).getRules());
-        return new EncryptRuleChangedEvent(shardingSchemaName, (EncryptRuleConfiguration) ruleConfigurations.iterator().next());
-    }
-    
-    private MasterSlaveRuleChangedEvent createMasterSlaveRuleChangedEvent(final String shardingSchemaName, final String ruleValue) {
-        Collection<RuleConfiguration> ruleConfigurations = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
-                YamlEngine.unmarshal(ruleValue, YamlRootRuleConfigurations.class).getRules());
-        return new MasterSlaveRuleChangedEvent(shardingSchemaName, (MasterSlaveRuleConfiguration) ruleConfigurations.iterator().next());
+                shardingSchemaName, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(event.getValue(), YamlRootRuleConfigurations.class).getRules()));
     }
     
     private ShardingOrchestrationEvent createUpdatedEventForNewSchema(final String shardingSchemaName) {
