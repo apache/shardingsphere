@@ -16,6 +16,6 @@
 #
 
 org.apache.shardingsphere.sharding.route.time.spi.MySQLDatabaseSQLEntry
-org.apache.shardingsphere.sharding.route.time.spi.OracleDatabaseSQLEntry
 org.apache.shardingsphere.sharding.route.time.spi.PostgreSQLDatabaseSQLEntry
+org.apache.shardingsphere.sharding.route.time.spi.OracleDatabaseSQLEntry
 org.apache.shardingsphere.sharding.route.time.spi.SQLServerDatabaseSQLEntry

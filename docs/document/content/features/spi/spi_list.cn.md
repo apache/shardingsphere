@@ -175,6 +175,29 @@ chapter = true
 | SnowflakeKeyGenerateAlgorithm | 基于雪花算法的分布式主键生成算法 |
 | UUIDKeyGenerateAlgorithm      | 基于UUID的分布式主键生成算法    |
 
+### TimeService
+
+| *SPI 名称*                  | *详细说明*                   |
+| --------------------------- | --------------------------- |
+| TimeService                 | 获取当前时间进行路由           |
+
+| *已知实现类*                 | *详细说明*                    |
+| --------------------------- | ---------------------------- |
+| DatabaseTimeServiceDelegate | 从数据库中获取当前时间进行路由   |
+
+### DatabaseSQLEntry
+
+| *SPI 名称*                 | *详细说明*                          |
+| -------------------------- | ---------------------------------- |
+| DatabaseSQLEntry           | 获取当前时间的数据库方言              |
+
+| *已知实现类*                | *详细说明*                          |
+| -------------------------- | ---------------------------------- |
+| MySQLDatabaseSQLEntry      | 从 MySQL 获取当前时间的数据库方言     |
+| PostgreSQLDatabaseSQLEntry | 从 PostgreSQL 获取当前时间的数据库方言|
+| OracleDatabaseSQLEntry     | 从 Oracle 获取当前时间的数据库方言    |
+| SQLServerDatabaseSQLEntry  | 从 SQLServer 获取当前时间的数据库方言 |
+
 ## 数据加密
 
 数据加密的接口用于规定加解密器的加密、解密、类型获取、属性设置等方式。

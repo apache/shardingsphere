@@ -175,6 +175,28 @@ Please refer to [SQL Parsing](/en/features/sharding/principle/parse/) for the in
 | SnowflakeKeyGenerateAlgorithm | Snowflake key generate algorithm |
 | UUIDKeyGenerateAlgorithm      | UUID key generate algorithm      |
 
+### TimeService
+
+| *SPI Name*                  | *Description*                                      |
+| --------------------------- | -------------------------------------------------- |
+| TimeService                 | Use current time for routing                       |
+
+| *Implementation Class*      | *Description*                                      |
+| --------------------------- | -------------------------------------------------- |
+| DatabaseTimeServiceDelegate | Get the current time from the database for routing |
+
+### DatabaseSQLEntry
+
+| *SPI Name*                 | *Description*                           |
+| -------------------------- | --------------------------------------- |
+| DatabaseSQLEntry           | Database dialect for get current time   |
+
+| *Implementation Class*     | *Description*                           |
+| -------------------------- | --------------------------------------- |
+| MySQLDatabaseSQLEntry      | MySQL dialect for get current time      |
+| PostgreSQLDatabaseSQLEntry | PostgreSQL dialect for get current time |
+| OracleDatabaseSQLEntry     | Oracle dialect for get current time     |
+| SQLServerDatabaseSQLEntry  | SQLServer dialect for get current time  |
 
 ## Data encryption
 
