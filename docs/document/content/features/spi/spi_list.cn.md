@@ -86,6 +86,22 @@ chapter = true
 
 ## 内核
 
+### DatabaseType
+
+| *SPI 名称*             | *详细说明*                |
+| ---------------------- | ------------------------ |
+| DatabaseType           | 支持的数据库类型           |
+
+| *已知实现类*            | *详细说明*                |
+| ---------------------- | ------------------------ |
+| SQL92DatabaseType      | 遵循 SQL92 标准的数据库类型 |
+| MySQLDatabaseType      | MySQL 数据库              |
+| MariaDBDatabaseType    | MariaDB 数据库            |
+| PostgreSQLDatabaseType | PostgreSQL 数据库         |
+| OracleDatabaseType     | Oracle 数据库             |
+| SQLServerDatabaseType  | SQLServer 数据库          |
+| H2DatabaseType         | H2 数据库                 |
+
 ### RuleMetaDataLoader
 
 | *SPI 名称*             | *详细说明*         |

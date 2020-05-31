@@ -86,6 +86,22 @@ chapter = true
 
 ## Kernel
 
+### DatabaseType
+
+| *SPI Name*             | *Description*           |
+| ---------------------- | ----------------------- |
+| DatabaseType           | Supported database type |
+
+| *Implementation Class* | *Description*           |
+| ---------------------- | ----------------------- |
+| SQL92DatabaseType      | SQL92 database type     |
+| MySQLDatabaseType      | MySQL database          |
+| MariaDBDatabaseType    | MariaDB database        |
+| PostgreSQLDatabaseType | PostgreSQL database     |
+| OracleDatabaseType     | Oracle database         |
+| SQLServerDatabaseType  | SQLServer database      |
+| H2DatabaseType         | H2 database             |
+
 ### RuleMetaDataLoader
 
 | *SPI Name*             | *Description*                           |
