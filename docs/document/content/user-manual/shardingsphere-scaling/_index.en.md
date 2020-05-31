@@ -1,7 +1,7 @@
 +++
-pre = "<b>4.5. </b>"
+pre = "<b>4.4. </b>"
 title = "ShardingSphere-Scaling"
-weight = 5
+weight = 4
 chapter = true
 +++
 
