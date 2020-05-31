@@ -21,8 +21,6 @@ chapter = true
 | OracleParserConfiguration     | 基于 Oracle 的SQL 解析器实现                       |
 | SQL92ParserConfiguration      | 基于 SQL92 的SQL 解析器实现                        |
 
-有关SQL解析介绍，请参考[SQL解析](/cn/features/sharding/principle/parse/)。
-
 ## 数据库协议
 
 ### DatabaseProtocolFrontendEngine
@@ -135,6 +133,17 @@ chapter = true
 | ---------------------------- | --------------------- |
 | ReplicaExecuteGroupDecorator | 用于多副本数据节点分组   |
 
+### SQLExecutionHook
+
+| *SPI 名称*                     | *详细说明*                        |
+| ----------------------------- | --------------------------------- |
+| SQLExecutionHook              | SQL执行过程监听器 |
+
+| *已知实现类*                   | *详细说明*                         |
+| ----------------------------- | --------------------------------- |
+| TransactionalSQLExecutionHook | 基于事务的SQL执行过程监听器          |
+| OpenTracingSQLExecutionHook   | 基于 OpenTracing 的SQL执行过程监听器 |
+
 ### ResultProcessEngine
 
 | *SPI 名称*                   | *详细说明*           |
@@ -174,8 +183,6 @@ chapter = true
 | ----------------------------- | ---------------------------- |
 | SnowflakeKeyGenerateAlgorithm | 基于雪花算法的分布式主键生成算法 |
 | UUIDKeyGenerateAlgorithm      | 基于UUID的分布式主键生成算法    |
-
-有分布式主键的介绍，请参考[分布式主键](/cn/features/sharding/concept/key-generator/)。
 
 ### TimeService
 
@@ -238,30 +245,52 @@ chapter = true
 | ---------------------- | ------------------------- |
 | 无                     |                           |
 
-有关加解密介绍，请参考[数据加密](/cn/features/encrypt/)。
-
-
-
 ## 分布式事务
 
-分布式事务的接口主要用于规定如何将分布式事务适配为本地事务接口。
+### ShardingTransactionManager
 
-主要接口为`ShardingTransactionManager`，其内置实现类有`XAShardingTransactionManager`和`SeataATShardingTransactionManager`。
+| *SPI 名称*                         | *详细说明*                 |
+| --------------------------------- | -------------------------- |
+| ShardingTransactionManager        | 分布式事务管理器             |
 
-有关分布式事务的介绍，请参考[分布式事务](/cn/features/transaction/)。
+| *已知实现类*                       | *详细说明*                  |
+| --------------------------------- | -------------------------- |
+| XAShardingTransactionManager      | 基于 XA 的分布式事务管理器    |
+| SeataATShardingTransactionManager | 基于 Seata 的分布式事务管理器 |
 
-## XA事务管理器
+### XATransactionManager
 
-XA事务管理器的接口主要用于规定如何将XA事务的实现者适配为统一的XA事务接口。
+| *SPI 名称*                   | *详细说明*                         |
+| ---------------------------- | --------------------------------- |
+| XATransactionManager         | XA分布式事务管理器                  |
 
-主要接口为`XATransactionManager`，其内置实现类有`AtomikosTransactionManager`, `NarayanaXATransactionManager`和`BitronixXATransactionManager`。
+| *已知实现类*                  | *详细说明*                         |
+| ---------------------------- | --------------------------------- |
+| AtomikosTransactionManager   | 基于 Atomikos 的 XA 分布式事务管理器 |
+| NarayanaXATransactionManager | 基于 Narayana 的 XA 分布式事务管理器 |
+| BitronixXATransactionManager | 基于 Bitronix 的 XA 分布式事务管理器 |
 
-有关XA事务管理器的介绍，请参考[XA事务管理器](/cn/features/concept/2pc-xa-transaction/)。
+### XADataSourceDefinition
 
-## 注册中心
+| *SPI 名称*                        | *详细说明*                                                |
+| -------------------------------- | --------------------------------------------------------- |
+| XADataSourceDefinition           | 非 XA 数据源自动转化为 XA 数据源                             |
 
-注册中心的接口主要用于规定注册中心初始化、存取数据、更新数据、监控等行为。
+| *已知实现类*                      | *详细说明*                                                 |
+| -------------------------------- | --------------------------------------------------------- |
+| MySQLXADataSourceDefinition      | 非 XA 的 MySQL 数据源自动转化为 XA 的 MySQL 数据源           |
+| MariaDBXADataSourceDefinition    | 非 XA 的 MariaDB 数据源自动转化为 XA 的 MariaDB 数据源       |
+| PostgreSQLXADataSourceDefinition | 非 XA 的 PostgreSQL 数据源自动转化为 XA 的 PostgreSQL 数据源 |
+| OracleXADataSourceDefinition     | 非 XA 的 Oracle 数据源自动转化为 XA 的 Oracle 数据源         |
+| SQLServerXADataSourceDefinition  | 非 XA 的 SQLServer 数据源自动转化为 XA 的 SQLServer 数据源   |
+| H2XADataSourceDefinition         | 非 XA 的 H2 数据源自动转化为 XA 的 H2 数据源                 |
 
-主要接口为`RegistryCenter`，其内置实现类有Zookeeper。
+### DataSourcePropertyProvider
 
-相关介绍请参考[注册中心](/cn/features/orchestration/supported-registry-repo/)。
+| *SPI 名称*                  | *详细说明*                       |
+| -------------------------- | ------------------------------- |
+| DataSourcePropertyProvider | 用于获取数据源连接池的标准属性      |
+
+| *已知实现类*                | *详细说明*                       |
+| -------------------------- | ------------------------------- |
+| HikariCPPropertyProvider   | 用于获取 HikariCP 连接池的标准属性 |

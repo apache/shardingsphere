@@ -21,8 +21,6 @@ chapter = true
 | OracleParserConfiguration     | Based on Oracle's SQL parser                          |
 | SQL92ParserConfiguration      | Based on SQL92's SQL parser                           |
 
-Please refer to [SQL Parsing](/en/features/sharding/principle/parse/) for the introduction.
-
 ## Database Protocol
 
 ### DatabaseProtocolFrontendEngine
@@ -135,6 +133,17 @@ Please refer to [SQL Parsing](/en/features/sharding/principle/parse/) for the in
 | ---------------------------- | -------------------------------------- |
 | ReplicaExecuteGroupDecorator | Used by multi replica data nodes group |
 
+### SQLExecutionHook
+
+| *SPI Name*                    | *Description*                      |
+| ----------------------------- | ---------------------------------- |
+| SQLExecutionHook              | Hook of SQL execution              |
+
+| *Implementation Class*        | *Description*                      |
+| ----------------------------- | ---------------------------------- |
+| TransactionalSQLExecutionHook | Transaction hook of SQL execution  |
+| OpenTracingSQLExecutionHook   | Open tracing hook of SQL execution |
+
 ### ResultProcessEngine
 
 | *SPI Name*                   | *Description*                                         |
@@ -174,8 +183,6 @@ Please refer to [SQL Parsing](/en/features/sharding/principle/parse/) for the in
 | ----------------------------- | -------------------------------- |
 | SnowflakeKeyGenerateAlgorithm | Snowflake key generate algorithm |
 | UUIDKeyGenerateAlgorithm      | UUID key generate algorithm      |
-
-Please refer to [Distributed Primary Key](/en/features/sharding/concept/key-generator/) for the introduction.
 
 ### TimeService
 
@@ -238,29 +245,53 @@ Please refer to [Distributed Primary Key](/en/features/sharding/concept/key-gene
 | ---------------------- | ---------------------------------------------------------- |
 | None                   |                                                            |
 
-
-
-
 ## Distributed Transaction
 
-The distributed transaction interface is to regulate how to adapter distributed transaction to local transaction API.
+### ShardingTransactionManager
 
-Its main interface is `ShardingTransactionManager` and built-in implementation types are `XAShardingTransactionManager` and `SeataATShardingTransactionManager`.
+| *SPI Name*                        | *Description*                         |
+| --------------------------------- | ------------------------------------- |
+| ShardingTransactionManager        | Distributed transaction manager       |
 
-Please refer to [Distributed Transaction](/en/features/transaction/) for the introduction.
+| *Implementation Class*            | *Description*                         |
+| --------------------------------- | ------------------------------------- |
+| XAShardingTransactionManager      | XA distributed transaction manager    |
+| SeataATShardingTransactionManager | Seata distributed transaction manager |
 
-## XA Transaction Manager
+### XATransactionManager
 
-The XA transaction manager interface is to regulate how to adapter XA transaction manager's implementors to unified XA transaction manager API.
+| *SPI Name*                   | *Description*                                        |
+| ---------------------------- | ---------------------------------------------------- |
+| XATransactionManager         | XA distributed transaction manager                   |
 
-Its main interface is `XATransactionManager` and built-in implementation types are `AtomikosTransactionManager`, `NarayanaXATransactionManager` and `BitronixXATransactionManager`.
+| *Implementation Class*       | *Description*                                        |
+| ---------------------------- | ---------------------------------------------------- |
+| AtomikosTransactionManager   | XA distributed transaction manager based on Atomikos |
+| NarayanaXATransactionManager | XA distributed transaction manager based on Narayana |
+| BitronixXATransactionManager | XA distributed transaction manager based on Bitronix |
 
-Please refer to [XA Transaction Manager](/en/features/concept/2pc-xa-transaction/) for the introduction.
+### XADataSourceDefinition
 
-## Registry Center
+| *SPI Name*                       | *Description*                                                           |
+| -------------------------------- | ----------------------------------------------------------------------- |
+| XADataSourceDefinition           | Auto convert Non XA data source to XA data source                       |
 
-The registry center interface is used to regulate its initialization, data storage, data upgrade, monitoring and others.
+| *Implementation Class*           | *Description*                                                           |
+| -------------------------------- | ----------------------------------------------------------------------- |
+| MySQLXADataSourceDefinition      | Auto convert Non XA MySQL data source to XA MySQL data source           |
+| MariaDBXADataSourceDefinition    | Auto convert Non XA MariaDB data source to XA MariaDB data source       |
+| PostgreSQLXADataSourceDefinition | Auto convert Non XA PostgreSQL data source to XA PostgreSQL data source |
+| OracleXADataSourceDefinition     | Auto convert Non XA Oracle data source to XA Oracle data source         |
+| SQLServerXADataSourceDefinition  | Auto convert Non XA SQLServer data source to XA SQLServer data source   |
+| H2XADataSourceDefinition         | Auto convert Non XA H2 data source to XA H2 data source                 |
 
-Its main interface is `RegistryCenter` and built-in implementation types are Zookeeper.
+### DataSourcePropertyProvider
 
-Please refer to [Available Registry Center](/en/features/orchestration/supported-registry-repo/) for the introduction.
+| *SPI Name*                 | *Description*                                       |
+| -------------------------- | --------------------------------------------------- |
+| DataSourcePropertyProvider | Used to get standard properties of data source pool |
+
+| *Implementation Class*     | *Description*                                       |
+| -------------------------- | --------------------------------------------------- |
+| HikariCPPropertyProvider   | Used to get standard properties of HikariCP         |
+
