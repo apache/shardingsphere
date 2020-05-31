@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.control;
 
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.control.core.ControlPanelSubscriber;
+import org.apache.shardingsphere.control.panel.core.ControlPanelSubscriber;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;

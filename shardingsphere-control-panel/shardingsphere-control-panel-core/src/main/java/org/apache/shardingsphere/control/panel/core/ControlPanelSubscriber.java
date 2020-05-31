@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.control.core;
+package org.apache.shardingsphere.control.panel.core;
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.cluster.heartbeat.event.HeartbeatDetectNoticeEvent;
@@ -246,8 +246,9 @@ public abstract class ControlPanelSubscriber {
         Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(oldSchemaContext.getName(), getNewDataSources(oldSchemaContext.getSchema().getDataSources(), 
                 deletedDataSources, getAddedDataSources(oldSchemaContext, newDataSources), modifiedDataSources));
         Map<String, Map<String, DataSourceParameter>> dataSourceParametersMap = createDataSourceParametersMap(Collections.singletonMap(oldSchemaContext.getName(), newDataSources));
-        return new SchemaContextsBuilder(dataSourcesMap, dataSourceParametersMap, this.schemaContexts.getAuthentication(), oldSchemaContext.getSchema().getDatabaseType(), Collections.singletonMap(oldSchemaContext.getName(),
-                oldSchemaContext.getSchema().getConfigurations()), this.schemaContexts.getProperties().getProps()).build().getSchemaContexts().get(oldSchemaContext.getName());
+        return new SchemaContextsBuilder(dataSourcesMap, dataSourceParametersMap, this.schemaContexts.getAuthentication(), oldSchemaContext.getSchema().getDatabaseType(), 
+                Collections.singletonMap(oldSchemaContext.getName(), oldSchemaContext.getSchema().getConfigurations()), 
+                this.schemaContexts.getProperties().getProps()).build().getSchemaContexts().get(oldSchemaContext.getName());
     }
     
     private Map<String, DataSource> getNewDataSources(final Map<String, DataSource> oldDataSources, final Collection<String> deletedDataSources,
