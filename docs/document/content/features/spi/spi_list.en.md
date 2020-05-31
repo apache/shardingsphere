@@ -203,6 +203,8 @@ Please refer to [Distributed Primary Key](/en/features/sharding/concept/key-gene
 
 ## Read-write splitting
 
+### MasterSlaveLoadBalanceAlgorithm
+
 | *SPI Name*                                | *Description*                                         |
 | ----------------------------------------- | ----------------------------------------------------- |
 | MasterSlaveLoadBalanceAlgorithm           | Load balance algorithm of slave databases             |

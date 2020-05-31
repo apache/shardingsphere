@@ -203,6 +203,8 @@ chapter = true
 
 ## 读写分离
 
+### MasterSlaveLoadBalanceAlgorithm
+
 | *SPI 名称*                                 | *详细说明*              |
 | ----------------------------------------- | ----------------------- |
 | MasterSlaveLoadBalanceAlgorithm           | 读库负载均衡算法          |
