@@ -369,6 +369,8 @@ chapter = true
 
 ## Scaling
 
+### ScalingEntry
+
 | *SPI Name*             | *Description*               |
 | ---------------------- | --------------------------- |
 | ScalingEntry           | Entry of scaling            |
@@ -377,3 +379,19 @@ chapter = true
 | ---------------------- | --------------------------- |
 | MySQLScalingEntry      | MySQL entry of scaling      |
 | PostgreSQLScalingEntry | PostgreSQL entry of scaling |
+
+## Proxy
+
+### JDBCDriverURLRecognizer
+
+| *SPI Name*              | *Description*                              |
+| ----------------------- | ------------------------------------------ |
+| JDBCDriverURLRecognizer | Use JDBC driver to execute SQL             |
+
+| *Implementation Class*  | *Description*                              |
+| ----------------------- | ------------------------------------------ |
+| MySQLRecognizer         |  Use MySQL JDBC driver to execute SQL      |
+| PostgreSQLRecognizer    |  Use PostgreSQL JDBC driver to execute SQL |
+| OracleRecognizer        |  Use Oracle JDBC driver to execute SQL     |
+| SQLServerRecognizer     |  Use SQLServer JDBC driver to execute SQL  |
+| H2Recognizer            |  Use H2 JDBC driver to execute SQL         |
