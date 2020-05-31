@@ -21,6 +21,16 @@ chapter = true
 | OracleParserConfiguration     | 基于 Oracle 的SQL 解析器实现                       |
 | SQL92ParserConfiguration      | 基于 SQL92 的SQL 解析器实现                        |
 
+### ParsingHook
+
+| *SPI 名称*             | *详细说明*                            |
+| ---------------------- | ------------------------------------ |
+| ParsingHook            | 用于SQL 解析过程追踪                   |
+
+| *已知实现类*            | *详细说明*                            |
+| ---------------------- | ------------------------------------ |
+| OpenTracingParsingHook | 使用 OpenTracing 协议追踪 SQL 解析过程 |
+
 ## 数据库协议
 
 ### DatabaseProtocolFrontendEngine
@@ -292,5 +302,52 @@ chapter = true
 | DataSourcePropertyProvider | 用于获取数据源连接池的标准属性      |
 
 | *已知实现类*                | *详细说明*                       |
-| -------------------------- | ------------------------------- |
+| -------------------------- 
+| ------------------------------- |
 | HikariCPPropertyProvider   | 用于获取 HikariCP 连接池的标准属性 |
+
+## 分布式治理
+
+### ConfigCenterRepository
+
+| *SPI 名称*                       | *详细说明*               |
+| -------------------------------- | ----------------------- |
+| ConfigCenterRepository           | 配置中心                 |
+
+| *已知实现类*                      | *详细说明*               |
+| -------------------------------- | ----------------------- |
+| CuratorZookeeperCenterRepository | 基于 ZooKeeper 的配置中心 |
+| EtcdCenterRepository             | 基于 Etcd 的配置中心      |
+| NacosCenterRepository            | 基于 Nacos 的配置中心     |
+| ApolloCenterRepository           | 基于 Apollo 的配置中心    |
+
+### RegistryCenterRepository
+
+| *SPI 名称*                       | *详细说明*               |
+| -------------------------------- | ----------------------- |
+| RegistryCenterRepository         | 注册中心                 |
+
+| *已知实现类*                      | *详细说明*               |
+| -------------------------------- | ----------------------- |
+| CuratorZookeeperCenterRepository | 基于 ZooKeeper 的注册中心 |
+| EtcdCenterRepository             | 基于 Etcd 的注册中心      |
+
+### RootInvokeHook
+
+| *SPI 名称*                 | *详细说明*                           |
+| ------------------------- | ------------------------------------ |
+| RootInvokeHook            | 请求调用入口追踪                       |
+
+| *已知实现类*               | *详细说明*                            |
+| ------------------------- | ------------------------------------ |
+| OpenTracingRootInvokeHook | 基于 OpenTracing 协议的请求调用入口追踪 |
+
+### MetricsTrackerManager
+
+| *SPI 名称*                      | *详细说明*                    |
+| ------------------------------- | --------------------------- |
+| MetricsTrackerManager           | 度量指标追踪                  |
+
+| *已知实现类*                     | *详细说明*                    |
+| ------------------------------- | ---------------------------- |
+| PrometheusMetricsTrackerManager | 基于 Prometheus 的度量指标追踪 |

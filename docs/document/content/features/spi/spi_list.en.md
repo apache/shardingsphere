@@ -9,7 +9,7 @@ chapter = true
 
 ### SQLParserConfiguration
 
-| *SPI Name*                    | *Descript ion*                                        |
+| *SPI Name*                    | *Description*                                        |
 | ----------------------------- | ----------------------------------------------------- |
 | SQLParserConfiguration        | Regulate for SQL parser ANTLR G4 file and AST visitor |
 
@@ -20,6 +20,16 @@ chapter = true
 | SQLServerParserConfiguration  | Based on SQLServer's SQL parser                       |
 | OracleParserConfiguration     | Based on Oracle's SQL parser                          |
 | SQL92ParserConfiguration      | Based on SQL92's SQL parser                           |
+
+### ParsingHook
+
+| *SPI Name*             | *Description*                                     |
+| ---------------------- | ------------------------------------------------- |
+| ParsingHook            | Used to trace SQL parse process                   |
+
+| *Implementation Class* | *Description*                                     |
+| ---------------------- | ------------------------------------------------- |
+| OpenTracingParsingHook | Use OpenTrace protocol to trace SQL parse process |
 
 ## Database Protocol
 
@@ -295,3 +305,48 @@ chapter = true
 | -------------------------- | --------------------------------------------------- |
 | HikariCPPropertyProvider   | Used to get standard properties of HikariCP         |
 
+## Distributed Governance
+
+### ConfigCenterRepository
+
+| *SPI Name*                       | *Description*           |
+| -------------------------------- | ----------------------- |
+| ConfigCenterRepository           | Config center           |
+
+| *Implementation Class*           | *Description*           |
+| -------------------------------- | ----------------------- |
+| CuratorZookeeperCenterRepository | ZooKeeper config center |
+| EtcdCenterRepository             | Etcd config center      |
+| NacosCenterRepository            | Nacos config center     |
+| ApolloCenterRepository           | Apollo config center    |
+
+### RegistryCenterRepository
+
+| *SPI Name*                       | *Description*             |
+| -------------------------------- | ------------------------- |
+| RegistryCenterRepository         | Registry center           |
+
+| *Implementation Class*           | *Description*             |
+| -------------------------------- | ------------------------- |
+| CuratorZookeeperCenterRepository | ZooKeeper registry center |
+| EtcdCenterRepository             | Etcd registry center      |
+
+### RootInvokeHook
+
+| *SPI Name*                | *Description*                                  |
+| ------------------------- | ---------------------------------------------- |
+| RootInvokeHook            | Used to trace request root                     |
+
+| *Implementation Class*    | *Description*                                  |
+| ------------------------- | ---------------------------------------------- |
+| OpenTracingRootInvokeHook | Use OpenTracing protocol to trace request root |
+
+### MetricsTrackerManager
+
+| *SPI Name*                      | *Description*                   |
+| ------------------------------- | ------------------------------- |
+| MetricsTrackerManager           | Metrics track manager           |
+
+| *Implementation Class*          | *Description*                   |
+| ------------------------------- | ------------------------------- |
+| PrometheusMetricsTrackerManager | Use Prometheus to track metrics |
