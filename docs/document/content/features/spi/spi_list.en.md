@@ -175,15 +175,18 @@ Please refer to [SQL Parsing](/en/features/sharding/principle/parse/) for the in
 | SnowflakeKeyGenerateAlgorithm | Snowflake key generate algorithm |
 | UUIDKeyGenerateAlgorithm      | UUID key generate algorithm      |
 
+Please refer to [Distributed Primary Key](/en/features/sharding/concept/key-generator/) for the introduction.
+
 ### TimeService
 
-| *SPI Name*                  | *Description*                                      |
-| --------------------------- | -------------------------------------------------- |
-| TimeService                 | Use current time for routing                       |
+| *SPI Name*                  | *Description*                                                |
+| --------------------------- | ------------------------------------------------------------ |
+| TimeService                 | Use current time for routing                                 |
 
-| *Implementation Class*      | *Description*                                      |
-| --------------------------- | -------------------------------------------------- |
-| DatabaseTimeServiceDelegate | Get the current time from the database for routing |
+| *Implementation Class*      | *Description*                                                |
+| --------------------------- | ------------------------------------------------------------ |
+| DefaultTimeService          | Get the current time from the application system for routing |
+| DatabaseTimeServiceDelegate | Get the current time from the database for routing           |
 
 ### DatabaseSQLEntry
 
@@ -198,21 +201,43 @@ Please refer to [SQL Parsing](/en/features/sharding/principle/parse/) for the in
 | OracleDatabaseSQLEntry     | Oracle dialect for get current time     |
 | SQLServerDatabaseSQLEntry  | SQLServer dialect for get current time  |
 
+## Read-write splitting
+
+| *SPI Name*                                | *Description*                                         |
+| ----------------------------------------- | ----------------------------------------------------- |
+| MasterSlaveLoadBalanceAlgorithm           | Load balance algorithm of slave databases             |
+
+| *Implementation Class*                    | *Description*                                         |
+| ----------------------------------------- | ----------------------------------------------------- |
+| RoundRobinMasterSlaveLoadBalanceAlgorithm | Round robin load balance algorithm of slave databases |
+| RandomMasterSlaveLoadBalanceAlgorithm     | Random load balance algorithm of slave databases      |
+
 ## Data encryption
 
-The data encryption interface is used to regulate the encryption, decryption, access type, property configuration and other methods of the encryptor.
+### Encryptor
 
-There are mainly two interfaces, `ShardingEncryptor` and `ShardingQueryAssistedEncryptor` and built-in implementation types are `AESShardingEncryptor` and `MD5ShardingEncryptor`. 
+| *SPI Name*             | *Description*              |
+| ---------------------- | -------------------------- |
+| Encryptor              | Data encrypt algorithm     |
 
-Please refer to [data encryption](/en/features/orchestration/encrypt/) for the introduction.
+| *Implementation Class* | *Description*              |
+| ---------------------- | -------------------------- |
+| MD5Encryptor           | MD5 data encrypt algorithm |
+| AESEncryptor           | AES data encrypt algorithm |
+| RC4Encryptor           | Rc4 data encrypt algorithm |
 
-## Distributed Primary Key
+### QueryAssistedEncryptor
 
-The distributed primary key interface is to regulate how to generate overall auto-increment, type access and property configurations.
+| *SPI Name*             | *Description*                                              |
+| ---------------------- | ---------------------------------------------------------- |
+| QueryAssistedEncryptor | Data encrypt algorithm which include query assisted column |
 
-Its main interface is `ShardingKeyGenerator` and built-in implementation types are `UUIDShardingKeyGenerator` and `SnowflakeShardingKeyGenerator`.
+| *Implementation Class* | *Description*                                              |
+| ---------------------- | ---------------------------------------------------------- |
+| None                   |                                                            |
 
-Please refer to [Distributed Primary Key](/en/features/sharding/other-features/key-generator/) for the introduction.
+
+
 
 ## Distributed Transaction
 

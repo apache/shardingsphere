@@ -175,15 +175,18 @@ chapter = true
 | SnowflakeKeyGenerateAlgorithm | 基于雪花算法的分布式主键生成算法 |
 | UUIDKeyGenerateAlgorithm      | 基于UUID的分布式主键生成算法    |
 
+有分布式主键的介绍，请参考[分布式主键](/cn/features/sharding/concept/key-generator/)。
+
 ### TimeService
 
 | *SPI 名称*                  | *详细说明*                   |
 | --------------------------- | --------------------------- |
 | TimeService                 | 获取当前时间进行路由           |
 
-| *已知实现类*                 | *详细说明*                    |
-| --------------------------- | ---------------------------- |
-| DatabaseTimeServiceDelegate | 从数据库中获取当前时间进行路由   |
+| *已知实现类*                 | *详细说明*                       |
+| --------------------------- | ------------------------------- |
+| DefaultTimeService          | 从应用系统时间中获取当前时间进行路由 |
+| DatabaseTimeServiceDelegate | 从数据库中获取当前时间进行路由      |
 
 ### DatabaseSQLEntry
 
@@ -198,21 +201,44 @@ chapter = true
 | OracleDatabaseSQLEntry     | 从 Oracle 获取当前时间的数据库方言    |
 | SQLServerDatabaseSQLEntry  | 从 SQLServer 获取当前时间的数据库方言 |
 
+## 读写分离
+
+| *SPI 名称*                                 | *详细说明*              |
+| ----------------------------------------- | ----------------------- |
+| MasterSlaveLoadBalanceAlgorithm           | 读库负载均衡算法          |
+
+| *已知实现类*                               | *详细说明*               |
+| ----------------------------------------- | ----------------------- |
+| RoundRobinMasterSlaveLoadBalanceAlgorithm | 基于轮询的读库负载均衡算法 |
+| RandomMasterSlaveLoadBalanceAlgorithm     | 基于随机的读库负载均衡算法 |
+
 ## 数据加密
 
-数据加密的接口用于规定加解密器的加密、解密、类型获取、属性设置等方式。
+### Encryptor
 
-主要接口有两个：`ShardingEncryptor`和`ShardingQueryAssistedEncryptor`，其中`ShardingEncryptor`的内置实现类有`AESShardingEncryptor`和`MD5ShardingEncryptor`。
+| *SPI 名称*    | *详细说明*            |
+| ------------ | --------------------- |
+| Encryptor    | 数据加密算法           |
 
-有关加解密介绍，请参考[数据加密](/cn/features/orchestration/encrypt/)。
+| *已知实现类*  | *详细说明*             |
+| ------------ | --------------------- |
+| MD5Encryptor | 基于 MD5 的数据加密算法 |
+| AESEncryptor | 基于 AES 的数据加密算法 |
+| RC4Encryptor | 基于 RC4 的数据加密算法 |
 
-## 分布式主键
+### QueryAssistedEncryptor
 
-分布式主键的接口主要用于规定如何生成全局性的自增、类型获取、属性设置等。
+| *SPI 名称*             | *详细说明*                 |
+| ---------------------- | ------------------------ |
+| QueryAssistedEncryptor | 包含查询辅助列的数据加密算法 |
 
-主要接口为`ShardingKeyGenerator`，其内置实现类有`UUIDShardingKeyGenerator`和`SnowflakeShardingKeyGenerator`。
+| *已知实现类*            | *详细说明*                 |
+| ---------------------- | ------------------------- |
+| 无                     |                           |
 
-有分布式主键的介绍，请参考[分布式主键](/cn/features/sharding/other-features/key-generator/)。
+有关加解密介绍，请参考[数据加密](/cn/features/encrypt/)。
+
+
 
 ## 分布式事务
 
