@@ -350,3 +350,14 @@ chapter = true
 | *Implementation Class*          | *Description*                   |
 | ------------------------------- | ------------------------------- |
 | PrometheusMetricsTrackerManager | Use Prometheus to track metrics |
+
+## Scaling
+
+| *SPI Name*             | *Description*               |
+| ---------------------- | --------------------------- |
+| ScalingEntry           | Entry of scaling            |
+
+| *Implementation Class* | *Description*               |
+| ---------------------- | --------------------------- |
+| MySQLScalingEntry      | MySQL entry of scaling      |
+| PostgreSQLScalingEntry | PostgreSQL entry of scaling |
