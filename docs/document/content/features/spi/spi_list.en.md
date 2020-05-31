@@ -66,6 +66,16 @@ Please refer to [SQL Parsing](/en/features/sharding/principle/parse/) for the in
 | EncryptRuleConfigurationYamlSwapper     | Used to convert YAML encryption configuration to standard encryption configuration           |
 | ShadowRuleConfigurationYamlSwapper      | Used to convert YAML shadow database configuration to standard shadow database configuration |
 
+### ShardingSphereYamlConstruct
+
+| *SPI Name*                                     | *Description*                                                |
+| ---------------------------------------------- | ------------------------------------------------------------ |
+| ShardingSphereYamlConstruct                    | Used to convert customized objects and YAML to each other    |
+
+| *Implementation Class*                         | *Description*                                                |
+| ---------------------------------------------- | ------------------------------------------------------------ |
+| NoneShardingStrategyConfigurationYamlConstruct | Used to convert non sharding strategy and YAML to each other |
+
 ## Kernel
 
 ### RuleMetaDataLoader
@@ -135,6 +145,35 @@ Please refer to [SQL Parsing](/en/features/sharding/principle/parse/) for the in
 | ---------------------------- | ----------------------------------------------------- |
 | ShardingResultMergerEngine   | Used by merge engine to process sharding result set   |
 | EncryptResultDecoratorEngine | Used by merge engine to process encryption result set |
+
+## Data Sharding
+
+### ShardingAlgorithm
+
+| *SPI Name*                      | *Description*                          |
+| ------------------------------- | -------------------------------------- |
+| ShardingAlgorithm               | Sharding algorithm                     |
+
+| *Implementation Class*          | *Description*                          |
+| ------------------------------- | -------------------------------------- |
+| InlineShardingAlgorithm         | Inline sharding algorithm              |
+| ModuloShardingAlgorithm         | Modulo sharding algorithm              |
+| HashShardingAlgorithm           | Hash sharding algorithm                |
+| DatetimeShardingAlgorithm       | Datetime sharding algorithm            |
+| CustomDateTimeShardingAlgorithm | Customized datetime sharding algorithm |
+| StandardRangeShardingAlgorithm  | Range sharding algorithm               |
+| CustomRangeShardingAlgorithm    | Customized range sharding algorithm    |
+
+### KeyGenerateAlgorithm
+
+| *SPI Name*                    | *Description*                    |
+| ----------------------------- | -------------------------------- |
+| KeyGenerateAlgorithm          | Key generate algorithm           |
+
+| *Implementation Class*        | *Description*                    |
+| ----------------------------- | -------------------------------- |
+| SnowflakeKeyGenerateAlgorithm | Snowflake key generate algorithm |
+| UUIDKeyGenerateAlgorithm      | UUID key generate algorithm      |
 
 
 ## Data encryption

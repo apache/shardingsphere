@@ -66,6 +66,16 @@ chapter = true
 | EncryptRuleConfigurationYamlSwapper     | 用于将加密的 YAML 分片配置转化为加密标准配置     |
 | ShadowRuleConfigurationYamlSwapper      | 用于将影子库的 YAML 分片配置转化为影子库标准配置 |
 
+### ShardingSphereYamlConstruct
+
+| *SPI 名称*                                     | *详细说明*                        |
+| ---------------------------------------------- | ------------------------------- |
+| ShardingSphereYamlConstruct                    | 用于将定制化对象和 YAML 相互转化    |
+
+| *已知实现类*                                    | *详细说明*                        |
+| ---------------------------------------------- | -------------------------------- |
+| NoneShardingStrategyConfigurationYamlConstruct | 用于将不分片策略对象和 YAML 相互转化 |
+
 ## 内核
 
 ### RuleMetaDataLoader
@@ -135,6 +145,35 @@ chapter = true
 | ---------------------------- | ------------------- |
 | ShardingResultMergerEngine   | 用于处理分片结果集归并 |
 | EncryptResultDecoratorEngine | 用于处理加密结果集改写 |
+
+## 数据分片
+
+### ShardingAlgorithm
+
+| *SPI 名称*                       | *详细说明*                   |
+| ------------------------------- | ---------------------------- |
+| ShardingAlgorithm               | 分片算法                      |
+
+| *已知实现类*                     | *详细说明*                    |
+| ------------------------------- | ---------------------------- |
+| InlineShardingAlgorithm         | 基于行表达式的分片算法          |
+| ModuloShardingAlgorithm         | 基于取模的分片算法             |
+| HashShardingAlgorithm           | 基于哈希取模的分片算法          |
+| DatetimeShardingAlgorithm       | 基于时间的分片算法             |
+| CustomDateTimeShardingAlgorithm | 基于用户自定义时间格式的分片算法 |
+| StandardRangeShardingAlgorithm  | 基于范围的分片算法             |
+| CustomRangeShardingAlgorithm    | 基于用户自定义范围的分片算法     |
+
+### KeyGenerateAlgorithm
+
+| *SPI 名称*                    | *详细说明*                    |
+| ----------------------------- | ---------------------------- |
+| KeyGenerateAlgorithm          | 分布式主键生成算法             |
+
+| *已知实现类*                   | *详细说明*                    |
+| ----------------------------- | ---------------------------- |
+| SnowflakeKeyGenerateAlgorithm | 基于雪花算法的分布式主键生成算法 |
+| UUIDKeyGenerateAlgorithm      | 基于UUID的分布式主键生成算法    |
 
 ## 数据加密
 
