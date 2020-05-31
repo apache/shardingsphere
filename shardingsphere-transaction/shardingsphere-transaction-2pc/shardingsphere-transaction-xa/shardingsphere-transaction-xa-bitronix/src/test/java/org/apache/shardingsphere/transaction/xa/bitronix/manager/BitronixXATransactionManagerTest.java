@@ -62,13 +62,9 @@ public class BitronixXATransactionManagerTest {
     }
     
     @Test
-    public void assertRegisterRecoveryResource() {
+    public void assertRegisterRecoveryResourceThenRemove() {
         bitronixXATransactionManager.registerRecoveryResource("ds1", xaDataSource);
         assertNotNull(ResourceRegistrar.get("ds1"));
-    }
-    
-    @Test
-    public void assertRemoveRecoveryResource() {
         bitronixXATransactionManager.removeRecoveryResource("ds1", xaDataSource);
         assertNull(ResourceRegistrar.get("ds1"));
     }

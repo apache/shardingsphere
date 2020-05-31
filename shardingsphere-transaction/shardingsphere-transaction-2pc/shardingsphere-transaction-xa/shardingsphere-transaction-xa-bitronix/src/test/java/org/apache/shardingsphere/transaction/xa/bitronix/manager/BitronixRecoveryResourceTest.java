@@ -63,25 +63,20 @@ public class BitronixRecoveryResourceTest {
         bitronixRecoveryResource = new BitronixRecoveryResource("ds1", xaDataSource);
     }
     
+    @SneakyThrows
     @Test
-    public void startRecovery() {
+    public void assertRecovery() {
         XAResourceHolderState xaResourceHolderState = bitronixRecoveryResource.startRecovery();
         assertEquals(xaResourceHolderState.getUniqueName(), "ds1");
         XAResourceHolder xaResourceHolder = xaResourceHolderState.getXAResourceHolder();
         assertThat(xaResourceHolder.getXAResource(), is(xaResource));
-    }
-    
-    @SneakyThrows
-    @Test
-    public void endRecovery() {
-        bitronixRecoveryResource.startRecovery();
         bitronixRecoveryResource.endRecovery();
         verify(xaConnection).close();
     }
     
     @SneakyThrows
     @Test
-    public void findXAResourceHolder() {
+    public void assertFindXAResourceHolder() {
         assertNotNull(bitronixRecoveryResource.findXAResourceHolder(singleXAResource));
     }
 }
