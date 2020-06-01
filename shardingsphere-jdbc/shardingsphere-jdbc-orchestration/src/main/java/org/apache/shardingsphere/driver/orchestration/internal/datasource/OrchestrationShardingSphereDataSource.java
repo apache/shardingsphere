@@ -23,6 +23,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.driver.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.util.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -42,9 +43,11 @@ import org.apache.shardingsphere.orchestration.core.common.event.RuleConfigurati
 import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenter;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.orchestration.core.metadatacenter.event.MetaDataChangedEvent;
+import org.apache.shardingsphere.orchestration.core.registrycenter.event.CircuitStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationSchema;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
@@ -83,6 +86,11 @@ public class OrchestrationShardingSphereDataSource extends AbstractOrchestration
         Map<String, Collection<RuleConfiguration>> result = new LinkedHashMap<>(1, 1);
         result.put(DefaultSchema.LOGIC_NAME, dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getConfigurations());
         return result;
+    }
+    
+    @Override
+    public final Connection getConnection() {
+        return dataSource.getSchemaContexts().isCircuitBreak() ? new CircuitBreakerDataSource().getConnection() : getDataSource().getConnection();
     }
     
     /**
@@ -147,6 +155,18 @@ public class OrchestrationShardingSphereDataSource extends AbstractOrchestration
     public final synchronized void renew(final PropertiesChangedEvent propertiesChangedEvent) {
         dataSource = new ShardingSphereDataSource(dataSource.getDataSourceMap(), 
                 dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getConfigurations(), propertiesChangedEvent.getProps());
+    }
+    
+    /**
+     * Renew circuit breaker state.
+     *
+     * @param event circuit state changed event
+     */
+    @Subscribe
+    public synchronized void renew(final CircuitStateChangedEvent event) {
+        SchemaContexts oldSchemaContexts = dataSource.getSchemaContexts();
+        SchemaContexts schemaContexts = new SchemaContexts(oldSchemaContexts.getSchemaContexts(), oldSchemaContexts.getProperties(), oldSchemaContexts.getAuthentication(), event.isCircuitBreak());
+        dataSource = new ShardingSphereDataSource(schemaContexts);
     }
     
     /**
