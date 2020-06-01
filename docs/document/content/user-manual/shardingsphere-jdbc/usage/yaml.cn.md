@@ -3,7 +3,13 @@ title = "使用 YAML 配置"
 weight = 2
 +++
 
-## 引入 Maven 依赖
+## 数据分片
+
+数据分片是 Apache ShardingSphere 的基础能力，本节以数据分片的使用举例。
+除数据分片之外，读写分离、多副本、数据加密、影子库压测等功能的使用方法完全一致，只要配置相应的规则即可。多规则可以叠加配置。
+详情请参见[配置手册](/cn/user-manual/shardingsphere-jdbc/configuration/config-yaml/)。
+
+### 引入 Maven 依赖
 
 ```xml
 <dependency>
@@ -13,7 +19,7 @@ weight = 2
 </dependency>
 ```
 
-## 规则配置
+### 规则配置
 
 ShardingSphere-JDBC 的 YAML 配置文件 通过数据源集合、规则集合以及属性配置组成。
 以下示例是根据 `user_id` 取模分库, 且根据 `order_id` 取模分表的 2 库 2 表的配置。
@@ -67,7 +73,7 @@ rules:
 DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(yamlFile);
 ```
 
-## 使用 ShardingSphereDataSource
+### 使用 ShardingSphereDataSource
 
 通过 YamlShardingSphereDataSourceFactory 工厂创建的 ShardingSphereDataSource 实现自 JDBC 的标准接口 DataSource。
 可通过 DataSource 选择使用原生 JDBC，或JPA， MyBatis 等 ORM 框架。

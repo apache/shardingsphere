@@ -3,7 +3,13 @@ title = "使用 Spring Boot Starter"
 weight = 3
 +++
 
-## 引入 Maven 依赖
+## 数据分片
+
+数据分片是 Apache ShardingSphere 的基础能力，本节以数据分片的使用举例。
+除数据分片之外，读写分离、多副本、数据加密、影子库压测等功能的使用方法完全一致，只要配置相应的规则即可。多规则可以叠加配置。
+详情请参见[配置手册](/cn/user-manual/shardingsphere-jdbc/configuration/config-spring-boot/)。
+
+### 引入 Maven 依赖
 
 ```xml
 <dependency>
@@ -13,7 +19,7 @@ weight = 3
 </dependency>
 ```
 
-## 规则配置
+### 规则配置
 
 ```properties
 # 配置真实数据源
@@ -51,7 +57,7 @@ spring.shardingsphere.rules.sharding.tables.t_order.table-strategy.standard.shar
 
 ```
 
-### 使用 JNDI 数据源
+#### 使用 JNDI 数据源
 
 如果计划使用 JNDI 配置数据库，在应用容器（如 Tomcat）中使用 ShardingSphere-JDBC 时，
 可使用 `spring.shardingsphere.datasource.${datasourceName}.jndiName` 来代替数据源的一系列配置。如：
@@ -69,7 +75,7 @@ spring.shardingsphere.datasource.ds1.jndi-name=java:comp/env/jdbc/ds1
 # ...
 ```
 
-## 在 Spring 中使用 ShardingSphereDataSource
+### 在 Spring 中使用 ShardingSphereDataSource
 
 直接通过注入的方式即可使用 ShardingSphereDataSource；或者将 ShardingSphereDataSource 配置在JPA， MyBatis 等 ORM 框架中配合使用。
 

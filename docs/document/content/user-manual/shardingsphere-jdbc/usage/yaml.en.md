@@ -3,7 +3,16 @@ title = "Use YAML"
 weight = 2
 +++
 
-## Import Maven Dependency
+## Data Sharding
+
+Data sharding is the basic capability of Apache ShardingSphere. 
+This section uses data sharding as an example.
+The usage of functions such as read-write-splitting, multi replica, data encryption, shadow database is completely consistent with data sharding, as long as the corresponding rules are configured. 
+Multiple rules can be appended.
+
+Please refer to [Configuration Manual](/en/user-manual/shardingsphere-jdbc/configuration/config-yaml/) for more details.
+
+### Import Maven Dependency
 
 ```xml
 <dependency>
@@ -13,7 +22,7 @@ weight = 2
 </dependency>
 ```
 
-## Configure Rule
+### Configure Rule
 
 ShardingSphere-JDBC YAML file consists of data sources, rules and properties configuration.
 The following example is the configuration of 2 databases and 2 tables, 
@@ -68,7 +77,7 @@ rules:
 DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(yamlFile);
 ```
 
-## Use ShardingSphereDataSource
+### Use ShardingSphereDataSource
 
 The ShardingSphereDataSource created by YamlShardingSphereDataSourceFactory implements the standard JDBC DataSource interface.
 Developer can choose to use native JDBC or ORM frameworks such as JPA or MyBatis through the DataSource.

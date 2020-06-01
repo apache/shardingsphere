@@ -3,7 +3,16 @@ title = "Use Spring Boot Starter"
 weight = 3
 +++
 
-## Import Maven Dependency
+## Data Sharding
+
+Data sharding is the basic capability of Apache ShardingSphere. 
+This section uses data sharding as an example.
+The usage of functions such as read-write-splitting, multi replica, data encryption, shadow database is completely consistent with data sharding, as long as the corresponding rules are configured. 
+Multiple rules can be appended.
+
+Please refer to [Configuration Manual](/en/user-manual/shardingsphere-jdbc/configuration/config-spring-boot/) for more details.
+
+### Import Maven Dependency
 
 ```xml
 <dependency>
@@ -13,7 +22,7 @@ weight = 3
 </dependency>
 ```
 
-## Configure Rule
+### Configure Rule
 
 ```properties
 # Configure actual data sources
@@ -50,7 +59,7 @@ spring.shardingsphere.rules.sharding.tables.t_order.table-strategy.standard.shar
 # ...
 ```
 
-### Use JNDI Data Source
+#### Use JNDI Data Source
 
 If developer plan to use ShardingSphere-JDBC in Web Server (such as Tomcat) with JNDI data source, 
 `spring.shardingsphere.datasource.${datasourceName}.jndiName` can be used as an alternative to series of configuration of datasource. 
@@ -69,7 +78,7 @@ spring.shardingsphere.datasource.ds1.jndi-name=java:comp/env/jdbc/ds1
 # ...
 ```
 
-## Use ShardingSphereDataSource in Spring
+### Use ShardingSphereDataSource in Spring
 
 ShardingSphereDataSource can be used directly by injection; 
 or configure ShardingSphereDataSource in ORM frameworks such as JPA or MyBatis.
