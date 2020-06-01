@@ -15,11 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.control.panel.core;
+package org.apache.shardingsphere.orchestration.core.schema;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.cluster.heartbeat.event.HeartbeatDetectNoticeEvent;
-import org.apache.shardingsphere.cluster.heartbeat.eventbus.HeartbeatEventBus;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -63,13 +61,12 @@ import java.util.Map.Entry;
  * Control panel subscriber.
  * 
  */
-public abstract class ControlPanelSubscriber {
+public abstract class OrchestrationSchemaContexts {
     
     private SchemaContexts schemaContexts;
     
-    public ControlPanelSubscriber() {
+    public OrchestrationSchemaContexts() {
         ShardingOrchestrationEventBus.getInstance().register(this);
-        HeartbeatEventBus.getInstance().register(this);
     }
     
     /**
@@ -191,16 +188,6 @@ public abstract class ControlPanelSubscriber {
         schemaContexts.remove(schemaName);
         schemaContexts.put(schemaName, getChangedSchemaContext(this.schemaContexts.getSchemaContexts().get(schemaName), dataSourceChangedEvent.getDataSourceConfigurations()));
         this.schemaContexts = new SchemaContexts(schemaContexts, this.schemaContexts.getProperties(), this.schemaContexts.getAuthentication());
-    }
-    
-    /**
-     * Heart beat detect.
-     *
-     * @param event heart beat detect notice event
-     */
-    @Subscribe
-    public synchronized void heartbeat(final HeartbeatDetectNoticeEvent event) {
-        // TODO Move HeartbeatHandler from proxy to cluster
     }
     
     private SchemaContext getAddedSchemaContext(final SchemaAddedEvent schemaAddedEvent) throws Exception {
