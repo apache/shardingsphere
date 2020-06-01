@@ -3,8 +3,6 @@ title = "Orchestration"
 weight = 14
 +++
 
-Using orchestration requires designating a config center, registry center & metadata center, in which all the configurations are saved. Users can either use local configurations to cover config center configurations or read configurations from config center.
-
 ## Not Use Spring
 
 ### Import Maven Dependency
