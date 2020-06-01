@@ -5,45 +5,6 @@ weight = 14
 
 ## 不使用Spring
 
-### 引入Maven依赖
-
-```xml
-<dependency>
-    <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-jdbc-orchestration</artifactId>
-    <version>${shardingsphere.version}</version>
-</dependency>
-
-<!--若使用zookeeper, 请加入下面Maven坐标-->
-<dependency>
-    <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-orchestration-reg-zookeeper-curator</artifactId>
-    <version>${shardingsphere.version}</version>
-</dependency>
-```
-
-### 基于Java编码的规则配置
-
-```java
-    // 省略配置dataSourceMap以及shardingRuleConfig
-    // ...
-
-    // 配置配置/注册/元数据中心
-    Properties properties = new Properties();
-    properties.setProperty("overwrite", overwrite);
-    CenterConfiguration centerConfiguration = new CenterConfiguration("zookeeper", properties);
-    centerConfiguration.setServerLists("localhost:2181");
-    centerConfiguration.setNamespace("shardingsphere-orchestration");
-    centerConfiguration.setOrchestrationType("registry_center,config_center,metadata_center");
-
-    // 配置治理
-    Map<String, CenterConfiguration> instanceConfigurationMap = new HashMap<String, CenterConfiguration>();
-    instanceConfigurationMap.put("orchestration-shardingsphere-data-source", centerConfiguration);
-
-    // 获取数据源对象
-    OrchestrationShardingDataSourceFactory.createDataSource(
-                        createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), new OrchestrationConfiguration(instanceConfigurationMap));
-```
 
 ### 基于Yaml的规则配置
 
@@ -61,7 +22,7 @@ orchestration:
 ```
 
 ```java
-    DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(yamlFile);
+DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(yamlFile);
 ```
 
 ## 使用Spring
