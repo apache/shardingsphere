@@ -59,7 +59,7 @@ tableShardingAlgorithm.setProperties(tableProps);
 StandardShardingStrategyConfiguration tableShardingStrategyConfig = new StandardShardingStrategyConfiguration("order_id", tableShardingAlgorithm);
 orderTableRuleConfig.setTableShardingStrategyConfig(tableShardingStrategyConfig);
 
-// Omit order_item table rule configuration
+// Omit order_item table rule configuration ...
 // ...
     
 // Configure sharding rule
@@ -72,7 +72,7 @@ DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(dataSou
 
 ## Use ShardingSphereDataSource
 
-The `ShardingSphereDataSource` created by `ShardingSphereDataSourceFactory` implements the standard JDBC DataSource interface.
+The ShardingSphereDataSource created by ShardingSphereDataSourceFactory implements the standard JDBC DataSource interface.
 Developer can choose to use native JDBC or ORM frameworks such as JPA or MyBatis through the DataSource.
 
 Take native JDBC usage as an example:

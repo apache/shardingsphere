@@ -39,7 +39,7 @@ rules:
 # Configure sharding rule
 - !SHARDING
   tables:
-    # Configure order table rule
+    # Configure t_order table rule
     t_order: 
       actualDataNodes: ds${0..1}.t_order${0..1}
       # Configure database sharding strategy
@@ -59,7 +59,7 @@ rules:
                 props:
                   algorithm.expression: t_order${order_id % 2}
     t_order_item: 
-    # Omit order_item table rule configuration
+    # Omit order_item table rule configuration ...
     # ...
 ```
 
@@ -69,7 +69,7 @@ rules:
 
 ## Use ShardingSphereDataSource
 
-The `ShardingSphereDataSource` created by `YamlShardingSphereDataSourceFactory` implements the standard JDBC DataSource interface.
+The ShardingSphereDataSource created by YamlShardingSphereDataSourceFactory implements the standard JDBC DataSource interface.
 Developer can choose to use native JDBC or ORM frameworks such as JPA or MyBatis through the DataSource.
 
 Take native JDBC usage as an example:

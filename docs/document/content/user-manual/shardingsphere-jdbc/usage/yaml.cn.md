@@ -68,7 +68,7 @@ DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(yam
 
 ## 使用 ShardingSphereDataSource
 
-通过 `YamlShardingSphereDataSourceFactory` 工厂创建的 `ShardingSphereDataSource` 实现自 JDBC 的标准接口 DataSource。
+通过 YamlShardingSphereDataSourceFactory 工厂创建的 ShardingSphereDataSource 实现自 JDBC 的标准接口 DataSource。
 可通过 DataSource 选择使用原生 JDBC，或JPA， MyBatis 等 ORM 框架。
 
 ```java
