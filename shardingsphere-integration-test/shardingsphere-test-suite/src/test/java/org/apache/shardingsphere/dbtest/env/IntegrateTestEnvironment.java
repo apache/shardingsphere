@@ -52,7 +52,7 @@ public final class IntegrateTestEnvironment {
         activeProfile = loadActiveProfile();
         Properties prop = new Properties();
         try {
-            prop.load(IntegrateTestEnvironment.class.getClassLoader().getResourceAsStream("proxy".equals(activeProfile) ? "integrate/env-proxy.properties" : "integrate/env.properties"));
+            prop.load(IntegrateTestEnvironment.class.getClassLoader().getResourceAsStream(isProxyEnvironment() ? "integrate/env-proxy.properties" : "integrate/env.properties"));
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
@@ -70,19 +70,19 @@ public final class IntegrateTestEnvironment {
                     break;
                 case "MySQL":
                     databaseEnvironments.put(each, new DatabaseEnvironment(each, prop.getProperty("mysql.host", "127.0.0.1"), Integer.parseInt(prop.getProperty("mysql.port", "3306")),
-                            prop.getProperty("mysql.username", "root"), prop.getProperty("mysql.password", "")));
+                        prop.getProperty("mysql.username", "root"), prop.getProperty("mysql.password", "")));
                     break;
                 case "PostgreSQL":
                     databaseEnvironments.put(each, new DatabaseEnvironment(each, prop.getProperty("postgresql.host", "127.0.0.1"), Integer.parseInt(prop.getProperty("postgresql.port", "5432")),
-                            prop.getProperty("postgresql.username", "postgres"), prop.getProperty("postgresql.password", "")));
+                        prop.getProperty("postgresql.username", "postgres"), prop.getProperty("postgresql.password", "")));
                     break;
                 case "SQLServer":
                     databaseEnvironments.put(each, new DatabaseEnvironment(each, prop.getProperty("sqlserver.host", "127.0.0.1"), Integer.parseInt(prop.getProperty("sqlserver.port", "1433")),
-                            prop.getProperty("sqlserver.username", "sa"), prop.getProperty("sqlserver.password", "Jdbc1234")));
+                        prop.getProperty("sqlserver.username", "sa"), prop.getProperty("sqlserver.password", "Jdbc1234")));
                     break;
                 case "Oracle":
                     databaseEnvironments.put(each, new DatabaseEnvironment(each, prop.getProperty("oracle.host", "127.0.0.1"), Integer.parseInt(prop.getProperty("oracle.port", "1521")),
-                            prop.getProperty("oracle.username", "jdbc"), prop.getProperty("oracle.password", "jdbc")));
+                        prop.getProperty("oracle.username", "jdbc"), prop.getProperty("oracle.password", "jdbc")));
                     break;
                 default:
                     break;
@@ -101,8 +101,17 @@ public final class IntegrateTestEnvironment {
     }
     
     /**
+     * Is proxy environment.
+     *
+     * @return true or false
+     */
+    public boolean isProxyEnvironment() {
+        return "proxy".equals(activeProfile);
+    }
+    
+    /**
      * Get instance.
-     * 
+     *
      * @return singleton instance
      */
     public static IntegrateTestEnvironment getInstance() {
