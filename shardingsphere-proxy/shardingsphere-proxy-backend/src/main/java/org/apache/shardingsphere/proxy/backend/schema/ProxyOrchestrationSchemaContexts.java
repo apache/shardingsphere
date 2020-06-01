@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.control;
+package org.apache.shardingsphere.proxy.backend.schema;
 
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.control.panel.core.ControlPanelSubscriber;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
+import org.apache.shardingsphere.orchestration.core.schema.OrchestrationSchemaContexts;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSourceFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCRawBackendDataSourceFactory;
 import org.apache.shardingsphere.proxy.backend.util.DataSourceConverter;
@@ -35,7 +35,7 @@ import java.util.Map.Entry;
  * Proxy control panel subscriber.
  * 
  */
-public final class ProxyControlPanelSubscriber extends ControlPanelSubscriber {
+public final class ProxyOrchestrationSchemaContexts extends OrchestrationSchemaContexts {
     
     private final JDBCBackendDataSourceFactory backendDataSourceFactory = JDBCRawBackendDataSourceFactory.getInstance();
     
