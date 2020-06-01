@@ -136,4 +136,4 @@ spring.shardingsphere.orchestration.spring_boot_ds_sharding.props.overwrite=true
 </beans>
 ```
 
-更多的详细配置请参考[配置手册](/cn/manual/shardingsphere-jdbc/configuration/)。
+更多的详细配置请参考[配置手册](/cn/user-manual/shardingsphere-jdbc/configuration/)。
