@@ -1,15 +1,9 @@
 +++
-title = "使用 YAML 配置"
+title = "Use YAML"
 weight = 2
 +++
 
-## 数据分片
-
-数据分片是 Apache ShardingSphere 的基础能力，本节以数据分片的使用举例。
-除数据分片之外，读写分离、多副本、数据加密、影子库压测等功能的使用方法完全一致，只要配置相应的规则即可。多规则可以叠加配置。
-详情请参见[配置手册](/cn/user-manual/shardingsphere-jdbc/configuration/config-yaml/)。
-
-### 引入 Maven 依赖
+## Import Maven Dependency
 
 ```xml
 <dependency>
@@ -19,21 +13,22 @@ weight = 2
 </dependency>
 ```
 
-### 规则配置
+## Configure Rule
 
-ShardingSphere-JDBC 的 YAML 配置文件 通过数据源集合、规则集合以及属性配置组成。
-以下示例是根据 `user_id` 取模分库, 且根据 `order_id` 取模分表的 2 库 2 表的配置。
+ShardingSphere-JDBC YAML file consists of data sources, rules and properties configuration.
+The following example is the configuration of 2 databases and 2 tables, 
+whose databases take module and split according to `order_id`, tables take module and split according to `order_id`.
 
 ```yaml
-# 配置真实数据源
+# Configure actual data sources
 dataSources:
-  # 配置第 1 个数据源
+  # Configure the first data source
   ds0: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ds0
     username: root
     password:
-  # 配置第 2 个数据源
+  # Configure the second data source
   ds1: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ds1
@@ -41,13 +36,13 @@ dataSources:
     password: 
 
 rules:
-# 配置分片规则
+# Configure sharding rule
 - !SHARDING
   tables:
-    # 配置 t_order 表规则
+    # Configure t_order table rule
     t_order: 
       actualDataNodes: ds${0..1}.t_order${0..1}
-      # 配置分库策略
+      # Configure database sharding strategy
       databaseStrategy:
         standard:
           shardingColumn: user_id
@@ -55,7 +50,7 @@ rules:
             type: INLINE
             props:
               algorithm.expression: ds${user_id % 2}
-      # 配置分表策略
+      # Configure table sharding strategy
       tableStrategy:
         standard:
           shardingColumn: order_id
@@ -64,19 +59,21 @@ rules:
                 props:
                   algorithm.expression: t_order${order_id % 2}
     t_order_item: 
-    # 省略配置 t_order_item 表规则...
+    # Omit t_order_item table rule configuration ...
     # ...
 ```
 
 ```java
-// 创建 ShardingSphereDataSource
+// Create ShardingSphereDataSource
 DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(yamlFile);
 ```
 
-### 使用 ShardingSphereDataSource
+## Use ShardingSphereDataSource
 
-通过 YamlShardingSphereDataSourceFactory 工厂创建的 ShardingSphereDataSource 实现自 JDBC 的标准接口 DataSource。
-可通过 DataSource 选择使用原生 JDBC，或JPA， MyBatis 等 ORM 框架。
+The ShardingSphereDataSource created by YamlShardingSphereDataSourceFactory implements the standard JDBC DataSource interface.
+Developer can choose to use native JDBC or ORM frameworks such as JPA or MyBatis through the DataSource.
+
+Take native JDBC usage as an example:
 
 ```java
 DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(yamlFile);

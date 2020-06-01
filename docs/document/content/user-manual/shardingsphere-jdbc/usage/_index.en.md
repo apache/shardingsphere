@@ -5,7 +5,5 @@ weight = 1
 chapter = true
 +++
 
-## Navigation
-
 This chapter will introduce the use of ShardingSphere-JDBC. 
-Please refer to [Example](https://github.com/apache/shardingsphere-example) for more details.
+Please refer to [Example](https://github.com/apache/shardingsphere/tree/master/examples) for more details.

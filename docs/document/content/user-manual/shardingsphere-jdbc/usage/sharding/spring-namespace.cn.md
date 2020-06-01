@@ -1,18 +1,9 @@
 +++
-title = "Use Spring Namespace"
+title = "使用 Spring 命名空间"
 weight = 4
 +++
 
-## Data Sharding
-
-Data sharding is the basic capability of Apache ShardingSphere. 
-This section uses data sharding as an example.
-The usage of functions such as read-write-splitting, multi replica, data encryption, shadow database is completely consistent with data sharding, as long as the corresponding rules are configured. 
-Multiple rules can be appended.
-
-Please refer to [Configuration Manual](/en/user-manual/shardingsphere-jdbc/configuration/config-spring-namespace/) for more details.
-
-### Import Maven Dependency
+## 引入Maven依赖
 
 ```xml
 <dependency>
@@ -22,7 +13,7 @@ Please refer to [Configuration Manual](/en/user-manual/shardingsphere-jdbc/confi
 </dependency>
 ```
 
-### Configure Rule
+## 规则配置
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -34,15 +25,15 @@ Please refer to [Configuration Manual](/en/user-manual/shardingsphere-jdbc/confi
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding 
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd 
                         ">
-    <!-- Configure actual data sources -->
-    <!-- Configure the first data source -->
+    <!-- 配置真实数据源 -->
+    <!-- 配置第 1 个数据源 -->
     <bean id="ds0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://localhost:3306/ds0" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
-    <!-- Configure the second data source -->
+    <!-- 配置第 2 个数据源 -->
     <bean id="ds1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://localhost:3306/ds1" />
@@ -50,7 +41,7 @@ Please refer to [Configuration Manual](/en/user-manual/shardingsphere-jdbc/confi
         <property name="password" value="" />
     </bean>
     
-    <!-- Configure database sharding strategy -->
+    <!-- 配置分库策略 -->
     <sharding:sharding-algorithm id="dbShardingAlgorithm" type="INLINE">
         <props>
             <prop key="algorithm.expression">ds$->{user_id % 2}</prop>
@@ -58,7 +49,7 @@ Please refer to [Configuration Manual](/en/user-manual/shardingsphere-jdbc/confi
     </sharding:sharding-algorithm>
     <sharding:standard-strategy id="dbStrategy" sharding-column="user_id" algorithm-ref="dbShardingAlgorithm" />
     
-    <!-- Configure table sharding strategy -->
+    <!-- 配置分表策略 -->
     <sharding:sharding-algorithm id="tableShardingAlgorithm" type="INLINE">
         <props>
             <prop key="algorithm.expression">t_order$->{order_id % 2}</prop>
@@ -66,14 +57,14 @@ Please refer to [Configuration Manual](/en/user-manual/shardingsphere-jdbc/confi
     </sharding:sharding-algorithm>
     <sharding:standard-strategy id="tableStrategy" sharding-column="user_id" algorithm-ref="tableShardingAlgorithm" />
     
-    <!-- Configure ShardingSphereDataSource -->
+    <!-- 配置ShardingSphereDataSource -->
     <sharding:data-source id="shardingDataSource">
-        <!-- Configure sharding rule -->
+        <!-- 配置分片规则 -->
         <sharding:sharding-rule data-source-names="ds0,ds1">
             <sharding:table-rules>
-                <!-- Configure t_order table rule -->
+                <!-- 配置 t_order 表规则 -->
                 <sharding:table-rule logic-table="t_order" actual-data-nodes="ds$->{0..1}.t_order$->{0..1}" database-strategy-ref="dbStrategy" table-strategy-ref="tableStrategy" />
-                <!-- Omit t_order_item table rule configuration ... -->
+                <!-- 省略配置 t_order_item 表规则... -->
                 <!-- ... -->
             </sharding:table-rules>
         </sharding:sharding-rule>
@@ -81,10 +72,9 @@ Please refer to [Configuration Manual](/en/user-manual/shardingsphere-jdbc/confi
 </beans>
 ```
 
-### Use ShardingSphereDataSource in Spring
+## 在 Spring 中使用 ShardingSphereDataSource
 
-ShardingSphereDataSource can be used directly by injection; 
-or configure ShardingSphereDataSource in ORM frameworks such as JPA or MyBatis.
+直接通过注入的方式即可使用 ShardingSphereDataSource；或者将 ShardingSphereDataSource 配置在JPA， MyBatis 等 ORM 框架中配合使用。
 
 ```java
 @Resource

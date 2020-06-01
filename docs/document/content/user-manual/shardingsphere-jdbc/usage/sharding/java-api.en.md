@@ -3,16 +3,7 @@ title = "Use Java API"
 weight = 1
 +++
 
-## Data Sharding
-
-Data sharding is the basic capability of Apache ShardingSphere. 
-This section uses data sharding as an example.
-The usage of functions such as read-write-splitting, multi replica, data encryption, shadow database is completely consistent with data sharding, as long as the corresponding rules are configured. 
-Multiple rules can be appended.
-
-Please refer to [Configuration Manual](/en/user-manual/shardingsphere-jdbc/configuration/config-java/) for more details.
-
-### Import Maven Dependency
+## Import Maven Dependency
 
 ```xml
 <dependency>
@@ -22,7 +13,7 @@ Please refer to [Configuration Manual](/en/user-manual/shardingsphere-jdbc/confi
 </dependency>
 ```
 
-### Configure Rule
+## Configure Rule
 
 ShardingSphere-JDBC Java API consists of data sources, rules and properties configuration.
 The following example is the configuration of 2 databases and 2 tables, 
@@ -79,7 +70,7 @@ shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
 DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Collections.singleton((shardingRuleConfig), new Properties());
 ```
 
-### Use ShardingSphereDataSource
+## Use ShardingSphereDataSource
 
 The ShardingSphereDataSource created by ShardingSphereDataSourceFactory implements the standard JDBC DataSource interface.
 Developer can choose to use native JDBC or ORM frameworks such as JPA or MyBatis through the DataSource.
