@@ -1,14 +1,14 @@
 +++
 pre = "<b>4.2.1. </b>"
-title = "Manual"
+title = "Usage"
 weight = 1
 +++
 
 ## Proxy Initialization
 
 1. Download the latest version of ShardingSphere-Proxy.
-2. If users use docker, they can implement `docker pull shardingsphere/shardingsphere-proxy` to get the clone. Please refer to [Docker Clone](/en/manual/shardingsphere-proxy/docker/) for more details.
-3. After the decompression, revise `conf/server.yaml` and documents begin with `config-` prefix, `conf/config-xxx.yaml` for example, to configure sharding rules and read-write split rules. Please refer to [Configuration Manual](/en/manual/shardingsphere-proxy/configuration/) for the configuration method.
+2. If users use docker, they can implement `docker pull shardingsphere/shardingsphere-proxy` to get the clone. Please refer to [Docker Clone](/en/user-manual/shardingsphere-proxy/docker/) for more details.
+3. After the decompression, revise `conf/server.yaml` and documents begin with `config-` prefix, `conf/config-xxx.yaml` for example, to configure sharding rules and read-write split rules. Please refer to [Configuration Manual](/en/user-manual/shardingsphere-proxy/configuration/) for the configuration method.
 4. Please run `bin/start.sh` for Linux operating system; run `bin/start.bat` for Windows operating system to start ShardingSphere-Proxy. To configure start port and document location, please refer to [Quick Start](/en/quick-start/shardingsphere-proxy-quick-start/).
 5. Use any PostgreSQL server client end to connect, such as `psql -U root -h 127.0.0.1 -p 3307`.
 
@@ -18,13 +18,13 @@ If users want to use the database orchestration function of ShardingSphere-Proxy
 
 ### Zookeeper
 
-1. ShardingSphere-Proxy has provided the registry center solution of Zookeeper in default. Users only need to follow [Configuration Rules](/en/manual/shardingsphere-proxy/configuration/) to set the registry center and use it.
+1. ShardingSphere-Proxy has provided the registry center solution of Zookeeper in default. Users only need to follow [Configuration Rules](/en/user-manual/shardingsphere-proxy/configuration/) to set the registry center and use it.
 
 ### Other Third Party Registry Center
 
 1. Delete`shardingsphere-orchestration-reg-zookeeper-curator-${shardingsphere.version}.jar` under the lib catalog of ShardingSphere-Proxy.
 2. Use SPI methods in logic coding and put the generated jar package to the lib catalog of ShardingSphere-Proxy.
-3. Follow [Configuration Rules](/en/manual/shardingsphere-proxy/configuration/) to set the registry center and use it.
+3. Follow [Configuration Rules](/en/user-manual/shardingsphere-proxy/configuration/) to set the registry center and use it.
 
 ### Use of user-defined sharding algorithm class
 
