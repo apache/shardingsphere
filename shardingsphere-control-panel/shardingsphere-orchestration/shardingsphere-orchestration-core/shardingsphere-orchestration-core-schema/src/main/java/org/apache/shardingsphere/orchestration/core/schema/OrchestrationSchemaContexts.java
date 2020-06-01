@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.control.panel.core;
+package org.apache.shardingsphere.orchestration.core.schema;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.cluster.heartbeat.event.HeartbeatDetectNoticeEvent;
-import org.apache.shardingsphere.cluster.heartbeat.eventbus.HeartbeatEventBus;
+import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -36,6 +35,7 @@ import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEve
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
+import org.apache.shardingsphere.kernel.context.SchemaContextsQuery;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
@@ -47,6 +47,7 @@ import org.apache.shardingsphere.orchestration.core.common.event.SchemaAddedEven
 import org.apache.shardingsphere.orchestration.core.common.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.core.metadatacenter.event.MetaDataChangedEvent;
+import org.apache.shardingsphere.orchestration.core.registrycenter.event.CircuitStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationSchema;
 
@@ -63,22 +64,43 @@ import java.util.Map.Entry;
  * Control panel subscriber.
  * 
  */
-public abstract class ControlPanelSubscriber {
+public abstract class OrchestrationSchemaContexts implements SchemaContextsQuery {
     
-    private SchemaContexts schemaContexts;
+    private volatile SchemaContexts schemaContexts;
     
-    public ControlPanelSubscriber() {
+    public OrchestrationSchemaContexts(final SchemaContexts schemaContexts) {
         ShardingOrchestrationEventBus.getInstance().register(this);
-        HeartbeatEventBus.getInstance().register(this);
+        this.schemaContexts = schemaContexts;
     }
     
-    /**
-     * Register.
-     * 
-     * @param schemaContexts schema contexts
-     */
-    public void register(final SchemaContexts schemaContexts) {
-        this.schemaContexts = schemaContexts;
+    @Override
+    public final Map<String, SchemaContext> getSchemaContexts() {
+        return schemaContexts.getSchemaContexts();
+    }
+    
+    @Override
+    public final ConfigurationProperties getProperties() {
+        return schemaContexts.getProperties();
+    }
+    
+    @Override
+    public final Authentication getAuthentication() {
+        return schemaContexts.getAuthentication();
+    }
+    
+    @Override
+    public final SchemaContext getDefaultSchemaContext() {
+        return schemaContexts.getDefaultSchemaContext();
+    }
+    
+    @Override
+    public final boolean isCircuitBreak() {
+        return schemaContexts.isCircuitBreak();
+    }
+    
+    @Override
+    public final void close() {
+        schemaContexts.close();
     }
     
     /**
@@ -194,13 +216,13 @@ public abstract class ControlPanelSubscriber {
     }
     
     /**
-     * Heart beat detect.
+     * Renew circuit breaker state.
      *
-     * @param event heart beat detect notice event
+     * @param event circuit state changed event
      */
     @Subscribe
-    public synchronized void heartbeat(final HeartbeatDetectNoticeEvent event) {
-        // TODO Move HeartbeatHandler from proxy to cluster
+    public synchronized void renew(final CircuitStateChangedEvent event) {
+        this.schemaContexts = new SchemaContexts(schemaContexts.getSchemaContexts(), schemaContexts.getProperties(), schemaContexts.getAuthentication(), event.isCircuitBreak());
     }
     
     private SchemaContext getAddedSchemaContext(final SchemaAddedEvent schemaAddedEvent) throws Exception {

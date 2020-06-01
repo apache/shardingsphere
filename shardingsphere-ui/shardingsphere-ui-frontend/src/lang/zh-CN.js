@@ -48,6 +48,10 @@ export default {
       {
         title: '数据扩容',
         href: '/data-scaling'
+      },
+      {
+        title: '节点状态',
+        href: '/cluster-state'
       }
     ],
     connect: '已连接',
@@ -229,6 +233,14 @@ export default {
       serviceUrl: '服务地址',
       serviceNamePlaceholder: '请输入服务名称',
       serviceUrlPlaceholder: '请输入服务地址'
+    }
+  },
+  clusterState: {
+    legendLabel: {
+      onLine: '正常',
+      offLine: '下线',
+      disabled: '禁用',
+      unknown: '未知'
     }
   }
 }

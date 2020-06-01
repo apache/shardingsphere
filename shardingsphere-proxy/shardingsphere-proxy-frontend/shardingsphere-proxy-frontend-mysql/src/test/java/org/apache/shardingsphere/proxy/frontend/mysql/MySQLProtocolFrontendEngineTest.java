@@ -27,9 +27,16 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandsha
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.ProxyUser;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.kernel.context.SchemaContext;
+import org.apache.shardingsphere.kernel.context.SchemaContexts;
+import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
+import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.orchestration.core.common.event.AuthenticationChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.schema.ProxyOrchestrationSchemaContexts;
+import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.apache.shardingsphere.proxy.frontend.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.mysql.auth.MySQLAuthenticationEngine;
 import org.junit.Before;
@@ -44,6 +51,9 @@ import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.isA;
@@ -66,12 +76,36 @@ public final class MySQLProtocolFrontendEngineTest {
     private Channel channel;
     
     @Before
+    public void setUp() {
+        initProxySchemaContexts();
+        resetConnectionIdGenerator();
+    }
+    
     @SneakyThrows
-    public void resetConnectionIdGenerator() {
+    private void resetConnectionIdGenerator() {
         Field field = ConnectionIdGenerator.class.getDeclaredField("currentId");
         field.setAccessible(true);
         field.set(ConnectionIdGenerator.getInstance(), 0);
         mysqlProtocolFrontendEngine = new MySQLProtocolFrontendEngine();
+    }
+    
+    @SneakyThrows
+    private void initProxySchemaContexts() {
+        Field field = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
+        field.setAccessible(true);
+        SchemaContexts schemaContexts = new SchemaContexts(getSchemaContextMap(), new ConfigurationProperties(new Properties()), new Authentication());
+        field.set(ProxySchemaContexts.getInstance(), new ProxyOrchestrationSchemaContexts(schemaContexts));
+    }
+    
+    private Map<String, SchemaContext> getSchemaContextMap() {
+        Map<String, SchemaContext> result = new HashMap<>(10);
+        for (int i = 0; i < 10; i++) {
+            String name = "schema_" + i;
+            ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+            RuntimeContext runtimeContext = mock(RuntimeContext.class);
+            result.put(name, new SchemaContext(name, schema, runtimeContext));
+        }
+        return result;
     }
     
     @Test
