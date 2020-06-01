@@ -1,6 +1,6 @@
 +++
 title = "Heartbeat Check"
-weight = 2
+weight = 1
 +++
 
 ## Background
@@ -13,4 +13,4 @@ TODO
 
 ## Goal
 
-TODO 
+TODO

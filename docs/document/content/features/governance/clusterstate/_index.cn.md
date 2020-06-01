@@ -1,7 +1,7 @@
 +++
 pre = "<b>3.4.3 </b>"
 title = "集群管理"
-weight = 1
+weight = 3
 chapter = true
 +++
 

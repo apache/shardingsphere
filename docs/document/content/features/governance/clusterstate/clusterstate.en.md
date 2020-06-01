@@ -1,6 +1,6 @@
 +++
 title = "Config Center"
-weight = 3
+weight = 2
 +++
 
 ## Background
@@ -13,4 +13,4 @@ TODO
 
 ## Goal
 
-TODO 
+TODO

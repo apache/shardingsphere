@@ -1,6 +1,6 @@
 +++
 title = "配置中心"
-weight = 3
+weight = 2
 +++
 
 ## 背景

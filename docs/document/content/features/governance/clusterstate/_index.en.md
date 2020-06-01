@@ -1,7 +1,7 @@
 +++
 pre = "<b>3.4.3 </b>"
 title = "Cluster"
-weight = 1
+weight = 3
 chapter = true
 +++
 

@@ -1,6 +1,6 @@
 +++
 title = "心跳检测"
-weight = 2
+weight = 1
 +++
 
 ## 背景
