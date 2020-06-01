@@ -58,14 +58,14 @@ tableShardingAlgorithm.setProperties(tableProps);
 StandardShardingStrategyConfiguration tableShardingStrategyConfig = new StandardShardingStrategyConfiguration("order_id", tableShardingAlgorithm);
 orderTableRuleConfig.setTableShardingStrategyConfig(tableShardingStrategyConfig);
 
-// 省略配置 order_item 表规则...
+// 省略配置 t_order_item 表规则...
 // ...
 
 // 配置分片规则
 ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
 shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
     
-// 创建数据源对象
+// 创建 ShardingSphereDataSource
 DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Collections.singleton((shardingRuleConfig), new Properties());
 ```
 

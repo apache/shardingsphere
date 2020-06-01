@@ -59,14 +59,14 @@ tableShardingAlgorithm.setProperties(tableProps);
 StandardShardingStrategyConfiguration tableShardingStrategyConfig = new StandardShardingStrategyConfiguration("order_id", tableShardingAlgorithm);
 orderTableRuleConfig.setTableShardingStrategyConfig(tableShardingStrategyConfig);
 
-// Omit order_item table rule configuration ...
+// Omit t_order_item table rule configuration ...
 // ...
     
 // Configure sharding rule
 ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
 shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
 
-// Create ShardingSphere data source
+// Create ShardingSphereDataSource
 DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Collections.singleton((shardingRuleConfig), new Properties());
 ```
 

@@ -59,12 +59,13 @@ rules:
                 props:
                   algorithm.expression: t_order${order_id % 2}
     t_order_item: 
-    # Omit order_item table rule configuration ...
+    # Omit t_order_item table rule configuration ...
     # ...
 ```
 
 ```java
-    DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(yamlFile);
+// Create ShardingSphereDataSource
+DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(yamlFile);
 ```
 
 ## Use ShardingSphereDataSource

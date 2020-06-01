@@ -50,7 +50,7 @@ Sharding database and table of ShardingSphere-JDBC configure descriptions accord
     ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
     shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
     
-    // Omit order_item table rule configuration
+    // Omit t_order_item table rule configuration
     // ...
     
     // Get data source

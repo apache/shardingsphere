@@ -58,11 +58,12 @@ rules:
                 props:
                   algorithm.expression: t_order${order_id % 2}
     t_order_item: 
-    # 省略配置 order_item 表规则...
+    # 省略配置 t_order_item 表规则...
     # ...
 ```
 
 ```java
+// 创建 ShardingSphereDataSource
 DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(yamlFile);
 ```
 

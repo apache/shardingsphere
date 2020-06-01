@@ -46,7 +46,7 @@ spring.shardingsphere.rules.sharding.tables.t_order.table-strategy.standard.shar
 spring.shardingsphere.rules.sharding.tables.t_order.table-strategy.standard.sharding-algorithm.type=INLINE
 spring.shardingsphere.rules.sharding.tables.t_order.table-strategy.standard.sharding-algorithm.props.algorithm.expression=t_order$->{order_id % 2}
 
-# Omit order_item table rule configuration ...
+# Omit t_order_item table rule configuration ...
 # ...
 ```
 
@@ -69,7 +69,7 @@ spring.shardingsphere.datasource.ds1.jndi-name=java:comp/env/jdbc/ds1
 # ...
 ```
 
-### Use ShardingSphereDataSource in Spring
+## Use ShardingSphereDataSource in Spring
 
 ShardingSphereDataSource can be used directly by injection; 
 or configure ShardingSphereDataSource in ORM frameworks such as JPA or MyBatis.
