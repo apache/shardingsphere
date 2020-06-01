@@ -1,5 +1,5 @@
 +++
-title = "Java配置"
+title = "Java 配置"
 weight = 1
 +++
 

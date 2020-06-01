@@ -3,48 +3,6 @@ title = "Distributed Transaction"
 weight = 15
 +++
 
-Distributed transaction have been integrated into `ShardingDataSource`, you can use `TransactionTypeHolder` to modify transaction type before creating `ShardingConnection`.
-
-## Not Use Spring
-
-### Import Maven Dependency
-
-```xml
-<dependency>
-    <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-jdbc-core</artifactId>
-    <version>${shardingsphere.version}</version>
-</dependency>
-
-<!-- introduce this module if you want to use XA transaction -->
-<dependency>
-    <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-transaction-xa-core</artifactId>
-    <version>${shardingsphere.version}</version>
-</dependency>
-
-<!-- introduce this module if you want to use BASE transaction -->
-<dependency>
-    <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
-    <version>${shardingsphere.version}</version>
-</dependency>
-```
-
-### Raw JDBC for sharding transaction
-
-```java
-TransactionTypeHolder.set(TransactionType.XA); // Support TransactionType.LOCAL, TransactionType.XA, TransactionType.BASE
-try (Connection connection = dataSource.getConnection()) { // dataSource type is ShardingDataSource
-    connection.setAutoCommit(false);
-    PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO t_order (user_id, status) VALUES (?, ?)");
-    preparedStatement.setObject(1, i);
-    preparedStatement.setObject(2, "init");
-    preparedStatement.executeUpdate();
-    connection.commit();
-}
-```
-
 ## Use Spring-namespace
 
 ### Import Maven Dependency

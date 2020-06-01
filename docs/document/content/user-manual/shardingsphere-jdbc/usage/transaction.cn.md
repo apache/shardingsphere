@@ -3,46 +3,6 @@ title = "分布式事务"
 weight = 15
 +++
 
-## 不使用Spring
-
-### 引入Maven依赖
-
-```xml
-<dependency>
-    <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-jdbc-core</artifactId>
-    <version>${shardingsphere.version}</version>
-</dependency>
-
-<!-- 使用XA事务时，需要引入此模块 -->
-<dependency>
-    <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-transaction-xa-core</artifactId>
-    <version>${shardingsphere.version}</version>
-</dependency>
-
-<!-- 使用BASE事务时，需要引入此模块 -->
-<dependency>
-    <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
-    <version>${shardingsphere.version}</version>
-</dependency>
-```
-
-### 基于Java编码方式使用分布式事务
-
-```java
-TransactionTypeHolder.set(TransactionType.XA); // 支持TransactionType.LOCAL, TransactionType.XA, TransactionType.BASE
-try (Connection connection = dataSource.getConnection()) { // dataSource的类型为ShardingDataSource
-    connection.setAutoCommit(false);
-    PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO t_order (user_id, status) VALUES (?, ?)");
-    preparedStatement.setObject(1, i);
-    preparedStatement.setObject(2, "init");
-    preparedStatement.executeUpdate();
-    connection.commit();
-}
-```
-
 ## 使用Spring-namespace
 
 ### 引入Maven依赖
