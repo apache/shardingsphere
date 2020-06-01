@@ -1,6 +1,6 @@
 +++
 title = "Hint"
-weight = 3
+weight = 13
 +++
 
 ## Introduction

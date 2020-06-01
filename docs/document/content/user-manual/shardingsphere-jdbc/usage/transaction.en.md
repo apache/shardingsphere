@@ -1,6 +1,6 @@
 +++
 title = "Distributed Transaction"
-weight = 5
+weight = 15
 +++
 
 Distributed transaction have been integrated into `ShardingDataSource`, you can use `TransactionTypeHolder` to modify transaction type before creating `ShardingConnection`.

@@ -1,6 +1,6 @@
 +++
 title = "data encryption"
-weight = 6
+weight = 16
 +++
 
 This chapter mainly introduces how to use the feather of data encryption. On one hand User can use data encryption and Sharding together, which will
