@@ -18,13 +18,11 @@
 package org.apache.shardingsphere.driver.orchestration.internal.datasource;
 
 import com.google.common.collect.Maps;
-import com.google.common.eventbus.Subscribe;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
-import org.apache.shardingsphere.driver.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.util.DataSourceConverter;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -32,7 +30,6 @@ import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
-import org.apache.shardingsphere.orchestration.core.registrycenter.event.CircuitStateChangedEvent;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -60,8 +57,6 @@ public abstract class AbstractOrchestrationDataSource extends AbstractUnsupporte
     @Getter(AccessLevel.PROTECTED)
     private final ShardingOrchestrationFacade shardingOrchestrationFacade;
     
-    private boolean isCircuitBreak;
-    
     @Getter(AccessLevel.PROTECTED)
     private final Map<String, DataSourceConfiguration> dataSourceConfigurations = new LinkedHashMap<>();
     
@@ -71,11 +66,6 @@ public abstract class AbstractOrchestrationDataSource extends AbstractUnsupporte
     }
     
     protected abstract DataSource getDataSource();
-    
-    @Override
-    public final Connection getConnection() throws SQLException {
-        return isCircuitBreak ? new CircuitBreakerDataSource().getConnection() : getDataSource().getConnection();
-    }
     
     @Override
     public final Connection getConnection(final String username, final String password) throws SQLException {
@@ -91,17 +81,6 @@ public abstract class AbstractOrchestrationDataSource extends AbstractUnsupporte
     public final void close() throws Exception {
         ((ShardingSphereDataSource) getDataSource()).close();
         shardingOrchestrationFacade.close();
-    }
-    
-    /**
-     /**
-     * Renew circuit breaker state.
-     *
-     * @param circuitStateChangedEvent circuit state changed event
-     */
-    @Subscribe
-    public final synchronized void renew(final CircuitStateChangedEvent circuitStateChangedEvent) {
-        isCircuitBreak = circuitStateChangedEvent.isCircuitBreak();
     }
     
     protected final void initShardingOrchestrationFacade() {
