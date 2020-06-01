@@ -48,6 +48,10 @@ export default {
       {
         title: 'Data scaling',
         href: '/data-scaling'
+      },
+      {
+        title: 'Cluster state',
+        href: '/cluster-state'
       }
     ],
     connected: 'Connected',
@@ -229,6 +233,14 @@ export default {
       serviceUrl: 'Service Url',
       serviceNamePlaceholder: 'Please enter serviceName',
       serviceUrlPlaceholder: 'Please enter serviceUrl'
+    }
+  },
+  clusterState: {
+    legendLabel: {
+      onLine: 'ONLINE',
+      offLine: 'OFFLINE',
+      disabled: 'DISABLED',
+      unknown: 'UNKNOWN'
     }
   }
 }
