@@ -3,29 +3,6 @@ title = "编排治理"
 weight = 14
 +++
 
-## 不使用Spring
-
-
-### 基于Yaml的规则配置
-
-或通过Yaml方式配置，与以上配置等价：
-
-```yaml
-orchestration:
-  orchestration_ds:
-      orchestrationType: registry_center,config_center,metadata_center
-      instanceType: zookeeper
-      serverLists: localhost:2181
-      namespace: orchestration
-      props:
-        overwrite: true
-```
-
-```java
-DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(yamlFile);
-```
-
-## 使用Spring
 
 ### 引入Maven依赖
 

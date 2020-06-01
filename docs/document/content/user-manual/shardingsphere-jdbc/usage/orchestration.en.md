@@ -3,67 +3,6 @@ title = "Orchestration"
 weight = 14
 +++
 
-## Not Use Spring
-
-### Import Maven Dependency
-
-```xml
-<dependency>
-    <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-jdbc-orchestration</artifactId>
-    <version>${shardingsphere.version}</version>
-</dependency>
-<!--If you want to use zookeeper, please use the artifactId below.-->
-<dependency>
-    <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-orchestration-reg-zookeeper-curator</artifactId>
-    <version>${shardingsphere.version}</version>
-</dependency>
-```
-
-### Rule Configuration Based on Java
-
-```java
-    // Configure dataSourceMap and shardingRuleConfig
-    // ...
-
-    // Configure config/registry/metadata center
-    Properties properties = new Properties();
-    properties.setProperty("overwrite", overwrite);
-    CenterConfiguration centerConfiguration = new CenterConfiguration("zookeeper", properties);
-    centerConfiguration.setServerLists("localhost:2181");
-    centerConfiguration.setNamespace("shardingsphere-orchestration");
-    centerConfiguration.setOrchestrationType("registry_center,config_center,metadata_center");
-
-    // Configure orchestration
-    Map<String, CenterConfiguration> instanceConfigurationMap = new HashMap<String, CenterConfiguration>();
-    instanceConfigurationMap.put("orchestration-shardingsphere-data-source", centerConfiguration);
-
-    // Get data source
-    OrchestrationShardingDataSourceFactory.createDataSource(
-                    createDataSourceMap(), createShardingRuleConfig(), new HashMap<String, Object>(), new Properties(), new OrchestrationConfiguration(instanceConfigurationMap));
-```
-
-### Rule Configuration Based on Yaml
-
-Or use Yaml to configure, similar as above configurations:
-
-```yaml
-orchestration:
-  orchestration_ds:
-      orchestrationType: registry_center,config_center,metadata_center
-      instanceType: zookeeper
-      serverLists: localhost:2181
-      namespace: orchestration
-      props:
-        overwrite: true
-```
-
-```java
-    DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(yamlFile);
-```
-
-## Using Spring
 
 ### Import Maven Dependency
 
