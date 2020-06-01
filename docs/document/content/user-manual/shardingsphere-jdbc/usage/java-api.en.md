@@ -3,9 +3,7 @@ title = "Use Java API"
 weight = 1
 +++
 
-## Not Use Spring
-
-### Introduce Maven Dependency
+## Import Maven Dependency
 
 ```xml
 <dependency>
@@ -15,9 +13,11 @@ weight = 1
 </dependency>
 ```
 
-### Rule Configuration Based on Java
+## Configure Rule
 
-Sharding database and table of ShardingSphere-JDBC configure descriptions according to rules. The following example is the configuration of two databases plus two tables, whose databases take module and split according to order_id, tables take module and split according to order_id.
+ShardingSphere-JDBC Java API consists of data sources, rules and properties configuration.
+The following example is the configuration of 2 databases and 2 tables, 
+whose databases take module and split according to `order_id`, tables take module and split according to `order_id`.
 
 ```java
 
@@ -70,7 +70,7 @@ shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
 DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Collections.singleton((shardingRuleConfig), new Properties());
 ```
 
-## Use ShardingSphereDataSource 
+## Use ShardingSphereDataSource
 
 The `ShardingSphereDataSource` created by `ShardingSphereDataSourceFactory` implements the standard JDBC DataSource interface.
 Developer can choose to use native JDBC or ORM frameworks such as JPA or MyBatis through the DataSource.

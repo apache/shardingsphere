@@ -13,9 +13,9 @@ weight = 1
 </dependency>
 ```
 
-## 配置规则
+## 规则配置
 
-ShardingSphere-JDBC 的 Java API 是通过 数据源集合，规则集合以及属性配置组成。
+ShardingSphere-JDBC 的 Java API 通过数据源集合、规则集合以及属性配置组成。
 以下示例是根据 `user_id` 取模分库, 且根据 `order_id` 取模分表的 2 库 2 表的配置。
 
 ```java
@@ -69,7 +69,7 @@ shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
 DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Collections.singleton((shardingRuleConfig), new Properties());
 ```
 
-## 使用 ShardingSphereDataSource 
+## 使用 ShardingSphereDataSource
 
 通过 `ShardingSphereDataSourceFactory` 工厂创建的 `ShardingSphereDataSource` 实现自 JDBC 的标准接口 DataSource。
 可通过 DataSource 选择使用原生 JDBC，或JPA， MyBatis 等 ORM 框架。
