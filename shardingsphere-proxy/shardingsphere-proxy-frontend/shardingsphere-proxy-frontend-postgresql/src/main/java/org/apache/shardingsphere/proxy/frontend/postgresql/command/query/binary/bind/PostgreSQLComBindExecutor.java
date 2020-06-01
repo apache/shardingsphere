@@ -75,7 +75,7 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     
     @Override
     public Collection<DatabasePacket> execute() {
-        if (ProxySchemaContexts.getInstance().isCircuitBreak()) {
+        if (ProxySchemaContexts.getInstance().getSchemaContexts().isCircuitBreak()) {
             return Collections.singletonList(new PostgreSQLErrorResponsePacket());
         }
         List<DatabasePacket> result = new LinkedList<>();

@@ -222,7 +222,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsQuery
      */
     @Subscribe
     public synchronized void renew(final CircuitStateChangedEvent event) {
-        this.schemaContexts = new SchemaContexts(schemaContexts.getSchemaContexts(), schemaContexts.getProperties(), schemaContexts.getAuthentication(), schemaContexts.isCircuitBreak());
+        this.schemaContexts = new SchemaContexts(schemaContexts.getSchemaContexts(), schemaContexts.getProperties(), schemaContexts.getAuthentication(), event.isCircuitBreak());
     }
     
     private SchemaContext getAddedSchemaContext(final SchemaAddedEvent schemaAddedEvent) throws Exception {
