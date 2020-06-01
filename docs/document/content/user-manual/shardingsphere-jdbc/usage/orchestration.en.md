@@ -7,7 +7,7 @@ Using orchestration requires designating a config center, registry center & meta
 
 ## Not Use Spring
 
-### Introduce Maven Dependency
+### Import Maven Dependency
 
 ```xml
 <dependency>
@@ -67,7 +67,7 @@ orchestration:
 
 ## Using Spring
 
-### Introduce Maven Dependency
+### Import Maven Dependency
 
 ```xml
 <!-- for spring boot -->

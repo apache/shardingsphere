@@ -7,7 +7,7 @@ Distributed transaction have been integrated into `ShardingDataSource`, you can 
 
 ## Not Use Spring
 
-### Introduce Maven Dependency
+### Import Maven Dependency
 
 ```xml
 <dependency>
@@ -47,7 +47,7 @@ try (Connection connection = dataSource.getConnection()) { // dataSource type is
 
 ## Use Spring-namespace
 
-### Introduce Maven Dependency
+### Import Maven Dependency
 
 ```xml
 <dependency>
@@ -106,7 +106,7 @@ public void insert() {
 
 ## Use Spring-boot
 
-### Introduce Maven Dependency
+### Import Maven Dependency
 
 ```xml
 <dependency>
