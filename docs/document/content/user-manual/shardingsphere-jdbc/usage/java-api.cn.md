@@ -88,13 +88,57 @@ DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(dataSou
 String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
 try (
         Connection conn = dataSource.getConnection();
-        PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
-    preparedStatement.setInt(1, 10);
-    preparedStatement.setInt(2, 1001);
+        PreparedStatement ps = conn.prepareStatement(sql)) {
+    ps.setInt(1, 10);
+    ps.setInt(2, 1001);
     try (ResultSet rs = preparedStatement.executeQuery()) {
         while(rs.next()) {
             // ...
         }
     }
+}
+```
+
+## 分布式事务
+
+通过 Apache ShardingSphere 使用分布式事务，与本地事务并无区别。
+除了透明化分布式事务的使用之外，Apache ShardingSphere 还能够在每次数据库访问时切换分布式事务类型。
+支持的事务类型包括 本地事务、XA事务 和 柔性事务。可在创建数据库连接之前设置，缺省为 Apache ShardingSphere 启动时的默认事务类型。
+
+### 引入 Maven 依赖
+
+```xml
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-jdbc-core</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+
+<!-- 使用XA事务时，需要引入此模块 -->
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-transaction-xa-core</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+
+<!-- 使用BASE事务时，需要引入此模块 -->
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+```
+
+### 使用分布式事务
+
+```java
+TransactionTypeHolder.set(TransactionType.XA); // 支持 TransactionType.LOCAL, TransactionType.XA, TransactionType.BASE
+try (Connection conn = dataSource.getConnection()) { // 使用 ShardingSphereDataSource
+    conn.setAutoCommit(false);
+    PreparedStatement ps = conn.prepareStatement("INSERT INTO t_order (user_id, status) VALUES (?, ?)");
+    ps.setObject(1, 1000);
+    ps.setObject(2, "init");
+    ps.executeUpdate();
+    conn.commit();
 }
 ```
