@@ -20,12 +20,15 @@ The following example is the configuration of 2 databases and 2 tables,
 whose databases take module and split according to `order_id`, tables take module and split according to `order_id`.
 
 ```yaml
+# Configure actual data sources
 dataSources:
+  # Configure the first data source
   ds0: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ds0
     username: root
-    password: 
+    password:
+  # Configure the second data source
   ds1: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ds1
@@ -33,10 +36,13 @@ dataSources:
     password: 
 
 rules:
+# Configure sharding rule
 - !SHARDING
   tables:
+    # Configure order table rule
     t_order: 
       actualDataNodes: ds${0..1}.t_order${0..1}
+      # Configure database sharding strategy
       databaseStrategy:
         standard:
           shardingColumn: user_id
@@ -44,7 +50,8 @@ rules:
             type: INLINE
             props:
               algorithm.expression: ds${user_id % 2}
-      databaseStrategy:
+      # Configure table sharding strategy
+      tableStrategy:
         standard:
           shardingColumn: order_id
             shardingAlgorithm:

@@ -40,7 +40,7 @@ dataSource2.setUsername("root");
 dataSource2.setPassword("");
 dataSourceMap.put("ds1", dataSource2);
 
-// Configure order table rules
+// Configure order table rule
 TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration("t_order", "ds${0..1}.t_order${0..1}");
 
 // Configure database sharding strategy

@@ -19,12 +19,15 @@ ShardingSphere-JDBC 的 YAML 配置文件 通过数据源集合、规则集合�
 以下示例是根据 `user_id` 取模分库, 且根据 `order_id` 取模分表的 2 库 2 表的配置。
 
 ```yaml
+# 配置真实数据源
 dataSources:
+  # 配置第 1 个数据源
   ds0: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ds0
     username: root
-    password: 
+    password:
+  # 配置第 2 个数据源
   ds1: !!org.apache.commons.dbcp.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ds1
@@ -32,10 +35,13 @@ dataSources:
     password: 
 
 rules:
+# 配置分片规则
 - !SHARDING
   tables:
+    # 配置 t_order 表规则
     t_order: 
       actualDataNodes: ds${0..1}.t_order${0..1}
+      # 配置分库策略
       databaseStrategy:
         standard:
           shardingColumn: user_id
@@ -43,7 +49,8 @@ rules:
             type: INLINE
             props:
               algorithm.expression: ds${user_id % 2}
-      databaseStrategy:
+      # 配置分表策略
+      tableStrategy:
         standard:
           shardingColumn: order_id
             shardingAlgorithm:
