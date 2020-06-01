@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Properties;
 
 @Getter
-public final class SchemaContexts {
+public final class SchemaContexts implements SchemaContextsQuery {
     
     private final Map<String, SchemaContext> schemaContexts = new HashMap<>();
     
@@ -35,30 +35,34 @@ public final class SchemaContexts {
     
     private final Authentication authentication;
     
+    private final boolean isCircuitBreak;
+    
     public SchemaContexts() {
         properties = new ConfigurationProperties(new Properties());
         authentication = new Authentication();
+        isCircuitBreak = false;
     }
     
     public SchemaContexts(final Map<String, SchemaContext> schemaContexts, final ConfigurationProperties properties, final Authentication authentication) {
         this.schemaContexts.putAll(schemaContexts);
         this.properties = properties;
         this.authentication = authentication;
+        isCircuitBreak = false;
     }
     
-    /**
-     * Get default schema context.
-     * 
-     * @return default schema context
-     */
+    public SchemaContexts(final Map<String, SchemaContext> schemaContexts, final ConfigurationProperties properties, final Authentication authentication, final boolean isCircuitBreak) {
+        this.schemaContexts.putAll(schemaContexts);
+        this.properties = properties;
+        this.authentication = authentication;
+        this.isCircuitBreak = isCircuitBreak;
+    }
+    
+    @Override
     public SchemaContext getDefaultSchemaContext() {
         return schemaContexts.get(DefaultSchema.LOGIC_NAME);
     }
     
-    /**
-     * Close.
-     * 
-     */
+    @Override
     public void close() {
         for (SchemaContext each : schemaContexts.values()) {
             each.getRuntimeContext().getExecutorKernel().close();
