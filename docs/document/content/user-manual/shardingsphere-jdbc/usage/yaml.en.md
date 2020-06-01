@@ -85,8 +85,7 @@ try (
     preparedStatement.setInt(2, 1001);
     try (ResultSet rs = preparedStatement.executeQuery()) {
         while(rs.next()) {
-            System.out.println(rs.getInt(1));
-            System.out.println(rs.getInt(2));
+            // ...
         }
     }
 }
