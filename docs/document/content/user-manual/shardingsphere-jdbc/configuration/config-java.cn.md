@@ -17,9 +17,11 @@ Apache ShardingSphere 数据源创建工厂。
 
 ### 数据分片
 
-#### ShardingRuleConfiguration
+#### 配置入口
 
-分片规则配置对象。
+类名称：ShardingRuleConfiguration
+
+可配置属性：
 
 | *名称*                                     | *数据类型*                                  | *说明*                                                                                         
 | ----------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------------------- |
@@ -30,9 +32,11 @@ Apache ShardingSphere 数据源创建工厂。
 | defaultTableShardingStrategyConfig (?)    | ShardingStrategyConfiguration              | 默认分表策略                                                                                      |
 | defaultKeyGeneratorConfig (?)             | KeyGeneratorConfiguration                  | 默认自增列值生成器配置，缺省将使用org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator |
 
-#### TableRuleConfiguration
+#### 逻辑表配置
 
-表分片规则配置对象。
+类名称：TableRuleConfiguration
+
+可配置属性：
 
 | *名称*                              | *数据类型*                     | *说明*                                                                                                                                                                                                      |
 | ---------------------------------- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -42,9 +46,13 @@ Apache ShardingSphere 数据源创建工厂。
 | tableShardingStrategyConfig (?)    | ShardingStrategyConfiguration | 分表策略，缺省表示使用默认分表策略                                                                                                                                                                              |
 | keyGeneratorConfig (?)             | KeyGeneratorConfiguration     | 自增列值生成器配置，缺省表示使用默认自增主键生成器                                                                                                                                                                |
 
-#### StandardShardingStrategyConfiguration
+#### 分片策略配置
 
-ShardingStrategyConfiguration 的实现类，用于单分片键的标准分片场景。
+##### 标准分片策略配置
+
+类名称：StandardShardingStrategyConfiguration
+
+可配置属性：
 
 | *名称*                      | *数据类型*                 | *说明*                  |
 | -------------------------- | ------------------------- | ----------------------- |
@@ -53,7 +61,7 @@ ShardingStrategyConfiguration 的实现类，用于单分片键的标准分片�
 
 Apache ShardingSphere内置的标准分片算法 StandardShardingAlgorithm 的实现类。
 
-包名称： `org.apache.shardingsphere.sharding.strategy.algorithm.sharding`。
+包名称：`org.apache.shardingsphere.sharding.strategy.algorithm.sharding`
 
 | *类名称*                              | *说明*                      |
 | ------------------------------------ | --------------------------- |
@@ -65,26 +73,30 @@ Apache ShardingSphere内置的标准分片算法 StandardShardingAlgorithm 的�
 | DatetimeShardingAlgorithm            | 基于范围的分片算法             |
 | CustomDateTimeShardingAlgorithm      | 基于用户自定义范围的分片算法    |
 
-#### ComplexShardingStrategyConfiguration
+##### 复合分片策略配置
 
-ShardingStrategyConfiguration 的实现类，用于多分片键的复合分片场景。
+类名称：ComplexShardingStrategyConfiguration
+
+可配置属性：
 
 | *名称*             | *数据类型*                    | *说明*                   |
 | ----------------- | ---------------------------- | ------------------------ |
 | shardingColumns   | String                       | 分片列名称，多个列以逗号分隔 |
 | shardingAlgorithm | ComplexKeysShardingAlgorithm | 复合分片算法实现类          |
 
-#### HintShardingStrategyConfiguration
+##### Hint 分片策略配置
 
-ShardingStrategyConfiguration 的实现类，用于配置 Hint 方式分片策略。
+类名称：HintShardingStrategyConfiguration
+
+可配置属性：
 
 | *名称*             | *数据类型*             | *说明*      |
 | ----------------- | --------------------- | ----------- |
 | shardingAlgorithm | HintShardingAlgorithm | Hint分片算法 |
 
-#### NoneShardingStrategyConfiguration
+##### 不分片策略配置
 
-ShardingStrategyConfiguration 的实现类，用于配置不分片的策略。
+类名称：NoneShardingStrategyConfiguration
 
 #### KeyGeneratorConfiguration
 

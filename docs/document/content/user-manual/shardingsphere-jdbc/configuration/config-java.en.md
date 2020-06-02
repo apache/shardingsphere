@@ -17,7 +17,11 @@ DataSource factory of Apache ShardingSphere.
 
 ### Data Sharding
 
-#### ShardingRuleConfiguration
+#### Root Configuration
+
+Class name: ShardingRuleConfiguration
+
+Attributes:
 
 | *Name*                                    | *DataType*                                 | *Description*                                                |
 | ----------------------------------------- | ------------------------------------------ | ------------------------------------------------------------ |
@@ -28,7 +32,11 @@ DataSource factory of Apache ShardingSphere.
 | defaultTableShardingStrategyConfig (?)    | ShardingStrategyConfiguration              | Default table sharding strategy                              |
 | defaultKeyGeneratorConfig (?)             | KeyGeneratorConfiguration                  | Default key generator configuration, use user-defined ones or built-in ones, e.g. SNOWFLAKE/UUID. Default key generator is `org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator` |
 
-#### TableRuleConfiguration
+#### Logic Table Configuration
+
+Class name: TableRuleConfiguration
+
+Attributes:
 
 | *Name*                             | *DataType*                    | *Description*                                                |
 | ---------------------------------- | ----------------------------- | ------------------------------------------------------------ |
@@ -38,9 +46,13 @@ DataSource factory of Apache ShardingSphere.
 | tableShardingStrategyConfig (?)    | ShardingStrategyConfiguration | Tables sharding strategy, use default databases sharding strategy if absent |
 | keyGeneratorConfig (?)             | KeyGeneratorConfiguration     | Key generator configuration, use default key generator if absent |
 
-#### StandardShardingStrategyConfiguration
+#### Sharding Strategy Configuration
 
-The implementation class of ShardingStrategyConfiguration.
+##### Standard Sharding Strategy Configuration
+
+Class name: StandardShardingStrategyConfiguration
+
+Attributes:
 
 | *Name*                     | *DataType*                | *Description*                                   |
 | -------------------------- | ------------------------- | ----------------------------------------------- |
@@ -49,7 +61,7 @@ The implementation class of ShardingStrategyConfiguration.
 
 Apache ShardingSphere built-in implemented classes of StandardShardingAlgorithm.
 
-The package name is `org.apache.shardingsphere.sharding.strategy.algorithm.sharding`.
+Package name: `org.apache.shardingsphere.sharding.strategy.algorithm.sharding`
 
 | *Class name*                         | *Description*                          |
 | ------------------------------------ | -------------------------------------- |
@@ -61,16 +73,22 @@ The package name is `org.apache.shardingsphere.sharding.strategy.algorithm.shard
 | DatetimeShardingAlgorithm            | Range sharding algorithm               |
 | CustomDateTimeShardingAlgorithm      | Customized range sharding algorithm    |
 
-#### ComplexShardingStrategyConfiguration
+##### Complex Sharding Strategy Configuration
 
-The implementation class of `ShardingStrategyConfiguration`, used in complex sharding situations with  multiple sharding keys.
+Class name: ComplexShardingStrategyConfiguration
+
+Attributes:
 
 | *Name*            | *DataType*                   | *Description*                             |
 | ----------------- | ---------------------------- | ----------------------------------------- |
 | shardingColumns   | String                       | Sharding column name, separated by commas |
 | shardingAlgorithm | ComplexKeysShardingAlgorithm | Complex sharding algorithm                |
 
-#### HintShardingStrategyConfiguration
+##### Hint Sharding Strategy Configuration
+
+Class name: HintShardingStrategyConfiguration
+
+Attributes:
 
 The implementation class of `ShardingStrategyConfiguration`,  used to configure hint sharding strategies.
 
@@ -78,9 +96,9 @@ The implementation class of `ShardingStrategyConfiguration`,  used to configure 
 | ----------------- | --------------------- | ----------------------- |
 | shardingAlgorithm | HintShardingAlgorithm | Hint sharding algorithm |
 
-#### NoneShardingStrategyConfiguration
+##### None Sharding Strategy Configuration
 
-The implementation class of `ShardingStrategyConfiguration`, used to configure none-sharding strategy.
+Class name: NoneShardingStrategyConfiguration
 
 #### KeyGeneratorConfiguration
 
