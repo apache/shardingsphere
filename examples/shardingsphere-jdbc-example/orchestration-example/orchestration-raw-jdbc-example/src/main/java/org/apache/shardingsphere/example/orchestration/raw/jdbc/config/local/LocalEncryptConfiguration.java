@@ -20,7 +20,7 @@ package org.apache.shardingsphere.example.orchestration.raw.jdbc.config.local;
 import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
@@ -55,13 +55,13 @@ public class LocalEncryptConfiguration implements ExampleConfiguration {
     private EncryptRuleConfiguration getEncryptRuleConfiguration() {
         Properties properties = new Properties();
         properties.setProperty("aes.key.value", "123456");
-        EncryptorRuleConfiguration aesRuleConfiguration = new EncryptorRuleConfiguration("aes", properties);
+        EncryptorConfiguration aesRuleConfiguration = new EncryptorConfiguration("aes", properties);
         EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("", "status", "", "status_encryptor");
         Map<String, EncryptColumnRuleConfiguration> columns = new HashMap<>();
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration(columns);
         columns.put("status", columnConfigAes);
         tableConfig.getColumns().putAll(columns);
-        Map<String, EncryptorRuleConfiguration> encryptors = new HashMap<>();
+        Map<String, EncryptorConfiguration> encryptors = new HashMap<>();
         encryptors.put("status_encryptor", aesRuleConfiguration);
         Map<String, EncryptTableRuleConfiguration> tables = new HashMap<>();
         tables.put("t_order", tableConfig);

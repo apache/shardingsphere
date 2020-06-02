@@ -22,7 +22,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration;
 import org.apache.shardingsphere.encrypt.strategy.EncryptTable;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 import org.apache.shardingsphere.encrypt.strategy.spi.QueryAssistedEncryptor;
@@ -78,12 +78,12 @@ public final class EncryptRule implements ShardingSphereRule {
         return !Strings.isNullOrEmpty(column.getEncryptor()) && !Strings.isNullOrEmpty(column.getCipherColumn()) && encryptRuleConfiguration.getEncryptors().containsKey(column.getEncryptor());
     }
     
-    private void initEncryptors(final Map<String, EncryptorRuleConfiguration> encryptors) {
-        encryptors.forEach((key, value) -> this.encryptors.put(key, createEncryptor(value)));
+    private void initEncryptors(final Map<String, EncryptorConfiguration> encryptorConfigs) {
+        encryptorConfigs.forEach((key, value) -> this.encryptors.put(key, createEncryptor(value)));
     }
     
-    private Encryptor createEncryptor(final EncryptorRuleConfiguration encryptorRuleConfig) {
-        Encryptor result = TypedSPIRegistry.getRegisteredService(Encryptor.class, encryptorRuleConfig.getType(), encryptorRuleConfig.getProperties());
+    private Encryptor createEncryptor(final EncryptorConfiguration encryptorConfig) {
+        Encryptor result = TypedSPIRegistry.getRegisteredService(Encryptor.class, encryptorConfig.getType(), encryptorConfig.getProperties());
         result.init();
         return result;
     }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.orchestration.core.configcenter.listener;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
@@ -124,7 +124,7 @@ public final class SchemaChangedListenerTest {
         assertThat(event.getRuleConfigurations().iterator().next(), instanceOf(EncryptRuleConfiguration.class));
         EncryptRuleConfiguration encryptRuleConfiguration = (EncryptRuleConfiguration) event.getRuleConfigurations().iterator().next();
         assertThat(encryptRuleConfiguration.getEncryptors().size(), is(1));
-        Entry<String, EncryptorRuleConfiguration> entry = encryptRuleConfiguration.getEncryptors().entrySet().iterator().next();
+        Entry<String, EncryptorConfiguration> entry = encryptRuleConfiguration.getEncryptors().entrySet().iterator().next();
         assertThat(entry.getKey(), is("order_encryptor"));
         assertThat(entry.getValue().getType(), is("aes"));
         assertThat(entry.getValue().getProperties().get("aes.key.value").toString(), is("123456"));

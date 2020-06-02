@@ -30,7 +30,7 @@ import java.util.Map;
 @Getter
 public final class EncryptRuleConfiguration implements RuleConfiguration {
     
-    private final Map<String, EncryptorRuleConfiguration> encryptors;
+    private final Map<String, EncryptorConfiguration> encryptors;
     
     private final Map<String, EncryptTableRuleConfiguration> tables;
 }

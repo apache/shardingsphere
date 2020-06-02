@@ -11,8 +11,8 @@ Attributes:
 
 | *Name*         | *DataType*                                   | *Description*                          |
 | -------------- | -------------------------------------------- | -------------------------------------- |
-| encryptors (+) | Map\<String, EncryptorRuleConfiguration\>    | Encryptor names and encryptors         |
 | tables (+)     | Map\<String, EncryptTableRuleConfiguration\> | Encrypt table names and encrypt tables |
+| encryptors (+) | Map\<String, EncryptorConfiguration\>        | Encryptor names and encryptors         |
 
 ## Encrypt Table Configuration
 
@@ -39,7 +39,7 @@ Attributes:
 
 ## Encryptor Configuration
 
-Class name: org.apache.shardingsphere.encrypt.api.config.EncryptorRuleConfiguration
+Class name: org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration
 
 Attributes:
 

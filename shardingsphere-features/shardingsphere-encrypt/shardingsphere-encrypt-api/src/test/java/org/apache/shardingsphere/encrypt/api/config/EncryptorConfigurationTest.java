@@ -24,16 +24,16 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class EncryptorRuleConfigurationTest {
+public final class EncryptorConfigurationTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertConstructorWithoutType() {
-        new EncryptorRuleConfiguration(null, new Properties());
+        new EncryptorConfiguration(null, new Properties());
     }
     
     @Test
     public void assertConstructorWithoutAssistedQueryColumnsAndProperties() {
-        EncryptorRuleConfiguration actual = new EncryptorRuleConfiguration("TEST", new Properties());
+        EncryptorConfiguration actual = new EncryptorConfiguration("TEST", new Properties());
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getProperties(), is(new Properties()));
     }
@@ -42,7 +42,7 @@ public final class EncryptorRuleConfigurationTest {
     public void assertConstructorWithMinArguments() {
         Properties props = new Properties();
         props.setProperty("key", "value");
-        EncryptorRuleConfiguration actual = new EncryptorRuleConfiguration("TEST", props);
+        EncryptorConfiguration actual = new EncryptorConfiguration("TEST", props);
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getProperties(), is(props));
     }
@@ -51,7 +51,7 @@ public final class EncryptorRuleConfigurationTest {
     public void assertConstructorWithMaxArguments() {
         Properties props = new Properties();
         props.setProperty("key", "value");
-        EncryptorRuleConfiguration actual = new EncryptorRuleConfiguration("TEST", props);
+        EncryptorConfiguration actual = new EncryptorConfiguration("TEST", props);
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getProperties(), is(props));
     }

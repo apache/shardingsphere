@@ -12,7 +12,7 @@ weight = 3
 | *名称*          | *数据类型*                                   | *说明*            |
 | -------------- | -------------------------------------------- | ---------------- |
 | tables (+)     | Map\<String, EncryptTableRuleConfiguration\> | 加密表名称和列表   |
-| encryptors (+) | Map\<String, EncryptorRuleConfiguration\>    | 加解密器名称和列表 |
+| encryptors (+) | Map\<String, EncryptorConfiguration\>        | 加解密器名称和列表 |
 
 ## 加密表配置
 
@@ -39,7 +39,7 @@ weight = 3
 
 ## 加解密器配置
 
-类名称：org.apache.shardingsphere.encrypt.api.config.EncryptorRuleConfiguration
+类名称：org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration
 
 可配置属性：
 

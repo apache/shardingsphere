@@ -15,22 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.yaml.config;
+package org.apache.shardingsphere.encrypt.api.config;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
 
 import java.util.Properties;
 
 /**
  * Encryptor configuration.
  */
-@Getter
-@Setter
-public final class YamlEncryptorRuleConfiguration implements YamlConfiguration {
+public final class EncryptorConfiguration extends TypedSPIConfiguration {
     
-    private String type;
-    
-    private Properties props = new Properties();
+    public EncryptorConfiguration(final String type, final Properties properties) {
+        super(type, properties);
+    }
 }

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -42,21 +42,21 @@ public final class EncryptShadowDatabasesConfiguration implements ExampleConfigu
         Map<String, DataSource> dataSourceMap = new HashMap<>();
         dataSourceMap.put("ds", DataSourceUtil.createDataSource("demo_ds"));
         dataSourceMap.put("ds_0", DataSourceUtil.createDataSource("shadow_demo_ds"));
-        EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(getEncryptorRuleConfiguration(), getEncryptTableRuleConfiguration());
+        EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(getEncryptorConfiguration(), getEncryptTableRuleConfiguration());
         Properties properties = new Properties();
         properties.setProperty("sql.show", "true");
         properties.setProperty("query.with.cipher.column", "true");
         return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Arrays.asList(shadowRuleConfiguration, encryptRuleConfiguration), properties);
     }
     
-    private Map<String, EncryptorRuleConfiguration> getEncryptorRuleConfiguration() {
-        Map<String, EncryptorRuleConfiguration> result = new HashMap<>();
+    private Map<String, EncryptorConfiguration> getEncryptorConfiguration() {
+        Map<String, EncryptorConfiguration> result = new HashMap<>();
         Properties properties = new Properties();
         properties.setProperty("aes.key.value", "123456");
-        EncryptorRuleConfiguration nameEncryptorRuleConfiguration = new EncryptorRuleConfiguration("aes", properties);
-        EncryptorRuleConfiguration pwdEncryptorRuleConfiguration = new EncryptorRuleConfiguration("assistedTest", null);
-        result.put("name_encryptror", nameEncryptorRuleConfiguration);
-        result.put("pwd_encryptror", pwdEncryptorRuleConfiguration);
+        EncryptorConfiguration nameEncryptorConfiguration = new EncryptorConfiguration("aes", properties);
+        EncryptorConfiguration pwdEncryptorConfiguration = new EncryptorConfiguration("assistedTest", null);
+        result.put("name_encryptror", nameEncryptorConfiguration);
+        result.put("pwd_encryptror", pwdEncryptorConfiguration);
         return result;
     }
     
@@ -65,7 +65,7 @@ public final class EncryptShadowDatabasesConfiguration implements ExampleConfigu
         Map<String, EncryptColumnRuleConfiguration> columns = new HashMap<>();
         columns.put("user_name", new EncryptColumnRuleConfiguration("user_name_plain", "user_name", "", "name_encryptror"));
         columns.put("pwd", new EncryptColumnRuleConfiguration("", "pwd", "assisted_query_pwd", "pwd_encryptror"));
-        result.put("t_user",new EncryptTableRuleConfiguration(columns));
+        result.put("t_user", new EncryptTableRuleConfiguration(columns));
         return result;
     }
 }
