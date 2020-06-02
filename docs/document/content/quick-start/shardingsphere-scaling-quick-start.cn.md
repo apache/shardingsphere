@@ -6,7 +6,7 @@ weight = 3
 
 ## 1. 规则配置
 
-编辑`%SHARDINGSPHERE_SCALING_HOME%\conf\server.yaml`。详情请参见[使用手册](cn/user-manual/shardingsphere-scaling/usage/)。
+编辑`%SHARDINGSPHERE_SCALING_HOME%\conf\server.yaml`。详情请参见[使用手册](/cn/user-manual/shardingsphere-scaling/usage/)。
 
 ## 2. 引入依赖
 
@@ -48,4 +48,4 @@ curl -X POST \
 }'
 ```
 
-更多管理接口详情请参见[使用手册](cn/user-manual/shardingsphere-scaling/usage/)。
+更多管理接口详情请参见[使用手册](/cn/user-manual/shardingsphere-scaling/usage/)。
