@@ -51,6 +51,8 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 
 类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.InlineShardingAlgorithm
 
+可配置属性：
+
 | *属性名称*                                 | *数据类型* | *说明*                                              | *默认值* |
 | ----------------------------------------- | --------- | --------------------------------------------------- | ------- |
 | algorithm.expression                      | String    | 分片算法的行表达式                                    | -       |
@@ -60,6 +62,8 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 
 类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.ModuloShardingAlgorithm
 
+可配置属性：
+
 | *属性名称* | *数据类型* | *说明*  |
 | --------- | --------- | ------- |
 | mod.value | int       | 分片数量 |
@@ -68,6 +72,8 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 
 类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.HashShardingAlgorithm
 
+可配置属性：
+
 | *属性名称* | *数据类型* | *说明*  |
 | --------- | --------- | ------- |
 | mod.value | int       | 分片数量 |
@@ -75,6 +81,8 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 #### 固定容量范围分片算法
 
 类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.StandardRangeShardingAlgorithm
+
+可配置属性：
 
 | *属性名称*        | *数据类型* | *说明*                      |
 | ---------------- | --------- | -------------------------- |
@@ -86,6 +94,8 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 
 类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.CustomRangeShardingAlgorithm
 
+可配置属性：
+
 | *属性名称*        | *数据类型* | *说明*                            |
 | ---------------- | --------- | --------------------------------- |
 | partition.ranges | String    | 分片的范围边界，多个范围边界以逗号分隔 |
@@ -93,6 +103,8 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 #### 定长时间段分片算法
 
 类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.DatetimeShardingAlgorithm
+
+可配置属性：
 
 | *属性名称*         | *数据类型* | *说明*                                          |
 | ----------------- | --------- | ----------------------------------------------- |
@@ -102,6 +114,8 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 #### 自定义时间边界分片算法
 
 类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.CustomDateTimeShardingAlgorithm
+
+可配置属性：
 
 | *属性名称*            | *数据类型* | *说明*                              |
 | -------------------- | --------- | ----------------------------------- |
@@ -140,6 +154,8 @@ Apache ShardingSphere 暂无内置复合分片算法实现类。
 ### 不分片策略配置
 
 类名称：NoneShardingStrategyConfiguration
+
+可配置属性：无
 
 ## 自增主键策略配置
 
