@@ -50,6 +50,7 @@ public final class InstanceStateChangedListenerTest {
     
     @Test
     public void assertCreateShardingOrchestrationEventWhenDisabled() {
-        assertTrue(instanceStateChangedListener.createShardingOrchestrationEvent(new DataChangedEvent("test/test_ds", RegistryCenterNodeStatus.DISABLED.name(), ChangedType.UPDATED)).isCircuitBreak());
+        assertTrue(instanceStateChangedListener.createShardingOrchestrationEvent(new DataChangedEvent("test/test_ds",
+                "state: " + RegistryCenterNodeStatus.DISABLED.name(), ChangedType.UPDATED)).isCircuitBreak());
     }
 }

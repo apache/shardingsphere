@@ -17,10 +17,13 @@
 
 package org.apache.shardingsphere.orchestration.core.registrycenter.listener;
 
+import com.google.common.base.Strings;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.listener.PostShardingCenterRepositoryEventListener;
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.CircuitStateChangedEvent;
+import org.apache.shardingsphere.orchestration.core.registrycenter.instance.InstanceState;
 import org.apache.shardingsphere.orchestration.core.registrycenter.instance.OrchestrationInstance;
 import org.apache.shardingsphere.orchestration.core.registrycenter.RegistryCenterNode;
 import org.apache.shardingsphere.orchestration.core.registrycenter.RegistryCenterNodeStatus;
@@ -38,6 +41,14 @@ public final class InstanceStateChangedListener extends PostShardingCenterReposi
     
     @Override
     protected CircuitStateChangedEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
-        return new CircuitStateChangedEvent(RegistryCenterNodeStatus.DISABLED.toString().equalsIgnoreCase(event.getValue()));
+        return new CircuitStateChangedEvent(isCircuitBreak(event.getValue()));
+    }
+    
+    private boolean isCircuitBreak(final String value) {
+        if (!Strings.isNullOrEmpty(value)) {
+            return RegistryCenterNodeStatus.DISABLED.toString()
+                    .equalsIgnoreCase(YamlEngine.unmarshal(value, InstanceState.class).getState().toString());
+        }
+        return false;
     }
 }

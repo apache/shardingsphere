@@ -17,9 +17,12 @@
 
 package org.apache.shardingsphere.ui.servcie.impl;
 
+import com.google.common.base.Strings;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.orchestration.core.registrycenter.RegistryCenterNodeStatus;
+import org.apache.shardingsphere.orchestration.core.registrycenter.instance.InstanceState;
 import org.apache.shardingsphere.ui.common.dto.InstanceDTO;
 import org.apache.shardingsphere.ui.common.dto.SlaveDataSourceDTO;
 import org.apache.shardingsphere.ui.servcie.OrchestrationService;
@@ -34,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -53,16 +57,17 @@ public final class OrchestrationServiceImpl implements OrchestrationService {
         List<String> instanceIds = registryCenterService.getActivatedRegistryCenter().getChildrenKeys(getInstancesNodeFullRootPath());
         Collection<InstanceDTO> result = new ArrayList<>(instanceIds.size());
         for (String instanceId : instanceIds) {
-            String value = registryCenterService.getActivatedRegistryCenter().get(registryCenterService.getActivatedStateNode().getInstancesNodeFullPath(instanceId));
-            result.add(new InstanceDTO(instanceId, !RegistryCenterNodeStatus.DISABLED.toString().equalsIgnoreCase(value)));
+            result.add(new InstanceDTO(instanceId, !RegistryCenterNodeStatus.DISABLED.toString().equalsIgnoreCase(getInstanceStatus(instanceId))));
         }
         return result;
     }
     
     @Override
     public void updateInstanceStatus(final String instanceId, final boolean enabled) {
-        String value = enabled ? "" : RegistryCenterNodeStatus.DISABLED.toString();
-        registryCenterService.getActivatedRegistryCenter().persist(registryCenterService.getActivatedStateNode().getInstancesNodeFullPath(instanceId), value);
+        RegistryCenterNodeStatus value = enabled ? RegistryCenterNodeStatus.ONLINE : RegistryCenterNodeStatus.DISABLED;
+        InstanceState instanceState = Optional.ofNullable(loadInstanceState(instanceId)).orElse(new InstanceState());
+        instanceState.setState(value);
+        registryCenterService.getActivatedRegistryCenter().persist(registryCenterService.getActivatedStateNode().getInstancesNodeFullPath(instanceId), YamlEngine.marshal(instanceState));
     }
     
     @Override
@@ -70,12 +75,10 @@ public final class OrchestrationServiceImpl implements OrchestrationService {
         Collection<SlaveDataSourceDTO> result = new ArrayList<>();
         for (String schemaName : shardingSchemaService.getAllSchemaNames()) {
             String configData = shardingSchemaService.getRuleConfiguration(schemaName);
-            if (!configData.contains("encryptors:\n")) {
-                if (configData.contains("tables:\n")) {
-                    handleShardingRuleConfiguration(result, configData, schemaName);
-                } else {
-                    handleMasterSlaveRuleConfiguration(result, configData, schemaName);
-                }
+            if (configData.contains("!SHARDING")) {
+                handleShardingRuleConfiguration(result, configData, schemaName);
+            } else if (configData.contains("!MASTER_SLAVE")) {
+                handleMasterSlaveRuleConfiguration(result, configData, schemaName);
             }
         }
         return result;
@@ -131,5 +134,15 @@ public final class OrchestrationServiceImpl implements OrchestrationService {
             }
         }
         return result;
+    }
+    
+    private String getInstanceStatus(final String instanceId) {
+        InstanceState instanceState = loadInstanceState(instanceId);
+        return null == instanceState ? "" : instanceState.getState().toString();
+    }
+    
+    private InstanceState loadInstanceState(final String instanceId) {
+        String value = registryCenterService.getActivatedRegistryCenter().get(registryCenterService.getActivatedStateNode().getInstancesNodeFullPath(instanceId));
+        return Strings.isNullOrEmpty(value) ? null : YamlEngine.unmarshal(value, InstanceState.class);
     }
 }
