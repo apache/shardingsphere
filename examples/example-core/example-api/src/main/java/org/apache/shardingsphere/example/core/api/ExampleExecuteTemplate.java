@@ -31,4 +31,13 @@ public final class ExampleExecuteTemplate {
             exampleService.cleanEnvironment();
         }
     }
+    
+    public static void runFailure(final ExampleService exampleService) throws SQLException {
+        try {
+            exampleService.initEnvironment();
+            exampleService.processFailure();
+        } finally {
+            exampleService.cleanEnvironment();
+        }
+    }
 }
