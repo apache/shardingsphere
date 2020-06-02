@@ -35,7 +35,7 @@ import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEve
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
-import org.apache.shardingsphere.kernel.context.SchemaContextsQuery;
+import org.apache.shardingsphere.kernel.context.SchemaContextsAware;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
@@ -64,7 +64,7 @@ import java.util.Map.Entry;
  * Control panel subscriber.
  * 
  */
-public abstract class OrchestrationSchemaContexts implements SchemaContextsQuery {
+public abstract class OrchestrationSchemaContexts implements SchemaContextsAware {
     
     private volatile SchemaContexts schemaContexts;
     

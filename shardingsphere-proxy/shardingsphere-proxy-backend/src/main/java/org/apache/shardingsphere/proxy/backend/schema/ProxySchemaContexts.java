@@ -25,7 +25,7 @@ import org.apache.shardingsphere.cluster.heartbeat.eventbus.HeartbeatEventBus;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
-import org.apache.shardingsphere.kernel.context.SchemaContextsQuery;
+import org.apache.shardingsphere.kernel.context.SchemaContextsAware;
 import org.apache.shardingsphere.proxy.backend.BackendDataSource;
 import org.apache.shardingsphere.proxy.backend.cluster.HeartbeatHandler;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -49,7 +49,7 @@ public final class ProxySchemaContexts {
     
     private static final ProxySchemaContexts INSTANCE = new ProxySchemaContexts();
     
-    private SchemaContextsQuery schemaContexts = new SchemaContexts();
+    private SchemaContextsAware schemaContexts = new SchemaContexts();
     
     private final JDBCBackendDataSource backendDataSource = new JDBCBackendDataSource();
     
@@ -71,7 +71,7 @@ public final class ProxySchemaContexts {
      *
      * @param schemaContexts  schema contexts
      */
-    public void init(final SchemaContextsQuery schemaContexts) {
+    public void init(final SchemaContextsAware schemaContexts) {
         this.schemaContexts = schemaContexts;
     }
     
