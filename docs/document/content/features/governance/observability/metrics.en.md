@@ -7,7 +7,7 @@ weight = 2
 
 Metrics are measures of used to evaluate the performance of a system at run time. 
 Quantitative assessment can be used to evaluate the performance of a system and to give relevant opinions on system optimization or business strategy.
-Apache ShardingSphere aims to build a distributed database. 
+Apache ShardingSphere aims to build a distributed database solution. 
 For the database,it analyzes its running status,connection data,transaction number,throughput and other relevant indicators.
 It is particularly important to provide visual advice and help for database scheduling,data smooth migration,sharding-database,sharding-table and other policies.
 
@@ -18,7 +18,6 @@ It is only responsible for embedding Metrics in the program. Currently, the defa
 HTTP protocol to periodically grab Metrics data.
 
 ![the follow image](https://shardingsphere.apache.org/document/current/img/control-pannel/metrics/metrics.png)
-
 
 ## Metrics indicators
 
@@ -66,8 +65,7 @@ Users set up the Prometheus service by themselves, adding the following configur
      static_configs:
      - targets: ['localhost:9190']
  ```
- 
- 
+
  ## Dashboard
  
 It is recommended to use Granfana. Users can customize the query to personalize the panel panel. Later we will provide the default panel panel configuration.

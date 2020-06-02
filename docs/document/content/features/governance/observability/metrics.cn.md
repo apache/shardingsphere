@@ -4,21 +4,17 @@ weight = 2
 +++
 
 ## 背景
-`Metrics` 是一种评估系统在运行时的度量指标，通常一组度量指标可以帮助我们评估系统性能,为系统优化或业务策略给出相关的意见。
-Apache ShardingSphere 旨在打造一款分布式数据库，而对于数据库来说，分析它的运行状态，连接数据，事务数，吞吐量等相关指标，
+`Metrics` 是一种评估系统在运行时的度量指标，通常一组度量指标可以帮助我们评估系统性能，为系统优化或业务策略给出相关的意见。
+Apache ShardingSphere 旨在打造一款分布式数据库解决方案，而对于数据库来说，分析它的运行状态，连接数据，事务数，吞吐量等相关指标，
 为数据库的调度，数据平滑迁移，分库分表等策略提供可视化的建议与帮助尤为重要。
-
-
 
 ## 方案
 
 Apache ShardingSphere 遵循`Metrics`标准，定义了一套可插拔的`SPI` 标准，它并不存储,收集,展现 `Metrics`信息，
-只是负责在程序中对`Metrics` 进行埋点,目前默认的实现方案为:`Prometheus` 客户端API埋点,服务端通过
+只是负责在程序中对`Metrics` 进行埋点，目前默认的实现方案为:`Prometheus` 客户端API埋点，服务端通过
 `http` 协议来定时抓取`Metrics`数据。
 
-
 ![流程图](https://shardingsphere.apache.org/document/current/img/control-pannel/metrics/metrics.png)
-
 
 ## 指标
 
