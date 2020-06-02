@@ -4,10 +4,71 @@ weight = 1
 chapter = true
 +++
 
-Configuration is the only module in ShardingSphere-JDBC that interacts with application developers, 
-through which developers can quickly and clearly understand the functions provided by ShardingSphere-JDBC.
+## Introduction
 
-This chapter is a configuration manual for ShardingSphere-JDBC, which can also be referred to as a dictionary if necessary.
+Java API is the foundation of all configuration methods in ShardingSphere-JDBC, 
+and other configurations will eventually be transformed into Java API configuration methods.
 
-ShardingSphere-JDBC has provided 4 kinds of configuration methods for different situations. 
-By configuration, application developers can flexibly use data sharding, read-write splitting, multi replica, data encryption, shadow database or the combination of them.
+The Java API is the most complex and flexible configuration method, which is suitable for the scenarios requiring dynamic configuration through programming.
+
+## Usage
+
+### Create Simple Data Source
+
+The ShardingSphereDataSource created by ShardingSphereDataSourceFactory implements the standard JDBC DataSource interface.
+
+```java
+// Build data source map
+Map<String, DataSource> dataSourceMap = // ...
+
+// Build rule configurations
+Collection<RuleConfiguration> configurations = // ...
+
+// Build properties
+Properties props = // ...
+
+DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, configurations, props);
+```
+
+### Create Orchestration Data Source
+
+The OrchestrationShardingSphereDataSource created by OrchestrationShardingSphereDataSourceFactory implements the standard JDBC DataSource interface.
+
+
+```java
+// Build data source map
+Map<String, DataSource> dataSourceMap = // ...
+
+// Build rule configurations
+Collection<RuleConfiguration> configurations = // ...
+
+// Build properties
+Properties props = // ...
+
+// Build orchestration configuration
+OrchestrationConfiguration orchestrationConfig = // ...
+
+DataSource dataSource = OrchestrationShardingSphereDataSourceFactory.createDataSource(dataSourceMap, configurations, props, orchestrationConfig);
+```
+
+### Use DataSource
+
+Developer can choose to use native JDBC or ORM frameworks such as JPA or MyBatis through the DataSource.
+
+Take native JDBC usage as an example:
+
+```java
+DataSource dataSource = // Use Apache ShardingSphere factory to create DataSource
+String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
+try (
+        Connection conn = dataSource.getConnection();
+        PreparedStatement ps = conn.prepareStatement(sql)) {
+    ps.setInt(1, 10);
+    ps.setInt(2, 1000);
+    try (ResultSet rs = preparedStatement.executeQuery()) {
+        while(rs.next()) {
+            // ...
+        }
+    }
+}
+```

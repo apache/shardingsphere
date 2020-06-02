@@ -43,7 +43,10 @@ Collection<RuleConfiguration> configurations = // ...
 // 构建属性配置
 Properties props = // ...
 
-DataSource dataSource = OrchestrationShardingSphereDataSourceFactory.createDataSource(dataSourceMap, configurations, props);
+// 构建注册中心配置对象
+OrchestrationConfiguration orchestrationConfig = // ...
+
+DataSource dataSource = OrchestrationShardingSphereDataSourceFactory.createDataSource(dataSourceMap, configurations, props, orchestrationConfig);
 ```
 
 ### 使用数据源
@@ -53,7 +56,7 @@ DataSource dataSource = OrchestrationShardingSphereDataSourceFactory.createDataS
 以原生 JDBC 使用方式为例：
 
 ```java
-DataSource dataSource = // 通过Apache ShardingSphere 工厂创建的数据源;
+DataSource dataSource = // 通过Apache ShardingSphere 工厂创建的数据源
 String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
 try (
         Connection conn = dataSource.getConnection();
