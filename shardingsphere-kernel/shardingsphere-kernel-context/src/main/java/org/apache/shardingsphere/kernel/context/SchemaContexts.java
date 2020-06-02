@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Properties;
 
 @Getter
-public final class SchemaContexts implements SchemaContextsQuery {
+public final class SchemaContexts implements SchemaContextsAware {
     
     private final Map<String, SchemaContext> schemaContexts = new HashMap<>();
     
