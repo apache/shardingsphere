@@ -7,11 +7,11 @@ weight = 1
 
 DataSource factory of Apache ShardingSphere. 
 
-| *Name*             | *DataType*                | *Description*                    |
-| ------------------ | ------------------------- | -------------------------------- |
-| dataSourceMap      | Map\<String, DataSource\> | Data sources configuration       |
-| shardingRuleConfig | ShardingRuleConfiguration | Data sharding configuration rule |
-| props (?)          | Properties                | Property configuration           |
+| *Name*             | *DataType*                      | *Description*                    |
+| ------------------ | ------------------------------- | -------------------------------- |
+| dataSourceMap      | Map\<String, DataSource\>       | Data sources configuration       |
+| shardingRuleConfig | Collection\<RuleConfiguration\> | Rule configurations              |
+| props (?)          | Properties                      | Property configuration           |
 
 ## Configuration Item Explanation
 

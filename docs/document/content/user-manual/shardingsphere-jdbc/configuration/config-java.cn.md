@@ -7,11 +7,11 @@ weight = 1
 
 Apache ShardingSphere 数据源创建工厂。
 
-| *名称*             | *数据类型*                 | *说明*          |
-| ------------------ |  ------------------------ | -------------- |
-| dataSourceMap      | Map\<String, DataSource\> | 数据源配置      |
-| ruleConfigurations | ShardingRuleConfiguration | 配置规则集合    |
-| props (?)          | Properties                | 属性配置        |
+| *名称*             | *数据类型*                       | *说明*       |
+| ------------------ |  ------------------------------ | ----------- |
+| dataSourceMap      | Map\<String, DataSource\>       | 数据源配置   |
+| shardingRuleConfig | Collection\<RuleConfiguration\> | 规则配置集合 |
+| props (?)          | Properties                      | 属性配置     |
 
 ## 配置项说明
 
