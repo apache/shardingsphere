@@ -1,5 +1,5 @@
 +++
-title = "数据分片"
+title = "Sharding"
 weight = 1
 +++
 
@@ -20,17 +20,17 @@ Attributes:
 
 ## Logic Table Configuration
 
-Class name: TableRuleConfiguration
+Class name: org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration
 
 Attributes:
 
-| *Name*                             | *DataType*                    | *Description*                                                |
-| ---------------------------------- | ----------------------------- | ------------------------------------------------------------ |
-| logicTable                         | String                        | Name of logic table                                          |
-| actualDataNodes (?)                | String                        | Describe data source names and actual tables, delimiter as point, multiple data nodes split by comma, support inline expression. Absent means sharding databases only. Example: ds${0..7}.tbl${0..7} |
-| databaseShardingStrategyConfig (?) | ShardingStrategyConfiguration | Databases sharding strategy, use default databases sharding strategy if absent |
-| tableShardingStrategyConfig (?)    | ShardingStrategyConfiguration | Tables sharding strategy, use default databases sharding strategy if absent |
-| keyGeneratorConfig (?)             | KeyGeneratorConfiguration     | Key generator configuration, use default key generator if absent |
+| *Name*                             | *DataType*                    | *Description*                                                                                                                   | *Default Value*                             |
+| ---------------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| logicTable                         | String                        | Name of logic table                                                                                                             | -                                           |
+| actualDataNodes (?)                | String                        | Describe data source names and actual tables, delimiter as point, multiple data nodes split by comma, support inline expression | Broadcast table or databases sharding only. |
+| databaseShardingStrategyConfig (?) | ShardingStrategyConfiguration | Databases sharding strategy                                                                                                     | Use default databases sharding strategy     |
+| tableShardingStrategyConfig (?)    | ShardingStrategyConfiguration | Tables sharding strategy                                                                                                        | Use default tables sharding strategy        |
+| keyGeneratorConfig (?)             | KeyGeneratorConfiguration     | Key generator configuration                                                                                                     | Use default key generator                   |
 
 ## Sharding Strategy Configuration
 

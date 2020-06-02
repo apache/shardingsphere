@@ -11,26 +11,26 @@ weight = 1
 
 | *名称*                                     | *数据类型*                            | *说明*            | *默认值* |
 | ----------------------------------------- | ------------------------------------ | ----------------- | ------- |
-| tableRuleConfigs (+)                      | Collection\<TableRuleConfiguration\> | 分片规则列表        | -      |
+| tableRuleConfigs (+)                      | Collection\<TableRuleConfiguration\> | 分片规则列表        | -       |
 | bindingTableGroups (*)                    | Collection\<String\>                 | 绑定表规则列表      | 无      |
 | broadcastTables (*)                       | Collection\<String\>                 | 广播表规则列表      | 无      |
-| defaultDatabaseShardingStrategyConfig (?) | ShardingStrategyConfiguration        | 默认分库策略        | 不分片  |
-| defaultTableShardingStrategyConfig (?)    | ShardingStrategyConfiguration        | 默认分表策略        | 不分片  |
+| defaultDatabaseShardingStrategyConfig (?) | ShardingStrategyConfiguration        | 默认分库策略        | 不分片   |
+| defaultTableShardingStrategyConfig (?)    | ShardingStrategyConfiguration        | 默认分表策略        | 不分片   |
 | defaultKeyGeneratorConfig (?)             | KeyGeneratorConfiguration            | 默认自增列生成器配置 | 雪花算法 |
 
 ## 逻辑表配置
 
-类名称：TableRuleConfiguration
+类名称：org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration
 
 可配置属性：
 
-| *名称*                              | *数据类型*                     | *说明*                                                                                                                                                                                                      |
-| ---------------------------------- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| logicTable                         | String                        | 逻辑表名称                                                                                                                                                                                                   |
-| actualDataNodes (?)                | String                        | 由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。缺省表示使用已知数据源与逻辑表名称生成数据节点，用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况    |
-| databaseShardingStrategyConfig (?) | ShardingStrategyConfiguration | 分库策略，缺省表示使用默认分库策略                                                                                                                                                                              |
-| tableShardingStrategyConfig (?)    | ShardingStrategyConfiguration | 分表策略，缺省表示使用默认分表策略                                                                                                                                                                              |
-| keyGeneratorConfig (?)             | KeyGeneratorConfiguration     | 自增列值生成器配置，缺省表示使用默认自增主键生成器                                                                                                                                                                |
+| *名称*                              | *数据类型*                     | *说明*                                                      | *默认值*                                                                            |
+| ---------------------------------- | ----------------------------- | ----------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| logicTable                         | String                        | 逻辑表名称                                                   | -                                                                                  |
+| actualDataNodes (?)                | String                        | 由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持行表达式 | 使用已知数据源与逻辑表名称生成数据节点，用于广播表或只分库不分表且所有库的表结构完全一致的情况 |
+| databaseShardingStrategyConfig (?) | ShardingStrategyConfiguration | 分库策略                                                     | 使用默认分库策略                                                                     |
+| tableShardingStrategyConfig (?)    | ShardingStrategyConfiguration | 分表策略                                                     | 使用默认分表策略                                                                     |
+| keyGeneratorConfig (?)             | KeyGeneratorConfiguration     | 自增列生成器                                                 | 使用默认自增主键生成器                                                                |
 
 ## 分片策略配置
 
