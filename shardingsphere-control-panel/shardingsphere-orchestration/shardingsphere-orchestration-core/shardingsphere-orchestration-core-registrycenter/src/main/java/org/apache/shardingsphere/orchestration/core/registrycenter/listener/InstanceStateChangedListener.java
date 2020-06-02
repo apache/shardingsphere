@@ -44,7 +44,7 @@ public final class InstanceStateChangedListener extends PostShardingCenterReposi
         return new CircuitStateChangedEvent(isCircuitBreak(event.getValue()));
     }
     
-    private Boolean isCircuitBreak(final String value) {
+    private boolean isCircuitBreak(final String value) {
         if (!Strings.isNullOrEmpty(value)) {
             return RegistryCenterNodeStatus.DISABLED.toString()
                     .equalsIgnoreCase(YamlEngine.unmarshal(value, InstanceState.class).getState().toString());
