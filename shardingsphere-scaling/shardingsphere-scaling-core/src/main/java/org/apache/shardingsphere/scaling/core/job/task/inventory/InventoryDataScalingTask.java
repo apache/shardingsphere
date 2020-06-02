@@ -32,6 +32,8 @@ import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.ImporterFactory;
+import org.apache.shardingsphere.scaling.core.job.position.AbstractPositionManager;
+import org.apache.shardingsphere.scaling.core.job.position.MemoryPositionManager;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 
@@ -53,6 +55,8 @@ public final class InventoryDataScalingTask implements ScalingTask {
     private final SyncConfiguration syncConfiguration;
     
     private final DataSourceManager dataSourceManager;
+
+    private final AbstractPositionManager positionManager;
     
     private final String syncTaskId;
     
@@ -70,6 +74,7 @@ public final class InventoryDataScalingTask implements ScalingTask {
         this.syncConfiguration = syncConfiguration;
         this.dataSourceManager = dataSourceManager;
         syncTaskId = generateSyncTaskId(syncConfiguration.getDumperConfiguration());
+        positionManager = new MemoryPositionManager(syncTaskId);
     }
     
     private String generateSyncTaskId(final RdbmsConfiguration dumperConfiguration) {
@@ -124,6 +129,7 @@ public final class InventoryDataScalingTask implements ScalingTask {
             int count = 0;
             for (Record record : records) {
                 if (DataRecord.class.equals(record.getClass())) {
+                    positionManager.updatePosition(record.getLogPosition());
                     count++;
                 }
             }

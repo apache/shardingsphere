@@ -18,22 +18,24 @@
 package org.apache.shardingsphere.scaling.core.job.task.incremental;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
-import org.apache.shardingsphere.scaling.core.job.SyncProgress;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.execute.engine.ExecuteCallback;
 import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.DistributionChannel;
-import org.apache.shardingsphere.scaling.core.job.position.LogPosition;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.Dumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.DumperFactory;
-import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.ImporterFactory;
+import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
+import org.apache.shardingsphere.scaling.core.job.SyncProgress;
+import org.apache.shardingsphere.scaling.core.job.position.AbstractPositionManager;
+import org.apache.shardingsphere.scaling.core.job.position.MemoryPositionManager;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
-import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,21 +52,24 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
     private final SyncConfiguration syncConfiguration;
     
     private final DataSourceManager dataSourceManager;
+
+    private final AbstractPositionManager positionManager;
     
     private final String syncTaskId;
     
-    private LogPosition logPosition;
+    private final Position logPosition;
     
     private Dumper dumper;
     
     private long delayMillisecond;
     
-    public IncrementalDataScalingTask(final SyncConfiguration syncConfiguration, final LogPosition logPosition) {
+    public IncrementalDataScalingTask(final SyncConfiguration syncConfiguration, final Position logPosition) {
         this.syncConfiguration = syncConfiguration;
         this.dataSourceManager = new DataSourceManager();
         this.logPosition = logPosition;
         DataSourceMetaData dataSourceMetaData = syncConfiguration.getDumperConfiguration().getDataSourceConfiguration().getDataSourceMetaData();
         syncTaskId = String.format("incremental-%s", null != dataSourceMetaData.getCatalog() ? dataSourceMetaData.getCatalog() : dataSourceMetaData.getSchema());
+        positionManager = new MemoryPositionManager(syncTaskId);
     }
     
     @Override
@@ -100,7 +105,7 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
     private void instanceChannel(final Collection<Importer> importers) {
         DistributionChannel channel = new DistributionChannel(importers.size(), records -> {
             Record lastHandledRecord = records.get(records.size() - 1);
-            logPosition = lastHandledRecord.getLogPosition();
+            positionManager.updatePosition(lastHandledRecord.getLogPosition());
             delayMillisecond = System.currentTimeMillis() - lastHandledRecord.getCommitTime();
         });
         dumper.setChannel(channel);
@@ -128,6 +133,6 @@ public final class IncrementalDataScalingTask extends AbstractShardingScalingExe
     
     @Override
     public SyncProgress getProgress() {
-        return new IncrementalDataSyncTaskProgress(syncTaskId, delayMillisecond, logPosition);
+        return new IncrementalDataSyncTaskProgress(syncTaskId, delayMillisecond, positionManager.getPosition());
     }
 }
