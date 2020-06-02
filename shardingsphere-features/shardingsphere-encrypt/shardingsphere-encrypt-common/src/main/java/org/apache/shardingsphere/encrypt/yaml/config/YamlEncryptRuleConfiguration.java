@@ -26,7 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Encrypt rule configuration.
+ * Encrypt rule configuration for YAML.
  */
 @Getter
 @Setter

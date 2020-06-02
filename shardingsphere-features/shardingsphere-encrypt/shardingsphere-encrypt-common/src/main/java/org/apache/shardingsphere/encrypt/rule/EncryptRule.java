@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.rule;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptColumnConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration;
@@ -65,7 +65,7 @@ public final class EncryptRule implements ShardingSphereRule {
     
     private boolean isValidTableConfiguration(final EncryptRuleConfiguration encryptRuleConfiguration) {
         for (EncryptTableRuleConfiguration table : encryptRuleConfiguration.getTables().values()) {
-            for (EncryptColumnRuleConfiguration column : table.getColumns().values()) {
+            for (EncryptColumnConfiguration column : table.getColumns().values()) {
                 if (!isValidColumnConfiguration(encryptRuleConfiguration, column)) {
                     return false;
                 }
@@ -74,7 +74,7 @@ public final class EncryptRule implements ShardingSphereRule {
         return true;
     }
     
-    private boolean isValidColumnConfiguration(final EncryptRuleConfiguration encryptRuleConfiguration, final EncryptColumnRuleConfiguration column) {
+    private boolean isValidColumnConfiguration(final EncryptRuleConfiguration encryptRuleConfiguration, final EncryptColumnConfiguration column) {
         return !Strings.isNullOrEmpty(column.getEncryptor()) && !Strings.isNullOrEmpty(column.getCipherColumn()) && encryptRuleConfiguration.getEncryptors().containsKey(column.getEncryptor());
     }
     

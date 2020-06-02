@@ -22,11 +22,11 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 
 /**
- * Encrypt column rule configuration.
+ * Encrypt column configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlEncryptColumnRuleConfiguration implements YamlConfiguration {
+public final class YamlEncryptColumnConfiguration implements YamlConfiguration {
     
     private String plainColumn;
     

@@ -22,11 +22,11 @@ Attributes:
 
 | *Name*         | *DataType*                                    | *Description*                    |
 | -------------- | --------------------------------------------- | -------------------------------- |
-| columns (+)    | Map\<String, EncryptColumnRuleConfiguration\> | Encrypt column names and columns |
+| columns (+)    | Map\<String, EncryptColumnConfiguration\>     | Encrypt column names and columns |
 
 ### Encrypt Column Configuration
 
-Class name: org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration
+Class name: org.apache.shardingsphere.encrypt.api.config.EncryptColumnConfiguration
 
 Attributes:
 

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.encrypt.table.raw.jdbc.config;
 
-import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptColumnConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration;
@@ -39,11 +39,11 @@ public class EncryptDatabasesConfiguration implements ExampleConfiguration {
         Properties properties = new Properties();
         properties.setProperty("aes.key.value", "123456");
         properties.setProperty("query.with.cipher.column", "true");
-        EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("user_name_plain", "user_name", "", "name_encryptor");
-        Map<String, EncryptColumnRuleConfiguration> columns = new HashMap<>();
+        EncryptColumnConfiguration columnConfigAes = new EncryptColumnConfiguration("user_name_plain", "user_name", "", "name_encryptor");
+        Map<String, EncryptColumnConfiguration> columns = new HashMap<>();
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration(columns);
         columns.put("user_name", columnConfigAes);
-        EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("", "pwd", "assisted_query_pwd", "pwd_encryptor");
+        EncryptColumnConfiguration columnConfigTest = new EncryptColumnConfiguration("", "pwd", "assisted_query_pwd", "pwd_encryptor");
         columns.put("pwd", columnConfigTest);
         tableConfig.getColumns().putAll(columns);
         Map<String, EncryptorConfiguration> encryptors = new HashMap<>();

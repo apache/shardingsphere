@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.log;
 
 import com.google.common.collect.ImmutableMap;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptColumnConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration;
@@ -88,7 +88,7 @@ public final class EncryptConfigurationLoggerTest {
         properties.put("aes.key.value", "123456abc");
         EncryptorConfiguration encryptorConfiguration = new EncryptorConfiguration("aes", properties);
         EncryptTableRuleConfiguration tableRuleConfiguration =
-                new EncryptTableRuleConfiguration(Collections.singletonMap("user_id", new EncryptColumnRuleConfiguration("user_decrypt", "user_encrypt", "user_assisted", "encryptor_aes")));
+                new EncryptTableRuleConfiguration(Collections.singletonMap("user_id", new EncryptColumnConfiguration("user_decrypt", "user_encrypt", "user_assisted", "encryptor_aes")));
         return new EncryptRuleConfiguration(ImmutableMap.of("encryptor_aes", encryptorConfiguration), ImmutableMap.of("t_encrypt", tableRuleConfiguration));
     }
     

@@ -22,11 +22,11 @@ weight = 3
 
 | *名称*          | *数据类型*                                    | *说明*          |
 | -------------- | --------------------------------------------- | -------------- |
-| columns (+)    | Map\<String, EncryptColumnRuleConfiguration\> | 加密列名称和列表 |
+| columns (+)    | Map\<String, EncryptColumnConfiguration\>     | 加密列名称和列表 |
 
 ### 加密列配置
 
-类名称：org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration
+类名称：org.apache.shardingsphere.encrypt.api.config.EncryptColumnConfiguration
 
 可配置属性：
 

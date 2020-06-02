@@ -30,9 +30,9 @@ import java.util.Map;
 @Getter
 public final class EncryptTableRuleConfiguration {
     
-    private final Map<String, EncryptColumnRuleConfiguration> columns = new LinkedHashMap<>();
+    private final Map<String, EncryptColumnConfiguration> columns = new LinkedHashMap<>();
     
-    public EncryptTableRuleConfiguration(final Map<String, EncryptColumnRuleConfiguration> columns) {
+    public EncryptTableRuleConfiguration(final Map<String, EncryptColumnConfiguration> columns) {
         this.columns.putAll(columns);
     }
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.encrypt.strategy.impl;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptColumnConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.strategy.EncryptTable;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
@@ -38,12 +38,12 @@ public final class EncryptTableTest {
     @Before
     public void setUp() {
         EncryptTableRuleConfiguration config = mock(EncryptTableRuleConfiguration.class);
-        EncryptColumnRuleConfiguration encryptColumnRuleConfiguration = mock(EncryptColumnRuleConfiguration.class);
-        when(config.getColumns()).thenReturn(ImmutableMap.of("key", encryptColumnRuleConfiguration));
-        when(encryptColumnRuleConfiguration.getCipherColumn()).thenReturn("cipherColumn");
-        when(encryptColumnRuleConfiguration.getAssistedQueryColumn()).thenReturn("assistedQueryColumn");
-        when(encryptColumnRuleConfiguration.getPlainColumn()).thenReturn("plainColumn");
-        when(encryptColumnRuleConfiguration.getEncryptor()).thenReturn("encryptor");
+        EncryptColumnConfiguration encryptColumnConfiguration = mock(EncryptColumnConfiguration.class);
+        when(config.getColumns()).thenReturn(ImmutableMap.of("key", encryptColumnConfiguration));
+        when(encryptColumnConfiguration.getCipherColumn()).thenReturn("cipherColumn");
+        when(encryptColumnConfiguration.getAssistedQueryColumn()).thenReturn("assistedQueryColumn");
+        when(encryptColumnConfiguration.getPlainColumn()).thenReturn("plainColumn");
+        when(encryptColumnConfiguration.getEncryptor()).thenReturn("encryptor");
         encryptTable = new EncryptTable(config);
     }
     

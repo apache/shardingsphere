@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 import java.util.Properties;
 
 /**
- * Encryptor configuration.
+ * Encryptor configuration for YAML.
  */
 @Getter
 @Setter

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.encrypt.rule;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptColumnConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration;
@@ -50,9 +50,9 @@ public final class EncryptRuleTest {
     @Before
     public void setUp() {
         Properties props = new Properties();
-        EncryptColumnRuleConfiguration columnConfig = new EncryptColumnRuleConfiguration("plain_pwd", "cipher_pwd", "", "aes");
-        EncryptColumnRuleConfiguration idNumberConfig = new EncryptColumnRuleConfiguration("plain_id_number", "cipher_id_number", "", "aes");
-        Map<String, EncryptColumnRuleConfiguration> ruleConfigurationMap = new HashMap<>();
+        EncryptColumnConfiguration columnConfig = new EncryptColumnConfiguration("plain_pwd", "cipher_pwd", "", "aes");
+        EncryptColumnConfiguration idNumberConfig = new EncryptColumnConfiguration("plain_id_number", "cipher_id_number", "", "aes");
+        Map<String, EncryptColumnConfiguration> ruleConfigurationMap = new HashMap<>();
         ruleConfigurationMap.put(column, columnConfig);
         ruleConfigurationMap.put(idNumber, idNumberConfig);
         EncryptorConfiguration encryptorConfig = new EncryptorConfiguration("assistedTest", props);
