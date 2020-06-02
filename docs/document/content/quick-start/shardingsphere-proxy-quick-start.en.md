@@ -6,9 +6,9 @@ weight = 2
 
 ## 1. Rule Configuration
 
-Edit `%SHARDINGSPHERE_PROXY_HOME%\conf\config-xxx.yaml`. Please refer to [Configuration Manual](/en/manual/shardingsphere-proxy/configuration/) for more details.
+Edit `%SHARDINGSPHERE_PROXY_HOME%\conf\config-xxx.yaml`. Please refer to [Configuration Manual](/en/user-manual/shardingsphere-proxy/configuration/) for more details.
 
-Edit `%SHARDINGSPHERE_PROXY_HOME%\conf\server.yaml`. Please refer to [Configuration Manual](/en/manual/shardingsphere-proxy/configuration/) for more details.
+Edit `%SHARDINGSPHERE_PROXY_HOME%\conf\server.yaml`. Please refer to [Configuration Manual](/en/user-manual/shardingsphere-proxy/configuration/) for more details.
 
 ## 2. Import Dependencies
 

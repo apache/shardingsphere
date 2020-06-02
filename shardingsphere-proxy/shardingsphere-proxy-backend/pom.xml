@@ -119,7 +119,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-control-panel-core</artifactId>
+            <artifactId>shardingsphere-orchestration-core-schema</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         

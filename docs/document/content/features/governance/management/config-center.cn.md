@@ -37,7 +37,7 @@ password: root
 
 ### config/props
 
-属性配置，详情请参见[配置手册](/cn/manual/shardingsphere-jdbc/configuration/)。
+属性配置，详情请参见[配置手册](/cn/user-manual/shardingsphere-jdbc/configuration/)。
 
 ```yaml
 executor.size: 20

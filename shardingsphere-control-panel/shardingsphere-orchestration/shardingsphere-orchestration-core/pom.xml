@@ -34,5 +34,6 @@
         <module>shardingsphere-orchestration-core-registrycenter</module>
         <module>shardingsphere-orchestration-core-metadatacenter</module>
         <module>shardingsphere-orchestration-core-facade</module>
+        <module>shardingsphere-orchestration-core-schema</module>
     </modules>
 </project>

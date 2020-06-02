@@ -30,6 +30,7 @@ import org.apache.shardingsphere.orchestration.core.common.event.AuthenticationC
 import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.CircuitStateChangedEvent;
+import org.apache.shardingsphere.proxy.backend.schema.ProxyOrchestrationSchemaContexts;
 import org.apache.shardingsphere.proxy.backend.schema.ProxySchemaContexts;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,9 +52,10 @@ public final class ShardingSphereProxyContextTest {
     @Before
     @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
-        Field schemaContexts = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
-        schemaContexts.setAccessible(true);
-        schemaContexts.set(ProxySchemaContexts.getInstance(), new SchemaContexts(getSchemaContextMap(), new ConfigurationProperties(new Properties()), new Authentication()));
+        Field field = ProxySchemaContexts.getInstance().getClass().getDeclaredField("schemaContexts");
+        field.setAccessible(true);
+        SchemaContexts schemaContexts = new SchemaContexts(getSchemaContextMap(), new ConfigurationProperties(new Properties()), new Authentication());
+        field.set(ProxySchemaContexts.getInstance(), new ProxyOrchestrationSchemaContexts(schemaContexts));
     }
     
     private Map<String, SchemaContext> getSchemaContextMap() {
@@ -89,9 +91,9 @@ public final class ShardingSphereProxyContextTest {
     
     @Test
     public void assertRenewCircuitState() {
-        assertFalse(ProxySchemaContexts.getInstance().isCircuitBreak());
+        assertFalse(ProxySchemaContexts.getInstance().getSchemaContexts().isCircuitBreak());
         ShardingOrchestrationEventBus.getInstance().post(new CircuitStateChangedEvent(true));
-        assertTrue(ProxySchemaContexts.getInstance().isCircuitBreak());
+        assertTrue(ProxySchemaContexts.getInstance().getSchemaContexts().isCircuitBreak());
         ShardingOrchestrationEventBus.getInstance().post(new CircuitStateChangedEvent(false));
     }
 }

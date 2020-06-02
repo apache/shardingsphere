@@ -6,9 +6,9 @@ weight = 2
 
 ## 1. 规则配置
 
-编辑`%SHARDINGSPHERE_PROXY_HOME%\conf\config-xxx.yaml`。详情请参见[配置手册](/cn/manual/shardingsphere-proxy/configuration/)。
+编辑`%SHARDINGSPHERE_PROXY_HOME%\conf\config-xxx.yaml`。详情请参见[配置手册](/cn/user-manual/shardingsphere-proxy/configuration/)。
 
-编辑`%SHARDINGSPHERE_PROXY_HOME%\conf\server.yaml`。详情请参见[配置手册](/cn/manual/shardingsphere-proxy/configuration/)。
+编辑`%SHARDINGSPHERE_PROXY_HOME%\conf\server.yaml`。详情请参见[配置手册](/cn/user-manual/shardingsphere-proxy/configuration/)。
 
 ## 2. 引入依赖
 

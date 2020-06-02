@@ -18,6 +18,10 @@
 FROM openjdk:8-jdk-alpine
 
 ARG APP_NAME
-ADD target/${APP_NAME}.tar.gz /export
-RUN mv /export/${APP_NAME} /export/shardingsphere-proxy
-ENTRYPOINT /export/shardingsphere-proxy/bin/start.sh && tail -f /export/shardingsphere-proxy/logs/stdout.log
+ENV WAIT_VERSION 2.7.2
+
+ADD target/${APP_NAME}.tar.gz /opt
+ADD https://github.com/ufoscout/docker-compose-wait/releases/download/$WAIT_VERSION/wait /wait
+RUN chmod +x /wait
+RUN mv /opt/${APP_NAME} /opt/shardingsphere-proxy
+ENTRYPOINT /wait && /opt/shardingsphere-proxy/bin/start.sh && tail -f /opt/shardingsphere-proxy/logs/stdout.log

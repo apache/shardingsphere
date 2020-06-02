@@ -68,7 +68,12 @@
         <property name="password" value=""/>
     </bean>
     
-    <sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="demo_ds_${user_id % 2}" />
+    <sharding:sharding-algorithm id="databaseAlgorithm" type="INLINE">
+        <props>
+            <prop key="algorithm.expression">demo_ds_${user_id % 2}</prop>
+        </props>
+    </sharding:sharding-algorithm>
+    <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="databaseAlgorithm" />
     
     <sharding:key-generate-algorithm id="snowflakeAlgorithm" type="SNOWFLAKE">
         <props>
