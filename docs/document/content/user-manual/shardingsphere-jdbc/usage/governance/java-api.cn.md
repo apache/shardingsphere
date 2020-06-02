@@ -67,7 +67,7 @@ try (
         Connection conn = dataSource.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
     ps.setInt(1, 10);
-    ps.setInt(2, 1001);
+    ps.setInt(2, 1000);
     try (ResultSet rs = preparedStatement.executeQuery()) {
         while(rs.next()) {
             // ...

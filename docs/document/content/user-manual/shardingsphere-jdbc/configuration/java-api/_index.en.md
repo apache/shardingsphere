@@ -1,7 +1,6 @@
 +++
-pre = "<b>4.1.2. </b>"
-title = "Configuration Manual"
-weight = 2
+title = "Java API"
+weight = 1
 chapter = true
 +++
 
