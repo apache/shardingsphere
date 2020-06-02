@@ -6,7 +6,7 @@ weight = 3
 
 ## 1. Rule Configuration
 
-Edit `%SHARDINGSPHERE_SCALING_HOME%\conf\server.yaml`. Please refer to [Configuration Manual](en/user-manual/shardingsphere-scaling/usage/) for more details.
+Edit `%SHARDINGSPHERE_SCALING_HOME%\conf\server.yaml`. Please refer to [Configuration Manual](/en/user-manual/shardingsphere-scaling/usage/) for more details.
 
 ## 2. Import Dependencies
 
@@ -48,4 +48,4 @@ curl -X POST \
 }'
 ```
 
-Please refer to [Configuration Manual](en/user-manual/shardingsphere-scaling/usage/) for more details. 
+Please refer to [Configuration Manual](/en/user-manual/shardingsphere-scaling/usage/) for more details. 
