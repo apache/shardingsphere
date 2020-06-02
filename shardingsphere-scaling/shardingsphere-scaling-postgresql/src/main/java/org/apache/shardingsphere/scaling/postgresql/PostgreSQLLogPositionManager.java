@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.postgresql;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.scaling.core.job.position.LogPositionManager;
+import org.apache.shardingsphere.scaling.core.job.task.incremental.LogPositionManager;
 import org.postgresql.replication.LogSequenceNumber;
 import org.postgresql.util.PSQLException;
 
@@ -86,10 +86,5 @@ public final class PostgreSQLLogPositionManager implements LogPositionManager<Wa
         ResultSet rs = ps.executeQuery();
         rs.next();
         return new WalPosition(LogSequenceNumber.valueOf(rs.getString(1)));
-    }
-    
-    @Override
-    public void updateCurrentPosition(final WalPosition newLogPosition) {
-        currentPosition = newLogPosition;
     }
 }

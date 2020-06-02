@@ -22,5 +22,5 @@ import java.io.Serializable;
 /**
  * Log position interface.
  */
-public interface LogPosition<T> extends Comparable<T>, Serializable {
+public interface Position<T> extends Comparable<T>, Serializable {
 }

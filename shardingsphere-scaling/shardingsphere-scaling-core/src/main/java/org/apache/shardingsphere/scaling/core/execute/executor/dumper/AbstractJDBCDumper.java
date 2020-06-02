@@ -26,7 +26,7 @@ import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
-import org.apache.shardingsphere.scaling.core.job.position.NopLogPosition;
+import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
@@ -85,7 +85,7 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
             ResultSet rs = ps.executeQuery();
             ResultSetMetaData metaData = rs.getMetaData();
             while (isRunning() && rs.next()) {
-                DataRecord record = new DataRecord(new NopLogPosition(), metaData.getColumnCount());
+                DataRecord record = new DataRecord(new NopPosition(), metaData.getColumnCount());
                 record.setType("BOOTSTRAP-INSERT");
                 record.setTableName(rdbmsConfiguration.getTableNameMap().get(rdbmsConfiguration.getTableName()));
                 for (int i = 1; i <= metaData.getColumnCount(); i++) {
@@ -98,7 +98,7 @@ public abstract class AbstractJDBCDumper extends AbstractShardingScalingExecutor
             channel.close();
             throw new SyncTaskExecuteException(e);
         } finally {
-            pushRecord(new FinishedRecord(new NopLogPosition()));
+            pushRecord(new FinishedRecord(new NopPosition()));
         }
     }
     

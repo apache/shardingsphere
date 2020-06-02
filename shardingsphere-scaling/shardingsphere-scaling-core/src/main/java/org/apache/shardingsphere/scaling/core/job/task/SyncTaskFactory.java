@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.core.job.task;
 import java.util.Collection;
 
 import org.apache.shardingsphere.scaling.core.config.SyncConfiguration;
-import org.apache.shardingsphere.scaling.core.job.position.LogPosition;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalDataScalingTask;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryDataScalingTask;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryDataScalingTaskGroup;
@@ -53,5 +53,5 @@ public interface SyncTaskFactory {
      * @param logPosition  log position of incremental data start
      * @return incremental data sync task
      */
-    IncrementalDataScalingTask createIncrementalDataSyncTask(SyncConfiguration syncConfiguration, LogPosition logPosition);
+    IncrementalDataScalingTask createIncrementalDataSyncTask(SyncConfiguration syncConfiguration, Position logPosition);
 }

@@ -18,22 +18,14 @@
 package org.apache.shardingsphere.scaling.core.job.position;
 
 /**
- * Database itself data synchronize position manager.
- * Such as mysql binlog, postgreSQL wal.
+ * Nop log position.
  */
-public interface LogPositionManager<T extends LogPosition> {
+public final class NopPosition implements Position<NopPosition> {
     
-    /**
-     * Get current log position.
-     *
-     * @return log position
-     */
-    T getCurrentPosition();
+    private static final long serialVersionUID = 1946907178847169020L;
     
-    /**
-     * Update currentPosition.
-     *
-     * @param newLogPosition new log position.
-     */
-    void updateCurrentPosition(T newLogPosition);
+    @Override
+    public int compareTo(final NopPosition nopLogPosition) {
+        return 0;
+    }
 }

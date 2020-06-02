@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.execute.executor.channel;
 
-import org.apache.shardingsphere.scaling.core.job.position.LogPosition;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.PlaceholderRecord;
@@ -55,7 +55,7 @@ public final class DistributionChannel implements Channel {
     
     private final Queue<Record> toBeAcknowledgeRecords = new ConcurrentLinkedQueue<>();
     
-    private final Map<LogPosition, Record> pendingAcknowledgeRecords = new ConcurrentHashMap<>();
+    private final Map<Position, Record> pendingAcknowledgeRecords = new ConcurrentHashMap<>();
     
     private ScheduledExecutorService scheduleAckRecordsExecutor;
     

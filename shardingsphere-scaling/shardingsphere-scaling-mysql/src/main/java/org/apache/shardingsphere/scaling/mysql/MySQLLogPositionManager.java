@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.mysql;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.scaling.core.job.position.LogPositionManager;
+import org.apache.shardingsphere.scaling.core.job.task.incremental.LogPositionManager;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -57,10 +57,5 @@ public final class MySQLLogPositionManager implements LogPositionManager<BinlogP
         } catch (final SQLException ex) {
             throw new RuntimeException("markPosition error", ex);
         }
-    }
-    
-    @Override
-    public void updateCurrentPosition(final BinlogPosition newLogPosition) {
-        this.currentPosition = newLogPosition;
     }
 }

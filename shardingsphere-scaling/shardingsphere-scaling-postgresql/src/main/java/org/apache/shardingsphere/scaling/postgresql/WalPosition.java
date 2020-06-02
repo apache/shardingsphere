@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.postgresql;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.scaling.core.job.position.LogPosition;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.postgresql.replication.LogSequenceNumber;
 
 /**
@@ -27,7 +27,7 @@ import org.postgresql.replication.LogSequenceNumber;
  */
 @Getter
 @RequiredArgsConstructor
-public class WalPosition implements LogPosition<WalPosition> {
+public class WalPosition implements Position<WalPosition> {
     
     private static final long serialVersionUID = -3498484556749679001L;
     

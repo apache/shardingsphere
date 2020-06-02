@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.mysql;
 
-import org.apache.shardingsphere.scaling.core.job.position.LogPosition;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,7 +31,7 @@ import lombok.Setter;
 @Setter
 @RequiredArgsConstructor
 @AllArgsConstructor
-public class BinlogPosition implements LogPosition<BinlogPosition> {
+public class BinlogPosition implements Position<BinlogPosition> {
     
     private static final long serialVersionUID = -4917415481787093677L;
     

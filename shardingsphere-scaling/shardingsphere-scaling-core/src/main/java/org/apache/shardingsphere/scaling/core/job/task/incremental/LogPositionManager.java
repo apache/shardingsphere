@@ -15,17 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position;
+package org.apache.shardingsphere.scaling.core.job.task.incremental;
+
+import org.apache.shardingsphere.scaling.core.job.position.Position;
 
 /**
- * Nop log position.
+ * Database itself data synchronize position manager.
+ * Such as mysql binlog, postgreSQL wal.
  */
-public final class NopLogPosition implements LogPosition<NopLogPosition> {
+public interface LogPositionManager<T extends Position> {
     
-    private static final long serialVersionUID = 1946907178847169020L;
-    
-    @Override
-    public int compareTo(final NopLogPosition nopLogPosition) {
-        return 0;
-    }
+    /**
+     * Get current log position.
+     *
+     * @return log position
+     */
+    T getCurrentPosition();
 }

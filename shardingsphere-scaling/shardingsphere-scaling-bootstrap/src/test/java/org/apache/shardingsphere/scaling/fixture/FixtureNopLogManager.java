@@ -18,22 +18,18 @@
 package org.apache.shardingsphere.scaling.fixture;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.scaling.core.job.position.LogPositionManager;
-import org.apache.shardingsphere.scaling.core.job.position.NopLogPosition;
+import org.apache.shardingsphere.scaling.core.job.task.incremental.LogPositionManager;
+import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
 
 import javax.sql.DataSource;
 
 @RequiredArgsConstructor
-public final class FixtureNopLogManager implements LogPositionManager<NopLogPosition> {
+public final class FixtureNopLogManager implements LogPositionManager<NopPosition> {
     
     private final DataSource dataSource;
     
     @Override
-    public NopLogPosition getCurrentPosition() {
-        return new NopLogPosition();
-    }
-    
-    @Override
-    public void updateCurrentPosition(final NopLogPosition newLogPosition) {
+    public NopPosition getCurrentPosition() {
+        return new NopPosition();
     }
 }

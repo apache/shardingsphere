@@ -88,15 +88,7 @@ public final class PostgreSQLLogPositionManagerTest {
         when(databaseMetaData.getDatabaseMinorVersion()).thenReturn(4);
         postgreSQLLogManager.getCurrentPosition();
     }
-    
-    @Test
-    public void assertUpdateCurrentPosition() {
-        PostgreSQLLogPositionManager postgreSQLLogManager = new PostgreSQLLogPositionManager(dataSource);
-        WalPosition expected = new WalPosition(LogSequenceNumber.valueOf(POSTGRESQL_96_LSN));
-        postgreSQLLogManager.updateCurrentPosition(expected);
-        assertThat(postgreSQLLogManager.getCurrentPosition(), is(expected));
-    }
-    
+
     private PreparedStatement mockPostgreSQL96Lsn() throws SQLException {
         PreparedStatement result = mock(PreparedStatement.class);
         ResultSet resultSet = mock(ResultSet.class);

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.scaling.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
-import org.apache.shardingsphere.scaling.core.job.position.NopLogPosition;
+import org.apache.shardingsphere.scaling.core.job.position.NopPosition;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
@@ -131,12 +131,12 @@ public final class AbstractJDBCImporterTest {
     private List<Record> mockRecords(final DataRecord dataRecord) {
         List<Record> result = new LinkedList<>();
         result.add(dataRecord);
-        result.add(new FinishedRecord(new NopLogPosition()));
+        result.add(new FinishedRecord(new NopPosition()));
         return result;
     }
     
     private DataRecord getDataRecord(final String recordType) {
-        DataRecord result = new DataRecord(new NopLogPosition(), 3);
+        DataRecord result = new DataRecord(new NopPosition(), 3);
         result.setTableName(TABLE_NAME);
         result.setType(recordType);
         result.addColumn(new Column("id", 1, false, true));

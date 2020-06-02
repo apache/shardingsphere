@@ -24,7 +24,7 @@ import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
-import org.apache.shardingsphere.scaling.core.job.position.LogPosition;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.LogDumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.scaling.postgresql.wal.LogicalReplication;
@@ -58,7 +58,7 @@ public final class PostgreSQLWalDumper extends AbstractShardingScalingExecutor i
     @Setter
     private Channel channel;
     
-    public PostgreSQLWalDumper(final RdbmsConfiguration rdbmsConfiguration, final LogPosition logPosition) {
+    public PostgreSQLWalDumper(final RdbmsConfiguration rdbmsConfiguration, final Position logPosition) {
         walPosition = (WalPosition) logPosition;
         if (!JDBCDataSourceConfiguration.class.equals(rdbmsConfiguration.getDataSourceConfiguration().getClass())) {
             throw new UnsupportedOperationException("PostgreSQLWalDumper only support JDBCDataSourceConfiguration");

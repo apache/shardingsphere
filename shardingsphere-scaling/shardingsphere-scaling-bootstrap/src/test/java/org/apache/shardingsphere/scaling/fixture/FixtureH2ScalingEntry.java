@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.fixture;
 
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
-import org.apache.shardingsphere.scaling.core.job.position.LogPositionManager;
+import org.apache.shardingsphere.scaling.core.job.task.incremental.LogPositionManager;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.JDBCDumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.LogDumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer;
