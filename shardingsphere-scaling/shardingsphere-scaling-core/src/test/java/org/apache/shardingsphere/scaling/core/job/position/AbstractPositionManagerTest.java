@@ -27,9 +27,10 @@ public class AbstractPositionManagerTest {
 
     @Test
     public void assertGetPosition() {
-        AbstractPositionManager positionManager = new MemoryPositionManager("123");
-        positionManager.updatePosition("123", new FixturePosition(1));
-        Position position = positionManager.getPosition("123");
+        final String taskId = "123";
+        AbstractPositionManager positionManager = new MemoryPositionManager(taskId);
+        positionManager.updatePosition(taskId, new FixturePosition(1));
+        Position position = positionManager.getPosition(taskId);
         assertThat(((FixturePosition) position).getId(), is(1));
     }
 }
