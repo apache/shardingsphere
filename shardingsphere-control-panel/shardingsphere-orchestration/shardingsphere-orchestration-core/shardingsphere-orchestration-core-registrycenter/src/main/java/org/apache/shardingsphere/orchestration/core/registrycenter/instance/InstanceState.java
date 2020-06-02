@@ -36,5 +36,5 @@ public final class InstanceState {
     
     private RegistryCenterNodeStatus state;
     
-    private Map<String,DataSourceState> dataSources;
+    private Map<String, DataSourceState> dataSources;
 }

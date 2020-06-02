@@ -75,9 +75,7 @@ public final class OrchestrationServiceImpl implements OrchestrationService {
         Collection<SlaveDataSourceDTO> result = new ArrayList<>();
         for (String schemaName : shardingSchemaService.getAllSchemaNames()) {
             String configData = shardingSchemaService.getRuleConfiguration(schemaName);
-            if (configData.contains("!SHARDING")) {
-                handleShardingRuleConfiguration(result, configData, schemaName);
-            } else if (configData.contains("!MASTER_SLAVE")) {
+           if (configData.contains("!MASTER_SLAVE")) {
                 handleMasterSlaveRuleConfiguration(result, configData, schemaName);
             }
         }
