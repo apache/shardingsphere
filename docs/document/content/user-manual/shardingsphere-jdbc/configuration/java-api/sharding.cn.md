@@ -56,11 +56,17 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 | algorithm.expression                      | String    | 分片算法的行表达式                                    | -       |
 | allow.range.query.with.inline.sharding (?)| boolean   | 是否允许范围查询。注意：范围查询会无视分片策略，进行全路由 | false   |
 
+#### 取模分片算法
+
+类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.ModuloShardingAlgorithm
+
+| *属性名称* | *数据类型* | *说明*  |
+| --------- | --------- | ------- |
+| mod.value | int       | 分片数量 |
+
 
 | *类名称*                              | *说明*                      |
 | ------------------------------------ | --------------------------- |
-| inline.InlineShardingAlgorithm       | 基于行表达式的分片             |
-| ModuloShardingAlgorithm              | 基于取模的分片算法             |
 | HashShardingAlgorithm                | 基于哈希取模的分片算法         |
 | range.StandardRangeShardingAlgorithm | 基于时间的分片算法             |
 | range.CustomRangeShardingAlgorithm   | 基于用户自定义时间格式的分片算法 |

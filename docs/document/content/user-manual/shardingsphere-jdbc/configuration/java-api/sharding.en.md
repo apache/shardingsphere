@@ -51,12 +51,18 @@ Apache ShardingSphere built-in implemented classes of StandardShardingAlgorithm 
 
 Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.InlineShardingAlgorithm
 
-| *Name*                     | *DataType*                | *Description*                                                                                           | *Default Value* |
-| ----------------------------------------- | --------- | -------------------------------------------------------------------------------------------------------- | --------------- |
-| algorithm.expression                      | String    | Inline expression sharding algorithm                                                                     | -               |
-| allow.range.query.with.inline.sharding (?)| boolean   | Whether range query is allowed. Note: range query will ignore sharding strategy and conduct full routing | false           |
+| *Name*                                    | *DataType* | *Description*                                                                                            | *Default Value* |
+| ----------------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------- | --------------- |
+| algorithm.expression                      | String     | Inline expression sharding algorithm                                                                     | -               |
+| allow.range.query.with.inline.sharding (?)| boolean    | Whether range query is allowed. Note: range query will ignore sharding strategy and conduct full routing | false           |
 
+#### Modulo Sharding Algorithm
 
+类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.ModuloShardingAlgorithm
+
+| *Name*    | *DataType* | *Description*  |
+| --------- | ---------- | -------------- |
+| mod.value | int        | Sharding count |
 
 
 
@@ -64,8 +70,6 @@ Package name: `org.apache.shardingsphere.sharding.strategy.algorithm.sharding`
 
 | *Class name*                         | *Description*                          |
 | ------------------------------------ | -------------------------------------- |
-| inline.InlineShardingAlgorithm       | Inline sharding algorithm, refer to [Inline expression](/en/features/sharding/other-features/inline-expression) for more details. |
-| ModuloShardingAlgorithm              | Modulo sharding algorithm              |
 | HashShardingAlgorithm                | Hash sharding algorithm                |
 | range.StandardRangeShardingAlgorithm | Datetime sharding algorithm            |
 | range.CustomRangeShardingAlgorithm   | Customized datetime sharding algorithm |
