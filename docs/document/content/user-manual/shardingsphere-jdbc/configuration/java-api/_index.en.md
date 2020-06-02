@@ -13,7 +13,7 @@ The Java API is the most complex and flexible configuration method, which is sui
 
 ## Usage
 
-### Create Simple Data Source
+### Create Simple DataSource
 
 The ShardingSphereDataSource created by ShardingSphereDataSourceFactory implements the standard JDBC DataSource interface.
 
@@ -30,7 +30,7 @@ Properties props = // ...
 DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, configurations, props);
 ```
 
-### Create Orchestration Data Source
+### Create Orchestration DataSource
 
 The OrchestrationShardingSphereDataSource created by OrchestrationShardingSphereDataSourceFactory implements the standard JDBC DataSource interface.
 
