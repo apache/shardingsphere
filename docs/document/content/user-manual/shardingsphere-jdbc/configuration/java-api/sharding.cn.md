@@ -5,18 +5,18 @@ weight = 1
 
 ## 配置入口
 
-类名称：ShardingRuleConfiguration
+类名称：org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration
 
 可配置属性：
 
-| *名称*                                     | *数据类型*                                  | *说明*                                                                                         
-| ----------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------------------- |
-| tableRuleConfigs                          | Collection\<TableRuleConfiguration\>       | 分片规则列表                                                                                      |
-| bindingTableGroups (?)                    | Collection\<String\>                       | 绑定表规则列表                                                                                    |
-| broadcastTables (?)                       | Collection\<String\>                       | 广播表规则列表                                                                                    |
-| defaultDatabaseShardingStrategyConfig (?) | ShardingStrategyConfiguration              | 默认分库策略                                                                                      |
-| defaultTableShardingStrategyConfig (?)    | ShardingStrategyConfiguration              | 默认分表策略                                                                                      |
-| defaultKeyGeneratorConfig (?)             | KeyGeneratorConfiguration                  | 默认自增列值生成器配置，缺省将使用org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator |
+| *名称*                                     | *数据类型*                            | *说明*            | *默认值* |
+| ----------------------------------------- | ------------------------------------ | ----------------- | ------- |
+| tableRuleConfigs (+)                      | Collection\<TableRuleConfiguration\> | 分片规则列表        | -      |
+| bindingTableGroups (*)                    | Collection\<String\>                 | 绑定表规则列表      | 无      |
+| broadcastTables (*)                       | Collection\<String\>                 | 广播表规则列表      | 无      |
+| defaultDatabaseShardingStrategyConfig (?) | ShardingStrategyConfiguration        | 默认分库策略        | 不分片  |
+| defaultTableShardingStrategyConfig (?)    | ShardingStrategyConfiguration        | 默认分表策略        | 不分片  |
+| defaultKeyGeneratorConfig (?)             | KeyGeneratorConfiguration            | 默认自增列生成器配置 | 雪花算法 |
 
 ## 逻辑表配置
 
@@ -45,7 +45,7 @@ weight = 1
 | shardingColumn             | String                    | 分片列名称               |
 | shardingAlgorithm          | StandardShardingAlgorithm | 标准分片算法实现类        |
 
-Apache ShardingSphere内置的标准分片算法 StandardShardingAlgorithm 的实现类。
+Apache ShardingSphere 内置的标准分片算法 StandardShardingAlgorithm 的实现类。
 
 包名称：`org.apache.shardingsphere.sharding.strategy.algorithm.sharding`
 
@@ -84,22 +84,33 @@ Apache ShardingSphere内置的标准分片算法 StandardShardingAlgorithm 的�
 
 类名称：NoneShardingStrategyConfiguration
 
-## KeyGeneratorConfiguration
+## 自增主键策略配置
 
-| *名称*             | *数据类型*                    | *说明*                                                                         |
-| ----------------- | ---------------------------- | ------------------------------------------------------------------------------ |
-| column            | String                       | 自增列名称                                                                      |
-| type              | String                       | 自增列值生成器类型，可自定义或选择内置类型：SNOWFLAKE/UUID |
-| props             | Properties                   | 自增列值生成器的相关属性配置                                                      |
+类名称：KeyGeneratorConfiguration
 
-### Properties
+可配置属性：
 
-属性配置项，可以为以下自增列值生成器的属性。
+| *名称*               | *数据类型*            | *说明*            |
+| -------------------- | -------------------- | ---------------- |
+| column               | String               | 自增列名称        |
+| keyGenerateAlgorithm | KeyGenerateAlgorithm | 自增主键算法实现类 |
 
-### SNOWFLAKE
+Apache ShardingSphere 内置的自增主键算法的实现类包括：
 
-| *名称*                                              | *数据类型*  | *说明*                                                                                                   |
-| --------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------- |
-| worker.id (?)                                        | long       | 工作机器唯一id，默认为0                                                                                  |
-| max.tolerate.time.difference.milliseconds (?)        | long       | 最大容忍时钟回退时间，单位：毫秒。默认为10毫秒                                                               |
-| max.vibration.offset (?)                             | int        | 最大抖动上限值，范围[0, 4096)，默认为1。注：若使用此算法生成值作分片值，建议配置此属性。此算法在不同毫秒内所生成的key取模2^n (2^n一般为分库或分表数) 之后结果总为0或1。为防止上述分片问题，建议将此属性值配置为(2^n)-1 |
+### 雪花算法
+
+类名称：org.apache.shardingsphere.sharding.strategy.algorithm.keygen.SnowflakeKeyGenerateAlgorithm
+
+可配置属性：
+
+| *属性名称*                                     | *数据类型* | *说明*                                      |
+| --------------------------------------------- | --------- | ------------------------------------------- |
+| worker.id (?)                                 | long      | 工作机器唯一标识，默认为 0                     |
+| max.vibration.offset (?)                      | int       | 最大抖动上限值，范围[0, 4096)，默认为1。注：若使用此算法生成值作分片值，建议配置此属性。此算法在不同毫秒内所生成的 key 取模 2^n (2^n一般为分库或分表数) 之后结果总为 0 或 1。为防止上述分片问题，建议将此属性值配置为 (2^n)-1 |
+| max.tolerate.time.difference.milliseconds (?) | long      | 最大容忍时钟回退时间，单位：毫秒。默认为 10 毫秒 |
+
+### UUID
+
+类名称：org.apache.shardingsphere.sharding.strategy.algorithm.keygen.UUIDKeyGenerateAlgorithm
+
+可配置属性：无

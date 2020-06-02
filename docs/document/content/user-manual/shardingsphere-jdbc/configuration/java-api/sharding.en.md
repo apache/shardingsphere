@@ -5,18 +5,18 @@ weight = 1
 
 ## Root Configuration
 
-Class name: ShardingRuleConfiguration
+Class name: org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration
 
 Attributes:
 
-| *Name*                                    | *DataType*                                 | *Description*                                                |
-| ----------------------------------------- | ------------------------------------------ | ------------------------------------------------------------ |
-| tableRuleConfigs                          | Collection\<TableRuleConfiguration\>       | Sharding rule list                                           |
-| bindingTableGroups (?)                    | Collection\<String\>                       | Binding table rule list                                      |
-| broadcastTables (?)                       | Collection\<String\>                       | Broadcast table rule list                                    |
-| defaultDatabaseShardingStrategyConfig (?) | ShardingStrategyConfiguration              | Default database sharding strategy                           |
-| defaultTableShardingStrategyConfig (?)    | ShardingStrategyConfiguration              | Default table sharding strategy                              |
-| defaultKeyGeneratorConfig (?)             | KeyGeneratorConfiguration                  | Default key generator configuration, use user-defined ones or built-in ones, e.g. SNOWFLAKE/UUID. Default key generator is `org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator` |
+| *Name*                                    | *DataType*                           | *Description*                      | *Default Value* |
+| ----------------------------------------- | ------------------------------------ | ---------------------------------- | --------------- |
+| tableRuleConfigs (+)                      | Collection\<TableRuleConfiguration\> | Sharding rules                     | -               |
+| bindingTableGroups (*)                    | Collection\<String\>                 | Binding table rules                | Empty           |
+| broadcastTables (*)                       | Collection\<String\>                 | Broadcast table rules              | Empty           |
+| defaultDatabaseShardingStrategyConfig (?) | ShardingStrategyConfiguration        | Default database sharding strategy | Not sharding    |
+| defaultTableShardingStrategyConfig (?)    | ShardingStrategyConfiguration        | Default table sharding strategy    | Not sharding    |
+| defaultKeyGeneratorConfig (?)             | KeyGeneratorConfiguration            | Default key generator              | Snowflake       |
 
 ## Logic Table Configuration
 
