@@ -161,22 +161,33 @@ There is no built-in hint sharding algorithm implementation class in Apache Shar
 
 Class name: NoneShardingStrategyConfiguration
 
-## KeyGeneratorConfiguration
+## Key Generator Configuration
 
-| *Name* | *DataType* | *Description*                                                |
-| ------ | ---------- | ------------------------------------------------------------ |
-| column | String     | Column name of key generator                                 |
-| type   | String     | Type of key generator, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID |
-| props  | Properties | The Property configuration of key generators                 |
+Class name: KeyGeneratorConfiguration
 
-### Properties
+Attributes:
 
-Property configuration that can include these properties of these key generators.
+| *Name*               | *DataType*           | *Description*                |
+| -------------------- | -------------------- | ---------------------------- |
+| column               | String               | Column name of key generate  |
+| keyGenerateAlgorithm | KeyGenerateAlgorithm | Key generate algorithm class |
 
-### SNOWFLAKE
+Apache ShardingSphere built-in implemented classes of KeyGenerateAlgorithm are:
 
-| *Name*                                              | *DataType* | *Description*                                                                                                                                                                                                                   |
-| --------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| worker.id (?)                                        |   long     | The unique id for working machine, the default value is `0`                                                                                                                                                                    |
-| max.tolerate.time.difference.milliseconds (?)        |   long     | The max tolerate time for different server's time difference in milliseconds, the default value is `10`                                                                                                                         |
-| max.vibration.offset (?)                             |    int     | The max upper limit value of vibrate number, range `[0, 4096)`, the default value is `1`. Notice: To use the generated value of this algorithm as sharding value, it is recommended to configure this property. The algorithm generates key mod `2^n` (`2^n` is usually the sharding amount of tables or databases) in different milliseconds and the result is always `0` or `1`. To prevent the above sharding problem, it is recommended to configure this property, its value is `(2^n)-1` |
+### Snowflake
+
+Class name: org.apache.shardingsphere.sharding.strategy.algorithm.keygen.SnowflakeKeyGenerateAlgorithm
+
+Attributes:
+
+| *Name*                                        | *DataType* | *Description*                                                                | *Default Value* |
+| --------------------------------------------- | ---------- | ---------------------------------------------------------------------------- | --------------- |
+| worker.id (?)                                 | long       | The unique ID for working machine                                            | 0               |
+| max.tolerate.time.difference.milliseconds (?) | long       | The max tolerate time for different server's time difference in milliseconds | 10 milliseconds |
+| max.vibration.offset (?)                      | int        | The max upper limit value of vibrate number, range `[0, 4096)`. Notice: To use the generated value of this algorithm as sharding value, it is recommended to configure this property. The algorithm generates key mod `2^n` (`2^n` is usually the sharding amount of tables or databases) in different milliseconds and the result is always `0` or `1`. To prevent the above sharding problem, it is recommended to configure this property, its value is `(2^n)-1`| 1 |
+
+### UUID
+
+Class name: org.apache.shardingsphere.sharding.strategy.algorithm.keygen.UUIDKeyGenerateAlgorithm
+
+Attributes: None
