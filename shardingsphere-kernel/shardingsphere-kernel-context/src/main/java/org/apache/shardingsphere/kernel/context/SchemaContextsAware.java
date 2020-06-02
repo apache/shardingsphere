@@ -23,10 +23,10 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import java.util.Map;
 
 /**
- * Schema contexts query.
+ * Schema contexts aware.
  * 
  */
-public interface SchemaContextsQuery extends AutoCloseable {
+public interface SchemaContextsAware extends AutoCloseable {
     
     /**
      * Get schema contexts.
