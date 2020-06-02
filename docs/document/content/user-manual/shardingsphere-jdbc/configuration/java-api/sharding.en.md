@@ -24,19 +24,19 @@ Class name: org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration
 
 Attributes:
 
-| *Name*                             | *DataType*                    | *Description*                                                                                                                   | *Default Value*                             |
-| ---------------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| logicTable                         | String                        | Name of logic table                                                                                                             | -                                           |
-| actualDataNodes (?)                | String                        | Describe data source names and actual tables, delimiter as point, multiple data nodes split by comma, support inline expression | Broadcast table or databases sharding only. |
-| databaseShardingStrategyConfig (?) | ShardingStrategyConfiguration | Databases sharding strategy                                                                                                     | Use default databases sharding strategy     |
-| tableShardingStrategyConfig (?)    | ShardingStrategyConfiguration | Tables sharding strategy                                                                                                        | Use default tables sharding strategy        |
-| keyGeneratorConfig (?)             | KeyGeneratorConfiguration     | Key generator configuration                                                                                                     | Use default key generator                   |
+| *Name*                             | *DataType*                    | *Description*                                                                                                                         | *Default Value*                             |
+| ---------------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| logicTable                         | String                        | Name of logic table                                                                                                                   | -                                           |
+| actualDataNodes (?)                | String                        | Describe data source names and actual tables, delimiter as point.<br /> Multiple data nodes split by comma, support inline expression | Broadcast table or databases sharding only. |
+| databaseShardingStrategyConfig (?) | ShardingStrategyConfiguration | Databases sharding strategy                                                                                                           | Use default databases sharding strategy     |
+| tableShardingStrategyConfig (?)    | ShardingStrategyConfiguration | Tables sharding strategy                                                                                                              | Use default tables sharding strategy        |
+| keyGeneratorConfig (?)             | KeyGeneratorConfiguration     | Key generator configuration                                                                                                           | Use default key generator                   |
 
 ## Sharding Strategy Configuration
 
 ### Standard Sharding Strategy Configuration
 
-Class name: StandardShardingStrategyConfiguration
+Class name: org.apache.shardingsphere.sharding.api.config.strategy.StandardShardingStrategyConfiguration
 
 Attributes:
 
@@ -45,7 +45,20 @@ Attributes:
 | shardingColumn             | String                    | Sharding column name                            |
 | shardingAlgorithm          | StandardShardingAlgorithm | Standard sharding algorithm class               |
 
-Apache ShardingSphere built-in implemented classes of StandardShardingAlgorithm.
+Apache ShardingSphere built-in implemented classes of StandardShardingAlgorithm are:
+
+#### Inline Sharding Algorithm
+
+Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.InlineShardingAlgorithm
+
+| *Name*                     | *DataType*                | *Description*                                                                                           | *Default Value* |
+| ----------------------------------------- | --------- | -------------------------------------------------------------------------------------------------------- | --------------- |
+| algorithm.expression                      | String    | Inline expression sharding algorithm                                                                     | -               |
+| allow.range.query.with.inline.sharding (?)| boolean   | Whether range query is allowed. Note: range query will ignore sharding strategy and conduct full routing | false           |
+
+
+
+
 
 Package name: `org.apache.shardingsphere.sharding.strategy.algorithm.sharding`
 

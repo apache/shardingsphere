@@ -24,34 +24,42 @@ weight = 1
 
 可配置属性：
 
-| *名称*                              | *数据类型*                     | *说明*                                                      | *默认值*                                                                            |
-| ---------------------------------- | ----------------------------- | ----------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| logicTable                         | String                        | 逻辑表名称                                                   | -                                                                                  |
-| actualDataNodes (?)                | String                        | 由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持行表达式 | 使用已知数据源与逻辑表名称生成数据节点，用于广播表或只分库不分表且所有库的表结构完全一致的情况 |
-| databaseShardingStrategyConfig (?) | ShardingStrategyConfiguration | 分库策略                                                     | 使用默认分库策略                                                                     |
-| tableShardingStrategyConfig (?)    | ShardingStrategyConfiguration | 分表策略                                                     | 使用默认分表策略                                                                     |
-| keyGeneratorConfig (?)             | KeyGeneratorConfiguration     | 自增列生成器                                                 | 使用默认自增主键生成器                                                                |
+| *名称*                              | *数据类型*                     | *说明*                                                            | *默认值*                                                                            |
+| ---------------------------------- | ----------------------------- | ----------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| logicTable                         | String                        | 逻辑表名称                                                         | -                                                                                  |
+| actualDataNodes (?)                | String                        | 由数据源名 + 表名组成，以小数点分隔。<br />多个表以逗号分隔，支持行表达式 | 使用已知数据源与逻辑表名称生成数据节点，用于广播表或只分库不分表且所有库的表结构完全一致的情况 |
+| databaseShardingStrategyConfig (?) | ShardingStrategyConfiguration | 分库策略                                                           | 使用默认分库策略                                                                     |
+| tableShardingStrategyConfig (?)    | ShardingStrategyConfiguration | 分表策略                                                           | 使用默认分表策略                                                                     |
+| keyGeneratorConfig (?)             | KeyGeneratorConfiguration     | 自增列生成器                                                        | 使用默认自增主键生成器                                                               |
 
 ## 分片策略配置
 
 ### 标准分片策略配置
 
-类名称：StandardShardingStrategyConfiguration
+类名称：org.apache.shardingsphere.sharding.api.config.strategy.StandardShardingStrategyConfiguration
 
 可配置属性：
 
-| *名称*                      | *数据类型*                 | *说明*                  |
-| -------------------------- | ------------------------- | ----------------------- |
-| shardingColumn             | String                    | 分片列名称               |
-| shardingAlgorithm          | StandardShardingAlgorithm | 标准分片算法实现类        |
+| *名称*             | *数据类型*                 | *说明*           |
+| ----------------- | ------------------------- | ---------------- |
+| shardingColumn    | String                    | 分片列名称        |
+| shardingAlgorithm | StandardShardingAlgorithm | 标准分片算法实现类 |
 
-Apache ShardingSphere 内置的标准分片算法 StandardShardingAlgorithm 的实现类。
+Apache ShardingSphere 内置的标准分片算法实现类包括：
 
-包名称：`org.apache.shardingsphere.sharding.strategy.algorithm.sharding`
+#### 行表达式分片算法
+
+类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.InlineShardingAlgorithm
+
+| *属性名称*                                 | *数据类型* | *说明*                                              | *默认值* |
+| ----------------------------------------- | --------- | --------------------------------------------------- | ------- |
+| algorithm.expression                      | String    | 分片算法的行表达式                                    | -       |
+| allow.range.query.with.inline.sharding (?)| boolean   | 是否允许范围查询。注意：范围查询会无视分片策略，进行全路由 | false   |
+
 
 | *类名称*                              | *说明*                      |
 | ------------------------------------ | --------------------------- |
-| inline.InlineShardingAlgorithm       | 基于行表达式的分片。算法详情请参考[行表达式](/cn/features/sharding/other-features/inline-expression) |
+| inline.InlineShardingAlgorithm       | 基于行表达式的分片             |
 | ModuloShardingAlgorithm              | 基于取模的分片算法             |
 | HashShardingAlgorithm                | 基于哈希取模的分片算法         |
 | range.StandardRangeShardingAlgorithm | 基于时间的分片算法             |
@@ -95,7 +103,7 @@ Apache ShardingSphere 内置的标准分片算法 StandardShardingAlgorithm 的�
 | column               | String               | 自增列名称        |
 | keyGenerateAlgorithm | KeyGenerateAlgorithm | 自增主键算法实现类 |
 
-Apache ShardingSphere 内置的自增主键算法的实现类包括：
+Apache ShardingSphere 内置的自增主键算法实现类包括：
 
 ### 雪花算法
 
