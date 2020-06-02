@@ -25,40 +25,35 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.StandardSharding
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Abstract range sharding algorithm.
  */
 public abstract class AbstractRangeShardingAlgorithm implements StandardShardingAlgorithm<Long> {
-
-    private volatile boolean init;
-
-    /**
-     * getTargetNameByPreciseShardingValue.
-     *
-     * @param availableTargetNames available data sources or tables's names
-     * @param shardingValue        sharding value
-     * @param partitionRangeMap    the mapping of partition and range
-     * @return sharding result for data source or table's name
-     */
-    protected String getTargetNameByPreciseShardingValue(final Collection<String> availableTargetNames,
-                                                         final PreciseShardingValue<Long> shardingValue,
-                                                         final Map<Integer, Range<Long>> partitionRangeMap) {
-        return availableTargetNames.stream().filter(each -> each.endsWith(getPartition(partitionRangeMap, shardingValue.getValue()) + ""))
-                .findFirst().orElseThrow(UnsupportedOperationException::new);
+    
+    private volatile boolean initialized;
+    
+    protected final void checkInit() {
+        if (!initialized) {
+            synchronized (this) {
+                if (!initialized) {
+                    initProperties();
+                    initialized = true;
+                }
+            }
+        }
     }
-
-    /**
-     * getTargetNameByRangeShardingValue.
-     *
-     * @param availableTargetNames available data sources or tables's names
-     * @param shardingValue        sharding value
-     * @param partitionRangeMap    the mapping of partition and range
-     * @return sharding results for data sources or tables's names
-     */
-    protected Collection<String> getTargetNameByRangeShardingValue(final Collection<String> availableTargetNames,
-                                                                   final RangeShardingValue<Long> shardingValue,
-                                                                   final Map<Integer, Range<Long>> partitionRangeMap) {
+    
+    protected abstract void initProperties();
+    
+    protected final String getTargetNameByPreciseShardingValue(final Collection<String> availableTargetNames, 
+                                                               final PreciseShardingValue<Long> shardingValue, final Map<Integer, Range<Long>> partitionRangeMap) {
+        return availableTargetNames.stream().filter(each -> each.endsWith(getPartition(partitionRangeMap, shardingValue.getValue()) + "")).findFirst().orElseThrow(UnsupportedOperationException::new);
+    }
+    
+    protected final Collection<String> getTargetNameByRangeShardingValue(final Collection<String> availableTargetNames, 
+                                                                         final RangeShardingValue<Long> shardingValue, final Map<Integer, Range<Long>> partitionRangeMap) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
         int lowerEndpointPartition = getPartition(partitionRangeMap, shardingValue.getValueRange().lowerEndpoint());
         int upperEndpointPartition = getPartition(partitionRangeMap, shardingValue.getValueRange().upperEndpoint());
@@ -71,28 +66,9 @@ public abstract class AbstractRangeShardingAlgorithm implements StandardSharding
         }
         return result;
     }
-
-    /**
-     * check properties whether init.
-     */
-    protected void checkInit() {
-        if (!init) {
-            synchronized (this) {
-                if (!init) {
-                    initProperties();
-                    init = true;
-                }
-            }
-        }
-    }
-
-    /**
-     * init properties.
-     */
-    protected abstract void initProperties();
-
+    
     private Integer getPartition(final Map<Integer, Range<Long>> partitionRangeMap, final Long value) {
-        for (Map.Entry<Integer, Range<Long>> entry : partitionRangeMap.entrySet()) {
+        for (Entry<Integer, Range<Long>> entry : partitionRangeMap.entrySet()) {
             if (entry.getValue().contains(value)) {
                 return entry.getKey();
             }

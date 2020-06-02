@@ -573,7 +573,7 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/sharding/shard
 
 #### \<sharding:key-generator />
 
-| *Name*    | *Type*    | *Explanation*                                                |
+| *Name*    | *Type*    | *Description*                                                |
 | --------- | --------- | ------------------------------------------------------------ |
 | column    | Attribute | Auto-increment column name                                   |
 | type      | Attribute | Auto-increment key generator `Type`; self-defined generator or internal Type generator (SNOWFLAKE/UUID) can both be selected |
@@ -585,7 +585,7 @@ Property configuration that can include these properties of these key generators
 
 ##### SNOWFLAKE
 
-| *Name*                                              | *DataType* | *Explanation*                                                                                                                                                                                                                   |
+| *Name*                                              | *DataType* | *Description*                                                                                                                                                                                                                   |
 | --------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | worker.id (?)                                        |   long     | The unique id for working machine, the default value is `0`                                                                                                                                                                    |
 | max.tolerate.time.difference.milliseconds (?)        |   long     | The max tolerate time for different server's time difference in milliseconds, the default value is `10`                                                                                                                         |
@@ -593,7 +593,7 @@ Property configuration that can include these properties of these key generators
 
 #### \<sharding:encrypt-rules />
 
-| *Name*             | *Type* | *Explanation*    |
+| *Name*             | *Type* | *Description*    |
 | -------------------| ------ | ---------------- |
 | encryptor-rule (+) | Tag    | Encryptor rule   |
 
@@ -605,7 +605,7 @@ Property configuration that can include these properties of these key generators
 
 #### \<sharding:props />
 
-| *Name*                             | *Type*    | *Explanation*                                                |
+| *Name*                             | *Type*    | *Description*                                                |
 | ---------------------------------- | --------- | ------------------------------------------------------------ |
 | sql.show (?)                       | Attribute | Show SQL or not; default value: false                        |
 | executor.size (?)                  | Attribute | Executing thread number; default value: CPU core number      |
@@ -619,7 +619,7 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/masterslave/ma
 
 #### \<master-slave:data-source />
 
-| *Name*                  | *Type*    | *Explanation*                                                |
+| *Name*                  | *Type*    | *Description*                                                |
 | ----------------------- | --------- | ------------------------------------------------------------ |
 | id                      | Attribute | Spring Bean id                                               |
 | master-data-source-name | Attribute | Bean id of data source in master database                    |
@@ -631,7 +631,7 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/masterslave/ma
 
 #### \<master-slave:props />
 
-| *Name*                             | *Type*    | *Explanation*                                                |
+| *Name*                             | *Type*    | *Description*                                                |
 | ---------------------------------- | --------- | ------------------------------------------------------------ |
 | sql.show (?)                       | Attribute | Show SQL or not; default value: false                        |
 | executor.size (?)                  | Attribute | Executing thread number; default value: CPU core number      |
@@ -641,7 +641,7 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/masterslave/ma
 #### \<master-slave:load-balance-algorithm />
 4.0.0-RC2 version added
 
-| *Name*                             | *Type*    | *Explanation*                                                |
+| *Name*                             | *Type*    | *Description*                                                |
 | ---------------------------------- | --------- | ------------------------------------------------------------ |
 | id                                 | Attribute | Spring Bean Id                                               |
 | type                               | Attribute | Type of load balance algorithm, 'RANDOM'或'ROUND_ROBIN', support custom extension|
@@ -667,7 +667,7 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encryp
 
 #### \<encrypt:encryptor />
 
-| *Name*                  | *Type*    | *Explanation*                                               |
+| *Name*                  | *Type*    | *Description*                                               |
 | ----------------------- | --------- | ----------------------------------------------------------- |
 | id                      | Attribute | Names of Encryptor                                          |
 | type                    | Attribute | Types of Encryptor, including MD5/AES or customize type     |
@@ -675,19 +675,19 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encryp
 
 #### \<encrypt:tables />
 
-| *Name*                  | *Type* | *Explanation*                                             |
+| *Name*                  | *Type* | *Description*                                             |
 | ----------------------- | -----  | --------------------------------------------------------- |
 | table(+)                | Tag    | Encrypt table configuration                               |
 
 #### \<encrypt:table />
 
-| *Name*                  | *Type* | *Explanation*                                            |
+| *Name*                  | *Type* | *Description*                                            |
 | ----------------------- | ------ | ---------------------------------------------------------|
 | column(+)               | Tag    | Encrypt column configuration                             |
 
 #### \<encrypt:column />
 
-| *Name*                   | *Type*   | *Explanation*                                                                                       |
+| *Name*                   | *Type*   | *Description*                                                                                       |
 | ----------------------- | --------- | --------------------------------------------------------------------------------------------------- |
 | logic-column            | Attribute | Logic column name                                                                                   |
 | plain-column            | Attribute | Plain column name                                                                                   |
@@ -696,7 +696,7 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encryp
 
 #### \<encrypt:props />
 
-| *Name*                             | *Type*    | *Explanation*                                                |
+| *Name*                             | *Type*    | *Description*                                                |
 | ---------------------------------- | --------- | ------------------------------------------------------------ |
 | sql.show (?)                       | Attribute | Show SQL or not; default value: false                        |
 | query.with.cipher.column (?)       | Attribute | When there is a plainColumn, use cipherColumn or not to query, default value: true                  |
@@ -707,7 +707,7 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/orchestration/
 
 #### \<orchestration:master-slave-data-source />
 
-| *Name*              | *Type*    | *Explanation*                                                |
+| *Name*              | *Type*    | *Description*                                                |
 | ------------------- | --------- | ------------------------------------------------------------ |
 | id                  | Attribute | ID                                                           |
 | data-source-ref (?) | Attribute | Orchestrated database id                                     |

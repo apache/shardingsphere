@@ -50,32 +50,27 @@ import java.util.stream.Collectors;
  * </p>
  */
 public final class CustomRangeShardingAlgorithm extends AbstractRangeShardingAlgorithm {
-
+    
     private static final String PARTITION_RANGES = "partition.ranges";
-
+    
     private Map<Integer, Range<Long>> partitionRangeMap;
-
+    
     @Getter
     @Setter
     private Properties properties = new Properties();
-
+    
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Long> shardingValue) {
         checkInit();
         return getTargetNameByPreciseShardingValue(availableTargetNames, shardingValue, partitionRangeMap);
     }
-
+    
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Long> shardingValue) {
         checkInit();
         return getTargetNameByRangeShardingValue(availableTargetNames, shardingValue, partitionRangeMap);
     }
-
-    @Override
-    public String getType() {
-        return "CUSTOM_RANGE";
-    }
-
+    
     @Override
     public void initProperties() {
         Preconditions.checkNotNull(properties.get(PARTITION_RANGES), "Custom range sharding algorithm partition ranges cannot be null.");
@@ -95,5 +90,10 @@ public final class CustomRangeShardingAlgorithm extends AbstractRangeShardingAlg
                 partitionRangeMap.put(i + 1, Range.atLeast(rangeValue));
             }
         }
+    }
+    
+    @Override
+    public String getType() {
+        return "CUSTOM_RANGE";
     }
 }

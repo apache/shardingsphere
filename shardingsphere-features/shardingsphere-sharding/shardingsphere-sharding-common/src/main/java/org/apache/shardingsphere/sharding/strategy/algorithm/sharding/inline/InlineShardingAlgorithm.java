@@ -32,9 +32,9 @@ import java.util.Properties;
  */
 public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>> {
     
-    private static final String ALLOW_RANGE_QUERY = "allow.range.query.with.inline.sharding";
-    
     private static final String ALGORITHM_EXPRESSION = "algorithm.expression";
+    
+    private static final String ALLOW_RANGE_QUERY = "allow.range.query.with.inline.sharding";
     
     private Properties properties = new Properties();
     

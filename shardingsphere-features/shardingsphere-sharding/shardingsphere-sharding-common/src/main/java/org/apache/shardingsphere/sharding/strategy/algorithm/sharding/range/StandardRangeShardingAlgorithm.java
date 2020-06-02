@@ -33,6 +33,7 @@ import java.util.Properties;
 
 /**
  * Standard range sharding algorithm.
+ * 
  * <p>
  * Standard range sharding algorithm is similar to the rule of partition table, but it can only be split by the same size.
  * User can specify the range by setting `partition.lower`, `partition.upper` and `partition.volume` parameters.
@@ -45,36 +46,31 @@ import java.util.Properties;
  * </p>
  */
 public final class StandardRangeShardingAlgorithm extends AbstractRangeShardingAlgorithm {
-
+    
     private static final String PARTITION_LOWER = "partition.lower";
-
+    
     private static final String PARTITION_UPPER = "partition.upper";
-
+    
     private static final String PARTITION_VOLUME = "partition.volume";
-
+    
     private Map<Integer, Range<Long>> partitionRangeMap;
-
+    
     @Getter
     @Setter
     private Properties properties = new Properties();
-
+    
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Long> shardingValue) {
         checkInit();
         return getTargetNameByPreciseShardingValue(availableTargetNames, shardingValue, partitionRangeMap);
     }
-
+    
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Long> shardingValue) {
         checkInit();
         return getTargetNameByRangeShardingValue(availableTargetNames, shardingValue, partitionRangeMap);
     }
-
-    @Override
-    public String getType() {
-        return "STANDARD_RANGE";
-    }
-
+    
     @Override
     public void initProperties() {
         Preconditions.checkNotNull(properties.get(PARTITION_LOWER), "Standard range sharding algorithm partition lower cannot be null.");
@@ -91,5 +87,10 @@ public final class StandardRangeShardingAlgorithm extends AbstractRangeShardingA
             partitionRangeMap.put(i + 1, Range.closedOpen(lower + i * volume, Math.min(lower + (i + 1) * volume, upper)));
         }
         partitionRangeMap.put(partitionSize + 1, Range.atLeast(upper));
+    }
+    
+    @Override
+    public String getType() {
+        return "STANDARD_RANGE";
     }
 }
