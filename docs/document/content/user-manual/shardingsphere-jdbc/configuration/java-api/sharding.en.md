@@ -58,23 +58,77 @@ Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inlin
 
 #### Modulo Sharding Algorithm
 
-类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.ModuloShardingAlgorithm
+Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.ModuloShardingAlgorithm
 
 | *Name*    | *DataType* | *Description*  |
 | --------- | ---------- | -------------- |
 | mod.value | int        | Sharding count |
 
+#### Hash Modulo Sharding Algorithm
 
+Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.HashShardingAlgorithm
 
-Package name: `org.apache.shardingsphere.sharding.strategy.algorithm.sharding`
+| *Name*    | *DataType* | *Description*  |
+| --------- | ---------- | -------------- |
+| mod.value | int        | Sharding count |
 
-| *Class name*                         | *Description*                          |
-| ------------------------------------ | -------------------------------------- |
-| HashShardingAlgorithm                | Hash sharding algorithm                |
-| range.StandardRangeShardingAlgorithm | Datetime sharding algorithm            |
-| range.CustomRangeShardingAlgorithm   | Customized datetime sharding algorithm |
-| DatetimeShardingAlgorithm            | Range sharding algorithm               |
-| CustomDateTimeShardingAlgorithm      | Customized range sharding algorithm    |
+#### Volume Range Sharding Algorithm
+
+Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.StandardRangeShardingAlgorithm
+
+| *Name*           | *DataType* | *Description*                                            |
+| ---------------- | ---------- | -------------------------------------------------------- |
+| partition.lower  | long       | Range lower bound, throw exception if lower than bound   |
+| partition.upper  | long       | Range upper bound, throw exception if upper than bound   |
+| partition.volume | long       | Sharding volume                                          |
+
+#### Customized Range Sharding Algorithm
+
+Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.CustomRangeShardingAlgorithm
+
+| *Name*           | *DataType* | *Description*                                                     |
+| ---------------- | ---------- | ----------------------------------------------------------------- |
+| partition.ranges | String     | Range of sharding border, multiple boundaries separated by commas |
+
+#### Fixed Range Volume Sharding Algorithm
+
+Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.StandardRangeShardingAlgorithm
+
+| *Name*           | *DataType* | *Description*                                                       |
+| ---------------- | ---------- | ------------------------------------------------------------------- |
+| partition.lower  | long       | Lower bound of range, data beyond the boundary will report an error |
+| partition.upper  | long       | Upper bound of range, data beyond the boundary will report an error |
+| partition.volume | long       | Range volume                                                        |
+
+#### Custom Range Bound Sharding Algorithm
+
+Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.CustomRangeShardingAlgorithm
+
+| *Name*           | *DataType* | *Description*                                                       |
+| ---------------- | ---------- | --------------------------------- |
+| partition.ranges | String     | 分片的范围边界，多个范围边界以逗号分隔 |
+
+#### Fixed Time Range Sharding Algorithm
+
+Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.DatetimeShardingAlgorithm
+
+| *Name*            | *DataType* | *Description*                                      |
+| ----------------- | ---------- | -------------------------------------------------- |
+| epoch             | String     | Shard datetime epoch, pattern: yyyy-MM-dd HH:mm:ss |
+| partition.seconds | long       | Max seconds for the data in one shard              |
+
+#### Custom Datetime Bound Sharding Algorithm
+
+Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.CustomDateTimeShardingAlgorithm
+
+| *Name*               | *DataType* | *Description*                                  |
+| -------------------- | ---------- | ---------------------------------------------- |
+| datetime.format      | String     | Datetime pattern, example: yyyy-MM-dd HH:mm:ss |
+| table.suffix.format  | String     | TODO                                           |
+| datetime.lower       | String     | TODO                                           |
+| datetime.upper       | String     | TODO                                           |
+| datetime.step.unit   | String     | TODO                                           |
+| datetime.step.amount | String     | TODO                                           |
 
 ### Complex Sharding Strategy Configuration
 
@@ -87,6 +141,8 @@ Attributes:
 | shardingColumns   | String                       | Sharding column name, separated by commas |
 | shardingAlgorithm | ComplexKeysShardingAlgorithm | Complex sharding algorithm                |
 
+There is no built-in complex keys sharding algorithm implementation class in Apache ShardingSphere.
+
 ### Hint Sharding Strategy Configuration
 
 Class name: HintShardingStrategyConfiguration
@@ -98,6 +154,8 @@ The implementation class of `ShardingStrategyConfiguration`,  used to configure 
 | *Name*            | *DataType*            | *Description*           |
 | ----------------- | --------------------- | ----------------------- |
 | shardingAlgorithm | HintShardingAlgorithm | Hint sharding algorithm |
+
+There is no built-in hint sharding algorithm implementation class in Apache ShardingSphere.
 
 ### None Sharding Strategy Configuration
 

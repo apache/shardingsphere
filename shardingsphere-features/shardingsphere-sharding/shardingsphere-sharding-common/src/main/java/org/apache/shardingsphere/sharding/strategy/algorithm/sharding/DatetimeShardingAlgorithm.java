@@ -89,8 +89,7 @@ public final class DatetimeShardingAlgorithm implements StandardShardingAlgorith
     
     private void checkProperties() {
         Preconditions.checkNotNull(properties.get(PARTITION_SECONDS), "Sharding partition volume cannot be null.");
-        Preconditions.checkState(null != properties.get(EPOCH) && checkDatetimePattern(properties.get(EPOCH).toString()), 
-                "%s pattern is required.", DATETIME_PATTERN);
+        Preconditions.checkState(null != properties.get(EPOCH) && checkDatetimePattern(properties.get(EPOCH).toString()), "%s pattern is required.", DATETIME_PATTERN);
     }
     
     private boolean checkDatetimePattern(final String datetime) {

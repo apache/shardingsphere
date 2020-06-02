@@ -64,14 +64,53 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 | --------- | --------- | ------- |
 | mod.value | int       | 分片数量 |
 
+#### 哈希取模分片算法
 
-| *类名称*                              | *说明*                      |
-| ------------------------------------ | --------------------------- |
-| HashShardingAlgorithm                | 基于哈希取模的分片算法         |
-| range.StandardRangeShardingAlgorithm | 基于时间的分片算法             |
-| range.CustomRangeShardingAlgorithm   | 基于用户自定义时间格式的分片算法 |
-| DatetimeShardingAlgorithm            | 基于范围的分片算法             |
-| CustomDateTimeShardingAlgorithm      | 基于用户自定义范围的分片算法    |
+类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.HashShardingAlgorithm
+
+| *属性名称* | *数据类型* | *说明*  |
+| --------- | --------- | ------- |
+| mod.value | int       | 分片数量 |
+
+#### 固定容量范围分片算法
+
+类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.StandardRangeShardingAlgorithm
+
+| *属性名称*        | *数据类型* | *说明*                      |
+| ---------------- | --------- | -------------------------- |
+| partition.lower  | long      | 范围下界，超过边界的数据会报错 |
+| partition.upper  | long      | 范围上界，超过边界的数据会报错 |
+| partition.volume | long      | 分片容量                    |
+
+#### 自定义边界范围分片算法
+
+类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.CustomRangeShardingAlgorithm
+
+| *属性名称*        | *数据类型* | *说明*                            |
+| ---------------- | --------- | --------------------------------- |
+| partition.ranges | String    | 分片的范围边界，多个范围边界以逗号分隔 |
+
+#### 定长时间段分片算法
+
+类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.DatetimeShardingAlgorithm
+
+| *属性名称*         | *数据类型* | *说明*                                          |
+| ----------------- | --------- | ----------------------------------------------- |
+| epoch             | String    | 分片时间的起始纪元，时间戳格式：yyyy-MM-dd HH:mm:ss |
+| partition.seconds | long      | 单一分片所能承载的最大时间，单位：秒                |
+
+#### 自定义时间边界分片算法
+
+类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.CustomDateTimeShardingAlgorithm
+
+| *属性名称*            | *数据类型* | *说明*                              |
+| -------------------- | --------- | ----------------------------------- |
+| datetime.format      | String    | 时间戳格式，例如：yyyy-MM-dd HH:mm:ss |
+| table.suffix.format  | String    | TODO                                |
+| datetime.lower       | String    | TODO                                |
+| datetime.upper       | String    | TODO                                |
+| datetime.step.unit   | String    | TODO                                |
+| datetime.step.amount | String    | TODO                                |
 
 ### 复合分片策略配置
 
@@ -84,6 +123,8 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 | shardingColumns   | String                       | 分片列名称，多个列以逗号分隔 |
 | shardingAlgorithm | ComplexKeysShardingAlgorithm | 复合分片算法实现类          |
 
+Apache ShardingSphere 暂无内置复合分片算法实现类。
+
 ### Hint 分片策略配置
 
 类名称：HintShardingStrategyConfiguration
@@ -93,6 +134,8 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 | *名称*             | *数据类型*             | *说明*      |
 | ----------------- | --------------------- | ----------- |
 | shardingAlgorithm | HintShardingAlgorithm | Hint分片算法 |
+
+Apache ShardingSphere 暂无内置复合分片算法实现类。
 
 ### 不分片策略配置
 
