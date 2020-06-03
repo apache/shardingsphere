@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.api.config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Map;
+import java.util.Collection;
 
 /**
  * Encrypt table rule configuration.
@@ -31,5 +31,5 @@ public final class EncryptTableRuleConfiguration {
     
     private final String name;
     
-    private final Map<String, EncryptColumnConfiguration> columns;
+    private final Collection<EncryptColumnConfiguration> columns;
 }

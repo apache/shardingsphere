@@ -25,10 +25,9 @@ import org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -50,13 +49,10 @@ public final class EncryptRuleTest {
     @Before
     public void setUp() {
         Properties props = new Properties();
-        EncryptColumnConfiguration columnConfig = new EncryptColumnConfiguration("plain_pwd", "cipher_pwd", "", "aes");
-        EncryptColumnConfiguration idNumberConfig = new EncryptColumnConfiguration("plain_id_number", "cipher_id_number", "", "aes");
-        Map<String, EncryptColumnConfiguration> columnConfigurationMap = new HashMap<>();
-        columnConfigurationMap.put(column, columnConfig);
-        columnConfigurationMap.put(idNumber, idNumberConfig);
+        EncryptColumnConfiguration columnConfig = new EncryptColumnConfiguration(column, "plain_pwd", "cipher_pwd", "", "aes");
+        EncryptColumnConfiguration idNumberConfig = new EncryptColumnConfiguration(idNumber, "plain_id_number", "cipher_id_number", "", "aes");
         EncryptorConfiguration encryptorConfig = new EncryptorConfiguration("assistedTest", props);
-        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration(table, columnConfigurationMap);
+        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration(table, Arrays.asList(columnConfig, idNumberConfig));
         encryptRuleConfig = new EncryptRuleConfiguration(ImmutableMap.of("aes", encryptorConfig), Collections.singleton(tableConfig));
     }
     

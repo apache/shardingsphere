@@ -90,17 +90,18 @@ public final class EncryptRuleBeanDefinitionParser extends AbstractBeanDefinitio
         return factory.getBeanDefinition();
     }
     
-    private static Map<String, BeanDefinition> parseEncryptColumnConfigurations(final Element element) {
+    private static Collection<BeanDefinition> parseEncryptColumnConfigurations(final Element element) {
         List<Element> encryptColumnElements = DomUtils.getChildElementsByTagName(element, EncryptRuleBeanDefinitionTag.COLUMN_CONFIG_TAG);
-        Map<String, BeanDefinition> result = new ManagedMap<>(encryptColumnElements.size());
+        Collection<BeanDefinition> result = new ManagedList<>(encryptColumnElements.size());
         for (Element each : encryptColumnElements) {
-            result.put(each.getAttribute(EncryptRuleBeanDefinitionTag.COLUMN_LOGIC_COLUMN_ATTRIBUTE), parseEncryptColumnConfiguration(each));
+            result.add(parseEncryptColumnConfiguration(each));
         }
         return result;
     }
     
     private static AbstractBeanDefinition parseEncryptColumnConfiguration(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(EncryptColumnConfiguration.class);
+        factory.addConstructorArgValue(element.getAttribute(EncryptRuleBeanDefinitionTag.COLUMN_LOGIC_COLUMN_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(EncryptRuleBeanDefinitionTag.COLUMN_PLAIN_COLUMN_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(EncryptRuleBeanDefinitionTag.COLUMN_CIPHER_COLUMN_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(EncryptRuleBeanDefinitionTag.COLUMN_ASSISTED_QUERY_COLUMN_ATTRIBUTE));

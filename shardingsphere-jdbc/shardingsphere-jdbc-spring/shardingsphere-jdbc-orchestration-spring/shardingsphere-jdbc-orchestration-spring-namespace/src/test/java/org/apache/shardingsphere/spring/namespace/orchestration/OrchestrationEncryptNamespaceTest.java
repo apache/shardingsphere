@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.spring.namespace.orchestration;
 
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.encrypt.api.config.EncryptColumnConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration;
@@ -29,6 +30,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+
+import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -60,8 +63,11 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
         assertThat(configuration.getEncryptors().size(), is(2));
         assertThat(configuration.getTables().size(), is(1));
         EncryptTableRuleConfiguration tableRuleConfiguration = configuration.getTables().iterator().next();
-        assertThat(tableRuleConfiguration.getColumns().get("user_id").getCipherColumn(), is("user_encrypt"));
-        assertThat(tableRuleConfiguration.getColumns().get("order_id").getPlainColumn(), is("order_decrypt"));
+        Iterator<EncryptColumnConfiguration> encryptColumnConfigurations = tableRuleConfiguration.getColumns().iterator();
+        EncryptColumnConfiguration userIdColumn = encryptColumnConfigurations.next();
+        EncryptColumnConfiguration orderIdColumn = encryptColumnConfigurations.next();
+        assertThat(userIdColumn.getCipherColumn(), is("user_encrypt"));
+        assertThat(orderIdColumn.getPlainColumn(), is("order_decrypt"));
         EncryptorConfiguration encryptorConfig = configuration.getEncryptors().get("encryptor_md5");
         assertNotNull(encryptorConfig);
         assertThat(encryptorConfig.getType(), is("MD5"));

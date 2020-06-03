@@ -27,6 +27,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class EncryptColumnConfiguration {
     
+    private final String logicName;
+    
     private final String plainColumn;
     
     private final String cipherColumn;

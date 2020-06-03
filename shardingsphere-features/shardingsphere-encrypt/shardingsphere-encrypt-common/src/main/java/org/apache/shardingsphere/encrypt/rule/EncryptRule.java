@@ -64,7 +64,7 @@ public final class EncryptRule implements ShardingSphereRule {
     
     private boolean isValidTableConfiguration(final EncryptRuleConfiguration encryptRuleConfiguration) {
         for (EncryptTableRuleConfiguration table : encryptRuleConfiguration.getTables()) {
-            for (EncryptColumnConfiguration column : table.getColumns().values()) {
+            for (EncryptColumnConfiguration column : table.getColumns()) {
                 if (!isValidColumnConfiguration(encryptRuleConfiguration, column)) {
                     return false;
                 }
