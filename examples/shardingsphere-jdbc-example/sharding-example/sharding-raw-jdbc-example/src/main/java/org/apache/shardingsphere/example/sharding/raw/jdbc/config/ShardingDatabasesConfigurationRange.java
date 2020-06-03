@@ -45,7 +45,7 @@ public final class ShardingDatabasesConfigurationRange implements ExampleConfigu
         shardingRuleConfig.getTables().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTables().add(getOrderItemTableRuleConfiguration());
         shardingRuleConfig.getBroadcastTables().add("t_address");
-        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", new StandardModuloShardingDatabaseAlgorithm()));
+        shardingRuleConfig.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", new StandardModuloShardingDatabaseAlgorithm()));
         Collection<RuleConfiguration> configurations = new LinkedList<>();
         configurations.add(shardingRuleConfig);
         return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), configurations, new Properties());

@@ -9,14 +9,14 @@ Class name: org.apache.shardingsphere.sharding.api.config.ShardingRuleConfigurat
 
 Attributes:
 
-| *Name*                                    | *DataType*                           | *Description*                      | *Default Value* |
-| ----------------------------------------- | ------------------------------------ | ---------------------------------- | --------------- |
-| tables (+)                                | Collection\<TableRuleConfiguration\> | Sharding table rules               | -               |
-| bindingTableGroups (*)                    | Collection\<String\>                 | Binding table rules                | Empty           |
-| broadcastTables (*)                       | Collection\<String\>                 | Broadcast table rules              | Empty           |
-| defaultDatabaseShardingStrategyConfig (?) | ShardingStrategyConfiguration        | Default database sharding strategy | Not sharding    |
-| defaultTableShardingStrategyConfig (?)    | ShardingStrategyConfiguration        | Default table sharding strategy    | Not sharding    |
-| defaultKeyGeneratorConfig (?)             | KeyGeneratorConfiguration            | Default key generator              | Snowflake       |
+| *Name*                              | *DataType*                           | *Description*                      | *Default Value* |
+| ----------------------------------- | ------------------------------------ | ---------------------------------- | --------------- |
+| tables (+)                          | Collection\<TableRuleConfiguration\> | Sharding table rules               | -               |
+| bindingTableGroups (*)              | Collection\<String\>                 | Binding table rules                | Empty           |
+| broadcastTables (*)                 | Collection\<String\>                 | Broadcast table rules              | Empty           |
+| defaultDatabaseShardingStrategy (?) | ShardingStrategyConfiguration        | Default database sharding strategy | Not sharding    |
+| defaultTableShardingStrategy (?)    | ShardingStrategyConfiguration        | Default table sharding strategy    | Not sharding    |
+| defaultKeyGeneratorConfig (?)       | KeyGeneratorConfiguration            | Default key generator              | Snowflake       |
 
 ## Logic Table Configuration
 

@@ -45,11 +45,11 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
         }
         result.getBindingTables().addAll(data.getBindingTableGroups());
         result.getBroadcastTables().addAll(data.getBroadcastTables());
-        if (null != data.getDefaultDatabaseShardingStrategyConfig()) {
-            result.setDefaultDatabaseStrategy(shardingStrategyConfigurationYamlSwapper.swap(data.getDefaultDatabaseShardingStrategyConfig()));
+        if (null != data.getDefaultDatabaseShardingStrategy()) {
+            result.setDefaultDatabaseStrategy(shardingStrategyConfigurationYamlSwapper.swap(data.getDefaultDatabaseShardingStrategy()));
         }
-        if (null != data.getDefaultTableShardingStrategyConfig()) {
-            result.setDefaultTableStrategy(shardingStrategyConfigurationYamlSwapper.swap(data.getDefaultTableShardingStrategyConfig()));
+        if (null != data.getDefaultTableShardingStrategy()) {
+            result.setDefaultTableStrategy(shardingStrategyConfigurationYamlSwapper.swap(data.getDefaultTableShardingStrategy()));
         }
         if (null != data.getDefaultKeyGeneratorConfig()) {
             result.setDefaultKeyGenerator(keyGeneratorConfigurationYamlSwapper.swap(data.getDefaultKeyGeneratorConfig()));
@@ -68,10 +68,10 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
         result.getBindingTableGroups().addAll(yamlConfiguration.getBindingTables());
         result.getBroadcastTables().addAll(yamlConfiguration.getBroadcastTables());
         if (null != yamlConfiguration.getDefaultDatabaseStrategy()) {
-            result.setDefaultDatabaseShardingStrategyConfig(shardingStrategyConfigurationYamlSwapper.swap(yamlConfiguration.getDefaultDatabaseStrategy()));
+            result.setDefaultDatabaseShardingStrategy(shardingStrategyConfigurationYamlSwapper.swap(yamlConfiguration.getDefaultDatabaseStrategy()));
         }
         if (null != yamlConfiguration.getDefaultTableStrategy()) {
-            result.setDefaultTableShardingStrategyConfig(shardingStrategyConfigurationYamlSwapper.swap(yamlConfiguration.getDefaultTableStrategy()));
+            result.setDefaultTableShardingStrategy(shardingStrategyConfigurationYamlSwapper.swap(yamlConfiguration.getDefaultTableStrategy()));
         }
         if (null != yamlConfiguration.getDefaultKeyGenerator()) {
             result.setDefaultKeyGeneratorConfig(keyGeneratorConfigurationYamlSwapper.swap(yamlConfiguration.getDefaultKeyGenerator()));

@@ -95,8 +95,8 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
         shardingRuleConfiguration.getTables().add(mock(TableRuleConfiguration.class));
         shardingRuleConfiguration.getBindingTableGroups().add("tbl, sub_tbl");
         shardingRuleConfiguration.getBroadcastTables().add("dict");
-        shardingRuleConfiguration.setDefaultDatabaseShardingStrategyConfig(mock(ShardingStrategyConfiguration.class));
-        shardingRuleConfiguration.setDefaultTableShardingStrategyConfig(mock(ShardingStrategyConfiguration.class));
+        shardingRuleConfiguration.setDefaultDatabaseShardingStrategy(mock(ShardingStrategyConfiguration.class));
+        shardingRuleConfiguration.setDefaultTableShardingStrategy(mock(ShardingStrategyConfiguration.class));
         shardingRuleConfiguration.setDefaultKeyGeneratorConfig(mock(KeyGeneratorConfiguration.class));
         YamlShardingRuleConfiguration actual = shardingRuleConfigurationYamlSwapper.swap(shardingRuleConfiguration);
         assertThat(actual.getTables().size(), is(1));
@@ -117,8 +117,8 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
         assertThat(actual.getTables().size(), is(1));
         assertTrue(actual.getBindingTableGroups().isEmpty());
         assertTrue(actual.getBroadcastTables().isEmpty());
-        assertNull(actual.getDefaultDatabaseShardingStrategyConfig());
-        assertNull(actual.getDefaultTableShardingStrategyConfig());
+        assertNull(actual.getDefaultDatabaseShardingStrategy());
+        assertNull(actual.getDefaultTableShardingStrategy());
         assertNull(actual.getDefaultKeyGeneratorConfig());
     }
     
@@ -137,8 +137,8 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
         assertThat(actual.getBindingTableGroups().iterator().next(), is("tbl, sub_tbl"));
         assertThat(actual.getBroadcastTables().size(), is(1));
         assertThat(actual.getBroadcastTables().iterator().next(), is("dict"));
-        assertNotNull(actual.getDefaultDatabaseShardingStrategyConfig());
-        assertNotNull(actual.getDefaultTableShardingStrategyConfig());
+        assertNotNull(actual.getDefaultDatabaseShardingStrategy());
+        assertNotNull(actual.getDefaultTableShardingStrategy());
         assertNotNull(actual.getDefaultKeyGeneratorConfig());
     }
 }

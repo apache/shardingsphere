@@ -38,9 +38,9 @@ public final class ShardingRuleConfiguration implements RuleConfiguration {
     
     private Collection<String> broadcastTables = new LinkedList<>();
     
-    private ShardingStrategyConfiguration defaultDatabaseShardingStrategyConfig;
+    private ShardingStrategyConfiguration defaultDatabaseShardingStrategy;
     
-    private ShardingStrategyConfiguration defaultTableShardingStrategyConfig;
+    private ShardingStrategyConfiguration defaultTableShardingStrategy;
     
     private KeyGeneratorConfiguration defaultKeyGeneratorConfig;
 }

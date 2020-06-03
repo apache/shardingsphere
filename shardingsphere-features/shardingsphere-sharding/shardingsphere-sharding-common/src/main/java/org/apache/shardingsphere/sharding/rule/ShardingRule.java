@@ -77,8 +77,8 @@ public final class ShardingRule implements DataNodeRoutedRule {
         tableRules = createTableRules(shardingRuleConfiguration);
         broadcastTables = shardingRuleConfiguration.getBroadcastTables();
         bindingTableRules = createBindingTableRules(shardingRuleConfiguration.getBindingTableGroups());
-        defaultDatabaseShardingStrategy = createDefaultShardingStrategy(shardingRuleConfiguration.getDefaultDatabaseShardingStrategyConfig());
-        defaultTableShardingStrategy = createDefaultShardingStrategy(shardingRuleConfiguration.getDefaultTableShardingStrategyConfig());
+        defaultDatabaseShardingStrategy = createDefaultShardingStrategy(shardingRuleConfiguration.getDefaultDatabaseShardingStrategy());
+        defaultTableShardingStrategy = createDefaultShardingStrategy(shardingRuleConfiguration.getDefaultTableShardingStrategy());
         defaultKeyGenerateAlgorithm = createDefaultKeyGenerateAlgorithm(shardingRuleConfiguration.getDefaultKeyGeneratorConfig());
     }
     

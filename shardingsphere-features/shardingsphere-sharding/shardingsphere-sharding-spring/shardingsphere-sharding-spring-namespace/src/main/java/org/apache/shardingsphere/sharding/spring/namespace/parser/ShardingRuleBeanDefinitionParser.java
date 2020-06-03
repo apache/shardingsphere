@@ -61,14 +61,14 @@ public final class ShardingRuleBeanDefinitionParser extends AbstractBeanDefiniti
     private void parseDefaultDatabaseShardingStrategy(final BeanDefinitionBuilder factory, final Element element) {
         String defaultDatabaseShardingStrategy = element.getAttribute(ShardingRuleBeanDefinitionTag.DEFAULT_DATABASE_STRATEGY_REF_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(defaultDatabaseShardingStrategy)) {
-            factory.addPropertyReference("defaultDatabaseShardingStrategyConfig", defaultDatabaseShardingStrategy);
+            factory.addPropertyReference("defaultDatabaseShardingStrategy", defaultDatabaseShardingStrategy);
         }
     }
     
     private void parseDefaultTableShardingStrategy(final BeanDefinitionBuilder factory, final Element element) {
         String defaultTableShardingStrategy = element.getAttribute(ShardingRuleBeanDefinitionTag.DEFAULT_TABLE_STRATEGY_REF_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(defaultTableShardingStrategy)) {
-            factory.addPropertyReference("defaultTableShardingStrategyConfig", defaultTableShardingStrategy);
+            factory.addPropertyReference("defaultTableShardingStrategy", defaultTableShardingStrategy);
         }
     }
     

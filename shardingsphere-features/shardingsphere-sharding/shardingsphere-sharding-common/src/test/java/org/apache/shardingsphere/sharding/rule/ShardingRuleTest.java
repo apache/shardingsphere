@@ -223,7 +223,7 @@ public final class ShardingRuleTest {
     public void assertIsShardingColumnForDefaultDatabaseShardingStrategy() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(createTableRuleConfigWithAllStrategies());
-        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("column", new StandardShardingAlgorithmFixture()));
+        shardingRuleConfig.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("column", new StandardShardingAlgorithmFixture()));
         assertTrue(new ShardingRule(shardingRuleConfig, createDataSourceNames()).isShardingColumn("column", "LOGIC_TABLE"));
     }
     
@@ -231,7 +231,7 @@ public final class ShardingRuleTest {
     public void assertIsShardingColumnForDefaultTableShardingStrategy() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(createTableRuleConfigWithAllStrategies());
-        shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("column", new StandardShardingAlgorithmFixture()));
+        shardingRuleConfig.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("column", new StandardShardingAlgorithmFixture()));
         assertTrue(new ShardingRule(shardingRuleConfig, createDataSourceNames()).isShardingColumn("column", "LOGIC_TABLE"));
     }
     
@@ -342,10 +342,10 @@ public final class ShardingRuleTest {
         shardingRuleConfiguration.getBroadcastTables().add("BROADCAST_TABLE");
         InlineShardingAlgorithm shardingAlgorithmDB = new InlineShardingAlgorithm();
         shardingAlgorithmDB.getProperties().setProperty("algorithm.expression", "ds_%{ds_id % 2}");
-        shardingRuleConfiguration.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("ds_id", shardingAlgorithmDB));
+        shardingRuleConfiguration.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("ds_id", shardingAlgorithmDB));
         InlineShardingAlgorithm shardingAlgorithmTBL = new InlineShardingAlgorithm();
         shardingAlgorithmTBL.getProperties().setProperty("algorithm.expression", "table_%{table_id % 2}");
-        shardingRuleConfiguration.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("table_id", shardingAlgorithmTBL));
+        shardingRuleConfiguration.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("table_id", shardingAlgorithmTBL));
         KeyGenerateAlgorithm defaultKeyGenerateAlgorithm = TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class, "INCREMENT", new Properties());
         shardingRuleConfiguration.setDefaultKeyGeneratorConfig(new KeyGeneratorConfiguration("id", defaultKeyGenerateAlgorithm));
         return new ShardingRule(shardingRuleConfiguration, createDataSourceNames());
