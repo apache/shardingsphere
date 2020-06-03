@@ -74,12 +74,12 @@ public final class EncryptRule implements ShardingSphereRule {
     }
     
     private boolean isValidColumnConfiguration(final EncryptRuleConfiguration encryptRuleConfiguration, final EncryptColumnConfiguration column) {
-        return !Strings.isNullOrEmpty(column.getEncryptor()) && !Strings.isNullOrEmpty(column.getCipherColumn()) && containsEncryptor(encryptRuleConfiguration, column);
+        return !Strings.isNullOrEmpty(column.getEncryptorName()) && !Strings.isNullOrEmpty(column.getCipherColumn()) && containsEncryptor(encryptRuleConfiguration, column);
     }
     
     private boolean containsEncryptor(final EncryptRuleConfiguration encryptRuleConfiguration, final EncryptColumnConfiguration column) {
         for (EncryptorConfiguration each : encryptRuleConfiguration.getEncryptors()) {
-            if (each.getName().equals(column.getEncryptor())) {
+            if (each.getName().equals(column.getEncryptorName())) {
                 return true;
             }
         }

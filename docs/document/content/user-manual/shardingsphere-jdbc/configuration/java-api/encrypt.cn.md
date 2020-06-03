@@ -77,4 +77,4 @@ Apache ShardingSphere 内置的加解密器算法实现类包括：
 | plainColumn (?)         | String   | 原文列名称     |
 | cipherColumn            | String   | 密文列名称     |
 | assistedQueryColumn (?) | String   | 查询辅助列名称 |
-| encryptor               | String   | 加密器名称     |
+| encryptorName           | String   | 加密器名称     |
