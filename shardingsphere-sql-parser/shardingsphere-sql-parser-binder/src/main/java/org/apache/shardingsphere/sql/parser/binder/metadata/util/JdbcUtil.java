@@ -29,11 +29,15 @@ public class JdbcUtil {
      * Get schema.
      *
      * @param connection connection
+     * @param databaseType database type
      * @return schema
      */
-    public static String getSchema(final Connection connection) {
+    public static String getSchema(final Connection connection, final String databaseType) {
         String result = null;
         try {
+            if ("Oracle".equals(databaseType)) {
+                return null;
+            }
             result = connection.getSchema();
         } catch (final SQLException ignore) {
         }
