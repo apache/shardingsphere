@@ -334,7 +334,7 @@ public final class ShardingRuleTest {
         ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfiguration = createTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
         KeyGenerateAlgorithm keyGenerateAlgorithm = TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class, "INCREMENT", new Properties());
-        tableRuleConfiguration.setKeyGeneratorConfig(new KeyGeneratorConfiguration("id", keyGenerateAlgorithm));
+        tableRuleConfiguration.setKeyGenerator(new KeyGeneratorConfiguration("id", keyGenerateAlgorithm));
         TableRuleConfiguration subTableRuleConfiguration = createTableRuleConfiguration("SUB_LOGIC_TABLE", "ds_${0..1}.sub_table_${0..2}");
         shardingRuleConfiguration.getTables().add(tableRuleConfiguration);
         shardingRuleConfiguration.getTables().add(subTableRuleConfiguration);

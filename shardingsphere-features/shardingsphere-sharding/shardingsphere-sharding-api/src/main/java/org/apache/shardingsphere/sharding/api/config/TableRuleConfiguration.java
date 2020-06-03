@@ -38,7 +38,7 @@ public final class TableRuleConfiguration {
     
     private ShardingStrategyConfiguration tableShardingStrategy;
     
-    private KeyGeneratorConfiguration keyGeneratorConfig;
+    private KeyGeneratorConfiguration keyGenerator;
     
     public TableRuleConfiguration(final String logicTable) {
         this(logicTable, null);

@@ -83,7 +83,7 @@ public final class TableRuleConfigurationYamlSwapperTest {
         TableRuleConfiguration tableRuleConfiguration = new TableRuleConfiguration("tbl", "ds_$->{0..1}.tbl_$->{0..1}");
         tableRuleConfiguration.setDatabaseShardingStrategy(mock(StandardShardingStrategyConfiguration.class));
         tableRuleConfiguration.setTableShardingStrategy(mock(StandardShardingStrategyConfiguration.class));
-        tableRuleConfiguration.setKeyGeneratorConfig(mock(KeyGeneratorConfiguration.class));
+        tableRuleConfiguration.setKeyGenerator(mock(KeyGeneratorConfiguration.class));
         YamlTableRuleConfiguration actual = tableRuleConfigurationYamlSwapper.swap(tableRuleConfiguration);
         assertThat(actual.getLogicTable(), is("tbl"));
         assertThat(actual.getActualDataNodes(), is("ds_$->{0..1}.tbl_$->{0..1}"));
@@ -107,7 +107,7 @@ public final class TableRuleConfigurationYamlSwapperTest {
         assertThat(actual.getActualDataNodes(), is("ds_$->{0..1}.tbl_$->{0..1}"));
         assertNull(actual.getDatabaseShardingStrategy());
         assertNull(actual.getTableShardingStrategy());
-        assertNull(actual.getKeyGeneratorConfig());
+        assertNull(actual.getKeyGenerator());
     }
     
     @Test
@@ -123,6 +123,6 @@ public final class TableRuleConfigurationYamlSwapperTest {
         assertThat(actual.getActualDataNodes(), is("ds_$->{0..1}.tbl_$->{0..1}"));
         assertNotNull(actual.getDatabaseShardingStrategy());
         assertNotNull(actual.getTableShardingStrategy());
-        assertNotNull(actual.getKeyGeneratorConfig());
+        assertNotNull(actual.getKeyGenerator());
     }
 }

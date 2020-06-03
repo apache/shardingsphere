@@ -93,9 +93,9 @@ public final class TableRule {
         actualTables = getActualTables();
         databaseShardingStrategy = null == tableRuleConfig.getDatabaseShardingStrategy() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getDatabaseShardingStrategy());
         tableShardingStrategy = null == tableRuleConfig.getTableShardingStrategy() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getTableShardingStrategy());
-        final KeyGeneratorConfiguration keyGeneratorConfiguration = tableRuleConfig.getKeyGeneratorConfig();
+        final KeyGeneratorConfiguration keyGeneratorConfiguration = tableRuleConfig.getKeyGenerator();
         generateKeyColumn = null != keyGeneratorConfiguration && !Strings.isNullOrEmpty(keyGeneratorConfiguration.getColumn()) ? keyGeneratorConfiguration.getColumn() : defaultGenerateKeyColumn;
-        keyGenerateAlgorithm = containsKeyGenerateAlgorithm(tableRuleConfig) ? tableRuleConfig.getKeyGeneratorConfig().getKeyGenerateAlgorithm() : null;
+        keyGenerateAlgorithm = containsKeyGenerateAlgorithm(tableRuleConfig) ? tableRuleConfig.getKeyGenerator().getKeyGenerateAlgorithm() : null;
         checkRule(dataNodes);
     }
     
@@ -108,7 +108,7 @@ public final class TableRule {
     }
     
     private boolean containsKeyGenerateAlgorithm(final TableRuleConfiguration tableRuleConfiguration) {
-        return null != tableRuleConfiguration.getKeyGeneratorConfig() && null != tableRuleConfiguration.getKeyGeneratorConfig().getKeyGenerateAlgorithm();
+        return null != tableRuleConfiguration.getKeyGenerator() && null != tableRuleConfiguration.getKeyGenerator().getKeyGenerateAlgorithm();
     }
     
     private boolean isEmptyDataNodes(final List<String> dataNodes) {

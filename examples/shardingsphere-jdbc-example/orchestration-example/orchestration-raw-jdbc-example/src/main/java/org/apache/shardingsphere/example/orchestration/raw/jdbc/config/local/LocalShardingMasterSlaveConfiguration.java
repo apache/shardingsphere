@@ -73,7 +73,7 @@ public final class LocalShardingMasterSlaveConfiguration implements ExampleConfi
     
     private TableRuleConfiguration getOrderTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration("t_order", "ds_${0..1}.t_order_${[0, 1]}");
-        result.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
+        result.setKeyGenerator(getKeyGeneratorConfiguration());
         return result;
     }
     

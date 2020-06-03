@@ -117,7 +117,7 @@ public final class ShardingRuleBeanDefinitionParser extends AbstractBeanDefiniti
     private void parseKeyGeneratorConfiguration(final Element tableElement, final BeanDefinitionBuilder factory) {
         String keyGenerator = tableElement.getAttribute(ShardingRuleBeanDefinitionTag.KEY_GENERATOR_REF_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(keyGenerator)) {
-            factory.addPropertyReference("keyGeneratorConfig", keyGenerator);
+            factory.addPropertyReference("keyGenerator", keyGenerator);
         }
     }
     

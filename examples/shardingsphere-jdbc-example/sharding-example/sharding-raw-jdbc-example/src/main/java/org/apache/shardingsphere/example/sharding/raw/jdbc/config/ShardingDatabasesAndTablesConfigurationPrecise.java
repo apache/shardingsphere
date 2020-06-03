@@ -58,13 +58,13 @@ public final class ShardingDatabasesAndTablesConfigurationPrecise implements Exa
     
     private static TableRuleConfiguration getOrderTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration("t_order", "demo_ds_${0..1}.t_order_${[0, 1]}");
-        result.setKeyGeneratorConfig(new KeyGeneratorConfiguration("order_id", getSnowflakeKeyGenerateAlgorithm()));
+        result.setKeyGenerator(new KeyGeneratorConfiguration("order_id", getSnowflakeKeyGenerateAlgorithm()));
         return result;
     }
     
     private static TableRuleConfiguration getOrderItemTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration("t_order_item", "demo_ds_${0..1}.t_order_item_${[0, 1]}");
-        result.setKeyGeneratorConfig(new KeyGeneratorConfiguration("order_item_id", getSnowflakeKeyGenerateAlgorithm()));
+        result.setKeyGenerator(new KeyGeneratorConfiguration("order_item_id", getSnowflakeKeyGenerateAlgorithm()));
         return result;
     }
     

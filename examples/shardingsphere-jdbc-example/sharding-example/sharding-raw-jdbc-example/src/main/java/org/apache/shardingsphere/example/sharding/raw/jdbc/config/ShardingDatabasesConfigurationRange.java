@@ -53,13 +53,13 @@ public final class ShardingDatabasesConfigurationRange implements ExampleConfigu
     
     private static TableRuleConfiguration getOrderTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration("t_order");
-        result.setKeyGeneratorConfig(new KeyGeneratorConfiguration("order_id", getSnowflakeKeyGenerateAlgorithm()));
+        result.setKeyGenerator(new KeyGeneratorConfiguration("order_id", getSnowflakeKeyGenerateAlgorithm()));
         return result;
     }
     
     private static TableRuleConfiguration getOrderItemTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration("t_order_item");
-        result.setKeyGeneratorConfig(new KeyGeneratorConfiguration("order_item_id", getSnowflakeKeyGenerateAlgorithm()));
+        result.setKeyGenerator(new KeyGeneratorConfiguration("order_item_id", getSnowflakeKeyGenerateAlgorithm()));
         return result;
     }
     

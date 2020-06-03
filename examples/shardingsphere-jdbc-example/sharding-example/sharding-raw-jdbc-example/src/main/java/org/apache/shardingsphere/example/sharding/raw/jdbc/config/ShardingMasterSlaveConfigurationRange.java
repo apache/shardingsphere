@@ -69,13 +69,13 @@ public final class ShardingMasterSlaveConfigurationRange implements ExampleConfi
     
     private static TableRuleConfiguration createOrderTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration("t_order", "ds_${0..1}.t_order_${[0, 1]}");
-        result.setKeyGeneratorConfig(new KeyGeneratorConfiguration("order_id", createSnowflakeKeyGenerateAlgorithm()));
+        result.setKeyGenerator(new KeyGeneratorConfiguration("order_id", createSnowflakeKeyGenerateAlgorithm()));
         return result;
     }
     
     private static TableRuleConfiguration createOrderItemTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration("t_order_item", "ds_${0..1}.t_order_item_${[0, 1]}");
-        result.setKeyGeneratorConfig(new KeyGeneratorConfiguration("order_item_id", createSnowflakeKeyGenerateAlgorithm()));
+        result.setKeyGenerator(new KeyGeneratorConfiguration("order_item_id", createSnowflakeKeyGenerateAlgorithm()));
         return result;
     }
     

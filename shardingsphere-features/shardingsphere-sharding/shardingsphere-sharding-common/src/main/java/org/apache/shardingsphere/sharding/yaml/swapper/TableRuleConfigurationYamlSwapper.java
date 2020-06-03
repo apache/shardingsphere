@@ -42,8 +42,8 @@ public final class TableRuleConfigurationYamlSwapper implements YamlSwapper<Yaml
         if (null != data.getTableShardingStrategy()) {
             result.setTableStrategy(shardingStrategyConfigurationYamlSwapper.swap(data.getTableShardingStrategy()));
         }
-        if (null != data.getKeyGeneratorConfig()) {
-            result.setKeyGenerator(keyGeneratorConfigurationYamlSwapper.swap(data.getKeyGeneratorConfig()));
+        if (null != data.getKeyGenerator()) {
+            result.setKeyGenerator(keyGeneratorConfigurationYamlSwapper.swap(data.getKeyGenerator()));
         }
         return result;
     }
@@ -59,7 +59,7 @@ public final class TableRuleConfigurationYamlSwapper implements YamlSwapper<Yaml
             result.setTableShardingStrategy(shardingStrategyConfigurationYamlSwapper.swap(yamlConfiguration.getTableStrategy()));
         }
         if (null != yamlConfiguration.getKeyGenerator()) {
-            result.setKeyGeneratorConfig(keyGeneratorConfigurationYamlSwapper.swap(yamlConfiguration.getKeyGenerator()));
+            result.setKeyGenerator(keyGeneratorConfigurationYamlSwapper.swap(yamlConfiguration.getKeyGenerator()));
         }
         return result;
     }

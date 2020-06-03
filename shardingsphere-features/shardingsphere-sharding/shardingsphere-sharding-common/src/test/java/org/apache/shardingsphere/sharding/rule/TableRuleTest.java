@@ -70,7 +70,7 @@ public final class TableRuleTest {
         tableRuleConfig.setDatabaseShardingStrategy(new NoneShardingStrategyConfiguration());
         tableRuleConfig.setTableShardingStrategy(new NoneShardingStrategyConfiguration());
         KeyGenerateAlgorithm keyGenerateAlgorithm = TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class, "INCREMENT", new Properties());
-        tableRuleConfig.setKeyGeneratorConfig(new KeyGeneratorConfiguration("col_1", keyGenerateAlgorithm));
+        tableRuleConfig.setKeyGenerator(new KeyGeneratorConfiguration("col_1", keyGenerateAlgorithm));
         TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1"), null);
         assertThat(actual.getLogicTable(), is("logic_table"));
         assertThat(actual.getActualDataNodes().size(), is(6));

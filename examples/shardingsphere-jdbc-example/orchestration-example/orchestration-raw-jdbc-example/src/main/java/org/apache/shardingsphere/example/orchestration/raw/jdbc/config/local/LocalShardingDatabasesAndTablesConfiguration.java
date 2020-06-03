@@ -71,7 +71,7 @@ public final class LocalShardingDatabasesAndTablesConfiguration implements Examp
     
     private TableRuleConfiguration getOrderTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration("t_order", "demo_ds_${0..1}.t_order_${[0, 1]}");
-        result.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
+        result.setKeyGenerator(getKeyGeneratorConfiguration());
         return result;
     }
     
