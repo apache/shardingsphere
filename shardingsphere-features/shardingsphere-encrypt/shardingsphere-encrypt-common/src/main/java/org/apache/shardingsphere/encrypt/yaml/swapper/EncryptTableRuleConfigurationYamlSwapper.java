@@ -23,6 +23,8 @@ import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptColumnConfigurat
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -43,10 +45,10 @@ public final class EncryptTableRuleConfigurationYamlSwapper implements YamlSwapp
     
     @Override
     public EncryptTableRuleConfiguration swap(final YamlEncryptTableRuleConfiguration yamlConfiguration) {
-        EncryptTableRuleConfiguration result = new EncryptTableRuleConfiguration();
+        Map<String, EncryptColumnConfiguration> columns = new LinkedHashMap<>();
         for (Entry<String, YamlEncryptColumnConfiguration> entry : yamlConfiguration.getColumns().entrySet()) {
-            result.getColumns().put(entry.getKey(), encryptColumnConfigurationYamlSwapper.swap(entry.getValue()));
+            columns.put(entry.getKey(), encryptColumnConfigurationYamlSwapper.swap(entry.getValue()));
         }
-        return result;
+        return new EncryptTableRuleConfiguration(columns);
     }
 }
