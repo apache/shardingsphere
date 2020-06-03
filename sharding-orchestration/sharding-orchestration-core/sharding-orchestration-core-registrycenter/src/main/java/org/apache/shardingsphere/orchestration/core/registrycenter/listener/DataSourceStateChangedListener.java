@@ -48,6 +48,7 @@ public final class DataSourceStateChangedListener extends PostShardingRegistryCe
     }
     
     private boolean isDataSourceDisabled(final DataChangedEvent event) {
-        return RegistryCenterNodeStatus.DISABLED.toString().equalsIgnoreCase(event.getValue()) && ChangedType.UPDATED == event.getChangedType();
+        return RegistryCenterNodeStatus.DISABLED.toString().equalsIgnoreCase(event.getValue())
+                && (ChangedType.UPDATED == event.getChangedType() || ChangedType.ADDED == event.getChangedType());
     }
 }
