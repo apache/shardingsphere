@@ -456,8 +456,8 @@ public final class ConfigCenterTest {
         for (RuleConfiguration each : ruleConfigurations) {
             if (each instanceof ShardingRuleConfiguration) {
                 ShardingRuleConfiguration shardingRuleConfiguration = (ShardingRuleConfiguration) each;
-                assertThat(shardingRuleConfiguration.getTableRuleConfigs().size(), is(1));
-                assertThat(shardingRuleConfiguration.getTableRuleConfigs().iterator().next().getLogicTable(), is("t_order"));
+                assertThat(shardingRuleConfiguration.getTables().size(), is(1));
+                assertThat(shardingRuleConfiguration.getTables().iterator().next().getLogicTable(), is("t_order"));
             } else if (each instanceof EncryptRuleConfiguration) {
                 EncryptRuleConfiguration encryptRuleConfiguration = (EncryptRuleConfiguration) each;
                 assertThat(encryptRuleConfiguration.getEncryptors().size(), is(2));
@@ -476,8 +476,8 @@ public final class ConfigCenterTest {
         Collection<RuleConfiguration> actual = configurationService.loadRuleConfigurations("sharding_db");
         assertThat(actual.size(), is(1));
         ShardingRuleConfiguration actualShardingRuleConfiguration = (ShardingRuleConfiguration) actual.iterator().next();
-        assertThat(actualShardingRuleConfiguration.getTableRuleConfigs().size(), is(1));
-        assertThat(actualShardingRuleConfiguration.getTableRuleConfigs().iterator().next().getLogicTable(), is("t_order"));
+        assertThat(actualShardingRuleConfiguration.getTables().size(), is(1));
+        assertThat(actualShardingRuleConfiguration.getTables().iterator().next().getLogicTable(), is("t_order"));
     }
     
     @Test

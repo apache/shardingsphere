@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.infra.route.context.RouteResult;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -39,7 +39,7 @@ public final class ShardingDatabaseBroadcastRoutingEngineTest {
     @Test
     public void assertRoute() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTableRuleConfigs().add(new TableRuleConfiguration("t_order", "ds${0..1}.t_order_${0..2}"));
+        shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds${0..1}.t_order_${0..2}"));
         RouteResult routeResult = shardingDatabaseBroadcastRoutingEngine.route(new ShardingRule(shardingRuleConfig, Arrays.asList("ds0", "ds1")));
         List<RouteUnit> routeUnits = new ArrayList<>(routeResult.getRouteUnits());
         assertThat(routeResult, instanceOf(RouteResult.class));

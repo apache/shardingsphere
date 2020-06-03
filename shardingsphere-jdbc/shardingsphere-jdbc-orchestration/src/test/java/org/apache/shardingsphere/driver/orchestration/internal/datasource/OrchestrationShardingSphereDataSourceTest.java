@@ -22,7 +22,7 @@ import org.apache.shardingsphere.masterslave.api.config.LoadBalanceStrategyConfi
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
@@ -116,7 +116,7 @@ public final class OrchestrationShardingSphereDataSourceTest {
     
     private ShardingRuleConfiguration getShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getTableRuleConfigs().add(new TableRuleConfiguration("logic_table", "ds_ms.table_${0..1}"));
+        result.getTables().add(new ShardingTableRuleConfiguration("logic_table", "ds_ms.table_${0..1}"));
         return result;
     }
     

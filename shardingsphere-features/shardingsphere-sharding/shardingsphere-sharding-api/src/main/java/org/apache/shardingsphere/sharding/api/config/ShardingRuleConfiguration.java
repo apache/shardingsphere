@@ -32,15 +32,15 @@ import java.util.LinkedList;
 @Setter
 public final class ShardingRuleConfiguration implements RuleConfiguration {
     
-    private Collection<TableRuleConfiguration> tableRuleConfigs = new LinkedList<>();
+    private Collection<ShardingTableRuleConfiguration> tables = new LinkedList<>();
     
     private Collection<String> bindingTableGroups = new LinkedList<>();
     
     private Collection<String> broadcastTables = new LinkedList<>();
     
-    private ShardingStrategyConfiguration defaultDatabaseShardingStrategyConfig;
+    private ShardingStrategyConfiguration defaultDatabaseShardingStrategy;
     
-    private ShardingStrategyConfiguration defaultTableShardingStrategyConfig;
+    private ShardingStrategyConfiguration defaultTableShardingStrategy;
     
     private KeyGeneratorConfiguration defaultKeyGeneratorConfig;
 }

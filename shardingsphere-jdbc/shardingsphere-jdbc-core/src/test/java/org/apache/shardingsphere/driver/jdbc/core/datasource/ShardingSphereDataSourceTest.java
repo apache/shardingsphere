@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.junit.After;
@@ -187,8 +187,8 @@ public final class ShardingSphereDataSourceTest {
         for (String each : dataSourceMap.keySet()) {
             orderActualDataNodes.add(each + ".table_${0..2}");
         }
-        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration("logicTable", Joiner.on(",").join(orderActualDataNodes));
-        result.getTableRuleConfigs().add(tableRuleConfig);
+        ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration("logicTable", Joiner.on(",").join(orderActualDataNodes));
+        result.getTables().add(tableRuleConfig);
         return result;
     }
 }

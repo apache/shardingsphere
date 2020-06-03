@@ -22,7 +22,7 @@ import com.google.common.base.Splitter;
 import lombok.Getter;
 import org.apache.shardingsphere.sharding.api.config.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.strategy.route.ShardingStrategy;
@@ -73,21 +73,21 @@ public final class ShardingRule implements DataNodeRoutedRule {
     public ShardingRule(final ShardingRuleConfiguration shardingRuleConfiguration, final Collection<String> dataSourceNames) {
         Preconditions.checkArgument(null != shardingRuleConfiguration, "ShardingRuleConfig cannot be null.");
         Preconditions.checkArgument(null != dataSourceNames && !dataSourceNames.isEmpty(), "Data sources cannot be empty.");
-        this.dataSourceNames = getDataSourceNames(shardingRuleConfiguration.getTableRuleConfigs(), dataSourceNames);
+        this.dataSourceNames = getDataSourceNames(shardingRuleConfiguration.getTables(), dataSourceNames);
         tableRules = createTableRules(shardingRuleConfiguration);
         broadcastTables = shardingRuleConfiguration.getBroadcastTables();
         bindingTableRules = createBindingTableRules(shardingRuleConfiguration.getBindingTableGroups());
-        defaultDatabaseShardingStrategy = createDefaultShardingStrategy(shardingRuleConfiguration.getDefaultDatabaseShardingStrategyConfig());
-        defaultTableShardingStrategy = createDefaultShardingStrategy(shardingRuleConfiguration.getDefaultTableShardingStrategyConfig());
+        defaultDatabaseShardingStrategy = createDefaultShardingStrategy(shardingRuleConfiguration.getDefaultDatabaseShardingStrategy());
+        defaultTableShardingStrategy = createDefaultShardingStrategy(shardingRuleConfiguration.getDefaultTableShardingStrategy());
         defaultKeyGenerateAlgorithm = createDefaultKeyGenerateAlgorithm(shardingRuleConfiguration.getDefaultKeyGeneratorConfig());
     }
     
-    private Collection<String> getDataSourceNames(final Collection<TableRuleConfiguration> tableRuleConfigs, final Collection<String> dataSourceNames) {
+    private Collection<String> getDataSourceNames(final Collection<ShardingTableRuleConfiguration> tableRuleConfigs, final Collection<String> dataSourceNames) {
         Collection<String> result = new LinkedHashSet<>();
         if (tableRuleConfigs.isEmpty()) {
             return dataSourceNames;
         }
-        for (TableRuleConfiguration each : tableRuleConfigs) {
+        for (ShardingTableRuleConfiguration each : tableRuleConfigs) {
             if (null == each.getActualDataNodes()) {
                 return dataSourceNames;
             }
@@ -96,16 +96,16 @@ public final class ShardingRule implements DataNodeRoutedRule {
         return result;
     }
     
-    private Collection<String> getDataSourceNames(final TableRuleConfiguration tableRuleConfiguration) {
+    private Collection<String> getDataSourceNames(final ShardingTableRuleConfiguration shardingTableRuleConfiguration) {
         Collection<String> result = new LinkedHashSet<>();
-        for (String each : new InlineExpressionParser(tableRuleConfiguration.getActualDataNodes()).splitAndEvaluate()) {
+        for (String each : new InlineExpressionParser(shardingTableRuleConfiguration.getActualDataNodes()).splitAndEvaluate()) {
             result.add(new DataNode(each).getDataSourceName());
         }
         return result;
     }
     
     private Collection<TableRule> createTableRules(final ShardingRuleConfiguration shardingRuleConfig) {
-        return shardingRuleConfig.getTableRuleConfigs().stream().map(each ->
+        return shardingRuleConfig.getTables().stream().map(each ->
                 new TableRule(each, dataSourceNames, getDefaultGenerateKeyColumn(shardingRuleConfig))).collect(Collectors.toList());
     }
     

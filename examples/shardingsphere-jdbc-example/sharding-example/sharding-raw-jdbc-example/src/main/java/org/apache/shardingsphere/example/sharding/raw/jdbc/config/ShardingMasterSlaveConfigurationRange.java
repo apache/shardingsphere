@@ -25,7 +25,7 @@ import org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceCon
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.strategy.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.keygen.KeyGenerateAlgorithm;
@@ -58,24 +58,24 @@ public final class ShardingMasterSlaveConfigurationRange implements ExampleConfi
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getTableRuleConfigs().add(createOrderTableRuleConfiguration());
-        result.getTableRuleConfigs().add(createOrderItemTableRuleConfiguration());
+        result.getTables().add(createOrderTableRuleConfiguration());
+        result.getTables().add(createOrderItemTableRuleConfiguration());
         result.getBindingTableGroups().add("t_order, t_order_item");
         result.getBroadcastTables().add("t_address");
-        result.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", new StandardModuloShardingDatabaseAlgorithm()));
-        result.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new StandardModuloShardingTableAlgorithm()));
+        result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", new StandardModuloShardingDatabaseAlgorithm()));
+        result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", new StandardModuloShardingTableAlgorithm()));
         return result;
     }
     
-    private static TableRuleConfiguration createOrderTableRuleConfiguration() {
-        TableRuleConfiguration result = new TableRuleConfiguration("t_order", "ds_${0..1}.t_order_${[0, 1]}");
-        result.setKeyGeneratorConfig(new KeyGeneratorConfiguration("order_id", createSnowflakeKeyGenerateAlgorithm()));
+    private static ShardingTableRuleConfiguration createOrderTableRuleConfiguration() {
+        ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${[0, 1]}");
+        result.setKeyGenerator(new KeyGeneratorConfiguration("order_id", createSnowflakeKeyGenerateAlgorithm()));
         return result;
     }
     
-    private static TableRuleConfiguration createOrderItemTableRuleConfiguration() {
-        TableRuleConfiguration result = new TableRuleConfiguration("t_order_item", "ds_${0..1}.t_order_item_${[0, 1]}");
-        result.setKeyGeneratorConfig(new KeyGeneratorConfiguration("order_item_id", createSnowflakeKeyGenerateAlgorithm()));
+    private static ShardingTableRuleConfiguration createOrderItemTableRuleConfiguration() {
+        ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order_item", "ds_${0..1}.t_order_item_${[0, 1]}");
+        result.setKeyGenerator(new KeyGeneratorConfiguration("order_item_id", createSnowflakeKeyGenerateAlgorithm()));
         return result;
     }
     

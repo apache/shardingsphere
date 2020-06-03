@@ -96,7 +96,7 @@ public final class SchemaChangedListenerTest {
         assertThat(((RuleConfigurationsChangedEvent) actual).getShardingSchemaName(), is("sharding_db"));
         Collection<RuleConfiguration> ruleConfigurations = ((RuleConfigurationsChangedEvent) actual).getRuleConfigurations();
         assertThat(ruleConfigurations.size(), is(1));
-        assertThat(((ShardingRuleConfiguration) ruleConfigurations.iterator().next()).getTableRuleConfigs().size(), is(1));
+        assertThat(((ShardingRuleConfiguration) ruleConfigurations.iterator().next()).getTables().size(), is(1));
     }
     
     @Test

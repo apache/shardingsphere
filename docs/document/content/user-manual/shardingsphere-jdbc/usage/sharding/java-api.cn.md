@@ -40,7 +40,7 @@ dataSource2.setPassword("");
 dataSourceMap.put("ds1", dataSource2);
 
 // 配置 t_order 表规则
-TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration("t_order", "ds${0..1}.t_order${0..1}");
+ShardingTableRuleConfiguration orderTableRuleConfig = new ShardingTableRuleConfiguration("t_order", "ds${0..1}.t_order${0..1}");
 
 // 配置分库策略
 StandardShardingAlgorithm dbShardingAlgorithm = new InlineShardingAlgorithm();
@@ -48,22 +48,22 @@ Properties dbProps = new Properties();
 dbProps.setProperty(InlineShardingAlgorithm.ALGORITHM_EXPRESSION, "ds${user_id % 2}");
 dbShardingAlgorithm.setProperties(dbProps);
 StandardShardingStrategyConfiguration dbShardingStrategyConfig = new StandardShardingStrategyConfiguration("user_id", dbShardingAlgorithm);
-orderTableRuleConfig.setDatabaseShardingStrategyConfig(dbShardingStrategyConfig);
+orderTableRuleConfig.setDatabaseShardingStrategy(dbShardingStrategyConfig);
 
 // 配置分表策略
 StandardShardingAlgorithm tableShardingAlgorithm = new InlineShardingAlgorithm();
 Properties tableProps = new Properties();
 tableProps.setProperty(InlineShardingAlgorithm.ALGORITHM_EXPRESSION, "t_order${order_id % 2}");
 tableShardingAlgorithm.setProperties(tableProps);
-StandardShardingStrategyConfiguration tableShardingStrategyConfig = new StandardShardingStrategyConfiguration("order_id", tableShardingAlgorithm);
-orderTableRuleConfig.setTableShardingStrategyConfig(tableShardingStrategyConfig);
+StandardShardingStrategyConfiguration tableShardingStrategy = new StandardShardingStrategyConfiguration("order_id", tableShardingAlgorithm);
+orderTableRuleConfig.setTableShardingStrategy(tableShardingStrategy);
 
 // 省略配置 t_order_item 表规则...
 // ...
 
 // 配置分片规则
 ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
+shardingRuleConfig.getTables().add(orderTableRuleConfig);
     
 // 创建 ShardingSphereDataSource
 DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Collections.singleton((shardingRuleConfig), new Properties());

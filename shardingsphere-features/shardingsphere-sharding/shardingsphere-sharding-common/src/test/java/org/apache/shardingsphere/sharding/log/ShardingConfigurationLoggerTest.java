@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.log;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.log.ConfigurationLogger;
@@ -78,9 +78,9 @@ public final class ShardingConfigurationLoggerTest {
     
     private ShardingRuleConfiguration getShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        TableRuleConfiguration tableRuleConfiguration = new TableRuleConfiguration("user", "ds_${0}.user_${0..1}");
-        tableRuleConfiguration.setTableShardingStrategyConfig(new NoneShardingStrategyConfiguration());
-        result.getTableRuleConfigs().add(tableRuleConfiguration);
+        ShardingTableRuleConfiguration shardingTableRuleConfiguration = new ShardingTableRuleConfiguration("user", "ds_${0}.user_${0..1}");
+        shardingTableRuleConfiguration.setTableShardingStrategy(new NoneShardingStrategyConfiguration());
+        result.getTables().add(shardingTableRuleConfiguration);
         return result;
     }
     

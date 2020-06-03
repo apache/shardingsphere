@@ -22,7 +22,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.sharding.api.config.KeyGeneratorConfiguration;
-import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.sharding.strategy.route.ShardingStrategyFactory;
@@ -85,17 +85,17 @@ public final class TableRule {
         keyGenerateAlgorithm = null;
     }
     
-    public TableRule(final TableRuleConfiguration tableRuleConfig, final Collection<String> dataSourceNames, final String defaultGenerateKeyColumn) {
+    public TableRule(final ShardingTableRuleConfiguration tableRuleConfig, final Collection<String> dataSourceNames, final String defaultGenerateKeyColumn) {
         logicTable = tableRuleConfig.getLogicTable().toLowerCase();
         List<String> dataNodes = new InlineExpressionParser(tableRuleConfig.getActualDataNodes()).splitAndEvaluate();
         dataNodeIndexMap = new HashMap<>(dataNodes.size(), 1);
         actualDataNodes = isEmptyDataNodes(dataNodes) ? generateDataNodes(tableRuleConfig.getLogicTable(), dataSourceNames) : generateDataNodes(dataNodes, dataSourceNames);
         actualTables = getActualTables();
-        databaseShardingStrategy = null == tableRuleConfig.getDatabaseShardingStrategyConfig() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getDatabaseShardingStrategyConfig());
-        tableShardingStrategy = null == tableRuleConfig.getTableShardingStrategyConfig() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getTableShardingStrategyConfig());
-        final KeyGeneratorConfiguration keyGeneratorConfiguration = tableRuleConfig.getKeyGeneratorConfig();
+        databaseShardingStrategy = null == tableRuleConfig.getDatabaseShardingStrategy() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getDatabaseShardingStrategy());
+        tableShardingStrategy = null == tableRuleConfig.getTableShardingStrategy() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getTableShardingStrategy());
+        final KeyGeneratorConfiguration keyGeneratorConfiguration = tableRuleConfig.getKeyGenerator();
         generateKeyColumn = null != keyGeneratorConfiguration && !Strings.isNullOrEmpty(keyGeneratorConfiguration.getColumn()) ? keyGeneratorConfiguration.getColumn() : defaultGenerateKeyColumn;
-        keyGenerateAlgorithm = containsKeyGenerateAlgorithm(tableRuleConfig) ? tableRuleConfig.getKeyGeneratorConfig().getKeyGenerateAlgorithm() : null;
+        keyGenerateAlgorithm = containsKeyGenerateAlgorithm(tableRuleConfig) ? tableRuleConfig.getKeyGenerator().getKeyGenerateAlgorithm() : null;
         checkRule(dataNodes);
     }
     
@@ -107,8 +107,8 @@ public final class TableRule {
         datasourceToTablesMap.computeIfAbsent(datasourceName, key -> new LinkedHashSet<>()).add(tableName);
     }
     
-    private boolean containsKeyGenerateAlgorithm(final TableRuleConfiguration tableRuleConfiguration) {
-        return null != tableRuleConfiguration.getKeyGeneratorConfig() && null != tableRuleConfiguration.getKeyGeneratorConfig().getKeyGenerateAlgorithm();
+    private boolean containsKeyGenerateAlgorithm(final ShardingTableRuleConfiguration shardingTableRuleConfiguration) {
+        return null != shardingTableRuleConfiguration.getKeyGenerator() && null != shardingTableRuleConfiguration.getKeyGenerator().getKeyGenerateAlgorithm();
     }
     
     private boolean isEmptyDataNodes(final List<String> dataNodes) {

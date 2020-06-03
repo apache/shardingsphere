@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.spring.namespace.parser;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.sharding.spring.namespace.tag.ShardingRuleBeanDefinitionTag;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -44,7 +44,7 @@ public final class ShardingRuleBeanDefinitionParser extends AbstractBeanDefiniti
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingRuleConfiguration.class);
         parseDefaultDatabaseShardingStrategy(factory, element);
         parseDefaultTableShardingStrategy(factory, element);
-        factory.addPropertyValue("tableRuleConfigs", parseTableRulesConfiguration(element));
+        factory.addPropertyValue("tables", parseTableRulesConfiguration(element));
         factory.addPropertyValue("bindingTableGroups", parseBindingTablesConfiguration(element));
         factory.addPropertyValue("broadcastTables", parseBroadcastTables(element));
         parseDefaultKeyGenerator(factory, element);
@@ -61,14 +61,14 @@ public final class ShardingRuleBeanDefinitionParser extends AbstractBeanDefiniti
     private void parseDefaultDatabaseShardingStrategy(final BeanDefinitionBuilder factory, final Element element) {
         String defaultDatabaseShardingStrategy = element.getAttribute(ShardingRuleBeanDefinitionTag.DEFAULT_DATABASE_STRATEGY_REF_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(defaultDatabaseShardingStrategy)) {
-            factory.addPropertyReference("defaultDatabaseShardingStrategyConfig", defaultDatabaseShardingStrategy);
+            factory.addPropertyReference("defaultDatabaseShardingStrategy", defaultDatabaseShardingStrategy);
         }
     }
     
     private void parseDefaultTableShardingStrategy(final BeanDefinitionBuilder factory, final Element element) {
         String defaultTableShardingStrategy = element.getAttribute(ShardingRuleBeanDefinitionTag.DEFAULT_TABLE_STRATEGY_REF_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(defaultTableShardingStrategy)) {
-            factory.addPropertyReference("defaultTableShardingStrategyConfig", defaultTableShardingStrategy);
+            factory.addPropertyReference("defaultTableShardingStrategy", defaultTableShardingStrategy);
         }
     }
     
@@ -83,7 +83,7 @@ public final class ShardingRuleBeanDefinitionParser extends AbstractBeanDefiniti
     }
     
     private BeanDefinition parseTableRuleConfiguration(final Element tableElement) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(TableRuleConfiguration.class);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingTableRuleConfiguration.class);
         factory.addConstructorArgValue(tableElement.getAttribute(ShardingRuleBeanDefinitionTag.LOGIC_TABLE_ATTRIBUTE));
         parseActualDataNodes(tableElement, factory);
         parseDatabaseShardingStrategyConfiguration(tableElement, factory);
@@ -103,21 +103,21 @@ public final class ShardingRuleBeanDefinitionParser extends AbstractBeanDefiniti
     private void parseDatabaseShardingStrategyConfiguration(final Element tableElement, final BeanDefinitionBuilder factory) {
         String databaseStrategy = tableElement.getAttribute(ShardingRuleBeanDefinitionTag.DATABASE_STRATEGY_REF_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(databaseStrategy)) {
-            factory.addPropertyReference("databaseShardingStrategyConfig", databaseStrategy);
+            factory.addPropertyReference("databaseShardingStrategy", databaseStrategy);
         }
     }
     
     private void parseTableShardingStrategyConfiguration(final Element tableElement, final BeanDefinitionBuilder factory) {
         String tableStrategy = tableElement.getAttribute(ShardingRuleBeanDefinitionTag.TABLE_STRATEGY_REF_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(tableStrategy)) {
-            factory.addPropertyReference("tableShardingStrategyConfig", tableStrategy);
+            factory.addPropertyReference("tableShardingStrategy", tableStrategy);
         }
     }
     
     private void parseKeyGeneratorConfiguration(final Element tableElement, final BeanDefinitionBuilder factory) {
         String keyGenerator = tableElement.getAttribute(ShardingRuleBeanDefinitionTag.KEY_GENERATOR_REF_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(keyGenerator)) {
-            factory.addPropertyReference("keyGeneratorConfig", keyGenerator);
+            factory.addPropertyReference("keyGenerator", keyGenerator);
         }
     }
     

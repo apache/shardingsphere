@@ -24,7 +24,7 @@ import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.sharding.api.config.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.strategy.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.InlineShardingAlgorithm;
@@ -55,28 +55,28 @@ public final class LocalShardingDatabasesAndTablesConfiguration implements Examp
     @Override
     public DataSource getDataSource() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
-        shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
+        shardingRuleConfig.getTables().add(getOrderTableRuleConfiguration());
+        shardingRuleConfig.getTables().add(getOrderItemTableRuleConfiguration());
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
         shardingRuleConfig.getBroadcastTables().add("t_address");
         InlineShardingAlgorithm shardingAlgorithm = new InlineShardingAlgorithm();
         shardingAlgorithm.getProperties().setProperty("algorithm.expression", "demo_ds_${user_id % 2}");
-        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", shardingAlgorithm));
-        shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new StandardModuloShardingTableAlgorithm()));
+        shardingRuleConfig.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", shardingAlgorithm));
+        shardingRuleConfig.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", new StandardModuloShardingTableAlgorithm()));
         OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(centerConfigurationMap);
         Collection<RuleConfiguration> configurations = new LinkedList<>();
         configurations.add(shardingRuleConfig);
         return OrchestrationShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), configurations, new Properties(), orchestrationConfig);
     }
     
-    private TableRuleConfiguration getOrderTableRuleConfiguration() {
-        TableRuleConfiguration result = new TableRuleConfiguration("t_order", "demo_ds_${0..1}.t_order_${[0, 1]}");
-        result.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
+    private ShardingTableRuleConfiguration getOrderTableRuleConfiguration() {
+        ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order", "demo_ds_${0..1}.t_order_${[0, 1]}");
+        result.setKeyGenerator(getKeyGeneratorConfiguration());
         return result;
     }
     
-    private TableRuleConfiguration getOrderItemTableRuleConfiguration() {
-        return new TableRuleConfiguration("t_order_item", "demo_ds_${0..1}.t_order_item_${[0, 1]}");
+    private ShardingTableRuleConfiguration getOrderItemTableRuleConfiguration() {
+        return new ShardingTableRuleConfiguration("t_order_item", "demo_ds_${0..1}.t_order_item_${[0, 1]}");
     }
     
     private Map<String, DataSource> createDataSourceMap() {

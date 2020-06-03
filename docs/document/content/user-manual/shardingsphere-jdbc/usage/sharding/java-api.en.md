@@ -41,7 +41,7 @@ dataSource2.setPassword("");
 dataSourceMap.put("ds1", dataSource2);
 
 // Configure order table rule
-TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration("t_order", "ds${0..1}.t_order${0..1}");
+ShardingTableRuleConfiguration orderTableRuleConfig = new ShardingTableRuleConfiguration("t_order", "ds${0..1}.t_order${0..1}");
 
 // Configure database sharding strategy
 StandardShardingAlgorithm dbShardingAlgorithm = new InlineShardingAlgorithm();
@@ -49,22 +49,22 @@ Properties dbProps = new Properties();
 dbProps.setProperty(InlineShardingAlgorithm.ALGORITHM_EXPRESSION, "ds${user_id % 2}");
 dbShardingAlgorithm.setProperties(dbProps);
 StandardShardingStrategyConfiguration dbShardingStrategyConfig = new StandardShardingStrategyConfiguration("user_id", dbShardingAlgorithm);
-orderTableRuleConfig.setDatabaseShardingStrategyConfig(dbShardingStrategyConfig);
+orderTableRuleConfig.setDatabaseShardingStrategy(dbShardingStrategyConfig);
 
 // Configure table sharding strategy
 StandardShardingAlgorithm tableShardingAlgorithm = new InlineShardingAlgorithm();
 Properties tableProps = new Properties();
 tableProps.setProperty(InlineShardingAlgorithm.ALGORITHM_EXPRESSION, "t_order${order_id % 2}");
 tableShardingAlgorithm.setProperties(tableProps);
-StandardShardingStrategyConfiguration tableShardingStrategyConfig = new StandardShardingStrategyConfiguration("order_id", tableShardingAlgorithm);
-orderTableRuleConfig.setTableShardingStrategyConfig(tableShardingStrategyConfig);
+StandardShardingStrategyConfiguration tableShardingStrategy = new StandardShardingStrategyConfiguration("order_id", tableShardingAlgorithm);
+orderTableRuleConfig.setTableShardingStrategy(tableShardingStrategy);
 
 // Omit t_order_item table rule configuration ...
 // ...
     
 // Configure sharding rule
 ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
+shardingRuleConfig.getTables().add(orderTableRuleConfig);
 
 // Create ShardingSphereDataSource
 DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Collections.singleton((shardingRuleConfig), new Properties());

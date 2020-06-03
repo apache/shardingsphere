@@ -9,28 +9,28 @@ Class name: org.apache.shardingsphere.sharding.api.config.ShardingRuleConfigurat
 
 Attributes:
 
-| *Name*                                    | *DataType*                           | *Description*                      | *Default Value* |
-| ----------------------------------------- | ------------------------------------ | ---------------------------------- | --------------- |
-| tableRuleConfigs (+)                      | Collection\<TableRuleConfiguration\> | Sharding rules                     | -               |
-| bindingTableGroups (*)                    | Collection\<String\>                 | Binding table rules                | Empty           |
-| broadcastTables (*)                       | Collection\<String\>                 | Broadcast table rules              | Empty           |
-| defaultDatabaseShardingStrategyConfig (?) | ShardingStrategyConfiguration        | Default database sharding strategy | Not sharding    |
-| defaultTableShardingStrategyConfig (?)    | ShardingStrategyConfiguration        | Default table sharding strategy    | Not sharding    |
-| defaultKeyGeneratorConfig (?)             | KeyGeneratorConfiguration            | Default key generator              | Snowflake       |
+| *Name*                              | *DataType*                                   | *Description*                      | *Default Value* |
+| ----------------------------------- | -------------------------------------------- | ---------------------------------- | --------------- |
+| tables (+)                          | Collection\<ShardingTableRuleConfiguration\> | Sharding table rules               | -               |
+| bindingTableGroups (*)              | Collection\<String\>                         | Binding table rules                | Empty           |
+| broadcastTables (*)                 | Collection\<String\>                         | Broadcast table rules              | Empty           |
+| defaultDatabaseShardingStrategy (?) | ShardingStrategyConfiguration                | Default database sharding strategy | Not sharding    |
+| defaultTableShardingStrategy (?)    | ShardingStrategyConfiguration                | Default table sharding strategy    | Not sharding    |
+| defaultKeyGeneratorConfig (?)       | KeyGeneratorConfiguration                    | Default key generator              | Snowflake       |
 
-## Logic Table Configuration
+## Sharding Table Configuration
 
-Class name: org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration
+Class name: org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration
 
 Attributes:
 
-| *Name*                             | *DataType*                    | *Description*                                                                                                                         | *Default Value*                             |
-| ---------------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| logicTable                         | String                        | Name of logic table                                                                                                                   | -                                           |
-| actualDataNodes (?)                | String                        | Describe data source names and actual tables, delimiter as point.<br /> Multiple data nodes split by comma, support inline expression | Broadcast table or databases sharding only. |
-| databaseShardingStrategyConfig (?) | ShardingStrategyConfiguration | Databases sharding strategy                                                                                                           | Use default databases sharding strategy     |
-| tableShardingStrategyConfig (?)    | ShardingStrategyConfiguration | Tables sharding strategy                                                                                                              | Use default tables sharding strategy        |
-| keyGeneratorConfig (?)             | KeyGeneratorConfiguration     | Key generator configuration                                                                                                           | Use default key generator                   |
+| *Name*                       | *DataType*                    | *Description*                                                                                                                         | *Default Value*                             |
+| ---------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| logicTable                   | String                        | Name of logic table                                                                                                                   | -                                           |
+| actualDataNodes (?)          | String                        | Describe data source names and actual tables, delimiter as point.<br /> Multiple data nodes split by comma, support inline expression | Broadcast table or databases sharding only. |
+| databaseShardingStrategy (?) | ShardingStrategyConfiguration | Databases sharding strategy                                                                                                           | Use default databases sharding strategy     |
+| tableShardingStrategy (?)    | ShardingStrategyConfiguration | Tables sharding strategy                                                                                                              | Use default tables sharding strategy        |
+| keyGenerator (?)             | KeyGeneratorConfiguration     | Key generator configuration                                                                                                           | Use default key generator                   |
 
 ## Sharding Strategy Configuration
 

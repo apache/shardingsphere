@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
@@ -70,9 +70,9 @@ public final class ShardingTableBroadcastRoutingEngineTest {
     
     @Before
     public void setUp() {
-        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration("t_order", "ds${0..1}.t_order_${0..2}");
+        ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration("t_order", "ds${0..1}.t_order_${0..2}");
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
+        shardingRuleConfig.getTables().add(tableRuleConfig);
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         when(tablesContext.getTableNames()).thenReturn(Lists.newArrayList("t_order"));
         when(schemaMetaData.getAllTableNames()).thenReturn(Lists.newArrayList("t_order"));

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.api;
 
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -76,7 +76,7 @@ public final class ShardingSphereDataSourceFactoryTest {
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getTableRuleConfigs().add(new TableRuleConfiguration("logicTable", "ds.table_${0..2}"));
+        result.getTables().add(new ShardingTableRuleConfiguration("logicTable", "ds.table_${0..2}"));
         return result;
     }
 }
