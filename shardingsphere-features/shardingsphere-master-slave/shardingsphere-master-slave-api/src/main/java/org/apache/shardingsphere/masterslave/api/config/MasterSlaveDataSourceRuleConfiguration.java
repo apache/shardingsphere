@@ -24,10 +24,10 @@ import lombok.Getter;
 import java.util.List;
 
 /**
- * Master-slave data source configuration.
+ * Master-slave data source rule configuration.
  */
 @Getter
-public final class MasterSlaveDataSourceConfiguration {
+public final class MasterSlaveDataSourceRuleConfiguration {
     
     private final String name;
     
@@ -37,12 +37,12 @@ public final class MasterSlaveDataSourceConfiguration {
     
     private final LoadBalanceStrategyConfiguration loadBalanceStrategy;
     
-    public MasterSlaveDataSourceConfiguration(final String name, final String masterDataSourceName, final List<String> slaveDataSourceNames) {
+    public MasterSlaveDataSourceRuleConfiguration(final String name, final String masterDataSourceName, final List<String> slaveDataSourceNames) {
         this(name, masterDataSourceName, slaveDataSourceNames, null);
     }
     
-    public MasterSlaveDataSourceConfiguration(final String name,
-                                              final String masterDataSourceName, final List<String> slaveDataSourceNames, final LoadBalanceStrategyConfiguration loadBalanceStrategy) {
+    public MasterSlaveDataSourceRuleConfiguration(final String name,
+                                                  final String masterDataSourceName, final List<String> slaveDataSourceNames, final LoadBalanceStrategyConfiguration loadBalanceStrategy) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(name), "Name is required.");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(masterDataSourceName), "Master data source name is required.");
         Preconditions.checkArgument(null != slaveDataSourceNames && !slaveDataSourceNames.isEmpty(), "Slave data source names are required.");

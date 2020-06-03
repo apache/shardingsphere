@@ -9,13 +9,13 @@ weight = 2
 
 可配置属性：
 
-| *名称*                    | *数据类型*                              | *说明*        |
-| --------------- | ------------------------------------------------ | ------------ |
-| dataSources (+) | Collection\<MasterSlaveDataSourceConfiguration\> | 主从数据源列表 |
+| *名称*           | *数据类型*                                            | *说明*       |
+| --------------- | ---------------------------------------------------- | ------------ |
+| dataSources (+) | Collection\<MasterSlaveDataSourceRuleConfiguration\> | 主从数据源列表 |
 
 ## 主从数据源配置
 
-类名称：org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceConfiguration
+类名称：org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceRuleConfiguration
 
 可配置属性：
 

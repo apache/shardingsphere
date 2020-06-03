@@ -9,13 +9,13 @@ Class name: org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConf
 
 Attributes:
 
-| *Name*                   | *DataType*                                       | *Description*                        |
-| ------------------------ | ------------------------------------------------ | ------------------------------------ |
-| dataSources (+)          | Collection\<MasterSlaveDataSourceConfiguration\> | Data sources of master and slaves    |
+| *Name*          | *DataType*                                           | *Description*                     |
+| --------------- | ---------------------------------------------------- | --------------------------------- |
+| dataSources (+) | Collection\<MasterSlaveDataSourceRuleConfiguration\> | Data sources of master and slaves |
 
 ## Master Slave Data Source Configuration
 
-Class name: org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceConfiguration
+Class name: org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceRuleConfiguration
 
 Attributes:
 

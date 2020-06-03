@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.orchestration.internal.datasource;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.masterslave.api.config.LoadBalanceStrategyConfiguration;
-import org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration;
@@ -121,7 +121,7 @@ public final class OrchestrationShardingSphereDataSourceTest {
     }
     
     private MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() {
-        MasterSlaveDataSourceConfiguration dataSourceConfiguration = new MasterSlaveDataSourceConfiguration(
+        MasterSlaveDataSourceRuleConfiguration dataSourceConfiguration = new MasterSlaveDataSourceRuleConfiguration(
                 "ds_ms", "ds_m", Collections.singletonList("ds_s"), new LoadBalanceStrategyConfiguration("ROUND_ROBIN"));
         return new MasterSlaveRuleConfiguration(Collections.singleton(dataSourceConfiguration));
     }

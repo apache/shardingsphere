@@ -26,11 +26,11 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Master-slave data source configuration for YAML.
+ * Master-slave data source rule configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlMasterSlaveDataSourceConfiguration implements YamlConfiguration {
+public final class YamlMasterSlaveDataSourceRuleConfiguration implements YamlConfiguration {
     
     private String name;
     
