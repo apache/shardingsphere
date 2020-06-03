@@ -128,14 +128,14 @@ rules:
 - !SHARDING
   tables:
     t_order:
-      actualDataNodes: db_${0..9}.t_order
+      actualDataNodes: ds_${0..9}.t_order
       databaseStrategy:
         standard:
           shardingColumn: user_id
           shardingAlgorithm:
             type: STANDARD_TEST
     t_order_item:
-      actualDataNodes: db_${0..9}.t_order_item
+      actualDataNodes: ds_${0..9}.t_order_item
       databaseStrategy:
         standard:
           shardingColumn: user_id
