@@ -34,9 +34,9 @@ public final class TableRuleConfiguration {
     
     private final String actualDataNodes;
     
-    private ShardingStrategyConfiguration databaseShardingStrategyConfig;
+    private ShardingStrategyConfiguration databaseShardingStrategy;
     
-    private ShardingStrategyConfiguration tableShardingStrategyConfig;
+    private ShardingStrategyConfiguration tableShardingStrategy;
     
     private KeyGeneratorConfiguration keyGeneratorConfig;
     

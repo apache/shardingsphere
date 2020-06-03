@@ -49,15 +49,15 @@ Properties dbProps = new Properties();
 dbProps.setProperty(InlineShardingAlgorithm.ALGORITHM_EXPRESSION, "ds${user_id % 2}");
 dbShardingAlgorithm.setProperties(dbProps);
 StandardShardingStrategyConfiguration dbShardingStrategyConfig = new StandardShardingStrategyConfiguration("user_id", dbShardingAlgorithm);
-orderTableRuleConfig.setDatabaseShardingStrategyConfig(dbShardingStrategyConfig);
+orderTableRuleConfig.setDatabaseShardingStrategy(dbShardingStrategyConfig);
 
 // Configure table sharding strategy
 StandardShardingAlgorithm tableShardingAlgorithm = new InlineShardingAlgorithm();
 Properties tableProps = new Properties();
 tableProps.setProperty(InlineShardingAlgorithm.ALGORITHM_EXPRESSION, "t_order${order_id % 2}");
 tableShardingAlgorithm.setProperties(tableProps);
-StandardShardingStrategyConfiguration tableShardingStrategyConfig = new StandardShardingStrategyConfiguration("order_id", tableShardingAlgorithm);
-orderTableRuleConfig.setTableShardingStrategyConfig(tableShardingStrategyConfig);
+StandardShardingStrategyConfiguration tableShardingStrategy = new StandardShardingStrategyConfiguration("order_id", tableShardingAlgorithm);
+orderTableRuleConfig.setTableShardingStrategy(tableShardingStrategy);
 
 // Omit t_order_item table rule configuration ...
 // ...

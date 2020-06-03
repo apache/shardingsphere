@@ -55,8 +55,8 @@ public final class ShardingShadowDatabasesConfiguration implements ExampleConfig
     
     private TableRuleConfiguration getUserTableConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration("t_user", "ds_${0..1}.t_user");
-        result.setTableShardingStrategyConfig(getTableStandardShardingStrategyConfiguration());
-        result.setDatabaseShardingStrategyConfig(getDatabaseStandardShardingStrategyConfiguration());
+        result.setTableShardingStrategy(getTableStandardShardingStrategyConfiguration());
+        result.setDatabaseShardingStrategy(getDatabaseStandardShardingStrategyConfiguration());
         return result;
     }
     

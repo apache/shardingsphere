@@ -67,8 +67,8 @@ public final class TableRuleTest {
     public void assertCreateFullTableRule() {
         ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}");
-        tableRuleConfig.setDatabaseShardingStrategyConfig(new NoneShardingStrategyConfiguration());
-        tableRuleConfig.setTableShardingStrategyConfig(new NoneShardingStrategyConfiguration());
+        tableRuleConfig.setDatabaseShardingStrategy(new NoneShardingStrategyConfiguration());
+        tableRuleConfig.setTableShardingStrategy(new NoneShardingStrategyConfiguration());
         KeyGenerateAlgorithm keyGenerateAlgorithm = TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class, "INCREMENT", new Properties());
         tableRuleConfig.setKeyGeneratorConfig(new KeyGeneratorConfiguration("col_1", keyGenerateAlgorithm));
         TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1"), null);
@@ -130,7 +130,7 @@ public final class TableRuleTest {
         TableRuleConfiguration tableRuleConfiguration = new TableRuleConfiguration("LOGIC_TABLE", "");
         InlineShardingAlgorithm shardingAlgorithm = new InlineShardingAlgorithm();
         shardingAlgorithm.getProperties().setProperty("algorithm.expression", "table_${shardingColumn % 3}");
-        tableRuleConfiguration.setTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("shardingColumn", shardingAlgorithm));
+        tableRuleConfiguration.setTableShardingStrategy(new StandardShardingStrategyConfiguration("shardingColumn", shardingAlgorithm));
         new TableRule(tableRuleConfiguration, Arrays.asList("ds0", "ds1"), null);
     }
 }

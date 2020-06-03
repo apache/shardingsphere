@@ -36,11 +36,11 @@ public final class TableRuleConfigurationYamlSwapper implements YamlSwapper<Yaml
         YamlTableRuleConfiguration result = new YamlTableRuleConfiguration();
         result.setLogicTable(data.getLogicTable());
         result.setActualDataNodes(data.getActualDataNodes());
-        if (null != data.getDatabaseShardingStrategyConfig()) {
-            result.setDatabaseStrategy(shardingStrategyConfigurationYamlSwapper.swap(data.getDatabaseShardingStrategyConfig()));
+        if (null != data.getDatabaseShardingStrategy()) {
+            result.setDatabaseStrategy(shardingStrategyConfigurationYamlSwapper.swap(data.getDatabaseShardingStrategy()));
         }
-        if (null != data.getTableShardingStrategyConfig()) {
-            result.setTableStrategy(shardingStrategyConfigurationYamlSwapper.swap(data.getTableShardingStrategyConfig()));
+        if (null != data.getTableShardingStrategy()) {
+            result.setTableStrategy(shardingStrategyConfigurationYamlSwapper.swap(data.getTableShardingStrategy()));
         }
         if (null != data.getKeyGeneratorConfig()) {
             result.setKeyGenerator(keyGeneratorConfigurationYamlSwapper.swap(data.getKeyGeneratorConfig()));
@@ -53,10 +53,10 @@ public final class TableRuleConfigurationYamlSwapper implements YamlSwapper<Yaml
         Preconditions.checkNotNull(yamlConfiguration.getLogicTable(), "Logic table cannot be null.");
         TableRuleConfiguration result = new TableRuleConfiguration(yamlConfiguration.getLogicTable(), yamlConfiguration.getActualDataNodes());
         if (null != yamlConfiguration.getDatabaseStrategy()) {
-            result.setDatabaseShardingStrategyConfig(shardingStrategyConfigurationYamlSwapper.swap(yamlConfiguration.getDatabaseStrategy()));
+            result.setDatabaseShardingStrategy(shardingStrategyConfigurationYamlSwapper.swap(yamlConfiguration.getDatabaseStrategy()));
         }
         if (null != yamlConfiguration.getTableStrategy()) {
-            result.setTableShardingStrategyConfig(shardingStrategyConfigurationYamlSwapper.swap(yamlConfiguration.getTableStrategy()));
+            result.setTableShardingStrategy(shardingStrategyConfigurationYamlSwapper.swap(yamlConfiguration.getTableStrategy()));
         }
         if (null != yamlConfiguration.getKeyGenerator()) {
             result.setKeyGeneratorConfig(keyGeneratorConfigurationYamlSwapper.swap(yamlConfiguration.getKeyGenerator()));

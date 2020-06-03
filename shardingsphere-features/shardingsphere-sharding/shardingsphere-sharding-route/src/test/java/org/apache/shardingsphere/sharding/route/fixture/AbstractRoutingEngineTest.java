@@ -105,16 +105,16 @@ public abstract class AbstractRoutingEngineTest {
     
     private TableRuleConfiguration createTableRuleWithHintConfig() {
         TableRuleConfiguration result = new TableRuleConfiguration("t_hint_test", "ds_${0..1}.t_hint_test_${0..1}");
-        result.setTableShardingStrategyConfig(new HintShardingStrategyConfiguration(new HintShardingAlgorithmFixture()));
-        result.setDatabaseShardingStrategyConfig(new HintShardingStrategyConfiguration(new HintShardingAlgorithmFixture()));
+        result.setTableShardingStrategy(new HintShardingStrategyConfiguration(new HintShardingAlgorithmFixture()));
+        result.setDatabaseShardingStrategy(new HintShardingStrategyConfiguration(new HintShardingAlgorithmFixture()));
         return result;
     }
     
     protected final TableRuleConfiguration createTableRuleConfig(final String tableName, final String actualDataNodes,
         final ShardingStrategyConfiguration dsShardingStrategyConfiguration, final ShardingStrategyConfiguration tableShardingStrategyConfiguration) {
         TableRuleConfiguration result = new TableRuleConfiguration(tableName, actualDataNodes);
-        result.setDatabaseShardingStrategyConfig(dsShardingStrategyConfiguration);
-        result.setTableShardingStrategyConfig(tableShardingStrategyConfiguration);
+        result.setDatabaseShardingStrategy(dsShardingStrategyConfiguration);
+        result.setTableShardingStrategy(tableShardingStrategyConfiguration);
         return result;
     }
     
