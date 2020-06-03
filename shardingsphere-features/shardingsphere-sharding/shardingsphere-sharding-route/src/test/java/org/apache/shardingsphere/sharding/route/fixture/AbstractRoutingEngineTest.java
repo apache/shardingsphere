@@ -110,8 +110,8 @@ public abstract class AbstractRoutingEngineTest {
         return result;
     }
     
-    protected final ShardingTableRuleConfiguration createTableRuleConfig(final String tableName, final String actualDataNodes,
-                                                                         final ShardingStrategyConfiguration dsShardingStrategyConfiguration, final ShardingStrategyConfiguration tableShardingStrategyConfiguration) {
+    protected final ShardingTableRuleConfiguration createTableRuleConfig(final String tableName, final String actualDataNodes, final ShardingStrategyConfiguration dsShardingStrategyConfiguration, 
+                                                                         final ShardingStrategyConfiguration tableShardingStrategyConfiguration) {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration(tableName, actualDataNodes);
         result.setDatabaseShardingStrategy(dsShardingStrategyConfiguration);
         result.setTableShardingStrategy(tableShardingStrategyConfiguration);
