@@ -20,7 +20,7 @@ package org.apache.shardingsphere.masterslave.rule;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.masterslave.api.config.LoadBalanceStrategyConfiguration;
-import org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceRuleConfiguration;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
@@ -54,11 +54,11 @@ public final class MasterSlaveDataSourceRule {
     @Getter(AccessLevel.NONE)
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
-    public MasterSlaveDataSourceRule(final MasterSlaveDataSourceConfiguration configuration) {
+    public MasterSlaveDataSourceRule(final MasterSlaveDataSourceRuleConfiguration configuration) {
         name = configuration.getName();
         masterDataSourceName = configuration.getMasterDataSourceName();
         slaveDataSourceNames = configuration.getSlaveDataSourceNames();
-        loadBalanceAlgorithm = createLoadBalanceAlgorithm(configuration.getLoadBalanceStrategyConfiguration());
+        loadBalanceAlgorithm = createLoadBalanceAlgorithm(configuration.getLoadBalanceStrategy());
     }
     
     private MasterSlaveLoadBalanceAlgorithm createLoadBalanceAlgorithm(final LoadBalanceStrategyConfiguration configuration) {

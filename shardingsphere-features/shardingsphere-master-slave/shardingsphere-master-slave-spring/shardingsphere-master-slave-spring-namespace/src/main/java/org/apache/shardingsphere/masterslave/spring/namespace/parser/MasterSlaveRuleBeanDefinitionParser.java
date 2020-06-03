@@ -19,7 +19,7 @@ package org.apache.shardingsphere.masterslave.spring.namespace.parser;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.masterslave.spring.namespace.tag.MasterSlaveRuleBeanDefinitionTag;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -45,14 +45,14 @@ public final class MasterSlaveRuleBeanDefinitionParser extends AbstractBeanDefin
         List<Element> masterSlaveDataSourceElements = DomUtils.getChildElementsByTagName(element, MasterSlaveRuleBeanDefinitionTag.MASTER_SLAVE_DATA_SOURCE_TAG);
         List<BeanDefinition> masterSlaveDataSources = new ManagedList<>(masterSlaveDataSourceElements.size());
         for (Element each : masterSlaveDataSourceElements) {
-            masterSlaveDataSources.add(parseMasterSlaveDataSourceConfiguration(each));
+            masterSlaveDataSources.add(parseMasterSlaveDataSourceRuleConfiguration(each));
         }
         factory.addConstructorArgValue(masterSlaveDataSources);
         return factory.getBeanDefinition();
     }
     
-    private BeanDefinition parseMasterSlaveDataSourceConfiguration(final Element element) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(MasterSlaveDataSourceConfiguration.class);
+    private BeanDefinition parseMasterSlaveDataSourceRuleConfiguration(final Element element) {
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(MasterSlaveDataSourceRuleConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(MasterSlaveRuleBeanDefinitionTag.MASTER_SLAVE_DATA_SOURCE_ID_TAG));
         factory.addConstructorArgValue(element.getAttribute(MasterSlaveRuleBeanDefinitionTag.MASTER_DATA_SOURCE_NAME_TAG));
         factory.addConstructorArgValue(parseSlaveDataSourcesRef(element));

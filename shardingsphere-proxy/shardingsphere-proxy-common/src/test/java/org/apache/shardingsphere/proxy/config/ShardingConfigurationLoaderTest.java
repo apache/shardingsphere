@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.config;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptorConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
-import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveDataSourceConfiguration;
+import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveDataSourceRuleConfiguration;
 import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
@@ -96,12 +96,12 @@ public final class ShardingConfigurationLoaderTest {
         Optional<YamlMasterSlaveRuleConfiguration> masterSlaveRuleConfiguration = actual.getRules().stream().filter(
             each -> each instanceof YamlMasterSlaveRuleConfiguration).findFirst().map(configuration -> (YamlMasterSlaveRuleConfiguration) configuration);
         assertTrue(masterSlaveRuleConfiguration.isPresent());
-        for (YamlMasterSlaveDataSourceConfiguration each : masterSlaveRuleConfiguration.get().getDataSources().values()) {
+        for (YamlMasterSlaveDataSourceRuleConfiguration each : masterSlaveRuleConfiguration.get().getDataSources().values()) {
             assertMasterSlaveRuleConfiguration(each);
         }
     }
     
-    private void assertMasterSlaveRuleConfiguration(final YamlMasterSlaveDataSourceConfiguration actual) {
+    private void assertMasterSlaveRuleConfiguration(final YamlMasterSlaveDataSourceRuleConfiguration actual) {
         assertThat(actual.getName(), is("ms_ds"));
         assertThat(actual.getMasterDataSourceName(), is("master_ds"));
         assertThat(actual.getSlaveDataSourceNames().size(), is(2));

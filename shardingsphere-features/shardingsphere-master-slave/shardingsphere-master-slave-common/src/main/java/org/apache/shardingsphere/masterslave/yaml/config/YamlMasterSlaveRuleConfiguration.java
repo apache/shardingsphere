@@ -32,7 +32,7 @@ import java.util.Map;
 @Setter
 public final class YamlMasterSlaveRuleConfiguration implements YamlRuleConfiguration {
     
-    private Map<String, YamlMasterSlaveDataSourceConfiguration> dataSources = new LinkedHashMap<>();
+    private Map<String, YamlMasterSlaveDataSourceRuleConfiguration> dataSources = new LinkedHashMap<>();
     
     @Override
     public Class<MasterSlaveRuleConfiguration> getRuleConfigurationType() {

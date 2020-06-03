@@ -9,22 +9,22 @@ weight = 2
 
 可配置属性：
 
-| *名称*                    | *数据类型*                              | *说明*        |
-| --------------- | ------------------------------------------------ | ------------ |
-| dataSources (+) | Collection\<MasterSlaveDataSourceConfiguration\> | 主从数据源列表 |
+| *名称*           | *数据类型*                                            | *说明*       |
+| --------------- | ---------------------------------------------------- | ------------ |
+| dataSources (+) | Collection\<MasterSlaveDataSourceRuleConfiguration\> | 主从数据源列表 |
 
 ## 主从数据源配置
 
-类名称：org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceConfiguration
+类名称：org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceRuleConfiguration
 
 可配置属性：
 
-| *名称*                               | *数据类型*                        | *说明*            | *默认值*        |
-| ------------------------------------ | -------------------------------- | ---------------- | -------------- |
-| name                                 | String                           | 读写分离数据源名称 | -              |
-| masterDataSourceName                 | String                           | 主库数据源名称     | -              |
-| slaveDataSourceNames                 | Collection\<String\>             | 从库数据源名称列表 | -              |
-| loadBalanceStrategyConfiguration (?) | LoadBalanceStrategyConfiguration | 从库负载均衡算法   | 轮询负载均衡算法 |
+| *名称*                  | *数据类型*                        | *说明*            | *默认值*        |
+| ----------------------- | -------------------------------- | ---------------- | -------------- |
+| name                    | String                           | 读写分离数据源名称 | -              |
+| masterDataSourceName    | String                           | 主库数据源名称     | -              |
+| slaveDataSourceNames    | Collection\<String\>             | 从库数据源名称列表 | -              |
+| loadBalanceStrategy (?) | LoadBalanceStrategyConfiguration | 从库负载均衡算法   | 轮询负载均衡算法 |
 
 ## 从库负载均衡策略配置
 

@@ -9,22 +9,22 @@ Class name: org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConf
 
 Attributes:
 
-| *Name*                   | *DataType*                                       | *Description*                        |
-| ------------------------ | ------------------------------------------------ | ------------------------------------ |
-| dataSources (+)          | Collection\<MasterSlaveDataSourceConfiguration\> | Data sources of master and slaves    |
+| *Name*          | *DataType*                                           | *Description*                     |
+| --------------- | ---------------------------------------------------- | --------------------------------- |
+| dataSources (+) | Collection\<MasterSlaveDataSourceRuleConfiguration\> | Data sources of master and slaves |
 
 ## Master Slave Data Source Configuration
 
-Class name: org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceConfiguration
+Class name: org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceRuleConfiguration
 
 Attributes:
 
-| *Name*                               | *DataType*                       | *Description*                         | *Default Value*                    |
-| ------------------------------------ | -------------------------------- | ------------------------------------- | ---------------------------------- |
-| name                                 | String                           | Read-write split data source name     | -                                  |
-| masterDataSourceName                 | String                           | Master database source name           | -                                  |
-| slaveDataSourceNames                 | Collection\<String\>             | Slave database source name list       | -                                  |
-| loadBalanceStrategyConfiguration (?) | LoadBalanceStrategyConfiguration | Slave database load balance algorithm | Round robin load balance algorithm |
+| *Name*                  | *DataType*                       | *Description*                         | *Default Value*                    |
+| ----------------------- | -------------------------------- | ------------------------------------- | ---------------------------------- |
+| name                    | String                           | Read-write split data source name     | -                                  |
+| masterDataSourceName    | String                           | Master database source name           | -                                  |
+| slaveDataSourceNames    | Collection\<String\>             | Slave database source name list       | -                                  |
+| loadBalanceStrategy (?) | LoadBalanceStrategyConfiguration | Slave database load balance algorithm | Round robin load balance algorithm |
 
 ## Slave Data Sources Load Balance Strategy Configuration
 

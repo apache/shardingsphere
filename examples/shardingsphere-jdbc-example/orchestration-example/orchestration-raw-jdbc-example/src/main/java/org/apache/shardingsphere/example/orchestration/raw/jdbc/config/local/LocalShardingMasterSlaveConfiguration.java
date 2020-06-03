@@ -23,7 +23,7 @@ import org.apache.shardingsphere.example.algorithm.StandardModuloShardingTableAl
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
@@ -92,9 +92,9 @@ public final class LocalShardingMasterSlaveConfiguration implements ExampleConfi
     }
     
     private MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() {
-        MasterSlaveDataSourceConfiguration dataSourceConfiguration1 = new MasterSlaveDataSourceConfiguration(
+        MasterSlaveDataSourceRuleConfiguration dataSourceConfiguration1 = new MasterSlaveDataSourceRuleConfiguration(
                 "ds_0", "demo_ds_master_0", Arrays.asList("demo_ds_master_0_slave_0", "demo_ds_master_0_slave_1"));
-        MasterSlaveDataSourceConfiguration dataSourceConfiguration2 = new MasterSlaveDataSourceConfiguration(
+        MasterSlaveDataSourceRuleConfiguration dataSourceConfiguration2 = new MasterSlaveDataSourceRuleConfiguration(
                 "ds_1", "demo_ds_master_1", Arrays.asList("demo_ds_master_1_slave_0", "demo_ds_master_1_slave_1"));
         return new MasterSlaveRuleConfiguration(Arrays.asList(dataSourceConfiguration1, dataSourceConfiguration2));
     }
