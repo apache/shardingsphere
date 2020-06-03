@@ -498,7 +498,7 @@ public final class ConfigCenterTest {
         EncryptRuleConfiguration actual = (EncryptRuleConfiguration) configurationService.loadRuleConfigurations("sharding_db").iterator().next();
         assertThat(actual.getEncryptors().size(), is(1));
         EncryptorConfiguration encryptorConfiguration = actual.getEncryptors().iterator().next();
-        assertThat(encryptorConfiguration, is("order_encryptor"));
+        assertThat(encryptorConfiguration.getName(), is("order_encryptor"));
         assertThat(encryptorConfiguration.getType(), is("aes"));
         assertThat(encryptorConfiguration.getProperties().get("aes.key.value").toString(), is("123456"));
     }
