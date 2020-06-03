@@ -25,6 +25,7 @@ import org.apache.shardingsphere.encrypt.spring.namespace.tag.EncryptRuleBeanDef
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.BeanDefinitionParserDelegate;
@@ -32,6 +33,7 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -71,18 +73,19 @@ public final class EncryptRuleBeanDefinitionParser extends AbstractBeanDefinitio
         return null == propsElement ? new Properties() : parserContext.getDelegate().parsePropsElement(propsElement);
     }
     
-    private static Map<String, BeanDefinition> parseEncryptTableRuleConfigurations(final Element element) {
+    private static Collection<BeanDefinition> parseEncryptTableRuleConfigurations(final Element element) {
         Element encryptTablesElement = DomUtils.getChildElementByTagName(element, EncryptRuleBeanDefinitionTag.TABLES_CONFIG_TAG);
         List<Element> encryptTableElements = DomUtils.getChildElementsByTagName(encryptTablesElement, EncryptRuleBeanDefinitionTag.TABLE_CONFIG_TAG);
-        Map<String, BeanDefinition> result = new ManagedMap<>(encryptTableElements.size());
+        Collection<BeanDefinition> result = new ManagedList<>(encryptTableElements.size());
         for (Element each : encryptTableElements) {
-            result.put(each.getAttribute(BeanDefinitionParserDelegate.NAME_ATTRIBUTE), parseEncryptTableConfiguration(each));
+            result.add(parseEncryptTableConfiguration(each));
         }
         return result;
     }
     
     private static AbstractBeanDefinition parseEncryptTableConfiguration(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(EncryptTableRuleConfiguration.class);
+        factory.addConstructorArgValue(element.getAttribute(BeanDefinitionParserDelegate.NAME_ATTRIBUTE));
         factory.addConstructorArgValue(parseEncryptColumnConfigurations(element));
         return factory.getBeanDefinition();
     }

@@ -31,5 +31,7 @@ import java.util.Map;
 @Setter
 public final class YamlEncryptTableRuleConfiguration implements YamlConfiguration {
     
+    private String name;
+    
     private Map<String, YamlEncryptColumnConfiguration> columns = new LinkedHashMap<>();
 }

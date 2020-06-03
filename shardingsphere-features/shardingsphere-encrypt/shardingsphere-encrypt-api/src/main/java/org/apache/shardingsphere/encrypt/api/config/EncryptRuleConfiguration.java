@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -32,5 +33,5 @@ public final class EncryptRuleConfiguration implements RuleConfiguration {
     
     private final Map<String, EncryptorConfiguration> encryptors;
     
-    private final Map<String, EncryptTableRuleConfiguration> tables;
+    private final Collection<EncryptTableRuleConfiguration> tables;
 }

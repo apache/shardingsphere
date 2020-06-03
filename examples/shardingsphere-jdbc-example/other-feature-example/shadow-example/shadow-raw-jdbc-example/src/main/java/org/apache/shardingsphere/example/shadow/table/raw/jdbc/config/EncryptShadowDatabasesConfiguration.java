@@ -29,8 +29,10 @@ import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
@@ -42,7 +44,7 @@ public final class EncryptShadowDatabasesConfiguration implements ExampleConfigu
         Map<String, DataSource> dataSourceMap = new HashMap<>();
         dataSourceMap.put("ds", DataSourceUtil.createDataSource("demo_ds"));
         dataSourceMap.put("ds_0", DataSourceUtil.createDataSource("shadow_demo_ds"));
-        EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(getEncryptorConfiguration(), getEncryptTableRuleConfiguration());
+        EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(getEncryptorConfiguration(), getEncryptTableRuleConfigurations());
         Properties properties = new Properties();
         properties.setProperty("sql.show", "true");
         properties.setProperty("query.with.cipher.column", "true");
@@ -60,12 +62,12 @@ public final class EncryptShadowDatabasesConfiguration implements ExampleConfigu
         return result;
     }
     
-    private Map<String, EncryptTableRuleConfiguration> getEncryptTableRuleConfiguration() {
-        Map<String, EncryptTableRuleConfiguration> result = new HashMap<>();
+    private Collection<EncryptTableRuleConfiguration> getEncryptTableRuleConfigurations() {
+        Collection<EncryptTableRuleConfiguration> result = new LinkedList<>();
         Map<String, EncryptColumnConfiguration> columns = new HashMap<>();
         columns.put("user_name", new EncryptColumnConfiguration("user_name_plain", "user_name", "", "name_encryptror"));
         columns.put("pwd", new EncryptColumnConfiguration("", "pwd", "assisted_query_pwd", "pwd_encryptror"));
-        result.put("t_user", new EncryptTableRuleConfiguration(columns));
+        result.add(new EncryptTableRuleConfiguration("t_user", columns));
         return result;
     }
 }

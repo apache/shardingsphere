@@ -88,8 +88,8 @@ public final class EncryptConfigurationLoggerTest {
         properties.put("aes.key.value", "123456abc");
         EncryptorConfiguration encryptorConfiguration = new EncryptorConfiguration("aes", properties);
         EncryptTableRuleConfiguration tableRuleConfiguration =
-                new EncryptTableRuleConfiguration(Collections.singletonMap("user_id", new EncryptColumnConfiguration("user_decrypt", "user_encrypt", "user_assisted", "encryptor_aes")));
-        return new EncryptRuleConfiguration(ImmutableMap.of("encryptor_aes", encryptorConfiguration), ImmutableMap.of("t_encrypt", tableRuleConfiguration));
+                new EncryptTableRuleConfiguration("t_encrypt", Collections.singletonMap("user_id", new EncryptColumnConfiguration("user_decrypt", "user_encrypt", "user_assisted", "encryptor_aes")));
+        return new EncryptRuleConfiguration(ImmutableMap.of("encryptor_aes", encryptorConfiguration), Collections.singleton(tableRuleConfiguration));
     }
     
     private void assertLogInfo(final String logContent) {

@@ -29,5 +29,7 @@ import java.util.Map;
 @Getter
 public final class EncryptTableRuleConfiguration {
     
+    private final String name;
+    
     private final Map<String, EncryptColumnConfiguration> columns;
 }

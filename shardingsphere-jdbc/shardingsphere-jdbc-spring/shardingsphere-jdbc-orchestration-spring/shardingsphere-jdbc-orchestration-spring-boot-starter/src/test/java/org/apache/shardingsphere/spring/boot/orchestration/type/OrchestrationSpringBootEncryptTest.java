@@ -69,6 +69,6 @@ public class OrchestrationSpringBootEncryptTest {
         assertTrue(configuration.getEncryptors().containsKey("order_encrypt"));
         assertThat(configuration.getEncryptors().get("order_encrypt").getType(), is("aes"));
         assertThat(configuration.getTables().size(), is(1));
-        assertThat(configuration.getTables().get("t_order").getColumns().get("order_id").getCipherColumn(), is("cipher_order_id"));
+        assertThat(configuration.getTables().iterator().next().getColumns().get("order_id").getCipherColumn(), is("cipher_order_id"));
     }
 }

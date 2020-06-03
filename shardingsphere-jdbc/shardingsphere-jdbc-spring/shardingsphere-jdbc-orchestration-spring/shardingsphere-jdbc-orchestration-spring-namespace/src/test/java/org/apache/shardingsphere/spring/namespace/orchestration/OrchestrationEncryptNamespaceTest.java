@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.spring.namespace.orchestration;
 
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.spring.namespace.orchestration.util.EmbedTestingServer;
-import org.apache.shardingsphere.spring.namespace.orchestration.util.FieldValueUtil;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.spring.namespace.orchestration.util.EmbedTestingServer;
+import org.apache.shardingsphere.spring.namespace.orchestration.util.FieldValueUtil;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
@@ -58,8 +59,9 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
     private void assertEncryptRule(final EncryptRuleConfiguration configuration) {
         assertThat(configuration.getEncryptors().size(), is(2));
         assertThat(configuration.getTables().size(), is(1));
-        assertThat(configuration.getTables().get("t_order").getColumns().get("user_id").getCipherColumn(), is("user_encrypt"));
-        assertThat(configuration.getTables().get("t_order").getColumns().get("order_id").getPlainColumn(), is("order_decrypt"));
+        EncryptTableRuleConfiguration tableRuleConfiguration = configuration.getTables().iterator().next();
+        assertThat(tableRuleConfiguration.getColumns().get("user_id").getCipherColumn(), is("user_encrypt"));
+        assertThat(tableRuleConfiguration.getColumns().get("order_id").getPlainColumn(), is("order_decrypt"));
         EncryptorConfiguration encryptorConfig = configuration.getEncryptors().get("encryptor_md5");
         assertNotNull(encryptorConfig);
         assertThat(encryptorConfig.getType(), is("MD5"));

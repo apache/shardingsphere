@@ -41,7 +41,7 @@ public class EncryptDatabasesConfiguration implements ExampleConfiguration {
         properties.setProperty("query.with.cipher.column", "true");
         EncryptColumnConfiguration columnConfigAes = new EncryptColumnConfiguration("user_name_plain", "user_name", "", "name_encryptor");
         Map<String, EncryptColumnConfiguration> columns = new HashMap<>();
-        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration(columns);
+        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_user", columns);
         columns.put("user_name", columnConfigAes);
         EncryptColumnConfiguration columnConfigTest = new EncryptColumnConfiguration("", "pwd", "assisted_query_pwd", "pwd_encryptor");
         columns.put("pwd", columnConfigTest);
@@ -49,9 +49,7 @@ public class EncryptDatabasesConfiguration implements ExampleConfiguration {
         Map<String, EncryptorConfiguration> encryptors = new HashMap<>();
         encryptors.put("name_encryptor", new EncryptorConfiguration("aes", properties));
         encryptors.put("pwd_encryptor", new EncryptorConfiguration("assistedTest", properties));
-        Map<String, EncryptTableRuleConfiguration> tables = new HashMap<>();
-        tables.put("t_user", tableConfig);
-        EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(encryptors, tables);
+        EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(encryptors, Collections.singleton(tableConfig));
         try {
             return ShardingSphereDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(encryptRuleConfiguration), properties);
         } catch (final SQLException ex) {

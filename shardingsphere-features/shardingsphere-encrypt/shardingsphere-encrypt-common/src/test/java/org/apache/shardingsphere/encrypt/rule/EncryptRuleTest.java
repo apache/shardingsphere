@@ -52,12 +52,12 @@ public final class EncryptRuleTest {
         Properties props = new Properties();
         EncryptColumnConfiguration columnConfig = new EncryptColumnConfiguration("plain_pwd", "cipher_pwd", "", "aes");
         EncryptColumnConfiguration idNumberConfig = new EncryptColumnConfiguration("plain_id_number", "cipher_id_number", "", "aes");
-        Map<String, EncryptColumnConfiguration> ruleConfigurationMap = new HashMap<>();
-        ruleConfigurationMap.put(column, columnConfig);
-        ruleConfigurationMap.put(idNumber, idNumberConfig);
+        Map<String, EncryptColumnConfiguration> columnConfigurationMap = new HashMap<>();
+        columnConfigurationMap.put(column, columnConfig);
+        columnConfigurationMap.put(idNumber, idNumberConfig);
         EncryptorConfiguration encryptorConfig = new EncryptorConfiguration("assistedTest", props);
-        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration(ruleConfigurationMap);
-        encryptRuleConfig = new EncryptRuleConfiguration(ImmutableMap.of("aes", encryptorConfig), ImmutableMap.of(table, tableConfig));
+        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration(table, columnConfigurationMap);
+        encryptRuleConfig = new EncryptRuleConfiguration(ImmutableMap.of("aes", encryptorConfig), Collections.singleton(tableConfig));
     }
     
     @Test
