@@ -51,14 +51,14 @@ public final class EncryptShadowDatabasesConfiguration implements ExampleConfigu
         return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Arrays.asList(shadowRuleConfiguration, encryptRuleConfiguration), properties);
     }
     
-    private Map<String, EncryptorConfiguration> getEncryptorConfiguration() {
-        Map<String, EncryptorConfiguration> result = new HashMap<>();
+    private Collection<EncryptorConfiguration> getEncryptorConfiguration() {
+        Collection<EncryptorConfiguration> result = new LinkedList<>();
         Properties properties = new Properties();
         properties.setProperty("aes.key.value", "123456");
-        EncryptorConfiguration nameEncryptorConfiguration = new EncryptorConfiguration("aes", properties);
-        EncryptorConfiguration pwdEncryptorConfiguration = new EncryptorConfiguration("assistedTest", null);
-        result.put("name_encryptror", nameEncryptorConfiguration);
-        result.put("pwd_encryptror", pwdEncryptorConfiguration);
+        EncryptorConfiguration nameEncryptorConfiguration = new EncryptorConfiguration("name_encryptror", "aes", properties);
+        EncryptorConfiguration pwdEncryptorConfiguration = new EncryptorConfiguration("pwd_encryptror", "assistedTest", null);
+        result.add(nameEncryptorConfiguration);
+        result.add(pwdEncryptorConfiguration);
         return result;
     }
     

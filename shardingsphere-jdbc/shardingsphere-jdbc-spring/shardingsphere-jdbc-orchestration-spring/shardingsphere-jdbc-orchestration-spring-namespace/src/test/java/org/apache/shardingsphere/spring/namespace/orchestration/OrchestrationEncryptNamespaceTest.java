@@ -68,12 +68,14 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
         EncryptColumnConfiguration orderIdColumn = encryptColumnConfigurations.next();
         assertThat(userIdColumn.getCipherColumn(), is("user_encrypt"));
         assertThat(orderIdColumn.getPlainColumn(), is("order_decrypt"));
-        EncryptorConfiguration encryptorConfig = configuration.getEncryptors().get("encryptor_md5");
-        assertNotNull(encryptorConfig);
-        assertThat(encryptorConfig.getType(), is("MD5"));
-        encryptorConfig = configuration.getEncryptors().get("encryptor_aes");
-        assertThat(encryptorConfig.getType(), is("AES"));
-        assertThat(encryptorConfig.getProperties().getProperty("aes.key.value"), is("123456"));
+        Iterator<EncryptorConfiguration> encryptors = configuration.getEncryptors().iterator();
+        EncryptorConfiguration aesEncryptorConfig = encryptors.next();
+        assertNotNull(aesEncryptorConfig);
+        assertThat(aesEncryptorConfig.getName(), is("encryptor_md5"));
+        assertThat(aesEncryptorConfig.getType(), is("MD5"));
+        EncryptorConfiguration md5EncryptorConfig = encryptors.next();
+        assertThat(md5EncryptorConfig.getType(), is("AES"));
+        assertThat(md5EncryptorConfig.getProperties().getProperty("aes.key.value"), is("123456"));
     }
     
     @Test

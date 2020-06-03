@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Encrypt rule configuration.
@@ -31,7 +30,7 @@ import java.util.Map;
 @Getter
 public final class EncryptRuleConfiguration implements RuleConfiguration {
     
-    private final Map<String, EncryptorConfiguration> encryptors;
+    private final Collection<EncryptorConfiguration> encryptors;
     
     private final Collection<EncryptTableRuleConfiguration> tables;
 }

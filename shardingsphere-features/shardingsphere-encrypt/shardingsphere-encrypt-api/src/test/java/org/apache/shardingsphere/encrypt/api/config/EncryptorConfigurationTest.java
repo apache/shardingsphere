@@ -28,12 +28,12 @@ public final class EncryptorConfigurationTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertConstructorWithoutType() {
-        new EncryptorConfiguration(null, new Properties());
+        new EncryptorConfiguration("test_encryptor", null, new Properties());
     }
     
     @Test
     public void assertConstructorWithoutAssistedQueryColumnsAndProperties() {
-        EncryptorConfiguration actual = new EncryptorConfiguration("TEST", new Properties());
+        EncryptorConfiguration actual = new EncryptorConfiguration("test_encryptor", "TEST", new Properties());
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getProperties(), is(new Properties()));
     }
@@ -42,7 +42,7 @@ public final class EncryptorConfigurationTest {
     public void assertConstructorWithMinArguments() {
         Properties props = new Properties();
         props.setProperty("key", "value");
-        EncryptorConfiguration actual = new EncryptorConfiguration("TEST", props);
+        EncryptorConfiguration actual = new EncryptorConfiguration("test_encryptor", "TEST", props);
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getProperties(), is(props));
     }
@@ -51,7 +51,7 @@ public final class EncryptorConfigurationTest {
     public void assertConstructorWithMaxArguments() {
         Properties props = new Properties();
         props.setProperty("key", "value");
-        EncryptorConfiguration actual = new EncryptorConfiguration("TEST", props);
+        EncryptorConfiguration actual = new EncryptorConfiguration("test_encryptor", "TEST", props);
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getProperties(), is(props));
     }

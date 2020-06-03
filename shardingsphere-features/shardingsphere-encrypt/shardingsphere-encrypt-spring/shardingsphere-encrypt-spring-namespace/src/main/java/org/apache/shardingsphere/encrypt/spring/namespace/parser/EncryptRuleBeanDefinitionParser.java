@@ -26,7 +26,6 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.ManagedList;
-import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.BeanDefinitionParserDelegate;
 import org.springframework.beans.factory.xml.ParserContext;
@@ -35,7 +34,6 @@ import org.w3c.dom.Element;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -51,18 +49,19 @@ public final class EncryptRuleBeanDefinitionParser extends AbstractBeanDefinitio
         return factory.getBeanDefinition();
     }
     
-    private static Map<String, BeanDefinition> parseEncryptorConfigurations(final Element element, final ParserContext parserContext) {
+    private static Collection<BeanDefinition> parseEncryptorConfigurations(final Element element, final ParserContext parserContext) {
         Element encryptorsRuleElement = DomUtils.getChildElementByTagName(element, EncryptRuleBeanDefinitionTag.ENCRYPTORS_CONFIG_TAG);
         List<Element> encryptorElements = DomUtils.getChildElementsByTagName(encryptorsRuleElement, EncryptRuleBeanDefinitionTag.ENCRYPTOR_CONFIG_TAG);
-        Map<String, BeanDefinition> result = new ManagedMap<>(encryptorElements.size());
+        Collection<BeanDefinition> result = new ManagedList<>(encryptorElements.size());
         for (Element each : encryptorElements) {
-            result.put(each.getAttribute(BeanDefinitionParserDelegate.ID_ATTRIBUTE), parseEncryptorConfiguration(each, parserContext));
+            result.add(parseEncryptorConfiguration(each, parserContext));
         }
         return result;
     }
     
     private static AbstractBeanDefinition parseEncryptorConfiguration(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(EncryptorConfiguration.class);
+        factory.addConstructorArgValue(element.getAttribute(BeanDefinitionParserDelegate.ID_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(EncryptRuleBeanDefinitionTag.ENCRYPTOR_TYPE_ATTRIBUTE));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
         return factory.getBeanDefinition();

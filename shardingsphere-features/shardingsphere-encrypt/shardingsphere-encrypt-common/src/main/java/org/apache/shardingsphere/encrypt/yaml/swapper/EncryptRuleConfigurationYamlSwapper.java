@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.encrypt.yaml.swapper;
 
-import com.google.common.collect.Maps;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptorConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
 
 import java.util.Collection;
@@ -41,22 +42,34 @@ public final class EncryptRuleConfigurationYamlSwapper implements YamlRuleConfig
     @Override
     public YamlEncryptRuleConfiguration swap(final EncryptRuleConfiguration data) {
         YamlEncryptRuleConfiguration result = new YamlEncryptRuleConfiguration();
-        result.getEncryptors().putAll(Maps.transformValues(data.getEncryptors(), encryptorConfigurationYamlSwapper::swap));
-        for (EncryptTableRuleConfiguration each : data.getTables()) {
-            result.getTables().put(each.getName(), encryptTableRuleConfigurationYamlSwapper.swap(each));
-        }
+        data.getEncryptors().forEach(each -> result.getEncryptors().put(each.getName(), encryptorConfigurationYamlSwapper.swap(each)));
+        data.getTables().forEach(each -> result.getTables().put(each.getName(), encryptTableRuleConfigurationYamlSwapper.swap(each)));
         return result;
     }
     
     @Override
     public EncryptRuleConfiguration swap(final YamlEncryptRuleConfiguration yamlConfiguration) {
-        Collection<EncryptTableRuleConfiguration> tables = new LinkedList<>();
+        return new EncryptRuleConfiguration(swapEncryptors(yamlConfiguration), swapTables(yamlConfiguration));
+    }
+    
+    private Collection<EncryptorConfiguration> swapEncryptors(final YamlEncryptRuleConfiguration yamlConfiguration) {
+        Collection<EncryptorConfiguration> result = new LinkedList<>();
+        for (Entry<String, YamlEncryptorConfiguration> entry : yamlConfiguration.getEncryptors().entrySet()) {
+            YamlEncryptorConfiguration yamlEncryptorConfiguration = entry.getValue();
+            yamlEncryptorConfiguration.setName(entry.getKey());
+            result.add(encryptorConfigurationYamlSwapper.swap(yamlEncryptorConfiguration));
+        }
+        return result;
+    }
+    
+    private Collection<EncryptTableRuleConfiguration> swapTables(final YamlEncryptRuleConfiguration yamlConfiguration) {
+        Collection<EncryptTableRuleConfiguration> result = new LinkedList<>();
         for (Entry<String, YamlEncryptTableRuleConfiguration> entry : yamlConfiguration.getTables().entrySet()) {
             YamlEncryptTableRuleConfiguration yamlEncryptTableRuleConfiguration = entry.getValue();
             yamlEncryptTableRuleConfiguration.setName(entry.getKey());
-            tables.add(encryptTableRuleConfigurationYamlSwapper.swap(yamlEncryptTableRuleConfiguration));
+            result.add(encryptTableRuleConfigurationYamlSwapper.swap(yamlEncryptTableRuleConfiguration));
         }
-        return new EncryptRuleConfiguration(Maps.transformValues(yamlConfiguration.getEncryptors(), encryptorConfigurationYamlSwapper::swap), tables);
+        return result;
     }
     
     @Override

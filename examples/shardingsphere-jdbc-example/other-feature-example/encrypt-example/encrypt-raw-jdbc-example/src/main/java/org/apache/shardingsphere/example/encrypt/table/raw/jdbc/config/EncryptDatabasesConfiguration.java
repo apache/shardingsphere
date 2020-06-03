@@ -28,9 +28,9 @@ import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
 import java.util.Properties;
 
 public class EncryptDatabasesConfiguration implements ExampleConfiguration {
@@ -43,9 +43,9 @@ public class EncryptDatabasesConfiguration implements ExampleConfiguration {
         EncryptColumnConfiguration columnConfigAes = new EncryptColumnConfiguration("user_name", "user_name_plain", "user_name", "", "name_encryptor");
         EncryptColumnConfiguration columnConfigTest = new EncryptColumnConfiguration("pwd", "", "pwd", "assisted_query_pwd", "pwd_encryptor");
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_user", Arrays.asList(columnConfigAes, columnConfigTest));
-        Map<String, EncryptorConfiguration> encryptors = new HashMap<>();
-        encryptors.put("name_encryptor", new EncryptorConfiguration("aes", properties));
-        encryptors.put("pwd_encryptor", new EncryptorConfiguration("assistedTest", properties));
+        Collection<EncryptorConfiguration> encryptors = new LinkedList<>();
+        encryptors.add(new EncryptorConfiguration("name_encryptor", "aes", properties));
+        encryptors.add(new EncryptorConfiguration("pwd_encryptor", "assistedTest", properties));
         EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(encryptors, Collections.singleton(tableConfig));
         try {
             return ShardingSphereDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(encryptRuleConfiguration), properties);

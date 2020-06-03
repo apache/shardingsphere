@@ -36,6 +36,6 @@ public final class EncryptorConfigurationYamlSwapper implements YamlSwapper<Yaml
     
     @Override
     public EncryptorConfiguration swap(final YamlEncryptorConfiguration yamlConfiguration) {
-        return new EncryptorConfiguration(yamlConfiguration.getType(), yamlConfiguration.getProps());
+        return new EncryptorConfiguration(yamlConfiguration.getName(), yamlConfiguration.getType(), yamlConfiguration.getProps());
     }
 }

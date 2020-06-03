@@ -9,10 +9,10 @@ Class name: org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguratio
 
 Attributes:
 
-| *Name*         | *DataType*                                   | *Description*  |
-| -------------- | -------------------------------------------- | -------------- |
-| encryptors (+) | Map\<String, EncryptorConfiguration\>        | Encryptors     |
-| tables (+)     | Collection\<EncryptTableRuleConfiguration\>  | Encrypt tables |
+| *Name*         | *DataType*                                  | *Description*  |
+| -------------- | ------------------------------------------- | -------------- |
+| encryptors (+) | Collection\<EncryptorConfiguration\>        | Encryptors     |
+| tables (+)     | Collection\<EncryptTableRuleConfiguration\> | Encrypt tables |
 
 ## Encryptor Configuration
 
@@ -22,6 +22,7 @@ Attributes:
 
 | *Name*     | *DataType* | *Description*         |
 | ---------- | ---------- | --------------------- |
+| name       | String     | Encryptor name        |
 | type       | String     | Encryptor type        |
 | properties | Properties | Encryptor properties  |
 
@@ -76,4 +77,4 @@ Attributes:
 | plainColumn (?)         | String     | Plain column name          |
 | cipherColumn            | String     | Cipher column name         |
 | assistedQueryColumn (?) | String     | Assisted query column name |
-| encryptor               | String     | Encryptor type             |
+| encryptor               | String     | Encryptor name             |

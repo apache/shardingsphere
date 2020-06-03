@@ -9,10 +9,10 @@ weight = 3
 
 可配置属性：
 
-| *名称*          | *数据类型*                                   | *说明*       |
-| -------------- | -------------------------------------------- | ----------- |
-| encryptors (+) | Map\<String, EncryptorConfiguration\>        | 加解密器列表 |
-| tables (+)     | Collection\<EncryptTableRuleConfiguration\>  | 加密表列表   |
+| *名称*          | *数据类型*                                   | *说明*      |
+| -------------- | ------------------------------------------- | ----------- |
+| encryptors (+) | Collection\<EncryptorConfiguration\>        | 加解密器列表 |
+| tables (+)     | Collection\<EncryptTableRuleConfiguration\> | 加密表列表   |
 
 ## 加解密器配置
 
@@ -22,6 +22,7 @@ weight = 3
 
 | *名称*      |*数据类型*   | *说明*         |
 | ---------- | ---------- | -------------- |
+| name       | String     | 加解密器名称     |
 | type       | String     | 加解密器类型     |
 | properties | Properties | 加解密器属性配置 |
 
@@ -76,4 +77,4 @@ Apache ShardingSphere 内置的加解密器算法实现类包括：
 | plainColumn (?)         | String   | 原文列名称     |
 | cipherColumn            | String   | 密文列名称     |
 | assistedQueryColumn (?) | String   | 查询辅助列名称 |
-| encryptor               | String   | 加密器类型     |
+| encryptor               | String   | 加密器名称     |

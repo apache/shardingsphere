@@ -21,8 +21,9 @@ import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
-import org.apache.shardingsphere.spring.boot.orchestration.util.EmbedTestingServer;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration;
+import org.apache.shardingsphere.spring.boot.orchestration.util.EmbedTestingServer;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -66,8 +67,9 @@ public class OrchestrationSpringBootEncryptTest {
         EncryptRuleConfiguration configuration = 
                 (EncryptRuleConfiguration) shardingSphereDataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getConfigurations().iterator().next();
         assertThat(configuration.getEncryptors().size(), is(1));
-        assertTrue(configuration.getEncryptors().containsKey("order_encrypt"));
-        assertThat(configuration.getEncryptors().get("order_encrypt").getType(), is("aes"));
+        EncryptorConfiguration encryptorConfiguration = configuration.getEncryptors().iterator().next();
+        assertThat(encryptorConfiguration.getName(), is("order_encrypt"));
+        assertThat(encryptorConfiguration.getType(), is("aes"));
         assertThat(configuration.getTables().size(), is(1));
         assertThat(configuration.getTables().iterator().next().getColumns().iterator().next().getCipherColumn(), is("cipher_order_id"));
     }

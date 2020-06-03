@@ -30,6 +30,8 @@ import java.util.Properties;
 @Setter
 public final class YamlEncryptorConfiguration implements YamlConfiguration {
     
+    private String name;
+    
     private String type;
     
     private Properties props = new Properties();
