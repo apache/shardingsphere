@@ -32,6 +32,8 @@ services:
         - "33070:3307"
       links:
         - "mysql:db.mysql"
+      volumes:
+        - ./proxy/conf:/opt/shardingsphere-proxy/conf
       depends_on:
         - mysql
       environment:
