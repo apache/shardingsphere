@@ -42,8 +42,8 @@ public final class ShardingDatabasesConfigurationPrecise implements ExampleConfi
     @Override
     public DataSource getDataSource() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
-        shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
+        shardingRuleConfig.getTables().add(getOrderTableRuleConfiguration());
+        shardingRuleConfig.getTables().add(getOrderItemTableRuleConfiguration());
         shardingRuleConfig.getBroadcastTables().add("t_address");
         InlineShardingAlgorithm shardingAlgorithm = new InlineShardingAlgorithm();
         shardingAlgorithm.getProperties().setProperty("algorithm.expression", "demo_ds_${user_id % 2}");

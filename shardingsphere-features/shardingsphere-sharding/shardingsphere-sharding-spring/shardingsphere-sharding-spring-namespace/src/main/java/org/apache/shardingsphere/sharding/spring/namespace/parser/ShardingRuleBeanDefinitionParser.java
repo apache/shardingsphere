@@ -44,7 +44,7 @@ public final class ShardingRuleBeanDefinitionParser extends AbstractBeanDefiniti
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingRuleConfiguration.class);
         parseDefaultDatabaseShardingStrategy(factory, element);
         parseDefaultTableShardingStrategy(factory, element);
-        factory.addPropertyValue("tableRuleConfigs", parseTableRulesConfiguration(element));
+        factory.addPropertyValue("tables", parseTableRulesConfiguration(element));
         factory.addPropertyValue("bindingTableGroups", parseBindingTablesConfiguration(element));
         factory.addPropertyValue("broadcastTables", parseBroadcastTables(element));
         parseDefaultKeyGenerator(factory, element);

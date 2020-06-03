@@ -32,7 +32,7 @@ import java.util.LinkedList;
 @Setter
 public final class ShardingRuleConfiguration implements RuleConfiguration {
     
-    private Collection<TableRuleConfiguration> tableRuleConfigs = new LinkedList<>();
+    private Collection<TableRuleConfiguration> tables = new LinkedList<>();
     
     private Collection<String> bindingTableGroups = new LinkedList<>();
     

@@ -38,38 +38,38 @@ public abstract class AbstractRoutingEngineTest {
     
     protected final ShardingRule createBasedShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTableRuleConfigs().add(createInlineTableRuleConfig("t_order", "ds_${0..1}.t_order_${0..1}", "t_order_${order_id % 2}", "ds_${user_id % 2}"));
+        shardingRuleConfig.getTables().add(createInlineTableRuleConfig("t_order", "ds_${0..1}.t_order_${0..1}", "t_order_${order_id % 2}", "ds_${user_id % 2}"));
         return new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
     }
     
     protected final ShardingRule createBindingShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTableRuleConfigs().add(createInlineTableRuleConfig("t_order", "ds_${0..1}.t_order_${0..1}", "t_order_${order_id % 2}", "ds_${user_id % 2}"));
-        shardingRuleConfig.getTableRuleConfigs().add(createInlineTableRuleConfig("t_order_item", "ds_${0..1}.t_order_item_${0..1}", "t_order_item_${order_id % 2}", "ds_${user_id % 2}"));
+        shardingRuleConfig.getTables().add(createInlineTableRuleConfig("t_order", "ds_${0..1}.t_order_${0..1}", "t_order_${order_id % 2}", "ds_${user_id % 2}"));
+        shardingRuleConfig.getTables().add(createInlineTableRuleConfig("t_order_item", "ds_${0..1}.t_order_item_${0..1}", "t_order_item_${order_id % 2}", "ds_${user_id % 2}"));
         shardingRuleConfig.getBindingTableGroups().add("t_order,t_order_item");
         return new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
     }
     
     protected final ShardingRule createBroadcastShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTableRuleConfigs().add(createInlineTableRuleConfig("t_order", "ds_${0..1}.t_order_${0..1}", "t_order_${order_id % 2}", "ds_${user_id % 2}"));
-        shardingRuleConfig.getTableRuleConfigs().add(createInlineTableRuleConfig("t_order_item", "ds_${0..1}.t_order_item_${0..1}", "t_order_item_${order_id % 2}", "ds_${user_id % 2}"));
+        shardingRuleConfig.getTables().add(createInlineTableRuleConfig("t_order", "ds_${0..1}.t_order_${0..1}", "t_order_${order_id % 2}", "ds_${user_id % 2}"));
+        shardingRuleConfig.getTables().add(createInlineTableRuleConfig("t_order_item", "ds_${0..1}.t_order_item_${0..1}", "t_order_item_${order_id % 2}", "ds_${user_id % 2}"));
         shardingRuleConfig.getBroadcastTables().add("t_config");
         return new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
     }
     
     protected final ShardingRule createHintShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTableRuleConfigs().add(createTableRuleWithHintConfig());
+        shardingRuleConfig.getTables().add(createTableRuleWithHintConfig());
         return new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
     }
     
     protected final ShardingRule createMixedShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTableRuleConfigs().add(createTableRuleConfig("t_hint_ds_test", "ds_${0..1}.t_hint_ds_test_${0..1}",
+        shardingRuleConfig.getTables().add(createTableRuleConfig("t_hint_ds_test", "ds_${0..1}.t_hint_ds_test_${0..1}",
             new HintShardingStrategyConfiguration(new HintShardingAlgorithmFixture()),
             createStandardShardingStrategyConfiguration("t_hint_ds_test_${order_id % 2}")));
-        shardingRuleConfig.getTableRuleConfigs().add(createTableRuleConfig("t_hint_table_test", "ds_${0..1}.t_hint_table_test_${0..1}",
+        shardingRuleConfig.getTables().add(createTableRuleConfig("t_hint_table_test", "ds_${0..1}.t_hint_table_test_${0..1}",
             createStandardShardingStrategyConfiguration("ds_${user_id % 2}"),
             new HintShardingStrategyConfiguration(new HintShardingAlgorithmFixture())));
         return new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
@@ -81,10 +81,10 @@ public abstract class AbstractRoutingEngineTest {
         InlineShardingAlgorithm shardingAlgorithm = new InlineShardingAlgorithm();
         shardingAlgorithm.getProperties().setProperty("algorithm.expression", "ds_${user_id % 2}");
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", shardingAlgorithm));
-        shardingRuleConfig.getTableRuleConfigs().add(createInlineTableRuleConfig("t_order", "ds_${0..1}.t_order_${0..1}", "t_order_${user_id % 2}", "ds_${user_id % 2}"));
-        shardingRuleConfig.getTableRuleConfigs().add(createInlineTableRuleConfig("t_order_item", "ds_${0..1}.t_order_item_${0..1}", "t_order_item_${user_id % 2}", "ds_${user_id % 2}"));
-        shardingRuleConfig.getTableRuleConfigs().add(createInlineTableRuleConfig("t_user", "ds_${0..1}.t_user_${0..1}", "t_user_${user_id % 2}", "ds_${user_id % 2}"));
-        shardingRuleConfig.getTableRuleConfigs().add(createTableRuleWithHintConfig());
+        shardingRuleConfig.getTables().add(createInlineTableRuleConfig("t_order", "ds_${0..1}.t_order_${0..1}", "t_order_${user_id % 2}", "ds_${user_id % 2}"));
+        shardingRuleConfig.getTables().add(createInlineTableRuleConfig("t_order_item", "ds_${0..1}.t_order_item_${0..1}", "t_order_item_${user_id % 2}", "ds_${user_id % 2}"));
+        shardingRuleConfig.getTables().add(createInlineTableRuleConfig("t_user", "ds_${0..1}.t_user_${0..1}", "t_user_${user_id % 2}", "ds_${user_id % 2}"));
+        shardingRuleConfig.getTables().add(createTableRuleWithHintConfig());
         shardingRuleConfig.getBindingTableGroups().add("t_order,t_order_item");
         return new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1", "main"));
     }

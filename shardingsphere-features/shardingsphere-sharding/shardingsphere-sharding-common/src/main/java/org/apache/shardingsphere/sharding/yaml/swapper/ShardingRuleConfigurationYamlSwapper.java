@@ -40,7 +40,7 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
     @Override
     public YamlShardingRuleConfiguration swap(final ShardingRuleConfiguration data) {
         YamlShardingRuleConfiguration result = new YamlShardingRuleConfiguration();
-        for (TableRuleConfiguration each : data.getTableRuleConfigs()) {
+        for (TableRuleConfiguration each : data.getTables()) {
             result.getTables().put(each.getLogicTable(), tableRuleConfigurationYamlSwapper.swap(each));
         }
         result.getBindingTables().addAll(data.getBindingTableGroups());
@@ -63,7 +63,7 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
         for (Entry<String, YamlTableRuleConfiguration> entry : yamlConfiguration.getTables().entrySet()) {
             YamlTableRuleConfiguration tableRuleConfig = entry.getValue();
             tableRuleConfig.setLogicTable(entry.getKey());
-            result.getTableRuleConfigs().add(tableRuleConfigurationYamlSwapper.swap(tableRuleConfig));
+            result.getTables().add(tableRuleConfigurationYamlSwapper.swap(tableRuleConfig));
         }
         result.getBindingTableGroups().addAll(yamlConfiguration.getBindingTables());
         result.getBroadcastTables().addAll(yamlConfiguration.getBroadcastTables());

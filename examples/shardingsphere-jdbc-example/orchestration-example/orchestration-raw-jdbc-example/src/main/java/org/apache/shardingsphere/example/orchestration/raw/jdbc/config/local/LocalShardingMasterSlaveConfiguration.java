@@ -62,8 +62,8 @@ public final class LocalShardingMasterSlaveConfiguration implements ExampleConfi
     
     private ShardingRuleConfiguration getShardingRuleConfiguration() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
-        shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
+        shardingRuleConfig.getTables().add(getOrderTableRuleConfiguration());
+        shardingRuleConfig.getTables().add(getOrderItemTableRuleConfiguration());
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
         shardingRuleConfig.getBroadcastTables().add("t_address");
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", new StandardModuloShardingDatabaseAlgorithm()));

@@ -72,7 +72,7 @@ public final class ShardingTableBroadcastRoutingEngineTest {
     public void setUp() {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration("t_order", "ds${0..1}.t_order_${0..2}");
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
+        shardingRuleConfig.getTables().add(tableRuleConfig);
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         when(tablesContext.getTableNames()).thenReturn(Lists.newArrayList("t_order"));
         when(schemaMetaData.getAllTableNames()).thenReturn(Lists.newArrayList("t_order"));

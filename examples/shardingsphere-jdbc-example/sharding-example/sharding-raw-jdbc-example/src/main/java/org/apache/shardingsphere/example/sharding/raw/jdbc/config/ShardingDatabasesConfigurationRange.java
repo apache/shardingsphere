@@ -42,8 +42,8 @@ public final class ShardingDatabasesConfigurationRange implements ExampleConfigu
     @Override
     public DataSource getDataSource() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
-        shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
+        shardingRuleConfig.getTables().add(getOrderTableRuleConfiguration());
+        shardingRuleConfig.getTables().add(getOrderItemTableRuleConfiguration());
         shardingRuleConfig.getBroadcastTables().add("t_address");
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", new StandardModuloShardingDatabaseAlgorithm()));
         Collection<RuleConfiguration> configurations = new LinkedList<>();

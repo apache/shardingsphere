@@ -58,8 +58,8 @@ public final class ShardingMasterSlaveConfigurationRange implements ExampleConfi
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getTableRuleConfigs().add(createOrderTableRuleConfiguration());
-        result.getTableRuleConfigs().add(createOrderItemTableRuleConfiguration());
+        result.getTables().add(createOrderTableRuleConfiguration());
+        result.getTables().add(createOrderItemTableRuleConfiguration());
         result.getBindingTableGroups().add("t_order, t_order_item");
         result.getBroadcastTables().add("t_address");
         result.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", new StandardModuloShardingDatabaseAlgorithm()));

@@ -188,7 +188,7 @@ public final class ShardingSphereDataSourceTest {
             orderActualDataNodes.add(each + ".table_${0..2}");
         }
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration("logicTable", Joiner.on(",").join(orderActualDataNodes));
-        result.getTableRuleConfigs().add(tableRuleConfig);
+        result.getTables().add(tableRuleConfig);
         return result;
     }
 }

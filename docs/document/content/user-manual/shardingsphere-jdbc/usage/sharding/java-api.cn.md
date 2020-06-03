@@ -63,7 +63,7 @@ orderTableRuleConfig.setTableShardingStrategyConfig(tableShardingStrategyConfig)
 
 // 配置分片规则
 ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
+shardingRuleConfig.getTables().add(orderTableRuleConfig);
     
 // 创建 ShardingSphereDataSource
 DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Collections.singleton((shardingRuleConfig), new Properties());

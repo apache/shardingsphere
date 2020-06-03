@@ -80,7 +80,7 @@ public final class ShardingConfigurationLoggerTest {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfiguration = new TableRuleConfiguration("user", "ds_${0}.user_${0..1}");
         tableRuleConfiguration.setTableShardingStrategyConfig(new NoneShardingStrategyConfiguration());
-        result.getTableRuleConfigs().add(tableRuleConfiguration);
+        result.getTables().add(tableRuleConfiguration);
         return result;
     }
     

@@ -76,7 +76,7 @@ public final class ShardingSphereDataSourceFactoryTest {
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getTableRuleConfigs().add(new TableRuleConfiguration("logicTable", "ds.table_${0..2}"));
+        result.getTables().add(new TableRuleConfiguration("logicTable", "ds.table_${0..2}"));
         return result;
     }
 }

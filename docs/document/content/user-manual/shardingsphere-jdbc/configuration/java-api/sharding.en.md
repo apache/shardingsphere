@@ -11,7 +11,7 @@ Attributes:
 
 | *Name*                                    | *DataType*                           | *Description*                      | *Default Value* |
 | ----------------------------------------- | ------------------------------------ | ---------------------------------- | --------------- |
-| tableRuleConfigs (+)                      | Collection\<TableRuleConfiguration\> | Sharding rules                     | -               |
+| tables (+)                                | Collection\<TableRuleConfiguration\> | Sharding table rules               | -               |
 | bindingTableGroups (*)                    | Collection\<String\>                 | Binding table rules                | Empty           |
 | broadcastTables (*)                       | Collection\<String\>                 | Broadcast table rules              | Empty           |
 | defaultDatabaseShardingStrategyConfig (?) | ShardingStrategyConfiguration        | Default database sharding strategy | Not sharding    |

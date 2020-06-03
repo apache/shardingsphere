@@ -11,7 +11,7 @@ weight = 1
 
 | *名称*                                     | *数据类型*                            | *说明*            | *默认值* |
 | ----------------------------------------- | ------------------------------------ | ----------------- | ------- |
-| tableRuleConfigs (+)                      | Collection\<TableRuleConfiguration\> | 分片规则列表        | -       |
+| tables (+)                                | Collection\<TableRuleConfiguration\> | 分片表规则列表      | -       |
 | bindingTableGroups (*)                    | Collection\<String\>                 | 绑定表规则列表      | 无      |
 | broadcastTables (*)                       | Collection\<String\>                 | 广播表规则列表      | 无      |
 | defaultDatabaseShardingStrategyConfig (?) | ShardingStrategyConfiguration        | 默认分库策略        | 不分片   |

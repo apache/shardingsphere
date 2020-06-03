@@ -41,7 +41,7 @@ public final class ShardingUnicastRoutingEngineTest {
     @Before
     public void setUp() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTableRuleConfigs().add(new TableRuleConfiguration("t_order", "ds${0..1}.t_order_${0..2}"));
+        shardingRuleConfig.getTables().add(new TableRuleConfiguration("t_order", "ds${0..1}.t_order_${0..2}"));
         shardingRuleConfig.getBroadcastTables().add("t_config");
         shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds0", "ds1"));
     }

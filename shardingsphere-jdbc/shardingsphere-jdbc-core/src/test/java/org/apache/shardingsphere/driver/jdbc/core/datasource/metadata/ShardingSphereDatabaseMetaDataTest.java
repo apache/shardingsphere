@@ -107,7 +107,7 @@ public final class ShardingSphereDatabaseMetaDataTest {
     private ShardingRule mockShardingRule() {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfiguration = new TableRuleConfiguration(TABLE_NAME, DATA_SOURCE_NAME + "." + TABLE_NAME);
-        ruleConfig.setTableRuleConfigs(Collections.singletonList(tableRuleConfiguration));
+        ruleConfig.setTables(Collections.singletonList(tableRuleConfiguration));
         return new ShardingRule(ruleConfig, Collections.singletonList(DATA_SOURCE_NAME));
     }
     

@@ -116,7 +116,7 @@ public final class OrchestrationShardingSphereDataSourceTest {
     
     private ShardingRuleConfiguration getShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getTableRuleConfigs().add(new TableRuleConfiguration("logic_table", "ds_ms.table_${0..1}"));
+        result.getTables().add(new TableRuleConfiguration("logic_table", "ds_ms.table_${0..1}"));
         return result;
     }
     

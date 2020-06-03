@@ -37,19 +37,19 @@ public final class ShardingShadowDatabasesConfiguration implements ExampleConfig
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration("shadow", new HashMap<String, String>(){{
-            put("ds_0","shadow_ds_0");
-            put("ds_1","shadow_ds_1");
-        }});
+        Map<String, String> shadowMappings = new HashMap<>();
+        shadowMappings.put("ds_0", "shadow_ds_0");
+        shadowMappings.put("ds_1", "shadow_ds_1");
+        ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration("shadow", shadowMappings);
         Map<String, DataSource> dataSourceMap = new HashMap<>();
         dataSourceMap.put("ds_0", DataSourceUtil.createDataSource("demo_ds_0"));
         dataSourceMap.put("ds_1", DataSourceUtil.createDataSource("demo_ds_1"));
         dataSourceMap.put("shadow_ds_0", DataSourceUtil.createDataSource("shadow_demo_ds_0"));
         dataSourceMap.put("shadow_ds_1", DataSourceUtil.createDataSource("shadow_demo_ds_1"));
         ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-        shardingRuleConfiguration.getTableRuleConfigs().add(getUserTableConfiguration());
+        shardingRuleConfiguration.getTables().add(getUserTableConfiguration());
         Properties properties = new Properties();
-        properties.setProperty("sql.show","true");
+        properties.setProperty("sql.show", "true");
         return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Arrays.asList(shadowRuleConfiguration, shardingRuleConfiguration), properties);
     }
     

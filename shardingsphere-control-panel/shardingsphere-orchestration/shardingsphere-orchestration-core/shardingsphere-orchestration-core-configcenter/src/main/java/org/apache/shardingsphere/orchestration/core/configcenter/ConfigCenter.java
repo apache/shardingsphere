@@ -112,7 +112,7 @@ public final class ConfigCenter {
         for (RuleConfiguration each : ruleConfigurations) {
             if (each instanceof ShardingRuleConfiguration) {
                 ShardingRuleConfiguration config = (ShardingRuleConfiguration) each;
-                Preconditions.checkState(!config.getTableRuleConfigs().isEmpty() || null != config.getDefaultTableShardingStrategyConfig(),
+                Preconditions.checkState(!config.getTables().isEmpty() || null != config.getDefaultTableShardingStrategyConfig(),
                         "No available sharding rule configuration in `%s` for orchestration.", shardingSchemaName);
                 configurations.add(each);
             } else if (each instanceof MasterSlaveRuleConfiguration) {

@@ -42,8 +42,8 @@ public final class ShardingTablesConfigurationRange implements ExampleConfigurat
     @Override
     public DataSource getDataSource() throws SQLException {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
-        shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
+        shardingRuleConfig.getTables().add(getOrderTableRuleConfiguration());
+        shardingRuleConfig.getTables().add(getOrderItemTableRuleConfiguration());
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
         shardingRuleConfig.getBroadcastTables().add("t_address");
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new StandardModuloShardingTableAlgorithm()));

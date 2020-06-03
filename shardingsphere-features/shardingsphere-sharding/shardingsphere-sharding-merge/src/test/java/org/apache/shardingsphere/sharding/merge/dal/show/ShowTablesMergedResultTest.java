@@ -53,7 +53,7 @@ public final class ShowTablesMergedResultTest {
     private ShardingRule createShardingRule() {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration("table", "ds.table_${0..2}");
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
+        shardingRuleConfig.getTables().add(tableRuleConfig);
         return new ShardingRule(shardingRuleConfig, Lists.newArrayList("ds"));
     }
     
