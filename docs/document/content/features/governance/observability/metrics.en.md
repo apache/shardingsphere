@@ -17,7 +17,7 @@ Apache ShardingSphere follows the Metrics standard, which defines a pluggable SP
 It is only responsible for embedding Metrics in the program. Currently, the default implementation scheme is: Prometheus client API burial point, through which the service side passes
 HTTP protocol to periodically grab Metrics data.
 
-![the follow image](https://shardingsphere.apache.org/document/current/img/control-pannel/metrics/metrics.png)
+![the follow image](https://shardingsphere.apache.org/document/current/img/control-panel/metrics/metrics.png)
 
 ## Metrics indicators
 
