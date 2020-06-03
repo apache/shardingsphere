@@ -53,17 +53,17 @@ public final class ColumnMetaDataLoader {
      * @throws SQLException SQL exception
      */
     public static Collection<ColumnMetaData> load(final Connection connection, final String table, final String databaseType) throws SQLException {
-        if (!isTableExist(connection, connection.getCatalog(), table)) {
+        if (!isTableExist(connection, connection.getCatalog(), table, databaseType)) {
             return Collections.emptyList();
         }
         Collection<ColumnMetaData> result = new LinkedList<>();
-        Collection<String> primaryKeys = loadPrimaryKeys(connection, table);
+        Collection<String> primaryKeys = loadPrimaryKeys(connection, table, databaseType);
         List<String> columnNames = new ArrayList<>();
         List<Integer> columnTypes = new ArrayList<>();
         List<String> columnTypeNames = new ArrayList<>();
         List<Boolean> isPrimaryKeys = new ArrayList<>();
         List<Boolean> isCaseSensitives = new ArrayList<>();
-        try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), JdbcUtil.getSchema(connection), table, "%")) {
+        try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), JdbcUtil.getSchema(connection, databaseType), table, "%")) {
             while (resultSet.next()) {
                 String columnName = resultSet.getString(COLUMN_NAME);
                 columnTypes.add(resultSet.getInt(DATA_TYPE));
@@ -104,15 +104,15 @@ public final class ColumnMetaDataLoader {
         return "SELECT * FROM " + delimiterLeft + table + delimiterRight + " WHERE 1 != 1";
     }
     
-    private static boolean isTableExist(final Connection connection, final String catalog, final String table) throws SQLException {
-        try (ResultSet resultSet = connection.getMetaData().getTables(catalog, JdbcUtil.getSchema(connection), table, null)) {
+    private static boolean isTableExist(final Connection connection, final String catalog, final String table, final String databaseType) throws SQLException {
+        try (ResultSet resultSet = connection.getMetaData().getTables(catalog, JdbcUtil.getSchema(connection, databaseType), table, null)) {
             return resultSet.next();
         }
     }
     
-    private static Collection<String> loadPrimaryKeys(final Connection connection, final String table) throws SQLException {
+    private static Collection<String> loadPrimaryKeys(final Connection connection, final String table, final String databaseType) throws SQLException {
         Collection<String> result = new HashSet<>();
-        try (ResultSet resultSet = connection.getMetaData().getPrimaryKeys(connection.getCatalog(), JdbcUtil.getSchema(connection), table)) {
+        try (ResultSet resultSet = connection.getMetaData().getPrimaryKeys(connection.getCatalog(), JdbcUtil.getSchema(connection, databaseType), table)) {
             while (resultSet.next()) {
                 result.add(resultSet.getString(COLUMN_NAME));
             }

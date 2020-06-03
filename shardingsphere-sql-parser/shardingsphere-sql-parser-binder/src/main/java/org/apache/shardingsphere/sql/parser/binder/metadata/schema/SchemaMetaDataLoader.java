@@ -65,7 +65,7 @@ public final class SchemaMetaDataLoader {
     public static SchemaMetaData load(final DataSource dataSource, final int maxConnectionCount, final String databaseType) throws SQLException {
         List<String> tableNames;
         try (Connection connection = dataSource.getConnection()) {
-            tableNames = loadAllTableNames(connection);
+            tableNames = loadAllTableNames(connection, databaseType);
         }
         log.info("Loading {} tables' meta data.", tableNames.size());
         if (0 == tableNames.size()) {
@@ -81,15 +81,15 @@ public final class SchemaMetaDataLoader {
         try (Connection con = connection) {
             Map<String, TableMetaData> result = new LinkedHashMap<>();
             for (String each : tables) {
-                result.put(each, new TableMetaData(ColumnMetaDataLoader.load(con, each, databaseType), IndexMetaDataLoader.load(con, each)));
+                result.put(each, new TableMetaData(ColumnMetaDataLoader.load(con, each, databaseType), IndexMetaDataLoader.load(con, each, databaseType)));
             }
             return result;
         }
     }
     
-    private static List<String> loadAllTableNames(final Connection connection) throws SQLException {
+    private static List<String> loadAllTableNames(final Connection connection, final String databaseType) throws SQLException {
         List<String> result = new LinkedList<>();
-        try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), JdbcUtil.getSchema(connection), null, new String[]{TABLE_TYPE})) {
+        try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), JdbcUtil.getSchema(connection, databaseType), null, new String[]{TABLE_TYPE})) {
             while (resultSet.next()) {
                 String table = resultSet.getString(TABLE_NAME);
                 if (!isSystemTable(table)) {
