@@ -20,7 +20,6 @@ package org.apache.shardingsphere.masterslave.api.config;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
 import java.util.List;
 
@@ -28,7 +27,7 @@ import java.util.List;
  * Master-slave data source configuration.
  */
 @Getter
-public final class MasterSlaveDataSourceConfiguration implements RuleConfiguration {
+public final class MasterSlaveDataSourceConfiguration {
     
     private final String name;
     
