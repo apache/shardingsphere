@@ -14,7 +14,7 @@ Apache ShardingSphere 遵循`Metrics`标准，定义了一套可插拔的`SPI` �
 只是负责在程序中对`Metrics` 进行埋点，目前默认的实现方案为:`Prometheus` 客户端API埋点，服务端通过
 `http` 协议来定时抓取`Metrics`数据。
 
-![流程图](https://shardingsphere.apache.org/document/current/img/control-pannel/metrics/metrics.png)
+![流程图](https://shardingsphere.apache.org/document/current/img/control-panel/metrics/metrics.png)
 
 ## 指标
 
