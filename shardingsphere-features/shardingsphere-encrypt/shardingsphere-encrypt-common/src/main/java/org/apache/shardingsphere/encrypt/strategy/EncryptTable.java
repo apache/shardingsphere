@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.strategy;
 
 import com.google.common.collect.Maps;
+import org.apache.shardingsphere.encrypt.api.config.EncryptColumnConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
@@ -36,8 +37,10 @@ public final class EncryptTable {
     private final Map<String, EncryptColumn> columns;
     
     public EncryptTable(final EncryptTableRuleConfiguration config) {
-        columns = new LinkedHashMap<>(new LinkedHashMap<>(Maps.transformValues(config.getColumns(), 
-            input -> new EncryptColumn(input.getCipherColumn(), input.getAssistedQueryColumn(), input.getPlainColumn(), input.getEncryptor()))));
+        columns = new LinkedHashMap<>(config.getColumns().size());
+        for (EncryptColumnConfiguration each : config.getColumns()) {
+            columns.put(each.getName(), new EncryptColumn(each.getCipherColumn(), each.getAssistedQueryColumn(), each.getPlainColumn(), each.getEncryptorName()));
+        }
     }
     
     /**

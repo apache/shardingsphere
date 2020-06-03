@@ -19,16 +19,16 @@ package org.apache.shardingsphere.encrypt.rule;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptColumnConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration;
 import org.apache.shardingsphere.encrypt.strategy.EncryptTable;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 import org.apache.shardingsphere.encrypt.strategy.spi.QueryAssistedEncryptor;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -36,7 +36,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -55,8 +54,8 @@ public final class EncryptRule implements ShardingSphereRule {
     
     public EncryptRule(final EncryptRuleConfiguration encryptRuleConfiguration) {
         Preconditions.checkArgument(isValidRuleConfiguration(encryptRuleConfiguration), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
-        initEncryptors(encryptRuleConfiguration.getEncryptors());
-        initTables(encryptRuleConfiguration.getTables());
+        encryptRuleConfiguration.getEncryptors().forEach(each -> encryptors.put(each.getName(), createEncryptor(each)));
+        encryptRuleConfiguration.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(each)));
     }
     
     private boolean isValidRuleConfiguration(final EncryptRuleConfiguration encryptRuleConfiguration) {
@@ -64,8 +63,8 @@ public final class EncryptRule implements ShardingSphereRule {
     }
     
     private boolean isValidTableConfiguration(final EncryptRuleConfiguration encryptRuleConfiguration) {
-        for (EncryptTableRuleConfiguration table : encryptRuleConfiguration.getTables().values()) {
-            for (EncryptColumnRuleConfiguration column : table.getColumns().values()) {
+        for (EncryptTableRuleConfiguration table : encryptRuleConfiguration.getTables()) {
+            for (EncryptColumnConfiguration column : table.getColumns()) {
                 if (!isValidColumnConfiguration(encryptRuleConfiguration, column)) {
                     return false;
                 }
@@ -74,24 +73,23 @@ public final class EncryptRule implements ShardingSphereRule {
         return true;
     }
     
-    private boolean isValidColumnConfiguration(final EncryptRuleConfiguration encryptRuleConfiguration, final EncryptColumnRuleConfiguration column) {
-        return !Strings.isNullOrEmpty(column.getEncryptor()) && !Strings.isNullOrEmpty(column.getCipherColumn()) && encryptRuleConfiguration.getEncryptors().containsKey(column.getEncryptor());
+    private boolean isValidColumnConfiguration(final EncryptRuleConfiguration encryptRuleConfiguration, final EncryptColumnConfiguration column) {
+        return !Strings.isNullOrEmpty(column.getEncryptorName()) && !Strings.isNullOrEmpty(column.getCipherColumn()) && containsEncryptor(encryptRuleConfiguration, column);
     }
     
-    private void initEncryptors(final Map<String, EncryptorRuleConfiguration> encryptors) {
-        encryptors.forEach((key, value) -> this.encryptors.put(key, createEncryptor(value)));
+    private boolean containsEncryptor(final EncryptRuleConfiguration encryptRuleConfiguration, final EncryptColumnConfiguration column) {
+        for (EncryptorConfiguration each : encryptRuleConfiguration.getEncryptors()) {
+            if (each.getName().equals(column.getEncryptorName())) {
+                return true;
+            }
+        }
+        return false;
     }
     
-    private Encryptor createEncryptor(final EncryptorRuleConfiguration encryptorRuleConfig) {
-        Encryptor result = TypedSPIRegistry.getRegisteredService(Encryptor.class, encryptorRuleConfig.getType(), encryptorRuleConfig.getProperties());
+    private Encryptor createEncryptor(final EncryptorConfiguration encryptorConfig) {
+        Encryptor result = TypedSPIRegistry.getRegisteredService(Encryptor.class, encryptorConfig.getType(), encryptorConfig.getProperties());
         result.init();
         return result;
-    }
-    
-    private void initTables(final Map<String, EncryptTableRuleConfiguration> tables) {
-        for (Entry<String, EncryptTableRuleConfiguration> entry : tables.entrySet()) {
-            this.tables.put(entry.getKey(), new EncryptTable(entry.getValue()));
-        }
     }
     
     /**

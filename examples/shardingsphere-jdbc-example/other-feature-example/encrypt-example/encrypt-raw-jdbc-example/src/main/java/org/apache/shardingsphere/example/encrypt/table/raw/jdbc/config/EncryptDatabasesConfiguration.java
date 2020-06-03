@@ -17,41 +17,36 @@
 
 package org.apache.shardingsphere.example.encrypt.table.raw.jdbc.config;
 
-import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.encrypt.api.config.EncryptColumnConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
-import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
 import java.util.Properties;
 
 public class EncryptDatabasesConfiguration implements ExampleConfiguration {
-
+    
     @Override
     public DataSource getDataSource() {
         Properties properties = new Properties();
         properties.setProperty("aes.key.value", "123456");
         properties.setProperty("query.with.cipher.column", "true");
-        EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("user_name_plain", "user_name", "", "name_encryptor");
-        Map<String, EncryptColumnRuleConfiguration> columns = new HashMap<>();
-        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration(columns);
-        columns.put("user_name", columnConfigAes);
-        EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("", "pwd", "assisted_query_pwd", "pwd_encryptor");
-        columns.put("pwd", columnConfigTest);
-        tableConfig.getColumns().putAll(columns);
-        Map<String, EncryptorRuleConfiguration> encryptors = new HashMap<>();
-        encryptors.put("name_encryptor", new EncryptorRuleConfiguration("aes", properties));
-        encryptors.put("pwd_encryptor", new EncryptorRuleConfiguration("assistedTest", properties));
-        Map<String, EncryptTableRuleConfiguration> tables = new HashMap<>();
-        tables.put("t_user", tableConfig);
-        EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(encryptors, tables);
+        EncryptColumnConfiguration columnConfigAes = new EncryptColumnConfiguration("user_name", "user_name_plain", "user_name", "", "name_encryptor");
+        EncryptColumnConfiguration columnConfigTest = new EncryptColumnConfiguration("pwd", "", "pwd", "assisted_query_pwd", "pwd_encryptor");
+        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_user", Arrays.asList(columnConfigAes, columnConfigTest));
+        Collection<EncryptorConfiguration> encryptors = new LinkedList<>();
+        encryptors.add(new EncryptorConfiguration("name_encryptor", "aes", properties));
+        encryptors.add(new EncryptorConfiguration("pwd_encryptor", "assistedTest", properties));
+        EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(encryptors, Collections.singleton(tableConfig));
         try {
             return ShardingSphereDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(encryptRuleConfiguration), properties);
         } catch (final SQLException ex) {

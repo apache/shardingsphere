@@ -9,42 +9,20 @@ Class name: org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguratio
 
 Attributes:
 
-| *Name*         | *DataType*                                   | *Description*                          |
-| -------------- | -------------------------------------------- | -------------------------------------- |
-| encryptors (+) | Map\<String, EncryptorRuleConfiguration\>    | Encryptor names and encryptors         |
-| tables (+)     | Map\<String, EncryptTableRuleConfiguration\> | Encrypt table names and encrypt tables |
-
-## Encrypt Table Configuration
-
-Class name: org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration
-
-Attributes:
-
-| *Name*         | *DataType*                                    | *Description*                    |
-| -------------- | --------------------------------------------- | -------------------------------- |
-| columns (+)    | Map\<String, EncryptColumnRuleConfiguration\> | Encrypt column names and columns |
-
-### Encrypt Column Configuration
-
-Class name: org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration
-
-Attributes:
-
-| *Name*                  | *DataType* | *Description*              |
-| ----------------------- | ---------- | -------------------------- |
-| plainColumn (?)         | String     | Plain column name          |
-| cipherColumn            | String     | Cipher column name         |
-| assistedQueryColumn (?) | String     | Assisted query column name |
-| encryptor               | String     | Encryptor type             |
+| *Name*         | *DataType*                                  | *Description*  |
+| -------------- | ------------------------------------------- | -------------- |
+| encryptors (+) | Collection\<EncryptorConfiguration\>        | Encryptors     |
+| tables (+)     | Collection\<EncryptTableRuleConfiguration\> | Encrypt tables |
 
 ## Encryptor Configuration
 
-Class name: org.apache.shardingsphere.encrypt.api.config.EncryptorRuleConfiguration
+Class name: org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration
 
 Attributes:
 
 | *Name*     | *DataType* | *Description*         |
 | ---------- | ---------- | --------------------- |
+| name       | String     | Encryptor name        |
 | type       | String     | Encryptor type        |
 | properties | Properties | Encryptor properties  |
 
@@ -75,3 +53,28 @@ Attributes:
 | *Name*        | *DataType* | *Description* |
 | ------------- | ---------- | ------------- |
 | rc4.key.value | String     | RC4 KEY       |
+
+## Encrypt Table Configuration
+
+Class name: org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration
+
+Attributes:
+
+| *Name*      | *DataType*                               | *Description*   |
+| ----------- | ---------------------------------------- | --------------- |
+| name        | String                                   | Table name      |
+| columns (+) | Collection\<EncryptColumnConfiguration\> | Encrypt columns |
+
+### Encrypt Column Configuration
+
+Class name: org.apache.shardingsphere.encrypt.api.config.EncryptColumnConfiguration
+
+Attributes:
+
+| *Name*                  | *DataType* | *Description*              |
+| ----------------------- | ---------- | -------------------------- |
+| name                    | String     | Logic column name          |
+| plainColumn (?)         | String     | Plain column name          |
+| cipherColumn            | String     | Cipher column name         |
+| assistedQueryColumn (?) | String     | Assisted query column name |
+| encryptorName           | String     | Encryptor name             |

@@ -25,11 +25,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Encrypt table rule configuration.
+ * Encrypt table rule configuration for YAML.
  */
 @Getter
 @Setter
 public final class YamlEncryptTableRuleConfiguration implements YamlConfiguration {
     
-    private Map<String, YamlEncryptColumnRuleConfiguration> columns = new LinkedHashMap<>();
+    private String name;
+    
+    private Map<String, YamlEncryptColumnConfiguration> columns = new LinkedHashMap<>();
 }

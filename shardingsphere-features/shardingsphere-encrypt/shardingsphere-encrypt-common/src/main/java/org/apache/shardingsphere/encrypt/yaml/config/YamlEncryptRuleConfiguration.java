@@ -26,13 +26,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Encrypt rule configuration.
+ * Encrypt rule configuration for YAML.
  */
 @Getter
 @Setter
 public final class YamlEncryptRuleConfiguration implements YamlRuleConfiguration {
     
-    private Map<String, YamlEncryptorRuleConfiguration> encryptors = new LinkedHashMap<>();
+    private Map<String, YamlEncryptorConfiguration> encryptors = new LinkedHashMap<>();
     
     private Map<String, YamlEncryptTableRuleConfiguration> tables = new LinkedHashMap<>();
     

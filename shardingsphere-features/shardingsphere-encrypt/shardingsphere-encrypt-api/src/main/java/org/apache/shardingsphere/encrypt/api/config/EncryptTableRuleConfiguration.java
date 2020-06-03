@@ -18,21 +18,18 @@
 package org.apache.shardingsphere.encrypt.api.config;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Collection;
 
 /**
  * Encrypt table rule configuration.
  */
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Getter
 public final class EncryptTableRuleConfiguration {
     
-    private final Map<String, EncryptColumnRuleConfiguration> columns = new LinkedHashMap<>();
+    private final String name;
     
-    public EncryptTableRuleConfiguration(final Map<String, EncryptColumnRuleConfiguration> columns) {
-        this.columns.putAll(columns);
-    }
+    private final Collection<EncryptColumnConfiguration> columns;
 }

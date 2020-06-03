@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.encrypt.log;
 
-import com.google.common.collect.ImmutableMap;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptColumnConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration;
 import org.apache.shardingsphere.infra.log.ConfigurationLogger;
 import org.junit.Before;
 import org.junit.Test;
@@ -80,16 +79,16 @@ public final class EncryptConfigurationLoggerTest {
                 + "          encryptor: encryptor_aes\n"
                 + "          plainColumn: user_decrypt\n";
         assertLogInfo(yaml);
-        ConfigurationLogger.log(Collections.singletonList(getEncryptRuleConfiguration()));
+        ConfigurationLogger.log(Collections.singletonList(getEncryptConfiguration()));
     }
     
-    private EncryptRuleConfiguration getEncryptRuleConfiguration() {
+    private EncryptRuleConfiguration getEncryptConfiguration() {
         Properties properties = new Properties();
         properties.put("aes.key.value", "123456abc");
-        EncryptorRuleConfiguration encryptorRuleConfiguration = new EncryptorRuleConfiguration("aes", properties);
+        EncryptorConfiguration encryptorConfiguration = new EncryptorConfiguration("encryptor_aes", "aes", properties);
         EncryptTableRuleConfiguration tableRuleConfiguration =
-                new EncryptTableRuleConfiguration(Collections.singletonMap("user_id", new EncryptColumnRuleConfiguration("user_decrypt", "user_encrypt", "user_assisted", "encryptor_aes")));
-        return new EncryptRuleConfiguration(ImmutableMap.of("encryptor_aes", encryptorRuleConfiguration), ImmutableMap.of("t_encrypt", tableRuleConfiguration));
+                new EncryptTableRuleConfiguration("t_encrypt", Collections.singleton(new EncryptColumnConfiguration("user_id", "user_decrypt", "user_encrypt", "user_assisted", "encryptor_aes")));
+        return new EncryptRuleConfiguration(Collections.singleton(encryptorConfiguration), Collections.singleton(tableRuleConfiguration));
     }
     
     private void assertLogInfo(final String logContent) {

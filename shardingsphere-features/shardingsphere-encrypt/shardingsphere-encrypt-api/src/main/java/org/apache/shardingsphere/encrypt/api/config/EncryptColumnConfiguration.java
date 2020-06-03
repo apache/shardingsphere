@@ -21,11 +21,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Encrypt column rule configuration.
+ * Encrypt column configuration.
  */
 @RequiredArgsConstructor
 @Getter
-public final class EncryptColumnRuleConfiguration {
+public final class EncryptColumnConfiguration {
+    
+    private final String name;
     
     private final String plainColumn;
     
@@ -33,5 +35,5 @@ public final class EncryptColumnRuleConfiguration {
     
     private final String assistedQueryColumn;
     
-    private final String encryptor;
+    private final String encryptorName;
 }

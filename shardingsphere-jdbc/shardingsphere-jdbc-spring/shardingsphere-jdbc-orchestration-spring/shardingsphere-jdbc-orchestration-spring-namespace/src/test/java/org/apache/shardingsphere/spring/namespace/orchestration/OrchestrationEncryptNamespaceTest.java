@@ -18,16 +18,20 @@
 package org.apache.shardingsphere.spring.namespace.orchestration;
 
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.spring.namespace.orchestration.util.EmbedTestingServer;
-import org.apache.shardingsphere.spring.namespace.orchestration.util.FieldValueUtil;
+import org.apache.shardingsphere.encrypt.api.config.EncryptColumnConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.spring.namespace.orchestration.util.EmbedTestingServer;
+import org.apache.shardingsphere.spring.namespace.orchestration.util.FieldValueUtil;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+
+import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -58,14 +62,19 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
     private void assertEncryptRule(final EncryptRuleConfiguration configuration) {
         assertThat(configuration.getEncryptors().size(), is(2));
         assertThat(configuration.getTables().size(), is(1));
-        assertThat(configuration.getTables().get("t_order").getColumns().get("user_id").getCipherColumn(), is("user_encrypt"));
-        assertThat(configuration.getTables().get("t_order").getColumns().get("order_id").getPlainColumn(), is("order_decrypt"));
-        EncryptorRuleConfiguration encryptorRule = configuration.getEncryptors().get("encryptor_md5");
-        assertNotNull(encryptorRule);
-        assertThat(encryptorRule.getType(), is("MD5"));
-        encryptorRule = configuration.getEncryptors().get("encryptor_aes");
-        assertThat(encryptorRule.getType(), is("AES"));
-        assertThat(encryptorRule.getProperties().getProperty("aes.key.value"), is("123456"));
+        EncryptTableRuleConfiguration tableRuleConfiguration = configuration.getTables().iterator().next();
+        Iterator<EncryptColumnConfiguration> encryptColumnConfigurations = tableRuleConfiguration.getColumns().iterator();
+        EncryptColumnConfiguration userIdColumn = encryptColumnConfigurations.next();
+        EncryptColumnConfiguration orderIdColumn = encryptColumnConfigurations.next();
+        assertThat(userIdColumn.getCipherColumn(), is("user_encrypt"));
+        assertThat(orderIdColumn.getPlainColumn(), is("order_decrypt"));
+        Iterator<EncryptorConfiguration> encryptors = configuration.getEncryptors().iterator();
+        EncryptorConfiguration aesEncryptorConfig = encryptors.next();
+        assertThat(aesEncryptorConfig.getType(), is("AES"));
+        assertThat(aesEncryptorConfig.getProperties().getProperty("aes.key.value"), is("123456"));
+        EncryptorConfiguration md5EncryptorConfig = encryptors.next();
+        assertThat(md5EncryptorConfig.getName(), is("encryptor_md5"));
+        assertThat(md5EncryptorConfig.getType(), is("MD5"));
     }
     
     @Test

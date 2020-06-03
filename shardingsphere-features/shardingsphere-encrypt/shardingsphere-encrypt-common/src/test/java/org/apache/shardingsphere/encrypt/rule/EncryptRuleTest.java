@@ -17,18 +17,16 @@
 
 package org.apache.shardingsphere.encrypt.rule;
 
-import com.google.common.collect.ImmutableMap;
-import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptColumnConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -50,14 +48,11 @@ public final class EncryptRuleTest {
     @Before
     public void setUp() {
         Properties props = new Properties();
-        EncryptColumnRuleConfiguration columnConfig = new EncryptColumnRuleConfiguration("plain_pwd", "cipher_pwd", "", "aes");
-        EncryptColumnRuleConfiguration idNumberConfig = new EncryptColumnRuleConfiguration("plain_id_number", "cipher_id_number", "", "aes");
-        Map<String, EncryptColumnRuleConfiguration> ruleConfigurationMap = new HashMap<>();
-        ruleConfigurationMap.put(column, columnConfig);
-        ruleConfigurationMap.put(idNumber, idNumberConfig);
-        EncryptorRuleConfiguration encryptorConfig = new EncryptorRuleConfiguration("assistedTest", props);
-        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration(ruleConfigurationMap);
-        encryptRuleConfig = new EncryptRuleConfiguration(ImmutableMap.of("aes", encryptorConfig), ImmutableMap.of(table, tableConfig));
+        EncryptColumnConfiguration columnConfig = new EncryptColumnConfiguration(column, "plain_pwd", "cipher_pwd", "", "aes");
+        EncryptColumnConfiguration idNumberConfig = new EncryptColumnConfiguration(idNumber, "plain_id_number", "cipher_id_number", "", "aes");
+        EncryptorConfiguration encryptorConfig = new EncryptorConfiguration("aes", "assistedTest", props);
+        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration(table, Arrays.asList(columnConfig, idNumberConfig));
+        encryptRuleConfig = new EncryptRuleConfiguration(Collections.singleton(encryptorConfig), Collections.singleton(tableConfig));
     }
     
     @Test
