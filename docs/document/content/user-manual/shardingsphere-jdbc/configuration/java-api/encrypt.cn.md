@@ -9,33 +9,10 @@ weight = 3
 
 可配置属性：
 
-| *名称*          | *数据类型*                                   | *说明*            |
-| -------------- | -------------------------------------------- | ---------------- |
-| tables (+)     | Map\<String, EncryptTableRuleConfiguration\> | 加密表名称和列表   |
-| encryptors (+) | Map\<String, EncryptorConfiguration\>        | 加解密器名称和列表 |
-
-## 加密表配置
-
-类名称：org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration
-
-可配置属性：
-
-| *名称*          | *数据类型*                                    | *说明*          |
-| -------------- | --------------------------------------------- | -------------- |
-| columns (+)    | Map\<String, EncryptColumnConfiguration\>     | 加密列名称和列表 |
-
-### 加密列配置
-
-类名称：org.apache.shardingsphere.encrypt.api.config.EncryptColumnConfiguration
-
-可配置属性：
-
-| *名称*                  | *数据类型* | *说明*       |
-| ----------------------- | -------- | ------------ |
-| plainColumn (?)         | String   | 原文列名称    |
-| cipherColumn            | String   | 密文列名称    |
-| assistedQueryColumn (?) | String   | 查询辅助列名称 |
-| encryptor               | String   | 加密器类型    |
+| *名称*          | *数据类型*                                   | *说明*       |
+| -------------- | -------------------------------------------- | ----------- |
+| encryptors (+) | Map\<String, EncryptorConfiguration\>        | 加解密器列表 |
+| tables (+)     | Collection\<EncryptTableRuleConfiguration\>  | 加密表列表   |
 
 ## 加解密器配置
 
@@ -75,3 +52,28 @@ Apache ShardingSphere 内置的加解密器算法实现类包括：
 | *名称*         | *数据类型* | *说明*        |
 | ------------- | --------- | ------------- |
 | rc4.key.value | String    | RC4 使用的 KEY |
+
+## 加密表配置
+
+类名称：org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration
+
+可配置属性：
+
+| *名称*      | *数据类型*                                | *说明* |
+| ----------- | ---------------------------------------- | --------- |
+| name        | String                                   | 表名称     |
+| columns (+) | Collection\<EncryptColumnConfiguration\> | 加密列列表 |
+
+### 加密列配置
+
+类名称：org.apache.shardingsphere.encrypt.api.config.EncryptColumnConfiguration
+
+可配置属性：
+
+| *名称*                  | *数据类型* | *说明*        |
+| ----------------------- | -------- | ------------- |
+| name                    | String   | 逻辑列名称     |
+| plainColumn (?)         | String   | 原文列名称     |
+| cipherColumn            | String   | 密文列名称     |
+| assistedQueryColumn (?) | String   | 查询辅助列名称 |
+| encryptor               | String   | 加密器类型     |
