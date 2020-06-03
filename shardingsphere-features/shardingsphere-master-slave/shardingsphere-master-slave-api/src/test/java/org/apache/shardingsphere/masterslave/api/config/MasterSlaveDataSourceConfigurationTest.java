@@ -53,7 +53,7 @@ public final class MasterSlaveDataSourceConfigurationTest {
         assertThat(actual.getName(), CoreMatchers.is("ds"));
         assertThat(actual.getMasterDataSourceName(), CoreMatchers.is("master_ds"));
         assertThat(actual.getSlaveDataSourceNames(), CoreMatchers.is(Collections.singletonList("slave_ds")));
-        assertNull(actual.getLoadBalanceStrategyConfiguration());
+        assertNull(actual.getLoadBalanceStrategy());
     }
     
     @Test
@@ -63,6 +63,6 @@ public final class MasterSlaveDataSourceConfigurationTest {
         assertThat(actual.getName(), CoreMatchers.is("ds"));
         assertThat(actual.getMasterDataSourceName(), CoreMatchers.is("master_ds"));
         assertThat(actual.getSlaveDataSourceNames(), CoreMatchers.is(Collections.singletonList("slave_ds")));
-        assertThat(actual.getLoadBalanceStrategyConfiguration().getType(), CoreMatchers.is("ROUND_ROBIN"));
+        assertThat(actual.getLoadBalanceStrategy().getType(), CoreMatchers.is("ROUND_ROBIN"));
     }
 }

@@ -58,7 +58,7 @@ public final class MasterSlaveDataSourceRule {
         name = configuration.getName();
         masterDataSourceName = configuration.getMasterDataSourceName();
         slaveDataSourceNames = configuration.getSlaveDataSourceNames();
-        loadBalanceAlgorithm = createLoadBalanceAlgorithm(configuration.getLoadBalanceStrategyConfiguration());
+        loadBalanceAlgorithm = createLoadBalanceAlgorithm(configuration.getLoadBalanceStrategy());
     }
     
     private MasterSlaveLoadBalanceAlgorithm createLoadBalanceAlgorithm(final LoadBalanceStrategyConfiguration configuration) {
