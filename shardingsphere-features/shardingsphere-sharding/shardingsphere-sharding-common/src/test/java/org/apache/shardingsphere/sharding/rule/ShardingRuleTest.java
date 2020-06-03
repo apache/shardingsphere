@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.rule;
 
 import org.apache.shardingsphere.sharding.api.config.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.fixture.StandardShardingAlgorithmFixture;
@@ -310,8 +310,8 @@ public final class ShardingRuleTest {
     @Test(expected = IllegalArgumentException.class)
     public void assertConstructShardingRuleWithNullDataSourceNames() {
         ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-        TableRuleConfiguration tableRuleConfiguration = createTableRuleConfiguration("LOGIC_TABLE", "ms_ds_${0..1}.table_${0..2}");
-        shardingRuleConfiguration.getTables().add(tableRuleConfiguration);
+        ShardingTableRuleConfiguration shardingTableRuleConfiguration = createTableRuleConfiguration("LOGIC_TABLE", "ms_ds_${0..1}.table_${0..2}");
+        shardingRuleConfiguration.getTables().add(shardingTableRuleConfiguration);
         new ShardingRule(shardingRuleConfiguration, null);
     }
     
@@ -332,13 +332,13 @@ public final class ShardingRuleTest {
     
     private ShardingRule createMaximumShardingRule() {
         ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-        TableRuleConfiguration tableRuleConfiguration = createTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
+        ShardingTableRuleConfiguration shardingTableRuleConfiguration = createTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
         KeyGenerateAlgorithm keyGenerateAlgorithm = TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class, "INCREMENT", new Properties());
-        tableRuleConfiguration.setKeyGenerator(new KeyGeneratorConfiguration("id", keyGenerateAlgorithm));
-        TableRuleConfiguration subTableRuleConfiguration = createTableRuleConfiguration("SUB_LOGIC_TABLE", "ds_${0..1}.sub_table_${0..2}");
-        shardingRuleConfiguration.getTables().add(tableRuleConfiguration);
+        shardingTableRuleConfiguration.setKeyGenerator(new KeyGeneratorConfiguration("id", keyGenerateAlgorithm));
+        ShardingTableRuleConfiguration subTableRuleConfiguration = createTableRuleConfiguration("SUB_LOGIC_TABLE", "ds_${0..1}.sub_table_${0..2}");
+        shardingRuleConfiguration.getTables().add(shardingTableRuleConfiguration);
         shardingRuleConfiguration.getTables().add(subTableRuleConfiguration);
-        shardingRuleConfiguration.getBindingTableGroups().add(tableRuleConfiguration.getLogicTable() + "," + subTableRuleConfiguration.getLogicTable());
+        shardingRuleConfiguration.getBindingTableGroups().add(shardingTableRuleConfiguration.getLogicTable() + "," + subTableRuleConfiguration.getLogicTable());
         shardingRuleConfiguration.getBroadcastTables().add("BROADCAST_TABLE");
         InlineShardingAlgorithm shardingAlgorithmDB = new InlineShardingAlgorithm();
         shardingAlgorithmDB.getProperties().setProperty("algorithm.expression", "ds_%{ds_id % 2}");
@@ -353,28 +353,28 @@ public final class ShardingRuleTest {
     
     private ShardingRule createMinimumShardingRule() {
         ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-        TableRuleConfiguration tableRuleConfiguration = createTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
-        shardingRuleConfiguration.getTables().add(tableRuleConfiguration);
+        ShardingTableRuleConfiguration shardingTableRuleConfiguration = createTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
+        shardingRuleConfiguration.getTables().add(shardingTableRuleConfiguration);
         return new ShardingRule(shardingRuleConfiguration, createDataSourceNames());
     }
     
-    private TableRuleConfiguration createTableRuleConfiguration(final String logicTableName, final String actualDataNodes) {
-        return new TableRuleConfiguration(logicTableName, actualDataNodes);
+    private ShardingTableRuleConfiguration createTableRuleConfiguration(final String logicTableName, final String actualDataNodes) {
+        return new ShardingTableRuleConfiguration(logicTableName, actualDataNodes);
     }
     
     private Collection<String> createDataSourceNames() {
         return Arrays.asList("ds_0", "ds_1");
     }
     
-    private TableRuleConfiguration createTableRuleConfigWithAllStrategies() {
-        TableRuleConfiguration result = new TableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
+    private ShardingTableRuleConfiguration createTableRuleConfigWithAllStrategies() {
+        ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
         result.setDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("column", new StandardShardingAlgorithmFixture()));
         result.setTableShardingStrategy(new NoneShardingStrategyConfiguration());
         return result;
     }
     
-    private TableRuleConfiguration createTableRuleConfigWithTableStrategies() {
-        TableRuleConfiguration result = new TableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
+    private ShardingTableRuleConfiguration createTableRuleConfigWithTableStrategies() {
+        ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
         result.setTableShardingStrategy(new StandardShardingStrategyConfiguration("column", new StandardShardingAlgorithmFixture()));
         return result;
     }

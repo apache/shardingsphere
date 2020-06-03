@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.yaml.swapper;
 
 import org.apache.shardingsphere.sharding.api.config.KeyGeneratorConfiguration;
-import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlKeyGeneratorConfiguration;
@@ -70,7 +70,7 @@ public final class TableRuleConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYamlWithMinProperties() {
-        YamlTableRuleConfiguration actual = tableRuleConfigurationYamlSwapper.swap(new TableRuleConfiguration("tbl", "ds_$->{0..1}.tbl_$->{0..1}"));
+        YamlTableRuleConfiguration actual = tableRuleConfigurationYamlSwapper.swap(new ShardingTableRuleConfiguration("tbl", "ds_$->{0..1}.tbl_$->{0..1}"));
         assertThat(actual.getLogicTable(), is("tbl"));
         assertThat(actual.getActualDataNodes(), is("ds_$->{0..1}.tbl_$->{0..1}"));
         assertNull(actual.getDatabaseStrategy());
@@ -80,11 +80,11 @@ public final class TableRuleConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYamlWithMaxProperties() {
-        TableRuleConfiguration tableRuleConfiguration = new TableRuleConfiguration("tbl", "ds_$->{0..1}.tbl_$->{0..1}");
-        tableRuleConfiguration.setDatabaseShardingStrategy(mock(StandardShardingStrategyConfiguration.class));
-        tableRuleConfiguration.setTableShardingStrategy(mock(StandardShardingStrategyConfiguration.class));
-        tableRuleConfiguration.setKeyGenerator(mock(KeyGeneratorConfiguration.class));
-        YamlTableRuleConfiguration actual = tableRuleConfigurationYamlSwapper.swap(tableRuleConfiguration);
+        ShardingTableRuleConfiguration shardingTableRuleConfiguration = new ShardingTableRuleConfiguration("tbl", "ds_$->{0..1}.tbl_$->{0..1}");
+        shardingTableRuleConfiguration.setDatabaseShardingStrategy(mock(StandardShardingStrategyConfiguration.class));
+        shardingTableRuleConfiguration.setTableShardingStrategy(mock(StandardShardingStrategyConfiguration.class));
+        shardingTableRuleConfiguration.setKeyGenerator(mock(KeyGeneratorConfiguration.class));
+        YamlTableRuleConfiguration actual = tableRuleConfigurationYamlSwapper.swap(shardingTableRuleConfiguration);
         assertThat(actual.getLogicTable(), is("tbl"));
         assertThat(actual.getActualDataNodes(), is("ds_$->{0..1}.tbl_$->{0..1}"));
         assertNotNull(actual.getDatabaseStrategy());
@@ -102,7 +102,7 @@ public final class TableRuleConfigurationYamlSwapperTest {
         YamlTableRuleConfiguration yamlConfiguration = new YamlTableRuleConfiguration();
         yamlConfiguration.setLogicTable("tbl");
         yamlConfiguration.setActualDataNodes("ds_$->{0..1}.tbl_$->{0..1}");
-        TableRuleConfiguration actual = tableRuleConfigurationYamlSwapper.swap(yamlConfiguration);
+        ShardingTableRuleConfiguration actual = tableRuleConfigurationYamlSwapper.swap(yamlConfiguration);
         assertThat(actual.getLogicTable(), is("tbl"));
         assertThat(actual.getActualDataNodes(), is("ds_$->{0..1}.tbl_$->{0..1}"));
         assertNull(actual.getDatabaseShardingStrategy());
@@ -118,7 +118,7 @@ public final class TableRuleConfigurationYamlSwapperTest {
         yamlConfiguration.setDatabaseStrategy(mock(YamlShardingStrategyConfiguration.class));
         yamlConfiguration.setTableStrategy(mock(YamlShardingStrategyConfiguration.class));
         yamlConfiguration.setKeyGenerator(mock(YamlKeyGeneratorConfiguration.class));
-        TableRuleConfiguration actual = tableRuleConfigurationYamlSwapper.swap(yamlConfiguration);
+        ShardingTableRuleConfiguration actual = tableRuleConfigurationYamlSwapper.swap(yamlConfiguration);
         assertThat(actual.getLogicTable(), is("tbl"));
         assertThat(actual.getActualDataNodes(), is("ds_$->{0..1}.tbl_$->{0..1}"));
         assertNotNull(actual.getDatabaseShardingStrategy());

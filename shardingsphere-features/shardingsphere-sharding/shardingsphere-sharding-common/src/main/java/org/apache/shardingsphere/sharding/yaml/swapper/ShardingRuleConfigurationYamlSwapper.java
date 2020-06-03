@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.yaml.swapper;
 
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlTableRuleConfiguration;
@@ -40,7 +40,7 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
     @Override
     public YamlShardingRuleConfiguration swap(final ShardingRuleConfiguration data) {
         YamlShardingRuleConfiguration result = new YamlShardingRuleConfiguration();
-        for (TableRuleConfiguration each : data.getTables()) {
+        for (ShardingTableRuleConfiguration each : data.getTables()) {
             result.getTables().put(each.getLogicTable(), tableRuleConfigurationYamlSwapper.swap(each));
         }
         result.getBindingTables().addAll(data.getBindingTableGroups());

@@ -62,8 +62,8 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
     private void assertEncryptRule(final EncryptRuleConfiguration configuration) {
         assertThat(configuration.getEncryptors().size(), is(2));
         assertThat(configuration.getTables().size(), is(1));
-        EncryptTableRuleConfiguration tableRuleConfiguration = configuration.getTables().iterator().next();
-        Iterator<EncryptColumnConfiguration> encryptColumnConfigurations = tableRuleConfiguration.getColumns().iterator();
+        EncryptTableRuleConfiguration encryptTableRuleConfiguration = configuration.getTables().iterator().next();
+        Iterator<EncryptColumnConfiguration> encryptColumnConfigurations = encryptTableRuleConfiguration.getColumns().iterator();
         EncryptColumnConfiguration userIdColumn = encryptColumnConfigurations.next();
         EncryptColumnConfiguration orderIdColumn = encryptColumnConfigurations.next();
         assertThat(userIdColumn.getCipherColumn(), is("user_encrypt"));

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.merge.dal.show;
 
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
@@ -50,7 +50,7 @@ public final class ShowCreateTableMergedResultTest {
     }
     
     private ShardingRule createShardingRule() {
-        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration("table", "ds.table_${0..2}");
+        ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration("table", "ds.table_${0..2}");
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(tableRuleConfig);
         return new ShardingRule(shardingRuleConfig, Collections.singletonList("ds"));

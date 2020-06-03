@@ -18,21 +18,21 @@
 package org.apache.shardingsphere.sharding.yaml.swapper;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlTableRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 
 /**
  * Table rule configuration YAML swapper.
  */
-public final class TableRuleConfigurationYamlSwapper implements YamlSwapper<YamlTableRuleConfiguration, TableRuleConfiguration> {
+public final class TableRuleConfigurationYamlSwapper implements YamlSwapper<YamlTableRuleConfiguration, ShardingTableRuleConfiguration> {
     
     private final ShardingStrategyConfigurationYamlSwapper shardingStrategyConfigurationYamlSwapper = new ShardingStrategyConfigurationYamlSwapper();
     
     private final KeyGeneratorConfigurationYamlSwapper keyGeneratorConfigurationYamlSwapper = new KeyGeneratorConfigurationYamlSwapper();
     
     @Override
-    public YamlTableRuleConfiguration swap(final TableRuleConfiguration data) {
+    public YamlTableRuleConfiguration swap(final ShardingTableRuleConfiguration data) {
         YamlTableRuleConfiguration result = new YamlTableRuleConfiguration();
         result.setLogicTable(data.getLogicTable());
         result.setActualDataNodes(data.getActualDataNodes());
@@ -49,9 +49,9 @@ public final class TableRuleConfigurationYamlSwapper implements YamlSwapper<Yaml
     }
     
     @Override
-    public TableRuleConfiguration swap(final YamlTableRuleConfiguration yamlConfiguration) {
+    public ShardingTableRuleConfiguration swap(final YamlTableRuleConfiguration yamlConfiguration) {
         Preconditions.checkNotNull(yamlConfiguration.getLogicTable(), "Logic table cannot be null.");
-        TableRuleConfiguration result = new TableRuleConfiguration(yamlConfiguration.getLogicTable(), yamlConfiguration.getActualDataNodes());
+        ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration(yamlConfiguration.getLogicTable(), yamlConfiguration.getActualDataNodes());
         if (null != yamlConfiguration.getDatabaseStrategy()) {
             result.setDatabaseShardingStrategy(shardingStrategyConfigurationYamlSwapper.swap(yamlConfiguration.getDatabaseStrategy()));
         }

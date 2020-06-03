@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.fixture;
 
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
@@ -89,7 +89,7 @@ public abstract class AbstractRoutingEngineTest {
         return new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1", "main"));
     }
     
-    private TableRuleConfiguration createInlineTableRuleConfig(final String tableName, final String actualDataNodes, final String algorithmExpression, final String dsAlgorithmExpression) {
+    private ShardingTableRuleConfiguration createInlineTableRuleConfig(final String tableName, final String actualDataNodes, final String algorithmExpression, final String dsAlgorithmExpression) {
         return createTableRuleConfig(tableName, actualDataNodes,
             createStandardShardingStrategyConfiguration(dsAlgorithmExpression), createStandardShardingStrategyConfiguration(algorithmExpression));
     }
@@ -103,16 +103,16 @@ public abstract class AbstractRoutingEngineTest {
         return new StandardShardingStrategyConfiguration(shardingColumn, shardingAlgorithm);
     }
     
-    private TableRuleConfiguration createTableRuleWithHintConfig() {
-        TableRuleConfiguration result = new TableRuleConfiguration("t_hint_test", "ds_${0..1}.t_hint_test_${0..1}");
+    private ShardingTableRuleConfiguration createTableRuleWithHintConfig() {
+        ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_hint_test", "ds_${0..1}.t_hint_test_${0..1}");
         result.setTableShardingStrategy(new HintShardingStrategyConfiguration(new HintShardingAlgorithmFixture()));
         result.setDatabaseShardingStrategy(new HintShardingStrategyConfiguration(new HintShardingAlgorithmFixture()));
         return result;
     }
     
-    protected final TableRuleConfiguration createTableRuleConfig(final String tableName, final String actualDataNodes,
-        final ShardingStrategyConfiguration dsShardingStrategyConfiguration, final ShardingStrategyConfiguration tableShardingStrategyConfiguration) {
-        TableRuleConfiguration result = new TableRuleConfiguration(tableName, actualDataNodes);
+    protected final ShardingTableRuleConfiguration createTableRuleConfig(final String tableName, final String actualDataNodes,
+                                                                         final ShardingStrategyConfiguration dsShardingStrategyConfiguration, final ShardingStrategyConfiguration tableShardingStrategyConfiguration) {
+        ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration(tableName, actualDataNodes);
         result.setDatabaseShardingStrategy(dsShardingStrategyConfiguration);
         result.setTableShardingStrategy(tableShardingStrategyConfiguration);
         return result;

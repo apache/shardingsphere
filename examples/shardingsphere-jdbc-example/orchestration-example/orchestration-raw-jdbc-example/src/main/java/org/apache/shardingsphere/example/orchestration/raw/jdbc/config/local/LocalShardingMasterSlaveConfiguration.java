@@ -29,7 +29,7 @@ import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.sharding.api.config.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.spi.keygen.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.strategy.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
@@ -71,14 +71,14 @@ public final class LocalShardingMasterSlaveConfiguration implements ExampleConfi
         return shardingRuleConfig;
     }
     
-    private TableRuleConfiguration getOrderTableRuleConfiguration() {
-        TableRuleConfiguration result = new TableRuleConfiguration("t_order", "ds_${0..1}.t_order_${[0, 1]}");
+    private ShardingTableRuleConfiguration getOrderTableRuleConfiguration() {
+        ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${[0, 1]}");
         result.setKeyGenerator(getKeyGeneratorConfiguration());
         return result;
     }
     
-    private TableRuleConfiguration getOrderItemTableRuleConfiguration() {
-        return new TableRuleConfiguration("t_order_item", "ds_${0..1}.t_order_item_${[0, 1]}");
+    private ShardingTableRuleConfiguration getOrderItemTableRuleConfiguration() {
+        return new ShardingTableRuleConfiguration("t_order_item", "ds_${0..1}.t_order_item_${[0, 1]}");
     }
     
     private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {

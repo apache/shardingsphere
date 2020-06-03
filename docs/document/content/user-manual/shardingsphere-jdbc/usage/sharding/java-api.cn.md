@@ -40,7 +40,7 @@ dataSource2.setPassword("");
 dataSourceMap.put("ds1", dataSource2);
 
 // 配置 t_order 表规则
-TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration("t_order", "ds${0..1}.t_order${0..1}");
+ShardingTableRuleConfiguration orderTableRuleConfig = new ShardingTableRuleConfiguration("t_order", "ds${0..1}.t_order${0..1}");
 
 // 配置分库策略
 StandardShardingAlgorithm dbShardingAlgorithm = new InlineShardingAlgorithm();

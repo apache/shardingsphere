@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.yaml.swapper;
 
 import org.apache.shardingsphere.sharding.api.config.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlKeyGeneratorConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
@@ -60,8 +60,8 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
     @Before
     public void setUp() throws ReflectiveOperationException {
         setSwapper("tableRuleConfigurationYamlSwapper", tableRuleConfigurationYamlSwapper);
-        when(tableRuleConfigurationYamlSwapper.swap(ArgumentMatchers.<TableRuleConfiguration>any())).thenReturn(mock(YamlTableRuleConfiguration.class));
-        when(tableRuleConfigurationYamlSwapper.swap(ArgumentMatchers.<YamlTableRuleConfiguration>any())).thenReturn(mock(TableRuleConfiguration.class));
+        when(tableRuleConfigurationYamlSwapper.swap(ArgumentMatchers.<ShardingTableRuleConfiguration>any())).thenReturn(mock(YamlTableRuleConfiguration.class));
+        when(tableRuleConfigurationYamlSwapper.swap(ArgumentMatchers.<YamlTableRuleConfiguration>any())).thenReturn(mock(ShardingTableRuleConfiguration.class));
         setSwapper("shardingStrategyConfigurationYamlSwapper", shardingStrategyConfigurationYamlSwapper);
         when(shardingStrategyConfigurationYamlSwapper.swap(ArgumentMatchers.<ShardingStrategyConfiguration>any())).thenReturn(mock(YamlShardingStrategyConfiguration.class));
         when(shardingStrategyConfigurationYamlSwapper.swap(ArgumentMatchers.<YamlShardingStrategyConfiguration>any())).thenReturn(mock(ShardingStrategyConfiguration.class));
@@ -79,7 +79,7 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToYamlWithMinProperties() {
         ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-        shardingRuleConfiguration.getTables().add(mock(TableRuleConfiguration.class));
+        shardingRuleConfiguration.getTables().add(mock(ShardingTableRuleConfiguration.class));
         YamlShardingRuleConfiguration actual = shardingRuleConfigurationYamlSwapper.swap(shardingRuleConfiguration);
         assertThat(actual.getTables().size(), is(1));
         assertTrue(actual.getBindingTables().isEmpty());
@@ -92,7 +92,7 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToYamlWithMaxProperties() {
         ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
-        shardingRuleConfiguration.getTables().add(mock(TableRuleConfiguration.class));
+        shardingRuleConfiguration.getTables().add(mock(ShardingTableRuleConfiguration.class));
         shardingRuleConfiguration.getBindingTableGroups().add("tbl, sub_tbl");
         shardingRuleConfiguration.getBroadcastTables().add("dict");
         shardingRuleConfiguration.setDefaultDatabaseShardingStrategy(mock(ShardingStrategyConfiguration.class));

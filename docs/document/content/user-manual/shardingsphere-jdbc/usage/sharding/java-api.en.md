@@ -41,7 +41,7 @@ dataSource2.setPassword("");
 dataSourceMap.put("ds1", dataSource2);
 
 // Configure order table rule
-TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration("t_order", "ds${0..1}.t_order${0..1}");
+ShardingTableRuleConfiguration orderTableRuleConfig = new ShardingTableRuleConfiguration("t_order", "ds${0..1}.t_order${0..1}");
 
 // Configure database sharding strategy
 StandardShardingAlgorithm dbShardingAlgorithm = new InlineShardingAlgorithm();

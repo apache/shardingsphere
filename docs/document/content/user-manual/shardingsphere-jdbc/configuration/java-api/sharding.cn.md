@@ -9,18 +9,18 @@ weight = 1
 
 可配置属性：
 
-| *名称*                               | *数据类型*                            | *说明*            | *默认值* |
-| ----------------------------------- | ------------------------------------ | ----------------- | ------- |
-| tables (+)                          | Collection\<TableRuleConfiguration\> | 分片表规则列表      | -       |
-| bindingTableGroups (*)              | Collection\<String\>                 | 绑定表规则列表      | 无      |
-| broadcastTables (*)                 | Collection\<String\>                 | 广播表规则列表      | 无      |
-| defaultDatabaseShardingStrategy (?) | ShardingStrategyConfiguration        | 默认分库策略        | 不分片   |
-| defaultTableShardingStrategy (?)    | ShardingStrategyConfiguration        | 默认分表策略        | 不分片   |
-| defaultKeyGeneratorConfig (?)       | KeyGeneratorConfiguration            | 默认自增列生成器配置 | 雪花算法 |
+| *名称*                               | *数据类型*                                    | *说明*            | *默认值* |
+| ----------------------------------- | -------------------------------------------- | ----------------- | ------- |
+| tables (+)                          | Collection\<ShardingTableRuleConfiguration\> | 分片表规则列表      | -       |
+| bindingTableGroups (*)              | Collection\<String\>                         | 绑定表规则列表      | 无      |
+| broadcastTables (*)                 | Collection\<String\>                         | 广播表规则列表      | 无      |
+| defaultDatabaseShardingStrategy (?) | ShardingStrategyConfiguration                | 默认分库策略        | 不分片   |
+| defaultTableShardingStrategy (?)    | ShardingStrategyConfiguration                | 默认分表策略        | 不分片   |
+| defaultKeyGeneratorConfig (?)       | KeyGeneratorConfiguration                    | 默认自增列生成器配置 | 雪花算法 |
 
 ## 逻辑表配置
 
-类名称：org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration
+类名称：org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration
 
 可配置属性：
 

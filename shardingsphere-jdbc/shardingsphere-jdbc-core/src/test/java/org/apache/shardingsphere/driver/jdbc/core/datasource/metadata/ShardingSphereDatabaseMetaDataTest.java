@@ -26,7 +26,7 @@ import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.kernel.context.runtime.CachedDatabaseMetaData;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
@@ -106,8 +106,8 @@ public final class ShardingSphereDatabaseMetaDataTest {
     
     private ShardingRule mockShardingRule() {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
-        TableRuleConfiguration tableRuleConfiguration = new TableRuleConfiguration(TABLE_NAME, DATA_SOURCE_NAME + "." + TABLE_NAME);
-        ruleConfig.setTables(Collections.singletonList(tableRuleConfiguration));
+        ShardingTableRuleConfiguration shardingTableRuleConfiguration = new ShardingTableRuleConfiguration(TABLE_NAME, DATA_SOURCE_NAME + "." + TABLE_NAME);
+        ruleConfig.setTables(Collections.singletonList(shardingTableRuleConfiguration));
         return new ShardingRule(ruleConfig, Collections.singletonList(DATA_SOURCE_NAME));
     }
     

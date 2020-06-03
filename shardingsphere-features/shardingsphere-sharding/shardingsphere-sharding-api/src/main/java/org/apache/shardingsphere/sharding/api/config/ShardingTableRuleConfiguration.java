@@ -24,11 +24,11 @@ import lombok.Setter;
 import org.apache.shardingsphere.sharding.api.config.strategy.ShardingStrategyConfiguration;
 
 /**
- * Table rule configuration.
+ * Sharding table rule configuration.
  */
 @Getter
 @Setter
-public final class TableRuleConfiguration {
+public final class ShardingTableRuleConfiguration {
     
     private final String logicTable;
     
@@ -40,11 +40,11 @@ public final class TableRuleConfiguration {
     
     private KeyGeneratorConfiguration keyGenerator;
     
-    public TableRuleConfiguration(final String logicTable) {
+    public ShardingTableRuleConfiguration(final String logicTable) {
         this(logicTable, null);
     }
     
-    public TableRuleConfiguration(final String logicTable, final String actualDataNodes) {
+    public ShardingTableRuleConfiguration(final String logicTable, final String actualDataNodes) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(logicTable), "LogicTable is required.");
         this.logicTable = logicTable;
         this.actualDataNodes = actualDataNodes;

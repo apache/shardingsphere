@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.spring.namespace.parser;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.sharding.spring.namespace.tag.ShardingRuleBeanDefinitionTag;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -83,7 +83,7 @@ public final class ShardingRuleBeanDefinitionParser extends AbstractBeanDefiniti
     }
     
     private BeanDefinition parseTableRuleConfiguration(final Element tableElement) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(TableRuleConfiguration.class);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingTableRuleConfiguration.class);
         factory.addConstructorArgValue(tableElement.getAttribute(ShardingRuleBeanDefinitionTag.LOGIC_TABLE_ATTRIBUTE));
         parseActualDataNodes(tableElement, factory);
         parseDatabaseShardingStrategyConfiguration(tableElement, factory);

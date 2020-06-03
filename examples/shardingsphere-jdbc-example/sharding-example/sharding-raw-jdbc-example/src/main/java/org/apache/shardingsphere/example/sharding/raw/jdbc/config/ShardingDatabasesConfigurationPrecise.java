@@ -21,7 +21,7 @@ import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.sharding.api.config.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.strategy.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.InlineShardingAlgorithm;
@@ -53,14 +53,14 @@ public final class ShardingDatabasesConfigurationPrecise implements ExampleConfi
         return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), configurations, new Properties());
     }
     
-    private static TableRuleConfiguration getOrderTableRuleConfiguration() {
-        TableRuleConfiguration result = new TableRuleConfiguration("t_order");
+    private static ShardingTableRuleConfiguration getOrderTableRuleConfiguration() {
+        ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order");
         result.setKeyGenerator(new KeyGeneratorConfiguration("order_id", getSnowflakeKeyGenerateAlgorithm()));
         return result;
     }
     
-    private static TableRuleConfiguration getOrderItemTableRuleConfiguration() {
-        TableRuleConfiguration result = new TableRuleConfiguration("t_order_item");
+    private static ShardingTableRuleConfiguration getOrderItemTableRuleConfiguration() {
+        ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order_item");
         result.setKeyGenerator(new KeyGeneratorConfiguration("order_item_id", getSnowflakeKeyGenerateAlgorithm()));
         return result;
     }

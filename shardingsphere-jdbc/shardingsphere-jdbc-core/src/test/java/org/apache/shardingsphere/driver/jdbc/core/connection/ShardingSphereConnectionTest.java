@@ -25,7 +25,7 @@ import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.kernel.context.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.kernel.context.runtime.RuntimeContext;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -82,7 +82,7 @@ public final class ShardingSphereConnectionTest {
         when(schemaContext.getRuntimeContext()).thenReturn(runtimeContext);
         when(runtimeContext.getTransactionManagerEngine()).thenReturn(new ShardingTransactionManagerEngine());
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTables().add(new TableRuleConfiguration("test"));
+        shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("test"));
         connection = new ShardingSphereConnection(dataSourceMap, schemaContexts, TransactionType.LOCAL);
     }
     

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceCon
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.strategy.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.keygen.KeyGenerateAlgorithm;
@@ -67,14 +67,14 @@ public final class ShardingMasterSlaveConfigurationPrecise implements ExampleCon
         return result;
     }
     
-    private static TableRuleConfiguration createOrderTableRuleConfiguration() {
-        TableRuleConfiguration result = new TableRuleConfiguration("t_order", "ds_${0..1}.t_order_${[0, 1]}");
+    private static ShardingTableRuleConfiguration createOrderTableRuleConfiguration() {
+        ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${[0, 1]}");
         result.setKeyGenerator(new KeyGeneratorConfiguration("order_id", createSnowflakeKeyGenerateAlgorithm()));
         return result;
     }
     
-    private static TableRuleConfiguration createOrderItemTableRuleConfiguration() {
-        TableRuleConfiguration result = new TableRuleConfiguration("t_order_item", "ds_${0..1}.t_order_item_${[0, 1]}");
+    private static ShardingTableRuleConfiguration createOrderItemTableRuleConfiguration() {
+        ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order_item", "ds_${0..1}.t_order_item_${[0, 1]}");
         result.setKeyGenerator(new KeyGeneratorConfiguration("order_item_id", createSnowflakeKeyGenerateAlgorithm()));
         return result;
     }

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.TableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.InlineShardingAlgorithm;
 
@@ -40,7 +40,6 @@ public final class ShardingShadowDatabasesConfiguration implements ExampleConfig
         Map<String, String> shadowMappings = new HashMap<>();
         shadowMappings.put("ds_0", "shadow_ds_0");
         shadowMappings.put("ds_1", "shadow_ds_1");
-        ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration("shadow", shadowMappings);
         Map<String, DataSource> dataSourceMap = new HashMap<>();
         dataSourceMap.put("ds_0", DataSourceUtil.createDataSource("demo_ds_0"));
         dataSourceMap.put("ds_1", DataSourceUtil.createDataSource("demo_ds_1"));
@@ -50,11 +49,12 @@ public final class ShardingShadowDatabasesConfiguration implements ExampleConfig
         shardingRuleConfiguration.getTables().add(getUserTableConfiguration());
         Properties properties = new Properties();
         properties.setProperty("sql.show", "true");
+        ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration("shadow", shadowMappings);
         return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Arrays.asList(shadowRuleConfiguration, shardingRuleConfiguration), properties);
     }
     
-    private TableRuleConfiguration getUserTableConfiguration() {
-        TableRuleConfiguration result = new TableRuleConfiguration("t_user", "ds_${0..1}.t_user");
+    private ShardingTableRuleConfiguration getUserTableConfiguration() {
+        ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_user", "ds_${0..1}.t_user");
         result.setTableShardingStrategy(getTableStandardShardingStrategyConfiguration());
         result.setDatabaseShardingStrategy(getDatabaseStandardShardingStrategyConfiguration());
         return result;

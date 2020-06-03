@@ -26,12 +26,12 @@ public final class TableRuleConfigurationTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertConstructorWithoutLogicTable() {
-        new TableRuleConfiguration("");
+        new ShardingTableRuleConfiguration("");
     }
     
     @Test
     public void assertConstructorWithFullArguments() {
-        TableRuleConfiguration actual = new TableRuleConfiguration("tbl", "ds_$->{0..15}.tbl_$->{0..15}");
+        ShardingTableRuleConfiguration actual = new ShardingTableRuleConfiguration("tbl", "ds_$->{0..15}.tbl_$->{0..15}");
         assertThat(actual.getLogicTable(), is("tbl"));
         assertThat(actual.getActualDataNodes(), is("ds_$->{0..15}.tbl_$->{0..15}"));
     }
