@@ -87,9 +87,9 @@ spring.shardingsphere.datasource.ds.max-total=100
 
 spring.shardingsphere.encrypt.encrypt-strategies.encrypt_strategy_aes.type=aes
 spring.shardingsphere.encrypt.encrypt-strategies.encrypt_strategy_aes.props.aes.key.value=123456
-spring.shardingsphere.encrypt.tables.t_order.columns.user_id.plain-column=user_decrypt
 spring.shardingsphere.encrypt.tables.t_order.columns.user_id.cipher-column=user_encrypt
 spring.shardingsphere.encrypt.tables.t_order.columns.user_id.assisted-query-column=user_assisted
+spring.shardingsphere.encrypt.tables.t_order.columns.user_id.plain-column=user_decrypt
 spring.shardingsphere.encrypt.tables.t_order.columns.user_id.encrypt-strategy-name=encrypt_strategy_aes
 
 spring.shardingsphere.props.sql.show=true
@@ -189,9 +189,9 @@ spring.shardingsphere.sharding.tables.t_order_item.key-generator.column=order_it
 spring.shardingsphere.sharding.tables.t_order_item.key-generator.type=SNOWFLAKE
 spring.shardingsphere.sharding.encrypt-rule.encrypt-strategies.encrypt_strategy_aes.type=aes
 spring.shardingsphere.sharding.encrypt-rule.encrypt-strategies.encrypt_strategy_aes.props.aes.key.value=123456
-spring.shardingsphere.sharding.encrypt-rule.tables.t_order.columns.user_id.plain-column=user_decrypt
 spring.shardingsphere.sharding.encrypt-rule.tables.t_order.columns.user_id.cipher-column=user_encrypt
 spring.shardingsphere.sharding.encrypt-rule.tables.t_order.columns.user_id.assisted-query-column=user_assisted
+spring.shardingsphere.sharding.encrypt-rule.tables.t_order.columns.user_id.plain-column=user_decrypt
 spring.shardingsphere.sharding.encrypt-rule.tables.t_order.columns.user_id.encrypt-strategy-name=encrypt_strategy_aes
 ```
 
@@ -353,9 +353,9 @@ spring.shardingsphere.props.check.table.metadata.enabled= #Whether to check meta
 
 spring.shardingsphere.encrypt.encrypt-strategies.<encrypt-strategy-name>.type= #Type of encrypt algorithm，use user-defined ones or built-in ones, e.g. MD5/AES
 spring.shardingsphere.encrypt.encrypt-strategies.<encrypt-strategy-name>.props.<property-name>= #Properties, Notice: when use AES encrypt algorithm, `aes.key.value` for AES encrypt algorithm need to be set
-spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.plain-column= #Plain column name
 spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.cipher-column= #Cipher column name
 spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.assisted-query-column= #AssistedColumns for query，when use QueryAssistedEncryptAlgorithm, it can help query encrypted data
+spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.plain-column= #Plain column name
 spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.encrypt-strategy-name= #Encrypt strategy name
 ```
 

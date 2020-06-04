@@ -187,8 +187,8 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
         <encrypt:encrypt-rule>
             <encrypt:tables>
                 <encrypt:table name="t_order">
-                    <encrypt:column logic-column="user_id" plain-column="user_decrypt" cipher-column="user_encrypt" assisted-query-column="user_assisted" encrypt-strategy-ref="encrypt_strategy_aes" />
-                    <encrypt:column logic-column="order_id" plain-column="order_decrypt" cipher-column="order_encrypt" assisted-query-column="order_assisted" encrypt-strategy-ref="encrypt_strategy_md5" />
+                    <encrypt:column logic-column="user_id" cipher-column="user_encrypt" assisted-query-column="user_assisted" plain-column="user_decrypt" encrypt-strategy-ref="encrypt_strategy_aes" />
+                    <encrypt:column logic-column="order_id" cipher-column="order_encrypt" assisted-query-column="order_assisted" plain-column="order_decrypt" encrypt-strategy-ref="encrypt_strategy_md5" />
                 </encrypt:table>
             </encrypt:tables>
             <encrypt:encrypt-strategies>
@@ -406,8 +406,8 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
             <sharding:encrypt-rule>
                 <encrypt:tables>
                     <encrypt:table name="t_order">
-                        <encrypt:column logic-column="user_id" plain-column="user_decrypt" cipher-column="user_encrypt" assisted-query-column="user_assisted" encrypt-strategy-ref="encrypt_strategy_aes" />
-                        <encrypt:column logic-column="order_id" plain-column="order_decrypt" cipher-column="order_encrypt" assisted-query-column="order_assisted" encrypt-strategy-ref="encrypt_strategy_md5" />
+                        <encrypt:column logic-column="user_id" cipher-column="user_encrypt" assisted-query-column="user_assisted" plain-column="user_decrypt" encrypt-strategy-ref="encrypt_strategy_aes" />
+                        <encrypt:column logic-column="order_id" cipher-column="order_encrypt" assisted-query-column="order_assisted" plain-column="order_decrypt" encrypt-strategy-ref="encrypt_strategy_md5" />
                     </encrypt:table>
                 </encrypt:tables>
                 <encrypt:encrypt-strategies>
