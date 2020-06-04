@@ -42,7 +42,7 @@ public final class EncryptRuleConfigurationYamlSwapper implements YamlRuleConfig
     @Override
     public YamlEncryptRuleConfiguration swap(final EncryptRuleConfiguration data) {
         YamlEncryptRuleConfiguration result = new YamlEncryptRuleConfiguration();
-        data.getEncryptors().forEach(each -> result.getEncryptors().put(each.getName(), encryptStrategyConfigurationYamlSwapper.swap(each)));
+        data.getEncryptStrategies().forEach(each -> result.getEncryptors().put(each.getName(), encryptStrategyConfigurationYamlSwapper.swap(each)));
         data.getTables().forEach(each -> result.getTables().put(each.getName(), encryptTableRuleConfigurationYamlSwapper.swap(each)));
         return result;
     }

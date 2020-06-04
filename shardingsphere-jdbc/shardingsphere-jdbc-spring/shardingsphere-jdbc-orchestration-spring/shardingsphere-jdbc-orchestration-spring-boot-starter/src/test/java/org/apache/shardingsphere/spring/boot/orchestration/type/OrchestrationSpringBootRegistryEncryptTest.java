@@ -89,8 +89,8 @@ public class OrchestrationSpringBootRegistryEncryptTest {
         assertThat(embedDataSource.getMaxTotal(), is(100));
         assertThat(embedDataSource.getUsername(), is("sa"));
         EncryptRuleConfiguration configuration = (EncryptRuleConfiguration) encryptDataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getConfigurations().iterator().next();
-        assertThat(configuration.getEncryptors().size(), is(1));
-        EncryptStrategyConfiguration encryptStrategyConfiguration = configuration.getEncryptors().iterator().next();
+        assertThat(configuration.getEncryptStrategies().size(), is(1));
+        EncryptStrategyConfiguration encryptStrategyConfiguration = configuration.getEncryptStrategies().iterator().next();
         assertThat(encryptStrategyConfiguration.getName(), is("order_encrypt"));
         assertThat(encryptStrategyConfiguration.getType(), is("aes"));
     }

@@ -9,10 +9,10 @@ weight = 3
 
 可配置属性：
 
-| *名称*          | *数据类型*                                   | *说明*       |
-| -------------- | ------------------------------------------- | ------------ |
-| encryptors (+) | Collection\<EncryptStrategyConfiguration\>  | 加解密策略列表 |
-| tables (+)     | Collection\<EncryptTableRuleConfiguration\> | 加密表规则列表 |
+| *名称*                 | *数据类型*                                   | *说明*       |
+| --------------------- | ------------------------------------------- | ------------ |
+| encryptStrategies (+) | Collection\<EncryptStrategyConfiguration\>  | 加解密策略列表 |
+| tables (+)            | Collection\<EncryptTableRuleConfiguration\> | 加密表规则列表 |
 
 ## 加解密策略配置
 

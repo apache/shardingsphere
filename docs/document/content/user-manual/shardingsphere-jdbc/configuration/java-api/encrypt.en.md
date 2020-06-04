@@ -9,10 +9,10 @@ Class name: org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguratio
 
 Attributes:
 
-| *Name*         | *DataType*                                  | *Description*       |
-| -------------- | ------------------------------------------- | ------------------- |
-| encryptors (+) | Collection\<EncryptStrategyConfiguration\>  | Encrypt strategies  |
-| tables (+)     | Collection\<EncryptTableRuleConfiguration\> | Encrypt table rules |
+| *Name*                | *DataType*                                  | *Description*       |
+| --------------------- | ------------------------------------------- | ------------------- |
+| encryptStrategies (+) | Collection\<EncryptStrategyConfiguration\>  | Encrypt strategies  |
+| tables (+)            | Collection\<EncryptTableRuleConfiguration\> | Encrypt table rules |
 
 ## Encrypt Strategy Configuration
 

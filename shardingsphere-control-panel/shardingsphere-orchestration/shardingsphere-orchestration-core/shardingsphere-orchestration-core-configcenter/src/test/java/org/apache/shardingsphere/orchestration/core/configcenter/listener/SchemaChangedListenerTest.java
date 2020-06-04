@@ -122,8 +122,8 @@ public final class SchemaChangedListenerTest {
         assertThat(event.getShardingSchemaName(), is("encrypt_db"));
         assertThat(event.getRuleConfigurations().iterator().next(), instanceOf(EncryptRuleConfiguration.class));
         EncryptRuleConfiguration encryptRuleConfiguration = (EncryptRuleConfiguration) event.getRuleConfigurations().iterator().next();
-        assertThat(encryptRuleConfiguration.getEncryptors().size(), is(1));
-        EncryptStrategyConfiguration encryptStrategyConfiguration = encryptRuleConfiguration.getEncryptors().iterator().next();
+        assertThat(encryptRuleConfiguration.getEncryptStrategies().size(), is(1));
+        EncryptStrategyConfiguration encryptStrategyConfiguration = encryptRuleConfiguration.getEncryptStrategies().iterator().next();
         assertThat(encryptStrategyConfiguration.getName(), is("order_encryptor"));
         assertThat(encryptStrategyConfiguration.getType(), is("aes"));
         assertThat(encryptStrategyConfiguration.getProperties().get("aes.key.value").toString(), is("123456"));

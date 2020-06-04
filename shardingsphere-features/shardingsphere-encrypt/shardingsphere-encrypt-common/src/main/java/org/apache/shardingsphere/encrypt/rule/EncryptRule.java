@@ -54,12 +54,12 @@ public final class EncryptRule implements ShardingSphereRule {
     
     public EncryptRule(final EncryptRuleConfiguration encryptRuleConfiguration) {
         Preconditions.checkArgument(isValidRuleConfiguration(encryptRuleConfiguration), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
-        encryptRuleConfiguration.getEncryptors().forEach(each -> encryptors.put(each.getName(), createEncryptor(each)));
+        encryptRuleConfiguration.getEncryptStrategies().forEach(each -> encryptors.put(each.getName(), createEncryptor(each)));
         encryptRuleConfiguration.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(each)));
     }
     
     private boolean isValidRuleConfiguration(final EncryptRuleConfiguration encryptRuleConfiguration) {
-        return (encryptRuleConfiguration.getEncryptors().isEmpty() && encryptRuleConfiguration.getTables().isEmpty()) || isValidTableConfiguration(encryptRuleConfiguration);
+        return (encryptRuleConfiguration.getEncryptStrategies().isEmpty() && encryptRuleConfiguration.getTables().isEmpty()) || isValidTableConfiguration(encryptRuleConfiguration);
     }
     
     private boolean isValidTableConfiguration(final EncryptRuleConfiguration encryptRuleConfiguration) {
@@ -78,7 +78,7 @@ public final class EncryptRule implements ShardingSphereRule {
     }
     
     private boolean containsEncryptor(final EncryptRuleConfiguration encryptRuleConfiguration, final EncryptColumnRuleConfiguration column) {
-        for (EncryptStrategyConfiguration each : encryptRuleConfiguration.getEncryptors()) {
+        for (EncryptStrategyConfiguration each : encryptRuleConfiguration.getEncryptStrategies()) {
             if (each.getName().equals(column.getEncryptorName())) {
                 return true;
             }
