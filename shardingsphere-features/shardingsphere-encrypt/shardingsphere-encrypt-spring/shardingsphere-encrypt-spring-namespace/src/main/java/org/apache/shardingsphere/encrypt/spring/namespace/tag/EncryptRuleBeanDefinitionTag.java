@@ -36,11 +36,11 @@ public final class EncryptRuleBeanDefinitionTag {
     
     public static final String COLUMN_LOGIC_COLUMN_ATTRIBUTE = "logic-column";
     
-    public static final String COLUMN_PLAIN_COLUMN_ATTRIBUTE = "plain-column";
-    
     public static final String COLUMN_CIPHER_COLUMN_ATTRIBUTE = "cipher-column";
     
     public static final String COLUMN_ASSISTED_QUERY_COLUMN_ATTRIBUTE = "assisted-query-column";
+    
+    public static final String COLUMN_PLAIN_COLUMN_ATTRIBUTE = "plain-column";
     
     public static final String COLUMN_ENCRYPT_STRATEGY_REF_ATTRIBUTE = "encrypt-strategy-ref";
     

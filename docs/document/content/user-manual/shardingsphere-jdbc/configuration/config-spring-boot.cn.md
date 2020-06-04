@@ -86,12 +86,12 @@ spring.shardingsphere.datasource.ds.username=root
 spring.shardingsphere.datasource.ds.password=
 spring.shardingsphere.datasource.ds.max-total=100
 
-spring.shardingsphere.encrypt.encrypt-strategies.encrypt_strategy_aes.type=aes
-spring.shardingsphere.encrypt.encrypt-strategies.encrypt_strategy_aes.props.aes.key.value=123456
-spring.shardingsphere.encrypt.tables.t_order.columns.user_id.plain-column=user_decrypt
+spring.shardingsphere.encrypt.encrypt-strategies.aes_encrypt_strategy.type=aes
+spring.shardingsphere.encrypt.encrypt-strategies.aes_encrypt_strategy.props.aes.key.value=123456
 spring.shardingsphere.encrypt.tables.t_order.columns.user_id.cipher-column=user_encrypt
 spring.shardingsphere.encrypt.tables.t_order.columns.user_id.assisted-query-column=user_assisted
-spring.shardingsphere.encrypt.tables.t_order.columns.user_id.encrypt-strategy-name=encrypt_strategy_aes
+spring.shardingsphere.encrypt.tables.t_order.columns.user_id.plain-column=user_decrypt
+spring.shardingsphere.encrypt.tables.t_order.columns.user_id.encrypt-strategy-name=aes_encrypt_strategy
 
 spring.shardingsphere.props.sql.show=true
 spring.shardingsphere.props.query.with.cipher.column=true
@@ -188,12 +188,12 @@ spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.shardin
 spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item_$->{order_id % 2}
 spring.shardingsphere.sharding.tables.t_order_item.key-generator.column=order_item_id
 spring.shardingsphere.sharding.tables.t_order_item.key-generator.type=SNOWFLAKE
-spring.shardingsphere.sharding.encrypt-rule.encryptStrategies.encrypt_strategy_aes.type=aes
-spring.shardingsphere.sharding.encrypt-rule.encryptStrategies.encrypt_strategy_aes.props.aes.key.value=123456
-spring.shardingsphere.sharding.encrypt-rule.tables.t_order.columns.user_id.plain-column=user_decrypt
+spring.shardingsphere.sharding.encrypt-rule.encryptStrategies.aes_encrypt_strategy.type=aes
+spring.shardingsphere.sharding.encrypt-rule.encryptStrategies.aes_encrypt_strategy.props.aes.key.value=123456
 spring.shardingsphere.sharding.encrypt-rule.tables.t_order.columns.user_id.cipher-column=user_encrypt
 spring.shardingsphere.sharding.encrypt-rule.tables.t_order.columns.user_id.assisted-query-column=user_assisted
-spring.shardingsphere.sharding.encrypt-rule.tables.t_order.columns.user_id.encrypt_strategy_name=encrypt_strategy_aes
+spring.shardingsphere.sharding.encrypt-rule.tables.t_order.columns.user_id.plain-column=user_decrypt
+spring.shardingsphere.sharding.encrypt-rule.tables.t_order.columns.user_id.encrypt_strategy_name=aes_encrypt_strategy
 ```
 
 ### 治理
@@ -354,9 +354,9 @@ spring.shardingsphere.props.check.table.metadata.enabled= #是否在启动时检
 
 spring.shardingsphere.encrypt.encryptStrategies.<encrypt-strategy-name>.type= #加解密策略类型，可自定义或选择内置类型：MD5/AES
 spring.shardingsphere.encrypt.encryptStrategies.<encrypt-strategy-name>.props.<property-name>= #属性配置, 注意：使用 AES 加密算法，需要配置 AES 加密算法的 KEY 属性：aes.key.value
-spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.plain-column= #存储明文的字段
 spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.cipher-column= #存储密文的字段
 spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.assisted-query-column= #辅助查询字段，针对 QueryAssistedEncryptAlgorithm 类型的加解密算法进行辅助查询
+spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.plain-column= #存储明文的字段
 spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.encrypt-strategy-name= #加密策略名字
 ```
 ### 治理

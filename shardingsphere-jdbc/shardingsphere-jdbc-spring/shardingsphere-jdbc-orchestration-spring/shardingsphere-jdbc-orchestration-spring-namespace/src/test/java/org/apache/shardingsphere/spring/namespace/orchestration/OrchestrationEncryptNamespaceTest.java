@@ -73,7 +73,7 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
         assertThat(aesEncryptStrategyConfiguration.getType(), is("AES"));
         assertThat(aesEncryptStrategyConfiguration.getProperties().getProperty("aes.key.value"), is("123456"));
         EncryptStrategyConfiguration md5EncryptStrategyConfiguration = encryptStrategyConfigurations.next();
-        assertThat(md5EncryptStrategyConfiguration.getName(), is("encrypt_strategy_md5"));
+        assertThat(md5EncryptStrategyConfiguration.getName(), is("md5_encrypt_strategy"));
         assertThat(md5EncryptStrategyConfiguration.getType(), is("MD5"));
     }
     

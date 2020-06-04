@@ -36,7 +36,7 @@ public final class EncryptTableTest {
     @Before
     public void setUp() {
         encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("", 
-                Collections.singleton(new EncryptColumnRuleConfiguration("key", "plainColumn", "cipherColumn", "plainColumn", "encryptStrategyName"))));
+                Collections.singleton(new EncryptColumnRuleConfiguration("key", "cipherColumn", "plainColumn", "plainColumn", "encryptStrategyName"))));
     }
     
     @Test

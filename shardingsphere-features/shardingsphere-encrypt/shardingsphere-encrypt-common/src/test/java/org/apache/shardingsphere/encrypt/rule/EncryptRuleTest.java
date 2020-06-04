@@ -48,8 +48,8 @@ public final class EncryptRuleTest {
     @Before
     public void setUp() {
         Properties props = new Properties();
-        EncryptColumnRuleConfiguration columnConfig = new EncryptColumnRuleConfiguration(column, "plain_pwd", "cipher_pwd", "", "aes");
-        EncryptColumnRuleConfiguration idNumberConfig = new EncryptColumnRuleConfiguration(idNumber, "plain_id_number", "cipher_id_number", "", "aes");
+        EncryptColumnRuleConfiguration columnConfig = new EncryptColumnRuleConfiguration(column, "cipher_pwd", "", "plain_pwd", "aes");
+        EncryptColumnRuleConfiguration idNumberConfig = new EncryptColumnRuleConfiguration(idNumber, "cipher_id_number", "", "plain_id_number", "aes");
         EncryptStrategyConfiguration encryptStrategyConfiguration = new EncryptStrategyConfiguration("aes", "assistedTest", props);
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration(table, Arrays.asList(columnConfig, idNumberConfig));
         encryptRuleConfig = new EncryptRuleConfiguration(Collections.singleton(encryptStrategyConfiguration), Collections.singleton(tableConfig));

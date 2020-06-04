@@ -120,11 +120,11 @@ public final class ConfigCenterTest {
             + "        column: order_id\n"
             + "- !ENCRYPT\n"
             + "  encryptStrategies:\n"
-            + "    encrypt_strategy_aes:\n"
+            + "    aes_encrypt_strategy:\n"
             + "      type: aes\n"
             + "      props:\n"
             + "        aes.key.value: 123456abcd\n"
-            + "    encrypt_strategy_md5:\n"
+            + "    md5_encrypt_strategy:\n"
             + "      type: md5\n"
             + "  tables:\n"
             + "    t_encrypt:\n"
@@ -132,10 +132,10 @@ public final class ConfigCenterTest {
             + "        user_id:\n"
             + "          plainColumn: user_plain\n"
             + "          cipherColumn: user_cipher\n"
-            + "          encryptStrategyName: encrypt_strategy_aes\n"
+            + "          encryptStrategyName: aes_encrypt_strategy\n"
             + "        order_id:\n"
             + "          cipherColumn: order_cipher\n"
-            + "          encryptStrategyName: encrypt_strategy_md5";
+            + "          encryptStrategyName: md5_encrypt_strategy";
     
     private static final String MASTER_SLAVE_RULE_YAML = ""
             + "rules:\n"
@@ -462,7 +462,7 @@ public final class ConfigCenterTest {
                 EncryptRuleConfiguration encryptRuleConfiguration = (EncryptRuleConfiguration) each;
                 assertThat(encryptRuleConfiguration.getEncryptStrategies().size(), is(2));
                 EncryptStrategyConfiguration encryptStrategyConfiguration = encryptRuleConfiguration.getEncryptStrategies().iterator().next();
-                assertThat(encryptStrategyConfiguration.getName(), is("encrypt_strategy_aes"));
+                assertThat(encryptStrategyConfiguration.getName(), is("aes_encrypt_strategy"));
                 assertThat(encryptStrategyConfiguration.getType(), is("aes"));
                 assertThat(encryptStrategyConfiguration.getProperties().get("aes.key.value").toString(), is("123456abcd"));
             }

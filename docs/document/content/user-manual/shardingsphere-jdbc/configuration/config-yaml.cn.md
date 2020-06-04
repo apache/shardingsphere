@@ -102,11 +102,11 @@ dataSource:  !!org.apache.commons.dbcp2.BasicDataSource
 
 encryptRule:
   encryptStrategies:
-    encrypt_strategy_aes:
+    aes_encrypt_strategy:
       type: aes
       props:
         aes.key.value: 123456abc
-    encrypt_strategy_md5:
+    md5_encrypt_strategy:
       type: md5
   tables:
     t_encrypt:
@@ -114,10 +114,10 @@ encryptRule:
         user_id:
           plainColumn: user_plain
           cipherColumn: user_cipher
-          encryptStrategyName: encrypt_strategy_aes
+          encryptStrategyName: aes_encrypt_strategy
         order_id:
           cipherColumn: order_cipher
-          encryptStrategyName: encrypt_strategy_md5
+          encryptStrategyName: md5_encrypt_strategy
 props:
   query.with.cipher.column: true #是否使用密文列查询
 ```
@@ -259,7 +259,7 @@ shardingRule:
     
   encryptRule:
     encryptStrategies:
-      encrypt_strategy_aes:
+      aes_encrypt_strategy:
         type: aes
         props:
           aes.key.value: 123456abc
@@ -269,7 +269,7 @@ shardingRule:
           order_id:
             plainColumn: order_plain
             cipherColumn: order_cipher
-            encryptStrategyName: encrypt_strategy_aes
+            encryptStrategyName: aes_encrypt_strategy
 
 props:
   sql.show: true
