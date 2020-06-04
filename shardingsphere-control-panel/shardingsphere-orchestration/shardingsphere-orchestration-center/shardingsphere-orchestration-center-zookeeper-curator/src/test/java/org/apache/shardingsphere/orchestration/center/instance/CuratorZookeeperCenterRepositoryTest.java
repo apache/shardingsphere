@@ -173,8 +173,8 @@ public final class CuratorZookeeperCenterRepositoryTest {
         customCenterRepository.setProperties(properties);
         customCenterRepository.init(configuration);
         assertThat(customCenterRepository.getProperties().getProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey()), is("0"));
-        customCenterRepository.persist("/test/children/build/2", "value1");
-        assertThat(customCenterRepository.get("/test/children/build/2"), is("value1"));
+        customCenterRepository.persist("/test/children/build/3", "value1");
+        assertThat(customCenterRepository.get("/test/children/build/3"), is("value1"));
     }
     
     @Test
@@ -187,8 +187,8 @@ public final class CuratorZookeeperCenterRepositoryTest {
         customCenterRepository.setProperties(properties);
         customCenterRepository.init(configuration);
         assertThat(customCenterRepository.getProperties().getProperty(ZookeeperPropertyKey.DIGEST.getKey()), is("any"));
-        customCenterRepository.persist("/test/children/build/3", "value1");
-        assertThat(customCenterRepository.get("/test/children/build/3"), is("value1"));
+        customCenterRepository.persist("/test/children/build/4", "value1");
+        assertThat(customCenterRepository.get("/test/children/build/4"), is("value1"));
     }
     
     @Test
