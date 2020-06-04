@@ -14,6 +14,31 @@ Attributes:
 | encryptStrategies (+) | Collection\<EncryptStrategyConfiguration\>  | Encrypt strategies  |
 | tables (+)            | Collection\<EncryptTableRuleConfiguration\> | Encrypt table rules |
 
+## Encrypt Table Rule Configuration
+
+Class name: org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration
+
+Attributes:
+
+| *Name*      | *DataType*                                   | *Description*        |
+| ----------- | -------------------------------------------- | -------------------- |
+| name        | String                                       | Table name           |
+| columns (+) | Collection\<EncryptColumnRuleConfiguration\> | Encrypt column rules |
+
+### Encrypt Column Rule Configuration
+
+Class name: org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration
+
+Attributes:
+
+| *Name*                  | *DataType* | *Description*              |
+| ----------------------- | ---------- | -------------------------- |
+| logicColumn             | String     | Logic column name          |
+| cipherColumn            | String     | Cipher column name         |
+| assistedQueryColumn (?) | String     | Assisted query column name |
+| plainColumn (?)         | String     | Plain column name          |
+| encryptStrategyName     | String     | Encrypt strategy name      |
+
 ## Encrypt Strategy Configuration
 
 Class name: org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration
@@ -53,28 +78,3 @@ Attributes:
 | *Name*        | *DataType* | *Description* |
 | ------------- | ---------- | ------------- |
 | rc4.key.value | String     | RC4 KEY       |
-
-## Encrypt Table Rule Configuration
-
-Class name: org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration
-
-Attributes:
-
-| *Name*      | *DataType*                                   | *Description*        |
-| ----------- | -------------------------------------------- | -------------------- |
-| name        | String                                       | Table name           |
-| columns (+) | Collection\<EncryptColumnRuleConfiguration\> | Encrypt column rules |
-
-### Encrypt Column Rule Configuration
-
-Class name: org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration
-
-Attributes:
-
-| *Name*                  | *DataType* | *Description*              |
-| ----------------------- | ---------- | -------------------------- |
-| logicColumn             | String     | Logic column name          |
-| cipherColumn            | String     | Cipher column name         |
-| assistedQueryColumn (?) | String     | Assisted query column name |
-| plainColumn (?)         | String     | Plain column name          |
-| encryptStrategyName     | String     | Encrypt strategy name      |
