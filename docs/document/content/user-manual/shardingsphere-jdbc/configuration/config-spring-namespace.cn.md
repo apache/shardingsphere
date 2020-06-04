@@ -183,22 +183,22 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
         <property name="password" value=""/>
     </bean>
     
-    <bean:properties id="props">
-        <prop key="aes.key.value">123456</prop>
-    </bean:properties>
-    
     <encrypt:data-source id="encryptDataSource" data-source-name="ds" >
         <encrypt:encrypt-rule>
             <encrypt:tables>
                 <encrypt:table name="t_order">
-                    <encrypt:column logic-column="user_id" plain-column="user_decrypt" cipher-column="user_encrypt" assisted-query-column="user_assisted" encryptor-ref="encryptor_aes" />
-                    <encrypt:column logic-column="order_id" plain-column="order_decrypt" cipher-column="order_encrypt" assisted-query-column="order_assisted" encryptor-ref="encryptor_md5"/>
+                    <encrypt:column logic-column="user_id" plain-column="user_decrypt" cipher-column="user_encrypt" assisted-query-column="user_assisted" encrypt-strategy-ref="encrypt_strategy_aes" />
+                    <encrypt:column logic-column="order_id" plain-column="order_decrypt" cipher-column="order_encrypt" assisted-query-column="order_assisted" encrypt-strategy-ref="encrypt_strategy_md5" />
                 </encrypt:table>
             </encrypt:tables>
-            <encrypt:encryptors>
-                <encrypt:encryptor id="encryptor_aes" type="AES" props-ref="props"/>
-                <encrypt:encryptor id="encryptor_md5" type="MD5" />
-            </encrypt:encryptors>
+            <encrypt:encrypt-strategies>
+                <encrypt:encrypt-strategy id="encrypt_strategy_aes" type="AES">
+                    <props>
+                        <prop key="aes.key.value">123456</prop>
+                    </props>
+                </encrypt:encrypt-strategy>
+                <encrypt:encrypt-strategy id="encrypt_strategy_md5" type="MD5" />
+            </encrypt:encrypt-strategies>
         </encrypt:encrypt-rule>
         <encrypt:props>
             <prop key="sql.show">true</prop>
@@ -406,14 +406,18 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
             <sharding:encrypt-rule>
                 <encrypt:tables>
                     <encrypt:table name="t_order">
-                        <encrypt:column logic-column="user_id" plain-column="user_decrypt" cipher-column="user_encrypt" assisted-query-column="user_assisted" encryptor-ref="encryptor_aes" />
-                        <encrypt:column logic-column="order_id" plain-column="order_decrypt" cipher-column="order_encrypt" assisted-query-column="order_assisted" encryptor-ref="encryptor_md5"/>
+                        <encrypt:column logic-column="user_id" plain-column="user_decrypt" cipher-column="user_encrypt" assisted-query-column="user_assisted" encrypt-strategy-ref="encrypt_strategy_aes" />
+                        <encrypt:column logic-column="order_id" plain-column="order_decrypt" cipher-column="order_encrypt" assisted-query-column="order_assisted" encrypt-strategy-ref="encrypt_strategy_md5" />
                     </encrypt:table>
                 </encrypt:tables>
-                <encrypt:encryptors>
-                    <encrypt:encryptor id="encryptor_aes" type="AES"  props-ref="props"/>
-                    <encrypt:encryptor id="encryptor_md5" type="MD5" />
-                </encrypt:encryptors>
+                <encrypt:encrypt-strategies>
+                    <encrypt:encrypt-strategy id="encrypt_strategy_aes" type="AES">
+                        <props>
+                            <prop key="aes.key.value">123456</prop>
+                        </props>
+                    </encrypt:encrypt-strategy>
+                    <encrypt:encrypt-strategy id="encrypt_strategy_md5" type="MD5" />
+                </encrypt:encrypt-strategies>
             </sharding:encrypt-rule>
 
         </sharding:sharding-rule>
@@ -422,9 +426,6 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
             <prop key="sql.show">true</prop>
         </sharding:props>
     </sharding:data-source>
-     <bean:properties id="props">
-        <prop key="aes.key.value">123456</prop>
-    </bean:properties>
 </beans>
 ```
 
@@ -640,40 +641,40 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
 | data-source-name        | 属性  | 加密数据源Bean Id                              |
 | props (?)               | 标签  | 属性配置                                       |
 
-#### \<encrypt:encryptors />
+#### \<encrypt:encrypt-strategies />
 
-| *名称*                   | *类型* | *说明*                                                    |
-| ----------------------- | ----- | --------------------------------------------------------- |
-| encryptor(+)            | 标签  | 加密器配置                                                |
+| *名称*               | *类型* | *说明*   |
+| ------------------- | ----- | -------- |
+| encrypt-strategy(+) | 标签  | 加密策略配置 |
 
-#### \<encrypt:encryptor />
+#### \<encrypt:encrypt-strategy />
 
-| *名称*                    | *类型* | *说明*                                                             |
-| ------------------------ | ----- | ------------------------------------------------------------------ |
-| id                       | 属性  | 加密器的名称                                                         |
-| type                     | 属性  | 加解密器类型，可自定义或选择内置类型：MD5/AES                            |
-| props-ref                | 属性  | 属性配置, 注意：使用AES加密器，需要配置AES加密器的KEY属性：aes.key.value   |
+| *名称*     | *类型* | *说明*                                                                   |
+| --------- | ----- | ------------------------------------------------------------------------ |
+| id        | 属性  | 加密策略的名称                                                              |
+| type      | 属性  | 加解密算法类型，可自定义或选择内置类型：MD5/AES                                |
+| props-ref | 属性  | 属性配置, 注意：使用AES加密算法，需要配置 AES 加密算法的 KEY 属性：aes.key.value |
 
 #### \<encrypt:tables />
 
-| *名称*                  | *类型* | *说明*                                                    |
-| ----------------------- | ----- | --------------------------------------------------------- |
-| table(+)                | 标签  | 加密表配置                                                  |
+| *名称*                  | *类型* | *说明*       |
+| ----------------------- | ----- | ------------ |
+| table(+)                | 标签  | 加密表规则配置 |
 
 #### \<encrypt:table />
 
-| *名称*                  | *类型* | *说明*                                                     |
-| ----------------------- | ----- | --------------------------------------------------------- |
-| column(+)               | 标签  | 加密列配置                                                  |
+| *名称*                  | *类型* | *说明*       |
+| ----------------------- | ----- | ------------ |
+| column(+)               | 标签  | 加密列规则配置 |
 
 #### \<encrypt:column />
 
-| *名称*                  | *类型* | *说明*                                                              |
-| ----------------------- | ----- | ------------------------------------------------------------------ |
-| logic-column            | 属性  | 逻辑列名                                                             |
-| plain-column            | 属性  | 存储明文的字段                                                        |
-| cipher-column           | 属性  | 存储密文的字段                                                        |
-| assisted-query-columns  | 属性  | 辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询|
+| *名称*                  | *类型* | *说明*                                                                  |
+| ----------------------- | ----- | ---------------------------------------------------------------------- |
+| logic-column            | 属性  | 逻辑列名                                                                 |
+| plain-column            | 属性  | 存储明文的字段                                                            |
+| cipher-column           | 属性  | 存储密文的字段                                                            |
+| assisted-query-columns  | 属性  | 辅助查询字段，针对 QueryAssistedEncryptAlgorithm 类型的加解密算法进行辅助查询 |
 
 #### \<encrypt:props />
 

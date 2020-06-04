@@ -30,7 +30,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * Encryptor table.
+ * Encrypt table.
  */
 public final class EncryptTable {
     
@@ -142,15 +142,15 @@ public final class EncryptTable {
     }
     
     /**
-     * Find encryptor.
+     * Find encrypt strategy name.
      *
      * @param logicColumn column name
-     * @return encryptor
+     * @return encrypt strategy name
      */
-    public Optional<String> findEncryptor(final String logicColumn) {
+    public Optional<String> findEncryptStrategyName(final String logicColumn) {
         Optional<String> originLogicColumnName = findOriginLogicColumnName(logicColumn);
         return originLogicColumnName.isPresent() && columns.containsKey(originLogicColumnName.get())
-                ? Optional.of(columns.get(originLogicColumnName.get()).getEncryptor()) : Optional.empty();
+                ? Optional.of(columns.get(originLogicColumnName.get()).getEncryptStrategyName()) : Optional.empty();
     }
     
     private Optional<String> findOriginLogicColumnName(final String logicColumn) {

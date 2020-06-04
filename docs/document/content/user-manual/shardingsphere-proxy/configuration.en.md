@@ -121,12 +121,12 @@ dataSource:
   maxPoolSize: 50
 
 encryptRule:
-  encryptors:
-    encryptor_aes:
+  encryptStrategies:
+    encrypt_strategy_aes:
       type: aes
       props:
         aes.key.value: 123456abc
-    encryptor_md5:
+    encrypt_strategy_md5:
       type: md5
   tables:
     t_encrypt:
@@ -134,10 +134,10 @@ encryptRule:
         user_id:
           plainColumn: user_plain
           cipherColumn: user_cipher
-          encryptor: encryptor_aes
+          encryptStrategyName: encrypt_strategy_aes
         order_id:
           cipherColumn: order_cipher
-          encryptor: encryptor_md5
+          encryptStrategyName: encrypt_strategy_md5
 ```
 
 ### Data Sharding + Read-Write Split
@@ -305,8 +305,8 @@ shardingRule:
     none:
     
   encryptRule:
-    encryptors:
-      encryptor_aes:
+    encryptStrategies:
+      encrypt_strategy_aes:
         type: aes
         props:
           aes.key.value: 123456abc
@@ -316,7 +316,7 @@ shardingRule:
           order_id:
             plainColumn: order_plain
             cipherColumn: order_cipher
-            encryptor: encryptor_aes 
+            encryptStrategyName: encrypt_strategy_aes 
 ```
 
 ## Overall Configuration Instance
@@ -397,10 +397,10 @@ masterSlaveRule: #Omit data source configurations; keep it consistent with Shard
 dataSource: #Ignore data sources configuration
 
 encryptRule:
-  encryptors:
-    <encryptor-name>:
-      type: #encryptor type
-      props: #Properties, e.g. `aes.key.value` for AES encryptor
+  encryptStrategies:
+    <encrypt-strategy-name>:
+      type: #encrypt algorithm type
+      props: #Properties, e.g. `aes.key.value` for AES encrypt algorithm
         aes.key.value: 
   tables:
     <table-name>:
@@ -408,8 +408,8 @@ encryptRule:
         <logic-column-name>:
           plainColumn: #plaintext column name
           cipherColumn: #ciphertext column name
-          assistedQueryColumn: #AssistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data
-          encryptor: #encrypt name
+          assistedQueryColumn: #AssistedColumns for query，when use QueryAssistedEncryptAlgorithm, it can help query encrypted data
+          encryptStrategyName: #encrypt strategy name
 props:
   query.with.cipher.column: true #Whether use cipherColumn to query or not
 ```

@@ -52,22 +52,20 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter exten
         for (int index = 0; index < onDuplicateKeyUpdateValueContext.getValueExpressions().size(); index++) {
             final int columnIndex = index;
             String encryptLogicColumnName = onDuplicateKeyUpdateValueContext.getColumn(columnIndex).getIdentifier().getValue();
-            Optional<EncryptAlgorithm> encryptorOptional = getEncryptRule().findEncryptAlgorithm(tableName, encryptLogicColumnName);
-            encryptorOptional.ifPresent(encryptor -> {
+            Optional<EncryptAlgorithm> encryptAlgorithmOptional = getEncryptRule().findEncryptAlgorithm(tableName, encryptLogicColumnName);
+            encryptAlgorithmOptional.ifPresent(encryptAlgorithm -> {
                 Object plainColumnValue = onDuplicateKeyUpdateValueContext.getValue(columnIndex);
-                Object cipherColumnValue = encryptorOptional.get().encrypt(plainColumnValue);
+                Object cipherColumnValue = encryptAlgorithmOptional.get().encrypt(plainColumnValue);
                 groupedParameterBuilder.getOnDuplicateKeyUpdateParametersBuilder().addReplacedParameters(columnIndex, cipherColumnValue);
                 Collection<Object> addedParameters = new LinkedList<>();
-                if (encryptor instanceof QueryAssistedEncryptAlgorithm) {
+                if (encryptAlgorithm instanceof QueryAssistedEncryptAlgorithm) {
                     Optional<String> assistedColumnName = getEncryptRule().findAssistedQueryColumn(tableName, encryptLogicColumnName);
                     Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
-                    addedParameters.add(((QueryAssistedEncryptAlgorithm) encryptor).queryAssistedEncrypt(plainColumnValue.toString()));
+                    addedParameters.add(((QueryAssistedEncryptAlgorithm) encryptAlgorithm).queryAssistedEncrypt(plainColumnValue.toString()));
                 }
-
                 if (getEncryptRule().findPlainColumn(tableName, encryptLogicColumnName).isPresent()) {
                     addedParameters.add(plainColumnValue);
                 }
-
                 if (!addedParameters.isEmpty()) {
                     if (!groupedParameterBuilder.getOnDuplicateKeyUpdateParametersBuilder().getAddedIndexAndParameters().containsKey(columnIndex + 1)) {
                         groupedParameterBuilder.getOnDuplicateKeyUpdateParametersBuilder().getAddedIndexAndParameters().put(columnIndex + 1, new LinkedList<>());

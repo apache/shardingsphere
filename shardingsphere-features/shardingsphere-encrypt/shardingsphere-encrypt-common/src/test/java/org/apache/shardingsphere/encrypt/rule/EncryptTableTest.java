@@ -36,7 +36,7 @@ public final class EncryptTableTest {
     @Before
     public void setUp() {
         encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("", 
-                Collections.singleton(new EncryptColumnRuleConfiguration("key", "plainColumn", "cipherColumn", "plainColumn", "encryptor"))));
+                Collections.singleton(new EncryptColumnRuleConfiguration("key", "plainColumn", "cipherColumn", "plainColumn", "encryptStrategyName"))));
     }
     
     @Test
@@ -70,8 +70,8 @@ public final class EncryptTableTest {
     }
 
     @Test
-    public void assertGetEncryptor() {
-        assertTrue(encryptTable.findEncryptor("key").isPresent());
-        assertFalse(encryptTable.findEncryptor("notExistLogicColumn").isPresent());
+    public void assertGetEncryptStrategyName() {
+        assertTrue(encryptTable.findEncryptStrategyName("key").isPresent());
+        assertFalse(encryptTable.findEncryptStrategyName("notExistLogicColumn").isPresent());
     }
 }

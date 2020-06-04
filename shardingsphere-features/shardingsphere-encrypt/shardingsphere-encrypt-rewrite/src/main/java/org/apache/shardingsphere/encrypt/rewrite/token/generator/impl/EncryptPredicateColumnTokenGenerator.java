@@ -65,7 +65,7 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         for (PredicateSegment each : andPredicate.getPredicates()) {
             Optional<EncryptTable> encryptTable = findEncryptTable(sqlStatementContext, each);
-            if (!encryptTable.isPresent() || !encryptTable.get().findEncryptor(each.getColumn().getIdentifier().getValue()).isPresent()) {
+            if (!encryptTable.isPresent() || !encryptTable.get().findEncryptStrategyName(each.getColumn().getIdentifier().getValue()).isPresent()) {
                 continue;
             }
             int startIndex = each.getColumn().getOwner().isPresent() ? each.getColumn().getOwner().get().getStopIndex() + 2 : each.getColumn().getStartIndex();

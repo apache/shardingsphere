@@ -40,13 +40,13 @@ public final class EncryptDatabasesConfiguration implements ExampleConfiguration
         Properties properties = new Properties();
         properties.setProperty("aes.key.value", "123456");
         properties.setProperty("query.with.cipher.column", "true");
-        EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("user_name", "user_name_plain", "user_name", "", "name_encryptor");
-        EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", "", "pwd", "assisted_query_pwd", "pwd_encryptor");
+        EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("user_name", "user_name_plain", "user_name", "", "name_encrypt_strategy");
+        EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", "", "pwd", "assisted_query_pwd", "pwd_encrypt_strategy");
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_user", Arrays.asList(columnConfigAes, columnConfigTest));
-        Collection<EncryptStrategyConfiguration> encryptors = new LinkedList<>();
-        encryptors.add(new EncryptStrategyConfiguration("name_encryptor", "aes", properties));
-        encryptors.add(new EncryptStrategyConfiguration("pwd_encryptor", "assistedTest", properties));
-        EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(encryptors, Collections.singleton(tableConfig));
+        Collection<EncryptStrategyConfiguration> encryptStrategyConfigurations = new LinkedList<>();
+        encryptStrategyConfigurations.add(new EncryptStrategyConfiguration("name_encrypt_strategy", "aes", properties));
+        encryptStrategyConfigurations.add(new EncryptStrategyConfiguration("pwd_encrypt_strategy", "assistedTest", properties));
+        EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(encryptStrategyConfigurations, Collections.singleton(tableConfig));
         try {
             return ShardingSphereDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(encryptRuleConfiguration), properties);
         } catch (final SQLException ex) {

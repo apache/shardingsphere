@@ -54,8 +54,8 @@ public final class LocalEncryptConfiguration implements ExampleConfiguration {
     private EncryptRuleConfiguration getEncryptRuleConfiguration() {
         Properties properties = new Properties();
         properties.setProperty("aes.key.value", "123456");
-        EncryptStrategyConfiguration aesRuleConfiguration = new EncryptStrategyConfiguration("status_encryptor", "aes", properties);
-        EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("status", "", "status", "", "status_encryptor");
+        EncryptStrategyConfiguration aesRuleConfiguration = new EncryptStrategyConfiguration("status_encrypt_strategy", "aes", properties);
+        EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("status", "", "status", "", "status_encrypt_strategy");
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_order", Collections.singleton(columnConfigAes));
         return new EncryptRuleConfiguration(Collections.singleton(aesRuleConfiguration), Collections.singleton(tableConfig));
     }

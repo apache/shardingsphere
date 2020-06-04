@@ -33,8 +33,8 @@ dataSources:
 
 rules:
 - !ENCRYPT
-  encryptors:
-    status_encryptor:
+  encryptStrategies:
+    status_encrypt_strategy:
       type: aes
       props:
         aes.key.value: 123456
@@ -43,7 +43,7 @@ rules:
       columns:
         status:
           cipherColumn: status
-          encryptor: status_encryptor
+          encryptStrategyName: status_encrypt_strategy
 
 props:
   query.with.cipher.column: true

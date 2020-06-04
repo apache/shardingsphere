@@ -249,12 +249,12 @@ shardingRule:
         - slave_ds_3
       loadBalanceAlgorithmType: ROUND_ROBIN
 encryptRule:
-  encryptors:
-    encryptor_aes:
+  encryptStrategies:
+    encrypt_strategy_aes:
       type: aes
       props:
         aes.key.value: 123456abc
-    encryptor_md5:
+    encrypt_strategy_md5:
       type: md5
   tables:
     sbtest:
@@ -262,10 +262,10 @@ encryptRule:
         c:
           plainColumn: c_plain
           cipherColumn: c_cipher
-          encryptor: encryptor_aes
+          encryptStrategyName: encrypt_strategy_aes
         pad:
           cipherColumn: pad_cipher
-          encryptor: encryptor_md5    
+          encryptStrategyName: encrypt_strategy_md5    
 ```
 
 #### 全路由

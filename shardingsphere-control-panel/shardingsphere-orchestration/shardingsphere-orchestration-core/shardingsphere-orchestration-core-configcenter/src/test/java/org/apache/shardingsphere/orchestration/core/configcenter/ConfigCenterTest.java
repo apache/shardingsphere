@@ -119,12 +119,12 @@ public final class ConfigCenterTest {
             + "        type: SNOWFLAKE\n"
             + "        column: order_id\n"
             + "- !ENCRYPT\n"
-            + "  encryptors:\n"
-            + "    encryptor_aes:\n"
+            + "  encryptStrategies:\n"
+            + "    encrypt_strategy_aes:\n"
             + "      type: aes\n"
             + "      props:\n"
             + "        aes.key.value: 123456abcd\n"
-            + "    encryptor_md5:\n"
+            + "    encrypt_strategy_md5:\n"
             + "      type: md5\n"
             + "  tables:\n"
             + "    t_encrypt:\n"
@@ -132,10 +132,10 @@ public final class ConfigCenterTest {
             + "        user_id:\n"
             + "          plainColumn: user_plain\n"
             + "          cipherColumn: user_cipher\n"
-            + "          encryptor: encryptor_aes\n"
+            + "          encryptStrategyName: encrypt_strategy_aes\n"
             + "        order_id:\n"
             + "          cipherColumn: order_cipher\n"
-            + "          encryptor: encryptor_md5";
+            + "          encryptStrategyName: encrypt_strategy_md5";
     
     private static final String MASTER_SLAVE_RULE_YAML = ""
             + "rules:\n"
@@ -151,8 +151,8 @@ public final class ConfigCenterTest {
     private static final String ENCRYPT_RULE_YAML = ""
             + "rules:\n"
             + "- !ENCRYPT\n"
-            + "  encryptors:\n"
-            + "    order_encryptor:\n"
+            + "  encryptStrategies:\n"
+            + "    order_encrypt_strategy:\n"
             + "      props:\n"
             + "        aes.key.value: 123456\n"
             + "      type: aes\n"
@@ -161,7 +161,7 @@ public final class ConfigCenterTest {
             + "      columns:\n"
             + "        order_id:\n"
             + "          cipherColumn: order_id\n"
-            + "          encryptor: order_encryptor\n";
+            + "          encryptStrategyName: order_encrypt_strategy\n";
     
     private static final String SHADOW_RULE_YAML = ""
             + "rules:\n"
@@ -462,7 +462,7 @@ public final class ConfigCenterTest {
                 EncryptRuleConfiguration encryptRuleConfiguration = (EncryptRuleConfiguration) each;
                 assertThat(encryptRuleConfiguration.getEncryptStrategies().size(), is(2));
                 EncryptStrategyConfiguration encryptStrategyConfiguration = encryptRuleConfiguration.getEncryptStrategies().iterator().next();
-                assertThat(encryptStrategyConfiguration.getName(), is("encryptor_aes"));
+                assertThat(encryptStrategyConfiguration.getName(), is("encrypt_strategy_aes"));
                 assertThat(encryptStrategyConfiguration.getType(), is("aes"));
                 assertThat(encryptStrategyConfiguration.getProperties().get("aes.key.value").toString(), is("123456abcd"));
             }
@@ -498,7 +498,7 @@ public final class ConfigCenterTest {
         EncryptRuleConfiguration actual = (EncryptRuleConfiguration) configurationService.loadRuleConfigurations("sharding_db").iterator().next();
         assertThat(actual.getEncryptStrategies().size(), is(1));
         EncryptStrategyConfiguration encryptStrategyConfiguration = actual.getEncryptStrategies().iterator().next();
-        assertThat(encryptStrategyConfiguration.getName(), is("order_encryptor"));
+        assertThat(encryptStrategyConfiguration.getName(), is("order_encrypt_strategy"));
         assertThat(encryptStrategyConfiguration.getType(), is("aes"));
         assertThat(encryptStrategyConfiguration.getProperties().get("aes.key.value").toString(), is("123456"));
     }

@@ -28,10 +28,10 @@ import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatement
 import java.util.Optional;
 
 /**
- * Encryptor meta data.
+ * Encrypt algorithm meta data.
  */
 @RequiredArgsConstructor
-public final class EncryptorMetaData {
+public final class EncryptAlgorithmMetaData {
     
     private final SchemaMetaData schemaMetaData;
     
@@ -40,26 +40,26 @@ public final class EncryptorMetaData {
     private final SelectStatementContext selectStatementContext;
     
     /**
-     * Find encryptor.
+     * Find encrypt algorithm.
      *
      * @param columnIndex column index
-     * @return encryptor
+     * @return encrypt algorithm
      */
-    public Optional<EncryptAlgorithm> findEncryptor(final int columnIndex) {
+    public Optional<EncryptAlgorithm> findEncryptAlgorithm(final int columnIndex) {
         Projection projection = selectStatementContext.getProjectionsContext().getExpandProjections().get(columnIndex - 1);
         if (projection instanceof ColumnProjection) {
             String columnName = ((ColumnProjection) projection).getName();
             Optional<String> tableName = selectStatementContext.getTablesContext().findTableName((ColumnProjection) projection, schemaMetaData);
-            return tableName.isPresent() ? findEncryptor(tableName.get(), columnName) : findEncryptor(columnName);
+            return tableName.isPresent() ? findEncryptAlgorithm(tableName.get(), columnName) : findEncryptAlgorithm(columnName);
         }
         return Optional.empty();
     }
     
-    private Optional<EncryptAlgorithm> findEncryptor(final String tableName, final String columnName) {
+    private Optional<EncryptAlgorithm> findEncryptAlgorithm(final String tableName, final String columnName) {
         return encryptRule.findEncryptAlgorithm(tableName, columnName);
     }
     
-    private Optional<EncryptAlgorithm> findEncryptor(final String columnName) {
+    private Optional<EncryptAlgorithm> findEncryptAlgorithm(final String columnName) {
         for (String each : selectStatementContext.getTablesContext().getTableNames()) {
             Optional<EncryptAlgorithm> result = encryptRule.findEncryptAlgorithm(each, columnName);
             if (result.isPresent()) {

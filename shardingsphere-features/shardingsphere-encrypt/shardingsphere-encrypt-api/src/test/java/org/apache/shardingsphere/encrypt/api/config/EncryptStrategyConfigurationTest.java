@@ -28,12 +28,12 @@ public final class EncryptStrategyConfigurationTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertConstructorWithoutType() {
-        new EncryptStrategyConfiguration("test_encryptor", null, new Properties());
+        new EncryptStrategyConfiguration("test_encrypt_strategy", null, new Properties());
     }
     
     @Test
     public void assertConstructorWithoutAssistedQueryColumnsAndProperties() {
-        EncryptStrategyConfiguration actual = new EncryptStrategyConfiguration("test_encryptor", "TEST", new Properties());
+        EncryptStrategyConfiguration actual = new EncryptStrategyConfiguration("test_encrypt_strategy", "TEST", new Properties());
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getProperties(), is(new Properties()));
     }
@@ -42,7 +42,7 @@ public final class EncryptStrategyConfigurationTest {
     public void assertConstructorWithMinArguments() {
         Properties props = new Properties();
         props.setProperty("key", "value");
-        EncryptStrategyConfiguration actual = new EncryptStrategyConfiguration("test_encryptor", "TEST", props);
+        EncryptStrategyConfiguration actual = new EncryptStrategyConfiguration("test_encrypt_strategy", "TEST", props);
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getProperties(), is(props));
     }
@@ -51,7 +51,7 @@ public final class EncryptStrategyConfigurationTest {
     public void assertConstructorWithMaxArguments() {
         Properties props = new Properties();
         props.setProperty("key", "value");
-        EncryptStrategyConfiguration actual = new EncryptStrategyConfiguration("test_encryptor", "TEST", props);
+        EncryptStrategyConfiguration actual = new EncryptStrategyConfiguration("test_encrypt_strategy", "TEST", props);
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getProperties(), is(props));
     }

@@ -88,7 +88,7 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator extends BaseE
         Iterator<String> descendingColumnNames = sqlStatementContext.getDescendingColumnNames();
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
-            if (encryptTable.findEncryptor(columnName).isPresent()) {
+            if (encryptTable.findEncryptStrategyName(columnName).isPresent()) {
                 int columnIndex = result.indexOf(columnName);
                 addPlainColumn(result, encryptTable, columnName, columnIndex);
                 addAssistedQueryColumn(result, encryptTable, columnName, columnIndex);

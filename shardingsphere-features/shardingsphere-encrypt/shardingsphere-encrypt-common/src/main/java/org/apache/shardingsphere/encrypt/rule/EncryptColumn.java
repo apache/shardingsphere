@@ -36,7 +36,7 @@ public final class EncryptColumn {
     
     private final String plainColumn;
     
-    private final String encryptor;
+    private final String encryptStrategyName;
     
     /**
      * Get assisted query column.

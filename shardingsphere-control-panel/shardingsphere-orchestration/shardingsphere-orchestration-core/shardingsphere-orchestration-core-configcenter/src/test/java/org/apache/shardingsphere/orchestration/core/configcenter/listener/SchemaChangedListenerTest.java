@@ -124,7 +124,7 @@ public final class SchemaChangedListenerTest {
         EncryptRuleConfiguration encryptRuleConfiguration = (EncryptRuleConfiguration) event.getRuleConfigurations().iterator().next();
         assertThat(encryptRuleConfiguration.getEncryptStrategies().size(), is(1));
         EncryptStrategyConfiguration encryptStrategyConfiguration = encryptRuleConfiguration.getEncryptStrategies().iterator().next();
-        assertThat(encryptStrategyConfiguration.getName(), is("order_encryptor"));
+        assertThat(encryptStrategyConfiguration.getName(), is("order_encrypt_strategy"));
         assertThat(encryptStrategyConfiguration.getType(), is("aes"));
         assertThat(encryptStrategyConfiguration.getProperties().get("aes.key.value").toString(), is("123456"));
     }

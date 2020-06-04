@@ -31,17 +31,17 @@ import org.apache.shardingsphere.infra.merge.result.impl.transparent.Transparent
 @RequiredArgsConstructor
 public final class EncryptDQLResultDecorator implements ResultDecorator {
     
-    private final EncryptorMetaData encryptorMetaData;
+    private final EncryptAlgorithmMetaData metaData;
     
     private final boolean queryWithCipherColumn;
     
     @Override
     public MergedResult decorate(final QueryResult queryResult, final SQLStatementContext sqlStatementContext, final SchemaMetaData schemaMetaData) {
-        return new EncryptMergedResult(encryptorMetaData, new TransparentMergedResult(queryResult), queryWithCipherColumn);
+        return new EncryptMergedResult(metaData, new TransparentMergedResult(queryResult), queryWithCipherColumn);
     }
     
     @Override
     public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final SchemaMetaData schemaMetaData) {
-        return new EncryptMergedResult(encryptorMetaData, mergedResult, queryWithCipherColumn);
+        return new EncryptMergedResult(metaData, mergedResult, queryWithCipherColumn);
     }
 }

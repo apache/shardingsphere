@@ -30,31 +30,31 @@ rules:
         certificate_number:
           cipherColumn: cipher_certificate_number
           assistedQueryColumn: assisted_query_certificate_number
-          encryptor: assisted_query
+          encryptStrategyName: assisted_query
         password:
           cipherColumn: cipher_password
           assistedQueryColumn: assisted_query_password
-          encryptor: assisted_query
+          encryptStrategyName: assisted_query
         amount:
           cipherColumn: cipher_amount
-          encryptor: normal
+          encryptStrategyName: normal
     t_account_bak:
       columns:
         certificate_number:
           cipherColumn: cipher_certificate_number
           assistedQueryColumn: assisted_query_certificate_number
           plainColumn: plain_certificate_number
-          encryptor: assisted_query
+          encryptStrategyName: assisted_query
         password:
           cipherColumn: cipher_password
           assistedQueryColumn: assisted_query_password
           plainColumn: plain_password
-          encryptor: assisted_query
+          encryptStrategyName: assisted_query
         amount:
           cipherColumn: cipher_amount
           plainColumn: plain_amount
-          encryptor: normal
-  encryptors:
+          encryptStrategyName: normal
+  encryptStrategies:
     normal:
       type: NORMAL_ENCRYPT
     assisted_query:
