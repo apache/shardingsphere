@@ -16,7 +16,7 @@ Attributes:
 
 ## Encrypt Strategy Configuration
 
-Class name: org.apache.shardingsphere.encrypt.api.config.EncryptStrategyConfiguration
+Class name: org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration
 
 Attributes:
 
@@ -56,7 +56,7 @@ Attributes:
 
 ## Encrypt Table Rule Configuration
 
-Class name: org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration
+Class name: org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration
 
 Attributes:
 
@@ -67,7 +67,7 @@ Attributes:
 
 ### Encrypt Column Rule Configuration
 
-Class name: org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration
+Class name: org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration
 
 Attributes:
 

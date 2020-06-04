@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.api.config;
 
+import org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration;
 import org.junit.Test;
 
 import java.util.Properties;

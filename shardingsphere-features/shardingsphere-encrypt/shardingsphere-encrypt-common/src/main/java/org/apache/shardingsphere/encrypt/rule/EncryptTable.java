@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.encrypt.rule;
 
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import java.util.Collection;

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.yaml.swapper;
 
-import org.apache.shardingsphere.encrypt.api.config.EncryptStrategyConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptStrategyConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 

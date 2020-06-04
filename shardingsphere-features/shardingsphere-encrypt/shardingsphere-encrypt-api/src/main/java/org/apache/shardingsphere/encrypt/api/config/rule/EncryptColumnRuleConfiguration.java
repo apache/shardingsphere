@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.api.config;
+package org.apache.shardingsphere.encrypt.api.config.rule;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

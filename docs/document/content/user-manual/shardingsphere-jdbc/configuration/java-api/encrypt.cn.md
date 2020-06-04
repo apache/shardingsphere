@@ -16,7 +16,7 @@ weight = 3
 
 ## 加解密策略配置
 
-类名称：org.apache.shardingsphere.encrypt.api.config.EncryptStrategyConfiguration
+类名称：org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration
 
 可配置属性：
 
@@ -56,7 +56,7 @@ Apache ShardingSphere 内置的加解密算法实现类包括：
 
 ## 加密表规则配置
 
-类名称：org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration
+类名称：org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration
 
 可配置属性：
 
@@ -67,7 +67,7 @@ Apache ShardingSphere 内置的加解密算法实现类包括：
 
 ### 加密列规则配置
 
-类名称：org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration
+类名称：org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration
 
 可配置属性：
 
