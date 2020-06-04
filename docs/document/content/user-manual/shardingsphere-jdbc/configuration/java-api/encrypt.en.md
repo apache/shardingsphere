@@ -77,4 +77,4 @@ Attributes:
 | plainColumn (?)         | String     | Plain column name          |
 | cipherColumn            | String     | Cipher column name         |
 | assistedQueryColumn (?) | String     | Assisted query column name |
-| encryptorName           | String     | Encrypt strategy name      |
+| encryptStrategyName     | String     | Encrypt strategy name      |
