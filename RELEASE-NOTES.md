@@ -1,3 +1,26 @@
+## 4.1.1
+
+### Enhancement
+
+1. Add Sharding-Scaling & Sharding-UI dockerfile
+1. update MySQL & PostgreSQL version for proxy
+
+### Bug Fixes
+
+1. Fix parser syntax rule of SUBSTRING and CONVERT
+1. Fix parser ColumnSegment ClassCastException
+1. Fix TableMetaData load error when use Sharding-JDBC with oracle
+1. Fix getSchema NPE when use Sharding-JDBC with oracle
+1. Fix Sharding-JDBC parse sql NPE in PostgreSQL 
+1. Fix Sharding-Proxy receive error response for PostgreSQL JDBC client
+1. Fix Sharding-Proxy response number of update is 0 for PostgreSQL JDBC client
+1. Fix Sharding-Proxy receive null for PostgreSQL column meta data
+1. Fix Sharding-Scaling NPE in MySQL incremental task
+
+###  Change Logs
+
+1. [MILESTONE](https://github.com/apache/shardingsphere/milestone/13)
+
 ## 4.1.0
 
 ### New Features
