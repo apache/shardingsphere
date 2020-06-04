@@ -19,9 +19,14 @@ package org.apache.shardingsphere.cluster.heartbeat;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.cluster.configuration.config.HeartbeatConfiguration;
+import org.apache.shardingsphere.cluster.heartbeat.detect.HeartbeatHandler;
 import org.apache.shardingsphere.cluster.heartbeat.event.HeartbeatDetectNoticeEvent;
+import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResponse;
 import org.apache.shardingsphere.cluster.heartbeat.task.HeartbeatTask;
 import org.apache.shardingsphere.cluster.heartbeat.task.HeartbeatTaskManager;
+import org.apache.shardingsphere.kernel.context.SchemaContext;
+
+import java.util.Map;
 
 /**
  * Cluster heartbeat instance.
@@ -29,6 +34,8 @@ import org.apache.shardingsphere.cluster.heartbeat.task.HeartbeatTaskManager;
 public final class ClusterHeartbeatInstance {
     
     private HeartbeatTaskManager heartbeatTaskManager;
+    
+    private HeartbeatHandler heartbeatHandler = HeartbeatHandler.getInstance();
     
     /**
      * Get cluster heartbeat instance.
@@ -46,9 +53,20 @@ public final class ClusterHeartbeatInstance {
      */
     public void init(final HeartbeatConfiguration configuration) {
         Preconditions.checkNotNull(configuration, "heartbeat configuration can not be null.");
+        heartbeatHandler.init(configuration);
         heartbeatTaskManager = new HeartbeatTaskManager(configuration.getInterval());
         HeartbeatTask task = new HeartbeatTask(new HeartbeatDetectNoticeEvent());
         heartbeatTaskManager.start(task);
+    }
+    
+    /**
+     * Detect heartbeat.
+     *
+     * @param schemaContexts schema contexts
+     * @return heartbeat response
+     */
+    public HeartbeatResponse detect(final Map<String, SchemaContext> schemaContexts) {
+        return heartbeatHandler.handle(schemaContexts);
     }
     
     private static final class ClusterHeartbeatInstanceHolder {

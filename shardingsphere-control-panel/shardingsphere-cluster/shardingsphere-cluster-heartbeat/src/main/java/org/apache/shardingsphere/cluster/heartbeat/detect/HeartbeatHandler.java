@@ -15,26 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.cluster;
+package org.apache.shardingsphere.cluster.heartbeat.detect;
 
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.cluster.configuration.config.HeartbeatConfiguration;
-import org.apache.shardingsphere.cluster.facade.ClusterFacade;
 import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResponse;
 import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResult;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
+import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
@@ -72,18 +71,20 @@ public final class HeartbeatHandler {
      * Handle heartbeat detect event.
      *
      * @param schemaContexts schema contexts
+     * @return heartbeat response
      */
-    public void handle(final Map<String, SchemaContext> schemaContexts) {
+    public HeartbeatResponse handle(final Map<String, SchemaContext> schemaContexts) {
         ExecutorService executorService = Executors.newFixedThreadPool(configuration.getThreadCount());
         List<Future<Map<String, HeartbeatResult>>> futureTasks = new ArrayList<>();
         schemaContexts.forEach((key, value) -> value.getSchema().getDataSources().forEach((innerKey, innerValue) -> {
             futureTasks.add(executorService.submit(new HeartbeatDetect(key, innerKey, innerValue, configuration)));
         }));
-        reportHeartbeat(futureTasks);
+        HeartbeatResponse heartbeatResponse = buildHeartbeatResponse(futureTasks);
         closeExecutor(executorService);
+        return heartbeatResponse;
     }
     
-    private void reportHeartbeat(final List<Future<Map<String, HeartbeatResult>>> futureTasks) {
+    private HeartbeatResponse buildHeartbeatResponse(final List<Future<Map<String, HeartbeatResult>>> futureTasks) {
         Map<String, Collection<HeartbeatResult>> heartbeatResultMap = futureTasks.stream().map(e -> {
             try {
                 return e.get(FUTURE_GET_TIME_OUT_MILLISECONDS, TimeUnit.MILLISECONDS);
@@ -92,7 +93,7 @@ public final class HeartbeatHandler {
                 return new HashMap<String, HeartbeatResult>();
             }
         }).flatMap(map -> map.entrySet().stream()).collect(Collectors.groupingBy(Map.Entry::getKey, HashMap::new, Collectors.mapping(Map.Entry::getValue, Collectors.toCollection(ArrayList::new))));
-        ClusterFacade.getInstance().reportHeartbeat(new HeartbeatResponse(heartbeatResultMap));
+        return new HeartbeatResponse(heartbeatResultMap);
     }
     
     private void closeExecutor(final ExecutorService executorService) {

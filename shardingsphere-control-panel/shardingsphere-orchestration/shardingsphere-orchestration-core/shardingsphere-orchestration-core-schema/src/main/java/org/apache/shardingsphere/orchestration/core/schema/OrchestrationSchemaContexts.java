@@ -18,6 +18,9 @@
 package org.apache.shardingsphere.orchestration.core.schema;
 
 import com.google.common.eventbus.Subscribe;
+import org.apache.shardingsphere.cluster.facade.ClusterFacade;
+import org.apache.shardingsphere.cluster.heartbeat.event.HeartbeatDetectNoticeEvent;
+import org.apache.shardingsphere.cluster.heartbeat.eventbus.HeartbeatEventBus;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -70,6 +73,7 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
     
     public OrchestrationSchemaContexts(final SchemaContexts schemaContexts) {
         ShardingOrchestrationEventBus.getInstance().register(this);
+        HeartbeatEventBus.getInstance().register(this);
         this.schemaContexts = schemaContexts;
     }
     
@@ -223,6 +227,16 @@ public abstract class OrchestrationSchemaContexts implements SchemaContextsAware
     @Subscribe
     public synchronized void renew(final CircuitStateChangedEvent event) {
         this.schemaContexts = new SchemaContexts(schemaContexts.getSchemaContexts(), schemaContexts.getProperties(), schemaContexts.getAuthentication(), event.isCircuitBreak());
+    }
+    
+    /**
+     * Heart beat detect.
+     *
+     * @param event heart beat detect notice event
+     */
+    @Subscribe
+    public synchronized void heartbeat(final HeartbeatDetectNoticeEvent event) {
+        ClusterFacade.getInstance().detectHeartbeat(schemaContexts.getSchemaContexts());
     }
     
     private SchemaContext getAddedSchemaContext(final SchemaAddedEvent schemaAddedEvent) throws Exception {

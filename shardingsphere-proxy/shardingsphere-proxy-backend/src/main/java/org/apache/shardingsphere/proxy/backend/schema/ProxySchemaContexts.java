@@ -18,16 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.schema;
 
 import com.google.common.base.Strings;
-import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
-import org.apache.shardingsphere.cluster.heartbeat.event.HeartbeatDetectNoticeEvent;
-import org.apache.shardingsphere.cluster.heartbeat.eventbus.HeartbeatEventBus;
 import org.apache.shardingsphere.infra.executor.sql.ConnectionMode;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.kernel.context.SchemaContextsAware;
 import org.apache.shardingsphere.proxy.backend.BackendDataSource;
-import org.apache.shardingsphere.proxy.backend.cluster.HeartbeatHandler;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
 
@@ -53,9 +49,7 @@ public final class ProxySchemaContexts {
     
     private final JDBCBackendDataSource backendDataSource = new JDBCBackendDataSource();
     
-    private ProxySchemaContexts() {
-        HeartbeatEventBus.getInstance().register(this);
-    }
+    private ProxySchemaContexts() { }
     
     /**
      * Get instance of proxy schema schemas.
@@ -102,16 +96,6 @@ public final class ProxySchemaContexts {
      */
     public List<String> getSchemaNames() {
         return new LinkedList<>(schemaContexts.getSchemaContexts().keySet());
-    }
-    
-    /**
-     * Heart beat detect.
-     *
-     * @param event heart beat detect notice event
-     */
-    @Subscribe
-    public synchronized void heartbeat(final HeartbeatDetectNoticeEvent event) {
-        HeartbeatHandler.getInstance().handle(schemaContexts.getSchemaContexts());
     }
     
     public final class JDBCBackendDataSource implements BackendDataSource {

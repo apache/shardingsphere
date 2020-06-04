@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.cluster;
+package org.apache.shardingsphere.cluster.heartbeat.detect;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.cluster.configuration.config.HeartbeatConfiguration;
