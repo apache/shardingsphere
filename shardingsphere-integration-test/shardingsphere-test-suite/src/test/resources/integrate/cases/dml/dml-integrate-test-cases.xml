@@ -181,7 +181,8 @@
         <assertion expected-data-file="delete_with_special_comments_returning_without_sharding_value.xml" />
     </dml-test-case>
 
-    <dml-test-case sql="DELETE o FROM t_order AS o WHERE status=?" db-types="MySQL,Oracle,SQLServer">
-        <assertion parameters="init:String" expected-data-file="delete_with_alias.xml" />
-    </dml-test-case>
+    <!-- Can't support delete multiple tables-->
+    <!--<dml-test-case sql="DELETE o FROM t_order AS o WHERE status=?" db-types="MySQL,Oracle,SQLServer">-->
+        <!--<assertion parameters="init:String" expected-data-file="delete_with_alias.xml" />-->
+    <!--</dml-test-case>-->
 </integrate-test-cases>
