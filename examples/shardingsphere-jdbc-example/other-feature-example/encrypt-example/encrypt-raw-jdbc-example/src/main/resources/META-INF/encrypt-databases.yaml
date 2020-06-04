@@ -25,11 +25,11 @@ dataSources:
 rules:
 - !ENCRYPT
   encryptStrategies:
-    name_encryptror:
+    name_encrypt_strategy:
       type: aes
       props:
         aes.key.value: 123456
-    pwd_encryptror:
+    pwd_encrypt_strategy:
       type: assistedTest
   tables:
     t_user:
@@ -37,11 +37,11 @@ rules:
         user_name:
           plainColumn: user_name_plain
           cipherColumn: user_name
-          encryptStrategyName: name_encryptror
+          encryptStrategyName: name_encrypt_strategy
         pwd:
           cipherColumn: pwd
           assistedQueryColumn: assisted_query_pwd
-          encryptStrategyName: pwd_encryptror
+          encryptStrategyName: pwd_encrypt_strategy
 
 props:
   query.with.cipher.column: true

@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.spring.namespace.orchestration;
 
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.EncryptStrategyConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.spring.namespace.orchestration.util.EmbedTestingServer;

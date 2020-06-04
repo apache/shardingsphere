@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.example.shadow.table.raw.jdbc.config;
 
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.EncryptStrategyConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -55,8 +55,8 @@ public final class EncryptShadowDatabasesConfiguration implements ExampleConfigu
         Collection<EncryptStrategyConfiguration> result = new LinkedList<>();
         Properties properties = new Properties();
         properties.setProperty("aes.key.value", "123456");
-        EncryptStrategyConfiguration nameEncryptStrategyConfiguration = new EncryptStrategyConfiguration("name_encryptror", "aes", properties);
-        EncryptStrategyConfiguration pwdEncryptStrategyConfiguration = new EncryptStrategyConfiguration("pwd_encryptror", "assistedTest", null);
+        EncryptStrategyConfiguration nameEncryptStrategyConfiguration = new EncryptStrategyConfiguration("name_encrypt_strategy", "aes", properties);
+        EncryptStrategyConfiguration pwdEncryptStrategyConfiguration = new EncryptStrategyConfiguration("pwd_encrypt_strategy", "assistedTest", null);
         result.add(nameEncryptStrategyConfiguration);
         result.add(pwdEncryptStrategyConfiguration);
         return result;
@@ -65,8 +65,8 @@ public final class EncryptShadowDatabasesConfiguration implements ExampleConfigu
     private Collection<EncryptTableRuleConfiguration> getEncryptTableRuleConfigurations() {
         Collection<EncryptTableRuleConfiguration> result = new LinkedList<>();
         Collection<EncryptColumnRuleConfiguration> columns = new LinkedList<>();
-        columns.add(new EncryptColumnRuleConfiguration("user_name", "user_name_plain", "user_name", "", "name_encryptror"));
-        columns.add(new EncryptColumnRuleConfiguration("pwd", "", "pwd", "assisted_query_pwd", "pwd_encryptror"));
+        columns.add(new EncryptColumnRuleConfiguration("user_name", "user_name", "", "user_name_plain", "name_encrypt_strategy"));
+        columns.add(new EncryptColumnRuleConfiguration("pwd", "pwd", "assisted_query_pwd", "", "pwd_encrypt_strategy"));
         result.add(new EncryptTableRuleConfiguration("t_user", columns));
         return result;
     }
