@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import org.apache.shardingsphere.sql.parser.binder.metadata.util.JdbcUtil;
 
 /**
  * Column meta data loader.
@@ -52,13 +53,13 @@ public final class ColumnMetaDataLoader {
      */
     public static Collection<ColumnMetaData> load(final Connection connection, final String table, final String databaseType) throws SQLException {
         Collection<ColumnMetaData> result = new LinkedList<>();
-        Collection<String> primaryKeys = loadPrimaryKeys(connection, table);
+        Collection<String> primaryKeys = loadPrimaryKeys(connection, table, databaseType);
         List<String> columnNames = new ArrayList<>();
         List<Integer> columnTypes = new ArrayList<>();
         List<String> columnTypeNames = new ArrayList<>();
         List<Boolean> isPrimaryKeys = new ArrayList<>();
         List<Boolean> isCaseSensitives = new ArrayList<>();
-        try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), connection.getSchema(), table, "%")) {
+        try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), JdbcUtil.getSchema(connection, databaseType), table, "%")) {
             while (resultSet.next()) {
                 String columnName = resultSet.getString(COLUMN_NAME);
                 columnTypes.add(resultSet.getInt(DATA_TYPE));
@@ -99,9 +100,9 @@ public final class ColumnMetaDataLoader {
         return "SELECT * FROM " + delimiterLeft + table + delimiterRight + " WHERE 1 != 1";
     }
     
-    private static Collection<String> loadPrimaryKeys(final Connection connection, final String table) throws SQLException {
+    private static Collection<String> loadPrimaryKeys(final Connection connection, final String table, final String databaseType) throws SQLException {
         Collection<String> result = new HashSet<>();
-        try (ResultSet resultSet = connection.getMetaData().getPrimaryKeys(connection.getCatalog(), connection.getSchema(), table)) {
+        try (ResultSet resultSet = connection.getMetaData().getPrimaryKeys(connection.getCatalog(), JdbcUtil.getSchema(connection, databaseType), table)) {
             while (resultSet.next()) {
                 result.add(resultSet.getString(COLUMN_NAME));
             }

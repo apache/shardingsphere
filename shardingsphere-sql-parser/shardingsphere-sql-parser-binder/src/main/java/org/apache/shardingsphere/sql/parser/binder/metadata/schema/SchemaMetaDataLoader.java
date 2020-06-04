@@ -41,6 +41,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import org.apache.shardingsphere.sql.parser.binder.metadata.util.JdbcUtil;
 
 /**
  * Schema meta data loader.
@@ -79,7 +80,7 @@ public final class SchemaMetaDataLoader {
     public static SchemaMetaData load(final DataSource dataSource, final int maxConnectionCount, final String databaseType, final Collection<String> excludedTableNames) throws SQLException {
         List<String> tableNames;
         try (MetaDataConnection connection = new MetaDataConnection(dataSource.getConnection())) {
-            tableNames = loadAllTableNames(connection);
+            tableNames = loadAllTableNames(connection, databaseType);
             tableNames.removeAll(excludedTableNames);
         }
         log.info("Loading {} tables' meta data.", tableNames.size());
@@ -96,15 +97,15 @@ public final class SchemaMetaDataLoader {
         try (MetaDataConnection connection = new MetaDataConnection(con)) {
             Map<String, TableMetaData> result = new LinkedHashMap<>();
             for (String each : tables) {
-                result.put(each, new TableMetaData(ColumnMetaDataLoader.load(connection, each, databaseType), IndexMetaDataLoader.load(connection, each)));
+                result.put(each, new TableMetaData(ColumnMetaDataLoader.load(connection, each, databaseType), IndexMetaDataLoader.load(connection, each, databaseType)));
             }
             return result;
         }
     }
     
-    private static List<String> loadAllTableNames(final Connection connection) throws SQLException {
+    private static List<String> loadAllTableNames(final Connection connection, final String databaseType) throws SQLException {
         List<String> result = new LinkedList<>();
-        try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), connection.getSchema(), null, new String[]{TABLE_TYPE})) {
+        try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), JdbcUtil.getSchema(connection, databaseType), null, new String[]{TABLE_TYPE})) {
             while (resultSet.next()) {
                 String table = resultSet.getString(TABLE_NAME);
                 if (!isSystemTable(table)) {
