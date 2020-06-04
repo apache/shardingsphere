@@ -66,7 +66,7 @@ public final class EncryptConfigurationLoggerTest {
         String yaml = "rules:\n"
                 + "- !ENCRYPT\n"
                 + "  encryptStrategies:\n"
-                + "    encrypt_strategy_aes:\n"
+                + "    aes_encrypt_strategy:\n"
                 + "      props:\n"
                 + "        aes.key.value: 123456abc\n"
                 + "      type: aes\n"
@@ -76,7 +76,7 @@ public final class EncryptConfigurationLoggerTest {
                 + "        user_id:\n"
                 + "          assistedQueryColumn: user_assisted\n"
                 + "          cipherColumn: user_encrypt\n"
-                + "          encryptStrategyName: encrypt_strategy_aes\n"
+                + "          encryptStrategyName: aes_encrypt_strategy\n"
                 + "          plainColumn: user_decrypt\n";
         assertLogInfo(yaml);
         ConfigurationLogger.log(Collections.singletonList(getEncryptConfiguration()));
@@ -85,9 +85,9 @@ public final class EncryptConfigurationLoggerTest {
     private EncryptRuleConfiguration getEncryptConfiguration() {
         Properties properties = new Properties();
         properties.put("aes.key.value", "123456abc");
-        EncryptStrategyConfiguration encryptStrategyConfiguration = new EncryptStrategyConfiguration("encrypt_strategy_aes", "aes", properties);
+        EncryptStrategyConfiguration encryptStrategyConfiguration = new EncryptStrategyConfiguration("aes_encrypt_strategy", "aes", properties);
         EncryptTableRuleConfiguration encryptTableRuleConfiguration = new EncryptTableRuleConfiguration(
-                "t_encrypt", Collections.singleton(new EncryptColumnRuleConfiguration("user_id", "user_encrypt", "user_assisted", "user_decrypt", "encrypt_strategy_aes")));
+                "t_encrypt", Collections.singleton(new EncryptColumnRuleConfiguration("user_id", "user_encrypt", "user_assisted", "user_decrypt", "aes_encrypt_strategy")));
         return new EncryptRuleConfiguration(Collections.singleton(encryptStrategyConfiguration), Collections.singleton(encryptTableRuleConfiguration));
     }
     

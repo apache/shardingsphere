@@ -187,17 +187,17 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
         <encrypt:encrypt-rule>
             <encrypt:tables>
                 <encrypt:table name="t_order">
-                    <encrypt:column logic-column="user_id" cipher-column="user_encrypt" assisted-query-column="user_assisted" plain-column="user_decrypt" encrypt-strategy-ref="encrypt_strategy_aes" />
-                    <encrypt:column logic-column="order_id" cipher-column="order_encrypt" assisted-query-column="order_assisted" plain-column="order_decrypt" encrypt-strategy-ref="encrypt_strategy_md5" />
+                    <encrypt:column logic-column="user_id" cipher-column="user_encrypt" assisted-query-column="user_assisted" plain-column="user_decrypt" encrypt-strategy-ref="aes_encrypt_strategy" />
+                    <encrypt:column logic-column="order_id" cipher-column="order_encrypt" assisted-query-column="order_assisted" plain-column="order_decrypt" encrypt-strategy-ref="md5_encrypt_strategy" />
                 </encrypt:table>
             </encrypt:tables>
             <encrypt:encrypt-strategies>
-                <encrypt:encrypt-strategy id="encrypt_strategy_aes" type="AES">
+                <encrypt:encrypt-strategy id="aes_encrypt_strategy" type="AES">
                     <props>
                         <prop key="aes.key.value">123456</prop>
                     </props>
                 </encrypt:encrypt-strategy>
-                <encrypt:encrypt-strategy id="encrypt_strategy_md5" type="MD5" />
+                <encrypt:encrypt-strategy id="md5_encrypt_strategy" type="MD5" />
             </encrypt:encrypt-strategies>
         </encrypt:encrypt-rule>
         <encrypt:props>
@@ -406,17 +406,17 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
             <sharding:encrypt-rule>
                 <encrypt:tables>
                     <encrypt:table name="t_order">
-                        <encrypt:column logic-column="user_id" cipher-column="user_encrypt" assisted-query-column="user_assisted" plain-column="user_decrypt" encrypt-strategy-ref="encrypt_strategy_aes" />
-                        <encrypt:column logic-column="order_id" cipher-column="order_encrypt" assisted-query-column="order_assisted" plain-column="order_decrypt" encrypt-strategy-ref="encrypt_strategy_md5" />
+                        <encrypt:column logic-column="user_id" cipher-column="user_encrypt" assisted-query-column="user_assisted" plain-column="user_decrypt" encrypt-strategy-ref="aes_encrypt_strategy" />
+                        <encrypt:column logic-column="order_id" cipher-column="order_encrypt" assisted-query-column="order_assisted" plain-column="order_decrypt" encrypt-strategy-ref="md5_encrypt_strategy" />
                     </encrypt:table>
                 </encrypt:tables>
                 <encrypt:encrypt-strategies>
-                    <encrypt:encrypt-strategy id="encrypt_strategy_aes" type="AES">
+                    <encrypt:encrypt-strategy id="aes_encrypt_strategy" type="AES">
                         <props>
                             <prop key="aes.key.value">123456</prop>
                         </props>
                     </encrypt:encrypt-strategy>
-                    <encrypt:encrypt-strategy id="encrypt_strategy_md5" type="MD5" />
+                    <encrypt:encrypt-strategy id="md5_encrypt_strategy" type="MD5" />
                 </encrypt:encrypt-strategies>
             </sharding:encrypt-rule>
 
