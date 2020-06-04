@@ -38,6 +38,6 @@ public final class DataChangedEvent {
      */
     public enum ChangedType {
         
-        UPDATED, DELETED, IGNORED
+        UPDATED, DELETED, IGNORED, ADDED
     }
 }

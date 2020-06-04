@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.orchestration.center.instance;
 
-import com.google.common.util.concurrent.SettableFuture;
 import lombok.SneakyThrows;
 import org.apache.curator.framework.CuratorFramework;
 
@@ -30,7 +29,6 @@ import org.junit.Test;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -84,10 +82,11 @@ public final class CuratorZookeeperCenterRepositoryTest {
     @Test
     public void assertWatchUpdatedChangedType() throws Exception {
         centerRepository.persist("/test/children_updated/1", "value1");
-        final SettableFuture<DataChangedEvent> future = SettableFuture.create();
-        centerRepository.watch("/test/children_updated", future::set);
+        AtomicReference<DataChangedEvent> dataChangedEventActual = new AtomicReference<>();
+        centerRepository.watch("/test/children_updated", dataChangedEvent -> dataChangedEventActual.set(dataChangedEvent));
         centerRepository.persist("/test/children_updated/1", "value2");
-        DataChangedEvent dataChangedEvent = future.get(5, TimeUnit.SECONDS);
+        Thread.sleep(50L);
+        DataChangedEvent dataChangedEvent = dataChangedEventActual.get();
         assertNotNull(dataChangedEvent);
         assertThat(dataChangedEvent.getChangedType(), is(DataChangedEvent.ChangedType.UPDATED));
         assertThat(dataChangedEvent.getKey(), is("/test/children_updated/1"));
@@ -98,13 +97,14 @@ public final class CuratorZookeeperCenterRepositoryTest {
     @Test
     public void assertWatchDeletedChangedType() throws Exception {
         centerRepository.persist("/test/children_deleted/5", "value5");
-        SettableFuture<DataChangedEvent> future = SettableFuture.create();
-        centerRepository.watch("/test/children_deleted/5", future::set);
         Field field = CuratorZookeeperCenterRepository.class.getDeclaredField("client");
         field.setAccessible(true);
         CuratorFramework client = (CuratorFramework) field.get(centerRepository);
+        AtomicReference<DataChangedEvent> dataChangedEventActual = new AtomicReference<>();
+        centerRepository.watch("/test/children_deleted/5", dataChangedEvent -> dataChangedEventActual.set(dataChangedEvent));
         client.delete().forPath("/test/children_deleted/5");
-        DataChangedEvent dataChangedEvent = future.get(5, TimeUnit.SECONDS);
+        Thread.sleep(50L);
+        DataChangedEvent dataChangedEvent = dataChangedEventActual.get();
         assertNotNull(dataChangedEvent);
         assertThat(dataChangedEvent.getChangedType(), is(DataChangedEvent.ChangedType.DELETED));
         assertThat(dataChangedEvent.getKey(), is("/test/children_deleted/5"));
@@ -117,7 +117,11 @@ public final class CuratorZookeeperCenterRepositoryTest {
         AtomicReference<DataChangedEvent> actualDataChangedEvent = new AtomicReference<>();
         centerRepository.watch("/test/children_added", actualDataChangedEvent::set);
         Thread.sleep(50L);
-        assertNull(actualDataChangedEvent.get());
+        DataChangedEvent event = actualDataChangedEvent.get();
+        assertNotNull(event);
+        assertThat(event.getChangedType(), is(DataChangedEvent.ChangedType.ADDED));
+        assertThat(event.getKey(), is("/test/children_added/4"));
+        assertThat(event.getValue(), is("value4"));
     }
     
     @Test
