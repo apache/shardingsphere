@@ -87,7 +87,7 @@ public final class EncryptConfigurationLoggerTest {
         properties.put("aes.key.value", "123456abc");
         EncryptStrategyConfiguration encryptStrategyConfiguration = new EncryptStrategyConfiguration("encrypt_strategy_aes", "aes", properties);
         EncryptTableRuleConfiguration encryptTableRuleConfiguration = new EncryptTableRuleConfiguration(
-                "t_encrypt", Collections.singleton(new EncryptColumnRuleConfiguration("user_id", "user_decrypt", "user_encrypt", "user_assisted", "encrypt_strategy_aes")));
+                "t_encrypt", Collections.singleton(new EncryptColumnRuleConfiguration("user_id", "user_encrypt", "user_assisted", "user_decrypt", "encrypt_strategy_aes")));
         return new EncryptRuleConfiguration(Collections.singleton(encryptStrategyConfiguration), Collections.singleton(encryptTableRuleConfiguration));
     }
     
