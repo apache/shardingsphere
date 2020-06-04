@@ -24,16 +24,16 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class EncryptorConfigurationTest {
+public final class EncryptStrategyConfigurationTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertConstructorWithoutType() {
-        new EncryptorConfiguration("test_encryptor", null, new Properties());
+        new EncryptStrategyConfiguration("test_encryptor", null, new Properties());
     }
     
     @Test
     public void assertConstructorWithoutAssistedQueryColumnsAndProperties() {
-        EncryptorConfiguration actual = new EncryptorConfiguration("test_encryptor", "TEST", new Properties());
+        EncryptStrategyConfiguration actual = new EncryptStrategyConfiguration("test_encryptor", "TEST", new Properties());
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getProperties(), is(new Properties()));
     }
@@ -42,7 +42,7 @@ public final class EncryptorConfigurationTest {
     public void assertConstructorWithMinArguments() {
         Properties props = new Properties();
         props.setProperty("key", "value");
-        EncryptorConfiguration actual = new EncryptorConfiguration("test_encryptor", "TEST", props);
+        EncryptStrategyConfiguration actual = new EncryptStrategyConfiguration("test_encryptor", "TEST", props);
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getProperties(), is(props));
     }
@@ -51,7 +51,7 @@ public final class EncryptorConfigurationTest {
     public void assertConstructorWithMaxArguments() {
         Properties props = new Properties();
         props.setProperty("key", "value");
-        EncryptorConfiguration actual = new EncryptorConfiguration("test_encryptor", "TEST", props);
+        EncryptStrategyConfiguration actual = new EncryptStrategyConfiguration("test_encryptor", "TEST", props);
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getProperties(), is(props));
     }

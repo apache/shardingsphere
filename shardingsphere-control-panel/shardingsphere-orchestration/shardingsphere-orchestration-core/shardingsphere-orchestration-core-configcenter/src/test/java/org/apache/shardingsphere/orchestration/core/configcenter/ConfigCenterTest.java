@@ -19,7 +19,7 @@ package org.apache.shardingsphere.orchestration.core.configcenter;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptStrategyConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration;
@@ -461,10 +461,10 @@ public final class ConfigCenterTest {
             } else if (each instanceof EncryptRuleConfiguration) {
                 EncryptRuleConfiguration encryptRuleConfiguration = (EncryptRuleConfiguration) each;
                 assertThat(encryptRuleConfiguration.getEncryptors().size(), is(2));
-                EncryptorConfiguration encryptorConfiguration = encryptRuleConfiguration.getEncryptors().iterator().next();
-                assertThat(encryptorConfiguration.getName(), is("encryptor_aes"));
-                assertThat(encryptorConfiguration.getType(), is("aes"));
-                assertThat(encryptorConfiguration.getProperties().get("aes.key.value").toString(), is("123456abcd"));
+                EncryptStrategyConfiguration encryptStrategyConfiguration = encryptRuleConfiguration.getEncryptors().iterator().next();
+                assertThat(encryptStrategyConfiguration.getName(), is("encryptor_aes"));
+                assertThat(encryptStrategyConfiguration.getType(), is("aes"));
+                assertThat(encryptStrategyConfiguration.getProperties().get("aes.key.value").toString(), is("123456abcd"));
             }
         }
     }
@@ -497,10 +497,10 @@ public final class ConfigCenterTest {
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
         EncryptRuleConfiguration actual = (EncryptRuleConfiguration) configurationService.loadRuleConfigurations("sharding_db").iterator().next();
         assertThat(actual.getEncryptors().size(), is(1));
-        EncryptorConfiguration encryptorConfiguration = actual.getEncryptors().iterator().next();
-        assertThat(encryptorConfiguration.getName(), is("order_encryptor"));
-        assertThat(encryptorConfiguration.getType(), is("aes"));
-        assertThat(encryptorConfiguration.getProperties().get("aes.key.value").toString(), is("123456"));
+        EncryptStrategyConfiguration encryptStrategyConfiguration = actual.getEncryptors().iterator().next();
+        assertThat(encryptStrategyConfiguration.getName(), is("order_encryptor"));
+        assertThat(encryptStrategyConfiguration.getType(), is("aes"));
+        assertThat(encryptStrategyConfiguration.getProperties().get("aes.key.value").toString(), is("123456"));
     }
     
     @Test

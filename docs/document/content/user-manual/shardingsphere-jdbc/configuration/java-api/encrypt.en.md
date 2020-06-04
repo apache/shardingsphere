@@ -9,32 +9,32 @@ Class name: org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguratio
 
 Attributes:
 
-| *Name*         | *DataType*                                  | *Description*  |
-| -------------- | ------------------------------------------- | -------------- |
-| encryptors (+) | Collection\<EncryptorConfiguration\>        | Encryptors     |
-| tables (+)     | Collection\<EncryptTableRuleConfiguration\> | Encrypt tables |
+| *Name*         | *DataType*                                  | *Description*       |
+| -------------- | ------------------------------------------- | ------------------- |
+| encryptors (+) | Collection\<EncryptStrategyConfiguration\>  | Encrypt strategies  |
+| tables (+)     | Collection\<EncryptTableRuleConfiguration\> | Encrypt table rules |
 
-## Encryptor Configuration
+## Encrypt Strategy Configuration
 
-Class name: org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration
+Class name: org.apache.shardingsphere.encrypt.api.config.EncryptStrategyConfiguration
 
 Attributes:
 
-| *Name*     | *DataType* | *Description*         |
-| ---------- | ---------- | --------------------- |
-| name       | String     | Encryptor name        |
-| type       | String     | Encryptor type        |
-| properties | Properties | Encryptor properties  |
+| *Name*     | *DataType* | *Description*               |
+| ---------- | ---------- | --------------------------- |
+| name       | String     | Encrypt strategy name       |
+| type       | String     | Encrypt strategy type       |
+| properties | Properties | Encrypt strategy properties |
 
-Apache ShardingSphere built-in implemented classes of Encryptor are:
+Apache ShardingSphere built-in implemented classes of encrypt algorithm are:
 
-### MD5 Encryptor
+### MD5 Encrypt Algorithm
 
 Class name: org.apache.shardingsphere.encrypt.strategy.impl.MD5Encryptor
 
 Attributes: None
 
-### AES Encryptor
+### AES Encrypt Algorithm
 
 Class name: org.apache.shardingsphere.encrypt.strategy.impl.AESEncryptor
 
@@ -44,7 +44,7 @@ Attributes:
 | ------------- | ---------- | ------------- |
 | aes.key.value | String     | AES KEY       |
 
-### RC4 Encryptor
+### RC4 Encrypt Algorithm
 
 Class name: org.apache.shardingsphere.encrypt.strategy.impl.RC4Encryptor
 
@@ -54,7 +54,7 @@ Attributes:
 | ------------- | ---------- | ------------- |
 | rc4.key.value | String     | RC4 KEY       |
 
-## Encrypt Table Configuration
+## Encrypt Table Rule Configuration
 
 Class name: org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration
 
@@ -65,7 +65,7 @@ Attributes:
 | name        | String                                       | Table name      |
 | columns (+) | Collection\<EncryptColumnRuleConfiguration\> | Encrypt columns |
 
-### Encrypt Column Configuration
+### Encrypt Column Rule Configuration
 
 Class name: org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration
 
@@ -77,4 +77,4 @@ Attributes:
 | plainColumn (?)         | String     | Plain column name          |
 | cipherColumn            | String     | Cipher column name         |
 | assistedQueryColumn (?) | String     | Assisted query column name |
-| encryptorName           | String     | Encryptor name             |
+| encryptorName           | String     | Encrypt strategy name      |

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptStrategyConfiguration;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -43,7 +43,7 @@ public final class EncryptShadowDatabasesConfiguration implements ExampleConfigu
         Map<String, DataSource> dataSourceMap = new HashMap<>();
         dataSourceMap.put("ds", DataSourceUtil.createDataSource("demo_ds"));
         dataSourceMap.put("ds_0", DataSourceUtil.createDataSource("shadow_demo_ds"));
-        EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(getEncryptorConfiguration(), getEncryptTableRuleConfigurations());
+        EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(getEncryptStrategyConfiguration(), getEncryptTableRuleConfigurations());
         Properties properties = new Properties();
         properties.setProperty("sql.show", "true");
         properties.setProperty("query.with.cipher.column", "true");
@@ -51,14 +51,14 @@ public final class EncryptShadowDatabasesConfiguration implements ExampleConfigu
         return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Arrays.asList(shadowRuleConfiguration, encryptRuleConfiguration), properties);
     }
     
-    private Collection<EncryptorConfiguration> getEncryptorConfiguration() {
-        Collection<EncryptorConfiguration> result = new LinkedList<>();
+    private Collection<EncryptStrategyConfiguration> getEncryptStrategyConfiguration() {
+        Collection<EncryptStrategyConfiguration> result = new LinkedList<>();
         Properties properties = new Properties();
         properties.setProperty("aes.key.value", "123456");
-        EncryptorConfiguration nameEncryptorConfiguration = new EncryptorConfiguration("name_encryptror", "aes", properties);
-        EncryptorConfiguration pwdEncryptorConfiguration = new EncryptorConfiguration("pwd_encryptror", "assistedTest", null);
-        result.add(nameEncryptorConfiguration);
-        result.add(pwdEncryptorConfiguration);
+        EncryptStrategyConfiguration nameEncryptStrategyConfiguration = new EncryptStrategyConfiguration("name_encryptror", "aes", properties);
+        EncryptStrategyConfiguration pwdEncryptStrategyConfiguration = new EncryptStrategyConfiguration("pwd_encryptror", "assistedTest", null);
+        result.add(nameEncryptStrategyConfiguration);
+        result.add(pwdEncryptStrategyConfiguration);
         return result;
     }
     

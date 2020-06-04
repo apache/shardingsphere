@@ -21,7 +21,7 @@ import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptStrategyConfiguration;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 
@@ -43,9 +43,9 @@ public final class EncryptDatabasesConfiguration implements ExampleConfiguration
         EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("user_name", "user_name_plain", "user_name", "", "name_encryptor");
         EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", "", "pwd", "assisted_query_pwd", "pwd_encryptor");
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_user", Arrays.asList(columnConfigAes, columnConfigTest));
-        Collection<EncryptorConfiguration> encryptors = new LinkedList<>();
-        encryptors.add(new EncryptorConfiguration("name_encryptor", "aes", properties));
-        encryptors.add(new EncryptorConfiguration("pwd_encryptor", "assistedTest", properties));
+        Collection<EncryptStrategyConfiguration> encryptors = new LinkedList<>();
+        encryptors.add(new EncryptStrategyConfiguration("name_encryptor", "aes", properties));
+        encryptors.add(new EncryptStrategyConfiguration("pwd_encryptor", "assistedTest", properties));
         EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(encryptors, Collections.singleton(tableConfig));
         try {
             return ShardingSphereDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(encryptRuleConfiguration), properties);

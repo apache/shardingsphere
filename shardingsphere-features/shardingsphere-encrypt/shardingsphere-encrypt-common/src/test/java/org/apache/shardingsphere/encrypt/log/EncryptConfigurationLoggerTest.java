@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptStrategyConfiguration;
 import org.apache.shardingsphere.infra.log.ConfigurationLogger;
 import org.junit.Before;
 import org.junit.Test;
@@ -85,10 +85,10 @@ public final class EncryptConfigurationLoggerTest {
     private EncryptRuleConfiguration getEncryptConfiguration() {
         Properties properties = new Properties();
         properties.put("aes.key.value", "123456abc");
-        EncryptorConfiguration encryptorConfiguration = new EncryptorConfiguration("encryptor_aes", "aes", properties);
+        EncryptStrategyConfiguration encryptStrategyConfiguration = new EncryptStrategyConfiguration("encryptor_aes", "aes", properties);
         EncryptTableRuleConfiguration encryptTableRuleConfiguration =
                 new EncryptTableRuleConfiguration("t_encrypt", Collections.singleton(new EncryptColumnRuleConfiguration("user_id", "user_decrypt", "user_encrypt", "user_assisted", "encryptor_aes")));
-        return new EncryptRuleConfiguration(Collections.singleton(encryptorConfiguration), Collections.singleton(encryptTableRuleConfiguration));
+        return new EncryptRuleConfiguration(Collections.singleton(encryptStrategyConfiguration), Collections.singleton(encryptTableRuleConfiguration));
     }
     
     private void assertLogInfo(final String logContent) {

@@ -22,7 +22,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptStrategyConfiguration;
 import org.apache.shardingsphere.encrypt.strategy.EncryptTable;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 import org.apache.shardingsphere.encrypt.strategy.spi.QueryAssistedEncryptor;
@@ -78,7 +78,7 @@ public final class EncryptRule implements ShardingSphereRule {
     }
     
     private boolean containsEncryptor(final EncryptRuleConfiguration encryptRuleConfiguration, final EncryptColumnRuleConfiguration column) {
-        for (EncryptorConfiguration each : encryptRuleConfiguration.getEncryptors()) {
+        for (EncryptStrategyConfiguration each : encryptRuleConfiguration.getEncryptors()) {
             if (each.getName().equals(column.getEncryptorName())) {
                 return true;
             }
@@ -86,7 +86,7 @@ public final class EncryptRule implements ShardingSphereRule {
         return false;
     }
     
-    private Encryptor createEncryptor(final EncryptorConfiguration encryptorConfig) {
+    private Encryptor createEncryptor(final EncryptStrategyConfiguration encryptorConfig) {
         Encryptor result = TypedSPIRegistry.getRegisteredService(Encryptor.class, encryptorConfig.getType(), encryptorConfig.getProperties());
         result.init();
         return result;

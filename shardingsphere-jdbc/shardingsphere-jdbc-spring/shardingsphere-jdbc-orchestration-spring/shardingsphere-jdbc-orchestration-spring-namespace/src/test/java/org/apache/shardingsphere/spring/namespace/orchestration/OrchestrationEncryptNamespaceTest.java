@@ -21,7 +21,7 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataS
 import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptStrategyConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.spring.namespace.orchestration.util.EmbedTestingServer;
@@ -68,11 +68,11 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
         EncryptColumnRuleConfiguration orderIdColumnRuleConfiguration = encryptColumnRuleConfigurations.next();
         assertThat(userIdColumnRuleConfiguration.getCipherColumn(), is("user_encrypt"));
         assertThat(orderIdColumnRuleConfiguration.getPlainColumn(), is("order_decrypt"));
-        Iterator<EncryptorConfiguration> encryptors = configuration.getEncryptors().iterator();
-        EncryptorConfiguration aesEncryptorConfig = encryptors.next();
+        Iterator<EncryptStrategyConfiguration> encryptors = configuration.getEncryptors().iterator();
+        EncryptStrategyConfiguration aesEncryptorConfig = encryptors.next();
         assertThat(aesEncryptorConfig.getType(), is("AES"));
         assertThat(aesEncryptorConfig.getProperties().getProperty("aes.key.value"), is("123456"));
-        EncryptorConfiguration md5EncryptorConfig = encryptors.next();
+        EncryptStrategyConfiguration md5EncryptorConfig = encryptors.next();
         assertThat(md5EncryptorConfig.getName(), is("encryptor_md5"));
         assertThat(md5EncryptorConfig.getType(), is("MD5"));
     }
