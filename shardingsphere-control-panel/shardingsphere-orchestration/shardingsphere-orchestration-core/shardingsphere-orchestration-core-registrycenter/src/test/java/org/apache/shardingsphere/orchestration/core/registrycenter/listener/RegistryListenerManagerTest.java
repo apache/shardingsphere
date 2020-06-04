@@ -46,6 +46,6 @@ public final class RegistryListenerManagerTest {
         FieldUtil.setField(actual, "dataSourceStateChangedListener", dataSourceStateChangedListener);
         actual.initListeners();
         verify(instanceStateChangedListener).watch(ChangedType.UPDATED);
-        verify(dataSourceStateChangedListener).watch(ChangedType.UPDATED, ChangedType.DELETED);
+        verify(dataSourceStateChangedListener).watch(ChangedType.UPDATED, ChangedType.DELETED, ChangedType.ADDED);
     }
 }

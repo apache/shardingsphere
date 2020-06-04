@@ -39,6 +39,6 @@ public final class RegistryListenerManager {
      */
     public void initListeners() {
         instanceStateChangedListener.watch(ChangedType.UPDATED);
-        dataSourceStateChangedListener.watch(ChangedType.UPDATED, ChangedType.DELETED);
+        dataSourceStateChangedListener.watch(ChangedType.UPDATED, ChangedType.DELETED, ChangedType.ADDED);
     }
 }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.orchestration.center.instance;
 
-import com.google.common.util.concurrent.SettableFuture;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.center.exception.OrchestrationException;
@@ -30,7 +29,6 @@ import org.junit.Test;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -74,20 +72,21 @@ public final class CuratorZookeeperCenterRepositoryTest {
     
     @Test
     public void assertGetChildrenKeys() {
-        REPOSITORY.persist("/test/children/1", "value11");
-        REPOSITORY.persist("/test/children/2", "value12");
-        REPOSITORY.persist("/test/children/3", "value13");
-        List<String> childrenKeys = REPOSITORY.getChildrenKeys("/test/children");
+        REPOSITORY.persist("/test/children/keys/1", "value11");
+        REPOSITORY.persist("/test/children/keys/2", "value12");
+        REPOSITORY.persist("/test/children/keys/3", "value13");
+        List<String> childrenKeys = REPOSITORY.getChildrenKeys("/test/children/keys");
         assertThat(childrenKeys.size(), is(3));
     }
     
     @Test
     public void assertWatchUpdatedChangedType() throws Exception {
         REPOSITORY.persist("/test/children_updated/1", "value1");
-        final SettableFuture<DataChangedEvent> future = SettableFuture.create();
-        REPOSITORY.watch("/test/children_updated", future::set);
+        AtomicReference<DataChangedEvent> dataChangedEventActual = new AtomicReference<>();
+        REPOSITORY.watch("/test/children_updated", dataChangedEvent -> dataChangedEventActual.set(dataChangedEvent));
         REPOSITORY.persist("/test/children_updated/1", "value2");
-        DataChangedEvent dataChangedEvent = future.get(5, TimeUnit.SECONDS);
+        Thread.sleep(50L);
+        DataChangedEvent dataChangedEvent = dataChangedEventActual.get();
         assertNotNull(dataChangedEvent);
         assertThat(dataChangedEvent.getChangedType(), is(DataChangedEvent.ChangedType.UPDATED));
         assertThat(dataChangedEvent.getKey(), is("/test/children_updated/1"));
@@ -98,13 +97,14 @@ public final class CuratorZookeeperCenterRepositoryTest {
     @Test
     public void assertWatchDeletedChangedType() throws Exception {
         REPOSITORY.persist("/test/children_deleted/5", "value5");
-        SettableFuture<DataChangedEvent> future = SettableFuture.create();
-        REPOSITORY.watch("/test/children_deleted/5", future::set);
         Field field = CuratorZookeeperCenterRepository.class.getDeclaredField("client");
         field.setAccessible(true);
         CuratorFramework client = (CuratorFramework) field.get(REPOSITORY);
+        AtomicReference<DataChangedEvent> dataChangedEventActual = new AtomicReference<>();
+        REPOSITORY.watch("/test/children_deleted/5", dataChangedEvent -> dataChangedEventActual.set(dataChangedEvent));
         client.delete().forPath("/test/children_deleted/5");
-        DataChangedEvent dataChangedEvent = future.get(5, TimeUnit.SECONDS);
+        Thread.sleep(50L);
+        DataChangedEvent dataChangedEvent = dataChangedEventActual.get();
         assertNotNull(dataChangedEvent);
         assertThat(dataChangedEvent.getChangedType(), is(DataChangedEvent.ChangedType.DELETED));
         assertThat(dataChangedEvent.getKey(), is("/test/children_deleted/5"));
@@ -117,7 +117,11 @@ public final class CuratorZookeeperCenterRepositoryTest {
         AtomicReference<DataChangedEvent> actualDataChangedEvent = new AtomicReference<>();
         REPOSITORY.watch("/test/children_added", actualDataChangedEvent::set);
         Thread.sleep(50L);
-        assertNull(actualDataChangedEvent.get());
+        DataChangedEvent event = actualDataChangedEvent.get();
+        assertNotNull(event);
+        assertThat(event.getChangedType(), is(DataChangedEvent.ChangedType.ADDED));
+        assertThat(event.getKey(), is("/test/children_added/4"));
+        assertThat(event.getValue(), is("value4"));
     }
     
     @Test
@@ -141,8 +145,8 @@ public final class CuratorZookeeperCenterRepositoryTest {
         assertThat(customCenterRepository.getProperties().getProperty(ZookeeperPropertyKey.MAX_RETRIES.getKey()), is("1"));
         assertThat(customCenterRepository.getProperties().getProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey()), is("1000"));
         assertThat(customCenterRepository.getProperties().getProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey()), is("1000"));
-        customCenterRepository.persist("/test/children/1", "value1");
-        assertThat(customCenterRepository.get("/test/children/1"), is("value1"));
+        customCenterRepository.persist("/test/children/build/1", "value1");
+        assertThat(customCenterRepository.get("/test/children/build/1"), is("value1"));
     }
     
     @Test
@@ -155,8 +159,8 @@ public final class CuratorZookeeperCenterRepositoryTest {
         customCenterRepository.setProperties(properties);
         customCenterRepository.init(configuration);
         assertThat(customCenterRepository.getProperties().getProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey()), is("0"));
-        customCenterRepository.persist("/test/children/1", "value1");
-        assertThat(customCenterRepository.get("/test/children/1"), is("value1"));
+        customCenterRepository.persist("/test/children/build/2", "value1");
+        assertThat(customCenterRepository.get("/test/children/build/2"), is("value1"));
     }
     
     @Test
@@ -169,8 +173,8 @@ public final class CuratorZookeeperCenterRepositoryTest {
         customCenterRepository.setProperties(properties);
         customCenterRepository.init(configuration);
         assertThat(customCenterRepository.getProperties().getProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey()), is("0"));
-        customCenterRepository.persist("/test/children/1", "value1");
-        assertThat(customCenterRepository.get("/test/children/1"), is("value1"));
+        customCenterRepository.persist("/test/children/build/3", "value1");
+        assertThat(customCenterRepository.get("/test/children/build/3"), is("value1"));
     }
     
     @Test
@@ -183,8 +187,8 @@ public final class CuratorZookeeperCenterRepositoryTest {
         customCenterRepository.setProperties(properties);
         customCenterRepository.init(configuration);
         assertThat(customCenterRepository.getProperties().getProperty(ZookeeperPropertyKey.DIGEST.getKey()), is("any"));
-        customCenterRepository.persist("/test/children/1", "value1");
-        assertThat(customCenterRepository.get("/test/children/1"), is("value1"));
+        customCenterRepository.persist("/test/children/build/4", "value1");
+        assertThat(customCenterRepository.get("/test/children/build/4"), is("value1"));
     }
     
     @Test
