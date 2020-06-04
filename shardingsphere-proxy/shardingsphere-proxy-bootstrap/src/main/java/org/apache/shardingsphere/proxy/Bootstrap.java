@@ -47,7 +47,6 @@ import org.apache.shardingsphere.opentracing.ShardingTracer;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.swapper.OrchestrationConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
-import org.apache.shardingsphere.proxy.backend.cluster.HeartbeatHandler;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCRawBackendDataSourceFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.JDBCDriverURLRecognizerEngine;
 import org.apache.shardingsphere.proxy.backend.schema.ProxyOrchestrationSchemaContexts;
@@ -128,7 +127,6 @@ public final class Bootstrap {
         Map<String, Collection<RuleConfiguration>> schemaRules = getRuleConfigurations(ruleConfigs);
         initialize(authentication, properties, schemaDataSources, schemaRules, metricsConfiguration, clusterConfiguration, false);
         ShardingSphereProxy.getInstance().start(port);
-    
     }
     
     private static void startWithRegistryCenter(final YamlProxyServerConfiguration serverConfig, final Collection<String> shardingSchemaNames,
@@ -225,7 +223,6 @@ public final class Bootstrap {
     private static void initCluster(final YamlClusterConfiguration clusterConfiguration) {
         if (ProxySchemaContexts.getInstance().getSchemaContexts().getProperties().<Boolean>getValue(ConfigurationPropertyKey.PROXY_CLUSTER_ENABLED)) {
             ClusterFacade.getInstance().init(new ClusterConfigurationYamlSwapper().swap(clusterConfiguration));
-            HeartbeatHandler.getInstance().init(new ClusterConfigurationYamlSwapper().swap(clusterConfiguration).getHeartbeat());
         }
     }
     

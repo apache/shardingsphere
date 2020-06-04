@@ -29,6 +29,7 @@ import org.apache.shardingsphere.cluster.state.ClusterStateInstance;
 import org.apache.shardingsphere.cluster.state.DataSourceState;
 import org.apache.shardingsphere.cluster.state.InstanceState;
 import org.apache.shardingsphere.cluster.state.enums.NodeState;
+import org.apache.shardingsphere.kernel.context.SchemaContext;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -66,12 +67,13 @@ public final class ClusterFacade {
     }
     
     /**
-     * Load all instance states.
+     * Detect heartbeat.
      *
-     * @return all instance states.
+     * @param schemaContexts schema contexts
      */
-    public Map<String, InstanceState> loadAllInstanceStates() {
-        return clusterStateInstance.loadAllInstanceStates();
+    public void detectHeartbeat(final Map<String, SchemaContext> schemaContexts) {
+        HeartbeatResponse heartbeatResponse = clusterHeartbeatInstance.detect(schemaContexts);
+        reportHeartbeat(heartbeatResponse);
     }
     
     private InstanceState buildInstanceState(final HeartbeatResponse heartbeatResponse) {
