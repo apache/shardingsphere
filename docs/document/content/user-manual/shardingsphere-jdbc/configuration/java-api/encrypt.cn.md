@@ -11,8 +11,8 @@ weight = 3
 
 | *名称*                 | *数据类型*                                   | *说明*       |
 | --------------------- | ------------------------------------------- | ------------ |
-| tables (+)            | Collection\<EncryptTableRuleConfiguration\> | 加密表规则列表 |
 | encryptStrategies (+) | Collection\<EncryptStrategyConfiguration\>  | 加解密策略列表 |
+| tables (+)            | Collection\<EncryptTableRuleConfiguration\> | 加密表规则列表 |
 
 ## 加解密策略配置
 
@@ -60,10 +60,10 @@ Apache ShardingSphere 内置的加解密算法实现类包括：
 
 可配置属性：
 
-| *名称*      | *数据类型*                                    | *说明*     |
-| ----------- | -------------------------------------------- | --------- |
-| name        | String                                       | 表名称     |
-| columns (+) | Collection\<EncryptColumnRuleConfiguration\> | 加密列列表 |
+| *名称*      | *数据类型*                                    | *说明*        |
+| ----------- | -------------------------------------------- | ------------ |
+| name        | String                                       | 表名称        |
+| columns (+) | Collection\<EncryptColumnRuleConfiguration\> | 加密列规则列表 |
 
 ### 加密列规则配置
 
@@ -73,8 +73,8 @@ Apache ShardingSphere 内置的加解密算法实现类包括：
 
 | *名称*                  | *数据类型* | *说明*        |
 | ----------------------- | -------- | ------------- |
-| name                    | String   | 逻辑列名称     |
-| plainColumn (?)         | String   | 原文列名称     |
+| logicColumn             | String   | 逻辑列名称     |
 | cipherColumn            | String   | 密文列名称     |
 | assistedQueryColumn (?) | String   | 查询辅助列名称 |
+| plainColumn (?)         | String   | 原文列名称     |
 | encryptStrategyName     | String   | 加密策略名称   |

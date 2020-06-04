@@ -38,7 +38,7 @@ public final class EncryptTableRuleConfigurationYamlSwapper implements YamlSwapp
     public YamlEncryptTableRuleConfiguration swap(final EncryptTableRuleConfiguration data) {
         YamlEncryptTableRuleConfiguration result = new YamlEncryptTableRuleConfiguration();
         for (EncryptColumnRuleConfiguration each : data.getColumns()) {
-            result.getColumns().put(each.getName(), encryptColumnRuleConfigurationYamlSwapper.swap(each));
+            result.getColumns().put(each.getLogicColumn(), encryptColumnRuleConfigurationYamlSwapper.swap(each));
         }
         return result;
     }
@@ -48,7 +48,7 @@ public final class EncryptTableRuleConfigurationYamlSwapper implements YamlSwapp
         Collection<EncryptColumnRuleConfiguration> columns = new LinkedList<>();
         for (Entry<String, YamlEncryptColumnRuleConfiguration> entry : yamlConfiguration.getColumns().entrySet()) {
             YamlEncryptColumnRuleConfiguration yamlEncryptColumnRuleConfiguration = entry.getValue();
-            yamlEncryptColumnRuleConfiguration.setLogicName(entry.getKey());
+            yamlEncryptColumnRuleConfiguration.setLogicColumn(entry.getKey());
             columns.add(encryptColumnRuleConfigurationYamlSwapper.swap(yamlEncryptColumnRuleConfiguration));
         }
         return new EncryptTableRuleConfiguration(yamlConfiguration.getName(), columns);

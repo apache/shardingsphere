@@ -11,8 +11,8 @@ Attributes:
 
 | *Name*                | *DataType*                                  | *Description*       |
 | --------------------- | ------------------------------------------- | ------------------- |
-| tables (+)            | Collection\<EncryptTableRuleConfiguration\> | Encrypt table rules |
 | encryptStrategies (+) | Collection\<EncryptStrategyConfiguration\>  | Encrypt strategies  |
+| tables (+)            | Collection\<EncryptTableRuleConfiguration\> | Encrypt table rules |
 
 ## Encrypt Strategy Configuration
 
@@ -60,10 +60,10 @@ Class name: org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleCo
 
 Attributes:
 
-| *Name*      | *DataType*                                   | *Description*   |
-| ----------- | -------------------------------------------- | --------------- |
-| name        | String                                       | Table name      |
-| columns (+) | Collection\<EncryptColumnRuleConfiguration\> | Encrypt columns |
+| *Name*      | *DataType*                                   | *Description*        |
+| ----------- | -------------------------------------------- | -------------------- |
+| name        | String                                       | Table name           |
+| columns (+) | Collection\<EncryptColumnRuleConfiguration\> | Encrypt column rules |
 
 ### Encrypt Column Rule Configuration
 
@@ -73,8 +73,8 @@ Attributes:
 
 | *Name*                  | *DataType* | *Description*              |
 | ----------------------- | ---------- | -------------------------- |
-| name                    | String     | Logic column name          |
-| plainColumn (?)         | String     | Plain column name          |
+| logicColumn             | String     | Logic column name          |
 | cipherColumn            | String     | Cipher column name         |
 | assistedQueryColumn (?) | String     | Assisted query column name |
+| plainColumn (?)         | String     | Plain column name          |
 | encryptStrategyName     | String     | Encrypt strategy name      |

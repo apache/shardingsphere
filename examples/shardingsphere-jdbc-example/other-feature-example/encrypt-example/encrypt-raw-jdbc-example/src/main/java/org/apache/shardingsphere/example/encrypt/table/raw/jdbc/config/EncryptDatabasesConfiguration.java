@@ -40,8 +40,8 @@ public final class EncryptDatabasesConfiguration implements ExampleConfiguration
         Properties properties = new Properties();
         properties.setProperty("aes.key.value", "123456");
         properties.setProperty("query.with.cipher.column", "true");
-        EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("user_name", "user_name_plain", "user_name", "", "name_encrypt_strategy");
-        EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", "", "pwd", "assisted_query_pwd", "pwd_encrypt_strategy");
+        EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("user_name", "user_name", "", "user_name_plain", "name_encrypt_strategy");
+        EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", "pwd", "assisted_query_pwd", "", "pwd_encrypt_strategy");
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_user", Arrays.asList(columnConfigAes, columnConfigTest));
         Collection<EncryptStrategyConfiguration> encryptStrategyConfigurations = new LinkedList<>();
         encryptStrategyConfigurations.add(new EncryptStrategyConfiguration("name_encrypt_strategy", "aes", properties));
