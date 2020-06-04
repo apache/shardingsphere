@@ -60,14 +60,14 @@ Class name: org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfigu
 
 Attributes:
 
-| *Name*      | *DataType*                               | *Description*   |
-| ----------- | ---------------------------------------- | --------------- |
-| name        | String                                   | Table name      |
-| columns (+) | Collection\<EncryptColumnConfiguration\> | Encrypt columns |
+| *Name*      | *DataType*                                   | *Description*   |
+| ----------- | -------------------------------------------- | --------------- |
+| name        | String                                       | Table name      |
+| columns (+) | Collection\<EncryptColumnRuleConfiguration\> | Encrypt columns |
 
 ### Encrypt Column Configuration
 
-Class name: org.apache.shardingsphere.encrypt.api.config.EncryptColumnConfiguration
+Class name: org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration
 
 Attributes:
 

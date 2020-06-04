@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.example.shadow.table.raw.jdbc.config;
 
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.encrypt.api.config.EncryptColumnConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration;
@@ -64,9 +64,9 @@ public final class EncryptShadowDatabasesConfiguration implements ExampleConfigu
     
     private Collection<EncryptTableRuleConfiguration> getEncryptTableRuleConfigurations() {
         Collection<EncryptTableRuleConfiguration> result = new LinkedList<>();
-        Collection<EncryptColumnConfiguration> columns = new LinkedList<>();
-        columns.add(new EncryptColumnConfiguration("user_name", "user_name_plain", "user_name", "", "name_encryptror"));
-        columns.add(new EncryptColumnConfiguration("pwd", "", "pwd", "assisted_query_pwd", "pwd_encryptror"));
+        Collection<EncryptColumnRuleConfiguration> columns = new LinkedList<>();
+        columns.add(new EncryptColumnRuleConfiguration("user_name", "user_name_plain", "user_name", "", "name_encryptror"));
+        columns.add(new EncryptColumnRuleConfiguration("pwd", "", "pwd", "assisted_query_pwd", "pwd_encryptror"));
         result.add(new EncryptTableRuleConfiguration("t_user", columns));
         return result;
     }

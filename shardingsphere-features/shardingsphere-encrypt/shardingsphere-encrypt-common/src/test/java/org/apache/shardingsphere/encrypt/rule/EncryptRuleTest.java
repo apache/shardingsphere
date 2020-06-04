@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rule;
 
-import org.apache.shardingsphere.encrypt.api.config.EncryptColumnConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration;
@@ -48,8 +48,8 @@ public final class EncryptRuleTest {
     @Before
     public void setUp() {
         Properties props = new Properties();
-        EncryptColumnConfiguration columnConfig = new EncryptColumnConfiguration(column, "plain_pwd", "cipher_pwd", "", "aes");
-        EncryptColumnConfiguration idNumberConfig = new EncryptColumnConfiguration(idNumber, "plain_id_number", "cipher_id_number", "", "aes");
+        EncryptColumnRuleConfiguration columnConfig = new EncryptColumnRuleConfiguration(column, "plain_pwd", "cipher_pwd", "", "aes");
+        EncryptColumnRuleConfiguration idNumberConfig = new EncryptColumnRuleConfiguration(idNumber, "plain_id_number", "cipher_id_number", "", "aes");
         EncryptorConfiguration encryptorConfig = new EncryptorConfiguration("aes", "assistedTest", props);
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration(table, Arrays.asList(columnConfig, idNumberConfig));
         encryptRuleConfig = new EncryptRuleConfiguration(Collections.singleton(encryptorConfig), Collections.singleton(tableConfig));

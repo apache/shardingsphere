@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.encrypt.yaml.swapper;
 
-import org.apache.shardingsphere.encrypt.api.config.EncryptColumnConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptColumnConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 
 /**
- * Encrypt column configuration YAML swapper.
+ * Encrypt column rule configuration YAML swapper.
  */
-public final class EncryptColumnConfigurationYamlSwapper implements YamlSwapper<YamlEncryptColumnConfiguration, EncryptColumnConfiguration> {
+public final class EncryptColumnRuleConfigurationYamlSwapper implements YamlSwapper<YamlEncryptColumnRuleConfiguration, EncryptColumnRuleConfiguration> {
     
     @Override
-    public YamlEncryptColumnConfiguration swap(final EncryptColumnConfiguration data) {
-        YamlEncryptColumnConfiguration result = new YamlEncryptColumnConfiguration();
+    public YamlEncryptColumnRuleConfiguration swap(final EncryptColumnRuleConfiguration data) {
+        YamlEncryptColumnRuleConfiguration result = new YamlEncryptColumnRuleConfiguration();
         result.setPlainColumn(data.getPlainColumn());
         result.setCipherColumn(data.getCipherColumn());
         result.setAssistedQueryColumn(data.getAssistedQueryColumn());
@@ -37,8 +37,8 @@ public final class EncryptColumnConfigurationYamlSwapper implements YamlSwapper<
     }
     
     @Override
-    public EncryptColumnConfiguration swap(final YamlEncryptColumnConfiguration yamlConfiguration) {
-        return new EncryptColumnConfiguration(yamlConfiguration.getLogicName(), 
+    public EncryptColumnRuleConfiguration swap(final YamlEncryptColumnRuleConfiguration yamlConfiguration) {
+        return new EncryptColumnRuleConfiguration(yamlConfiguration.getLogicName(), 
                 yamlConfiguration.getPlainColumn(), yamlConfiguration.getCipherColumn(), yamlConfiguration.getAssistedQueryColumn(), yamlConfiguration.getEncryptor());
     }
 }

@@ -15,25 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.api.config;
+package org.apache.shardingsphere.encrypt.yaml.config;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 
 /**
- * Encrypt column configuration.
+ * Encrypt column rule configuration for YAML.
  */
-@RequiredArgsConstructor
 @Getter
-public final class EncryptColumnConfiguration {
+@Setter
+public final class YamlEncryptColumnRuleConfiguration implements YamlConfiguration {
     
-    private final String name;
+    private String logicName;
     
-    private final String plainColumn;
+    private String plainColumn;
     
-    private final String cipherColumn;
+    private String cipherColumn;
     
-    private final String assistedQueryColumn;
+    private String assistedQueryColumn;
     
-    private final String encryptorName;
+    private String encryptor;
 }

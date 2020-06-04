@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.spring.namespace.parser;
 
-import org.apache.shardingsphere.encrypt.api.config.EncryptColumnConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration;
@@ -85,21 +85,21 @@ public final class EncryptRuleBeanDefinitionParser extends AbstractBeanDefinitio
     private static AbstractBeanDefinition parseEncryptTableConfiguration(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(EncryptTableRuleConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(BeanDefinitionParserDelegate.NAME_ATTRIBUTE));
-        factory.addConstructorArgValue(parseEncryptColumnConfigurations(element));
+        factory.addConstructorArgValue(parseEncryptColumnRuleConfigurations(element));
         return factory.getBeanDefinition();
     }
     
-    private static Collection<BeanDefinition> parseEncryptColumnConfigurations(final Element element) {
+    private static Collection<BeanDefinition> parseEncryptColumnRuleConfigurations(final Element element) {
         List<Element> encryptColumnElements = DomUtils.getChildElementsByTagName(element, EncryptRuleBeanDefinitionTag.COLUMN_CONFIG_TAG);
         Collection<BeanDefinition> result = new ManagedList<>(encryptColumnElements.size());
         for (Element each : encryptColumnElements) {
-            result.add(parseEncryptColumnConfiguration(each));
+            result.add(parseEncryptColumnRuleConfiguration(each));
         }
         return result;
     }
     
-    private static AbstractBeanDefinition parseEncryptColumnConfiguration(final Element element) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(EncryptColumnConfiguration.class);
+    private static AbstractBeanDefinition parseEncryptColumnRuleConfiguration(final Element element) {
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(EncryptColumnRuleConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(EncryptRuleBeanDefinitionTag.COLUMN_LOGIC_COLUMN_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(EncryptRuleBeanDefinitionTag.COLUMN_PLAIN_COLUMN_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(EncryptRuleBeanDefinitionTag.COLUMN_CIPHER_COLUMN_ATTRIBUTE));

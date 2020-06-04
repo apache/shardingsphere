@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.strategy.impl;
 
-import org.apache.shardingsphere.encrypt.api.config.EncryptColumnConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.strategy.EncryptTable;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
@@ -37,7 +37,7 @@ public final class EncryptTableTest {
     @Before
     public void setUp() {
         encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("", 
-                Collections.singleton(new EncryptColumnConfiguration("key", "plainColumn", "cipherColumn", "plainColumn", "encryptor"))));
+                Collections.singleton(new EncryptColumnRuleConfiguration("key", "plainColumn", "cipherColumn", "plainColumn", "encryptor"))));
     }
     
     @Test

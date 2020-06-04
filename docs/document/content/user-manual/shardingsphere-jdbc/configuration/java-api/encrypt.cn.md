@@ -60,14 +60,14 @@ Apache ShardingSphere 内置的加解密器算法实现类包括：
 
 可配置属性：
 
-| *名称*      | *数据类型*                                | *说明* |
-| ----------- | ---------------------------------------- | --------- |
-| name        | String                                   | 表名称     |
-| columns (+) | Collection\<EncryptColumnConfiguration\> | 加密列列表 |
+| *名称*      | *数据类型*                                    | *说明*     |
+| ----------- | -------------------------------------------- | --------- |
+| name        | String                                       | 表名称     |
+| columns (+) | Collection\<EncryptColumnRuleConfiguration\> | 加密列列表 |
 
 ### 加密列配置
 
-类名称：org.apache.shardingsphere.encrypt.api.config.EncryptColumnConfiguration
+类名称：org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration
 
 可配置属性：
 

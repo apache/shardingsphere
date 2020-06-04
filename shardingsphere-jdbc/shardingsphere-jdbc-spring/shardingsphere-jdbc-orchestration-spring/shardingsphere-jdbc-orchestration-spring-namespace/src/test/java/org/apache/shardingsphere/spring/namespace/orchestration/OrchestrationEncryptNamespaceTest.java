@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.spring.namespace.orchestration;
 
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.encrypt.api.config.EncryptColumnConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration;
@@ -63,11 +63,11 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
         assertThat(configuration.getEncryptors().size(), is(2));
         assertThat(configuration.getTables().size(), is(1));
         EncryptTableRuleConfiguration encryptTableRuleConfiguration = configuration.getTables().iterator().next();
-        Iterator<EncryptColumnConfiguration> encryptColumnConfigurations = encryptTableRuleConfiguration.getColumns().iterator();
-        EncryptColumnConfiguration userIdColumn = encryptColumnConfigurations.next();
-        EncryptColumnConfiguration orderIdColumn = encryptColumnConfigurations.next();
-        assertThat(userIdColumn.getCipherColumn(), is("user_encrypt"));
-        assertThat(orderIdColumn.getPlainColumn(), is("order_decrypt"));
+        Iterator<EncryptColumnRuleConfiguration> encryptColumnRuleConfigurations = encryptTableRuleConfiguration.getColumns().iterator();
+        EncryptColumnRuleConfiguration userIdColumnRuleConfiguration = encryptColumnRuleConfigurations.next();
+        EncryptColumnRuleConfiguration orderIdColumnRuleConfiguration = encryptColumnRuleConfigurations.next();
+        assertThat(userIdColumnRuleConfiguration.getCipherColumn(), is("user_encrypt"));
+        assertThat(orderIdColumnRuleConfiguration.getPlainColumn(), is("order_decrypt"));
         Iterator<EncryptorConfiguration> encryptors = configuration.getEncryptors().iterator();
         EncryptorConfiguration aesEncryptorConfig = encryptors.next();
         assertThat(aesEncryptorConfig.getType(), is("AES"));

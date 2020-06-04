@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.example.orchestration.raw.jdbc.config.local;
 
 import org.apache.shardingsphere.driver.orchestration.api.OrchestrationShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.encrypt.api.config.EncryptColumnConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration;
@@ -33,7 +33,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
-public class LocalEncryptConfiguration implements ExampleConfiguration {
+public final class LocalEncryptConfiguration implements ExampleConfiguration {
     
     private final Map<String, CenterConfiguration> centerConfigurationMap;
     
@@ -55,7 +55,7 @@ public class LocalEncryptConfiguration implements ExampleConfiguration {
         Properties properties = new Properties();
         properties.setProperty("aes.key.value", "123456");
         EncryptorConfiguration aesRuleConfiguration = new EncryptorConfiguration("status_encryptor", "aes", properties);
-        EncryptColumnConfiguration columnConfigAes = new EncryptColumnConfiguration("status", "", "status", "", "status_encryptor");
+        EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("status", "", "status", "", "status_encryptor");
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_order", Collections.singleton(columnConfigAes));
         return new EncryptRuleConfiguration(Collections.singleton(aesRuleConfiguration), Collections.singleton(tableConfig));
     }
