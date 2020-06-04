@@ -42,13 +42,13 @@ public final class EncryptRuleBeanDefinitionTag {
     
     public static final String COLUMN_ASSISTED_QUERY_COLUMN_ATTRIBUTE = "assisted-query-column";
     
-    public static final String COLUMN_ENCRYPTOR_REF_ATTRIBUTE = "encryptor-ref";
+    public static final String COLUMN_ENCRYPT_STRATEGY_REF_ATTRIBUTE = "encrypt-strategy-ref";
     
-    public static final String ENCRYPTORS_CONFIG_TAG = "encryptors";
+    public static final String ENCRYPT_STRATEGIES_TAG = "encrypt-strategies";
     
-    public static final String ENCRYPTOR_CONFIG_TAG = "encryptor";
+    public static final String ENCRYPT_STRATEGY_CONFIG_TAG = "encrypt-strategy";
     
-    public static final String ENCRYPTOR_TYPE_ATTRIBUTE = "type";
+    public static final String ENCRYPT_ALGORITHM_TYPE_ATTRIBUTE = "type";
     
-    public static final String ENCRYPTOR_PROPS_TAG = "props";
+    public static final String ENCRYPT_ALGORITHM_PROPS_TAG = "props";
 }

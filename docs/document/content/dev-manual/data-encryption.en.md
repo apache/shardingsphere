@@ -5,24 +5,24 @@ weight = 6
 chapter = true
 +++
 
-## Encryptor
+## EncryptAlgorithm
 
-| *SPI Name*             | *Description*              |
-| ---------------------- | -------------------------- |
-| Encryptor              | Data encrypt algorithm     |
+| *SPI Name*                    | *Description*              |
+| ----------------------------- | -------------------------- |
+| EncryptAlgorithm              | Data encrypt algorithm     |
 
-| *Implementation Class* | *Description*              |
-| ---------------------- | -------------------------- |
-| MD5Encryptor           | MD5 data encrypt algorithm |
-| AESEncryptor           | AES data encrypt algorithm |
-| RC4Encryptor           | Rc4 data encrypt algorithm |
+| *Implementation Class*        | *Description*              |
+| ----------------------------- | -------------------------- |
+| MD5EncryptAlgorithm           | MD5 data encrypt algorithm |
+| AESEncryptAlgorithm           | AES data encrypt algorithm |
+| RC4EncryptAlgorithm           | Rc4 data encrypt algorithm |
 
-## QueryAssistedEncryptor
+## QueryAssistedEncryptAlgorithm
 
-| *SPI Name*             | *Description*                                              |
-| ---------------------- | ---------------------------------------------------------- |
-| QueryAssistedEncryptor | Data encrypt algorithm which include query assisted column |
+| *SPI Name*                    | *Description*                                              |
+| ----------------------------- | ---------------------------------------------------------- |
+| QueryAssistedEncryptAlgorithm | Data encrypt algorithm which include query assisted column |
 
-| *Implementation Class* | *Description*                                              |
-| ---------------------- | ---------------------------------------------------------- |
-| None                   |                                                            |
+| *Implementation Class*        | *Description*                                              |
+| ----------------------------- | ---------------------------------------------------------- |
+| None                          |                                                            |

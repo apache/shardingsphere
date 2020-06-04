@@ -30,7 +30,7 @@ import java.util.Collection;
 @Getter
 public final class EncryptRuleConfiguration implements RuleConfiguration {
     
-    private final Collection<EncryptorConfiguration> encryptors;
+    private final Collection<EncryptStrategyConfiguration> encryptStrategies;
     
     private final Collection<EncryptTableRuleConfiguration> tables;
 }

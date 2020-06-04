@@ -199,10 +199,10 @@ public final class ShardingRule implements DataNodeRoutedRule {
     }
     
     /**
-     * Judge logic tables is all belong to binding encryptors.
+     * Judge logic tables is all belong to binding encryptStrategies.
      *
      * @param logicTableNames logic table names
-     * @return logic tables is all belong to binding encryptors or not
+     * @return logic tables is all belong to binding encryptStrategies or not
      */
     public boolean isAllBindingTables(final Collection<String> logicTableNames) {
         if (logicTableNames.isEmpty()) {
@@ -232,10 +232,10 @@ public final class ShardingRule implements DataNodeRoutedRule {
     }
     
     /**
-     * Judge logic tables is all belong to broadcast encryptors.
+     * Judge logic tables is all belong to broadcast encryptStrategies.
      *
      * @param logicTableNames logic table names
-     * @return logic tables is all belong to broadcast encryptors or not
+     * @return logic tables is all belong to broadcast encryptStrategies or not
      */
     public boolean isAllBroadcastTables(final Collection<String> logicTableNames) {
         if (logicTableNames.isEmpty()) {

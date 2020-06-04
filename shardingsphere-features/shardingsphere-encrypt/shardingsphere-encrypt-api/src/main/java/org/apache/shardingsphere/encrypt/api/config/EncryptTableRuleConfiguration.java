@@ -31,5 +31,5 @@ public final class EncryptTableRuleConfiguration {
     
     private final String name;
     
-    private final Collection<EncryptColumnConfiguration> columns;
+    private final Collection<EncryptColumnRuleConfiguration> columns;
 }

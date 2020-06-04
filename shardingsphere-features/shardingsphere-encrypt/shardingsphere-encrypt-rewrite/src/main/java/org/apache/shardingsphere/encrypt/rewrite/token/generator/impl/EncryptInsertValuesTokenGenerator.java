@@ -20,8 +20,8 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptInsertValuesToken;
-import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
-import org.apache.shardingsphere.encrypt.strategy.spi.QueryAssistedEncryptor;
+import org.apache.shardingsphere.encrypt.strategy.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.strategy.spi.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.expression.DerivedLiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.expression.DerivedParameterMarkerExpressionSegment;
@@ -118,14 +118,14 @@ public final class EncryptInsertValuesTokenGenerator extends BaseEncryptSQLToken
         Iterator<String> descendingColumnNames = insertStatementContext.getDescendingColumnNames();
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
-            Optional<Encryptor> encryptor = getEncryptRule().findEncryptor(tableName, columnName);
-            if (encryptor.isPresent()) {
+            Optional<EncryptAlgorithm> encryptAlgorithm = getEncryptRule().findEncryptAlgorithm(tableName, columnName);
+            if (encryptAlgorithm.isPresent()) {
                 int columnIndex = useDefaultInsertColumnsToken.map(sqlToken -> ((UseDefaultInsertColumnsToken) sqlToken).getColumns().indexOf(columnName))
                         .orElseGet(() -> insertStatementContext.getColumnNames().indexOf(columnName));
                 Object originalValue = insertValueContext.getValue(columnIndex);
                 addPlainColumn(insertValueToken, columnIndex, tableName, columnName, insertValueContext, originalValue);
-                addAssistedQueryColumn(insertValueToken, encryptor.get(), columnIndex, tableName, columnName, insertValueContext, originalValue);
-                setCipherColumn(insertValueToken, encryptor.get(), columnIndex, insertValueContext.getValueExpressions().get(columnIndex), originalValue);
+                addAssistedQueryColumn(insertValueToken, encryptAlgorithm.get(), columnIndex, tableName, columnName, insertValueContext, originalValue);
+                setCipherColumn(insertValueToken, encryptAlgorithm.get(), columnIndex, insertValueContext.getValueExpressions().get(columnIndex), originalValue);
             }
         }
     }
@@ -139,11 +139,11 @@ public final class EncryptInsertValuesTokenGenerator extends BaseEncryptSQLToken
         }
     }
     
-    private void addAssistedQueryColumn(final InsertValue insertValueToken, final Encryptor encryptor, final int columnIndex,
+    private void addAssistedQueryColumn(final InsertValue insertValueToken, final EncryptAlgorithm encryptAlgorithm, final int columnIndex,
                                         final String tableName, final String columnName, final InsertValueContext insertValueContext, final Object originalValue) {
         if (getEncryptRule().findAssistedQueryColumn(tableName, columnName).isPresent()) {
             DerivedSimpleExpressionSegment derivedExpressionSegment = insertValueContext.getParameters().isEmpty()
-                    ? new DerivedLiteralExpressionSegment(((QueryAssistedEncryptor) encryptor).queryAssistedEncrypt(null == originalValue ? null : originalValue.toString()))
+                    ? new DerivedLiteralExpressionSegment(((QueryAssistedEncryptAlgorithm) encryptAlgorithm).queryAssistedEncrypt(null == originalValue ? null : originalValue.toString()))
                     : new DerivedParameterMarkerExpressionSegment(getParameterIndexCount(insertValueToken));
             insertValueToken.getValues().add(columnIndex + 1, derivedExpressionSegment);
         }
@@ -159,9 +159,10 @@ public final class EncryptInsertValuesTokenGenerator extends BaseEncryptSQLToken
         return result;
     }
     
-    private void setCipherColumn(final InsertValue insertValueToken, final Encryptor encryptor, final int columnIndex, final ExpressionSegment valueExpression, final Object originalValue) {
+    private void setCipherColumn(final InsertValue insertValueToken, 
+                                 final EncryptAlgorithm encryptAlgorithm, final int columnIndex, final ExpressionSegment valueExpression, final Object originalValue) {
         if (valueExpression instanceof LiteralExpressionSegment) {
-            insertValueToken.getValues().set(columnIndex, new LiteralExpressionSegment(valueExpression.getStartIndex(), valueExpression.getStopIndex(), encryptor.encrypt(originalValue)));
+            insertValueToken.getValues().set(columnIndex, new LiteralExpressionSegment(valueExpression.getStartIndex(), valueExpression.getStopIndex(), encryptAlgorithm.encrypt(originalValue)));
         }
     }
 }

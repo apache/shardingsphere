@@ -15,19 +15,19 @@ Apache ShardingSphere 自动化 & 透明化了数据加密过程，让用户无�
 
 ![1](https://shardingsphere.apache.org/document/current/img/encrypt/1.png)
 
-加密模块将用户发起的 SQL 进行拦截，并通过 SQL 语法解析器进行解析、理解 SQL 行为，再依据用户传入的加密规则，找出需要加密的字段和所使用的加解密器对目标字段进行加解密处理后，再与底层数据库进行交互。
+加密模块将用户发起的 SQL 进行拦截，并通过 SQL 语法解析器进行解析、理解 SQL 行为，再依据用户传入的加密规则，找出需要加密的字段和所使用的加解密算法对目标字段进行加解密处理后，再与底层数据库进行交互。
 Apache ShardingSphere 会将用户请求的明文进行加密后存储到底层数据库；并在用户查询时，将密文从数据库中取出进行解密后返回给终端用户。
 通过屏蔽对数据的加密处理，使用户无需感知解析 SQL、数据加密、数据解密的处理过程，就像在使用普通数据一样使用加密数据。
 
 ### 加密规则
 
-在详解整套流程之前，我们需要先了解下加密规则与配置，这是认识整套流程的基础。加密配置主要分为四部分：数据源配置，加密器配置，加密表配置以及查询属性配置，其详情如下图所示：
+在详解整套流程之前，我们需要先了解下加密规则与配置，这是认识整套流程的基础。加密配置主要分为四部分：数据源配置，加密算法配置，加密表配置以及查询属性配置，其详情如下图所示：
 
 ![2](https://shardingsphere.apache.org/document/current/img/encrypt/2.png)
 
 **数据源配置**：指数据源配置。
 
-**加密器配置**：指使用什么加密策略进行加解密。目前ShardingSphere内置了两种加解密策略：AES/MD5。用户还可以通过实现ShardingSphere提供的接口，自行实现一套加解密算法。
+**加密算法配置**：指使用什么加密策略进行加解密。目前ShardingSphere内置了两种加解密策略：AES/MD5。用户还可以通过实现ShardingSphere提供的接口，自行实现一套加解密算法。
 
 **加密表配置**：用于告诉ShardingSphere数据表里哪个列用于存储密文数据（cipherColumn）、哪个列用于存储明文数据（plainColumn）以及用户想使用哪个列进行SQL编写（logicColumn）。
 
@@ -69,12 +69,12 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
 
 业务场景分析：新上线业务由于一切从零开始，不存在历史数据清洗问题，所以相对简单。
 
-解决方案说明：选择合适的加密器，如 AES 后，只需配置逻辑列（面向用户编写 SQL ）和密文列（数据表存密文数据）即可，**逻辑列和密文列可以相同也可以不同**。建议配置如下（YAML 格式展示）：
+解决方案说明：选择合适的加密算法，如 AES 后，只需配置逻辑列（面向用户编写 SQL ）和密文列（数据表存密文数据）即可，**逻辑列和密文列可以相同也可以不同**。建议配置如下（YAML 格式展示）：
 
 ```yaml
 -!ENCRYPT
-  encryptors:
-    aes_encryptor:
+  encryptStrategies:
+    aes_encrypt_strategy:
       type: aes
       props:
         aes.key.value: 123456abc
@@ -83,7 +83,7 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
       columns:
         pwd:
           cipherColumn: pwd
-          encryptor: aes_encryptor
+          encryptStrategyName: aes_encrypt_strategy
 ```
 
 使用这套配置， Apache ShardingSphere 只需将 logicColumn 和 cipherColumn 进行转换，底层数据表不存储明文，只存储了密文，这也是安全审计部分的要求所在。
@@ -96,7 +96,7 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
 业务场景分析：由于业务已经在线上运行，数据库里必然存有大量明文历史数据。现在的问题是如何让历史数据得以加密清洗、如何让增量数据得以加密处理、如何让业务在新旧两套数据系统之间进行无缝、透明化迁移。
 
 解决方案说明：在提供解决方案之前，我们先来头脑风暴一下：首先，既然是旧业务需要进行加密改造，那一定存储了非常重要且敏感的信息。这些信息含金量高且业务相对基础重要。
-不应该采用停止业务禁止新数据写入，再找个加密器把历史数据全部加密清洗，再把之前重构的代码部署上线，使其能把存量和增量数据进行在线加密解密。
+不应该采用停止业务禁止新数据写入，再找个加密算法把历史数据全部加密清洗，再把之前重构的代码部署上线，使其能把存量和增量数据进行在线加密解密。
 
 那么另一种相对安全的做法是：重新搭建一套和生产环境一模一样的预发环境，然后通过相关迁移洗数工具把生产环境的**存量原文数据**加密后存储到预发环境，
 而**新增数据**则通过例如 MySQL 主从复制及业务方自行开发的工具加密后存储到预发环境的数据库里，再把重构后可以进行加解密的代码部署到预发环境。
@@ -113,8 +113,8 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
 
 ```yaml
 -!ENCRYPT
-  encryptors:
-    aes_encryptor:
+  encryptStrategies:
+    aes_encrypt_strategy:
       type: aes
       props:
         aes.key.value: 123456abc
@@ -124,7 +124,7 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
         pwd:
           plainColumn: pwd
           cipherColumn: pwd_cipher
-          encryptor: aes_encryptor
+          encryptStrategyName: aes_encrypt_strategy
 props:
   query.with.cipher.column: false
 ```
@@ -168,17 +168,17 @@ props:
 
 ```yaml
 -!ENCRYPT
-  encryptors:
-    aes_encryptor:
+  encryptStrategies:
+    aes_encrypt_strategy:
       type: aes
       props:
         aes.key.value: 123456abc
   tables:
     t_user:
       columns:
-        pwd: # pwd与pwd_cipher的转换映射
+        pwd: # pwd 与 pwd_cipher 的转换映射
           cipherColumn: pwd_cipher
-          encryptor: aes_encryptor
+          encryptStrategyName: aes_encrypt_strategy
 props:
   query.with.cipher.column: true
 ```
@@ -200,13 +200,13 @@ props:
 
 ## 加密策略解析
 
-Apache ShardingSphere 提供了两种加密策略用于数据加密，该两种策略分别对应 Apache ShardingSphere 的两种加解密的接口，即 `ShardingEncryptor` 和 `ShardingQueryAssistedEncryptor`。
+Apache ShardingSphere 提供了两种加密策略用于数据加密，该两种策略分别对应 Apache ShardingSphere 的两种加解密的接口，即 `EncryptAlgorithm` 和 `QueryAssistedEncryptAlgorithm`。
 
 一方面，Apache ShardingSphere 为用户提供了内置的加解密实现类，用户只需进行配置即可使用；
 另一方面，为了满足用户不同场景的需求，我们还开放了相关加解密接口，用户可依据该两种类型的接口提供具体实现类。
 再进行简单配置，即可让 Apache ShardingSphere 调用用户自定义的加解密方案进行数据加密。
 
-### ShardingEncryptor
+### EncryptAlgorithm
 
 该解决方案通过提供`encrypt()`, `decrypt()`两种方法对需要加密的数据进行加解密。
 在用户进行`INSERT`, `DELETE`, `UPDATE`时，ShardingSphere会按照用户配置，对SQL进行解析、改写、路由，并会调用`encrypt()`将数据加密后存储到数据库, 
@@ -214,7 +214,7 @@ Apache ShardingSphere 提供了两种加密策略用于数据加密，该两种�
 
 当前，Apache ShardingSphere 针对这种类型的加密解决方案提供了两种具体实现类，分别是 MD5(不可逆)，AES(可逆)，用户只需配置即可使用这两种内置的方案。
 
-### ShardingQueryAssistedEncryptor
+### QueryAssistedEncryptAlgorithm
 
 相比较于第一种加密方案，该方案更为安全和复杂。它的理念是：即使是相同的数据，如两个用户的密码相同，它们在数据库里存储的加密数据也应当是不一样的。这种理念更有利于保护用户信息，防止撞库成功。
 

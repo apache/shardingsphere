@@ -52,18 +52,18 @@
     <encrypt:rule id="encryptRule">
         <encrypt:tables>
             <encrypt:table name="t_user">
-                <encrypt:column logic-column="user_name" cipher-column="user_name" encryptor-ref="name_encryptor" />
-                <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" encryptor-ref="pwd_encryptor"/>
+                <encrypt:column logic-column="user_name" cipher-column="user_name" encrypt-strategy-ref="name_encrypt_strategy" />
+                <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" encrypt-strategy-ref="pwd_encrypt_strategy" />
             </encrypt:table>
         </encrypt:tables>
-        <encrypt:encryptors>
-            <encrypt:encryptor id="name_encryptor" type="AES">
+        <encrypt:encrypt-strategies>
+            <encrypt:encrypt-strategy id="name_encrypt_strategy" type="AES">
                 <props>
                     <prop key="aes.key.value">123456</prop>
                 </props>
-            </encrypt:encryptor>
-            <encrypt:encryptor id="pwd_encryptor" type="MD5" />
-        </encrypt:encryptors>
+            </encrypt:encrypt-strategy>
+            <encrypt:encrypt-strategy id="pwd_encrypt_strategy" type="MD5" />
+        </encrypt:encrypt-strategies>
     </encrypt:rule>
     
     <shardingsphere:data-source id="realEncryptDataSource" data-source-names="dbtbl_0" rule-refs="encryptRule">

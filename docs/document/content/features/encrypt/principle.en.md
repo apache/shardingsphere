@@ -27,14 +27,14 @@ just like using ordinary data.
 ### Encryption Rule
 
 Before explaining the whole process in detail, we need to understand the encryption rules and configuration, which is the basis of understanding the whole process. 
-The encryption configuration is mainly divided into four parts: data source configuration, encryptor configuration, encryption table configuration, and query attribute configuration.
+The encryption configuration is mainly divided into four parts: data source configuration, encrypt strategy configuration, encryption table rule configuration, and query attribute configuration.
  The details are shown in the following figure:
 
 ![2](https://shardingsphere.apache.org/document/current/img/encrypt/2_en.png)
 
 **Datasource Configuration**：The configuration of DataSource.
 
-**Encryptor Configuration**：What kind of encryption strategy to use for encryption and decryption. 
+**Encrypt Strategy Configuration**：What kind of encryption strategy to use for encryption and decryption. 
 Currently ShardingSphere has two built-in encryption/decryption strategies: AES / MD5. 
 Users can also implement a set of encryption/decryption algorithms by implementing the interface provided by Apache ShardingSphere.
 
@@ -89,14 +89,14 @@ how should ShardingSphere be used to achieve business requirements?
 
 Business scenario analysis: The newly launched business is relatively simple because everything starts from scratch and there is no historical data cleaning problem.
 
-Solution description: After selecting the appropriate encryptor, such as AES, 
+Solution description: After selecting the appropriate encrypt algorithm, such as AES, 
 you only need to configure the logical column (write SQL for users) and the ciphertext column (the data table stores the ciphertext data). 
 It can also be different **. The recommended configuration is as follows (shown in Yaml format):
 
 ```yaml
 -!ENCRYPT
-  encryptors:
-    aes_encryptor:
+  encryptStrategies:
+    aes_encrypt_strategy:
       type: aes
       props:
         aes.key.value: 123456abc
@@ -105,7 +105,7 @@ It can also be different **. The recommended configuration is as follows (shown 
       columns:
         pwd:
           cipherColumn: pwd
-          encryptor: aes_encryptor
+          encryptStrategyName: aes_encrypt_strategy
 ```
 
 With this configuration, Apache ShardingSphere only needs to convert logicColumn and cipherColumn. 
@@ -125,7 +125,7 @@ Solution description: Before providing a solution, let ’s brainstorm:
 First, if the old business needs to be desensitized, it must have stored very important and sensitive information. 
 This information has a high gold content and the business is relatively important. 
 If it is broken, the whole team KPI is over. 
-Therefore, it is impossible to suspend business immediately, prohibit writing of new data, encrypt and clean all historical data with an encryptor, 
+Therefore, it is impossible to suspend business immediately, prohibit writing of new data, encrypt and clean all historical data with an encrypt algorithm, 
 and then deploy the previously reconstructed code online, so that it can encrypt and decrypt online and incremental data. 
 Such a simple and rough way, based on historical experience, will definitely not work.
 
@@ -151,8 +151,8 @@ In addition, demonstrate a set of encryption configuration rules, as follows:
 
 ```yaml
 -!ENCRYPT
-  encryptors:
-    aes_encryptor:
+  encryptStrategies:
+    aes_encrypt_strategy:
       type: aes
       props:
         aes.key.value: 123456abc
@@ -162,7 +162,7 @@ In addition, demonstrate a set of encryption configuration rules, as follows:
         pwd:
           plainColumn: pwd
           cipherColumn: pwd_cipher
-          encryptor: aes_encryptor
+          encryptStrategyName: aes_encrypt_strategy
 props:
   query.with.cipher.column: false
 ```
@@ -218,8 +218,8 @@ So the encryption configuration after migration is:
 
 ```yaml
 -!ENCRYPT
-  encryptors:
-    aes_encryptor:
+  encryptStrategies:
+    aes_encrypt_strategy:
       type: aes
       props:
         aes.key.value: 123456abc
@@ -228,7 +228,7 @@ So the encryption configuration after migration is:
       columns:
         pwd: # pwd与pwd_cipher的转换映射
           cipherColumn: pwd_cipher
-          encryptor: aes_encryptor
+          encryptStrategyName: aes_encrypt_strategy
 props:
   query.with.cipher.column: true
 ```
@@ -252,13 +252,13 @@ Without changing the business query SQL, the on-line system can safely and trans
 
 ## Solution
 
-Apache ShardingSphere has provided two data encryption solutions, corresponding to two ShardingSphere encryption and decryption interfaces, i.e., `ShardingEncryptor` and `ShardingQueryAssistedEncryptor`.
+Apache ShardingSphere has provided two data encryption solutions, corresponding to two ShardingSphere encryption and decryption interfaces, i.e., `EncryptAlgorithm` and `QueryAssistedEncryptAlgorithm`.
 
 On the one hand, Apache ShardingSphere has provided internal encryption and decryption implementations for users, which can be used by them only after configuration. 
 On the other hand, to satisfy users' requirements for different scenarios, we have also opened relevant encryption and decryption interfaces, according to which, users can provide specific implementation types. 
 Then, after simple configurations, Apache ShardingSphere can use encryption and decryption solutions defined by users themselves to desensitize data.
 
-### ShardingEncryptor
+### EncryptAlgorithm
 
 The solution has provided two methods `encrypt()` and `decrypt()` to encrypt/decrypt data for encryption.
 
@@ -267,7 +267,7 @@ they will decrypt sensitive data from the database with `decrypt()` reversely an
 
 Currently, Apache ShardingSphere has provided two types of implementations for this kind of encrypt solution, MD5 (irreversible) and AES (reversible), which can be used after configuration.
 
-### ShardingQueryAssistedEncryptor
+### QueryAssistedEncryptAlgorithm
 
 Compared with the first encrypt scheme, this one is more secure and complex. 
 Its concept is: even the same data, two same user passwords for example, should not be stored as the same desensitized form in the database. 

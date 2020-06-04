@@ -56,7 +56,7 @@ public final class EncryptAssignmentTokenGenerator extends BaseEncryptSQLTokenGe
         Collection<EncryptAssignmentToken> result = new LinkedList<>();
         String tableName = ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
         for (AssignmentSegment each : getSetAssignmentSegment(sqlStatementContext.getSqlStatement()).getAssignments()) {
-            if (getEncryptRule().findEncryptor(tableName, each.getColumn().getIdentifier().getValue()).isPresent()) {
+            if (getEncryptRule().findEncryptAlgorithm(tableName, each.getColumn().getIdentifier().getValue()).isPresent()) {
                 generateSQLToken(tableName, each).ifPresent(result::add);
             }
         }

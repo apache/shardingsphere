@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.encrypt.merge.dql;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
+import org.apache.shardingsphere.encrypt.strategy.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 
 import java.io.InputStream;
@@ -32,7 +32,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class EncryptMergedResult implements MergedResult {
     
-    private final EncryptorMetaData metaData;
+    private final EncryptAlgorithmMetaData metaData;
     
     private final MergedResult mergedResult;
     
@@ -48,12 +48,12 @@ public final class EncryptMergedResult implements MergedResult {
         if (!queryWithCipherColumn) {
             return mergedResult.getValue(columnIndex, type);
         }
-        Optional<Encryptor> encryptor = metaData.findEncryptor(columnIndex);
-        if (!encryptor.isPresent()) {
+        Optional<EncryptAlgorithm> encryptAlgorithm = metaData.findEncryptAlgorithm(columnIndex);
+        if (!encryptAlgorithm.isPresent()) {
             return mergedResult.getValue(columnIndex, type);
         }
         String ciphertext = (String) mergedResult.getValue(columnIndex, String.class);
-        return null == ciphertext ? null : encryptor.get().decrypt(ciphertext);
+        return null == ciphertext ? null : encryptAlgorithm.get().decrypt(ciphertext);
     }
     
     @Override

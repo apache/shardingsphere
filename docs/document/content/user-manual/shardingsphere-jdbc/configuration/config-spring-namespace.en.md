@@ -193,14 +193,18 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
         <encrypt:encrypt-rule>
             <encrypt:tables>
                 <encrypt:table name="t_order">
-                    <encrypt:column logic-column="user_id" plain-column="user_decrypt" cipher-column="user_encrypt" assisted-query-column="user_assisted" encryptor-ref="encryptor_aes" />
-                    <encrypt:column logic-column="order_id" plain-column="order_decrypt" cipher-column="order_encrypt" assisted-query-column="order_assisted" encryptor-ref="encryptor_md5"/>
+                    <encrypt:column logic-column="user_id" plain-column="user_decrypt" cipher-column="user_encrypt" assisted-query-column="user_assisted" encrypt-strategy-ref="encrypt_strategy_aes" />
+                    <encrypt:column logic-column="order_id" plain-column="order_decrypt" cipher-column="order_encrypt" assisted-query-column="order_assisted" encrypt-strategy-ref="encrypt_strategy_md5"/>
                 </encrypt:table>
             </encrypt:tables>
-            <encrypt:encryptors>
-                <encrypt:encryptor id="encryptor_aes" type="AES" props-ref="props"/>
-                <encrypt:encryptor id="encryptor_md5" type="MD5" />
-            </encrypt:encryptors>
+            <encrypt:encrypt-strategies>
+                <encrypt:encrypt-strategy id="encrypt_strategy_aes" type="AES">
+                    <props>
+                        <prop key="aes.key.value">123456</prop>
+                    </props>
+                </encrypt:encrypt-strategy>
+                <encrypt:encrypt-strategy id="encrypt_strategy_md5" type="MD5" />
+            </encrypt:encrypt-strategies>
         </encrypt:encrypt-rule>
         <encrypt:props>
             <prop key="sql.show">true</prop>
@@ -412,14 +416,18 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
             <sharding:encrypt-rule>
                 <encrypt:tables>
                     <encrypt:table name="t_order">
-                        <encrypt:column logic-column="user_id" plain-column="user_decrypt" cipher-column="user_encrypt" assisted-query-column="user_assisted" encryptor-ref="encryptor_aes" />
-                        <encrypt:column logic-column="order_id" plain-column="order_decrypt" cipher-column="order_encrypt" assisted-query-column="order_assisted" encryptor-ref="encryptor_md5"/>
+                        <encrypt:column logic-column="user_id" plain-column="user_decrypt" cipher-column="user_encrypt" assisted-query-column="user_assisted" encrypt-strategy-ref="encrypt_strategy_aes" />
+                        <encrypt:column logic-column="order_id" plain-column="order_decrypt" cipher-column="order_encrypt" assisted-query-column="order_assisted" encrypt-strategy-ref="encrypt_strategy_md5" />
                     </encrypt:table>
                 </encrypt:tables>
-                <encrypt:encryptors>
-                    <encrypt:encryptor id="encryptor_aes" type="AES"  props-ref="props"/>
-                    <encrypt:encryptor id="encryptor_md5" type="MD5" />
-                </encrypt:encryptors>
+                <encrypt:encrypt-strategies>
+                    <encrypt:encrypt-strategy id="encrypt_strategy_aes" type="AES">
+                        <props>
+                            <prop key="aes.key.value">123456</prop>
+                        </props>
+                    </encrypt:encrypt-strategy>
+                    <encrypt:encrypt-strategy id="encrypt_strategy_md5" type="MD5" />
+                </encrypt:encrypt-strategies>
             </sharding:encrypt-rule>
 
         </sharding:sharding-rule>
@@ -428,9 +436,6 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
             <prop key="sql.show">true</prop>
         </sharding:props>
     </sharding:data-source>
-     <bean:properties id="props">
-        <prop key="aes.key.value">123456</prop>
-    </bean:properties>
 </beans>
 ```
 
@@ -593,9 +598,9 @@ Property configuration that can include these properties of these key generators
 
 #### \<sharding:encrypt-rules />
 
-| *Name*             | *Type* | *Description*    |
-| -------------------| ------ | ---------------- |
-| encryptor-rule (+) | Tag    | Encryptor rule   |
+| *Name*           | *Type* | *Description*  |
+| -----------------| ------ | -------------- |
+| encrypt-rule (+) | Tag    | Encrypt rule   |
 
 #### \<sharding:encrypt-rule />
 
@@ -653,25 +658,25 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encryp
 
 #### \<encrypt:data-source />
 
-| *Name*                  | *Type*    | *Type*                                                |
-| ----------------------- | --------- | ------------------------------------------------------------ |
-| id                      | Attribute | Spring Bean Id                                               |
-| data-source-name        | Attribute | Encrypt data source Bean Id                                  |
-| props (?)               | Tag       | Attribute configurations                                     |
+| *Name*                  | *Type*    | *Type*                      |
+| ----------------------- | --------- | --------------------------- |
+| id                      | Attribute | Spring Bean Id              |
+| data-source-name        | Attribute | Encrypt data source Bean Id |
+| props (?)               | Tag       | Attribute configurations    |
 
-#### \<encrypt:encryptors />
+#### \<encrypt:encrypt-strategies />
 
-| *Name*               | *Type*  | *Type*                                                    |
-| -------------------- | ------- | --------------------------------------------------------- |
-| encryptor(+)         | Tag     | Encryptor configuration                                   |
+| *Name*              | *Type*  | *Type*                         |
+| ------------------- | ------- | ------------------------------ |
+| encrypt-strategy(+) | Tag     | Encrypt strategy configuration |
 
-#### \<encrypt:encryptor />
+#### \<encrypt:encrypt-strategy />
 
-| *Name*                  | *Type*    | *Description*                                               |
-| ----------------------- | --------- | ----------------------------------------------------------- |
-| id                      | Attribute | Names of Encryptor                                          |
-| type                    | Attribute | Types of Encryptor, including MD5/AES or customize type     |
-| props-re                | Attribute | Attribute configurations                                    |
+| *Name*    | *Type*    | *Description*                                                   |
+| --------- | --------- | --------------------------------------------------------------- |
+| id        | Attribute | Names of Encrypt strategy                                       |
+| type      | Attribute | Types of Encrypt algorithm, including MD5/AES or customize type |
+| props-ref | Attribute | Attribute configurations                                        |
 
 #### \<encrypt:tables />
 
@@ -692,7 +697,7 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encryp
 | logic-column            | Attribute | Logic column name                                                                                   |
 | plain-column            | Attribute | Plain column name                                                                                   |
 | cipher-column           | Attribute | Cipher column name                                                                                  |
-| assisted-query-columns  | Attribute | AssistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data|
+| assisted-query-columns  | Attribute | AssistedColumns for query，when use QueryAssistedEncryptAlgorithm, it can help query encrypted data|
 
 #### \<encrypt:props />
 

@@ -34,7 +34,7 @@ rules:
     ds: ds_0
 
 - !ENCRYPT
-  encryptors:
+  encryptStrategies:
     name_encryptror:
       type: aes
       props:
@@ -47,11 +47,11 @@ rules:
         user_name:
           plainColumn: user_name_plain
           cipherColumn: user_name
-          encryptor: name_encryptror
+          encryptStrategyName: name_encryptror
         pwd:
           cipherColumn: pwd
-          encryptor: pwd_encryptror
           assistedQueryColumn: assisted_query_pwd
+          encryptStrategyName: pwd_encryptror
 
 props:
   query.with.cipher.column: true

@@ -19,8 +19,8 @@ package org.apache.shardingsphere.encrypt.rewrite.parameter.impl;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriter;
-import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
-import org.apache.shardingsphere.encrypt.strategy.spi.QueryAssistedEncryptor;
+import org.apache.shardingsphere.encrypt.strategy.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.strategy.spi.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
@@ -50,20 +50,20 @@ public final class EncryptInsertValueParameterRewriter extends EncryptParameterR
         Iterator<String> descendingColumnNames = insertStatementContext.getDescendingColumnNames();
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
-            getEncryptRule().findEncryptor(tableName, columnName).ifPresent(
-                encryptor -> encryptInsertValues((GroupedParameterBuilder) parameterBuilder, insertStatementContext, encryptor, tableName, columnName));
+            getEncryptRule().findEncryptAlgorithm(tableName, columnName).ifPresent(
+                encryptAlgorithm -> encryptInsertValues((GroupedParameterBuilder) parameterBuilder, insertStatementContext, encryptAlgorithm, tableName, columnName));
         }
     }
     
     private void encryptInsertValues(final GroupedParameterBuilder parameterBuilder,
-                                     final InsertStatementContext insertStatementContext, final Encryptor encryptor, final String tableName, final String encryptLogicColumnName) {
+                                     final InsertStatementContext insertStatementContext, final EncryptAlgorithm encryptAlgorithm, final String tableName, final String encryptLogicColumnName) {
         int columnIndex = getColumnIndex(parameterBuilder, insertStatementContext, encryptLogicColumnName);
         int count = 0;
         for (List<Object> each : insertStatementContext.getGroupedParameters()) {
             if (!each.isEmpty()) {
                 StandardParameterBuilder standardParameterBuilder = parameterBuilder.getParameterBuilders().get(count);
                 encryptInsertValue(
-                        encryptor, tableName, columnIndex, insertStatementContext.getInsertValueContexts().get(count).getValue(columnIndex), standardParameterBuilder, encryptLogicColumnName);
+                        encryptAlgorithm, tableName, columnIndex, insertStatementContext.getInsertValueContexts().get(count).getValue(columnIndex), standardParameterBuilder, encryptLogicColumnName);
             }
             count++;
         }
@@ -80,17 +80,17 @@ public final class EncryptInsertValueParameterRewriter extends EncryptParameterR
         return columnNames.indexOf(encryptLogicColumnName);
     }
     
-    private void encryptInsertValue(final Encryptor encryptor, final String tableName, final int columnIndex,
+    private void encryptInsertValue(final EncryptAlgorithm encryptAlgorithm, final String tableName, final int columnIndex,
                                     final Object originalValue, final StandardParameterBuilder parameterBuilder, final String encryptLogicColumnName) {
         // FIXME: can process all part of insert value is ? or literal, can not process mix ? and literal
         // For example: values (?, ?), (1, 1) can process
         // For example: values (?, 1), (?, 2) can not process
-        parameterBuilder.addReplacedParameters(columnIndex, encryptor.encrypt(originalValue));
+        parameterBuilder.addReplacedParameters(columnIndex, encryptAlgorithm.encrypt(originalValue));
         Collection<Object> addedParameters = new LinkedList<>();
-        if (encryptor instanceof QueryAssistedEncryptor) {
+        if (encryptAlgorithm instanceof QueryAssistedEncryptAlgorithm) {
             Optional<String> assistedColumnName = getEncryptRule().findAssistedQueryColumn(tableName, encryptLogicColumnName);
             Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
-            addedParameters.add(((QueryAssistedEncryptor) encryptor).queryAssistedEncrypt(originalValue.toString()));
+            addedParameters.add(((QueryAssistedEncryptAlgorithm) encryptAlgorithm).queryAssistedEncrypt(originalValue.toString()));
         }
         if (getEncryptRule().findPlainColumn(tableName, encryptLogicColumnName).isPresent()) {
             addedParameters.add(originalValue);

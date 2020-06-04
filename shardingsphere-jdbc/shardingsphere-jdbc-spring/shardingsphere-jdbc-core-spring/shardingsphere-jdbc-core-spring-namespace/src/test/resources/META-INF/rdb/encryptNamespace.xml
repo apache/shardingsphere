@@ -32,18 +32,18 @@
     <encrypt:rule id="encryptRule">
         <encrypt:tables>
             <encrypt:table name="t_order">
-                <encrypt:column logic-column="user_id" plain-column="user_decrypt" cipher-column="user_encrypt" assisted-query-column="user_assisted" encryptor-ref="encryptor_aes" />
-                <encrypt:column logic-column="order_id" plain-column="order_decrypt" cipher-column="order_encrypt" assisted-query-column="order_assisted" encryptor-ref="encryptor_md5"/>
+                <encrypt:column logic-column="user_id" plain-column="user_decrypt" cipher-column="user_encrypt" assisted-query-column="user_assisted" encrypt-strategy-ref="encrypt_strategy_aes" />
+                <encrypt:column logic-column="order_id" plain-column="order_decrypt" cipher-column="order_encrypt" assisted-query-column="order_assisted" encrypt-strategy-ref="encrypt_strategy_md5"/>
             </encrypt:table>
         </encrypt:tables>
-        <encrypt:encryptors>
-            <encrypt:encryptor id="encryptor_aes" type="AES">
+        <encrypt:encrypt-strategies>
+            <encrypt:encrypt-strategy id="encrypt_strategy_aes" type="AES">
                 <props>
                     <prop key="aes.key.value">123456</prop>
                 </props>
-            </encrypt:encryptor>
-            <encrypt:encryptor id="encryptor_md5" type="MD5" />
-        </encrypt:encryptors>
+            </encrypt:encrypt-strategy>
+            <encrypt:encrypt-strategy id="encrypt_strategy_md5" type="MD5" />
+        </encrypt:encrypt-strategies>
     </encrypt:rule>
     
     <shardingsphere:data-source id="encryptDataSource" data-source-names="dbtbl_0" rule-refs="encryptRule">

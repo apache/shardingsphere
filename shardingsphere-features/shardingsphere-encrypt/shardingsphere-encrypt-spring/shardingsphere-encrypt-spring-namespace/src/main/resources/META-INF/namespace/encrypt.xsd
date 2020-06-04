@@ -26,21 +26,21 @@
     <xsd:element name="rule">
         <xsd:complexType>
             <xsd:all>
-                <xsd:element ref="encryptors" />
+                <xsd:element ref="encrypt-strategies" />
                 <xsd:element ref="tables" />
             </xsd:all>
             <xsd:attribute name="id" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>
     
-     <xsd:element name="encryptors">
+     <xsd:element name="encrypt-strategies">
        <xsd:complexType>
             <xsd:sequence>
-                <xsd:element ref="encryptor" maxOccurs="unbounded"/>
+                <xsd:element ref="encrypt-strategy" maxOccurs="unbounded"/>
             </xsd:sequence>
         </xsd:complexType>
     </xsd:element>
-     <xsd:element name="encryptor">
+     <xsd:element name="encrypt-strategy">
         <xsd:complexType>
             <xsd:all>
                 <xsd:element ref="beans:props" minOccurs="0" />
@@ -70,7 +70,7 @@
             <xsd:attribute name="plain-column" type="xsd:string" />
             <xsd:attribute name="cipher-column" type="xsd:string" use="required" />
             <xsd:attribute name="assisted-query-column" type="xsd:string" />
-            <xsd:attribute name="encryptor-ref" type="xsd:string" use="required" />
+            <xsd:attribute name="encrypt-strategy-ref" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>
 </xsd:schema>

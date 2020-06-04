@@ -22,7 +22,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.EncryptorConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.EncryptStrategyConfiguration;
 import org.apache.shardingsphere.spring.boot.orchestration.util.EmbedTestingServer;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -66,10 +66,10 @@ public class OrchestrationSpringBootEncryptTest {
         assertThat(embedDataSource.getUsername(), is("sa"));
         EncryptRuleConfiguration configuration = 
                 (EncryptRuleConfiguration) shardingSphereDataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getConfigurations().iterator().next();
-        assertThat(configuration.getEncryptors().size(), is(1));
-        EncryptorConfiguration encryptorConfiguration = configuration.getEncryptors().iterator().next();
-        assertThat(encryptorConfiguration.getName(), is("order_encrypt"));
-        assertThat(encryptorConfiguration.getType(), is("aes"));
+        assertThat(configuration.getEncryptStrategies().size(), is(1));
+        EncryptStrategyConfiguration encryptStrategyConfiguration = configuration.getEncryptStrategies().iterator().next();
+        assertThat(encryptStrategyConfiguration.getName(), is("order_encrypt"));
+        assertThat(encryptStrategyConfiguration.getType(), is("aes"));
         assertThat(configuration.getTables().size(), is(1));
         assertThat(configuration.getTables().iterator().next().getColumns().iterator().next().getCipherColumn(), is("cipher_order_id"));
     }
