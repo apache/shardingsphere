@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.merge.dql;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
+import org.apache.shardingsphere.encrypt.strategy.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.ColumnProjection;
@@ -45,7 +45,7 @@ public final class EncryptorMetaData {
      * @param columnIndex column index
      * @return encryptor
      */
-    public Optional<Encryptor> findEncryptor(final int columnIndex) {
+    public Optional<EncryptAlgorithm> findEncryptor(final int columnIndex) {
         Projection projection = selectStatementContext.getProjectionsContext().getExpandProjections().get(columnIndex - 1);
         if (projection instanceof ColumnProjection) {
             String columnName = ((ColumnProjection) projection).getName();
@@ -55,13 +55,13 @@ public final class EncryptorMetaData {
         return Optional.empty();
     }
     
-    private Optional<Encryptor> findEncryptor(final String tableName, final String columnName) {
-        return encryptRule.findEncryptor(tableName, columnName);
+    private Optional<EncryptAlgorithm> findEncryptor(final String tableName, final String columnName) {
+        return encryptRule.findEncryptAlgorithm(tableName, columnName);
     }
     
-    private Optional<Encryptor> findEncryptor(final String columnName) {
+    private Optional<EncryptAlgorithm> findEncryptor(final String columnName) {
         for (String each : selectStatementContext.getTablesContext().getTableNames()) {
-            Optional<Encryptor> result = encryptRule.findEncryptor(each, columnName);
+            Optional<EncryptAlgorithm> result = encryptRule.findEncryptAlgorithm(each, columnName);
             if (result.isPresent()) {
                 return result;
             }

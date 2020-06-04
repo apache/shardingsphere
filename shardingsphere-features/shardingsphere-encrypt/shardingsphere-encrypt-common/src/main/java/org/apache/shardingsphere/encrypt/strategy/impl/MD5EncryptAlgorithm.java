@@ -15,44 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.strategy;
+package org.apache.shardingsphere.encrypt.strategy.impl;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.shardingsphere.encrypt.strategy.spi.EncryptAlgorithm;
 
-import java.util.Optional;
+import java.util.Properties;
 
 /**
- * Encrypt column.
+ * MD5 encrypt algorithm.
  */
-@RequiredArgsConstructor
 @Getter
-public final class EncryptColumn {
+@Setter
+public final class MD5EncryptAlgorithm implements EncryptAlgorithm {
     
-    private final String cipherColumn;
+    private Properties properties = new Properties();
     
-    private final String assistedQueryColumn;
-    
-    private final String plainColumn;
-    
-    private final String encryptor;
-    
-    /**
-     * Get assisted query column.
-     * 
-     * @return assisted query column
-     */
-    public Optional<String> getAssistedQueryColumn() {
-        return Strings.isNullOrEmpty(assistedQueryColumn) ? Optional.empty() : Optional.of(assistedQueryColumn);
+    @Override
+    public String getType() {
+        return "MD5";
     }
     
-    /**
-     * Get plain column.
-     *
-     * @return plain column
-     */
-    public Optional<String> getPlainColumn() {
-        return Strings.isNullOrEmpty(plainColumn) ? Optional.empty() : Optional.of(plainColumn);
+    @Override
+    public void init() {
+    }
+    
+    @Override
+    public String encrypt(final Object plaintext) {
+        if (null == plaintext) {
+            return null;
+        }
+        return DigestUtils.md5Hex(String.valueOf(plaintext));
+    }
+    
+    @Override
+    public Object decrypt(final String ciphertext) {
+        return ciphertext;
     }
 }

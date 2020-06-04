@@ -17,20 +17,37 @@
 
 package org.apache.shardingsphere.encrypt.strategy.impl;
 
-import org.apache.shardingsphere.encrypt.strategy.EncryptColumn;
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import java.util.Properties;
 
-public final class EncryptColumnTest {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class MD5EncryptAlgorithmTest {
+    
+    private final MD5EncryptAlgorithm encryptAlgorithm = new MD5EncryptAlgorithm();
     
     @Test
-    public void assertGetAssistedQueryColumn() {
-        assertTrue(new EncryptColumn("cipherColumn", "assistedQueryColumn", "plainColumn", "encryptor").getAssistedQueryColumn().isPresent());
+    public void assertGetType() {
+        assertThat(encryptAlgorithm.getType(), is("MD5"));
     }
     
     @Test
-    public void assertGetPlainColumn() {
-        assertTrue(new EncryptColumn("cipherColumn", "assistedQueryColumn", "plainColumn", "encryptor").getPlainColumn().isPresent());
+    public void assertEncode() {
+        assertThat(encryptAlgorithm.encrypt("test"), is("098f6bcd4621d373cade4e832627b4f6"));
+    }
+    
+    @Test
+    public void assertDecode() {
+        assertThat(encryptAlgorithm.decrypt("test").toString(), is("test"));
+    }
+    
+    @Test
+    public void assertProperties() {
+        Properties properties = new Properties();
+        properties.setProperty("key1", "value1");
+        encryptAlgorithm.setProperties(properties);
+        assertThat(encryptAlgorithm.getProperties().get("key1").toString(), is("value1"));
     }
 }

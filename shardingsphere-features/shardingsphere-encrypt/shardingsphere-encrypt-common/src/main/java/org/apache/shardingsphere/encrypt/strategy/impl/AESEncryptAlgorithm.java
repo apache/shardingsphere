@@ -24,7 +24,7 @@ import lombok.SneakyThrows;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
+import org.apache.shardingsphere.encrypt.strategy.spi.EncryptAlgorithm;
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
@@ -36,11 +36,11 @@ import java.util.Arrays;
 import java.util.Properties;
 
 /**
- * AES encryptor.
+ * AES encrypt algorithm.
  */
 @Getter
 @Setter
-public final class AESEncryptor implements Encryptor {
+public final class AESEncryptAlgorithm implements EncryptAlgorithm {
     
     private static final String AES_KEY = "aes.key.value";
     
@@ -76,7 +76,7 @@ public final class AESEncryptor implements Encryptor {
     }
     
     private Cipher getCipher(final int decryptMode) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
-        Preconditions.checkArgument(properties.containsKey(AES_KEY), "No available secret key for `%s`.", AESEncryptor.class.getName());
+        Preconditions.checkArgument(properties.containsKey(AES_KEY), "No available secret key for `%s`.", AESEncryptAlgorithm.class.getName());
         Cipher result = Cipher.getInstance(getType());
         result.init(decryptMode, new SecretKeySpec(createSecretKey(), getType()));
         return result;

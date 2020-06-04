@@ -15,5 +15,6 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sharding.rewrite.fixture.NormalEncryptorFixture
-org.apache.shardingsphere.sharding.rewrite.fixture.QueryAssistedEncryptorFixture
+org.apache.shardingsphere.encrypt.strategy.impl.MD5EncryptAlgorithm
+org.apache.shardingsphere.encrypt.strategy.impl.AESEncryptAlgorithm
+org.apache.shardingsphere.encrypt.strategy.impl.RC4EncryptAlgorithm

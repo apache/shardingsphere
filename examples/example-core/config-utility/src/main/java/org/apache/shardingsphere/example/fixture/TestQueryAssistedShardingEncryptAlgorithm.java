@@ -15,23 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.strategy.fixture;
+package org.apache.shardingsphere.example.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.encrypt.strategy.spi.QueryAssistedEncryptor;
+import org.apache.shardingsphere.encrypt.strategy.spi.QueryAssistedEncryptAlgorithm;
 
 import java.util.Properties;
 
-@Getter
-@Setter
-public final class TestQueryAssistedEncryptor implements QueryAssistedEncryptor {
+public final class TestQueryAssistedShardingEncryptAlgorithm implements QueryAssistedEncryptAlgorithm {
     
     private Properties properties = new Properties();
     
     @Override
     public String getType() {
         return "assistedTest";
+    }
+    
+    @Override
+    public Properties getProperties() {
+        return properties;
+    }
+    
+    @Override
+    public void setProperties(final Properties properties) {
+        this.properties = properties;
     }
     
     @Override

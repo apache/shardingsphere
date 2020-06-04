@@ -11,8 +11,8 @@ Attributes:
 
 | *Name*                | *DataType*                                  | *Description*       |
 | --------------------- | ------------------------------------------- | ------------------- |
-| encryptStrategies (+) | Collection\<EncryptStrategyConfiguration\>  | Encrypt strategies  |
 | tables (+)            | Collection\<EncryptTableRuleConfiguration\> | Encrypt table rules |
+| encryptStrategies (+) | Collection\<EncryptStrategyConfiguration\>  | Encrypt strategies  |
 
 ## Encrypt Strategy Configuration
 
@@ -30,13 +30,13 @@ Apache ShardingSphere built-in implemented classes of encrypt algorithm are:
 
 ### MD5 Encrypt Algorithm
 
-Class name: org.apache.shardingsphere.encrypt.strategy.impl.MD5Encryptor
+Class name: org.apache.shardingsphere.encrypt.strategy.impl.MD5EncryptAlgorithm
 
 Attributes: None
 
 ### AES Encrypt Algorithm
 
-Class name: org.apache.shardingsphere.encrypt.strategy.impl.AESEncryptor
+Class name: org.apache.shardingsphere.encrypt.strategy.impl.AESEncryptAlgorithm
 
 Attributes:
 
@@ -46,7 +46,7 @@ Attributes:
 
 ### RC4 Encrypt Algorithm
 
-Class name: org.apache.shardingsphere.encrypt.strategy.impl.RC4Encryptor
+Class name: org.apache.shardingsphere.encrypt.strategy.impl.RC4EncryptAlgorithm
 
 Attributes:
 

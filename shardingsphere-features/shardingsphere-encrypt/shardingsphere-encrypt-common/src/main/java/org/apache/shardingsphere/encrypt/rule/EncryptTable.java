@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.strategy;
+package org.apache.shardingsphere.encrypt.rule;
 
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.encrypt.api.config.EncryptColumnRuleConfiguration;

@@ -15,45 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.fixture;
+package org.apache.shardingsphere.encrypt.rule;
 
-import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
+import org.junit.Test;
 
-import java.util.Properties;
+import static org.junit.Assert.assertTrue;
 
-/**
- * Test encryptor.
- */
-public final class TestEncryptor implements Encryptor {
+public final class EncryptColumnTest {
     
-    private Properties properties = new Properties();
-    
-    @Override
-    public String getType() {
-        return "test";
+    @Test
+    public void assertGetAssistedQueryColumn() {
+        assertTrue(new EncryptColumn("cipherColumn", "assistedQueryColumn", "plainColumn", "encryptor").getAssistedQueryColumn().isPresent());
     }
     
-    @Override
-    public Properties getProperties() {
-        return properties;
-    }
-    
-    @Override
-    public void setProperties(final Properties properties) {
-        this.properties = properties;
-    }
-    
-    @Override
-    public void init() {
-    }
-    
-    @Override
-    public String encrypt(final Object plaintext) {
-        return "";
-    }
-    
-    @Override
-    public Object decrypt(final String ciphertext) {
-        return "";
+    @Test
+    public void assertGetPlainColumn() {
+        assertTrue(new EncryptColumn("cipherColumn", "assistedQueryColumn", "plainColumn", "encryptor").getPlainColumn().isPresent());
     }
 }

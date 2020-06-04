@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.fixture;
+package org.apache.shardingsphere.driver.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
+import org.apache.shardingsphere.encrypt.strategy.spi.QueryAssistedEncryptAlgorithm;
 
 import java.util.Properties;
 
 @Getter
 @Setter
-public final class NormalEncryptorFixture implements Encryptor {
+public final class TestQueryAssistedEncryptAlgorithm implements QueryAssistedEncryptAlgorithm {
     
     private Properties properties = new Properties();
     
     @Override
     public String getType() {
-        return "NORMAL_ENCRYPT";
+        return "assistedTest";
     }
     
     @Override
@@ -40,11 +40,16 @@ public final class NormalEncryptorFixture implements Encryptor {
     
     @Override
     public String encrypt(final Object plaintext) {
-        return "encrypt_" + plaintext;
+        return "encryptValue";
     }
     
     @Override
     public Object decrypt(final String ciphertext) {
-        return ciphertext.replaceAll("encrypt_", "");
+        return "decryptValue";
+    }
+    
+    @Override
+    public String queryAssistedEncrypt(final String plaintext) {
+        return "assistedEncryptValue";
     }
 }

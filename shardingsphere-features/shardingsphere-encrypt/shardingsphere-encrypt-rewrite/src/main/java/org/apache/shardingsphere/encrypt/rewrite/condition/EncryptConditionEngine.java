@@ -91,7 +91,7 @@ public final class EncryptConditionEngine {
     
     private Optional<EncryptCondition> createEncryptCondition(final SQLStatementContext sqlStatementContext, final PredicateSegment predicateSegment) {
         Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(predicateSegment.getColumn(), schemaMetaData);
-        return tableName.isPresent() && encryptRule.findEncryptor(tableName.get(), predicateSegment.getColumn().getIdentifier().getValue()).isPresent()
+        return tableName.isPresent() && encryptRule.findEncryptAlgorithm(tableName.get(), predicateSegment.getColumn().getIdentifier().getValue()).isPresent()
                 ? createEncryptCondition(predicateSegment, tableName.get()) : Optional.empty();
     }
     

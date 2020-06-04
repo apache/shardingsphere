@@ -22,7 +22,7 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
-import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
+import org.apache.shardingsphere.encrypt.strategy.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import java.nio.charset.StandardCharsets;
@@ -30,11 +30,11 @@ import java.util.Arrays;
 import java.util.Properties;
 
 /**
- * RC4 encryptor.
+ * RC4 encrypt algorithm.
  */
 @Getter
 @Setter
-public final class RC4Encryptor implements Encryptor {
+public final class RC4EncryptAlgorithm implements EncryptAlgorithm {
     
     private static final String RC4_KEY = "rc4.key.value";
     
@@ -44,7 +44,7 @@ public final class RC4Encryptor implements Encryptor {
     
     private byte[] key = new byte[SBOX_LENGTH - 1];
     
-    private int[] sbox = new int[SBOX_LENGTH];
+    private int[] sBox = new int[SBOX_LENGTH];
     
     private Properties properties = new Properties();
     
@@ -88,26 +88,26 @@ public final class RC4Encryptor implements Encryptor {
     
     private void reset() {
         Arrays.fill(key, (byte) 0);
-        Arrays.fill(sbox, 0);
+        Arrays.fill(sBox, 0);
     }
     
     /**
      * Crypt given byte array. Be aware, that you must init key, before using.
-     * @param msg array to be crypt
+     * @param message array to be crypt
      * @return byte array
      * @see <a href="http://en.wikipedia.org/wiki/RC4#Pseudo-random_generation_algorithm_.28PRGA.29">Pseudo-random generation algorithm</a>
      */
-    private byte[] crypt(final byte[] msg) {
-        sbox = initSBox(key);
-        byte[] code = new byte[msg.length];
+    private byte[] crypt(final byte[] message) {
+        sBox = initSBox(key);
+        byte[] code = new byte[message.length];
         int i = 0;
         int j = 0;
-        for (int n = 0; n < msg.length; n++) {
+        for (int n = 0; n < message.length; n++) {
             i = (i + 1) % SBOX_LENGTH;
-            j = (j + sbox[i]) % SBOX_LENGTH;
-            swap(i, j, sbox);
-            int rand = sbox[(sbox[i] + sbox[j]) % SBOX_LENGTH];
-            code[n] = (byte) (rand ^ msg[n]);
+            j = (j + sBox[i]) % SBOX_LENGTH;
+            swap(i, j, sBox);
+            int rand = sBox[(sBox[i] + sBox[j]) % SBOX_LENGTH];
+            code[n] = (byte) (rand ^ message[n]);
         }
         return code;
     }
@@ -116,8 +116,8 @@ public final class RC4Encryptor implements Encryptor {
      * Initialize SBOX with given key, Key-scheduling algorithm.
      *
      * @param key key
-     * @return sbox int array
-     * @see <a href="http://en.wikipedia.org/wiki/RC4#Key-scheduling_algorithm_.28KSA.29">Wikipedia. Init sbox</a>
+     * @return sBox int array
+     * @see <a href="http://en.wikipedia.org/wiki/RC4#Key-scheduling_algorithm_.28KSA.29">Wikipedia. Init sBox</a>
      */
     private int[] initSBox(final byte[] key) {
         int[] sbox = new int[SBOX_LENGTH];
@@ -132,10 +132,10 @@ public final class RC4Encryptor implements Encryptor {
         return sbox;
     }
     
-    private void swap(final int i, final int j, final int[] sbox) {
-        int temp = sbox[i];
-        sbox[i] = sbox[j];
-        sbox[j] = temp;
+    private void swap(final int i, final int j, final int[] sBox) {
+        int temp = sBox[i];
+        sBox[i] = sBox[j];
+        sBox[j] = temp;
     }
     
     /**

@@ -15,39 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.strategy.impl;
+package org.apache.shardingsphere.driver.fixture;
 
-import org.junit.Test;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.encrypt.strategy.spi.EncryptAlgorithm;
 
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class MD5EncryptorTest {
+@Getter
+@Setter
+public final class TestEncryptAlgorithm implements EncryptAlgorithm {
     
-    private final MD5Encryptor encryptor = new MD5Encryptor();
+    private Properties properties = new Properties();
     
-    @Test
-    public void assertGetType() {
-        assertThat(encryptor.getType(), is("MD5"));
+    @Override
+    public String getType() {
+        return "test";
     }
     
-    @Test
-    public void assertEncode() {
-        assertThat(encryptor.encrypt("test"), is("098f6bcd4621d373cade4e832627b4f6"));
+    @Override
+    public void init() {
     }
     
-    @Test
-    public void assertDecode() {
-        assertThat(encryptor.decrypt("test").toString(), is("test"));
+    @Override
+    public String encrypt(final Object plaintext) {
+        return "encryptValue";
     }
     
-    @Test
-    public void assertProperties() {
-        Properties properties = new Properties();
-        properties.setProperty("key1", "value1");
-        encryptor.setProperties(properties);
-        assertThat(encryptor.getProperties().get("key1").toString(), is("value1"));
+    @Override
+    public Object decrypt(final String ciphertext) {
+        return "decryptValue";
     }
 }

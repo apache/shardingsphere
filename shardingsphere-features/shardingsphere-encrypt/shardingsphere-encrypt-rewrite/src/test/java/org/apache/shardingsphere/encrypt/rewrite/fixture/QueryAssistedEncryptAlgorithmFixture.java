@@ -15,27 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.strategy.impl;
+package org.apache.shardingsphere.encrypt.rewrite.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
+import org.apache.shardingsphere.encrypt.strategy.spi.QueryAssistedEncryptAlgorithm;
 
 import java.util.Properties;
 
-/**
- * MD5 encryptor.
- */
 @Getter
 @Setter
-public final class MD5Encryptor implements Encryptor {
+public final class QueryAssistedEncryptAlgorithmFixture implements QueryAssistedEncryptAlgorithm {
     
     private Properties properties = new Properties();
     
     @Override
     public String getType() {
-        return "MD5";
+        return "ASSISTED_QUERY_ENCRYPT";
     }
     
     @Override
@@ -44,14 +40,16 @@ public final class MD5Encryptor implements Encryptor {
     
     @Override
     public String encrypt(final Object plaintext) {
-        if (null == plaintext) {
-            return null;
-        }
-        return DigestUtils.md5Hex(String.valueOf(plaintext));
+        return "encrypt_" + plaintext;
     }
     
     @Override
     public Object decrypt(final String ciphertext) {
-        return ciphertext;
+        return ciphertext.replaceAll("encrypt_", "");
+    }
+    
+    @Override
+    public String queryAssistedEncrypt(final String plaintext) {
+        return "assisted_query_" + plaintext;
     }
 }

@@ -11,8 +11,8 @@ weight = 3
 
 | *名称*                 | *数据类型*                                   | *说明*       |
 | --------------------- | ------------------------------------------- | ------------ |
-| encryptStrategies (+) | Collection\<EncryptStrategyConfiguration\>  | 加解密策略列表 |
 | tables (+)            | Collection\<EncryptTableRuleConfiguration\> | 加密表规则列表 |
+| encryptStrategies (+) | Collection\<EncryptStrategyConfiguration\>  | 加解密策略列表 |
 
 ## 加解密策略配置
 
@@ -30,13 +30,13 @@ Apache ShardingSphere 内置的加解密算法实现类包括：
 
 ### MD5 加解密策略
 
-类名称：org.apache.shardingsphere.encrypt.strategy.impl.MD5Encryptor
+类名称：org.apache.shardingsphere.encrypt.strategy.impl.MD5EncryptAlgorithm
 
 可配置属性：无
 
 ### AES 加解密算法
 
-类名称：org.apache.shardingsphere.encrypt.strategy.impl.AESEncryptor
+类名称：org.apache.shardingsphere.encrypt.strategy.impl.AESEncryptAlgorithm
 
 可配置属性：
 
@@ -46,7 +46,7 @@ Apache ShardingSphere 内置的加解密算法实现类包括：
 
 ### RC4 加解密算法
 
-类名称：org.apache.shardingsphere.encrypt.strategy.impl.RC4Encryptor
+类名称：org.apache.shardingsphere.encrypt.strategy.impl.RC4EncryptAlgorithm
 
 可配置属性：
 

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.strategy.impl;
 
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,53 +27,52 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
-public final class AESEncryptorTest {
+public final class RC4EncryptAlgorithmTest {
     
-    private final AESEncryptor encryptor = new AESEncryptor();
+    private final RC4EncryptAlgorithm encryptAlgorithm = new RC4EncryptAlgorithm();
     
     @Before
     public void setUp() {
         Properties properties = new Properties();
-        properties.setProperty("aes.key.value", "test");
-        encryptor.setProperties(properties);
+        properties.setProperty("rc4.key.value", "test-sharding");
+        encryptAlgorithm.setProperties(properties);
+        encryptAlgorithm.init();
     }
     
     @Test
     public void assertGetType() {
-        assertThat(encryptor.getType(), is("AES"));
+        assertThat(encryptAlgorithm.getType(), is("RC4"));
     }
     
     @Test
     public void assertEncode() {
-        assertThat(encryptor.encrypt("test"), is("dSpPiyENQGDUXMKFMJPGWA=="));
+        assertThat(encryptAlgorithm.encrypt("test"), is("qn36NQ=="));
     }
     
-    @Test(expected = IllegalArgumentException.class)
-    public void assertEncodeWithoutKey() {
+    @Test(expected = ShardingSphereException.class)
+    public void assertKeyIsToLong() {
         Properties properties = new Properties();
-        encryptor.setProperties(properties);
-        assertThat(encryptor.encrypt("test"), is("dSpPiyENQGDUXMKFMJPGWA=="));
+        StringBuilder keyBuffer = new StringBuilder();
+        for (int i = 0; i < 100; i++) {
+            keyBuffer.append("test");
+        }
+        properties.setProperty("rc4.key.value", keyBuffer.toString());
+        encryptAlgorithm.setProperties(properties);
+        encryptAlgorithm.init();
     }
     
     @Test
     public void assertDecode() {
-        assertThat(encryptor.decrypt("dSpPiyENQGDUXMKFMJPGWA==").toString(), is("test"));
+        assertThat(encryptAlgorithm.decrypt("qn36NQ==").toString(), is("test"));
     }
     
     @Test
     public void assertDecodeWithNull() {
-        assertNull(encryptor.decrypt(null));
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void assertDecodeWithoutKey() {
-        Properties properties = new Properties();
-        encryptor.setProperties(properties);
-        assertThat(encryptor.decrypt("dSpPiyENQGDUXMKFMJPGWA==").toString(), is("test"));
+        assertNull(encryptAlgorithm.decrypt(null));
     }
     
     @Test
     public void assertGetProperties() {
-        assertThat(encryptor.getProperties().get("aes.key.value").toString(), is("test"));
+        assertThat(encryptAlgorithm.getProperties().get("rc4.key.value").toString(), is("test-sharding"));
     }
 }

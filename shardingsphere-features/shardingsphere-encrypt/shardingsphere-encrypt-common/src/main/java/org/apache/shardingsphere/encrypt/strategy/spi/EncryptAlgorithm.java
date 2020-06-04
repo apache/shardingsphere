@@ -15,39 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.boot.fixture;
+package org.apache.shardingsphere.encrypt.strategy.spi;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
-
-import java.util.Properties;
+import org.apache.shardingsphere.infra.spi.type.TypedSPI;
 
 /**
- * Test encryptor.
+ * Encrypt algorithm.
  */
-@Getter
-@Setter
-public final class TestEncryptor implements Encryptor {
+public interface EncryptAlgorithm extends TypedSPI {
     
-    private Properties properties = new Properties();
+    /**
+     * Initialize.
+     */
+    void init();
     
-    @Override
-    public String getType() {
-        return "test";
-    }
+    /**
+     * Encode.
+     * 
+     * @param plaintext plaintext
+     * @return ciphertext
+     */
+    String encrypt(Object plaintext);
     
-    @Override
-    public void init() {
-    }
-    
-    @Override
-    public String encrypt(final Object plaintext) {
-        return "";
-    }
-    
-    @Override
-    public Object decrypt(final String ciphertext) {
-        return "";
-    }
+    /**
+     * Decode.
+     * 
+     * @param ciphertext ciphertext
+     * @return plaintext
+     */
+    Object decrypt(String ciphertext);
 }

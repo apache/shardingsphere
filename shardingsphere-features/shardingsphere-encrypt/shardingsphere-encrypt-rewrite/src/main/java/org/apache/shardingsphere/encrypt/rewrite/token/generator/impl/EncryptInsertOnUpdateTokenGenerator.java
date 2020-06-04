@@ -56,7 +56,7 @@ public final class EncryptInsertOnUpdateTokenGenerator extends BaseEncryptSQLTok
             return result;
         }
         for (AssignmentSegment each : onDuplicateKeyColumnsSegments) {
-            if (getEncryptRule().findEncryptor(tableName, each.getColumn().getIdentifier().getValue()).isPresent()) {
+            if (getEncryptRule().findEncryptAlgorithm(tableName, each.getColumn().getIdentifier().getValue()).isPresent()) {
                 generateSQLToken(tableName, each).ifPresent(result::add);
             }
         }
