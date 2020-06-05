@@ -81,7 +81,7 @@ public final class ShardingConfigurationLoader {
             return Optional.empty();
         }
         Preconditions.checkNotNull(result.getSchemaName(), "Property `schemaName` in file `%s` is required.", yamlFile.getName());
-        result.getDataSources().forEach((k, v) -> YamlDataSourceParameterMerger.merged(v, result.getDataSourceCommon()));
+        result.getDataSources().forEach((dataSourceName, dataSourceParameter) -> YamlDataSourceParameterMerger.merged(dataSourceParameter, result.getDataSourceCommon()));
         if (result.getDataSources().isEmpty() && null != result.getDataSource()) {
             YamlDataSourceParameterMerger.merged(result.getDataSource(), result.getDataSourceCommon());
             result.getDataSources().put(DEFAULT_DATASOURCE_NAME, result.getDataSource());
