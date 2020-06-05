@@ -43,6 +43,6 @@ public final class HeartbeatTaskManager {
      */
     public void start(final HeartbeatTask heartbeatTask) {
         Preconditions.checkNotNull(heartbeatTask, "task can not be null");
-        executorService.scheduleAtFixedRate(heartbeatTask, interval, interval, TimeUnit.SECONDS);
+        executorService.scheduleAtFixedRate(heartbeatTask, 0L, interval, TimeUnit.SECONDS);
     }
 }
