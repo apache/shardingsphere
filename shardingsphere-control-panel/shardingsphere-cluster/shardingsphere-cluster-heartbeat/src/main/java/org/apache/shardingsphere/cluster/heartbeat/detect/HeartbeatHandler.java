@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class HeartbeatHandler {
     
-    private static final int FUTURE_GET_TIME_OUT_MILLISECONDS = 1000;
+    private static final int FUTURE_GET_TIME_OUT_MILLISECONDS = 5000;
     
     private HeartbeatConfiguration configuration;
     
