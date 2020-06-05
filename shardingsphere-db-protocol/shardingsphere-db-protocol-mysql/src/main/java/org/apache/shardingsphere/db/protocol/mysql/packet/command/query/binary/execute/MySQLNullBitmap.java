@@ -70,7 +70,7 @@ public final class MySQLNullBitmap {
      * @param index column index
      */
     public void setNullBit(final int index) {
-        nullBitmap[getBytePosition(index)] = 1 << getBitPosition(index);
+        nullBitmap[getBytePosition(index)] |= 1 << getBitPosition(index);
     }
     
     private int getBytePosition(final int index) {
