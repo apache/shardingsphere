@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.example.shardingjdbc.sharding.javaconfiguration.mybatis.entity;
 
-import lombok.Data;
-
-@Data
 public class Order {
 
     private long orderId;
@@ -29,4 +26,36 @@ public class Order {
     private long addressId;
     
     private String status;
+
+    public long getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(long orderId) {
+        this.orderId = orderId;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public long getAddressId() {
+        return addressId;
+    }
+
+    public void setAddressId(long addressId) {
+        this.addressId = addressId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }
