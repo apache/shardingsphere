@@ -34,22 +34,22 @@ public final class MasterSlaveDataSourceRuleTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewMasterSlaveDataSourceRuleWithoutName() {
-        new MasterSlaveDataSourceRule((new MasterSlaveDataSourceRuleConfiguration("", "master_ds", Collections.singletonList("slave_ds"))));
+        new MasterSlaveDataSourceRule(new MasterSlaveDataSourceRuleConfiguration("", "master_ds", Collections.singletonList("slave_ds")));
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewMasterSlaveDataSourceRuleWithoutMasterDataSourceName() {
-        new MasterSlaveDataSourceRule((new MasterSlaveDataSourceRuleConfiguration("ds", "", Collections.singletonList("slave_ds"))));
+        new MasterSlaveDataSourceRule(new MasterSlaveDataSourceRuleConfiguration("ds", "", Collections.singletonList("slave_ds")));
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewMasterSlaveDataSourceRuleWithNullSlaveDataSourceName() {
-        new MasterSlaveDataSourceRule((new MasterSlaveDataSourceRuleConfiguration("ds", "master_ds", null)));
+        new MasterSlaveDataSourceRule(new MasterSlaveDataSourceRuleConfiguration("ds", "master_ds", null));
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewMasterSlaveDataSourceRuleWithEmptySlaveDataSourceName() {
-        new MasterSlaveDataSourceRule((new MasterSlaveDataSourceRuleConfiguration("ds", "master_ds", Collections.emptyList())));
+        new MasterSlaveDataSourceRule(new MasterSlaveDataSourceRuleConfiguration("ds", "master_ds", Collections.emptyList()));
     }
     
     @Test
