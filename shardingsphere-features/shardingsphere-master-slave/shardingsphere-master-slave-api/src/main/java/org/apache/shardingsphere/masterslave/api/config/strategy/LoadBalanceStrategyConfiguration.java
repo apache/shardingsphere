@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.api.config;
+package org.apache.shardingsphere.masterslave.api.config.strategy;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;

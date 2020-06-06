@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.masterslave.api.config;
 
+import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.strategy.LoadBalanceStrategyConfiguration;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 

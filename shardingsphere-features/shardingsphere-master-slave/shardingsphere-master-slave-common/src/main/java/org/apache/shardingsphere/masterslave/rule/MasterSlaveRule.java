@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.masterslave.rule;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceRuleConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.infra.rule.DataSourceRoutedRule;
