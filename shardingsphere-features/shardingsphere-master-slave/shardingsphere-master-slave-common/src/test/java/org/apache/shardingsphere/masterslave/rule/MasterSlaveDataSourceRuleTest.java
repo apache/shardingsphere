@@ -32,6 +32,26 @@ public final class MasterSlaveDataSourceRuleTest {
     private final MasterSlaveDataSourceRule masterSlaveDataSourceRule = new MasterSlaveDataSourceRule(
             new MasterSlaveDataSourceRuleConfiguration("test_ms", "master_db", Arrays.asList("slave_db_0", "slave_db_1"), new LoadBalanceStrategyConfiguration("RANDOM")));
     
+    @Test(expected = IllegalArgumentException.class)
+    public void assertNewMasterSlaveDataSourceRuleWithoutName() {
+        new MasterSlaveDataSourceRule((new MasterSlaveDataSourceRuleConfiguration("", "master_ds", Collections.singletonList("slave_ds"))));
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void assertNewMasterSlaveDataSourceRuleWithoutMasterDataSourceName() {
+        new MasterSlaveDataSourceRule((new MasterSlaveDataSourceRuleConfiguration("ds", "", Collections.singletonList("slave_ds"))));
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void assertNewMasterSlaveDataSourceRuleWithNullSlaveDataSourceName() {
+        new MasterSlaveDataSourceRule((new MasterSlaveDataSourceRuleConfiguration("ds", "master_ds", null)));
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void assertNewMasterSlaveDataSourceRuleWithEmptySlaveDataSourceName() {
+        new MasterSlaveDataSourceRule((new MasterSlaveDataSourceRuleConfiguration("ds", "master_ds", Collections.emptyList())));
+    }
+    
     @Test
     public void assertGetSlaveDataSourceNamesWithoutDisabledDataSourceNames() {
         assertThat(masterSlaveDataSourceRule.getSlaveDataSourceNames(), is(Arrays.asList("slave_db_0", "slave_db_1")));

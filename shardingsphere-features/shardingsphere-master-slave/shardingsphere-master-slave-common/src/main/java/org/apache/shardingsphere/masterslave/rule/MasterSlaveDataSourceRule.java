@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.masterslave.rule;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.masterslave.api.config.strategy.LoadBalanceStrategyConfiguration;
-import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
+import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.strategy.LoadBalanceStrategyConfiguration;
+import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -55,10 +57,17 @@ public final class MasterSlaveDataSourceRule {
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
     public MasterSlaveDataSourceRule(final MasterSlaveDataSourceRuleConfiguration configuration) {
+        checkConfiguration(configuration);
         name = configuration.getName();
         masterDataSourceName = configuration.getMasterDataSourceName();
         slaveDataSourceNames = configuration.getSlaveDataSourceNames();
         loadBalanceAlgorithm = createLoadBalanceAlgorithm(configuration.getLoadBalanceStrategy());
+    }
+    
+    private void checkConfiguration(final MasterSlaveDataSourceRuleConfiguration configuration) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(configuration.getName()), "Name is required.");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(configuration.getMasterDataSourceName()), "Master data source name is required.");
+        Preconditions.checkArgument(null != configuration.getSlaveDataSourceNames() && !configuration.getSlaveDataSourceNames().isEmpty(), "Slave data source names are required.");
     }
     
     private MasterSlaveLoadBalanceAlgorithm createLoadBalanceAlgorithm(final LoadBalanceStrategyConfiguration configuration) {
