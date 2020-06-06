@@ -37,8 +37,6 @@
     </environments>
 
     <mappers>
-        <mapper resource="META-INF/mappers/AddressMapper.xml"/>
         <mapper resource="META-INF/mappers/OrderMapper.xml"/>
-        <mapper resource="META-INF/mappers/OrderItemMapper.xml"/>
     </mappers>
 </configuration>
