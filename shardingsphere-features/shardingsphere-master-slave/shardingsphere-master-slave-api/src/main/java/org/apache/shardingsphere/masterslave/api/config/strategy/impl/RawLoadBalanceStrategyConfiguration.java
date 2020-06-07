@@ -19,6 +19,7 @@ package org.apache.shardingsphere.masterslave.api.config.strategy.impl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.strategy.RawStrategyConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.strategy.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
 
@@ -27,7 +28,7 @@ import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm
  */
 @RequiredArgsConstructor
 @Getter
-public final class RawLoadBalanceStrategyConfiguration implements LoadBalanceStrategyConfiguration {
+public final class RawLoadBalanceStrategyConfiguration implements LoadBalanceStrategyConfiguration, RawStrategyConfiguration<MasterSlaveLoadBalanceAlgorithm> {
     
     private final String name;
     

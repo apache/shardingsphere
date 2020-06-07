@@ -15,25 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.api.config.strategy.impl;
-
-import lombok.Getter;
-import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
-import org.apache.shardingsphere.infra.config.strategy.SPIStrategyConfiguration;
-import org.apache.shardingsphere.masterslave.api.config.strategy.LoadBalanceStrategyConfiguration;
+package org.apache.shardingsphere.infra.config.strategy;
 
 import java.util.Properties;
 
 /**
- * Master-slave load balance strategy configuration for SPI.
+ * SPI strategy configuration.
  */
-@Getter
-public final class SPILoadBalanceStrategyConfiguration extends TypedSPIConfiguration implements LoadBalanceStrategyConfiguration, SPIStrategyConfiguration {
+public interface SPIStrategyConfiguration extends StrategyConfiguration {
     
-    private final String name;
+    /**
+     * Get algorithm type.
+     * 
+     * @return algorithm type
+     */
+    String getType();
     
-    public SPILoadBalanceStrategyConfiguration(final String name, final String type, final Properties properties) {
-        super(type, properties);
-        this.name = name;
-    }
+    /**
+     * Get algorithm properties.
+     * 
+     * @return algorithm properties
+     */
+    Properties getProperties();
 }

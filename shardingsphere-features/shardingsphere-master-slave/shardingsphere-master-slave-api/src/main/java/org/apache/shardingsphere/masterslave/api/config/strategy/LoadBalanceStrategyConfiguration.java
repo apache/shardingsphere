@@ -17,15 +17,10 @@
 
 package org.apache.shardingsphere.masterslave.api.config.strategy;
 
+import org.apache.shardingsphere.infra.config.strategy.StrategyConfiguration;
+
 /**
  * Master-slave load balance strategy configuration.
  */
-public interface LoadBalanceStrategyConfiguration {
-    
-    /**
-     * Get strategy name.
-     *
-     * @return strategy name
-     */
-    String getName();
+public interface LoadBalanceStrategyConfiguration extends StrategyConfiguration {
 }

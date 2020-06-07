@@ -17,15 +17,10 @@
 
 package org.apache.shardingsphere.encrypt.api.config.strategy;
 
+import org.apache.shardingsphere.infra.config.strategy.StrategyConfiguration;
+
 /**
  * Encrypt strategy configuration.
  */
-public interface EncryptStrategyConfiguration {
-    
-    /**
-     * Get strategy name.
-     * 
-     * @return strategy name
-     */
-    String getName();
+public interface EncryptStrategyConfiguration extends StrategyConfiguration {
 }

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.encrypt.api.config.strategy.impl;
 import lombok.Getter;
 import org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration;
 import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
+import org.apache.shardingsphere.infra.config.strategy.SPIStrategyConfiguration;
 
 import java.util.Properties;
 
@@ -27,7 +28,7 @@ import java.util.Properties;
  * Encrypt strategy configuration for SPI.
  */
 @Getter
-public final class SPIEncryptStrategyConfiguration extends TypedSPIConfiguration implements EncryptStrategyConfiguration {
+public final class SPIEncryptStrategyConfiguration extends TypedSPIConfiguration implements EncryptStrategyConfiguration, SPIStrategyConfiguration {
     
     private final String name;
     

@@ -15,22 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.api.config.strategy.impl;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.infra.config.strategy.RawStrategyConfiguration;
+package org.apache.shardingsphere.infra.config.strategy;
 
 /**
- * Encrypt strategy configuration for raw.
+ * ShardingSphere algorithm.
  */
-@RequiredArgsConstructor
-@Getter
-public final class RawEncryptStrategyConfiguration implements EncryptStrategyConfiguration, RawStrategyConfiguration<EncryptAlgorithm> {
-    
-    private final String name;
-    
-    private final EncryptAlgorithm algorithm;
+public interface ShardingSphereAlgorithm {
 }
