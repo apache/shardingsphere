@@ -32,6 +32,8 @@ import java.util.Random;
 
 public class ExampleMain {
 
+    private static final int DATA_COUNT = 10;
+
     private static OrderRepository orderRepository;
 
     public static void main(String... args) throws IOException, SQLException {
@@ -54,31 +56,45 @@ public class ExampleMain {
     }
 
     public static void initEnvironment() throws SQLException {
+        System.out.println("---------------- Environment Initialization Start ----------------");
         orderRepository.createTableIfNotExists();
         orderRepository.truncateTable();
+        System.out.println("---------------- Environment Initialization Stop ----------------");
+        System.out.println("\n");
     }
 
     public static void insertData() throws SQLException {
-        for (int i = 0; i < 10; i++) {
+        System.out.println("---------------- Data Insertion Start ----------------");
+        for (int i = 0; i < DATA_COUNT; i++) {
             Order order = new Order();
             order.setAddressId(new Random().nextInt(200));
             order.setUserId(i);
             order.setStatus("INIT STATUS");
             orderRepository.insert(order);
         }
+        System.out.println("---------------- Data Insertion Stop ----------------");
+        System.out.println("\n");
     }
 
     public static void selectData() throws SQLException {
+        System.out.println("---------------- Data Selection Start ----------------");
+        System.out.println("Followings are the Data Created Just Now : ");
         List<Order> orderList = orderRepository.selectAll();
-        for (Order order : orderList) {
-            System.out.println(order);
+        for (Order each : orderList) {
+            System.out.println(each);
         }
+        System.out.println("---------------- Data Selection Stop ----------------");
+        System.out.println("\n");
     }
 
     public static void deleteData() throws SQLException {
+        System.out.println("---------------- Data Deletion Start ----------------");
         List<Order> orderList = orderRepository.selectAll();
-        for (Order order : orderList) {
-            orderRepository.delete(order.getOrderId());
+        for (Order each : orderList) {
+            orderRepository.delete(each.getOrderId());
         }
+        System.out.println("---------------- Data Deletion Stop ----------------");
+        System.out.println("\n");
+        System.out.println("The Order Data Remains : " + orderRepository.selectAll().size());
     }
 }
