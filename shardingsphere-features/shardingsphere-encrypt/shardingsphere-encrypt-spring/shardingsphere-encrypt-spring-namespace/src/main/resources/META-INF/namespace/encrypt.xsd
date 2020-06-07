@@ -33,14 +33,14 @@
         </xsd:complexType>
     </xsd:element>
     
-     <xsd:element name="encrypt-strategies">
-       <xsd:complexType>
+    <xsd:element name="encrypt-strategies">
+        <xsd:complexType>
             <xsd:sequence>
                 <xsd:element ref="encrypt-strategy" maxOccurs="unbounded"/>
             </xsd:sequence>
         </xsd:complexType>
     </xsd:element>
-     <xsd:element name="encrypt-strategy">
+    <xsd:element name="encrypt-strategy">
         <xsd:complexType>
             <xsd:all>
                 <xsd:element ref="beans:props" minOccurs="0" />
@@ -49,6 +49,7 @@
             <xsd:attribute name="type" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>
+    
     <xsd:element name="tables">
         <xsd:complexType>
             <xsd:sequence>

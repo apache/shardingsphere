@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.masterslave.log;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceRuleConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.infra.log.ConfigurationLogger;
 import org.junit.Before;
@@ -75,7 +75,8 @@ public final class MasterSlaveConfigurationLoggerTest {
     }
     
     private MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() {
-        return new MasterSlaveRuleConfiguration(Collections.singleton(new MasterSlaveDataSourceRuleConfiguration("ms_ds", "master_ds", Arrays.asList("slave_ds_0", "slave_ds_1"))));
+        return new MasterSlaveRuleConfiguration(Collections.emptyList(), 
+                Collections.singleton(new MasterSlaveDataSourceRuleConfiguration("ms_ds", "master_ds", Arrays.asList("slave_ds_0", "slave_ds_1"), null)));
     }
     
     private void assertLogInfo(final String logContent) {

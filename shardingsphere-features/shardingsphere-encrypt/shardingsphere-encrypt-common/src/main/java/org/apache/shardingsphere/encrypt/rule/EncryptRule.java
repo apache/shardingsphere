@@ -51,20 +51,20 @@ public final class EncryptRule implements ShardingSphereRule {
     
     private final Map<String, EncryptTable> tables = new LinkedHashMap<>();
     
-    public EncryptRule(final EncryptRuleConfiguration encryptRuleConfiguration) {
-        Preconditions.checkArgument(isValidRuleConfiguration(encryptRuleConfiguration), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
-        encryptRuleConfiguration.getEncryptStrategies().forEach(each -> encryptAlgorithms.put(each.getName(), createEncryptAlgorithm(each)));
-        encryptRuleConfiguration.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(each)));
+    public EncryptRule(final EncryptRuleConfiguration configuration) {
+        Preconditions.checkArgument(isValidRuleConfiguration(configuration), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
+        configuration.getEncryptStrategies().forEach(each -> encryptAlgorithms.put(each.getName(), createEncryptAlgorithm(each)));
+        configuration.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(each)));
     }
     
-    private boolean isValidRuleConfiguration(final EncryptRuleConfiguration encryptRuleConfiguration) {
-        return (encryptRuleConfiguration.getEncryptStrategies().isEmpty() && encryptRuleConfiguration.getTables().isEmpty()) || isValidTableConfiguration(encryptRuleConfiguration);
+    private boolean isValidRuleConfiguration(final EncryptRuleConfiguration configuration) {
+        return (configuration.getEncryptStrategies().isEmpty() && configuration.getTables().isEmpty()) || isValidTableConfiguration(configuration);
     }
     
-    private boolean isValidTableConfiguration(final EncryptRuleConfiguration encryptRuleConfiguration) {
-        for (EncryptTableRuleConfiguration table : encryptRuleConfiguration.getTables()) {
+    private boolean isValidTableConfiguration(final EncryptRuleConfiguration configuration) {
+        for (EncryptTableRuleConfiguration table : configuration.getTables()) {
             for (EncryptColumnRuleConfiguration column : table.getColumns()) {
-                if (!isValidColumnConfiguration(encryptRuleConfiguration, column)) {
+                if (!isValidColumnConfiguration(configuration, column)) {
                     return false;
                 }
             }

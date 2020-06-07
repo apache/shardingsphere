@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.masterslave.spring.namespace.parser;
 
-import org.apache.shardingsphere.masterslave.api.config.LoadBalanceStrategyConfiguration;
-import org.apache.shardingsphere.masterslave.spring.namespace.tag.LoadBalanceAlgorithmBeanDefinitionTag;
+import org.apache.shardingsphere.masterslave.api.config.strategy.LoadBalanceStrategyConfiguration;
+import org.apache.shardingsphere.masterslave.spring.namespace.tag.LoadBalanceStrategyBeanDefinitionTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -36,13 +36,14 @@ public final class MasterSlaveLoadBalanceStrategyBeanDefinitionParser extends Ab
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(LoadBalanceStrategyConfiguration.class);
-        factory.addConstructorArgValue(element.getAttribute(LoadBalanceAlgorithmBeanDefinitionTag.ALGORITHM_TYPE_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(LoadBalanceStrategyBeanDefinitionTag.NAME_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(LoadBalanceStrategyBeanDefinitionTag.TYPE_ATTRIBUTE));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
         return factory.getBeanDefinition();
     }
     
     private static Properties parseProperties(final Element element, final ParserContext parserContext) {
-        Element propsElement = DomUtils.getChildElementByTagName(element, LoadBalanceAlgorithmBeanDefinitionTag.ALGORITHM_PROPS_TAG);
+        Element propsElement = DomUtils.getChildElementByTagName(element, LoadBalanceStrategyBeanDefinitionTag.PROPS_TAG);
         return null == propsElement ? new Properties() : parserContext.getDelegate().parsePropsElement(propsElement);
     }
 }

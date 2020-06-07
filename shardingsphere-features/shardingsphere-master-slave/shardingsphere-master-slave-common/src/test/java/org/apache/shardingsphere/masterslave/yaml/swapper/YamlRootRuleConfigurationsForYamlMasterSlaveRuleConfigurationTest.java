@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.masterslave.yaml.swapper;
 
-import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -71,12 +71,12 @@ public final class YamlRootRuleConfigurationsForYamlMasterSlaveRuleConfiguration
     private void assertMasterSlaveRuleForDs0(final YamlMasterSlaveRuleConfiguration actual) {
         assertThat(actual.getDataSources().get("ds_0").getMasterDataSourceName(), is("master_ds_0"));
         assertThat(actual.getDataSources().get("ds_0").getSlaveDataSourceNames(), is(Arrays.asList("master_ds_0_slave_0", "master_ds_0_slave_1")));
-        assertThat(actual.getDataSources().get("ds_0").getLoadBalanceAlgorithmType(), is("ROUND_ROBIN"));
+        assertThat(actual.getDataSources().get("ds_0").getLoadBalanceStrategyName(), is("roundRobin"));
     }
     
     private void assertMasterSlaveRuleForDs1(final YamlMasterSlaveRuleConfiguration actual) {
         assertThat(actual.getDataSources().get("ds_1").getMasterDataSourceName(), is("master_ds_1"));
         assertThat(actual.getDataSources().get("ds_1").getSlaveDataSourceNames(), is(Arrays.asList("master_ds_1_slave_0", "master_ds_1_slave_1")));
-        assertThat(actual.getDataSources().get("ds_1").getLoadBalanceAlgorithmType(), is("RANDOM"));
+        assertThat(actual.getDataSources().get("ds_1").getLoadBalanceStrategyName(), is("random"));
     }
 }

@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.masterslave.rule;
 
-import org.apache.shardingsphere.masterslave.api.config.LoadBalanceStrategyConfiguration;
-import org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceRuleConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
+import org.apache.shardingsphere.masterslave.strategy.RandomMasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.masterslave.strategy.RoundRobinMasterSlaveLoadBalanceAlgorithm;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -30,7 +31,27 @@ import static org.junit.Assert.assertThat;
 public final class MasterSlaveDataSourceRuleTest {
     
     private final MasterSlaveDataSourceRule masterSlaveDataSourceRule = new MasterSlaveDataSourceRule(
-            new MasterSlaveDataSourceRuleConfiguration("test_ms", "master_db", Arrays.asList("slave_db_0", "slave_db_1"), new LoadBalanceStrategyConfiguration("RANDOM")));
+            new MasterSlaveDataSourceRuleConfiguration("test_ms", "master_db", Arrays.asList("slave_db_0", "slave_db_1"), "ramdon"), new RandomMasterSlaveLoadBalanceAlgorithm());
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void assertNewMasterSlaveDataSourceRuleWithoutName() {
+        new MasterSlaveDataSourceRule(new MasterSlaveDataSourceRuleConfiguration("", "master_ds", Collections.singletonList("slave_ds"), null), new RoundRobinMasterSlaveLoadBalanceAlgorithm());
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void assertNewMasterSlaveDataSourceRuleWithoutMasterDataSourceName() {
+        new MasterSlaveDataSourceRule(new MasterSlaveDataSourceRuleConfiguration("ds", "", Collections.singletonList("slave_ds"), null), new RoundRobinMasterSlaveLoadBalanceAlgorithm());
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void assertNewMasterSlaveDataSourceRuleWithNullSlaveDataSourceName() {
+        new MasterSlaveDataSourceRule(new MasterSlaveDataSourceRuleConfiguration("ds", "master_ds", null, null), new RoundRobinMasterSlaveLoadBalanceAlgorithm());
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void assertNewMasterSlaveDataSourceRuleWithEmptySlaveDataSourceName() {
+        new MasterSlaveDataSourceRule(new MasterSlaveDataSourceRuleConfiguration("ds", "master_ds", Collections.emptyList(), null), new RoundRobinMasterSlaveLoadBalanceAlgorithm());
+    }
     
     @Test
     public void assertGetSlaveDataSourceNamesWithoutDisabledDataSourceNames() {

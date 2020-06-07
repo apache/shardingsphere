@@ -32,6 +32,8 @@ import java.util.Map;
 @Setter
 public final class YamlMasterSlaveRuleConfiguration implements YamlRuleConfiguration {
     
+    private Map<String, YamlMasterSlaveLoadBalanceStrategyConfiguration> loadBalanceStrategies = new LinkedHashMap<>();
+    
     private Map<String, YamlMasterSlaveDataSourceRuleConfiguration> dataSources = new LinkedHashMap<>();
     
     @Override

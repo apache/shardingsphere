@@ -15,7 +15,7 @@ weight = 2
 
 ## 主从数据源配置
 
-类名称：org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceRuleConfiguration
+类名称：org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration
 
 可配置属性：
 

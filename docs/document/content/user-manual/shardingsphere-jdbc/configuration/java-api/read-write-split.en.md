@@ -15,7 +15,7 @@ Attributes:
 
 ## Master Slave Data Source Configuration
 
-Class name: org.apache.shardingsphere.masterslave.api.config.MasterSlaveDataSourceRuleConfiguration
+Class name: org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration
 
 Attributes:
 
