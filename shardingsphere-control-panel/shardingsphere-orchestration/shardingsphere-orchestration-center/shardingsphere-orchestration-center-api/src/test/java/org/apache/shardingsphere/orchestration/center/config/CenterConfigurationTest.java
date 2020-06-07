@@ -29,7 +29,7 @@ public final class CenterConfigurationTest {
     @Test
     public void assertConstructorWithType() {
         String type = "zookeeper";
-        assertThat(new CenterConfiguration(type).getType(), is(type));
+        assertThat(new CenterConfiguration(type, new Properties()).getType(), is(type));
     }
     
     @Test
@@ -45,7 +45,7 @@ public final class CenterConfigurationTest {
     public void assertCenterType() {
         String type = "zookeeper";
         String orchestrationType = "config_center";
-        CenterConfiguration configuration = new CenterConfiguration(type);
+        CenterConfiguration configuration = new CenterConfiguration(type, new Properties());
         configuration.setOrchestrationType(orchestrationType);
         assertThat(configuration.getOrchestrationType(), is(orchestrationType));
     }
@@ -54,7 +54,7 @@ public final class CenterConfigurationTest {
     public void assertServerLists() {
         String type = "zookeeper";
         String serverLists = "127.0.0.1:2181,127.0.0.1:2182";
-        CenterConfiguration configuration = new CenterConfiguration(type);
+        CenterConfiguration configuration = new CenterConfiguration(type, new Properties());
         configuration.setServerLists(serverLists);
         assertThat(configuration.getServerLists(), is(serverLists));
     }
@@ -63,7 +63,7 @@ public final class CenterConfigurationTest {
     public void assertNamespace() {
         String type = "zookeeper";
         String namespace = "orchestration";
-        CenterConfiguration configuration = new CenterConfiguration(type);
+        CenterConfiguration configuration = new CenterConfiguration(type, new Properties());
         configuration.setNamespace(namespace);
         assertThat(configuration.getNamespace(), is(namespace));
     }
