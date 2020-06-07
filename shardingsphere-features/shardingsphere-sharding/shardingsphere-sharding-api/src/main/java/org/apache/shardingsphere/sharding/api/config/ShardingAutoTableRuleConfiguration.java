@@ -17,32 +17,35 @@
 
 package org.apache.shardingsphere.sharding.api.config;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sharding.api.config.strategy.ShardingStrategyConfiguration;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-
-import java.util.Collection;
-import java.util.LinkedList;
 
 /**
- * Sharding rule configuration.
+ * Sharding auto table rule configuration.
+ *
  */
 @Getter
 @Setter
-public final class ShardingRuleConfiguration implements RuleConfiguration {
-    
-    private Collection<ShardingTableRuleConfiguration> tables = new LinkedList<>();
+public class ShardingAutoTableRuleConfiguration {
 
-    private Collection<ShardingAutoTableRuleConfiguration> autoTables = new LinkedList<>();
+    private final String logicTable;
 
-    private Collection<String> bindingTableGroups = new LinkedList<>();
-    
-    private Collection<String> broadcastTables = new LinkedList<>();
-    
-    private ShardingStrategyConfiguration defaultDatabaseShardingStrategy;
-    
-    private ShardingStrategyConfiguration defaultTableShardingStrategy;
-    
-    private KeyGeneratorConfiguration defaultKeyGeneratorConfig;
+    private final String actualDataSources;
+
+    private ShardingStrategyConfiguration shardingStrategy;
+
+    private KeyGeneratorConfiguration keyGenerator;
+
+    public ShardingAutoTableRuleConfiguration(final String logicTable) {
+        this(logicTable, null);
+    }
+
+    public ShardingAutoTableRuleConfiguration(final String logicTable, final String actualDataSources) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(logicTable), "LogicTable is required.");
+        this.logicTable = logicTable;
+        this.actualDataSources = actualDataSources;
+    }
 }
