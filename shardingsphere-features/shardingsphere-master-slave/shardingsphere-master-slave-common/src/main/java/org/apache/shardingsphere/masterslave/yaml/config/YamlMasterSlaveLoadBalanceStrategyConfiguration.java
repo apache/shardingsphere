@@ -15,16 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.spring.namespace.tag;
+package org.apache.shardingsphere.masterslave.yaml.config;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+
+import java.util.Properties;
 
 /**
- * Load balance algorithm bean definition tag.
+ * Master-slave load balance strategy configuration for YAML.
  */
-public final class LoadBalanceAlgorithmBeanDefinitionTag {
+@Getter
+@Setter
+public final class YamlMasterSlaveLoadBalanceStrategyConfiguration implements YamlConfiguration {
     
-    public static final String LOAD_BALANCE_ALGORITHM_TAG = "load-balance-algorithm";
+    private String name;
     
-    public static final String ALGORITHM_TYPE_ATTRIBUTE = "type";
+    private String type;
     
-    public static final String ALGORITHM_PROPS_TAG = "props";
+    private Properties props = new Properties();
 }

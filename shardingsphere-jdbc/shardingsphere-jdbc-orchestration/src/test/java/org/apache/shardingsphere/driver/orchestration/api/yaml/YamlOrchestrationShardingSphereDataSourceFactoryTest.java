@@ -45,8 +45,8 @@ public class YamlOrchestrationShardingSphereDataSourceFactoryTest extends Abstra
             try {
                 File yamlFile = new File(YamlOrchestrationShardingSphereDataSourceFactoryTest.class.getResource(each).toURI());
                 executeSQL(yamlFile);
-            } catch (URISyntaxException | SQLException | IOException e) {
-                throw new ShardingSphereException(e);
+            } catch (final URISyntaxException | SQLException | IOException ex) {
+                throw new ShardingSphereException(ex);
             }
         });
     }

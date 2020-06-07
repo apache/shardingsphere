@@ -37,11 +37,11 @@
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="master-data-source-name" type="xsd:string" use="required" />
             <xsd:attribute name="slave-data-source-names" type="xsd:string" use="required" />
-            <xsd:attribute name="strategy-ref" type="xsd:string" />
+            <xsd:attribute name="load-balance-strategy-ref" type="xsd:string" />
         </xsd:complexType>
     </xsd:element>
     
-    <xsd:element name="load-balance-algorithm">
+    <xsd:element name="load-balance-strategy">
         <xsd:complexType>
             <xsd:all>
                 <xsd:element ref="beans:props" minOccurs="0" />

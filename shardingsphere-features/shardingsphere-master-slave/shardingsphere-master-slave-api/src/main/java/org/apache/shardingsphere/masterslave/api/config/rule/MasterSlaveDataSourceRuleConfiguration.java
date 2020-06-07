@@ -19,7 +19,6 @@ package org.apache.shardingsphere.masterslave.api.config.rule;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.masterslave.api.config.strategy.LoadBalanceStrategyConfiguration;
 
 import java.util.List;
 
@@ -36,9 +35,5 @@ public final class MasterSlaveDataSourceRuleConfiguration {
     
     private final List<String> slaveDataSourceNames;
     
-    private final LoadBalanceStrategyConfiguration loadBalanceStrategy;
-    
-    public MasterSlaveDataSourceRuleConfiguration(final String name, final String masterDataSourceName, final List<String> slaveDataSourceNames) {
-        this(name, masterDataSourceName, slaveDataSourceNames, null);
-    }
+    private final String loadBalanceStrategyName;
 }

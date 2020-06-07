@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.masterslave.yaml.swapper;
 
-import com.google.common.base.Strings;
-import org.apache.shardingsphere.masterslave.api.config.strategy.LoadBalanceStrategyConfiguration;
-import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.strategy.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.masterslave.constant.MasterSlaveOrder;
 import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveDataSourceRuleConfiguration;
+import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveLoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -44,32 +44,35 @@ public final class MasterSlaveRuleConfigurationYamlSwapper implements YamlRuleCo
         return result;
     }
     
-    private YamlMasterSlaveDataSourceRuleConfiguration swap(final MasterSlaveDataSourceRuleConfiguration group) {
+    private YamlMasterSlaveDataSourceRuleConfiguration swap(final MasterSlaveDataSourceRuleConfiguration dataSourceRuleConfiguration) {
         YamlMasterSlaveDataSourceRuleConfiguration result = new YamlMasterSlaveDataSourceRuleConfiguration();
-        result.setName(group.getName());
-        result.setMasterDataSourceName(group.getMasterDataSourceName());
-        result.setSlaveDataSourceNames(group.getSlaveDataSourceNames());
-        if (null != group.getLoadBalanceStrategy()) {
-            result.setLoadBalanceAlgorithmType(group.getLoadBalanceStrategy().getType());
-        }
+        result.setName(dataSourceRuleConfiguration.getName());
+        result.setMasterDataSourceName(dataSourceRuleConfiguration.getMasterDataSourceName());
+        result.setSlaveDataSourceNames(dataSourceRuleConfiguration.getSlaveDataSourceNames());
+        result.setLoadBalanceStrategyName(dataSourceRuleConfiguration.getLoadBalanceStrategyName());
         return result;
     }
     
     @Override
     public MasterSlaveRuleConfiguration swap(final YamlMasterSlaveRuleConfiguration yamlConfiguration) {
-        Collection<MasterSlaveDataSourceRuleConfiguration> groups = new LinkedList<>();
-        for (Entry<String, YamlMasterSlaveDataSourceRuleConfiguration> entry : yamlConfiguration.getDataSources().entrySet()) {
-            groups.add(swap(entry.getKey(), entry.getValue()));
+        Collection<LoadBalanceStrategyConfiguration> loadBalanceStrategies = new LinkedList<>();
+        for (Entry<String, YamlMasterSlaveLoadBalanceStrategyConfiguration> entry : yamlConfiguration.getLoadBalanceStrategies().entrySet()) {
+            loadBalanceStrategies.add(swap(entry.getKey(), entry.getValue()));
         }
-        return new MasterSlaveRuleConfiguration(groups);
+        Collection<MasterSlaveDataSourceRuleConfiguration> dataSources = new LinkedList<>();
+        for (Entry<String, YamlMasterSlaveDataSourceRuleConfiguration> entry : yamlConfiguration.getDataSources().entrySet()) {
+            dataSources.add(swap(entry.getKey(), entry.getValue()));
+        }
+        return new MasterSlaveRuleConfiguration(loadBalanceStrategies, dataSources);
     }
     
-    private MasterSlaveDataSourceRuleConfiguration swap(final String name, final YamlMasterSlaveDataSourceRuleConfiguration yamlGroup) {
-        return new MasterSlaveDataSourceRuleConfiguration(name, yamlGroup.getMasterDataSourceName(), yamlGroup.getSlaveDataSourceNames(), getLoadBalanceStrategyConfiguration(yamlGroup));
+    private LoadBalanceStrategyConfiguration swap(final String name, final YamlMasterSlaveLoadBalanceStrategyConfiguration yamlLoadBalanceStrategyConfiguration) {
+        return new LoadBalanceStrategyConfiguration(name, yamlLoadBalanceStrategyConfiguration.getType(), yamlLoadBalanceStrategyConfiguration.getProps());
     }
     
-    private LoadBalanceStrategyConfiguration getLoadBalanceStrategyConfiguration(final YamlMasterSlaveDataSourceRuleConfiguration yamlGroup) {
-        return Strings.isNullOrEmpty(yamlGroup.getLoadBalanceAlgorithmType()) ? null : new LoadBalanceStrategyConfiguration(yamlGroup.getLoadBalanceAlgorithmType(), yamlGroup.getProps());
+    private MasterSlaveDataSourceRuleConfiguration swap(final String name, final YamlMasterSlaveDataSourceRuleConfiguration yamlDataSourceRuleConfiguration) {
+        return new MasterSlaveDataSourceRuleConfiguration(name, 
+                yamlDataSourceRuleConfiguration.getMasterDataSourceName(), yamlDataSourceRuleConfiguration.getSlaveDataSourceNames(), yamlDataSourceRuleConfiguration.getLoadBalanceStrategyName());
     }
     
     @Override

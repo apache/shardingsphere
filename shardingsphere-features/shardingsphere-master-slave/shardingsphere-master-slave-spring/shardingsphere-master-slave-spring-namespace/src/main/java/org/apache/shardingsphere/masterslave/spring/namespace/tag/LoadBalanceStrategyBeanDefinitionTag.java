@@ -15,23 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.api.config.strategy;
-
-import lombok.Getter;
-import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
-
-import java.util.Properties;
+package org.apache.shardingsphere.masterslave.spring.namespace.tag;
 
 /**
- * Master-slave load balance strategy configuration.
+ * Load balance strategy bean definition tag.
  */
-@Getter
-public final class LoadBalanceStrategyConfiguration extends TypedSPIConfiguration {
+public final class LoadBalanceStrategyBeanDefinitionTag {
     
-    private final String name;
+    public static final String LOAD_BALANCE_STRATEGY_TAG = "load-balance-strategy";
     
-    public LoadBalanceStrategyConfiguration(final String name, final String type, final Properties properties) {
-        super(type, properties);
-        this.name = name;
-    }
+    public static final String NAME_ATTRIBUTE = "id";
+    
+    public static final String TYPE_ATTRIBUTE = "type";
+    
+    public static final String PROPS_TAG = "props";
 }

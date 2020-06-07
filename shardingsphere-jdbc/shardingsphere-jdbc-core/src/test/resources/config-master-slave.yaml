@@ -17,10 +17,13 @@
 
 rules:
 - !MASTER_SLAVE
+  loadBalanceStrategies:
+    roundRobin:
+      type: ROUND_ROBIN
   dataSources:
     test_ds:
       name: test_ds
       masterDataSourceName: test_ds_master
       slaveDataSourceNames:
         - test_ds_slave
-      loadBalanceAlgorithmType: ROUND_ROBIN
+      loadBalanceStrategyName: roundRobin

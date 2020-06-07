@@ -75,7 +75,8 @@ public final class MasterSlaveConfigurationLoggerTest {
     }
     
     private MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() {
-        return new MasterSlaveRuleConfiguration(Collections.singleton(new MasterSlaveDataSourceRuleConfiguration("ms_ds", "master_ds", Arrays.asList("slave_ds_0", "slave_ds_1"))));
+        return new MasterSlaveRuleConfiguration(Collections.emptyList(), 
+                Collections.singleton(new MasterSlaveDataSourceRuleConfiguration("ms_ds", "master_ds", Arrays.asList("slave_ds_0", "slave_ds_1"), null)));
     }
     
     private void assertLogInfo(final String logContent) {
