@@ -22,7 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 
 /**
- * Sharding automatic table rule configuration for YAML.
+ * Sharding auto table rule configuration for YAML.
  */
 @Getter
 @Setter
