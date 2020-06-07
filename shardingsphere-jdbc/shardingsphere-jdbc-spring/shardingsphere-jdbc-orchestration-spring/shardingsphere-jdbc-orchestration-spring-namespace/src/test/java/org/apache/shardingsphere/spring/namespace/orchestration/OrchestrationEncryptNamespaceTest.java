@@ -38,6 +38,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @ContextConfiguration(locations = "classpath:META-INF/rdb/encryptOrchestration.xml")
 public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringContextTests {
@@ -69,12 +70,20 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
         assertThat(userIdColumnRuleConfiguration.getCipherColumn(), is("user_encrypt"));
         assertThat(orderIdColumnRuleConfiguration.getPlainColumn(), is("order_decrypt"));
         Iterator<EncryptStrategyConfiguration> encryptStrategyConfigurations = configuration.getEncryptStrategies().iterator();
-        EncryptStrategyConfiguration aesEncryptStrategyConfiguration = encryptStrategyConfigurations.next();
-        assertThat(aesEncryptStrategyConfiguration.getType(), is("AES"));
-        assertThat(aesEncryptStrategyConfiguration.getProperties().getProperty("aes.key.value"), is("123456"));
-        EncryptStrategyConfiguration md5EncryptStrategyConfiguration = encryptStrategyConfigurations.next();
-        assertThat(md5EncryptStrategyConfiguration.getName(), is("md5_encrypt_strategy"));
-        assertThat(md5EncryptStrategyConfiguration.getType(), is("MD5"));
+        assertEncryptStrategyConfiguration(encryptStrategyConfigurations.next());
+        assertEncryptStrategyConfiguration(encryptStrategyConfigurations.next());
+        assertFalse(encryptStrategyConfigurations.hasNext());
+    }
+    
+    private void assertEncryptStrategyConfiguration(final EncryptStrategyConfiguration encryptStrategyConfiguration) {
+        if ("AES".equals(encryptStrategyConfiguration.getType())) {
+            assertThat(encryptStrategyConfiguration.getName(), is("aes_encrypt_strategy"));
+            assertThat(encryptStrategyConfiguration.getProperties().getProperty("aes.key.value"), is("123456"));
+        } else if ("MD5".equals(encryptStrategyConfiguration.getType())) {
+            assertThat(encryptStrategyConfiguration.getName(), is("md5_encrypt_strategy"));
+        } else {
+            fail();
+        }
     }
     
     @Test

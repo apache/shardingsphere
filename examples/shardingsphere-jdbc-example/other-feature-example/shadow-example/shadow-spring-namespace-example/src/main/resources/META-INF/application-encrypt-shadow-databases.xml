@@ -23,15 +23,12 @@
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:shadow="http://shardingsphere.apache.org/schema/shardingsphere/shadow"
        xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
-       xmlns:bean="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd 
                            http://www.springframework.org/schema/tx 
                            http://www.springframework.org/schema/tx/spring-tx.xsd
                            http://www.springframework.org/schema/context 
                            http://www.springframework.org/schema/context/spring-context.xsd
-                           http://www.springframework.org/schema/util
-                           http://www.springframework.org/schema/util/spring-util.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/shadow
@@ -47,37 +44,34 @@
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>
-
+    
     <bean id="shadow_ds" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/shadow_demo_ds?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>
-
+    
     <shadow:rule id="shadowRule" column="shadow">
         <shadow:mappings>
             <shadow:mapping product-data-source-name="ds" shadow-data-source-name="shadow_ds"/>
         </shadow:mappings>
     </shadow:rule>
-
+    
+    <encrypt:encrypt-strategy id="name_encrypt_strategy" type="AES">
+        <props>
+            <prop key="aes.key.value">123456</prop>
+        </props>
+    </encrypt:encrypt-strategy>
+    <encrypt:encrypt-strategy id="pwd_encrypt_strategy" type="assistedTest" />
+    
     <encrypt:rule id="encryptRule">
-        <encrypt:tables>
-            <encrypt:table name="t_user">
-                <encrypt:column logic-column="user_name" cipher-column="user_name" plain-column="user_name_plain" encrypt-strategy-ref="name_encrypt_strategy" />
-                <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" encrypt-strategy-ref="pwd_encrypt_strategy"/>
-            </encrypt:table>
-        </encrypt:tables>
-        <encrypt:encrypt-strategies>
-            <encrypt:encrypt-strategy id="name_encrypt_strategy" type="AES">
-                <props>
-                    <prop key="aes.key.value">123456</prop>
-                </props>
-            </encrypt:encrypt-strategy>
-            <encrypt:encrypt-strategy id="pwd_encrypt_strategy" type="assistedTest" />
-        </encrypt:encrypt-strategies>
+        <encrypt:table name="t_user">
+            <encrypt:column logic-column="user_name" cipher-column="user_name" plain-column="user_name_plain" encrypt-strategy-ref="name_encrypt_strategy" />
+            <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" encrypt-strategy-ref="pwd_encrypt_strategy"/>
+        </encrypt:table>
     </encrypt:rule>
-
+    
     <shardingsphere:data-source id="encryptShadowDataSource" data-source-names="ds,shadow_ds" rule-refs="shadowRule,encryptRule">
         <props>
             <prop key="sql.show">true</prop>

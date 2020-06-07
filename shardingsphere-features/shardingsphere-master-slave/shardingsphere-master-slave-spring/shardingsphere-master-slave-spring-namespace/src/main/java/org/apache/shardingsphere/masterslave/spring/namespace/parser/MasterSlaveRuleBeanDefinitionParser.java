@@ -44,14 +44,32 @@ public final class MasterSlaveRuleBeanDefinitionParser extends AbstractBeanDefin
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(MasterSlaveRuleConfiguration.class);
-        List<Element> masterSlaveDataSourceElements = DomUtils.getChildElementsByTagName(element, MasterSlaveRuleBeanDefinitionTag.DATA_SOURCE_TAG);
-        List<BeanDefinition> masterSlaveDataSources = new ManagedList<>(masterSlaveDataSourceElements.size());
-        for (Element each : masterSlaveDataSourceElements) {
-            masterSlaveDataSources.add(parseMasterSlaveDataSourceRuleConfiguration(each));
-        }
         factory.addConstructorArgValue(parseLoadBalanceStrategiesConfigurations(element));
-        factory.addConstructorArgValue(masterSlaveDataSources);
+        factory.addConstructorArgValue(parseMasterSlaveDataSourceRuleConfigurations(element));
         return factory.getBeanDefinition();
+    }
+    
+    private Collection<RuntimeBeanReference> parseLoadBalanceStrategiesConfigurations(final Element element) {
+        Collection<String> loadBalanceStrategyRefs = findLoadBalanceStrategyRefs(DomUtils.getChildElementsByTagName(element, MasterSlaveRuleBeanDefinitionTag.DATA_SOURCE_TAG));
+        Collection<RuntimeBeanReference> result = new ManagedList<>(loadBalanceStrategyRefs.size());
+        for (String each : loadBalanceStrategyRefs) {
+            result.add(new RuntimeBeanReference(each));
+        }
+        return result;
+    }
+    
+    private Collection<String> findLoadBalanceStrategyRefs(final List<Element> masterSlaveDataSourceElements) {
+        return masterSlaveDataSourceElements.stream().filter(each -> !Strings.isNullOrEmpty(each.getAttribute(MasterSlaveRuleBeanDefinitionTag.LOAD_BALANCE_STRATEGY_REF_ATTRIBUTE)))
+                .map(each -> each.getAttribute(MasterSlaveRuleBeanDefinitionTag.LOAD_BALANCE_STRATEGY_REF_ATTRIBUTE)).collect(Collectors.toSet());
+    }
+    
+    private List<BeanDefinition> parseMasterSlaveDataSourceRuleConfigurations(final Element element) {
+        List<Element> masterSlaveDataSourceElements = DomUtils.getChildElementsByTagName(element, MasterSlaveRuleBeanDefinitionTag.DATA_SOURCE_TAG);
+        List<BeanDefinition> result = new ManagedList<>(masterSlaveDataSourceElements.size());
+        for (Element each : masterSlaveDataSourceElements) {
+            result.add(parseMasterSlaveDataSourceRuleConfiguration(each));
+        }
+        return result;
     }
     
     private BeanDefinition parseMasterSlaveDataSourceRuleConfiguration(final Element element) {
@@ -68,19 +86,5 @@ public final class MasterSlaveRuleBeanDefinitionParser extends AbstractBeanDefin
         Collection<String> result = new ManagedList<>(slaveDataSources.size());
         result.addAll(slaveDataSources);
         return result;
-    }
-    
-    private Collection<RuntimeBeanReference> parseLoadBalanceStrategiesConfigurations(final Element element) {
-        Collection<String> loadBalanceStrategyRefs = findLoadBalanceStrategyRefs(DomUtils.getChildElementsByTagName(element, MasterSlaveRuleBeanDefinitionTag.DATA_SOURCE_TAG));
-        Collection<RuntimeBeanReference> result = new ManagedList<>(loadBalanceStrategyRefs.size());
-        for (String each : loadBalanceStrategyRefs) {
-            result.add(new RuntimeBeanReference(each));
-        }
-        return result;
-    }
-    
-    private Collection<String> findLoadBalanceStrategyRefs(final List<Element> masterSlaveDataSourceElements) {
-        return masterSlaveDataSourceElements.stream().filter(each -> !Strings.isNullOrEmpty(each.getAttribute(MasterSlaveRuleBeanDefinitionTag.LOAD_BALANCE_STRATEGY_REF_ATTRIBUTE)))
-                .map(each -> each.getAttribute(MasterSlaveRuleBeanDefinitionTag.LOAD_BALANCE_STRATEGY_REF_ATTRIBUTE)).collect(Collectors.toSet());
     }
 }

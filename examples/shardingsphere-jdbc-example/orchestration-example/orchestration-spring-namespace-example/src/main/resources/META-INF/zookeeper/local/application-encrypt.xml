@@ -20,7 +20,6 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:bean="http://www.springframework.org/schema/util"
        xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
        xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
        xmlns:orchestration="http://shardingsphere.apache.org/schema/shardingsphere/orchestration"
@@ -30,8 +29,6 @@
                            http://www.springframework.org/schema/context/spring-context.xsd
                            http://www.springframework.org/schema/tx 
                            http://www.springframework.org/schema/tx/spring-tx.xsd
-                           http://www.springframework.org/schema/util
-                           http://www.springframework.org/schema/util/spring-util.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt
@@ -49,21 +46,18 @@
         <property name="password" value=""/>
     </bean>
     
+    <encrypt:encrypt-strategy id="name_encrypt_strategy" type="AES">
+        <props>
+            <prop key="aes.key.value">123456</prop>
+        </props>
+    </encrypt:encrypt-strategy>
+    <encrypt:encrypt-strategy id="pwd_encrypt_strategy" type="assistedTest" />
+    
     <encrypt:rule id="encryptRule">
-        <encrypt:tables>
-            <encrypt:table name="t_user">
-                <encrypt:column logic-column="user_name" cipher-column="user_name" encrypt-strategy-ref="name_encrypt_strategy" />
-                <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" encrypt-strategy-ref="pwd_encrypt_strategy"/>
-            </encrypt:table>
-        </encrypt:tables>
-        <encrypt:encrypt-strategies>
-            <encrypt:encrypt-strategy id="name_encrypt_strategy" type="AES">
-                <props>
-                    <prop key="aes.key.value">123456</prop>
-                </props>
-            </encrypt:encrypt-strategy>
-            <encrypt:encrypt-strategy id="pwd_encrypt_strategy" type="assistedTest" />
-        </encrypt:encrypt-strategies>
+        <encrypt:table name="t_user">
+            <encrypt:column logic-column="user_name" cipher-column="user_name" encrypt-strategy-ref="name_encrypt_strategy" />
+            <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" encrypt-strategy-ref="pwd_encrypt_strategy"/>
+        </encrypt:table>
     </encrypt:rule>
     
     <shardingsphere:data-source id="realEncryptDataSource" data-source-names="dbtbl_0" rule-refs="encryptRule">
