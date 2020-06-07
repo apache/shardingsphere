@@ -66,10 +66,10 @@ public final class MasterSlaveRule implements DataSourceRoutedRule, StatusContai
     
     private MasterSlaveLoadBalanceAlgorithm getLoadBalanceAlgorithm(final LoadBalanceStrategyConfiguration loadBalanceStrategyConfiguration) {
         return loadBalanceStrategyConfiguration instanceof RawLoadBalanceStrategyConfiguration ? ((RawLoadBalanceStrategyConfiguration) loadBalanceStrategyConfiguration).getAlgorithm()
-                : createEncryptAlgorithm((SPILoadBalanceStrategyConfiguration) loadBalanceStrategyConfiguration);
+                : createLoadBalanceAlgorithm((SPILoadBalanceStrategyConfiguration) loadBalanceStrategyConfiguration);
     }
     
-    private MasterSlaveLoadBalanceAlgorithm createEncryptAlgorithm(final SPILoadBalanceStrategyConfiguration loadBalanceStrategyConfiguration) {
+    private MasterSlaveLoadBalanceAlgorithm createLoadBalanceAlgorithm(final SPILoadBalanceStrategyConfiguration loadBalanceStrategyConfiguration) {
         return TypedSPIRegistry.getRegisteredService(MasterSlaveLoadBalanceAlgorithm.class, loadBalanceStrategyConfiguration.getType(), loadBalanceStrategyConfiguration.getProperties());
     }
     
