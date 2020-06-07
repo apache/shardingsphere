@@ -15,17 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.api.config.strategy;
+package org.apache.shardingsphere.masterslave.api.config.strategy.impl;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.masterslave.api.config.strategy.LoadBalanceStrategyConfiguration;
+import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
 
 /**
- * Master-slave load balance strategy configuration.
+ * Master-slave load balance strategy configuration for raw.
  */
-public interface LoadBalanceStrategyConfiguration {
+@RequiredArgsConstructor
+@Getter
+public final class RawLoadBalanceStrategyConfiguration implements LoadBalanceStrategyConfiguration {
     
-    /**
-     * Get strategy name.
-     *
-     * @return strategy name
-     */
-    String getName();
+    private final String name;
+    
+    private final MasterSlaveLoadBalanceAlgorithm algorithm;
 }

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.strategy.LoadBalanceStrategyConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.strategy.impl.SPILoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.masterslave.constant.MasterSlaveOrder;
 import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveDataSourceRuleConfiguration;
 import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveLoadBalanceStrategyConfiguration;
@@ -67,7 +68,7 @@ public final class MasterSlaveRuleConfigurationYamlSwapper implements YamlRuleCo
     }
     
     private LoadBalanceStrategyConfiguration swap(final String name, final YamlMasterSlaveLoadBalanceStrategyConfiguration yamlLoadBalanceStrategyConfiguration) {
-        return new LoadBalanceStrategyConfiguration(name, yamlLoadBalanceStrategyConfiguration.getType(), yamlLoadBalanceStrategyConfiguration.getProps());
+        return new SPILoadBalanceStrategyConfiguration(name, yamlLoadBalanceStrategyConfiguration.getType(), yamlLoadBalanceStrategyConfiguration.getProps());
     }
     
     private MasterSlaveDataSourceRuleConfiguration swap(final String name, final YamlMasterSlaveDataSourceRuleConfiguration yamlDataSourceRuleConfiguration) {

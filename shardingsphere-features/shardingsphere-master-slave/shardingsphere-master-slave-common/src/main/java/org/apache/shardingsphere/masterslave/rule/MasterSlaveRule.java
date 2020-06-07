@@ -28,6 +28,8 @@ import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.strategy.LoadBalanceStrategyConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.strategy.impl.RawLoadBalanceStrategyConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.strategy.impl.SPILoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
 
 import java.util.Collection;
@@ -52,7 +54,7 @@ public final class MasterSlaveRule implements DataSourceRoutedRule, StatusContai
     
     public MasterSlaveRule(final MasterSlaveRuleConfiguration configuration) {
         Preconditions.checkArgument(!configuration.getDataSources().isEmpty(), "Master-slave data source rules can not be empty.");
-        configuration.getLoadBalanceStrategies().forEach(each -> loadBalanceAlgorithms.put(each.getName(), createEncryptAlgorithm(each)));
+        configuration.getLoadBalanceStrategies().forEach(each -> loadBalanceAlgorithms.put(each.getName(), getLoadBalanceAlgorithm(each)));
         dataSourceRules = new HashMap<>(configuration.getDataSources().size(), 1);
         for (MasterSlaveDataSourceRuleConfiguration each : configuration.getDataSources()) {
             // TODO check if can not find load balance strategy should throw exception.
@@ -62,7 +64,12 @@ public final class MasterSlaveRule implements DataSourceRoutedRule, StatusContai
         }
     }
     
-    private MasterSlaveLoadBalanceAlgorithm createEncryptAlgorithm(final LoadBalanceStrategyConfiguration loadBalanceStrategyConfiguration) {
+    private MasterSlaveLoadBalanceAlgorithm getLoadBalanceAlgorithm(final LoadBalanceStrategyConfiguration loadBalanceStrategyConfiguration) {
+        return loadBalanceStrategyConfiguration instanceof RawLoadBalanceStrategyConfiguration ? ((RawLoadBalanceStrategyConfiguration) loadBalanceStrategyConfiguration).getAlgorithm()
+                : createEncryptAlgorithm((SPILoadBalanceStrategyConfiguration) loadBalanceStrategyConfiguration);
+    }
+    
+    private MasterSlaveLoadBalanceAlgorithm createEncryptAlgorithm(final SPILoadBalanceStrategyConfiguration loadBalanceStrategyConfiguration) {
         return TypedSPIRegistry.getRegisteredService(MasterSlaveLoadBalanceAlgorithm.class, loadBalanceStrategyConfiguration.getType(), loadBalanceStrategyConfiguration.getProperties());
     }
     
