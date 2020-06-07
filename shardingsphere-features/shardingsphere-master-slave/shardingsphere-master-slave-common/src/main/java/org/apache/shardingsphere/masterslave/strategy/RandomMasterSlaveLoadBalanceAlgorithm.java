@@ -19,7 +19,7 @@ package org.apache.shardingsphere.masterslave.strategy;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.masterslave.spi.SPIMasterSlaveLoadBalanceAlgorithm;
 
 import java.util.List;
 import java.util.Properties;
@@ -30,7 +30,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 @Getter
 @Setter
-public final class RandomMasterSlaveLoadBalanceAlgorithm implements MasterSlaveLoadBalanceAlgorithm {
+public final class RandomMasterSlaveLoadBalanceAlgorithm implements SPIMasterSlaveLoadBalanceAlgorithm {
     
     private Properties properties = new Properties();
     

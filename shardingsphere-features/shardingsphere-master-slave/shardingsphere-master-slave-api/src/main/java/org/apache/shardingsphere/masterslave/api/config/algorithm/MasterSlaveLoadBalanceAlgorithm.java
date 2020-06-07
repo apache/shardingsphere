@@ -15,17 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.spi;
+package org.apache.shardingsphere.masterslave.api.config.algorithm;
 
 import org.apache.shardingsphere.infra.config.strategy.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.spi.type.TypedSPI;
 
 import java.util.List;
 
 /**
  * Master-slave database load-balance algorithm.
  */
-public interface MasterSlaveLoadBalanceAlgorithm extends ShardingSphereAlgorithm, TypedSPI {
+public interface MasterSlaveLoadBalanceAlgorithm extends ShardingSphereAlgorithm {
     
     /**
      * Get data source.

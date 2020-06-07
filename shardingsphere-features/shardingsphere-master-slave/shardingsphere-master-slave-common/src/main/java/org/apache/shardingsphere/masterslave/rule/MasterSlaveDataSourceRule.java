@@ -21,8 +21,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.shardingsphere.masterslave.api.config.algorithm.MasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
-import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
 
 import java.util.Collection;
 import java.util.HashMap;

@@ -26,11 +26,12 @@ import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEve
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.algorithm.MasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.strategy.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.strategy.impl.RawLoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.strategy.impl.SPILoadBalanceStrategyConfiguration;
-import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.masterslave.spi.SPIMasterSlaveLoadBalanceAlgorithm;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -45,7 +46,7 @@ import java.util.Optional;
 public final class MasterSlaveRule implements DataSourceRoutedRule, StatusContainedRule {
     
     static {
-        ShardingSphereServiceLoader.register(MasterSlaveLoadBalanceAlgorithm.class);
+        ShardingSphereServiceLoader.register(SPIMasterSlaveLoadBalanceAlgorithm.class);
     }
     
     private final Map<String, MasterSlaveLoadBalanceAlgorithm> loadBalanceAlgorithms = new LinkedHashMap<>();
@@ -59,7 +60,7 @@ public final class MasterSlaveRule implements DataSourceRoutedRule, StatusContai
         for (MasterSlaveDataSourceRuleConfiguration each : configuration.getDataSources()) {
             // TODO check if can not find load balance strategy should throw exception.
             MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm = Strings.isNullOrEmpty(each.getLoadBalanceStrategyName()) || !loadBalanceAlgorithms.containsKey(each.getLoadBalanceStrategyName())
-                    ? TypedSPIRegistry.getRegisteredService(MasterSlaveLoadBalanceAlgorithm.class) : loadBalanceAlgorithms.get(each.getLoadBalanceStrategyName());
+                    ? TypedSPIRegistry.getRegisteredService(SPIMasterSlaveLoadBalanceAlgorithm.class) : loadBalanceAlgorithms.get(each.getLoadBalanceStrategyName());
             dataSourceRules.put(each.getName(), new MasterSlaveDataSourceRule(each, loadBalanceAlgorithm));
         }
     }
@@ -69,8 +70,8 @@ public final class MasterSlaveRule implements DataSourceRoutedRule, StatusContai
                 : createLoadBalanceAlgorithm((SPILoadBalanceStrategyConfiguration) loadBalanceStrategyConfiguration);
     }
     
-    private MasterSlaveLoadBalanceAlgorithm createLoadBalanceAlgorithm(final SPILoadBalanceStrategyConfiguration loadBalanceStrategyConfiguration) {
-        return TypedSPIRegistry.getRegisteredService(MasterSlaveLoadBalanceAlgorithm.class, loadBalanceStrategyConfiguration.getType(), loadBalanceStrategyConfiguration.getProperties());
+    private SPIMasterSlaveLoadBalanceAlgorithm createLoadBalanceAlgorithm(final SPILoadBalanceStrategyConfiguration loadBalanceStrategyConfiguration) {
+        return TypedSPIRegistry.getRegisteredService(SPIMasterSlaveLoadBalanceAlgorithm.class, loadBalanceStrategyConfiguration.getType(), loadBalanceStrategyConfiguration.getProperties());
     }
     
     /**
