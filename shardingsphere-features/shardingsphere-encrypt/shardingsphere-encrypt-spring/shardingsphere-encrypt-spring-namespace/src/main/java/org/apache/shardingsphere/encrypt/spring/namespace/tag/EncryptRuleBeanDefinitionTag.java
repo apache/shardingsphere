@@ -28,27 +28,17 @@ public final class EncryptRuleBeanDefinitionTag {
     
     public static final String ROOT_TAG = "rule";
     
-    public static final String TABLES_CONFIG_TAG = "tables";
+    public static final String TABLE_TAG = "table";
     
-    public static final String TABLE_CONFIG_TAG = "table";
+    public static final String COLUMN_TAG = "column";
     
-    public static final String COLUMN_CONFIG_TAG = "column";
+    public static final String LOGIC_COLUMN_ATTRIBUTE = "logic-column";
     
-    public static final String COLUMN_LOGIC_COLUMN_ATTRIBUTE = "logic-column";
+    public static final String CIPHER_COLUMN_ATTRIBUTE = "cipher-column";
     
-    public static final String COLUMN_CIPHER_COLUMN_ATTRIBUTE = "cipher-column";
+    public static final String ASSISTED_QUERY_COLUMN_ATTRIBUTE = "assisted-query-column";
     
-    public static final String COLUMN_ASSISTED_QUERY_COLUMN_ATTRIBUTE = "assisted-query-column";
+    public static final String PLAIN_COLUMN_ATTRIBUTE = "plain-column";
     
-    public static final String COLUMN_PLAIN_COLUMN_ATTRIBUTE = "plain-column";
-    
-    public static final String COLUMN_ENCRYPT_STRATEGY_REF_ATTRIBUTE = "encrypt-strategy-ref";
-    
-    public static final String ENCRYPT_STRATEGIES_TAG = "encrypt-strategies";
-    
-    public static final String ENCRYPT_STRATEGY_CONFIG_TAG = "encrypt-strategy";
-    
-    public static final String ENCRYPT_ALGORITHM_TYPE_ATTRIBUTE = "type";
-    
-    public static final String ENCRYPT_ALGORITHM_PROPS_TAG = "props";
+    public static final String ENCRYPT_STRATEGY_REF_ATTRIBUTE = "encrypt-strategy-ref";
 }

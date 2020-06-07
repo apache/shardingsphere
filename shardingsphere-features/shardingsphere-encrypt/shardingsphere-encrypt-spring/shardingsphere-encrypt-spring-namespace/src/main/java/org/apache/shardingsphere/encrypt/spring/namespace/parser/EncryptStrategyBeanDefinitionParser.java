@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.spring.namespace.parser;
+package org.apache.shardingsphere.encrypt.spring.namespace.parser;
 
-import org.apache.shardingsphere.masterslave.api.config.strategy.LoadBalanceStrategyConfiguration;
-import org.apache.shardingsphere.masterslave.spring.namespace.tag.LoadBalanceStrategyBeanDefinitionTag;
+import org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration;
+import org.apache.shardingsphere.encrypt.spring.namespace.tag.EncryptStrategyBeanDefinitionTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -29,21 +29,21 @@ import org.w3c.dom.Element;
 import java.util.Properties;
 
 /**
- * Master slave load balance strategy bean definition parser.
+ * Encrypt strategy bean definition parser.
  */
-public final class MasterSlaveLoadBalanceStrategyBeanDefinitionParser extends AbstractBeanDefinitionParser {
+public final class EncryptStrategyBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(LoadBalanceStrategyConfiguration.class);
-        factory.addConstructorArgValue(element.getAttribute(LoadBalanceStrategyBeanDefinitionTag.NAME_ATTRIBUTE));
-        factory.addConstructorArgValue(element.getAttribute(LoadBalanceStrategyBeanDefinitionTag.TYPE_ATTRIBUTE));
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(EncryptStrategyConfiguration.class);
+        factory.addConstructorArgValue(element.getAttribute(EncryptStrategyBeanDefinitionTag.NAME_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(EncryptStrategyBeanDefinitionTag.TYPE_ATTRIBUTE));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
         return factory.getBeanDefinition();
     }
     
     private static Properties parseProperties(final Element element, final ParserContext parserContext) {
-        Element propsElement = DomUtils.getChildElementByTagName(element, LoadBalanceStrategyBeanDefinitionTag.PROPS_TAG);
+        Element propsElement = DomUtils.getChildElementByTagName(element, EncryptStrategyBeanDefinitionTag.PROPS_TAG);
         return null == propsElement ? new Properties() : parserContext.getDelegate().parsePropsElement(propsElement);
     }
 }

@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.spring.namespace.tag;
+package org.apache.shardingsphere.encrypt.spring.namespace.tag;
 
 /**
- * Load balance strategy bean definition tag.
+ * Encrypt strategy bean definition tag.
  */
-public final class LoadBalanceStrategyBeanDefinitionTag {
+public final class EncryptStrategyBeanDefinitionTag {
     
-    public static final String ROOT_TAG = "load-balance-strategy";
+    public static final String ROOT_TAG = "encrypt-strategy";
     
     public static final String NAME_ATTRIBUTE = "id";
     

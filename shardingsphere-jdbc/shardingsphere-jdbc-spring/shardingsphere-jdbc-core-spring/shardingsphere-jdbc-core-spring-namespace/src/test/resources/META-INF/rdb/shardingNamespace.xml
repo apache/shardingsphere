@@ -64,21 +64,19 @@
             <sharding:table-rule logic-table="t_order" />
         </sharding:table-rules>
     </sharding:rule>
+    
+    <encrypt:encrypt-strategy id="aes_encrypt_strategy" type="AES">
+        <props>
+            <prop key="appToken">business</prop>
+        </props>
+    </encrypt:encrypt-strategy>
+    <encrypt:encrypt-strategy id="md5_encrypt_strategy" type="MD5" />
+    
     <encrypt:rule id="simpleShardingDataSourceEncryptRule">
-        <encrypt:tables>
-            <encrypt:table name="t_order">
-                <encrypt:column logic-column="user_id" cipher-column="user_encrypt" assisted-query-column="user_assisted" plain-column="user_decrypt" encrypt-strategy-ref="aes_encrypt_strategy" />
-                <encrypt:column logic-column="order_id" cipher-column="order_encrypt" assisted-query-column="order_assisted" plain-column="order_decrypt" encrypt-strategy-ref="md5_encrypt_strategy"/>
-            </encrypt:table>
-        </encrypt:tables>
-        <encrypt:encrypt-strategies>
-            <encrypt:encrypt-strategy id="aes_encrypt_strategy" type="AES">
-                <props>
-                    <prop key="appToken">business</prop>
-                </props>
-            </encrypt:encrypt-strategy>
-            <encrypt:encrypt-strategy id="md5_encrypt_strategy" type="MD5" />
-        </encrypt:encrypt-strategies>
+        <encrypt:table name="t_order">
+            <encrypt:column logic-column="user_id" cipher-column="user_encrypt" assisted-query-column="user_assisted" plain-column="user_decrypt" encrypt-strategy-ref="aes_encrypt_strategy" />
+            <encrypt:column logic-column="order_id" cipher-column="order_encrypt" assisted-query-column="order_assisted" plain-column="order_decrypt" encrypt-strategy-ref="md5_encrypt_strategy" />
+        </encrypt:table>
     </encrypt:rule>
     
     <shardingsphere:data-source id="simpleShardingDataSource" data-source-names="dbtbl_0" rule-refs="simpleShardingDataSourceShardingRule, simpleShardingDataSourceEncryptRule" />

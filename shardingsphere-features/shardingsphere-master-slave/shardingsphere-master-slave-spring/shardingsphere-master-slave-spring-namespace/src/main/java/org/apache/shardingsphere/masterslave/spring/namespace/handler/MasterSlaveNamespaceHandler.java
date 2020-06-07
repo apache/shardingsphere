@@ -31,6 +31,6 @@ public final class MasterSlaveNamespaceHandler extends NamespaceHandlerSupport {
     @Override
     public void init() {
         registerBeanDefinitionParser(MasterSlaveRuleBeanDefinitionTag.ROOT_TAG, new MasterSlaveRuleBeanDefinitionParser());
-        registerBeanDefinitionParser(LoadBalanceStrategyBeanDefinitionTag.LOAD_BALANCE_STRATEGY_TAG, new MasterSlaveLoadBalanceStrategyBeanDefinitionParser());
+        registerBeanDefinitionParser(LoadBalanceStrategyBeanDefinitionTag.ROOT_TAG, new MasterSlaveLoadBalanceStrategyBeanDefinitionParser());
     }
 }
