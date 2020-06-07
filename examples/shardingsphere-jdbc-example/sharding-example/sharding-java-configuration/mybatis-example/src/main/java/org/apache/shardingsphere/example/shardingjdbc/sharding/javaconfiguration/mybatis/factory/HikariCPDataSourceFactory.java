@@ -24,8 +24,8 @@ import java.sql.SQLException;
 public class HikariCPDataSourceFactory extends UnpooledDataSourceFactory {
 
     public HikariCPDataSourceFactory() throws SQLException {
-        // dataSource = ShardingDataBaseDataSourceFactory.getDataSource();
-        dataSource = ShardingTablesDataSourceFactory.getDataSource();
+        dataSource = ShardingDataBaseDataSourceFactory.getDataSource();
+        //dataSource = ShardingTablesDataSourceFactory.getDataSource();
         // dataSource = ShardingDatabasesAndTablesDataSourceFactory.getDataSource();
     }
 }
