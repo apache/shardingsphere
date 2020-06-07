@@ -58,4 +58,10 @@ public class Order {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    @Override
+    public String toString() {
+        return "Order{" + "orderId=" + orderId + ", userId=" + userId + ", addressId=" + addressId + ", status='"
+                + status + '\'' + '}';
+    }
 }
