@@ -17,21 +17,15 @@
 
 package org.apache.shardingsphere.encrypt.api.config.strategy;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
-
-import java.util.Properties;
-
 /**
  * Encrypt strategy configuration.
  */
-@Getter
-public final class EncryptStrategyConfiguration extends TypedSPIConfiguration {
+public interface EncryptStrategyConfiguration {
     
-    private final String name;
-    
-    public EncryptStrategyConfiguration(final String name, final String type, final Properties properties) {
-        super(type, properties);
-        this.name = name;
-    }
+    /**
+     * Get strategy name.
+     * 
+     * @return strategy name
+     */
+    String getName();
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.spring.namespace.parser;
 
-import org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.strategy.impl.SPIEncryptStrategyConfiguration;
 import org.apache.shardingsphere.encrypt.spring.namespace.tag.EncryptStrategyBeanDefinitionTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -35,7 +35,7 @@ public final class EncryptStrategyBeanDefinitionParser extends AbstractBeanDefin
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(EncryptStrategyConfiguration.class);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SPIEncryptStrategyConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(EncryptStrategyBeanDefinitionTag.NAME_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(EncryptStrategyBeanDefinitionTag.TYPE_ATTRIBUTE));
         factory.addConstructorArgValue(parseProperties(element, parserContext));

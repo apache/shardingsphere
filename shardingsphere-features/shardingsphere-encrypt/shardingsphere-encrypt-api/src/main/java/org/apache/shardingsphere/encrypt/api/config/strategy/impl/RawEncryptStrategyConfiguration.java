@@ -15,18 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.strategy.spi;
+package org.apache.shardingsphere.encrypt.api.config.strategy.impl;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 
 /**
- * Query assisted encrypt algorithm.
+ * Encrypt strategy configuration for raw.
  */
-public interface QueryAssistedEncryptAlgorithm extends EncryptAlgorithm {
+@RequiredArgsConstructor
+@Getter
+public final class RawEncryptStrategyConfiguration implements EncryptStrategyConfiguration {
     
-    /**
-     * Query assisted encrypt.
-     * 
-     * @param plaintext plaintext
-     * @return ciphertext
-     */
-    String queryAssistedEncrypt(String plaintext);
+    private final String name;
+    
+    private final EncryptAlgorithm algorithm;
 }

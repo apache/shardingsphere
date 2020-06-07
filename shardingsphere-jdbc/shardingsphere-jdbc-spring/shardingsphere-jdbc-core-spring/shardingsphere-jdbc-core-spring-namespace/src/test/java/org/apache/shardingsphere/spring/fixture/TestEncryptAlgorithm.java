@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.spring.fixture;
 
-import org.apache.shardingsphere.encrypt.strategy.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 
 import java.util.Properties;
 

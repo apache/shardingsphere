@@ -22,7 +22,7 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
-import org.apache.shardingsphere.encrypt.strategy.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import java.nio.charset.StandardCharsets;

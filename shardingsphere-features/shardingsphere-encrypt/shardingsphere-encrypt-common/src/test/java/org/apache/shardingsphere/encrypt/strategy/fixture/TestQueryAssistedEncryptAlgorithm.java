@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.strategy.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.strategy.spi.QueryAssistedEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 
 import java.util.Properties;
 

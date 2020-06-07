@@ -15,36 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.strategy.fixture;
+package org.apache.shardingsphere.encrypt.api.config.strategy.impl;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration;
+import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
 
 import java.util.Properties;
 
+/**
+ * Encrypt strategy configuration for SPI.
+ */
 @Getter
-@Setter
-public final class TestEncryptAlgorithm implements EncryptAlgorithm {
+public final class SPIEncryptStrategyConfiguration extends TypedSPIConfiguration implements EncryptStrategyConfiguration {
     
-    private Properties properties = new Properties();
+    private final String name;
     
-    @Override
-    public String getType() {
-        return "test";
-    }
-    
-    @Override
-    public void init() {
-    }
-    
-    @Override
-    public String encrypt(final Object plaintext) {
-        return "encryptValue";
-    }
-    
-    @Override
-    public Object decrypt(final String ciphertext) {
-        return "decryptValue";
+    public SPIEncryptStrategyConfiguration(final String name, final String type, final Properties properties) {
+        super(type, properties);
+        this.name = name;
     }
 }

@@ -19,8 +19,8 @@ package org.apache.shardingsphere.encrypt.rewrite.parameter.impl;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriter;
-import org.apache.shardingsphere.encrypt.strategy.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.strategy.spi.QueryAssistedEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;

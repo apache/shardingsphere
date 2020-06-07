@@ -15,33 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.strategy.spi;
-
-import org.apache.shardingsphere.infra.spi.type.TypedSPI;
+package org.apache.shardingsphere.encrypt.spi;
 
 /**
- * Encrypt algorithm.
+ * Query assisted encrypt algorithm.
  */
-public interface EncryptAlgorithm extends TypedSPI {
+public interface QueryAssistedEncryptAlgorithm extends EncryptAlgorithm {
     
     /**
-     * Initialize.
-     */
-    void init();
-    
-    /**
-     * Encode.
+     * Query assisted encrypt.
      * 
      * @param plaintext plaintext
      * @return ciphertext
      */
-    String encrypt(Object plaintext);
-    
-    /**
-     * Decode.
-     * 
-     * @param ciphertext ciphertext
-     * @return plaintext
-     */
-    Object decrypt(String ciphertext);
+    String queryAssistedEncrypt(String plaintext);
 }

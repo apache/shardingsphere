@@ -19,12 +19,14 @@ package org.apache.shardingsphere.encrypt.rule;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration;
-import org.apache.shardingsphere.encrypt.strategy.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.strategy.spi.QueryAssistedEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.api.config.strategy.impl.RawEncryptStrategyConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.strategy.impl.SPIEncryptStrategyConfiguration;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
@@ -53,7 +55,7 @@ public final class EncryptRule implements ShardingSphereRule {
     
     public EncryptRule(final EncryptRuleConfiguration configuration) {
         Preconditions.checkArgument(isValidRuleConfiguration(configuration), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
-        configuration.getEncryptStrategies().forEach(each -> encryptAlgorithms.put(each.getName(), createEncryptAlgorithm(each)));
+        configuration.getEncryptStrategies().forEach(each -> encryptAlgorithms.put(each.getName(), getEncryptAlgorithm(each)));
         configuration.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(each)));
     }
     
@@ -85,7 +87,12 @@ public final class EncryptRule implements ShardingSphereRule {
         return false;
     }
     
-    private EncryptAlgorithm createEncryptAlgorithm(final EncryptStrategyConfiguration encryptStrategyConfiguration) {
+    private EncryptAlgorithm getEncryptAlgorithm(final EncryptStrategyConfiguration encryptStrategyConfiguration) {
+        return encryptStrategyConfiguration instanceof RawEncryptStrategyConfiguration
+                ? ((RawEncryptStrategyConfiguration) encryptStrategyConfiguration).getAlgorithm() : createEncryptAlgorithm((SPIEncryptStrategyConfiguration) encryptStrategyConfiguration);
+    }
+    
+    private EncryptAlgorithm createEncryptAlgorithm(final SPIEncryptStrategyConfiguration encryptStrategyConfiguration) {
         EncryptAlgorithm result = TypedSPIRegistry.getRegisteredService(EncryptAlgorithm.class, encryptStrategyConfiguration.getType(), encryptStrategyConfiguration.getProperties());
         result.init();
         return result;

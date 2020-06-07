@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.fixture;
 
-import org.apache.shardingsphere.encrypt.strategy.spi.QueryAssistedEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 
 import java.util.Properties;
 
