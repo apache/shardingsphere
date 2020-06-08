@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy;
 
 import com.google.common.primitives.Ints;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -34,11 +35,9 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypes;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.log.ConfigurationLogger;
-import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
-import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
 import org.apache.shardingsphere.kernel.context.SchemaContextsAware;
+import org.apache.shardingsphere.kernel.context.SchemaContextsBuilder;
 import org.apache.shardingsphere.kernel.context.schema.DataSourceParameter;
 import org.apache.shardingsphere.metrics.configuration.swapper.MetricsConfigurationYamlSwapper;
 import org.apache.shardingsphere.metrics.configuration.yaml.YamlMetricsConfiguration;
@@ -63,7 +62,6 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -164,11 +162,7 @@ public final class Bootstrap {
     }
     
     private static Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceParameter>> schemaDataSources) {
-        Map<String, Map<String, DataSource>> result = new LinkedHashMap<>();
-        for (Entry<String, Map<String, DataSourceParameter>> entry : schemaDataSources.entrySet()) {
-            result.put(entry.getKey(), createDataSources(entry.getValue()));
-        }
-        return result;
+        return schemaDataSources.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> createDataSources(entry.getValue()), (oldVal, currVal) -> oldVal, LinkedHashMap::new));
     }
     
     private static Map<String, DataSource> createDataSources(final Map<String, DataSourceParameter> dataSourceParameters) {
@@ -235,16 +229,8 @@ public final class Bootstrap {
     }
     
     private static Map<String, Collection<RuleConfiguration>> getRuleConfigurations(final Map<String, YamlProxyRuleConfiguration> localRuleConfigs) {
-        Map<String, Collection<RuleConfiguration>> result = new HashMap<>();
         YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
-        for (Entry<String, YamlProxyRuleConfiguration> entry : localRuleConfigs.entrySet()) {
-            YamlRootRuleConfigurations configurations = new YamlRootRuleConfigurations();
-            for (YamlRuleConfiguration each : entry.getValue().getRules()) {
-                configurations.getRules().add(each);
-            }
-            result.put(entry.getKey(), swapperEngine.swapToRuleConfigurations(configurations.getRules()));
-        }
-        return result;
+        return localRuleConfigs.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> swapperEngine.swapToRuleConfigurations(entry.getValue().getRules())));
     }
     
     private static Map<String, Map<String, DataSourceParameter>> getDataSourceParametersMap(final ShardingOrchestrationFacade shardingOrchestrationFacade) {
@@ -256,19 +242,11 @@ public final class Bootstrap {
     }
     
     private static Map<String, Map<String, DataSourceParameter>> getDataSourceParametersMap(final Map<String, YamlProxyRuleConfiguration> localRuleConfigs) {
-        Map<String, Map<String, DataSourceParameter>> result = new HashMap<>(localRuleConfigs.size(), 1);
-        for (Entry<String, YamlProxyRuleConfiguration> entry : localRuleConfigs.entrySet()) {
-            result.put(entry.getKey(), getDataSourceParameters(entry.getValue().getDataSources()));
-        }
-        return result;
+        return localRuleConfigs.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> getDataSourceParameters(entry.getValue().getDataSources())));
     }
     
     private static Map<String, DataSourceParameter> getDataSourceParameters(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
-        Map<String, DataSourceParameter> result = new LinkedHashMap<>();
-        for (Entry<String, YamlDataSourceParameter> entry : dataSourceParameters.entrySet()) {
-            result.put(entry.getKey(), createDataSourceParameter(entry.getValue()));
-        }
-        return result;
+        return dataSourceParameters.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> createDataSourceParameter(entry.getValue()), (oldVal, currVal) -> oldVal, LinkedHashMap::new));
     }
     
     private static DataSourceParameter createDataSourceParameter(final YamlDataSourceParameter yamlDataSourceParameter) {

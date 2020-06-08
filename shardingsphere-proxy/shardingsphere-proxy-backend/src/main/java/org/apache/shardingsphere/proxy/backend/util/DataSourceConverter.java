@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.util;
 
 import com.zaxxer.hikari.HikariDataSource;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
@@ -41,11 +42,8 @@ public final class DataSourceConverter {
      * @return data source parameter map
      */
     public static Map<String, DataSourceParameter> getDataSourceParameterMap(final Map<String, DataSourceConfiguration> dataSourceConfigurationMap) {
-        Map<String, DataSourceParameter> result = new LinkedHashMap<>(dataSourceConfigurationMap.size(), 1);
-        for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigurationMap.entrySet()) {
-            result.put(entry.getKey(), createDataSourceParameter(entry.getValue()));
-        }
-        return result;
+        return dataSourceConfigurationMap.entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> createDataSourceParameter(entry.getValue()), (oldVal, currVal) -> oldVal, LinkedHashMap::new));
     }
     
     private static DataSourceParameter createDataSourceParameter(final DataSourceConfiguration dataSourceConfiguration) {
@@ -78,11 +76,8 @@ public final class DataSourceConverter {
      * @return data source configuration map
      */
     public static Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final Map<String, DataSourceParameter> dataSourceParameterMap) {
-        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(dataSourceParameterMap.size());
-        for (Entry<String, DataSourceParameter> entry : dataSourceParameterMap.entrySet()) {
-            result.put(entry.getKey(), createDataSourceConfiguration(entry.getValue()));
-        }
-        return result;
+        return dataSourceParameterMap.entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> createDataSourceConfiguration(entry.getValue()), (oldVal, currVal) -> oldVal, LinkedHashMap::new));
     }
     
     private static DataSourceConfiguration createDataSourceConfiguration(final DataSourceParameter dataSourceParameter) {
