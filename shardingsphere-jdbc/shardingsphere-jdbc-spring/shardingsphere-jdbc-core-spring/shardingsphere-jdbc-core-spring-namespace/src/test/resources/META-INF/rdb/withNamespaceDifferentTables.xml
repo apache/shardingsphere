@@ -52,7 +52,7 @@
     <sharding:rule id="shardingRule">
         <sharding:table-rules>
             <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_0.t_order_${0..3}, dbtbl_1.t_order_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" />
-            <sharding:table-rule logic-table="t_order_item" actual-data-nodes="dbtbl_0.t_order_item_${0..3}, dbtbl_1.t_order_item_${0..3}" database-strategy-ref="databaseStrategy"  table-strategy-ref="orderItemTableStrategy" />
+            <sharding:table-rule logic-table="t_order_item" actual-data-nodes="dbtbl_0.t_order_item_${0..3}, dbtbl_1.t_order_item_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" />
         </sharding:table-rules>
     </sharding:rule>
     
