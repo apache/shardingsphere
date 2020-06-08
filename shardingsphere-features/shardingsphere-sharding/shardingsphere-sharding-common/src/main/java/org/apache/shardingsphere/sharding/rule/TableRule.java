@@ -39,6 +39,7 @@ import org.apache.shardingsphere.sharding.strategy.route.none.NoneShardingStrate
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -106,16 +107,34 @@ public final class TableRule {
         Preconditions.checkArgument(null == tableRuleConfig.getShardingStrategy() || tableRuleConfig.getShardingStrategy() instanceof ShardingAutoTableAlgorithm,
                 "ShardingAutoTableAlgorithm is required.");
         logicTable = tableRuleConfig.getLogicTable().toLowerCase();
+        databaseShardingStrategy = null;
         tableShardingStrategy = null == tableRuleConfig.getShardingStrategy() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getShardingStrategy());
-        List<String> dataNodes = null;
+        List<String> dataNodes = getDataNodes(tableRuleConfig, dataSourceNames);
         dataNodeIndexMap = new HashMap<>(dataNodes.size(), 1);
         actualDataNodes = isEmptyDataNodes(dataNodes) ? generateDataNodes(tableRuleConfig.getLogicTable(), dataSourceNames) : generateDataNodes(dataNodes, dataSourceNames);
         actualTables = getActualTables();
-        databaseShardingStrategy = null;
         final KeyGeneratorConfiguration keyGeneratorConfiguration = tableRuleConfig.getKeyGenerator();
         generateKeyColumn = null != keyGeneratorConfiguration && !Strings.isNullOrEmpty(keyGeneratorConfiguration.getColumn()) ? keyGeneratorConfiguration.getColumn() : defaultGenerateKeyColumn;
         keyGenerateAlgorithm = containsKeyGenerateAlgorithm(tableRuleConfig.getKeyGenerator()) ? tableRuleConfig.getKeyGenerator().getKeyGenerateAlgorithm() : null;
         checkRule(dataNodes);
+    }
+
+    private List<String> getDataNodes(final ShardingAutoTableRuleConfiguration tableRuleConfig, final Collection<String> dataSourceNames) {
+        if (null == tableShardingStrategy) {
+            return new LinkedList<>();
+        }
+        List<String> result = new LinkedList<>();
+        List<String> dataSources = null == tableRuleConfig.getActualDataSources() ? new LinkedList<>(dataSourceNames)
+                : new InlineExpressionParser(tableRuleConfig.getActualDataSources()).splitAndEvaluate();
+        ShardingAutoTableAlgorithm tableAlgorithm = (ShardingAutoTableAlgorithm) tableShardingStrategy.getShardingAlgorithm();
+        Iterator iterator = dataSources.iterator();
+        for (int i = 0; i < tableAlgorithm.getAutoTablesAmount(); i++) {
+            if (!iterator.hasNext()) {
+                iterator = dataSources.iterator();
+            }
+            result.add(String.format("%s.%s_%s", iterator.next(), logicTable, i));
+        }
+        return result;
     }
 
     private Set<String> getActualTables() {
