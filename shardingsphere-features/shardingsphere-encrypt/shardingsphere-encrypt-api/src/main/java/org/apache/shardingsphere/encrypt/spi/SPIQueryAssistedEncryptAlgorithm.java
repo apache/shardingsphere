@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.encrypt.spi;
 
 import org.apache.shardingsphere.encrypt.api.config.algorithm.QueryAssistedEncryptAlgorithm;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereSPIAlgorithm;
 
 /**
  * Query assisted encrypt algorithm for SPI.
  */
-public interface SPIQueryAssistedEncryptAlgorithm extends QueryAssistedEncryptAlgorithm, SPIEncryptAlgorithm {
+public interface SPIQueryAssistedEncryptAlgorithm extends QueryAssistedEncryptAlgorithm, ShardingSphereSPIAlgorithm {
 }

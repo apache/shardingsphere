@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.masterslave.spi;
 
-import org.apache.shardingsphere.infra.spi.type.TypedSPI;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereSPIAlgorithm;
 import org.apache.shardingsphere.masterslave.api.config.algorithm.MasterSlaveLoadBalanceAlgorithm;
 
 /**
  * Master-slave database load-balance algorithm for SPI.
  */
-public interface SPIMasterSlaveLoadBalanceAlgorithm extends MasterSlaveLoadBalanceAlgorithm, TypedSPI {
+public interface SPIMasterSlaveLoadBalanceAlgorithm extends MasterSlaveLoadBalanceAlgorithm, ShardingSphereSPIAlgorithm {
 }
