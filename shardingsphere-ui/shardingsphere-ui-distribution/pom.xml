@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-ui</artifactId>
-        <version>5.0.0-RC1-SNAPSHOT</version>
+        <version>4.1.1</version>
     </parent>
     <artifactId>shardingsphere-ui-distribution</artifactId>
     <name>${project.artifactId}</name>
