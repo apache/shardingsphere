@@ -18,10 +18,16 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
 import lombok.Setter;
+import org.apache.shardingsphere.encrypt.api.config.algorithm.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.api.config.algorithm.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptInsertValuesToken;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertValue;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertValuesToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.UseDefaultInsertColumnsToken;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.expression.DerivedLiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.expression.DerivedParameterMarkerExpressionSegment;
@@ -32,12 +38,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertVal
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertValue;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertValuesToken;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.UseDefaultInsertColumnsToken;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -159,7 +159,7 @@ public final class EncryptInsertValuesTokenGenerator extends BaseEncryptSQLToken
         return result;
     }
     
-    private void setCipherColumn(final InsertValue insertValueToken, 
+    private void setCipherColumn(final InsertValue insertValueToken,
                                  final EncryptAlgorithm encryptAlgorithm, final int columnIndex, final ExpressionSegment valueExpression, final Object originalValue) {
         if (valueExpression instanceof LiteralExpressionSegment) {
             insertValueToken.getValues().set(columnIndex, new LiteralExpressionSegment(valueExpression.getStartIndex(), valueExpression.getStopIndex(), encryptAlgorithm.encrypt(originalValue)));

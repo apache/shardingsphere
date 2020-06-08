@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.strategy.impl;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.SPIEncryptAlgorithm;
 
 import java.util.Properties;
 
@@ -29,7 +29,7 @@ import java.util.Properties;
  */
 @Getter
 @Setter
-public final class MD5EncryptAlgorithm implements EncryptAlgorithm {
+public final class MD5EncryptAlgorithm implements SPIEncryptAlgorithm {
     
     private Properties properties = new Properties();
     

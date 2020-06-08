@@ -19,8 +19,8 @@ package org.apache.shardingsphere.encrypt.api.config.strategy.impl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.encrypt.api.config.algorithm.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.strategy.RawStrategyConfiguration;
 
 /**

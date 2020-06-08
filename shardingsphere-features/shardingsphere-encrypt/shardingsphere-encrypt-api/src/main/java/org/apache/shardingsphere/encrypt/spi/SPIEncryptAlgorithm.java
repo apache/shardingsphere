@@ -17,16 +17,11 @@
 
 package org.apache.shardingsphere.encrypt.spi;
 
+import org.apache.shardingsphere.encrypt.api.config.algorithm.EncryptAlgorithm;
+import org.apache.shardingsphere.infra.spi.type.TypedSPI;
+
 /**
- * Query assisted encrypt algorithm.
+ * Encrypt algorithm for SPI.
  */
-public interface QueryAssistedEncryptAlgorithm extends EncryptAlgorithm {
-    
-    /**
-     * Query assisted encrypt.
-     * 
-     * @param plaintext plaintext
-     * @return ciphertext
-     */
-    String queryAssistedEncrypt(String plaintext);
+public interface SPIEncryptAlgorithm extends EncryptAlgorithm, TypedSPI {
 }

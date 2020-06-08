@@ -24,7 +24,7 @@ import lombok.SneakyThrows;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.SPIEncryptAlgorithm;
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
@@ -40,7 +40,7 @@ import java.util.Properties;
  */
 @Getter
 @Setter
-public final class AESEncryptAlgorithm implements EncryptAlgorithm {
+public final class AESEncryptAlgorithm implements SPIEncryptAlgorithm {
     
     private static final String AES_KEY = "aes.key.value";
     

@@ -15,36 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.fixture;
+package org.apache.shardingsphere.encrypt.api.config.algorithm;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.encrypt.spi.SPIEncryptAlgorithm;
-
-import java.util.Properties;
-
-@Getter
-@Setter
-public final class NormalEncryptAlgorithmFixture implements SPIEncryptAlgorithm {
+/**
+ * Query assisted encrypt algorithm.
+ */
+public interface QueryAssistedEncryptAlgorithm extends EncryptAlgorithm {
     
-    private Properties properties = new Properties();
-    
-    @Override
-    public String getType() {
-        return "NORMAL_ENCRYPT";
-    }
-    
-    @Override
-    public void init() {
-    }
-    
-    @Override
-    public String encrypt(final Object plaintext) {
-        return "encrypt_" + plaintext;
-    }
-    
-    @Override
-    public Object decrypt(final String ciphertext) {
-        return ciphertext.replaceAll("encrypt_", "");
-    }
+    /**
+     * Query assisted encrypt.
+     * 
+     * @param plaintext plaintext
+     * @return ciphertext
+     */
+    String queryAssistedEncrypt(String plaintext);
 }
