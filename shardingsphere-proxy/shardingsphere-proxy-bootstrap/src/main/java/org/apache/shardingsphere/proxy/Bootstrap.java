@@ -18,15 +18,7 @@
 package org.apache.shardingsphere.proxy;
 
 import com.google.common.primitives.Ints;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.stream.Collectors;
-import javax.sql.DataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -65,6 +57,15 @@ import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.proxy.frontend.bootstrap.ShardingSphereProxy;
+
+import javax.sql.DataSource;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
 
 /**
  * ShardingSphere-Proxy Bootstrap.
