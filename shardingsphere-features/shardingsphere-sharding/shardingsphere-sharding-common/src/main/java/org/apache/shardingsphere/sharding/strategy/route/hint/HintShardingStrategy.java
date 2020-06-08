@@ -33,9 +33,9 @@ import java.util.TreeSet;
 /**
  * Hint sharding strategy.
  */
+@Getter
 public final class HintShardingStrategy implements ShardingStrategy {
     
-    @Getter
     private final Collection<String> shardingColumns;
     
     private final HintShardingAlgorithm shardingAlgorithm;
