@@ -104,11 +104,11 @@ public final class TableRule {
     }
 
     public TableRule(final ShardingAutoTableRuleConfiguration tableRuleConfig, final Collection<String> dataSourceNames, final String defaultGenerateKeyColumn) {
-        Preconditions.checkArgument(null == tableRuleConfig.getShardingStrategy() || tableRuleConfig.getShardingStrategy() instanceof ShardingAutoTableAlgorithm,
-                "ShardingAutoTableAlgorithm is required.");
         logicTable = tableRuleConfig.getLogicTable().toLowerCase();
         databaseShardingStrategy = null;
         tableShardingStrategy = null == tableRuleConfig.getShardingStrategy() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getShardingStrategy());
+        Preconditions.checkArgument(null == tableRuleConfig.getShardingStrategy() || tableShardingStrategy.getShardingAlgorithm() instanceof ShardingAutoTableAlgorithm,
+                "ShardingAutoTableAlgorithm is required.");
         List<String> dataNodes = getDataNodes(tableRuleConfig, dataSourceNames);
         dataNodeIndexMap = new HashMap<>(dataNodes.size(), 1);
         actualDataNodes = isEmptyDataNodes(dataNodes) ? generateDataNodes(tableRuleConfig.getLogicTable(), dataSourceNames) : generateDataNodes(dataNodes, dataSourceNames);
