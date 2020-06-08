@@ -18,17 +18,18 @@
 package org.apache.shardingsphere.sharding.rule;
 
 import com.google.common.collect.Sets;
+import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.sharding.api.config.KeyGeneratorConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.spi.keygen.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.strategy.algorithm.keygen.fixture.IncrementKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.InlineShardingAlgorithm;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.sharding.spi.keygen.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
-import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -85,6 +86,46 @@ public final class TableRuleTest {
         assertTrue(actual.getGenerateKeyColumn().isPresent());
         assertThat(actual.getGenerateKeyColumn().get(), is("col_1"));
         assertThat(actual.getKeyGenerateAlgorithm(), instanceOf(IncrementKeyGenerateAlgorithm.class));
+    }
+
+    @Test
+    public void assertCreateAutoTableRuleWithActualDataSources() {
+        ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
+        ShardingAutoTableRuleConfiguration tableRuleConfig = new ShardingAutoTableRuleConfiguration("LOGIC_TABLE", "ds0,ds1");
+        InlineShardingAlgorithm shardingAlgorithm = new InlineShardingAlgorithm();
+        Properties properties = new Properties();
+        properties.setProperty("algorithm.expression", "ds${0..1}.logic_table_${0..1}");
+        shardingAlgorithm.setProperties(properties);
+        tableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("col_1", shardingAlgorithm));
+        TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1", "ds2"), null);
+        assertThat(actual.getLogicTable(), is("logic_table"));
+        assertThat(actual.getActualDataNodes().size(), is(4));
+        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", "logic_table_0")));
+        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds1", "logic_table_1")));
+        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", "logic_table_2")));
+        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds1", "logic_table_3")));
+        assertNull(actual.getDatabaseShardingStrategy());
+        assertNotNull(actual.getTableShardingStrategy());
+    }
+
+    @Test
+    public void assertCreateAutoTableRuleWithoutActualDataSources() {
+        ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
+        ShardingAutoTableRuleConfiguration tableRuleConfig = new ShardingAutoTableRuleConfiguration("LOGIC_TABLE", null);
+        InlineShardingAlgorithm shardingAlgorithm = new InlineShardingAlgorithm();
+        Properties properties = new Properties();
+        properties.setProperty("algorithm.expression", "ds${0..1}.logic_table_${0..1}");
+        shardingAlgorithm.setProperties(properties);
+        tableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("col_1", shardingAlgorithm));
+        TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1", "ds2"), null);
+        assertThat(actual.getLogicTable(), is("logic_table"));
+        assertThat(actual.getActualDataNodes().size(), is(4));
+        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", "logic_table_0")));
+        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds1", "logic_table_1")));
+        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds2", "logic_table_2")));
+        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", "logic_table_3")));
+        assertNull(actual.getDatabaseShardingStrategy());
+        assertNotNull(actual.getTableShardingStrategy());
     }
     
     @Test
