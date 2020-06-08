@@ -35,7 +35,9 @@ import java.util.Map;
 public final class YamlShardingRuleConfiguration implements YamlRuleConfiguration {
     
     private Map<String, YamlTableRuleConfiguration> tables = new LinkedHashMap<>();
-    
+
+    private Map<String, YamlShardingAutoTableRuleConfiguration> autoTables = new LinkedHashMap<>();
+
     private Collection<String> bindingTables = new ArrayList<>();
     
     private Collection<String> broadcastTables = new ArrayList<>();

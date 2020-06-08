@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.sharding.strategy.route;
 
-import org.apache.shardingsphere.sharding.strategy.route.value.RouteValue;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.sharding.spi.algorithm.ShardingAlgorithm;
+import org.apache.shardingsphere.sharding.strategy.route.value.RouteValue;
 
 import java.util.Collection;
 
@@ -33,6 +34,13 @@ public interface ShardingStrategy {
      * @return sharding columns
      */
     Collection<String> getShardingColumns();
+
+    /**
+     * Get sharding algorithm.
+     *
+     * @return sharding algorithm
+     */
+    ShardingAlgorithm getShardingAlgorithm();
     
     /**
      * Sharding.

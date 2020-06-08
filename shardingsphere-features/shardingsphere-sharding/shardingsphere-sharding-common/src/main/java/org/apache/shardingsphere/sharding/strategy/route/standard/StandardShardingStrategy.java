@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.strategy.route.standard;
 
 import com.google.common.base.Preconditions;
+import lombok.Getter;
 import org.apache.shardingsphere.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
@@ -38,7 +39,8 @@ import java.util.TreeSet;
 public final class StandardShardingStrategy implements ShardingStrategy {
     
     private final String shardingColumn;
-    
+
+    @Getter
     private final StandardShardingAlgorithm shardingAlgorithm;
     
     public StandardShardingStrategy(final StandardShardingStrategyConfiguration standardShardingStrategyConfig) {
