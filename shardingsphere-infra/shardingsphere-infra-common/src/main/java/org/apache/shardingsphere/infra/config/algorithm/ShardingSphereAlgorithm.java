@@ -15,21 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.strategy;
-
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
+package org.apache.shardingsphere.infra.config.algorithm;
 
 /**
- * Raw strategy configuration.
- * 
- * @param <T> type of algorithm
+ * ShardingSphere algorithm.
  */
-public interface RawStrategyConfiguration<T extends ShardingSphereAlgorithm> extends StrategyConfiguration {
-    
-    /**
-     * Get algorithm.
-     * 
-     * @return algorithm
-     */
-    T getAlgorithm();
+public interface ShardingSphereAlgorithm {
 }

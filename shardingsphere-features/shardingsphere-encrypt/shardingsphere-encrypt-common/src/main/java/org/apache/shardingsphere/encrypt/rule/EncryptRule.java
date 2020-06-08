@@ -25,12 +25,10 @@ import org.apache.shardingsphere.encrypt.api.config.algorithm.QueryAssistedEncry
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.strategy.impl.RawEncryptStrategyConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.strategy.impl.SPIEncryptStrategyConfiguration;
 import org.apache.shardingsphere.encrypt.spi.SPIEncryptAlgorithm;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -56,7 +54,7 @@ public final class EncryptRule implements ShardingSphereRule {
     
     public EncryptRule(final EncryptRuleConfiguration configuration) {
         Preconditions.checkArgument(isValidRuleConfiguration(configuration), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
-        configuration.getEncryptStrategies().forEach(each -> encryptAlgorithms.put(each.getName(), getEncryptAlgorithm(each)));
+        configuration.getEncryptStrategies().forEach(each -> encryptAlgorithms.put(each.getName(), ShardingSphereAlgorithmFactory.createAlgorithm(each, SPIEncryptAlgorithm.class)));
         configuration.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(each)));
     }
     
@@ -86,17 +84,6 @@ public final class EncryptRule implements ShardingSphereRule {
             }
         }
         return false;
-    }
-    
-    private EncryptAlgorithm getEncryptAlgorithm(final EncryptStrategyConfiguration encryptStrategyConfiguration) {
-        return encryptStrategyConfiguration instanceof RawEncryptStrategyConfiguration
-                ? ((RawEncryptStrategyConfiguration) encryptStrategyConfiguration).getAlgorithm() : createEncryptAlgorithm((SPIEncryptStrategyConfiguration) encryptStrategyConfiguration);
-    }
-    
-    private EncryptAlgorithm createEncryptAlgorithm(final SPIEncryptStrategyConfiguration encryptStrategyConfiguration) {
-        SPIEncryptAlgorithm result = TypedSPIRegistry.getRegisteredService(SPIEncryptAlgorithm.class, encryptStrategyConfiguration.getType(), encryptStrategyConfiguration.getProperties());
-        result.init();
-        return result;
     }
     
     /**

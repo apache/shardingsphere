@@ -15,10 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.strategy;
+package org.apache.shardingsphere.infra.config.algorithm;
 
 /**
- * ShardingSphere algorithm.
+ * ShardingSphere algorithm post processor.
+ *
+ * @author zhangliang
  */
-public interface ShardingSphereAlgorithm {
+public interface ShardingSphereAlgorithmPostProcessor {
+    
+    /**
+     * Initialize algorithm.
+     */
+    void init();
 }

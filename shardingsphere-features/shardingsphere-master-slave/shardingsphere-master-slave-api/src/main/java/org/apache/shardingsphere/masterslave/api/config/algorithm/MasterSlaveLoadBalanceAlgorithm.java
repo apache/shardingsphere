@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.masterslave.api.config.algorithm;
 
-import org.apache.shardingsphere.infra.config.strategy.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 
 import java.util.List;
 
