@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.example.shadow.table.raw.jdbc.config;
 
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.strategy.impl.SPIEncryptStrategyConfiguration;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -43,7 +44,7 @@ public final class EncryptShadowDatabasesConfiguration implements ExampleConfigu
         Map<String, DataSource> dataSourceMap = new HashMap<>();
         dataSourceMap.put("ds", DataSourceUtil.createDataSource("demo_ds"));
         dataSourceMap.put("ds_0", DataSourceUtil.createDataSource("shadow_demo_ds"));
-        EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(getEncryptStrategyConfiguration(), getEncryptTableRuleConfigurations());
+        EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(getEncryptStrategyConfigurations(), getEncryptTableRuleConfigurations());
         Properties properties = new Properties();
         properties.setProperty("sql.show", "true");
         properties.setProperty("query.with.cipher.column", "true");
@@ -51,12 +52,12 @@ public final class EncryptShadowDatabasesConfiguration implements ExampleConfigu
         return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Arrays.asList(shadowRuleConfiguration, encryptRuleConfiguration), properties);
     }
     
-    private Collection<EncryptStrategyConfiguration> getEncryptStrategyConfiguration() {
+    private Collection<EncryptStrategyConfiguration> getEncryptStrategyConfigurations() {
         Collection<EncryptStrategyConfiguration> result = new LinkedList<>();
         Properties properties = new Properties();
         properties.setProperty("aes.key.value", "123456");
-        EncryptStrategyConfiguration nameEncryptStrategyConfiguration = new EncryptStrategyConfiguration("name_encrypt_strategy", "aes", properties);
-        EncryptStrategyConfiguration pwdEncryptStrategyConfiguration = new EncryptStrategyConfiguration("pwd_encrypt_strategy", "assistedTest", null);
+        EncryptStrategyConfiguration nameEncryptStrategyConfiguration = new SPIEncryptStrategyConfiguration("name_encrypt_strategy", "aes", properties);
+        EncryptStrategyConfiguration pwdEncryptStrategyConfiguration = new SPIEncryptStrategyConfiguration("pwd_encrypt_strategy", "assistedTest", null);
         result.add(nameEncryptStrategyConfiguration);
         result.add(pwdEncryptStrategyConfiguration);
         return result;

@@ -64,7 +64,7 @@ public final class ApolloOpenApiWrapperTest {
         Properties properties = new Properties();
         properties.setProperty(ApolloPropertyKey.PORTAL_URL.getKey(), PORTAL_URL);
         properties.setProperty(ApolloPropertyKey.TOKEN.getKey(), TOKEN);
-        apolloOpenApiWrapper = new ApolloOpenApiWrapper(new CenterConfiguration("apollo"), new ApolloProperties(properties));
+        apolloOpenApiWrapper = new ApolloOpenApiWrapper(new CenterConfiguration("apollo", new Properties()), new ApolloProperties(properties));
         FieldSetter.setField(apolloOpenApiWrapper, ApolloOpenApiWrapper.class.getDeclaredField("client"), client);
         FieldSetter.setField(apolloOpenApiWrapper, ApolloOpenApiWrapper.class.getDeclaredField("namespace"), NAME_SPACE);
         FieldSetter.setField(apolloOpenApiWrapper, ApolloOpenApiWrapper.class.getDeclaredField("appId"), ApolloPropertyKey.APP_ID.getDefaultValue());

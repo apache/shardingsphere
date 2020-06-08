@@ -69,15 +69,15 @@ public final class ShardingOrchestrationFacadeTest {
     @Before
     public void setUp() {
         Map<String, CenterConfiguration> instanceConfigurationMap = new HashMap<>();
-        CenterConfiguration configuration1 = new CenterConfiguration("SecondTestRegistryCenter");
+        CenterConfiguration configuration1 = new CenterConfiguration("SecondTestRegistryCenter", new Properties());
         configuration1.setOrchestrationType("registry_center");
         configuration1.setNamespace("namespace_1");
         instanceConfigurationMap.put("test_name_1", configuration1);
-        CenterConfiguration configuration2 = new CenterConfiguration("FirstTestConfigCenter");
+        CenterConfiguration configuration2 = new CenterConfiguration("FirstTestConfigCenter", new Properties());
         configuration2.setOrchestrationType("config_center");
         configuration2.setNamespace("namespace_2");
         instanceConfigurationMap.put("test_name_2", configuration2);
-        CenterConfiguration configuration3 = new CenterConfiguration("FirstTestConfigCenter");
+        CenterConfiguration configuration3 = new CenterConfiguration("FirstTestConfigCenter", new Properties());
         configuration3.setOrchestrationType("metadata_center");
         configuration3.setNamespace("namespace_3");
         instanceConfigurationMap.put("test_name_3", configuration3);

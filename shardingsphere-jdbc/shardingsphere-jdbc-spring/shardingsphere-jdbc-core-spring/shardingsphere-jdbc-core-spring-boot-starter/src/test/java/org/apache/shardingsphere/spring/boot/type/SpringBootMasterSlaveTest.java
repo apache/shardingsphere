@@ -22,6 +22,7 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataS
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.masterslave.rule.MasterSlaveDataSourceRule;
 import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
+import org.apache.shardingsphere.masterslave.spi.SPIMasterSlaveLoadBalanceAlgorithm;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -64,6 +65,6 @@ public class SpringBootMasterSlaveTest {
         assertThat(dataSourceRule.getSlaveDataSourceNames().size(), is(2));
         assertThat(dataSourceRule.getSlaveDataSourceNames().get(0), is("ds_slave_0"));
         assertThat(dataSourceRule.getSlaveDataSourceNames().get(1), is("ds_slave_1"));
-        assertThat(dataSourceRule.getLoadBalanceAlgorithm().getType(), is("RANDOM"));
+        assertThat(((SPIMasterSlaveLoadBalanceAlgorithm) dataSourceRule.getLoadBalanceAlgorithm()).getType(), is("RANDOM"));
     }
 }

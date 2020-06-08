@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.spi;
+package org.apache.shardingsphere.infra.config.strategy;
 
-import org.apache.shardingsphere.infra.spi.type.TypedSPI;
-
-import java.util.List;
+import java.util.Properties;
 
 /**
- * Master-slave database load-balance algorithm.
+ * SPI strategy configuration.
  */
-public interface MasterSlaveLoadBalanceAlgorithm extends TypedSPI {
+public interface SPIStrategyConfiguration extends StrategyConfiguration {
     
     /**
-     * Get data source.
+     * Get algorithm type.
      * 
-     * @param name master-slave logic data source name
-     * @param masterDataSourceName name of master data sources
-     * @param slaveDataSourceNames names of slave data sources
-     * @return name of selected data source
+     * @return algorithm type
      */
-    String getDataSource(String name, String masterDataSourceName, List<String> slaveDataSourceNames);
+    String getType();
+    
+    /**
+     * Get algorithm properties.
+     * 
+     * @return algorithm properties
+     */
+    Properties getProperties();
 }

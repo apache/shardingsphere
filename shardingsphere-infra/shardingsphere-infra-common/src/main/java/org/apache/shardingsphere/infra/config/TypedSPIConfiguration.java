@@ -33,10 +33,6 @@ public abstract class TypedSPIConfiguration {
     
     private final Properties properties;
     
-    public TypedSPIConfiguration(final String type) {
-        this(type, null);
-    }
-    
     public TypedSPIConfiguration(final String type, final Properties properties) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(type), "Type is required.");
         this.type = type;

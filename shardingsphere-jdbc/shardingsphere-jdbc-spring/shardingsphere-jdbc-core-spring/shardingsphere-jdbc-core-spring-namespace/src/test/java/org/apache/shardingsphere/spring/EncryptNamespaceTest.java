@@ -19,6 +19,7 @@ package org.apache.shardingsphere.spring;
 
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.spi.SPIEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.strategy.impl.AESEncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
@@ -41,7 +42,7 @@ public class EncryptNamespaceTest extends AbstractJUnit4SpringContextTests {
         assertTrue(encryptRule.findEncryptAlgorithm("t_order", "user_id").isPresent());
         assertThat(encryptRule.getCipherColumn("t_order", "user_id"), is("user_encrypt"));
         assertTrue(encryptRule.findEncryptAlgorithm("t_order", "user_id").get() instanceof AESEncryptAlgorithm);
-        assertThat(encryptRule.findEncryptAlgorithm("t_order", "user_id").get().getProperties().getProperty("aes.key.value"), is("123456"));
+        assertThat(((SPIEncryptAlgorithm) encryptRule.findEncryptAlgorithm("t_order", "user_id").get()).getProperties().getProperty("aes.key.value"), is("123456"));
         assertThat(encryptRule.findPlainColumn("t_order", "order_id"), is(Optional.of("order_decrypt")));
         assertTrue(getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
         assertTrue(getProperties().<Boolean>getValue(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN));

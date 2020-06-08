@@ -26,6 +26,7 @@ import org.apache.shardingsphere.orchestration.center.instance.CuratorZookeeperC
 import org.apache.shardingsphere.ui.common.constant.InstanceType;
 import org.apache.shardingsphere.ui.common.domain.CenterConfig;
 
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -63,7 +64,8 @@ public final class CenterRepositoryFactory {
     }
     
     /**
-     * Create config center instance
+     * Create config center instance.
+     * 
      * @param config config center config
      * @return config center
      */
@@ -85,9 +87,8 @@ public final class CenterRepositoryFactory {
         return result;
     }
     
-    
     private static CenterConfiguration convert(final CenterConfig config) {
-        CenterConfiguration result = new CenterConfiguration(config.getInstanceType());
+        CenterConfiguration result = new CenterConfiguration(config.getInstanceType(), new Properties());
         result.setServerLists(config.getServerLists());
         result.setNamespace(config.getNamespace());
         result.getProperties().put("digest", config.getDigest());

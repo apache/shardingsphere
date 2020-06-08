@@ -34,7 +34,6 @@ import io.etcd.jetcd.watch.WatchResponse;
 import io.grpc.stub.StreamObserver;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,23 +41,24 @@ import org.mockito.Mock;
 import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
-import java.util.Arrays;
-import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class EtcdCenterRepositoryTest {
@@ -223,7 +223,7 @@ public final class EtcdCenterRepositoryTest {
     
     @Test
     public void assertProperties() {
-        CenterConfiguration configuration = new CenterConfiguration(CENTER_TYPE);
+        CenterConfiguration configuration = new CenterConfiguration(CENTER_TYPE, new Properties());
         configuration.setServerLists("127.0.0.1");
         Properties properties = new Properties();
         centerRepository.setProperties(properties);
@@ -239,7 +239,7 @@ public final class EtcdCenterRepositoryTest {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            Assert.assertTrue(ex instanceof InterruptedException);
+            assertThat(ex, instanceOf(InterruptedException.class));
         }
     }
     
@@ -252,7 +252,7 @@ public final class EtcdCenterRepositoryTest {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            Assert.assertTrue(ex instanceof ExecutionException);
+            assertThat(ex, instanceOf(ExecutionException.class));
         }
     }
     
@@ -265,7 +265,7 @@ public final class EtcdCenterRepositoryTest {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            Assert.assertTrue(ex instanceof InterruptedException);
+            assertThat(ex, instanceOf(InterruptedException.class));
         }
     }
     
@@ -278,7 +278,7 @@ public final class EtcdCenterRepositoryTest {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            Assert.assertTrue(ex instanceof ExecutionException);
+            assertThat(ex, instanceOf(ExecutionException.class));
         }
     }
     

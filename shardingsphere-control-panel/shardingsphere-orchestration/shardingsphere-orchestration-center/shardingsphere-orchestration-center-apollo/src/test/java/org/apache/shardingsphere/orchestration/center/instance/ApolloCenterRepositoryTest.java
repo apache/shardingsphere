@@ -64,7 +64,7 @@ public final class ApolloCenterRepositoryTest {
     @SneakyThrows(ReflectiveOperationException.class)
     @BeforeClass
     public static void init() {
-        CenterConfiguration configuration = new CenterConfiguration("apollo");
+        CenterConfiguration configuration = new CenterConfiguration("apollo", new Properties());
         configuration.setServerLists("http://config-service-url");
         configuration.setNamespace("orchestration");
         Properties properties = new Properties();
