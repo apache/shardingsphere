@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.rule;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
@@ -57,6 +58,12 @@ public final class EncryptRule implements ShardingSphereRule {
         configuration.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(each)));
     }
     
+    public EncryptRule(final AlgorithmProvidedEncryptRuleConfiguration configuration) {
+        Preconditions.checkArgument(isValidRuleConfigurationWithAlgorithmProvided(configuration), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
+        encryptAlgorithms.putAll(configuration.getAlgorithms());
+        configuration.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(each)));
+    }
+    
     private boolean isValidRuleConfiguration(final EncryptRuleConfiguration configuration) {
         return (configuration.getEncryptStrategies().isEmpty() && configuration.getTables().isEmpty()) || isValidTableConfiguration(configuration);
     }
@@ -84,6 +91,27 @@ public final class EncryptRule implements ShardingSphereRule {
         }
         return false;
     }
+    
+    private boolean isValidRuleConfigurationWithAlgorithmProvided(final AlgorithmProvidedEncryptRuleConfiguration configuration) {
+        return (configuration.getAlgorithms().isEmpty() && configuration.getTables().isEmpty()) || isValidTableConfigurationWithAlgorithmProvided(configuration);
+    }
+    
+    private boolean isValidTableConfigurationWithAlgorithmProvided(final AlgorithmProvidedEncryptRuleConfiguration configuration) {
+        for (EncryptTableRuleConfiguration table : configuration.getTables()) {
+            for (EncryptColumnRuleConfiguration column : table.getColumns()) {
+                if (!isValidColumnConfigurationWithAlgorithmProvided(configuration, column)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    private boolean isValidColumnConfigurationWithAlgorithmProvided(final AlgorithmProvidedEncryptRuleConfiguration encryptRuleConfiguration, final EncryptColumnRuleConfiguration column) {
+        return !Strings.isNullOrEmpty(column.getEncryptStrategyName()) && !Strings.isNullOrEmpty(column.getCipherColumn())
+                && encryptRuleConfiguration.getAlgorithms().containsKey(column.getEncryptStrategyName());
+    }
+    
     
     /**
      * Find encrypt table.

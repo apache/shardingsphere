@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.spring.namespace.orchestration;
 
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.spring.namespace.orchestration.util.EmbedTestingServer;
@@ -32,13 +32,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import java.util.Iterator;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 @ContextConfiguration(locations = "classpath:META-INF/rdb/encryptOrchestration.xml")
 public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringContextTests {
@@ -54,14 +54,14 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
         assertEncryptRule(getEncryptRuleConfiguration());
     }
     
-    private EncryptRuleConfiguration getEncryptRuleConfiguration() {
+    private AlgorithmProvidedEncryptRuleConfiguration getEncryptRuleConfiguration() {
         OrchestrationSpringShardingSphereDataSource orchestrationDataSource = (OrchestrationSpringShardingSphereDataSource) applicationContext.getBean("encryptDataSourceOrchestration");
         ShardingSphereDataSource dataSource = (ShardingSphereDataSource) FieldValueUtil.getFieldValue(orchestrationDataSource, "dataSource", true);
-        return (EncryptRuleConfiguration) dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getConfigurations().iterator().next();
+        return (AlgorithmProvidedEncryptRuleConfiguration) dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getConfigurations().iterator().next();
     }
     
-    private void assertEncryptRule(final EncryptRuleConfiguration configuration) {
-        assertThat(configuration.getEncryptStrategies().size(), is(2));
+    private void assertEncryptRule(final AlgorithmProvidedEncryptRuleConfiguration configuration) {
+        assertThat(configuration.getAlgorithms().size(), is(2));
         assertThat(configuration.getTables().size(), is(1));
         EncryptTableRuleConfiguration encryptTableRuleConfiguration = configuration.getTables().iterator().next();
         Iterator<EncryptColumnRuleConfiguration> encryptColumnRuleConfigurations = encryptTableRuleConfiguration.getColumns().iterator();
@@ -69,21 +69,11 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
         EncryptColumnRuleConfiguration orderIdColumnRuleConfiguration = encryptColumnRuleConfigurations.next();
         assertThat(userIdColumnRuleConfiguration.getCipherColumn(), is("user_encrypt"));
         assertThat(orderIdColumnRuleConfiguration.getPlainColumn(), is("order_decrypt"));
-        Iterator<? extends org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration> encryptStrategyConfigurations = configuration.getEncryptStrategies().iterator();
-        assertEncryptStrategyConfiguration((EncryptStrategyConfiguration) encryptStrategyConfigurations.next());
-        assertEncryptStrategyConfiguration((EncryptStrategyConfiguration) encryptStrategyConfigurations.next());
-        assertFalse(encryptStrategyConfigurations.hasNext());
-    }
-    
-    private void assertEncryptStrategyConfiguration(final EncryptStrategyConfiguration encryptStrategyConfiguration) {
-        if ("AES".equals(encryptStrategyConfiguration.getType())) {
-            assertThat(encryptStrategyConfiguration.getName(), is("aes_encrypt_strategy"));
-            assertThat(encryptStrategyConfiguration.getProperties().getProperty("aes.key.value"), is("123456"));
-        } else if ("MD5".equals(encryptStrategyConfiguration.getType())) {
-            assertThat(encryptStrategyConfiguration.getName(), is("md5_encrypt_strategy"));
-        } else {
-            fail();
-        }
+        Map<String, EncryptAlgorithm> encryptAlgorithms = configuration.getAlgorithms();
+        assertThat(encryptAlgorithms.size(), is(2));
+        assertThat(encryptAlgorithms.get("aes_encrypt_strategy").getType(), is("AES"));
+        assertThat(encryptAlgorithms.get("aes_encrypt_strategy").getProperties().getProperty("aes.key.value"), is("123456"));
+        assertThat(encryptAlgorithms.get("md5_encrypt_strategy").getType(), is("MD5"));
     }
     
     @Test
