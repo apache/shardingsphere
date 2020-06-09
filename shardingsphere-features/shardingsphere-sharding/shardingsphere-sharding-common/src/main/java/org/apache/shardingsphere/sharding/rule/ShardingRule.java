@@ -74,8 +74,7 @@ public final class ShardingRule implements DataNodeRoutedRule {
         Preconditions.checkArgument(null != shardingRuleConfiguration, "ShardingRuleConfig cannot be null.");
         Preconditions.checkArgument(null != dataSourceNames && !dataSourceNames.isEmpty(), "Data sources cannot be empty.");
         this.dataSourceNames = getDataSourceNames(shardingRuleConfiguration.getTables(), dataSourceNames);
-        tableRules = new LinkedList<>();
-        tableRules.addAll(createTableRules(shardingRuleConfiguration));
+        tableRules = new LinkedList<>(createTableRules(shardingRuleConfiguration));
         tableRules.addAll(createAutoTableRules(shardingRuleConfiguration));
         broadcastTables = shardingRuleConfiguration.getBroadcastTables();
         bindingTableRules = createBindingTableRules(shardingRuleConfiguration.getBindingTableGroups());
