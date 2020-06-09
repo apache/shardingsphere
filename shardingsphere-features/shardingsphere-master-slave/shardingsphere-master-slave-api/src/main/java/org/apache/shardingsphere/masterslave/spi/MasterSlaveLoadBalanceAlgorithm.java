@@ -15,25 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.api.config.strategy.impl;
+package org.apache.shardingsphere.masterslave.spi;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
-import org.apache.shardingsphere.infra.config.strategy.SPIStrategyConfiguration;
-import org.apache.shardingsphere.masterslave.api.config.strategy.LoadBalanceStrategyConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereSPIAlgorithm;
 
-import java.util.Properties;
+import java.util.List;
 
 /**
- * Master-slave load balance strategy configuration for SPI.
+ * Master-slave database load-balance algorithm.
  */
-@Getter
-public final class SPILoadBalanceStrategyConfiguration extends TypedSPIConfiguration implements LoadBalanceStrategyConfiguration, SPIStrategyConfiguration {
+public interface MasterSlaveLoadBalanceAlgorithm extends ShardingSphereSPIAlgorithm {
     
-    private final String name;
-    
-    public SPILoadBalanceStrategyConfiguration(final String name, final String type, final Properties properties) {
-        super(type, properties);
-        this.name = name;
-    }
+    /**
+     * Get data source.
+     * 
+     * @param name master-slave logic data source name
+     * @param masterDataSourceName name of master data sources
+     * @param slaveDataSourceNames names of slave data sources
+     * @return name of selected data source
+     */
+    String getDataSource(String name, String masterDataSourceName, List<String> slaveDataSourceNames);
 }
