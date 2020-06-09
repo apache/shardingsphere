@@ -33,7 +33,7 @@ import org.springframework.context.annotation.Configuration;
 public class ShardingRuleSpringBootConfiguration {
     
     /**
-     * Sharding YAML rule spring boot configuration .
+     * Sharding YAML rule spring boot configuration.
      *
      * @return YAML rule configuration
      */
@@ -45,4 +45,3 @@ public class ShardingRuleSpringBootConfiguration {
         return new YamlShardingRuleConfiguration();
     }
 }
-
