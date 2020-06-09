@@ -19,13 +19,14 @@ package org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.strategy.route.standard.StandardShardingStrategy;
 import org.apache.shardingsphere.sharding.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.sharding.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.sharding.strategy.route.value.RouteValue;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -73,5 +74,14 @@ public class StandardRangeShardingAlgorithmTest {
         assertTrue(actual.contains("t_order_3"));
         assertTrue(actual.contains("t_order_4"));
         assertTrue(actual.contains("t_order_5"));
+    }
+
+    @Ignore
+    public void assertGetAutoTablesAmount() {
+        StandardRangeShardingAlgorithm shardingAlgorithm = new StandardRangeShardingAlgorithm();
+        shardingAlgorithm.getProperties().setProperty("partition.lower", "10");
+        shardingAlgorithm.getProperties().setProperty("partition.upper", "45");
+        shardingAlgorithm.getProperties().setProperty("partition.volume", "10");
+        assertThat(shardingAlgorithm.getAutoTablesAmount(), is(6));
     }
 }
