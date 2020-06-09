@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.api.config;
 
-import org.apache.shardingsphere.encrypt.api.config.strategy.impl.SPIEncryptStrategyConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -29,12 +29,12 @@ public final class EncryptStrategyConfigurationTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertConstructorWithoutType() {
-        new SPIEncryptStrategyConfiguration("test_encrypt_strategy", null, new Properties());
+        new EncryptStrategyConfiguration("test_encrypt_strategy", null, new Properties());
     }
     
     @Test
     public void assertConstructorWithoutAssistedQueryColumnsAndProperties() {
-        SPIEncryptStrategyConfiguration actual = new SPIEncryptStrategyConfiguration("test_encrypt_strategy", "TEST", new Properties());
+        EncryptStrategyConfiguration actual = new EncryptStrategyConfiguration("test_encrypt_strategy", "TEST", new Properties());
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getProperties(), is(new Properties()));
     }
@@ -43,7 +43,7 @@ public final class EncryptStrategyConfigurationTest {
     public void assertConstructorWithMinArguments() {
         Properties props = new Properties();
         props.setProperty("key", "value");
-        SPIEncryptStrategyConfiguration actual = new SPIEncryptStrategyConfiguration("test_encrypt_strategy", "TEST", props);
+        EncryptStrategyConfiguration actual = new EncryptStrategyConfiguration("test_encrypt_strategy", "TEST", props);
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getProperties(), is(props));
     }
@@ -52,7 +52,7 @@ public final class EncryptStrategyConfigurationTest {
     public void assertConstructorWithMaxArguments() {
         Properties props = new Properties();
         props.setProperty("key", "value");
-        SPIEncryptStrategyConfiguration actual = new SPIEncryptStrategyConfiguration("test_encrypt_strategy", "TEST", props);
+        EncryptStrategyConfiguration actual = new EncryptStrategyConfiguration("test_encrypt_strategy", "TEST", props);
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getProperties(), is(props));
     }

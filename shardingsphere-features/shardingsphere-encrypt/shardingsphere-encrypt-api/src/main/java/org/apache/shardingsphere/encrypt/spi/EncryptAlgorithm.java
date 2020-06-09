@@ -15,25 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.api.config.strategy.impl;
+package org.apache.shardingsphere.encrypt.spi;
 
-import lombok.Getter;
-import org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration;
-import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
-import org.apache.shardingsphere.infra.config.strategy.SPIStrategyConfiguration;
-
-import java.util.Properties;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereSPIAlgorithm;
 
 /**
- * Encrypt strategy configuration for SPI.
+ * Encrypt algorithm for SPI.
  */
-@Getter
-public final class SPIEncryptStrategyConfiguration extends TypedSPIConfiguration implements EncryptStrategyConfiguration, SPIStrategyConfiguration {
+public interface EncryptAlgorithm extends ShardingSphereSPIAlgorithm, ShardingSphereAlgorithmPostProcessor {
     
-    private final String name;
+    /**
+     * Encode.
+     *
+     * @param plaintext plaintext
+     * @return ciphertext
+     */
+    String encrypt(Object plaintext);
     
-    public SPIEncryptStrategyConfiguration(final String name, final String type, final Properties properties) {
-        super(type, properties);
-        this.name = name;
-    }
+    /**
+     * Decode.
+     *
+     * @param ciphertext ciphertext
+     * @return plaintext
+     */
+    Object decrypt(String ciphertext);
 }

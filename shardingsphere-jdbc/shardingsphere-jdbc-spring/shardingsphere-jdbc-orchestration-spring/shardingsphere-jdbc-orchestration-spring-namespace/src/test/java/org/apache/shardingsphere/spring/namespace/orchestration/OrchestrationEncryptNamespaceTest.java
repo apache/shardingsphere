@@ -22,7 +22,6 @@ import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.strategy.impl.SPIEncryptStrategyConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.spring.namespace.orchestration.util.EmbedTestingServer;
@@ -70,13 +69,13 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
         EncryptColumnRuleConfiguration orderIdColumnRuleConfiguration = encryptColumnRuleConfigurations.next();
         assertThat(userIdColumnRuleConfiguration.getCipherColumn(), is("user_encrypt"));
         assertThat(orderIdColumnRuleConfiguration.getPlainColumn(), is("order_decrypt"));
-        Iterator<? extends EncryptStrategyConfiguration> encryptStrategyConfigurations = configuration.getEncryptStrategies().iterator();
-        assertEncryptStrategyConfiguration((SPIEncryptStrategyConfiguration) encryptStrategyConfigurations.next());
-        assertEncryptStrategyConfiguration((SPIEncryptStrategyConfiguration) encryptStrategyConfigurations.next());
+        Iterator<? extends org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration> encryptStrategyConfigurations = configuration.getEncryptStrategies().iterator();
+        assertEncryptStrategyConfiguration((EncryptStrategyConfiguration) encryptStrategyConfigurations.next());
+        assertEncryptStrategyConfiguration((EncryptStrategyConfiguration) encryptStrategyConfigurations.next());
         assertFalse(encryptStrategyConfigurations.hasNext());
     }
     
-    private void assertEncryptStrategyConfiguration(final SPIEncryptStrategyConfiguration encryptStrategyConfiguration) {
+    private void assertEncryptStrategyConfiguration(final EncryptStrategyConfiguration encryptStrategyConfiguration) {
         if ("AES".equals(encryptStrategyConfiguration.getType())) {
             assertThat(encryptStrategyConfiguration.getName(), is("aes_encrypt_strategy"));
             assertThat(encryptStrategyConfiguration.getProperties().getProperty("aes.key.value"), is("123456"));

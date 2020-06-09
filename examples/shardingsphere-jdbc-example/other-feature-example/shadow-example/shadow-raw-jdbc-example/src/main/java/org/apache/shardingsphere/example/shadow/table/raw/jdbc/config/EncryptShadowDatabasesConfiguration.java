@@ -22,7 +22,6 @@ import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.strategy.impl.SPIEncryptStrategyConfiguration;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -52,12 +51,12 @@ public final class EncryptShadowDatabasesConfiguration implements ExampleConfigu
         return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Arrays.asList(shadowRuleConfiguration, encryptRuleConfiguration), properties);
     }
     
-    private Collection<EncryptStrategyConfiguration> getEncryptStrategyConfigurations() {
-        Collection<EncryptStrategyConfiguration> result = new LinkedList<>();
+    private Collection<org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration> getEncryptStrategyConfigurations() {
+        Collection<org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration> result = new LinkedList<>();
         Properties properties = new Properties();
         properties.setProperty("aes.key.value", "123456");
-        EncryptStrategyConfiguration nameEncryptStrategyConfiguration = new SPIEncryptStrategyConfiguration("name_encrypt_strategy", "aes", properties);
-        EncryptStrategyConfiguration pwdEncryptStrategyConfiguration = new SPIEncryptStrategyConfiguration("pwd_encrypt_strategy", "assistedTest", null);
+        org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration nameEncryptStrategyConfiguration = new EncryptStrategyConfiguration("name_encrypt_strategy", "aes", properties);
+        org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration pwdEncryptStrategyConfiguration = new EncryptStrategyConfiguration("pwd_encrypt_strategy", "assistedTest", null);
         result.add(nameEncryptStrategyConfiguration);
         result.add(pwdEncryptStrategyConfiguration);
         return result;

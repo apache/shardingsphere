@@ -20,12 +20,11 @@ package org.apache.shardingsphere.encrypt.rule;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.algorithm.EncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.api.config.algorithm.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration;
-import org.apache.shardingsphere.encrypt.spi.SPIEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -45,7 +44,7 @@ import java.util.stream.Collectors;
 public final class EncryptRule implements ShardingSphereRule {
     
     static {
-        ShardingSphereServiceLoader.register(SPIEncryptAlgorithm.class);
+        ShardingSphereServiceLoader.register(EncryptAlgorithm.class);
     }
     
     private final Map<String, EncryptAlgorithm> encryptAlgorithms = new LinkedHashMap<>();
@@ -54,7 +53,7 @@ public final class EncryptRule implements ShardingSphereRule {
     
     public EncryptRule(final EncryptRuleConfiguration configuration) {
         Preconditions.checkArgument(isValidRuleConfiguration(configuration), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
-        configuration.getEncryptStrategies().forEach(each -> encryptAlgorithms.put(each.getName(), ShardingSphereAlgorithmFactory.createAlgorithm(each, SPIEncryptAlgorithm.class)));
+        configuration.getEncryptStrategies().forEach(each -> encryptAlgorithms.put(each.getName(), ShardingSphereAlgorithmFactory.createAlgorithm(each, EncryptAlgorithm.class)));
         configuration.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(each)));
     }
     

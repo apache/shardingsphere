@@ -22,7 +22,6 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataS
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.strategy.impl.SPIEncryptStrategyConfiguration;
 import org.apache.shardingsphere.spring.boot.orchestration.registry.TestCenterRepository;
 import org.apache.shardingsphere.spring.boot.orchestration.util.EmbedTestingServer;
 import org.junit.BeforeClass;
@@ -92,9 +91,9 @@ public class OrchestrationSpringBootRegistryEncryptTest {
         assertThat(embedDataSource.getUsername(), is("sa"));
         EncryptRuleConfiguration configuration = (EncryptRuleConfiguration) encryptDataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getConfigurations().iterator().next();
         assertThat(configuration.getEncryptStrategies().size(), is(1));
-        EncryptStrategyConfiguration encryptStrategyConfiguration = configuration.getEncryptStrategies().iterator().next();
-        assertThat(encryptStrategyConfiguration, instanceOf(SPIEncryptStrategyConfiguration.class));
+        org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration encryptStrategyConfiguration = configuration.getEncryptStrategies().iterator().next();
+        assertThat(encryptStrategyConfiguration, instanceOf(EncryptStrategyConfiguration.class));
         assertThat(encryptStrategyConfiguration.getName(), is("order_encrypt"));
-        assertThat(((SPIEncryptStrategyConfiguration) encryptStrategyConfiguration).getType(), is("aes"));
+        assertThat(((EncryptStrategyConfiguration) encryptStrategyConfiguration).getType(), is("aes"));
     }
 }

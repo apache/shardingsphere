@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.example.fixture;
 
-import org.apache.shardingsphere.encrypt.spi.SPIQueryAssistedEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 
 import java.util.Properties;
 
-public final class TestQueryAssistedShardingEncryptAlgorithm implements SPIQueryAssistedEncryptAlgorithm {
+public final class TestQueryAssistedShardingEncryptAlgorithm implements QueryAssistedEncryptAlgorithm {
     
     private Properties properties = new Properties();
     

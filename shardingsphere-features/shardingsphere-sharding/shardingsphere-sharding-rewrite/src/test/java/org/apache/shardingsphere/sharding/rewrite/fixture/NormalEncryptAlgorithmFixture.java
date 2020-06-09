@@ -19,13 +19,13 @@ package org.apache.shardingsphere.sharding.rewrite.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.spi.SPIEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 
 import java.util.Properties;
 
 @Getter
 @Setter
-public final class NormalEncryptAlgorithmFixture implements SPIEncryptAlgorithm {
+public final class NormalEncryptAlgorithmFixture implements EncryptAlgorithm {
     
     private Properties properties = new Properties();
     
