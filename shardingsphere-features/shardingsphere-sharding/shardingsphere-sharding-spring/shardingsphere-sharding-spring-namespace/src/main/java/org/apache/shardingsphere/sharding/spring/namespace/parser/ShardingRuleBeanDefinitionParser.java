@@ -94,7 +94,6 @@ public final class ShardingRuleBeanDefinitionParser extends AbstractBeanDefiniti
         parseDatabaseShardingStrategyConfiguration(tableElement, factory);
         parseTableShardingStrategyConfiguration(tableElement, factory);
         parseKeyGeneratorConfiguration(tableElement, factory);
-        parseLogicIndex(tableElement, factory);
         return factory.getBeanDefinition();
     }
     
@@ -159,13 +158,6 @@ public final class ShardingRuleBeanDefinitionParser extends AbstractBeanDefiniti
         String keyGenerator = tableElement.getAttribute(ShardingRuleBeanDefinitionTag.KEY_GENERATOR_REF_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(keyGenerator)) {
             factory.addPropertyReference("keyGenerator", keyGenerator);
-        }
-    }
-    
-    private void parseLogicIndex(final Element tableElement, final BeanDefinitionBuilder factory) {
-        String logicIndex = tableElement.getAttribute(ShardingRuleBeanDefinitionTag.LOGIC_INDEX_ATTRIBUTE);
-        if (!Strings.isNullOrEmpty(logicIndex)) {
-            factory.addPropertyValue("logicIndex", logicIndex);
         }
     }
     
