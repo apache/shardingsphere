@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline;
 import com.google.common.base.Preconditions;
 import groovy.lang.Closure;
 import groovy.util.Expando;
-import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
@@ -31,7 +30,7 @@ import java.util.Properties;
 /**
  * Inline sharding algorithm.
  */
-public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
+public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>> {
     
     private static final String ALGORITHM_EXPRESSION = "algorithm.expression";
     
@@ -75,12 +74,5 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     @Override
     public void setProperties(final Properties properties) {
         this.properties = properties;
-    }
-
-    @Override
-    public int getAutoTablesAmount() {
-        Preconditions.checkNotNull(properties.get(ALGORITHM_EXPRESSION), "Inline sharding algorithm expression cannot be null.");
-        String algorithmExpression = InlineExpressionParser.handlePlaceHolder(properties.get(ALGORITHM_EXPRESSION).toString().trim());
-        return new InlineExpressionParser(algorithmExpression).splitAndEvaluate().size();
     }
 }
