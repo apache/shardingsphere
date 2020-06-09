@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.masterslave.spring.namespace.parser;
 
-import org.apache.shardingsphere.masterslave.api.config.strategy.LoadBalanceStrategyConfiguration;
+import org.apache.shardingsphere.masterslave.spring.namespace.factorybean.MasterSlaveLoadBalanceAlgorithmFactoryBean;
 import org.apache.shardingsphere.masterslave.spring.namespace.tag.LoadBalanceStrategyBeanDefinitionTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -35,7 +35,7 @@ public final class MasterSlaveLoadBalanceStrategyBeanDefinitionParser extends Ab
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(LoadBalanceStrategyConfiguration.class);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(MasterSlaveLoadBalanceAlgorithmFactoryBean.class);
         factory.addConstructorArgValue(element.getAttribute(LoadBalanceStrategyBeanDefinitionTag.NAME_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(LoadBalanceStrategyBeanDefinitionTag.TYPE_ATTRIBUTE));
         factory.addConstructorArgValue(parseProperties(element, parserContext));

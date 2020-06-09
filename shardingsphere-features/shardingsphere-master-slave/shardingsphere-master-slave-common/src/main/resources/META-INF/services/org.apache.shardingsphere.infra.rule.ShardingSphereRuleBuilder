@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.masterslave.rule.MasterSlaveRuleBuilder
+org.apache.shardingsphere.masterslave.rule.AlgorithmProvidedMasterSlaveRuleBuilder

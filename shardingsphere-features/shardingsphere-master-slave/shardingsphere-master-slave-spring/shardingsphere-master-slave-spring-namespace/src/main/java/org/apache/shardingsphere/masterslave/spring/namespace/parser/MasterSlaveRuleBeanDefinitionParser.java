@@ -19,14 +19,15 @@ package org.apache.shardingsphere.masterslave.spring.namespace.parser;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
 import org.apache.shardingsphere.masterslave.spring.namespace.tag.MasterSlaveRuleBeanDefinitionTag;
+import org.apache.shardingsphere.masterslave.strategy.config.AlgorithmProvidedMasterSlaveRuleConfiguration;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.ManagedList;
+import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
@@ -34,6 +35,7 @@ import org.w3c.dom.Element;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -43,17 +45,17 @@ public final class MasterSlaveRuleBeanDefinitionParser extends AbstractBeanDefin
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(MasterSlaveRuleConfiguration.class);
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(AlgorithmProvidedMasterSlaveRuleConfiguration.class);
         factory.addConstructorArgValue(parseLoadBalanceStrategiesConfigurations(element));
         factory.addConstructorArgValue(parseMasterSlaveDataSourceRuleConfigurations(element));
         return factory.getBeanDefinition();
     }
     
-    private Collection<RuntimeBeanReference> parseLoadBalanceStrategiesConfigurations(final Element element) {
+    private Map<String, RuntimeBeanReference> parseLoadBalanceStrategiesConfigurations(final Element element) {
         Collection<String> loadBalanceStrategyRefs = findLoadBalanceStrategyRefs(DomUtils.getChildElementsByTagName(element, MasterSlaveRuleBeanDefinitionTag.DATA_SOURCE_TAG));
-        Collection<RuntimeBeanReference> result = new ManagedList<>(loadBalanceStrategyRefs.size());
+        Map<String, RuntimeBeanReference> result = new ManagedMap<>(loadBalanceStrategyRefs.size());
         for (String each : loadBalanceStrategyRefs) {
-            result.add(new RuntimeBeanReference(each));
+            result.put(each, new RuntimeBeanReference(each));
         }
         return result;
     }
