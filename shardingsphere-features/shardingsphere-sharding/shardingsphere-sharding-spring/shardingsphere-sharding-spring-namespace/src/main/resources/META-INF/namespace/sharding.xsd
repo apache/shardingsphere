@@ -52,7 +52,6 @@
             <xsd:attribute name="database-strategy-ref" type="xsd:string" />
             <xsd:attribute name="table-strategy-ref" type="xsd:string" />
             <xsd:attribute name="key-generator-ref" type="xsd:string" />
-            <xsd:attribute name="logic-index" type="xsd:string" />
         </xsd:complexType>
     </xsd:element>
     <xsd:element name="auto-table-rules">
