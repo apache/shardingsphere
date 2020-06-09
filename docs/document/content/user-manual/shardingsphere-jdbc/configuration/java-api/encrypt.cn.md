@@ -55,13 +55,13 @@ Apache ShardingSphere 内置的加解密算法实现类包括：
 
 ### MD5 加解密策略
 
-类名称：org.apache.shardingsphere.encrypt.strategy.impl.MD5EncryptAlgorithm
+类名称：org.apache.shardingsphere.encrypt.algorithm.MD5EncryptAlgorithm
 
 可配置属性：无
 
 ### AES 加解密算法
 
-类名称：org.apache.shardingsphere.encrypt.strategy.impl.AESEncryptAlgorithm
+类名称：org.apache.shardingsphere.encrypt.algorithm.AESEncryptAlgorithm
 
 可配置属性：
 
@@ -71,7 +71,7 @@ Apache ShardingSphere 内置的加解密算法实现类包括：
 
 ### RC4 加解密算法
 
-类名称：org.apache.shardingsphere.encrypt.strategy.impl.RC4EncryptAlgorithm
+类名称：org.apache.shardingsphere.encrypt.algorithm.RC4EncryptAlgorithm
 
 可配置属性：
 

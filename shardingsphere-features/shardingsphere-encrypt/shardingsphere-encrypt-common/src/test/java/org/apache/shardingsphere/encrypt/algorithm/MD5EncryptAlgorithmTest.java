@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.strategy.impl;
+package org.apache.shardingsphere.encrypt.algorithm;
 
 import org.junit.Test;
 

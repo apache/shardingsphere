@@ -55,13 +55,13 @@ Apache ShardingSphere built-in implemented classes of encrypt algorithm are:
 
 ### MD5 Encrypt Algorithm
 
-Class name: org.apache.shardingsphere.encrypt.strategy.impl.MD5EncryptAlgorithm
+Class name: org.apache.shardingsphere.encrypt.algorithm.MD5EncryptAlgorithm
 
 Attributes: None
 
 ### AES Encrypt Algorithm
 
-Class name: org.apache.shardingsphere.encrypt.strategy.impl.AESEncryptAlgorithm
+Class name: org.apache.shardingsphere.encrypt.algorithm.AESEncryptAlgorithm
 
 Attributes:
 
@@ -71,7 +71,7 @@ Attributes:
 
 ### RC4 Encrypt Algorithm
 
-Class name: org.apache.shardingsphere.encrypt.strategy.impl.RC4EncryptAlgorithm
+Class name: org.apache.shardingsphere.encrypt.algorithm.RC4EncryptAlgorithm
 
 Attributes:
 

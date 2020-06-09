@@ -20,7 +20,7 @@ package org.apache.shardingsphere.spring;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.spi.SPIEncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.strategy.impl.AESEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.algorithm.AESEncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.junit.Test;

@@ -15,6 +15,6 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.encrypt.strategy.impl.MD5EncryptAlgorithm
-org.apache.shardingsphere.encrypt.strategy.impl.AESEncryptAlgorithm
-org.apache.shardingsphere.encrypt.strategy.impl.RC4EncryptAlgorithm
+org.apache.shardingsphere.encrypt.algorithm.MD5EncryptAlgorithm
+org.apache.shardingsphere.encrypt.algorithm.AESEncryptAlgorithm
+org.apache.shardingsphere.encrypt.algorithm.RC4EncryptAlgorithm
