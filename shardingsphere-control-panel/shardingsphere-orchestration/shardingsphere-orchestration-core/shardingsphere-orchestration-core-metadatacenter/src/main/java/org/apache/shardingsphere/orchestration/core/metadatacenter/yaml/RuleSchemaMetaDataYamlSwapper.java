@@ -26,8 +26,10 @@ import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -47,9 +49,9 @@ public final class RuleSchemaMetaDataYamlSwapper implements YamlSwapper<YamlRule
 
     @Override
     public RuleSchemaMetaData swap(final YamlRuleSchemaMetaData yaml) {
-        SchemaMetaData configured = null == yaml.getConfiguredSchemaMetaData() ? new SchemaMetaData(Collections.emptyMap()) : convertSchema(yaml.getConfiguredSchemaMetaData());
-        Map<String, SchemaMetaData> unconfigured = null == yaml.getUnconfiguredSchemaMetaDataMap() ? Collections.emptyMap() : yaml.getUnconfiguredSchemaMetaDataMap().entrySet().stream()
-             .collect(Collectors.toMap(Entry::getKey, entry -> convertSchema(entry.getValue())));
+        SchemaMetaData configured = Optional.ofNullable(yaml.getConfiguredSchemaMetaData()).map(e -> this.convertSchema(e)).orElse(new SchemaMetaData(new HashMap<>()));
+        Map<String, SchemaMetaData> unconfigured = Optional.ofNullable(yaml.getUnconfiguredSchemaMetaDataMap()).map(e -> e.entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> convertSchema(entry.getValue())))).orElse(new HashMap<>());
         return new RuleSchemaMetaData(configured, unconfigured);
     }
 
