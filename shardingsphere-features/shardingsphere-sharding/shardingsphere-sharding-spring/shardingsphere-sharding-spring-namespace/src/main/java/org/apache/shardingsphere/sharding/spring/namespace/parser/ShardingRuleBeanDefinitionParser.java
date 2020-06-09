@@ -76,6 +76,9 @@ public final class ShardingRuleBeanDefinitionParser extends AbstractBeanDefiniti
     
     private List<BeanDefinition> parseTableRulesConfiguration(final Element element) {
         Element tableRulesElement = DomUtils.getChildElementByTagName(element, ShardingRuleBeanDefinitionTag.TABLE_RULES_TAG);
+        if (null == tableRulesElement) {
+            return new LinkedList<>();
+        }
         List<Element> tableRuleElements = DomUtils.getChildElementsByTagName(tableRulesElement, ShardingRuleBeanDefinitionTag.TABLE_RULE_TAG);
         List<BeanDefinition> result = new ManagedList<>(tableRuleElements.size());
         for (Element each : tableRuleElements) {
@@ -118,6 +121,9 @@ public final class ShardingRuleBeanDefinitionParser extends AbstractBeanDefiniti
 
     private List<BeanDefinition> parseAutoTableRulesConfiguration(final Element element) {
         Element tableRulesElement = DomUtils.getChildElementByTagName(element, ShardingRuleBeanDefinitionTag.AUTO_TABLE_RULES_TAG);
+        if (null == tableRulesElement) {
+            return new LinkedList<>();
+        }
         List<Element> tableRuleElements = DomUtils.getChildElementsByTagName(tableRulesElement, ShardingRuleBeanDefinitionTag.AUTO_TABLE_RULE_TAG);
         List<BeanDefinition> result = new ManagedList<>(tableRuleElements.size());
         for (Element each : tableRuleElements) {
