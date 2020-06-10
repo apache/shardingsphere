@@ -77,17 +77,17 @@
         </sharding:auto-table-rules>
     </sharding:rule>
     
-    <encrypt:encrypt-strategy id="aes_encrypt_strategy" type="AES">
+    <encrypt:encrypt-algorithm id="aes_encrypt_algorithm" type="AES">
         <props>
             <prop key="appToken">business</prop>
         </props>
-    </encrypt:encrypt-strategy>
-    <encrypt:encrypt-strategy id="md5_encrypt_strategy" type="MD5" />
+    </encrypt:encrypt-algorithm>
+    <encrypt:encrypt-algorithm id="md5_encrypt_algorithm" type="MD5" />
     
     <encrypt:rule id="simpleShardingDataSourceEncryptRule">
         <encrypt:table name="t_order">
-            <encrypt:column logic-column="user_id" cipher-column="user_encrypt" assisted-query-column="user_assisted" plain-column="user_decrypt" encrypt-strategy-ref="aes_encrypt_strategy" />
-            <encrypt:column logic-column="order_id" cipher-column="order_encrypt" assisted-query-column="order_assisted" plain-column="order_decrypt" encrypt-strategy-ref="md5_encrypt_strategy" />
+            <encrypt:column logic-column="user_id" cipher-column="user_encrypt" assisted-query-column="user_assisted" plain-column="user_decrypt" encrypt-algorithm-ref="aes_encrypt_algorithm" />
+            <encrypt:column logic-column="order_id" cipher-column="order_encrypt" assisted-query-column="order_assisted" plain-column="order_decrypt" encrypt-algorithm-ref="md5_encrypt_algorithm" />
         </encrypt:table>
     </encrypt:rule>
     

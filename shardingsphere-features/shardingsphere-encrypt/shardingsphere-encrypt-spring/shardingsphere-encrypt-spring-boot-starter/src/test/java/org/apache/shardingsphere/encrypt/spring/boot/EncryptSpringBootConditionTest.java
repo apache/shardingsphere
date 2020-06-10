@@ -37,7 +37,7 @@ public final class EncryptSpringBootConditionTest {
     @Test
     public void assertMatch() {
         MockEnvironment mockEnvironment = new MockEnvironment();
-        mockEnvironment.setProperty("spring.shardingsphere.rules.encrypt.encryptors.aes_encrypt_strategy.type", "aes");
+        mockEnvironment.setProperty("spring.shardingsphere.rules.encrypt.encryptors.aes_encrypt_algorithm.type", "aes");
         ConditionContext context = Mockito.mock(ConditionContext.class);
         AnnotatedTypeMetadata metadata = Mockito.mock(AnnotatedTypeMetadata.class);
         when(context.getEnvironment()).thenReturn(mockEnvironment);

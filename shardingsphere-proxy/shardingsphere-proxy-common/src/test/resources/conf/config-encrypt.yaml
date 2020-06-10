@@ -37,14 +37,14 @@ rules:
       columns:
         pwd:
           cipherColumn: pwd
-          encryptorName: aes_encrypt_strategy
+          encryptorName: aes_encrypt_algorithm
         name:
           cipherColumn: name
-          encryptorName: md5_encrypt_strategy
+          encryptorName: md5_encrypt_algorithm
   encryptors:
-    aes_encrypt_strategy:
+    aes_encrypt_algorithm:
       type: aes
       props:
         aes.key.value: 123456abc
-    md5_encrypt_strategy:
+    md5_encrypt_algorithm:
           type: md5

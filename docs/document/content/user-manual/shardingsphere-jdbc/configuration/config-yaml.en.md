@@ -103,11 +103,11 @@ dataSource:  !!org.apache.commons.dbcp2.BasicDataSource
 
 encryptRule:
   encryptors:
-    aes_encrypt_strategy:
+    aes_encrypt_algorithm:
       type: aes
       props:
         aes.key.value: 123456abc
-    md5_encrypt_strategy:
+    md5_encrypt_algorithm:
       type: md5
   tables:
     t_encrypt:
@@ -115,10 +115,10 @@ encryptRule:
         user_id:
           plainColumn: user_plain
           cipherColumn: user_cipher
-          encryptorName: aes_encrypt_strategy
+          encryptorName: aes_encrypt_algorithm
         order_id:
           cipherColumn: order_cipher
-          encryptorName: md5_encrypt_strategy
+          encryptorName: md5_encrypt_algorithm
 props:
   query.with.cipher.column: true
 ```
@@ -260,7 +260,7 @@ shardingRule:
 
   encryptRule:
     encryptors:
-      aes_encrypt_strategy:
+      aes_encrypt_algorithm:
         type: aes
         props:
           aes.key.value: 123456abc
@@ -270,7 +270,7 @@ shardingRule:
           order_id:
             plainColumn: order_plain
             cipherColumn: order_cipher
-            encryptorName: aes_encrypt_strategy
+            encryptorName: aes_encrypt_algorithm
 
 props:
   sql.show: true
@@ -390,7 +390,7 @@ dataSource: #Ignore data sources configuration
 
 encryptRule:
   encryptors:
-    <encrypt-strategy-name>:
+    <encrypt-algorithm-name>:
       type: #encrypt algorithm type
       props: #Properties, e.g. `aes.key.value` for AES encrypt algorithm
         aes.key.value: 

@@ -29,9 +29,9 @@ rules:
       columns:
         status:
           cipherColumn: status
-          encryptorName: status_encrypt_strategy
+          encryptorName: status_encrypt_algorithm
   encryptors:
-    status_encrypt_strategy:
+    status_encrypt_algorithm:
       type: aes
       props:
         aes.key.value: 123456

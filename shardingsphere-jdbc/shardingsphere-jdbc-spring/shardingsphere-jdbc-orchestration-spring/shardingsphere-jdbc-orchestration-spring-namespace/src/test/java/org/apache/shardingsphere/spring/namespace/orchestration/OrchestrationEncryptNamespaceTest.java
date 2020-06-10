@@ -71,9 +71,9 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
         assertThat(orderIdColumnRuleConfiguration.getPlainColumn(), is("order_decrypt"));
         Map<String, EncryptAlgorithm> encryptAlgorithms = configuration.getEncryptors();
         assertThat(encryptAlgorithms.size(), is(2));
-        assertThat(encryptAlgorithms.get("aes_encrypt_strategy").getType(), is("AES"));
-        assertThat(encryptAlgorithms.get("aes_encrypt_strategy").getProperties().getProperty("aes.key.value"), is("123456"));
-        assertThat(encryptAlgorithms.get("md5_encrypt_strategy").getType(), is("MD5"));
+        assertThat(encryptAlgorithms.get("aes_encrypt_algorithm").getType(), is("AES"));
+        assertThat(encryptAlgorithms.get("aes_encrypt_algorithm").getProperties().getProperty("aes.key.value"), is("123456"));
+        assertThat(encryptAlgorithms.get("md5_encrypt_algorithm").getType(), is("MD5"));
     }
     
     @Test

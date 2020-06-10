@@ -168,13 +168,11 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
-       xmlns:bean="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans.xsd 
                         http://shardingsphere.apache.org/schema/shardingsphere/encrypt
                         http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd 
-                        http://www.springframework.org/schema/util 
-                        http://www.springframework.org/schema/util/spring-util.xsd">
+                        ">
    
     <bean id="ds" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
@@ -183,22 +181,21 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
         <property name="password" value=""/>
     </bean>
     
+    <encrypt:encrypt-algorithm id="aes_encrypt_algorithm" type="AES">
+        <props>
+            <prop key="aes.key.value">123456</prop>
+        </props>
+    </encrypt:encrypt-algorithm>
+    <encrypt:encrypt-algorithm id="md5_encrypt_algorithm" type="MD5" />
+           
     <encrypt:data-source id="encryptDataSource" data-source-name="ds" >
         <encrypt:encrypt-rule>
             <encrypt:tables>
                 <encrypt:table name="t_order">
-                    <encrypt:column logic-column="user_id" cipher-column="user_encrypt" assisted-query-column="user_assisted" plain-column="user_decrypt" encrypt-strategy-ref="aes_encrypt_strategy" />
-                    <encrypt:column logic-column="order_id" cipher-column="order_encrypt" assisted-query-column="order_assisted" plain-column="order_decrypt" encrypt-strategy-ref="md5_encrypt_strategy" />
+                    <encrypt:column logic-column="user_id" cipher-column="user_encrypt" assisted-query-column="user_assisted" plain-column="user_decrypt" encrypt-algorithm-ref="aes_encrypt_algorithm" />
+                    <encrypt:column logic-column="order_id" cipher-column="order_encrypt" assisted-query-column="order_assisted" plain-column="order_decrypt" encrypt-algorithm-ref="md5_encrypt_algorithm" />
                 </encrypt:table>
             </encrypt:tables>
-            <encrypt:encrypt-strategies>
-                <encrypt:encrypt-strategy id="aes_encrypt_strategy" type="AES">
-                    <props>
-                        <prop key="aes.key.value">123456</prop>
-                    </props>
-                </encrypt:encrypt-strategy>
-                <encrypt:encrypt-strategy id="md5_encrypt_strategy" type="MD5" />
-            </encrypt:encrypt-strategies>
         </encrypt:encrypt-rule>
         <encrypt:props>
             <prop key="sql.show">true</prop>
@@ -396,7 +393,14 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
     <bean:properties id="dataProtectorProps">
         <prop key="appToken">business</prop>
     </bean:properties>
-
+    
+    <encrypt:encrypt-algorithm id="aes_encrypt_algorithm" type="AES">
+        <props>
+            <prop key="aes.key.value">123456</prop>
+        </props>
+    </encrypt:encrypt-algorithm>
+    <encrypt:encrypt-algorithm id="md5_encrypt_algorithm" type="MD5" />
+    
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-source-names="demo_ds_0, demo_ds_1">
             <sharding:table-rules>
@@ -406,20 +410,11 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
             <sharding:encrypt-rule>
                 <encrypt:tables>
                     <encrypt:table name="t_order">
-                        <encrypt:column logic-column="user_id" cipher-column="user_encrypt" assisted-query-column="user_assisted" plain-column="user_decrypt" encrypt-strategy-ref="aes_encrypt_strategy" />
-                        <encrypt:column logic-column="order_id" cipher-column="order_encrypt" assisted-query-column="order_assisted" plain-column="order_decrypt" encrypt-strategy-ref="md5_encrypt_strategy" />
+                        <encrypt:column logic-column="user_id" cipher-column="user_encrypt" assisted-query-column="user_assisted" plain-column="user_decrypt" encrypt-algorithm-ref="aes_encrypt_algorithm" />
+                        <encrypt:column logic-column="order_id" cipher-column="order_encrypt" assisted-query-column="order_assisted" plain-column="order_decrypt" encrypt-algorithm-ref="md5_encrypt_algorithm" />
                     </encrypt:table>
                 </encrypt:tables>
-                <encrypt:encrypt-strategies>
-                    <encrypt:encrypt-strategy id="aes_encrypt_strategy" type="AES">
-                        <props>
-                            <prop key="aes.key.value">123456</prop>
-                        </props>
-                    </encrypt:encrypt-strategy>
-                    <encrypt:encrypt-strategy id="md5_encrypt_strategy" type="MD5" />
-                </encrypt:encrypt-strategies>
             </sharding:encrypt-rule>
-
         </sharding:sharding-rule>
 
         <sharding:props>
@@ -641,13 +636,7 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
 | data-source-name        | 属性  | 加密数据源Bean Id                              |
 | props (?)               | 标签  | 属性配置                                       |
 
-#### \<encrypt:encrypt-strategies />
-
-| *名称*               | *类型* | *说明*   |
-| ------------------- | ----- | -------- |
-| encrypt-strategy(+) | 标签  | 加密策略配置 |
-
-#### \<encrypt:encrypt-strategy />
+#### \<encrypt:encrypt-algorithm />
 
 | *名称*     | *类型* | *说明*                                                                   |
 | --------- | ----- | ------------------------------------------------------------------------ |

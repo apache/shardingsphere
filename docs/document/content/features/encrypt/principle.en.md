@@ -96,7 +96,7 @@ It can also be different **. The recommended configuration is as follows (shown 
 ```yaml
 -!ENCRYPT
   encryptors:
-    aes_encrypt_strategy:
+    aes_encrypt_algorithm:
       type: aes
       props:
         aes.key.value: 123456abc
@@ -105,7 +105,7 @@ It can also be different **. The recommended configuration is as follows (shown 
       columns:
         pwd:
           cipherColumn: pwd
-          encryptorName: aes_encrypt_strategy
+          encryptorName: aes_encrypt_algorithm
 ```
 
 With this configuration, Apache ShardingSphere only needs to convert logicColumn and cipherColumn. 
@@ -152,7 +152,7 @@ In addition, demonstrate a set of encryption configuration rules, as follows:
 ```yaml
 -!ENCRYPT
   encryptors:
-    aes_encrypt_strategy:
+    aes_encrypt_algorithm:
       type: aes
       props:
         aes.key.value: 123456abc
@@ -162,7 +162,7 @@ In addition, demonstrate a set of encryption configuration rules, as follows:
         pwd:
           plainColumn: pwd
           cipherColumn: pwd_cipher
-          encryptorName: aes_encrypt_strategy
+          encryptorName: aes_encrypt_algorithm
 props:
   query.with.cipher.column: false
 ```
@@ -219,7 +219,7 @@ So the encryption configuration after migration is:
 ```yaml
 -!ENCRYPT
   encryptors:
-    aes_encrypt_strategy:
+    aes_encrypt_algorithm:
       type: aes
       props:
         aes.key.value: 123456abc
@@ -228,7 +228,7 @@ So the encryption configuration after migration is:
       columns:
         pwd: # pwd与pwd_cipher的转换映射
           cipherColumn: pwd_cipher
-          encryptorName: aes_encrypt_strategy
+          encryptorName: aes_encrypt_algorithm
 props:
   query.with.cipher.column: true
 ```

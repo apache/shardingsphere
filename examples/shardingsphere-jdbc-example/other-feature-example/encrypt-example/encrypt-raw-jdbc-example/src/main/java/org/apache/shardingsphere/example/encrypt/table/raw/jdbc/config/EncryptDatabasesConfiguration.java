@@ -40,12 +40,12 @@ public final class EncryptDatabasesConfiguration implements ExampleConfiguration
         Properties properties = new Properties();
         properties.setProperty("aes.key.value", "123456");
         properties.setProperty("query.with.cipher.column", "true");
-        EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("user_name", "user_name", "", "user_name_plain", "name_encrypt_strategy");
-        EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", "pwd", "assisted_query_pwd", "", "pwd_encrypt_strategy");
+        EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("user_name", "user_name", "", "user_name_plain", "name_encrypt_algorithm");
+        EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", "pwd", "assisted_query_pwd", "", "pwd_encrypt_algorithm");
         EncryptTableRuleConfiguration encryptTableRuleConfiguration = new EncryptTableRuleConfiguration("t_user", Arrays.asList(columnConfigAes, columnConfigTest));
         Map<String, EncryptAlgorithmConfiguration> encryptAlgorithmConfigurations = new LinkedHashMap<>(2, 1);
-        encryptAlgorithmConfigurations.put("name_encrypt_strategy", new EncryptAlgorithmConfiguration("aes", properties));
-        encryptAlgorithmConfigurations.put("pwd_encrypt_strategy", new EncryptAlgorithmConfiguration("assistedTest", properties));
+        encryptAlgorithmConfigurations.put("name_encrypt_algorithm", new EncryptAlgorithmConfiguration("aes", properties));
+        encryptAlgorithmConfigurations.put("pwd_encrypt_algorithm", new EncryptAlgorithmConfiguration("assistedTest", properties));
         EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfiguration), encryptAlgorithmConfigurations);
         try {
             return ShardingSphereDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(encryptRuleConfiguration), properties);

@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.encrypt.spring.namespace.tag;
 
 /**
- * Encrypt strategy bean definition tag.
+ * Encrypt algorithm bean definition tag.
  */
-public final class EncryptStrategyBeanDefinitionTag {
+public final class EncryptAlgorithmBeanDefinitionTag {
     
-    public static final String ROOT_TAG = "encrypt-strategy";
+    public static final String ROOT_TAG = "encrypt-algorithm";
     
-    public static final String NAME_ATTRIBUTE = "id";
+    public static final String ID_ATTRIBUTE = "id";
     
     public static final String TYPE_ATTRIBUTE = "type";
     

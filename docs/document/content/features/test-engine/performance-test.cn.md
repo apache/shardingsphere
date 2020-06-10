@@ -250,11 +250,11 @@ shardingRule:
       loadBalanceAlgorithmType: ROUND_ROBIN
 encryptRule:
   encryptors:
-    aes_encrypt_strategy:
+    aes_encrypt_algorithm:
       type: aes
       props:
         aes.key.value: 123456abc
-    md5_encrypt_strategy:
+    md5_encrypt_algorithm:
       type: md5
   tables:
     sbtest:
@@ -262,10 +262,10 @@ encryptRule:
         c:
           plainColumn: c_plain
           cipherColumn: c_cipher
-          encryptorName: aes_encrypt_strategy
+          encryptorName: aes_encrypt_algorithm
         pad:
           cipherColumn: pad_cipher
-          encryptorName: md5_encrypt_strategy    
+          encryptorName: md5_encrypt_algorithm    
 ```
 
 #### 全路由

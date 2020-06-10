@@ -120,11 +120,11 @@ public final class ConfigCenterTest {
             + "        column: order_id\n"
             + "- !ENCRYPT\n"
             + "  encryptors:\n"
-            + "    aes_encrypt_strategy:\n"
+            + "    aes_encrypt_algorithm:\n"
             + "      type: aes\n"
             + "      props:\n"
             + "        aes.key.value: 123456abcd\n"
-            + "    md5_encrypt_strategy:\n"
+            + "    md5_encrypt_algorithm:\n"
             + "      type: md5\n"
             + "  tables:\n"
             + "    t_encrypt:\n"
@@ -132,10 +132,10 @@ public final class ConfigCenterTest {
             + "        user_id:\n"
             + "          plainColumn: user_plain\n"
             + "          cipherColumn: user_cipher\n"
-            + "          encryptorName: aes_encrypt_strategy\n"
+            + "          encryptorName: aes_encrypt_algorithm\n"
             + "        order_id:\n"
             + "          cipherColumn: order_cipher\n"
-            + "          encryptorName: md5_encrypt_strategy";
+            + "          encryptorName: md5_encrypt_algorithm";
     
     private static final String MASTER_SLAVE_RULE_YAML = ""
             + "rules:\n"
@@ -152,7 +152,7 @@ public final class ConfigCenterTest {
             + "rules:\n"
             + "- !ENCRYPT\n"
             + "  encryptors:\n"
-            + "    order_encrypt_strategy:\n"
+            + "    order_encrypt_algorithm:\n"
             + "      props:\n"
             + "        aes.key.value: 123456\n"
             + "      type: aes\n"
@@ -161,7 +161,7 @@ public final class ConfigCenterTest {
             + "      columns:\n"
             + "        order_id:\n"
             + "          cipherColumn: order_id\n"
-            + "          encryptorName: order_encrypt_strategy\n";
+            + "          encryptorName: order_encrypt_algorithm\n";
     
     private static final String SHADOW_RULE_YAML = ""
             + "rules:\n"
@@ -461,7 +461,7 @@ public final class ConfigCenterTest {
             } else if (each instanceof EncryptRuleConfiguration) {
                 EncryptRuleConfiguration encryptRuleConfiguration = (EncryptRuleConfiguration) each;
                 assertThat(encryptRuleConfiguration.getEncryptors().size(), is(2));
-                EncryptAlgorithmConfiguration encryptAlgorithmConfiguration = encryptRuleConfiguration.getEncryptors().get("aes_encrypt_strategy");
+                EncryptAlgorithmConfiguration encryptAlgorithmConfiguration = encryptRuleConfiguration.getEncryptors().get("aes_encrypt_algorithm");
                 assertThat(encryptAlgorithmConfiguration.getType(), is("aes"));
                 assertThat(encryptAlgorithmConfiguration.getProperties().get("aes.key.value").toString(), is("123456abcd"));
             }
@@ -496,7 +496,7 @@ public final class ConfigCenterTest {
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
         EncryptRuleConfiguration actual = (EncryptRuleConfiguration) configurationService.loadRuleConfigurations("sharding_db").iterator().next();
         assertThat(actual.getEncryptors().size(), is(1));
-        EncryptAlgorithmConfiguration encryptAlgorithmConfiguration = actual.getEncryptors().get("order_encrypt_strategy");
+        EncryptAlgorithmConfiguration encryptAlgorithmConfiguration = actual.getEncryptors().get("order_encrypt_algorithm");
         assertThat(encryptAlgorithmConfiguration.getType(), is("aes"));
         assertThat(encryptAlgorithmConfiguration.getProperties().get("aes.key.value").toString(), is("123456"));
     }

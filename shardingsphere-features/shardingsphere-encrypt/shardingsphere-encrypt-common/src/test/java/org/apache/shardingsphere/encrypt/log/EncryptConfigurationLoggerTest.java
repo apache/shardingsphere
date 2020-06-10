@@ -67,7 +67,7 @@ public final class EncryptConfigurationLoggerTest {
         String yaml = "rules:\n"
                 + "- !ENCRYPT\n"
                 + "  encryptors:\n"
-                + "    aes_encrypt_strategy:\n"
+                + "    aes_encrypt_algorithm:\n"
                 + "      props:\n"
                 + "        aes.key.value: 123456abc\n"
                 + "      type: aes\n"
@@ -77,7 +77,7 @@ public final class EncryptConfigurationLoggerTest {
                 + "        user_id:\n"
                 + "          assistedQueryColumn: user_assisted\n"
                 + "          cipherColumn: user_encrypt\n"
-                + "          encryptorName: aes_encrypt_strategy\n"
+                + "          encryptorName: aes_encrypt_algorithm\n"
                 + "          plainColumn: user_decrypt\n";
         assertLogInfo(yaml);
         ConfigurationLogger.log(Collections.singletonList(getEncryptConfiguration()));
@@ -88,8 +88,8 @@ public final class EncryptConfigurationLoggerTest {
         properties.put("aes.key.value", "123456abc");
         EncryptAlgorithmConfiguration encryptAlgorithmConfiguration = new EncryptAlgorithmConfiguration("aes", properties);
         EncryptTableRuleConfiguration encryptTableRuleConfiguration = new EncryptTableRuleConfiguration(
-                "t_encrypt", Collections.singleton(new EncryptColumnRuleConfiguration("user_id", "user_encrypt", "user_assisted", "user_decrypt", "aes_encrypt_strategy")));
-        return new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfiguration), ImmutableMap.of("aes_encrypt_strategy", encryptAlgorithmConfiguration));
+                "t_encrypt", Collections.singleton(new EncryptColumnRuleConfiguration("user_id", "user_encrypt", "user_assisted", "user_decrypt", "aes_encrypt_algorithm")));
+        return new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfiguration), ImmutableMap.of("aes_encrypt_algorithm", encryptAlgorithmConfiguration));
     }
     
     private void assertLogInfo(final String logContent) {

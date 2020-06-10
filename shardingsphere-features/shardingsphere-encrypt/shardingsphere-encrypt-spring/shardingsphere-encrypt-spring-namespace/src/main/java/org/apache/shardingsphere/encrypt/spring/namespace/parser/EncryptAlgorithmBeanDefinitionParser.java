@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.encrypt.spring.namespace.parser;
 
 import org.apache.shardingsphere.encrypt.spring.namespace.factorybean.EncryptAlgorithmFactoryBean;
-import org.apache.shardingsphere.encrypt.spring.namespace.tag.EncryptStrategyBeanDefinitionTag;
+import org.apache.shardingsphere.encrypt.spring.namespace.tag.EncryptAlgorithmBeanDefinitionTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -29,21 +29,21 @@ import org.w3c.dom.Element;
 import java.util.Properties;
 
 /**
- * Encrypt strategy bean definition parser.
+ * Encrypt algorithm bean definition parser.
  */
-public final class EncryptStrategyBeanDefinitionParser extends AbstractBeanDefinitionParser {
+public final class EncryptAlgorithmBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(EncryptAlgorithmFactoryBean.class);
-        factory.addConstructorArgValue(element.getAttribute(EncryptStrategyBeanDefinitionTag.NAME_ATTRIBUTE));
-        factory.addConstructorArgValue(element.getAttribute(EncryptStrategyBeanDefinitionTag.TYPE_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(EncryptAlgorithmBeanDefinitionTag.ID_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(EncryptAlgorithmBeanDefinitionTag.TYPE_ATTRIBUTE));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
         return factory.getBeanDefinition();
     }
     
     private static Properties parseProperties(final Element element, final ParserContext parserContext) {
-        Element propsElement = DomUtils.getChildElementByTagName(element, EncryptStrategyBeanDefinitionTag.PROPS_TAG);
+        Element propsElement = DomUtils.getChildElementByTagName(element, EncryptAlgorithmBeanDefinitionTag.PROPS_TAG);
         return null == propsElement ? new Properties() : parserContext.getDelegate().parsePropsElement(propsElement);
     }
 }

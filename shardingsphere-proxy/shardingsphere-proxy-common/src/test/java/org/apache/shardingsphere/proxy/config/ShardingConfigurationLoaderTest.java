@@ -125,12 +125,12 @@ public final class ShardingConfigurationLoaderTest {
     
     private void assertEncryptRuleConfiguration(final YamlEncryptRuleConfiguration actual) {
         assertThat(actual.getEncryptors().size(), is(2));
-        assertTrue(actual.getEncryptors().containsKey("aes_encrypt_strategy"));
-        assertTrue(actual.getEncryptors().containsKey("md5_encrypt_strategy"));
-        YamlEncryptAlgorithmConfiguration aesEncryptAlgorithmConfiguration = actual.getEncryptors().get("aes_encrypt_strategy");
+        assertTrue(actual.getEncryptors().containsKey("aes_encrypt_algorithm"));
+        assertTrue(actual.getEncryptors().containsKey("md5_encrypt_algorithm"));
+        YamlEncryptAlgorithmConfiguration aesEncryptAlgorithmConfiguration = actual.getEncryptors().get("aes_encrypt_algorithm");
         assertThat(aesEncryptAlgorithmConfiguration.getType(), is("aes"));
         assertThat(aesEncryptAlgorithmConfiguration.getProps().getProperty("aes.key.value"), is("123456abc"));
-        YamlEncryptAlgorithmConfiguration md5EncryptAlgorithmConfiguration = actual.getEncryptors().get("md5_encrypt_strategy");
+        YamlEncryptAlgorithmConfiguration md5EncryptAlgorithmConfiguration = actual.getEncryptors().get("md5_encrypt_algorithm");
         assertThat(md5EncryptAlgorithmConfiguration.getType(), is("md5"));
     }
     

@@ -54,9 +54,9 @@ public final class EncryptRuleBeanDefinitionParser extends AbstractBeanDefinitio
     }
     
     private Map<String, RuntimeBeanReference> parseEncryptAlgorithmConfigurations(final Element element) {
-        Collection<String> encryptStrategyRefs = findEncryptAlgorithmRefs(DomUtils.getChildElementsByTagName(element, EncryptRuleBeanDefinitionTag.TABLE_TAG));
-        Map<String, RuntimeBeanReference> result = new ManagedMap<>(encryptStrategyRefs.size());
-        for (String each : encryptStrategyRefs) {
+        Collection<String> encryptAlgorithmRefs = findEncryptAlgorithmRefs(DomUtils.getChildElementsByTagName(element, EncryptRuleBeanDefinitionTag.TABLE_TAG));
+        Map<String, RuntimeBeanReference> result = new ManagedMap<>(encryptAlgorithmRefs.size());
+        for (String each : encryptAlgorithmRefs) {
             result.put(each, new RuntimeBeanReference(each));
         }
         return result;
@@ -65,14 +65,14 @@ public final class EncryptRuleBeanDefinitionParser extends AbstractBeanDefinitio
     private Collection<String> findEncryptAlgorithmRefs(final List<Element> encryptTableElements) {
         Collection<String> result = new HashSet<>();
         for (Element each : encryptTableElements) {
-            result.addAll(findEncryptStrategyRefsFromColumn(DomUtils.getChildElementsByTagName(each, EncryptRuleBeanDefinitionTag.COLUMN_TAG)));
+            result.addAll(findEncryptAlgorithmRefsFromColumn(DomUtils.getChildElementsByTagName(each, EncryptRuleBeanDefinitionTag.COLUMN_TAG)));
         }
         return result;
     }
     
-    private Collection<String> findEncryptStrategyRefsFromColumn(final List<Element> encryptColumnElements) {
-        return encryptColumnElements.stream().filter(each -> !Strings.isNullOrEmpty(each.getAttribute(EncryptRuleBeanDefinitionTag.ENCRYPT_STRATEGY_REF_ATTRIBUTE)))
-                .map(each -> each.getAttribute(EncryptRuleBeanDefinitionTag.ENCRYPT_STRATEGY_REF_ATTRIBUTE)).collect(Collectors.toSet());
+    private Collection<String> findEncryptAlgorithmRefsFromColumn(final List<Element> encryptColumnElements) {
+        return encryptColumnElements.stream().filter(each -> !Strings.isNullOrEmpty(each.getAttribute(EncryptRuleBeanDefinitionTag.ENCRYPT_ALGORITHM_REF_ATTRIBUTE)))
+                .map(each -> each.getAttribute(EncryptRuleBeanDefinitionTag.ENCRYPT_ALGORITHM_REF_ATTRIBUTE)).collect(Collectors.toSet());
     }
     
     private static Collection<BeanDefinition> parseEncryptTableRuleConfigurations(final Element element) {
@@ -106,7 +106,7 @@ public final class EncryptRuleBeanDefinitionParser extends AbstractBeanDefinitio
         factory.addConstructorArgValue(element.getAttribute(EncryptRuleBeanDefinitionTag.CIPHER_COLUMN_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(EncryptRuleBeanDefinitionTag.ASSISTED_QUERY_COLUMN_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(EncryptRuleBeanDefinitionTag.PLAIN_COLUMN_ATTRIBUTE));
-        factory.addConstructorArgValue(element.getAttribute(EncryptRuleBeanDefinitionTag.ENCRYPT_STRATEGY_REF_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(EncryptRuleBeanDefinitionTag.ENCRYPT_ALGORITHM_REF_ATTRIBUTE));
         return factory.getBeanDefinition();
     }
 }

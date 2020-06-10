@@ -102,11 +102,11 @@ dataSource:  !!org.apache.commons.dbcp2.BasicDataSource
 
 encryptRule:
   encryptors:
-    aes_encrypt_strategy:
+    aes_encrypt_algorithm:
       type: aes
       props:
         aes.key.value: 123456abc
-    md5_encrypt_strategy:
+    md5_encrypt_algorithm:
       type: md5
   tables:
     t_encrypt:
@@ -114,10 +114,10 @@ encryptRule:
         user_id:
           plainColumn: user_plain
           cipherColumn: user_cipher
-          encryptorName: aes_encrypt_strategy
+          encryptorName: aes_encrypt_algorithm
         order_id:
           cipherColumn: order_cipher
-          encryptorName: md5_encrypt_strategy
+          encryptorName: md5_encrypt_algorithm
 props:
   query.with.cipher.column: true #是否使用密文列查询
 ```
@@ -259,7 +259,7 @@ shardingRule:
     
   encryptRule:
     encryptors:
-      aes_encrypt_strategy:
+      aes_encrypt_algorithm:
         type: aes
         props:
           aes.key.value: 123456abc
@@ -269,7 +269,7 @@ shardingRule:
           order_id:
             plainColumn: order_plain
             cipherColumn: order_cipher
-            encryptorName: aes_encrypt_strategy
+            encryptorName: aes_encrypt_algorithm
 
 props:
   sql.show: true
@@ -385,7 +385,7 @@ dataSource: #省略数据源配置
 
 encryptRule:
   encryptors:
-    <encrypt-strategy-name>:
+    <encrypt-algorithm-name>:
       type: #加解密算法类型，可自定义或选择内置类型：MD5/AES 
       props: #属性配置, 注意：使用AES加密算法，需要配置AES加密算法的KEY属性：aes.key.value
         aes.key.value: 
