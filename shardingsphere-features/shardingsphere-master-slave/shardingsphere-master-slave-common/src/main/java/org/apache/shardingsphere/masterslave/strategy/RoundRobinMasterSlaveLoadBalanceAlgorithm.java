@@ -19,7 +19,7 @@ package org.apache.shardingsphere.masterslave.strategy;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.masterslave.spi.SPIMasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
 
 import java.util.List;
 import java.util.Properties;
@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Getter
 @Setter
-public final class RoundRobinMasterSlaveLoadBalanceAlgorithm implements SPIMasterSlaveLoadBalanceAlgorithm {
+public final class RoundRobinMasterSlaveLoadBalanceAlgorithm implements MasterSlaveLoadBalanceAlgorithm {
     
     private static final ConcurrentHashMap<String, AtomicInteger> COUNTS = new ConcurrentHashMap<>();
     

@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.api.config.algorithm.EncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.api.config.algorithm.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptInsertValuesToken;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
@@ -118,14 +118,14 @@ public final class EncryptInsertValuesTokenGenerator extends BaseEncryptSQLToken
         Iterator<String> descendingColumnNames = insertStatementContext.getDescendingColumnNames();
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
-            Optional<EncryptAlgorithm> encryptAlgorithm = getEncryptRule().findEncryptAlgorithm(tableName, columnName);
-            if (encryptAlgorithm.isPresent()) {
+            Optional<EncryptAlgorithm> encryptor = getEncryptRule().findEncryptor(tableName, columnName);
+            if (encryptor.isPresent()) {
                 int columnIndex = useDefaultInsertColumnsToken.map(sqlToken -> ((UseDefaultInsertColumnsToken) sqlToken).getColumns().indexOf(columnName))
                         .orElseGet(() -> insertStatementContext.getColumnNames().indexOf(columnName));
                 Object originalValue = insertValueContext.getValue(columnIndex);
                 addPlainColumn(insertValueToken, columnIndex, tableName, columnName, insertValueContext, originalValue);
-                addAssistedQueryColumn(insertValueToken, encryptAlgorithm.get(), columnIndex, tableName, columnName, insertValueContext, originalValue);
-                setCipherColumn(insertValueToken, encryptAlgorithm.get(), columnIndex, insertValueContext.getValueExpressions().get(columnIndex), originalValue);
+                addAssistedQueryColumn(insertValueToken, encryptor.get(), columnIndex, tableName, columnName, insertValueContext, originalValue);
+                setCipherColumn(insertValueToken, encryptor.get(), columnIndex, insertValueContext.getValueExpressions().get(columnIndex), originalValue);
             }
         }
     }

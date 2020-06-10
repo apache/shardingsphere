@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.spring.namespace.orchestration;
 
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.spring.namespace.orchestration.util.EmbedTestingServer;
-import org.apache.shardingsphere.spring.namespace.orchestration.util.FieldValueUtil;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.masterslave.rule.MasterSlaveDataSourceRule;
 import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
-import org.apache.shardingsphere.masterslave.spi.SPIMasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.masterslave.strategy.RandomMasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.masterslave.strategy.RoundRobinMasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.spring.namespace.orchestration.util.EmbedTestingServer;
+import org.apache.shardingsphere.spring.namespace.orchestration.util.FieldValueUtil;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -79,7 +79,7 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
     @Ignore
     // TODO load balance algorithm have been construct twice for SpringMasterDatasource extends MasterSlaveDatasource.
     public void assertRefMasterSlaveDataSource() {
-        SPIMasterSlaveLoadBalanceAlgorithm randomLoadBalanceAlgorithm = applicationContext.getBean("randomLoadBalanceAlgorithm", SPIMasterSlaveLoadBalanceAlgorithm.class);
+        MasterSlaveLoadBalanceAlgorithm randomLoadBalanceAlgorithm = applicationContext.getBean("randomLoadBalanceAlgorithm", MasterSlaveLoadBalanceAlgorithm.class);
         MasterSlaveRule masterSlaveRule = getMasterSlaveRule("refMasterSlaveDataSourceOrchestration");
         Optional<MasterSlaveDataSourceRule> masterSlaveDataSourceRule = masterSlaveRule.findDataSourceRule("randomLoadBalanceAlgorithm");
         assertTrue(masterSlaveDataSourceRule.isPresent());

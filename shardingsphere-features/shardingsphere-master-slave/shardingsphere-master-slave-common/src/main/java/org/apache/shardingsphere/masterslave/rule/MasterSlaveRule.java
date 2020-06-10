@@ -27,9 +27,9 @@ import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEve
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.masterslave.api.config.algorithm.MasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
-import org.apache.shardingsphere.masterslave.spi.SPIMasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.masterslave.strategy.config.AlgorithmProvidedMasterSlaveRuleConfiguration;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -44,7 +44,7 @@ import java.util.Optional;
 public final class MasterSlaveRule implements DataSourceRoutedRule, StatusContainedRule {
     
     static {
-        ShardingSphereServiceLoader.register(SPIMasterSlaveLoadBalanceAlgorithm.class);
+        ShardingSphereServiceLoader.register(MasterSlaveLoadBalanceAlgorithm.class);
     }
     
     private final Map<String, MasterSlaveLoadBalanceAlgorithm> loadBalanceAlgorithms = new LinkedHashMap<>();
@@ -54,12 +54,24 @@ public final class MasterSlaveRule implements DataSourceRoutedRule, StatusContai
     public MasterSlaveRule(final MasterSlaveRuleConfiguration configuration) {
         Preconditions.checkArgument(!configuration.getDataSources().isEmpty(), "Master-slave data source rules can not be empty.");
         configuration.getLoadBalanceStrategies().forEach(
-            each -> loadBalanceAlgorithms.put(each.getName(), ShardingSphereAlgorithmFactory.createAlgorithm(each, SPIMasterSlaveLoadBalanceAlgorithm.class)));
+            each -> loadBalanceAlgorithms.put(each.getName(), ShardingSphereAlgorithmFactory.createAlgorithm(each, MasterSlaveLoadBalanceAlgorithm.class)));
         dataSourceRules = new HashMap<>(configuration.getDataSources().size(), 1);
         for (MasterSlaveDataSourceRuleConfiguration each : configuration.getDataSources()) {
             // TODO check if can not find load balance strategy should throw exception.
             MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm = Strings.isNullOrEmpty(each.getLoadBalanceStrategyName()) || !loadBalanceAlgorithms.containsKey(each.getLoadBalanceStrategyName())
-                    ? TypedSPIRegistry.getRegisteredService(SPIMasterSlaveLoadBalanceAlgorithm.class) : loadBalanceAlgorithms.get(each.getLoadBalanceStrategyName());
+                    ? TypedSPIRegistry.getRegisteredService(MasterSlaveLoadBalanceAlgorithm.class) : loadBalanceAlgorithms.get(each.getLoadBalanceStrategyName());
+            dataSourceRules.put(each.getName(), new MasterSlaveDataSourceRule(each, loadBalanceAlgorithm));
+        }
+    }
+    
+    public MasterSlaveRule(final AlgorithmProvidedMasterSlaveRuleConfiguration configuration) {
+        Preconditions.checkArgument(!configuration.getDataSources().isEmpty(), "Master-slave data source rules can not be empty.");
+        loadBalanceAlgorithms.putAll(configuration.getLoadBalanceAlgorithms());
+        dataSourceRules = new HashMap<>(configuration.getDataSources().size(), 1);
+        for (MasterSlaveDataSourceRuleConfiguration each : configuration.getDataSources()) {
+            // TODO check if can not find load balance strategy should throw exception.
+            MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm = Strings.isNullOrEmpty(each.getLoadBalanceStrategyName()) || !loadBalanceAlgorithms.containsKey(each.getLoadBalanceStrategyName())
+                    ? TypedSPIRegistry.getRegisteredService(MasterSlaveLoadBalanceAlgorithm.class) : loadBalanceAlgorithms.get(each.getLoadBalanceStrategyName());
             dataSourceRules.put(each.getName(), new MasterSlaveDataSourceRule(each, loadBalanceAlgorithm));
         }
     }

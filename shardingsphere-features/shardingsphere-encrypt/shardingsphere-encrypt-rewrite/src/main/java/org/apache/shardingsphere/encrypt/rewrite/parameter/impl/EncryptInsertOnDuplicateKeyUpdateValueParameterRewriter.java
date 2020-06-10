@@ -19,9 +19,9 @@ package org.apache.shardingsphere.encrypt.rewrite.parameter.impl;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.api.config.algorithm.EncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.api.config.algorithm.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriter;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.OnDuplicateUpdateContext;
@@ -52,16 +52,16 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter exten
         for (int index = 0; index < onDuplicateKeyUpdateValueContext.getValueExpressions().size(); index++) {
             final int columnIndex = index;
             String encryptLogicColumnName = onDuplicateKeyUpdateValueContext.getColumn(columnIndex).getIdentifier().getValue();
-            Optional<EncryptAlgorithm> encryptAlgorithmOptional = getEncryptRule().findEncryptAlgorithm(tableName, encryptLogicColumnName);
-            encryptAlgorithmOptional.ifPresent(encryptAlgorithm -> {
+            Optional<EncryptAlgorithm> encryptorOptional = getEncryptRule().findEncryptor(tableName, encryptLogicColumnName);
+            encryptorOptional.ifPresent(encryptor -> {
                 Object plainColumnValue = onDuplicateKeyUpdateValueContext.getValue(columnIndex);
-                Object cipherColumnValue = encryptAlgorithmOptional.get().encrypt(plainColumnValue);
+                Object cipherColumnValue = encryptorOptional.get().encrypt(plainColumnValue);
                 groupedParameterBuilder.getOnDuplicateKeyUpdateParametersBuilder().addReplacedParameters(columnIndex, cipherColumnValue);
                 Collection<Object> addedParameters = new LinkedList<>();
-                if (encryptAlgorithm instanceof QueryAssistedEncryptAlgorithm) {
+                if (encryptor instanceof QueryAssistedEncryptAlgorithm) {
                     Optional<String> assistedColumnName = getEncryptRule().findAssistedQueryColumn(tableName, encryptLogicColumnName);
                     Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
-                    addedParameters.add(((QueryAssistedEncryptAlgorithm) encryptAlgorithm).queryAssistedEncrypt(plainColumnValue.toString()));
+                    addedParameters.add(((QueryAssistedEncryptAlgorithm) encryptor).queryAssistedEncrypt(plainColumnValue.toString()));
                 }
                 if (getEncryptRule().findPlainColumn(tableName, encryptLogicColumnName).isPresent()) {
                     addedParameters.add(plainColumnValue);

@@ -102,12 +102,12 @@ dataSource:  !!org.apache.commons.dbcp2.BasicDataSource
   password:
 
 encryptRule:
-  encryptStrategies:
-    aes_encrypt_strategy:
+  encryptors:
+    aes_encryptor:
       type: aes
       props:
         aes.key.value: 123456abc
-    md5_encrypt_strategy:
+    md5_encryptor:
       type: md5
   tables:
     t_encrypt:
@@ -115,10 +115,10 @@ encryptRule:
         user_id:
           plainColumn: user_plain
           cipherColumn: user_cipher
-          encryptStrategyName: aes_encrypt_strategy
+          encryptorName: aes_encryptor
         order_id:
           cipherColumn: order_cipher
-          encryptStrategyName: md5_encrypt_strategy
+          encryptorName: md5_encryptor
 props:
   query.with.cipher.column: true
 ```
@@ -259,8 +259,8 @@ shardingRule:
     none:
 
   encryptRule:
-    encryptStrategies:
-      aes_encrypt_strategy:
+    encryptors:
+      aes_encryptor:
         type: aes
         props:
           aes.key.value: 123456abc
@@ -270,7 +270,7 @@ shardingRule:
           order_id:
             plainColumn: order_plain
             cipherColumn: order_cipher
-            encryptStrategyName: aes_encrypt_strategy
+            encryptorName: aes_encryptor
 
 props:
   sql.show: true
@@ -389,8 +389,8 @@ props: #Property configuration
 dataSource: #Ignore data sources configuration
 
 encryptRule:
-  encryptStrategies:
-    <encrypt-strategy-name>:
+  encryptors:
+    <encrypt-algorithm-name>:
       type: #encrypt algorithm type
       props: #Properties, e.g. `aes.key.value` for AES encrypt algorithm
         aes.key.value: 
@@ -401,7 +401,7 @@ encryptRule:
           plainColumn: #plaintext column name
           cipherColumn: #ciphertext column name
           assistedQueryColumn: #AssistedColumns for query，when use QueryAssistedEncryptAlgorithm, it can help query encrypted data
-          encryptStrategyName: #encrypt name
+          encryptorName: #encrypt name
 ```
 
 ### Orchestration

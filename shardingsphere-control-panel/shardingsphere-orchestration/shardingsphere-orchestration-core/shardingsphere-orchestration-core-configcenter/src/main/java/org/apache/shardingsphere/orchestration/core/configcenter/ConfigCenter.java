@@ -122,7 +122,7 @@ public final class ConfigCenter {
                 configurations.add(each);
             } else if (each instanceof EncryptRuleConfiguration) {
                 EncryptRuleConfiguration config = (EncryptRuleConfiguration) each;
-                Preconditions.checkState(!config.getEncryptStrategies().isEmpty(), "No available encrypt rule configuration in `%s` for orchestration.", shardingSchemaName);
+                Preconditions.checkState(!config.getEncryptors().isEmpty(), "No available encrypt rule configuration in `%s` for orchestration.", shardingSchemaName);
                 configurations.add(each);
             } else if (each instanceof ShadowRuleConfiguration) {
                 ShadowRuleConfiguration config = (ShadowRuleConfiguration) each;

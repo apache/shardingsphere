@@ -19,15 +19,19 @@ package org.apache.shardingsphere.encrypt.yaml.swapper;
 
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.strategy.impl.SPIEncryptStrategyConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.algorithm.EncryptAlgorithmConfiguration;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptStrategyConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.algorithm.YamlEncryptAlgorithmConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.swapper.algorithm.EncryptAlgorithmConfigurationYamlSwapper;
+import org.apache.shardingsphere.encrypt.yaml.swapper.rule.EncryptTableRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -35,31 +39,21 @@ import java.util.Map.Entry;
  */
 public final class EncryptRuleConfigurationYamlSwapper implements YamlRuleConfigurationSwapper<YamlEncryptRuleConfiguration, EncryptRuleConfiguration> {
     
-    private final EncryptStrategyConfigurationYamlSwapper encryptStrategyConfigurationYamlSwapper = new EncryptStrategyConfigurationYamlSwapper();
-    
     private final EncryptTableRuleConfigurationYamlSwapper encryptTableRuleConfigurationYamlSwapper = new EncryptTableRuleConfigurationYamlSwapper();
+    
+    private final EncryptAlgorithmConfigurationYamlSwapper encryptAlgorithmConfigurationYamlSwapper = new EncryptAlgorithmConfigurationYamlSwapper();
     
     @Override
     public YamlEncryptRuleConfiguration swap(final EncryptRuleConfiguration data) {
         YamlEncryptRuleConfiguration result = new YamlEncryptRuleConfiguration();
-        data.getEncryptStrategies().forEach(each -> result.getEncryptStrategies().put(each.getName(), encryptStrategyConfigurationYamlSwapper.swap((SPIEncryptStrategyConfiguration) each)));
         data.getTables().forEach(each -> result.getTables().put(each.getName(), encryptTableRuleConfigurationYamlSwapper.swap(each)));
+        data.getEncryptors().forEach((key, value) -> result.getEncryptors().put(key, encryptAlgorithmConfigurationYamlSwapper.swap(value)));
         return result;
     }
     
     @Override
     public EncryptRuleConfiguration swap(final YamlEncryptRuleConfiguration yamlConfiguration) {
-        return new EncryptRuleConfiguration(swapEncryptStrategy(yamlConfiguration), swapTables(yamlConfiguration));
-    }
-    
-    private Collection<SPIEncryptStrategyConfiguration> swapEncryptStrategy(final YamlEncryptRuleConfiguration yamlConfiguration) {
-        Collection<SPIEncryptStrategyConfiguration> result = new LinkedList<>();
-        for (Entry<String, YamlEncryptStrategyConfiguration> entry : yamlConfiguration.getEncryptStrategies().entrySet()) {
-            YamlEncryptStrategyConfiguration yamlEncryptStrategyConfiguration = entry.getValue();
-            yamlEncryptStrategyConfiguration.setName(entry.getKey());
-            result.add(encryptStrategyConfigurationYamlSwapper.swap(yamlEncryptStrategyConfiguration));
-        }
-        return result;
+        return new EncryptRuleConfiguration(swapTables(yamlConfiguration), swapEncryptAlgorithm(yamlConfiguration));
     }
     
     private Collection<EncryptTableRuleConfiguration> swapTables(final YamlEncryptRuleConfiguration yamlConfiguration) {
@@ -68,6 +62,16 @@ public final class EncryptRuleConfigurationYamlSwapper implements YamlRuleConfig
             YamlEncryptTableRuleConfiguration yamlEncryptTableRuleConfiguration = entry.getValue();
             yamlEncryptTableRuleConfiguration.setName(entry.getKey());
             result.add(encryptTableRuleConfigurationYamlSwapper.swap(yamlEncryptTableRuleConfiguration));
+        }
+        return result;
+    }
+    
+    private Map<String, EncryptAlgorithmConfiguration> swapEncryptAlgorithm(final YamlEncryptRuleConfiguration yamlConfiguration) {
+        Map<String, EncryptAlgorithmConfiguration> result = new LinkedHashMap<>();
+        for (Entry<String, YamlEncryptAlgorithmConfiguration> entry : yamlConfiguration.getEncryptors().entrySet()) {
+            YamlEncryptAlgorithmConfiguration yamlEncryptAlgorithmConfiguration = entry.getValue();
+            yamlEncryptAlgorithmConfiguration.setName(entry.getKey());
+            result.put(entry.getKey(), encryptAlgorithmConfigurationYamlSwapper.swap(yamlEncryptAlgorithmConfiguration));
         }
         return result;
     }

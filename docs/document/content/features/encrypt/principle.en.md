@@ -27,14 +27,14 @@ just like using ordinary data.
 ### Encryption Rule
 
 Before explaining the whole process in detail, we need to understand the encryption rules and configuration, which is the basis of understanding the whole process. 
-The encryption configuration is mainly divided into four parts: data source configuration, encrypt strategy configuration, encryption table rule configuration, and query attribute configuration.
+The encryption configuration is mainly divided into four parts: data source configuration, encrypt algorithm configuration, encryption table rule configuration, and query attribute configuration.
  The details are shown in the following figure:
 
 ![2](https://shardingsphere.apache.org/document/current/img/encrypt/2_en.png)
 
 **Datasource Configuration**：The configuration of DataSource.
 
-**Encrypt Strategy Configuration**：What kind of encryption strategy to use for encryption and decryption. 
+**Encrypt Algorithm Configuration**：What kind of encryption strategy to use for encryption and decryption. 
 Currently ShardingSphere has two built-in encryption/decryption strategies: AES / MD5. 
 Users can also implement a set of encryption/decryption algorithms by implementing the interface provided by Apache ShardingSphere.
 
@@ -95,8 +95,8 @@ It can also be different **. The recommended configuration is as follows (shown 
 
 ```yaml
 -!ENCRYPT
-  encryptStrategies:
-    aes_encrypt_strategy:
+  encryptors:
+    aes_encryptor:
       type: aes
       props:
         aes.key.value: 123456abc
@@ -105,7 +105,7 @@ It can also be different **. The recommended configuration is as follows (shown 
       columns:
         pwd:
           cipherColumn: pwd
-          encryptStrategyName: aes_encrypt_strategy
+          encryptorName: aes_encryptor
 ```
 
 With this configuration, Apache ShardingSphere only needs to convert logicColumn and cipherColumn. 
@@ -151,8 +151,8 @@ In addition, demonstrate a set of encryption configuration rules, as follows:
 
 ```yaml
 -!ENCRYPT
-  encryptStrategies:
-    aes_encrypt_strategy:
+  encryptors:
+    aes_encryptor:
       type: aes
       props:
         aes.key.value: 123456abc
@@ -162,7 +162,7 @@ In addition, demonstrate a set of encryption configuration rules, as follows:
         pwd:
           plainColumn: pwd
           cipherColumn: pwd_cipher
-          encryptStrategyName: aes_encrypt_strategy
+          encryptorName: aes_encryptor
 props:
   query.with.cipher.column: false
 ```
@@ -218,8 +218,8 @@ So the encryption configuration after migration is:
 
 ```yaml
 -!ENCRYPT
-  encryptStrategies:
-    aes_encrypt_strategy:
+  encryptors:
+    aes_encryptor:
       type: aes
       props:
         aes.key.value: 123456abc
@@ -228,7 +228,7 @@ So the encryption configuration after migration is:
       columns:
         pwd: # pwd与pwd_cipher的转换映射
           cipherColumn: pwd_cipher
-          encryptStrategyName: aes_encrypt_strategy
+          encryptorName: aes_encryptor
 props:
   query.with.cipher.column: true
 ```

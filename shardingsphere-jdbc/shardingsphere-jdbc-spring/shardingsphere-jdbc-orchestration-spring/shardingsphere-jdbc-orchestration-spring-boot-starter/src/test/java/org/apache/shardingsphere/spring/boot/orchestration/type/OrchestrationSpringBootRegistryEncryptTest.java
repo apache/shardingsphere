@@ -21,8 +21,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.strategy.impl.SPIEncryptStrategyConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.algorithm.EncryptAlgorithmConfiguration;
 import org.apache.shardingsphere.spring.boot.orchestration.registry.TestCenterRepository;
 import org.apache.shardingsphere.spring.boot.orchestration.util.EmbedTestingServer;
 import org.junit.BeforeClass;
@@ -66,7 +65,7 @@ public class OrchestrationSpringBootRegistryEncryptTest {
         testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/rule", ""
                 + "rules:\n"
                 + "- !ENCRYPT\n"
-                + "  encryptStrategies:\n"
+                + "  encryptors:\n"
                 + "    order_encrypt:\n"
                 + "      props:\n"
                 + "        aes.key.value: '123456'\n"
@@ -76,7 +75,7 @@ public class OrchestrationSpringBootRegistryEncryptTest {
                 + "      columns:\n"
                 + "         user_id:\n"
                 + "           cipherColumn: user_id\n"
-                + "           encryptStrategyName: order_encrypt\n");
+                + "           encryptorName: order_encrypt\n");
         testCenter.persist("/demo_spring_boot_ds_center/config/props", "sql.show: 'true'\n");
         testCenter.persist("/demo_spring_boot_ds_center/registry/datasources", "");
     }
@@ -91,10 +90,9 @@ public class OrchestrationSpringBootRegistryEncryptTest {
         assertThat(embedDataSource.getMaxTotal(), is(100));
         assertThat(embedDataSource.getUsername(), is("sa"));
         EncryptRuleConfiguration configuration = (EncryptRuleConfiguration) encryptDataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getConfigurations().iterator().next();
-        assertThat(configuration.getEncryptStrategies().size(), is(1));
-        EncryptStrategyConfiguration encryptStrategyConfiguration = configuration.getEncryptStrategies().iterator().next();
-        assertThat(encryptStrategyConfiguration, instanceOf(SPIEncryptStrategyConfiguration.class));
-        assertThat(encryptStrategyConfiguration.getName(), is("order_encrypt"));
-        assertThat(((SPIEncryptStrategyConfiguration) encryptStrategyConfiguration).getType(), is("aes"));
+        assertThat(configuration.getEncryptors().size(), is(1));
+        EncryptAlgorithmConfiguration encryptAlgorithmConfiguration = configuration.getEncryptors().get("order_encrypt");
+        assertThat(encryptAlgorithmConfiguration, instanceOf(EncryptAlgorithmConfiguration.class));
+        assertThat(encryptAlgorithmConfiguration.getType(), is("aes"));
     }
 }

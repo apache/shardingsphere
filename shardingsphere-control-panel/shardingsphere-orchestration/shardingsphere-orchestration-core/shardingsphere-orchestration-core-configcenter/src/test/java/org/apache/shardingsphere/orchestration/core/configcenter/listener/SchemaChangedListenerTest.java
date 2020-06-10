@@ -19,7 +19,7 @@ package org.apache.shardingsphere.orchestration.core.configcenter.listener;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.strategy.impl.SPIEncryptStrategyConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.algorithm.EncryptAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
@@ -122,11 +122,10 @@ public final class SchemaChangedListenerTest {
         assertThat(event.getShardingSchemaName(), is("encrypt_db"));
         assertThat(event.getRuleConfigurations().iterator().next(), instanceOf(EncryptRuleConfiguration.class));
         EncryptRuleConfiguration encryptRuleConfiguration = (EncryptRuleConfiguration) event.getRuleConfigurations().iterator().next();
-        assertThat(encryptRuleConfiguration.getEncryptStrategies().size(), is(1));
-        SPIEncryptStrategyConfiguration encryptStrategyConfiguration = (SPIEncryptStrategyConfiguration) encryptRuleConfiguration.getEncryptStrategies().iterator().next();
-        assertThat(encryptStrategyConfiguration.getName(), is("order_encrypt_strategy"));
-        assertThat(encryptStrategyConfiguration.getType(), is("aes"));
-        assertThat(encryptStrategyConfiguration.getProperties().get("aes.key.value").toString(), is("123456"));
+        assertThat(encryptRuleConfiguration.getEncryptors().size(), is(1));
+        EncryptAlgorithmConfiguration encryptAlgorithmConfiguration = encryptRuleConfiguration.getEncryptors().get("order_encryptor");
+        assertThat(encryptAlgorithmConfiguration.getType(), is("aes"));
+        assertThat(encryptAlgorithmConfiguration.getProperties().get("aes.key.value").toString(), is("123456"));
     }
     
     @Test

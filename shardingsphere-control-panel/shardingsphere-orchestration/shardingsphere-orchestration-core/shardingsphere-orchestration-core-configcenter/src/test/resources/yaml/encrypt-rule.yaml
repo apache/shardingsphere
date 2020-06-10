@@ -22,9 +22,9 @@ rules:
         columns:
           order_id:
             cipherColumn: order_id
-            encryptStrategyName: order_encrypt_strategy
-    encryptStrategies:
-      order_encrypt_strategy:
+            encryptorName: order_encryptor
+    encryptors:
+      order_encryptor:
         type: aes
         props:
           aes.key.value: 123456

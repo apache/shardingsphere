@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.spring;
 
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.masterslave.api.config.strategy.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.masterslave.rule.MasterSlaveDataSourceRule;
 import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
-import org.apache.shardingsphere.masterslave.spi.SPIMasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.masterslave.strategy.RandomMasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.masterslave.strategy.RoundRobinMasterSlaveLoadBalanceAlgorithm;
 import org.junit.Test;
@@ -62,11 +61,11 @@ public class MasterSlaveNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @Test
     public void assertRefMasterSlaveDataSource() {
-        assertThat(applicationContext.getBean("randomLoadBalanceAlgorithm"), instanceOf(LoadBalanceStrategyConfiguration.class));
+        assertThat(applicationContext.getBean("randomLoadBalanceAlgorithm"), instanceOf(MasterSlaveLoadBalanceAlgorithm.class));
         MasterSlaveRule masterSlaveRule = getMasterSlaveRule("refMasterSlaveDataSource");
         Optional<MasterSlaveDataSourceRule> masterSlaveDataSourceRule = masterSlaveRule.findDataSourceRule("random_dbtbl_1");
         assertTrue(masterSlaveDataSourceRule.isPresent());
-        assertThat(masterSlaveDataSourceRule.get().getLoadBalanceAlgorithm(), instanceOf(SPIMasterSlaveLoadBalanceAlgorithm.class));
+        assertThat(masterSlaveDataSourceRule.get().getLoadBalanceAlgorithm(), instanceOf(MasterSlaveLoadBalanceAlgorithm.class));
     }
     
     private MasterSlaveRule getMasterSlaveRule(final String masterSlaveDataSourceName) {

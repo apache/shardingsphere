@@ -189,22 +189,21 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
         <prop key="aes.key.value">123456</prop>
     </bean:properties>
     
+    <encrypt:encrypt-algorithm id="aes_encryptor" type="AES">
+        <props>
+            <prop key="aes.key.value">123456</prop>
+        </props>
+    </encrypt:encrypt-algorithm>
+    <encrypt:encrypt-algorithm id="md5_encryptor" type="MD5" />
+            
     <encrypt:data-source id="encryptDataSource" data-source-name="ds" >
         <encrypt:encrypt-rule>
             <encrypt:tables>
                 <encrypt:table name="t_order">
-                    <encrypt:column logic-column="user_id" cipher-column="user_encrypt" assisted-query-column="user_assisted" plain-column="user_decrypt" encrypt-strategy-ref="aes_encrypt_strategy" />
-                    <encrypt:column logic-column="order_id" cipher-column="order_encrypt" assisted-query-column="order_assisted" plain-column="order_decrypt" encrypt-strategy-ref="md5_encrypt_strategy"/>
+                    <encrypt:column logic-column="user_id" cipher-column="user_encrypt" assisted-query-column="user_assisted" plain-column="user_decrypt" encrypt-algorithm-ref="aes_encryptor" />
+                    <encrypt:column logic-column="order_id" cipher-column="order_encrypt" assisted-query-column="order_assisted" plain-column="order_decrypt" encrypt-algorithm-ref="md5_encryptor"/>
                 </encrypt:table>
             </encrypt:tables>
-            <encrypt:encrypt-strategies>
-                <encrypt:encrypt-strategy id="aes_encrypt_strategy" type="AES">
-                    <props>
-                        <prop key="aes.key.value">123456</prop>
-                    </props>
-                </encrypt:encrypt-strategy>
-                <encrypt:encrypt-strategy id="md5_encrypt_strategy" type="MD5" />
-            </encrypt:encrypt-strategies>
         </encrypt:encrypt-rule>
         <encrypt:props>
             <prop key="sql.show">true</prop>
@@ -406,7 +405,14 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
     <bean:properties id="dataProtectorProps">
         <prop key="appToken">business</prop>
     </bean:properties>
-
+    
+    <encrypt:encrypt-algorithm id="aes_encryptor" type="AES">
+        <props>
+            <prop key="aes.key.value">123456</prop>
+        </props>
+    </encrypt:encrypt-algorithm>
+    <encrypt:encrypt-algorithm id="md5_encryptor" type="MD5" />
+    
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-source-names="demo_ds_0, demo_ds_1">
             <sharding:table-rules>
@@ -416,20 +422,11 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
             <sharding:encrypt-rule>
                 <encrypt:tables>
                     <encrypt:table name="t_order">
-                        <encrypt:column logic-column="user_id" cipher-column="user_encrypt" assisted-query-column="user_assisted" plain-column="user_decrypt" encrypt-strategy-ref="aes_encrypt_strategy" />
-                        <encrypt:column logic-column="order_id" cipher-column="order_encrypt" assisted-query-column="order_assisted" plain-column="order_decrypt" encrypt-strategy-ref="md5_encrypt_strategy" />
+                        <encrypt:column logic-column="user_id" cipher-column="user_encrypt" assisted-query-column="user_assisted" plain-column="user_decrypt" encrypt-algorithm-ref="aes_encryptor" />
+                        <encrypt:column logic-column="order_id" cipher-column="order_encrypt" assisted-query-column="order_assisted" plain-column="order_decrypt" encrypt-algorithm-ref="md5_encryptor" />
                     </encrypt:table>
                 </encrypt:tables>
-                <encrypt:encrypt-strategies>
-                    <encrypt:encrypt-strategy id="aes_encrypt_strategy" type="AES">
-                        <props>
-                            <prop key="aes.key.value">123456</prop>
-                        </props>
-                    </encrypt:encrypt-strategy>
-                    <encrypt:encrypt-strategy id="md5_encrypt_strategy" type="MD5" />
-                </encrypt:encrypt-strategies>
             </sharding:encrypt-rule>
-
         </sharding:sharding-rule>
 
         <sharding:props>
@@ -664,17 +661,11 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encryp
 | data-source-name        | Attribute | Encrypt data source Bean Id |
 | props (?)               | Tag       | Attribute configurations    |
 
-#### \<encrypt:encrypt-strategies />
-
-| *Name*              | *Type*  | *Type*                         |
-| ------------------- | ------- | ------------------------------ |
-| encrypt-strategy(+) | Tag     | Encrypt strategy configuration |
-
-#### \<encrypt:encrypt-strategy />
+#### \<encrypt:encrypt-algorithm />
 
 | *Name*    | *Type*    | *Description*                                                   |
 | --------- | --------- | --------------------------------------------------------------- |
-| id        | Attribute | Names of Encrypt strategy                                       |
+| id        | Attribute | Names of Encrypt algorithm                                      |
 | type      | Attribute | Types of Encrypt algorithm, including MD5/AES or customize type |
 | props-ref | Attribute | Attribute configurations                                        |
 

@@ -121,12 +121,12 @@ dataSource:
   maxPoolSize: 50
 
 encryptRule:
-  encryptStrategies:
-    aes_encrypt_strategy:
+  encryptors:
+    aes_encryptor:
       type: aes
       props:
         aes.key.value: 123456abc
-    md5_encrypt_strategy:
+    md5_encryptor:
       type: md5
   tables:
     t_encrypt:
@@ -134,10 +134,10 @@ encryptRule:
         user_id:
           plainColumn: user_plain
           cipherColumn: user_cipher
-          encryptStrategyName: aes_encrypt_strategy
+          encryptorName: aes_encryptor
         order_id:
           cipherColumn: order_cipher
-          encryptStrategyName: md5_encrypt_strategy
+          encryptorName: md5_encryptor
 ```
 
 ### 数据分片 + 读写分离
@@ -306,8 +306,8 @@ shardingRule:
     none:
     
   encryptRule:
-    encryptStrategies:
-      aes_encrypt_strategy:
+    encryptors:
+      aes_encryptor:
         type: aes
         props:
           aes.key.value: 123456abc
@@ -317,7 +317,7 @@ shardingRule:
           order_id:
             plainColumn: order_plain
             cipherColumn: order_cipher
-            encryptStrategyName: aes_encrypt_strategy
+            encryptorName: aes_encryptor
 ```
 
 ## 全局配置示例
@@ -398,10 +398,10 @@ masterSlaveRule: #省略读写分离配置，与ShardingSphere-JDBC配置一致
 dataSource: #省略数据源配置
 
 encryptRule:
-  encryptStrategies:
-    <encrypt-strategy-name>:
+  encryptors:
+    <encrypt-algorithm-name>:
       type: #加解密算法类型，可自定义或选择内置类型：MD5/AES 
-      props: #属性配置, 注意：使用 AES 加算法，需要配置AES加密算法的 KEY 属性：aes.key.value
+      props: #属性配置, 注意：使用 AES 加密算法，需要配置 AES 加密算法的 KEY 属性：aes.key.value
         aes.key.value: 
   tables:
     <table-name>:
@@ -410,7 +410,7 @@ encryptRule:
           plainColumn: #存储明文的字段
           cipherColumn: #存储密文的字段
           assistedQueryColumn: #辅助查询字段，针对 QueryAssistedEncryptAlgorithm 类型的加解密算法进行辅助查询
-          encryptStrategyName: #加密策略名称
+          encryptorName: #加密算法名称
 props:
   query.with.cipher.column: true #是否使用密文列查询
 ```

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.config;
 
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptStrategyConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.algorithm.YamlEncryptAlgorithmConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
 import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveDataSourceRuleConfiguration;
 import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration;
@@ -124,14 +124,14 @@ public final class ShardingConfigurationLoaderTest {
     }
     
     private void assertEncryptRuleConfiguration(final YamlEncryptRuleConfiguration actual) {
-        assertThat(actual.getEncryptStrategies().size(), is(2));
-        assertTrue(actual.getEncryptStrategies().containsKey("aes_encrypt_strategy"));
-        assertTrue(actual.getEncryptStrategies().containsKey("md5_encrypt_strategy"));
-        YamlEncryptStrategyConfiguration aesEncryptStrategyConfiguration = actual.getEncryptStrategies().get("aes_encrypt_strategy");
-        assertThat(aesEncryptStrategyConfiguration.getType(), is("aes"));
-        assertThat(aesEncryptStrategyConfiguration.getProps().getProperty("aes.key.value"), is("123456abc"));
-        YamlEncryptStrategyConfiguration md5EncryptStrategyConfiguration = actual.getEncryptStrategies().get("md5_encrypt_strategy");
-        assertThat(md5EncryptStrategyConfiguration.getType(), is("md5"));
+        assertThat(actual.getEncryptors().size(), is(2));
+        assertTrue(actual.getEncryptors().containsKey("aes_encryptor"));
+        assertTrue(actual.getEncryptors().containsKey("md5_encryptor"));
+        YamlEncryptAlgorithmConfiguration aesEncryptAlgorithmConfiguration = actual.getEncryptors().get("aes_encryptor");
+        assertThat(aesEncryptAlgorithmConfiguration.getType(), is("aes"));
+        assertThat(aesEncryptAlgorithmConfiguration.getProps().getProperty("aes.key.value"), is("123456abc"));
+        YamlEncryptAlgorithmConfiguration md5EncryptAlgorithmConfiguration = actual.getEncryptors().get("md5_encryptor");
+        assertThat(md5EncryptAlgorithmConfiguration.getType(), is("md5"));
     }
     
     private void assertDataSourceParameter(final YamlDataSourceParameter actual, final String expectedURL) {
