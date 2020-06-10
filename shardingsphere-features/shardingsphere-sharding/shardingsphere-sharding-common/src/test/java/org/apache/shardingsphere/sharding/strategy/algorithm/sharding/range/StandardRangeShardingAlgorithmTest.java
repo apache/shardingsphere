@@ -77,7 +77,7 @@ public class StandardRangeShardingAlgorithmTest {
         assertTrue(actual.contains("t_order_5"));
     }
 
-    @Ignore
+    @Test
     public void assertGetAutoTablesAmount() {
         StandardRangeShardingAlgorithm shardingAlgorithm = new StandardRangeShardingAlgorithm();
         shardingAlgorithm.getProperties().setProperty("partition.lower", "10");

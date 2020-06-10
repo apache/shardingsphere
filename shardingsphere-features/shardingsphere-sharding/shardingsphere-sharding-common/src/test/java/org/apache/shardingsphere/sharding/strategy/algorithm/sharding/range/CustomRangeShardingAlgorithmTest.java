@@ -72,7 +72,7 @@ public final class CustomRangeShardingAlgorithmTest {
         assertTrue(actual.contains("t_order_3"));
     }
 
-    @Ignore
+    @Test
     public void assertGetAutoTablesAmount() {
         CustomRangeShardingAlgorithm shardingAlgorithm = new CustomRangeShardingAlgorithm();
         shardingAlgorithm.getProperties().setProperty("partition.ranges", "1,5,10");
