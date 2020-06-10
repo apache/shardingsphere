@@ -85,18 +85,18 @@ rules:
         type: STANDARD_TEST_DB
 
 - !MASTER_SLAVE
-  loadBalanceStrategies:
-    roundRobin:
-      type: ROUND_ROBIN
   dataSources:
     ds_0:
       masterDataSourceName: ds_master_0
       slaveDataSourceNames: [ds_master_0_slave_0, ds_master_0_slave_1]
-      loadBalanceStrategyName: roundRobin
+      loadBalancerName: roundRobin
     ds_1:
       masterDataSourceName: ds_master_1
       slaveDataSourceNames: [ds_master_1_slave_0, ds_master_1_slave_1]
-      loadBalanceStrategyName: roundRobin
-  
+      loadBalancerName: roundRobin
+  loadBalancers:
+    roundRobin:
+      type: ROUND_ROBIN
+
 props:
   sql.show: false

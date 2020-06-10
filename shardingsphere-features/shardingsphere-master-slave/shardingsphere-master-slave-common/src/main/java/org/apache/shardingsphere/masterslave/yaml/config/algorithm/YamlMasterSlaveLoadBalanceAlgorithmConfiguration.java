@@ -24,13 +24,11 @@ import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 import java.util.Properties;
 
 /**
- * Master-slave load balance strategy configuration for YAML.
+ * Master-slave load balance algorithm configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlMasterSlaveLoadBalanceStrategyConfiguration implements YamlConfiguration {
-    
-    private String name;
+public final class YamlMasterSlaveLoadBalanceAlgorithmConfiguration implements YamlConfiguration {
     
     private String type;
     

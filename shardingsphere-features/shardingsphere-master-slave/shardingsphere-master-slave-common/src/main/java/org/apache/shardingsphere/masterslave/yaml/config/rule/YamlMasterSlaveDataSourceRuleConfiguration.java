@@ -38,7 +38,7 @@ public final class YamlMasterSlaveDataSourceRuleConfiguration implements YamlCon
     
     private List<String> slaveDataSourceNames = new ArrayList<>();
     
-    private String loadBalanceStrategyName;
+    private String loadBalancerName;
     
     private Properties props = new Properties();
 }

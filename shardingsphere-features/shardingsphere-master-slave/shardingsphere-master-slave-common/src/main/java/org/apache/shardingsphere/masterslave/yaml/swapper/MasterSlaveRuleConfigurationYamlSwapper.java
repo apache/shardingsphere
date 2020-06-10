@@ -23,7 +23,7 @@ import org.apache.shardingsphere.masterslave.api.config.algorithm.LoadBalanceAlg
 import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
 import org.apache.shardingsphere.masterslave.constant.MasterSlaveOrder;
 import org.apache.shardingsphere.masterslave.yaml.config.rule.YamlMasterSlaveDataSourceRuleConfiguration;
-import org.apache.shardingsphere.masterslave.yaml.config.algorithm.YamlMasterSlaveLoadBalanceStrategyConfiguration;
+import org.apache.shardingsphere.masterslave.yaml.config.algorithm.YamlMasterSlaveLoadBalanceAlgorithmConfiguration;
 import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration;
 
 import java.util.Collection;
@@ -50,7 +50,7 @@ public final class MasterSlaveRuleConfigurationYamlSwapper implements YamlRuleCo
         result.setName(dataSourceRuleConfiguration.getName());
         result.setMasterDataSourceName(dataSourceRuleConfiguration.getMasterDataSourceName());
         result.setSlaveDataSourceNames(dataSourceRuleConfiguration.getSlaveDataSourceNames());
-        result.setLoadBalanceStrategyName(dataSourceRuleConfiguration.getLoadBalancerName());
+        result.setLoadBalancerName(dataSourceRuleConfiguration.getLoadBalancerName());
         return result;
     }
     
@@ -60,8 +60,8 @@ public final class MasterSlaveRuleConfigurationYamlSwapper implements YamlRuleCo
         for (Entry<String, YamlMasterSlaveDataSourceRuleConfiguration> entry : yamlConfiguration.getDataSources().entrySet()) {
             dataSources.add(swap(entry.getKey(), entry.getValue()));
         }
-        Map<String, LoadBalanceAlgorithmConfiguration> loadBalancers = new LinkedHashMap<>(yamlConfiguration.getLoadBalanceStrategies().entrySet().size(), 1);
-        for (Entry<String, YamlMasterSlaveLoadBalanceStrategyConfiguration> entry : yamlConfiguration.getLoadBalanceStrategies().entrySet()) {
+        Map<String, LoadBalanceAlgorithmConfiguration> loadBalancers = new LinkedHashMap<>(yamlConfiguration.getLoadBalancers().entrySet().size(), 1);
+        for (Entry<String, YamlMasterSlaveLoadBalanceAlgorithmConfiguration> entry : yamlConfiguration.getLoadBalancers().entrySet()) {
             loadBalancers.put(entry.getKey(), swap(entry.getValue()));
         }
         return new MasterSlaveRuleConfiguration(dataSources, loadBalancers);
@@ -69,10 +69,10 @@ public final class MasterSlaveRuleConfigurationYamlSwapper implements YamlRuleCo
     
     private MasterSlaveDataSourceRuleConfiguration swap(final String name, final YamlMasterSlaveDataSourceRuleConfiguration yamlDataSourceRuleConfiguration) {
         return new MasterSlaveDataSourceRuleConfiguration(name, 
-                yamlDataSourceRuleConfiguration.getMasterDataSourceName(), yamlDataSourceRuleConfiguration.getSlaveDataSourceNames(), yamlDataSourceRuleConfiguration.getLoadBalanceStrategyName());
+                yamlDataSourceRuleConfiguration.getMasterDataSourceName(), yamlDataSourceRuleConfiguration.getSlaveDataSourceNames(), yamlDataSourceRuleConfiguration.getLoadBalancerName());
     }
     
-    private LoadBalanceAlgorithmConfiguration swap(final YamlMasterSlaveLoadBalanceStrategyConfiguration yamlLoadBalanceStrategyConfiguration) {
+    private LoadBalanceAlgorithmConfiguration swap(final YamlMasterSlaveLoadBalanceAlgorithmConfiguration yamlLoadBalanceStrategyConfiguration) {
         return new LoadBalanceAlgorithmConfiguration(yamlLoadBalanceStrategyConfiguration.getType(), yamlLoadBalanceStrategyConfiguration.getProps());
     }
     
