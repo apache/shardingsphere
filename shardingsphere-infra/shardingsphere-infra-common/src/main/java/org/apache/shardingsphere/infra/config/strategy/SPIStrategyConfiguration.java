@@ -22,7 +22,14 @@ import java.util.Properties;
 /**
  * SPI strategy configuration.
  */
-public interface SPIStrategyConfiguration extends StrategyConfiguration {
+public interface SPIStrategyConfiguration {
+    
+    /**
+     * Get strategy name.
+     *
+     * @return strategy name
+     */
+    String getName();
     
     /**
      * Get algorithm type.
