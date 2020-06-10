@@ -31,7 +31,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.StandardShardingSt
 import org.apache.shardingsphere.sharding.rule.BindingTableRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
-import org.apache.shardingsphere.sharding.spi.keygen.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.spring.algorithm.DefaultComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.spring.algorithm.DefaultHintShardingAlgorithm;
 import org.apache.shardingsphere.spring.algorithm.StandardModuloDatabaseShardingAlgorithm;

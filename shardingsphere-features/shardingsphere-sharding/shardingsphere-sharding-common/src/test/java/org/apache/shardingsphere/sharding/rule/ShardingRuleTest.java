@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.Inl
 import org.apache.shardingsphere.sharding.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.sharding.strategy.route.none.NoneShardingStrategy;
 import org.apache.shardingsphere.sharding.strategy.route.standard.StandardShardingStrategy;
-import org.apache.shardingsphere.sharding.spi.keygen.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.datanode.DataNode;

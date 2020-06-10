@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.strategy.route;
 
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.sharding.spi.algorithm.ShardingAlgorithm;
+import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sharding.strategy.route.value.RouteValue;
 
 import java.util.Collection;

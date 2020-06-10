@@ -22,7 +22,7 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
-import org.apache.shardingsphere.sharding.spi.keygen.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.springframework.beans.factory.FactoryBean;
 
 import java.util.Properties;

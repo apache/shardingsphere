@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.strategy.algorithm.keygen;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sharding.spi.keygen.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
 import java.util.Properties;
 import java.util.UUID;
