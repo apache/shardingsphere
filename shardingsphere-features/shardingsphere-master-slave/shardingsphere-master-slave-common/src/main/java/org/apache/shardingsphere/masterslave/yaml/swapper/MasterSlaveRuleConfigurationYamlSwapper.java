@@ -72,8 +72,8 @@ public final class MasterSlaveRuleConfigurationYamlSwapper implements YamlRuleCo
                 yamlDataSourceRuleConfiguration.getMasterDataSourceName(), yamlDataSourceRuleConfiguration.getSlaveDataSourceNames(), yamlDataSourceRuleConfiguration.getLoadBalancerName());
     }
     
-    private LoadBalanceAlgorithmConfiguration swap(final YamlMasterSlaveLoadBalanceAlgorithmConfiguration yamlLoadBalanceStrategyConfiguration) {
-        return new LoadBalanceAlgorithmConfiguration(yamlLoadBalanceStrategyConfiguration.getType(), yamlLoadBalanceStrategyConfiguration.getProps());
+    private LoadBalanceAlgorithmConfiguration swap(final YamlMasterSlaveLoadBalanceAlgorithmConfiguration yamlLoadBalanceAlgorithmConfiguration) {
+        return new LoadBalanceAlgorithmConfiguration(yamlLoadBalanceAlgorithmConfiguration.getType(), yamlLoadBalanceAlgorithmConfiguration.getProps());
     }
     
     @Override

@@ -66,11 +66,11 @@ spring.shardingsphere.datasource.slave1.url=jdbc:mysql://localhost:3306/slave1
 spring.shardingsphere.datasource.slave1.username=root
 spring.shardingsphere.datasource.slave1.password=
 
-spring.shardingsphere.rules.master-slave.load-balance-strategies.round_robin.type=ROUND_ROBIN
+spring.shardingsphere.rules.master-slave.load-balancers.round_robin.type=ROUND_ROBIN
 spring.shardingsphere.masterslave.name=ms
 spring.shardingsphere.masterslave.master-data-source-name=master
 spring.shardingsphere.masterslave.slave-data-source-names=slave0,slave1
-spring.shardingsphere.masterslave.load-balance-strategy-name=round_robin
+spring.shardingsphere.masterslave.load-balancer-name=round_robin
 
 spring.shardingsphere.props.sql.show=true
 ```
@@ -321,14 +321,14 @@ spring.shardingsphere.sharding.default-table-strategy.xxx= #默认表分片策�
 spring.shardingsphere.sharding.default-key-generator.type= #默认自增列值生成器类型，缺省将使用org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator。可使用用户自定义的列值生成器或选择内置类型：SNOWFLAKE/UUID
 spring.shardingsphere.sharding.default-key-generator.props.<property-name>= #自增列值生成器属性配置, 比如SNOWFLAKE算法的worker.id与max.tolerate.time.difference.milliseconds
 
-spring.shardingsphere.rules.master-slave.load-balance-strategies.<load-balance-strategy-name>.type=#
+spring.shardingsphere.rules.master-slave.load-balancers.<load-balancer-name>.type=#
 
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.master-data-source-name= #详见读写分离部分
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[0]= #详见读写分离部分
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[1]= #详见读写分离部分
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[x]= #详见读写分离部分
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-class-name= #详见读写分离部分
-spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-strategy-name= #详见读写分离部分
+spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.load-balancer-name= #详见读写分离部分
 
 spring.shardingsphere.props.sql.show= #是否开启SQL显示，默认值: false
 spring.shardingsphere.props.executor.size= #工作线程数量，默认值: CPU核数
@@ -339,14 +339,14 @@ spring.shardingsphere.props.executor.size= #工作线程数量，默认值: CPU�
 ```properties
 #省略数据源配置，与数据分片一致
 
-spring.shardingsphere.rules.master-slave.load-balance-strategies.<load-balance-strategy-name>.type=#
+spring.shardingsphere.rules.master-slave.load-balancers.<load-balancer-name>.type=#
 
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.master-data-source-name= #主库数据源名称
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[0]= #从库数据源名称列表
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[1]= #从库数据源名称列表
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[x]= #从库数据源名称列表
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-class-name= #从库负载均衡算法类名称。该类需实现MasterSlaveLoadBalanceAlgorithm接口且提供无参数构造器
-spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-strategy-name= #从库负载均衡算法名称
+spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.load-balancer-name= #从库负载均衡算法名称
 
 spring.shardingsphere.props.sql.show= #是否开启SQL显示，默认值: false
 spring.shardingsphere.props.executor.size= #工作线程数量，默认值: CPU核数

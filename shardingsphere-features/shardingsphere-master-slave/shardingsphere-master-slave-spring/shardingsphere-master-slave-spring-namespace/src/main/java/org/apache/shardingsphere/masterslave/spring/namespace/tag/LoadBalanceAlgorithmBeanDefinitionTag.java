@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.masterslave.spring.namespace.tag;
 
 /**
- * Load balance strategy bean definition tag.
+ * Load balance algorithm bean definition tag.
  */
-public final class LoadBalanceStrategyBeanDefinitionTag {
+public final class LoadBalanceAlgorithmBeanDefinitionTag {
     
-    public static final String ROOT_TAG = "load-balance-strategy";
+    public static final String ROOT_TAG = "load-balance-algorithm";
     
-    public static final String NAME_ATTRIBUTE = "id";
+    public static final String ID_ATTRIBUTE = "id";
     
     public static final String TYPE_ATTRIBUTE = "type";
     

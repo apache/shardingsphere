@@ -36,5 +36,5 @@ public final class MasterSlaveRuleBeanDefinitionTag {
     
     public static final String SLAVE_DATA_SOURCE_NAMES_ATTRIBUTE = "slave-data-source-names";
     
-    public static final String LOAD_BALANCE_STRATEGY_REF_ATTRIBUTE = "load-balance-strategy-ref";
+    public static final String LOAD_BALANCE_ALGORITHM_REF_ATTRIBUTE = "load-balance-algorithm-ref";
 }
