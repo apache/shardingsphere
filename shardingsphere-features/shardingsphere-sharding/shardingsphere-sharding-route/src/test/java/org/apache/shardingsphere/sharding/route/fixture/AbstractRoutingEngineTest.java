@@ -80,6 +80,7 @@ public abstract class AbstractRoutingEngineTest {
         shardingRuleConfig.getBroadcastTables().add("t_product");
         InlineShardingAlgorithm shardingAlgorithm = new InlineShardingAlgorithm();
         shardingAlgorithm.getProperties().setProperty("algorithm.expression", "ds_${user_id % 2}");
+        shardingAlgorithm.init();
         shardingRuleConfig.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", shardingAlgorithm));
         shardingRuleConfig.getTables().add(createInlineTableRuleConfig("t_order", "ds_${0..1}.t_order_${0..1}", "t_order_${user_id % 2}", "ds_${user_id % 2}"));
         shardingRuleConfig.getTables().add(createInlineTableRuleConfig("t_order_item", "ds_${0..1}.t_order_item_${0..1}", "t_order_item_${user_id % 2}", "ds_${user_id % 2}"));
@@ -100,6 +101,7 @@ public abstract class AbstractRoutingEngineTest {
         String shardingColumn = algorithmExpression.substring(startIndex + 1, endIndex).trim();
         InlineShardingAlgorithm shardingAlgorithm = new InlineShardingAlgorithm();
         shardingAlgorithm.getProperties().setProperty("algorithm.expression", algorithmExpression);
+        shardingAlgorithm.init();
         return new StandardShardingStrategyConfiguration(shardingColumn, shardingAlgorithm);
     }
     
