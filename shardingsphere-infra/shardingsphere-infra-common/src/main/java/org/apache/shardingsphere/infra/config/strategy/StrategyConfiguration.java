@@ -20,9 +20,9 @@ package org.apache.shardingsphere.infra.config.strategy;
 import java.util.Properties;
 
 /**
- * SPI strategy configuration.
+ * Strategy configuration.
  */
-public interface SPIStrategyConfiguration {
+public interface StrategyConfiguration {
     
     /**
      * Get strategy name.
