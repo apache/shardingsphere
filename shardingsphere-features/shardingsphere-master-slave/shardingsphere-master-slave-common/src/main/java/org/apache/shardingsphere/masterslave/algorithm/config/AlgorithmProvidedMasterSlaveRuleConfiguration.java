@@ -33,7 +33,7 @@ import java.util.Map;
 @Getter
 public final class AlgorithmProvidedMasterSlaveRuleConfiguration implements RuleConfiguration {
     
-    private final Map<String, MasterSlaveLoadBalanceAlgorithm> loadBalanceAlgorithms;
-    
     private final Collection<MasterSlaveDataSourceRuleConfiguration> dataSources;
+    
+    private final Map<String, MasterSlaveLoadBalanceAlgorithm> loadBalanceAlgorithms;
 }
