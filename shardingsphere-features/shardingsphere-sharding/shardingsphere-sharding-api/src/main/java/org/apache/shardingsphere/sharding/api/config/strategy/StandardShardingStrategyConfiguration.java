@@ -35,6 +35,8 @@ public final class StandardShardingStrategyConfiguration implements ShardingStra
     public StandardShardingStrategyConfiguration(final String shardingColumn, final StandardShardingAlgorithm shardingAlgorithm) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(shardingColumn), "ShardingColumns is required.");
         Preconditions.checkNotNull(shardingAlgorithm, "ShardingAlgorithm is required.");
+        // TODO When ShardingSphereAlgorithmFactory is used for Sharding Strategy, the following can be removed.
+        shardingAlgorithm.init();
         this.shardingColumn = shardingColumn;
         this.shardingAlgorithm = shardingAlgorithm;
     }
