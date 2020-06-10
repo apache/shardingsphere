@@ -35,18 +35,15 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     private static final String ALGORITHM_EXPRESSION = "algorithm.expression";
     
     private static final String ALLOW_RANGE_QUERY = "allow.range.query.with.inline.sharding";
+
+    private Closure<?> closure;
     
     private Properties properties = new Properties();
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
-        Preconditions.checkNotNull(properties.get(ALGORITHM_EXPRESSION), "Inline sharding algorithm expression cannot be null.");
-        String algorithmExpression = InlineExpressionParser.handlePlaceHolder(properties.get(ALGORITHM_EXPRESSION).toString().trim());
-        Closure<?> closure = new InlineExpressionParser(algorithmExpression).evaluateClosure();
-        Closure<?> result = closure.rehydrate(new Expando(), null, null);
-        result.setResolveStrategy(Closure.DELEGATE_ONLY);
-        result.setProperty(shardingValue.getColumnName(), shardingValue.getValue());
-        return result.call().toString();
+        closure.setProperty(shardingValue.getColumnName(), shardingValue.getValue());
+        return closure.call().toString();
     }
     
     @Override
@@ -74,5 +71,14 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     @Override
     public void setProperties(final Properties properties) {
         this.properties = properties;
+    }
+
+    @Override
+    public void init() {
+        Preconditions.checkNotNull(properties.get(ALGORITHM_EXPRESSION), "Inline sharding algorithm expression cannot be null.");
+        String algorithmExpression = InlineExpressionParser.handlePlaceHolder(properties.get(ALGORITHM_EXPRESSION).toString().trim());
+        Closure<?> closure = new InlineExpressionParser(algorithmExpression).evaluateClosure();
+        this.closure = closure.rehydrate(new Expando(), null, null);
+        this.closure.setResolveStrategy(Closure.DELEGATE_ONLY);
     }
 }

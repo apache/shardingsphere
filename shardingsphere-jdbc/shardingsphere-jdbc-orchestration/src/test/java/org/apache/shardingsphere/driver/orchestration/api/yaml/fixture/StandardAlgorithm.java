@@ -54,4 +54,8 @@ public final class StandardAlgorithm implements StandardShardingAlgorithm<Intege
     @Override
     public void setProperties(final Properties properties) {
     }
+
+    @Override
+    public void init() {
+    }
 }

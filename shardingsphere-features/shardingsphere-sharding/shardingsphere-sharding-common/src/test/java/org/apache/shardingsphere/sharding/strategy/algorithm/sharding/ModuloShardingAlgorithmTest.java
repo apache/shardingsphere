@@ -44,6 +44,7 @@ public final class ModuloShardingAlgorithmTest {
     public void setup() {
         ModuloShardingAlgorithm shardingAlgorithm = new ModuloShardingAlgorithm();
         shardingAlgorithm.getProperties().setProperty("mod.value", "4");
+        shardingAlgorithm.init();
         StandardShardingStrategyConfiguration shardingStrategyConfig = new StandardShardingStrategyConfiguration("order_id", shardingAlgorithm);
         shardingStrategy = new StandardShardingStrategy(shardingStrategyConfig);
     }

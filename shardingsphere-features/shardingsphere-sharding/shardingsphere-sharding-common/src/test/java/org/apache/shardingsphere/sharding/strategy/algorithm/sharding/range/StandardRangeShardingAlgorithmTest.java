@@ -47,6 +47,7 @@ public class StandardRangeShardingAlgorithmTest {
         shardingAlgorithm.getProperties().setProperty("partition.lower", "10");
         shardingAlgorithm.getProperties().setProperty("partition.upper", "45");
         shardingAlgorithm.getProperties().setProperty("partition.volume", "10");
+        shardingAlgorithm.init();
         StandardShardingStrategyConfiguration shardingStrategyConfig = new StandardShardingStrategyConfiguration("order_id", shardingAlgorithm);
         shardingStrategy = new StandardShardingStrategy(shardingStrategyConfig);
     }
@@ -82,6 +83,7 @@ public class StandardRangeShardingAlgorithmTest {
         shardingAlgorithm.getProperties().setProperty("partition.lower", "10");
         shardingAlgorithm.getProperties().setProperty("partition.upper", "45");
         shardingAlgorithm.getProperties().setProperty("partition.volume", "10");
+        shardingAlgorithm.init();
         assertThat(shardingAlgorithm.getAutoTablesAmount(), is(6));
     }
 }

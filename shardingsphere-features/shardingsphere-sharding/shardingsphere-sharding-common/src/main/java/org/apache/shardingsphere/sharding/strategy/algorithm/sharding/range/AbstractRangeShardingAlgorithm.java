@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range;
 
 import com.google.common.collect.Range;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
@@ -27,34 +29,34 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 /**
  * Abstract range sharding algorithm.
  */
 public abstract class AbstractRangeShardingAlgorithm implements StandardShardingAlgorithm<Long>, ShardingAutoTableAlgorithm {
-    
-    private volatile boolean initialized;
-    
-    protected final void checkInit() {
-        if (!initialized) {
-            synchronized (this) {
-                if (!initialized) {
-                    initProperties();
-                    initialized = true;
-                }
-            }
-        }
+
+    private Map<Integer, Range<Long>> partitionRangeMap;
+
+    @Getter
+    @Setter
+    private Properties properties = new Properties();
+
+    @Override
+    public final void init() {
+        partitionRangeMap = createPartitionRangeMap(properties);
     }
-    
-    protected abstract void initProperties();
-    
-    protected final String getTargetNameByPreciseShardingValue(final Collection<String> availableTargetNames, 
-                                                               final PreciseShardingValue<Long> shardingValue, final Map<Integer, Range<Long>> partitionRangeMap) {
-        return availableTargetNames.stream().filter(each -> each.endsWith(getPartition(partitionRangeMap, shardingValue.getValue()) + "")).findFirst().orElseThrow(UnsupportedOperationException::new);
+
+    abstract Map<Integer, Range<Long>> createPartitionRangeMap(Properties properties);
+
+    @Override
+    public final String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Long> shardingValue) {
+        return availableTargetNames.stream().filter(each -> each.endsWith(getPartition(partitionRangeMap, shardingValue.getValue()) + ""))
+                .findFirst().orElseThrow(UnsupportedOperationException::new);
     }
-    
-    protected final Collection<String> getTargetNameByRangeShardingValue(final Collection<String> availableTargetNames, 
-                                                                         final RangeShardingValue<Long> shardingValue, final Map<Integer, Range<Long>> partitionRangeMap) {
+
+    @Override
+    public final Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Long> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
         int lowerEndpointPartition = getPartition(partitionRangeMap, shardingValue.getValueRange().lowerEndpoint());
         int upperEndpointPartition = getPartition(partitionRangeMap, shardingValue.getValueRange().upperEndpoint());
@@ -67,7 +69,7 @@ public abstract class AbstractRangeShardingAlgorithm implements StandardSharding
         }
         return result;
     }
-    
+
     private Integer getPartition(final Map<Integer, Range<Long>> partitionRangeMap, final Long value) {
         for (Entry<Integer, Range<Long>> entry : partitionRangeMap.entrySet()) {
             if (entry.getValue().contains(value)) {
@@ -75,5 +77,10 @@ public abstract class AbstractRangeShardingAlgorithm implements StandardSharding
             }
         }
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public final int getAutoTablesAmount() {
+        return partitionRangeMap.size();
     }
 }

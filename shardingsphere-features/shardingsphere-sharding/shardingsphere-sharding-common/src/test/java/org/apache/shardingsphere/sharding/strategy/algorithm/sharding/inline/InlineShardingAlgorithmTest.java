@@ -43,10 +43,12 @@ public final class InlineShardingAlgorithmTest {
     public void setUp() {
         InlineShardingAlgorithm shardingAlgorithm = new InlineShardingAlgorithm();
         shardingAlgorithm.getProperties().setProperty("algorithm.expression", "t_order_$->{order_id % 4}");
+        shardingAlgorithm.init();
         StandardShardingStrategyConfiguration shardingStrategyConfig = new StandardShardingStrategyConfiguration("order_id", shardingAlgorithm);
         shardingStrategy = new StandardShardingStrategy(shardingStrategyConfig);
         InlineShardingAlgorithm shardingAlgorithmWithSimplified = new InlineShardingAlgorithm();
         shardingAlgorithmWithSimplified.getProperties().setProperty("algorithm.expression", "t_order_${order_id % 4}");
+        shardingAlgorithmWithSimplified.init();
         StandardShardingStrategyConfiguration shardingStrategyConfigWithSimplified = new StandardShardingStrategyConfiguration("order_id", shardingAlgorithmWithSimplified);
         shardingStrategyWithSimplified = new StandardShardingStrategy(shardingStrategyConfigWithSimplified);
     }

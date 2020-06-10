@@ -43,4 +43,8 @@ public final class MultiAlgorithm implements ComplexKeysShardingAlgorithm<String
     @Override
     public void setProperties(final Properties properties) {
     }
+
+    @Override
+    public void init() {
+    }
 }

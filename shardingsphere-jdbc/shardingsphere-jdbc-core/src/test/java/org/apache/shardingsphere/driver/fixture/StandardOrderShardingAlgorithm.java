@@ -63,4 +63,8 @@ public final class StandardOrderShardingAlgorithm implements StandardShardingAlg
     @Override
     public void setProperties(final Properties properties) {
     }
+
+    @Override
+    public void init() {
+    }
 }

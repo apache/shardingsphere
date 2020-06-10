@@ -63,4 +63,8 @@ public final class StandardModuloTableShardingAlgorithm implements StandardShard
     @Override
     public void setProperties(final Properties properties) {
     }
+
+    @Override
+    public void init() {
+    }
 }

@@ -43,4 +43,8 @@ public final class DefaultComplexKeysShardingAlgorithm implements ComplexKeysSha
     @Override
     public void setProperties(final Properties properties) {
     }
+
+    @Override
+    public void init() {
+    }
 }

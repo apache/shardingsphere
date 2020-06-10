@@ -42,10 +42,14 @@ public final class ModuloShardingAlgorithm implements StandardShardingAlgorithm<
     @Getter
     @Setter
     private Properties properties = new Properties();
+
+    @Override
+    public void init() {
+        Preconditions.checkNotNull(properties.get(MODULO_VALUE), "Modulo value cannot be null.");
+    }
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Long> shardingValue) {
-        Preconditions.checkNotNull(properties.get(MODULO_VALUE), "Modulo value cannot be null.");
         for (String each : availableTargetNames) {
             if (each.endsWith(shardingValue.getValue() % getModuloValue() + "")) {
                 return each;
@@ -56,7 +60,6 @@ public final class ModuloShardingAlgorithm implements StandardShardingAlgorithm<
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Long> shardingValue) {
-        Preconditions.checkNotNull(properties.get(MODULO_VALUE), "Modulo value cannot be null.");
         if (isContainAllTargets(shardingValue)) {
             return availableTargetNames;
         }

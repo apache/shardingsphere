@@ -63,4 +63,8 @@ public final class StandardModuloDatabaseShardingAlgorithm implements StandardSh
     @Override
     public void setProperties(final Properties properties) {
     }
+
+    @Override
+    public void init() {
+    }
 }

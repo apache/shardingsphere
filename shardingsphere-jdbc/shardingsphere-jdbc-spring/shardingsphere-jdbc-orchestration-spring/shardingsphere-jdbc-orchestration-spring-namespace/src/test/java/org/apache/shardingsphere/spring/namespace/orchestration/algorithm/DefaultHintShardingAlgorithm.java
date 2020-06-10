@@ -43,4 +43,8 @@ public final class DefaultHintShardingAlgorithm implements HintShardingAlgorithm
     @Override
     public void setProperties(final Properties properties) {
     }
+
+    @Override
+    public void init() {
+    }
 }
