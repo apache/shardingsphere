@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.masterslave.spi;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereSPIAlgorithm;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 
 import java.util.List;
 
 /**
  * Master-slave database load-balance algorithm.
  */
-public interface MasterSlaveLoadBalanceAlgorithm extends ShardingSphereSPIAlgorithm {
+public interface MasterSlaveLoadBalanceAlgorithm extends ShardingSphereAlgorithm {
     
     /**
      * Get data source.

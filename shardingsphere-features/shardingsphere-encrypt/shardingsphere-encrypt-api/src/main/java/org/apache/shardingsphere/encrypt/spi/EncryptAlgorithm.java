@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.encrypt.spi;
 
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereSPIAlgorithm;
 
 /**
  * Encrypt algorithm for SPI.
  */
-public interface EncryptAlgorithm extends ShardingSphereSPIAlgorithm, ShardingSphereAlgorithmPostProcessor {
+public interface EncryptAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
     
     /**
      * Encode.

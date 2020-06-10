@@ -19,9 +19,7 @@ package org.apache.shardingsphere.infra.config.algorithm;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.strategy.RawStrategyConfiguration;
-import org.apache.shardingsphere.infra.config.strategy.SPIStrategyConfiguration;
-import org.apache.shardingsphere.infra.config.strategy.StrategyConfiguration;
+import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
 import org.apache.shardingsphere.infra.spi.type.TypedSPI;
 import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
 
@@ -34,20 +32,14 @@ public final class ShardingSphereAlgorithmFactory {
     /**
      * Create algorithm.
      * 
-     * @param strategyConfiguration strategy configuration
-     * @param spiAlgorithmClass SPI algorithm class
+     * @param typedSPIConfiguration typed SPI configuration
+     * @param algorithmClass algorithm class
      * @param <T> type of algorithm
      * @return algorithm
      */
     @SuppressWarnings("unchecked")
-    public static <T extends ShardingSphereAlgorithm> T createAlgorithm(final StrategyConfiguration strategyConfiguration, final Class<? extends TypedSPI> spiAlgorithmClass) {
-        return strategyConfiguration instanceof RawStrategyConfiguration
-                ? (T) ((RawStrategyConfiguration) strategyConfiguration).getAlgorithm() : createSPIAlgorithm((SPIStrategyConfiguration) strategyConfiguration, spiAlgorithmClass);
-    }
-    
-    @SuppressWarnings("unchecked")
-    private static <T extends ShardingSphereAlgorithm> T createSPIAlgorithm(final SPIStrategyConfiguration spiStrategyConfiguration, final Class<? extends TypedSPI> spiAlgorithmClass) {
-        T result = (T) TypedSPIRegistry.getRegisteredService(spiAlgorithmClass, spiStrategyConfiguration.getType(), spiStrategyConfiguration.getProperties());
+    public static <T extends ShardingSphereAlgorithm> T createAlgorithm(final TypedSPIConfiguration typedSPIConfiguration, final Class<? extends TypedSPI> algorithmClass) {
+        T result = (T) TypedSPIRegistry.getRegisteredService(algorithmClass, typedSPIConfiguration.getType(), typedSPIConfiguration.getProperties());
         if (result instanceof ShardingSphereAlgorithmPostProcessor) {
             ((ShardingSphereAlgorithmPostProcessor) result).init();
         }
