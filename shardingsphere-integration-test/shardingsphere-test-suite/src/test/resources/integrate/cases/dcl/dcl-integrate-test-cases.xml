@@ -15,9 +15,9 @@
   ~ limitations under the License.
   -->
 <integrate-test-cases>
-    <dcl-test-case sql="CREATE USER 'user_dev_new'@'localhost' default role role1" db-types="MySQL" />
+    <dcl-test-case sql="CREATE USER 'user_dev_new'@'localhost'" db-types="MySQL" />
     <dcl-test-case value="CREATE USER user_dev_new" db-types="PostgreSQL" />
-    <dcl-test-case sql="CREATE USER 'user_dev_new'@'localhost' identified by 'passwd_dev' default role role1" db-types="MySQL"/>
+    <dcl-test-case sql="CREATE USER 'user_dev_new'@'localhost' identified by 'passwd_dev'" db-types="MySQL"/>
     <dcl-test-case sql="CREATE USER user_dev_new identified by passwd_dev" db-types="Oracle" />
     <dcl-test-case sql="CREATE USER user_dev_new FOR LOGIN login_dev" db-types="SQLServer"/>
     <dcl-test-case sql="CREATE USER user_dev_new PASSWORD 'passwd_dev'" db-types="PostgreSQL"/>
