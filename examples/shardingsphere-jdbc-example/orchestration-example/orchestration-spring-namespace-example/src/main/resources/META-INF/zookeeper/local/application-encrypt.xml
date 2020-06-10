@@ -46,17 +46,17 @@
         <property name="password" value=""/>
     </bean>
     
-    <encrypt:encrypt-algorithm id="name_encrypt_algorithm" type="AES">
+    <encrypt:encrypt-algorithm id="name_encryptor" type="AES">
         <props>
             <prop key="aes.key.value">123456</prop>
         </props>
     </encrypt:encrypt-algorithm>
-    <encrypt:encrypt-algorithm id="pwd_encrypt_algorithm" type="assistedTest" />
+    <encrypt:encrypt-algorithm id="pwd_encryptor" type="assistedTest" />
     
     <encrypt:rule id="encryptRule">
         <encrypt:table name="t_user">
-            <encrypt:column logic-column="user_name" cipher-column="user_name" encrypt-algorithm-ref="name_encrypt_algorithm" />
-            <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" encrypt-algorithm-ref="pwd_encrypt_algorithm" />
+            <encrypt:column logic-column="user_name" cipher-column="user_name" encrypt-algorithm-ref="name_encryptor" />
+            <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" encrypt-algorithm-ref="pwd_encryptor" />
         </encrypt:table>
     </encrypt:rule>
     

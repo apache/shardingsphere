@@ -30,17 +30,17 @@ rules:
         user_name:
           plainColumn: user_name_plain
           cipherColumn: user_name
-          encryptorName: name_encrypt_algorithm
+          encryptorName: name_encryptor
         pwd:
           cipherColumn: pwd
           assistedQueryColumn: assisted_query_pwd
-          encryptorName: pwd_encrypt_algorithm
+          encryptorName: pwd_encryptor
   encryptors:
-    name_encrypt_algorithm:
+    name_encryptor:
       type: aes
       props:
         aes.key.value: 123456
-    pwd_encrypt_algorithm:
+    pwd_encryptor:
       type: assistedTest
 
 props:

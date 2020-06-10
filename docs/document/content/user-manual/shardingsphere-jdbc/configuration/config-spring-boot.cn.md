@@ -87,12 +87,12 @@ spring.shardingsphere.datasource.ds.username=root
 spring.shardingsphere.datasource.ds.password=
 spring.shardingsphere.datasource.ds.max-total=100
 
-spring.shardingsphere.encrypt.encryptors.aes_encrypt_algorithm.type=aes
-spring.shardingsphere.encrypt.encryptors.aes_encrypt_algorithm.props.aes.key.value=123456
+spring.shardingsphere.encrypt.encryptors.aes_encryptor.type=aes
+spring.shardingsphere.encrypt.encryptors.aes_encryptor.props.aes.key.value=123456
 spring.shardingsphere.encrypt.tables.t_order.columns.user_id.cipher-column=user_encrypt
 spring.shardingsphere.encrypt.tables.t_order.columns.user_id.assisted-query-column=user_assisted
 spring.shardingsphere.encrypt.tables.t_order.columns.user_id.plain-column=user_decrypt
-spring.shardingsphere.encrypt.tables.t_order.columns.user_id.encryptor-name=aes_encrypt_algorithm
+spring.shardingsphere.encrypt.tables.t_order.columns.user_id.encryptor-name=aes_encryptor
 
 spring.shardingsphere.props.sql.show=true
 spring.shardingsphere.props.query.with.cipher.column=true
@@ -189,12 +189,12 @@ spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.shardin
 spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item_$->{order_id % 2}
 spring.shardingsphere.sharding.tables.t_order_item.key-generator.column=order_item_id
 spring.shardingsphere.sharding.tables.t_order_item.key-generator.type=SNOWFLAKE
-spring.shardingsphere.sharding.encrypt-rule.encryptors.aes_encrypt_algorithm.type=aes
-spring.shardingsphere.sharding.encrypt-rule.encryptors.aes_encrypt_algorithm.props.aes.key.value=123456
+spring.shardingsphere.sharding.encrypt-rule.encryptors.aes_encryptor.type=aes
+spring.shardingsphere.sharding.encrypt-rule.encryptors.aes_encryptor.props.aes.key.value=123456
 spring.shardingsphere.sharding.encrypt-rule.tables.t_order.columns.user_id.cipher-column=user_encrypt
 spring.shardingsphere.sharding.encrypt-rule.tables.t_order.columns.user_id.assisted-query-column=user_assisted
 spring.shardingsphere.sharding.encrypt-rule.tables.t_order.columns.user_id.plain-column=user_decrypt
-spring.shardingsphere.sharding.encrypt-rule.tables.t_order.columns.user_id.encryptor-name=aes_encrypt_algorithm
+spring.shardingsphere.sharding.encrypt-rule.tables.t_order.columns.user_id.encryptor-name=aes_encryptor
 ```
 
 ### 治理

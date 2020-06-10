@@ -53,11 +53,11 @@ public final class LocalEncryptConfiguration implements ExampleConfiguration {
     }
     
     private EncryptRuleConfiguration getEncryptRuleConfiguration() {
-        return new EncryptRuleConfiguration(Collections.singleton(createEncryptTableRuleConfiguration()), ImmutableMap.of("status_encrypt_algorithm", createEncryptAlgorithmConfiguration()));
+        return new EncryptRuleConfiguration(Collections.singleton(createEncryptTableRuleConfiguration()), ImmutableMap.of("status_encryptor", createEncryptAlgorithmConfiguration()));
     }
     
     private EncryptTableRuleConfiguration createEncryptTableRuleConfiguration() {
-        EncryptColumnRuleConfiguration encryptColumnRuleConfiguration = new EncryptColumnRuleConfiguration("status", "status", "", "", "status_encrypt_algorithm");
+        EncryptColumnRuleConfiguration encryptColumnRuleConfiguration = new EncryptColumnRuleConfiguration("status", "status", "", "", "status_encryptor");
         return new EncryptTableRuleConfiguration("t_order", Collections.singleton(encryptColumnRuleConfiguration));
     }
     

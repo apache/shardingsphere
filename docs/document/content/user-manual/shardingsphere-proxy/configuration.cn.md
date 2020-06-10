@@ -122,11 +122,11 @@ dataSource:
 
 encryptRule:
   encryptors:
-    aes_encrypt_algorithm:
+    aes_encryptor:
       type: aes
       props:
         aes.key.value: 123456abc
-    md5_encrypt_algorithm:
+    md5_encryptor:
       type: md5
   tables:
     t_encrypt:
@@ -134,10 +134,10 @@ encryptRule:
         user_id:
           plainColumn: user_plain
           cipherColumn: user_cipher
-          encryptorName: aes_encrypt_algorithm
+          encryptorName: aes_encryptor
         order_id:
           cipherColumn: order_cipher
-          encryptorName: md5_encrypt_algorithm
+          encryptorName: md5_encryptor
 ```
 
 ### 数据分片 + 读写分离
@@ -307,7 +307,7 @@ shardingRule:
     
   encryptRule:
     encryptors:
-      aes_encrypt_algorithm:
+      aes_encryptor:
         type: aes
         props:
           aes.key.value: 123456abc
@@ -317,7 +317,7 @@ shardingRule:
           order_id:
             plainColumn: order_plain
             cipherColumn: order_cipher
-            encryptorName: aes_encrypt_algorithm
+            encryptorName: aes_encryptor
 ```
 
 ## 全局配置示例

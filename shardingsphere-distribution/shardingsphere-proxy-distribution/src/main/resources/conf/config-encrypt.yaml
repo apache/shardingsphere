@@ -44,11 +44,11 @@
 #rules:
 #- !ENCRYPT
 #  encryptors:
-#    aes_encrypt_algorithm:
+#    aes_encryptor:
 #      type: aes
 #      props:
 #        aes.key.value: 123456abc
-#    md5_encrypt_algorithm:
+#    md5_encryptor:
 #      type: md5
 #  tables:
 #    t_encrypt:
@@ -56,10 +56,10 @@
 #        user_id:
 #          plainColumn: user_plain
 #          cipherColumn: user_cipher
-#          encrypt_algorithm_name: aes_encrypt_algorithm
+#          encryptor_name: aes_encryptor
 #        order_id:
 #          cipherColumn: order_encrypt
-#          encrypt_algorithm_name: md5_encrypt_algorithm
+#          encryptor_name: md5_encryptor
 
 ######################################################################################################
 #
@@ -85,11 +85,11 @@
 #rules:
 #- !ENCRYPT
 #  encryptors:
-#    aes_encrypt_algorithm:
+#    aes_encryptor:
 #      type: aes
 #      props:
 #        aes.key.value: 123456abc
-#    md5_encrypt_algorithm:
+#    md5_encryptor:
 #      type: md5
 #  tables:
 #    t_encrypt:
@@ -97,7 +97,7 @@
 #        user_id:
 #          plainColumn: user_plain
 #          cipherColumn: user_cipher
-#          encrypt_algorithm_name: aes_encrypt_algorithm
+#          encryptor_name: aes_encryptor
 #        order_id:
 #          cipherColumn: order_cipher
-#          encrypt_algorithm_name: md5_encrypt_algorithm
+#          encryptor_name: md5_encryptor

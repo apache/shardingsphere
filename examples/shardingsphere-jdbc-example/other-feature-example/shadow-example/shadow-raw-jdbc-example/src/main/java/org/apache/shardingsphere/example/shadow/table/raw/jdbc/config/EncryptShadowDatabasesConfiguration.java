@@ -55,8 +55,8 @@ public final class EncryptShadowDatabasesConfiguration implements ExampleConfigu
     private Collection<EncryptTableRuleConfiguration> getEncryptTableRuleConfigurations() {
         Collection<EncryptTableRuleConfiguration> result = new LinkedList<>();
         Collection<EncryptColumnRuleConfiguration> columns = new LinkedList<>();
-        columns.add(new EncryptColumnRuleConfiguration("user_name", "user_name", "", "user_name_plain", "name_encrypt_algorithm"));
-        columns.add(new EncryptColumnRuleConfiguration("pwd", "pwd", "assisted_query_pwd", "", "pwd_encrypt_algorithm"));
+        columns.add(new EncryptColumnRuleConfiguration("user_name", "user_name", "", "user_name_plain", "name_encryptor"));
+        columns.add(new EncryptColumnRuleConfiguration("pwd", "pwd", "assisted_query_pwd", "", "pwd_encryptor"));
         result.add(new EncryptTableRuleConfiguration("t_user", columns));
         return result;
     }
@@ -65,8 +65,8 @@ public final class EncryptShadowDatabasesConfiguration implements ExampleConfigu
         Map<String, EncryptAlgorithmConfiguration> result = new LinkedHashMap<>(2, 1);
         Properties properties = new Properties();
         properties.setProperty("aes.key.value", "123456");
-        result.put("name_encrypt_algorithm", new EncryptAlgorithmConfiguration("aes", properties));
-        result.put("pwd_encrypt_algorithm", new EncryptAlgorithmConfiguration("assistedTest", null));
+        result.put("name_encryptor", new EncryptAlgorithmConfiguration("aes", properties));
+        result.put("pwd_encryptor", new EncryptAlgorithmConfiguration("assistedTest", null));
         return result;
     }
 }
