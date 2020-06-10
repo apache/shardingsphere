@@ -53,7 +53,7 @@ public final class MasterSlaveRule implements DataSourceRoutedRule, StatusContai
     
     public MasterSlaveRule(final MasterSlaveRuleConfiguration configuration) {
         Preconditions.checkArgument(!configuration.getDataSources().isEmpty(), "Master-slave data source rules can not be empty.");
-        configuration.getLoadBalancer().forEach(
+        configuration.getLoadBalancers().forEach(
             each -> loadBalanceAlgorithms.put(each.getName(), ShardingSphereAlgorithmFactory.createAlgorithm(each, MasterSlaveLoadBalanceAlgorithm.class)));
         dataSourceRules = new HashMap<>(configuration.getDataSources().size(), 1);
         for (MasterSlaveDataSourceRuleConfiguration each : configuration.getDataSources()) {

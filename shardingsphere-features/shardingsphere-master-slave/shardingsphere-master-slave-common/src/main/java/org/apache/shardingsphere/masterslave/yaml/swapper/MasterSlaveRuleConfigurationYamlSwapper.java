@@ -55,15 +55,15 @@ public final class MasterSlaveRuleConfigurationYamlSwapper implements YamlRuleCo
     
     @Override
     public MasterSlaveRuleConfiguration swap(final YamlMasterSlaveRuleConfiguration yamlConfiguration) {
-        Collection<LoadBalanceAlgorithmConfiguration> loadBalanceStrategies = new LinkedList<>();
+        Collection<LoadBalanceAlgorithmConfiguration> loadBalancers = new LinkedList<>();
         for (Entry<String, YamlMasterSlaveLoadBalanceStrategyConfiguration> entry : yamlConfiguration.getLoadBalanceStrategies().entrySet()) {
-            loadBalanceStrategies.add(swap(entry.getKey(), entry.getValue()));
+            loadBalancers.add(swap(entry.getKey(), entry.getValue()));
         }
         Collection<MasterSlaveDataSourceRuleConfiguration> dataSources = new LinkedList<>();
         for (Entry<String, YamlMasterSlaveDataSourceRuleConfiguration> entry : yamlConfiguration.getDataSources().entrySet()) {
             dataSources.add(swap(entry.getKey(), entry.getValue()));
         }
-        return new MasterSlaveRuleConfiguration(loadBalanceStrategies, dataSources);
+        return new MasterSlaveRuleConfiguration(dataSources, loadBalancers);
     }
     
     private LoadBalanceAlgorithmConfiguration swap(final String name, final YamlMasterSlaveLoadBalanceStrategyConfiguration yamlLoadBalanceStrategyConfiguration) {

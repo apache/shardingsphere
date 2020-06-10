@@ -52,8 +52,8 @@ public final class MasterSlaveRuleTest {
     
     private MasterSlaveRule createMasterSlaveRule() {
         MasterSlaveDataSourceRuleConfiguration configuration = new MasterSlaveDataSourceRuleConfiguration("test_ms", "master_db", Arrays.asList("slave_db_0", "slave_db_1"), "random");
-        return new MasterSlaveRule(
-                new MasterSlaveRuleConfiguration(Collections.singleton(new LoadBalanceAlgorithmConfiguration("random", "RANDOM", new Properties())), Collections.singleton(configuration)));
+        return new MasterSlaveRule(new MasterSlaveRuleConfiguration(
+                Collections.singleton(configuration), Collections.singleton(new LoadBalanceAlgorithmConfiguration("random", "RANDOM", new Properties()))));
     }
     
     private void assertDataSourceRule(final MasterSlaveDataSourceRule actual) {

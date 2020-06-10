@@ -122,8 +122,8 @@ public final class OrchestrationShardingSphereDataSourceTest {
     
     private MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() {
         MasterSlaveDataSourceRuleConfiguration dataSourceConfiguration = new MasterSlaveDataSourceRuleConfiguration("ds_ms", "ds_m", Collections.singletonList("ds_s"), "roundRobin");
-        return new MasterSlaveRuleConfiguration(
-                Collections.singleton(new LoadBalanceAlgorithmConfiguration("roundRobin", "ROUND_ROBIN", new Properties())), Collections.singleton(dataSourceConfiguration));
+        return new MasterSlaveRuleConfiguration(Collections.singleton(dataSourceConfiguration), 
+                Collections.singleton(new LoadBalanceAlgorithmConfiguration("roundRobin", "ROUND_ROBIN", new Properties())));
     }
     
     @Test

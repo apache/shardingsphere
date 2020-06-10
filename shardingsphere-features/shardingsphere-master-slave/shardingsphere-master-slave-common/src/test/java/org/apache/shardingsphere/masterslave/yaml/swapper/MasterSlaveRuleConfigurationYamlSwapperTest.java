@@ -38,7 +38,7 @@ public final class MasterSlaveRuleConfigurationYamlSwapperTest {
     public void assertSwapToYamlWithLoadBalanceAlgorithm() {
         MasterSlaveDataSourceRuleConfiguration dataSourceConfiguration = new MasterSlaveDataSourceRuleConfiguration("ds", "master", Collections.singletonList("slave"), "roundRobin");
         YamlMasterSlaveRuleConfiguration actual = new MasterSlaveRuleConfigurationYamlSwapper().swap(new MasterSlaveRuleConfiguration(
-                Collections.singleton(new LoadBalanceAlgorithmConfiguration("roundRobin", "ROUND_ROBIN", new Properties())), Collections.singleton(dataSourceConfiguration)));
+                Collections.singleton(dataSourceConfiguration), Collections.singleton(new LoadBalanceAlgorithmConfiguration("roundRobin", "ROUND_ROBIN", new Properties()))));
         assertThat(actual.getDataSources().get("ds").getName(), is("ds"));
         assertThat(actual.getDataSources().get("ds").getMasterDataSourceName(), is("master"));
         assertThat(actual.getDataSources().get("ds").getSlaveDataSourceNames(), is(Collections.singletonList("slave")));
@@ -49,7 +49,7 @@ public final class MasterSlaveRuleConfigurationYamlSwapperTest {
     public void assertSwapToYamlWithoutLoadBalanceAlgorithm() {
         MasterSlaveDataSourceRuleConfiguration dataSourceConfiguration = new MasterSlaveDataSourceRuleConfiguration("ds", "master", Collections.singletonList("slave"), null);
         YamlMasterSlaveRuleConfiguration actual = new MasterSlaveRuleConfigurationYamlSwapper().swap(
-                new MasterSlaveRuleConfiguration(Collections.emptyList(), Collections.singleton(dataSourceConfiguration)));
+                new MasterSlaveRuleConfiguration(Collections.singleton(dataSourceConfiguration), Collections.emptyList()));
         assertThat(actual.getDataSources().get("ds").getName(), is("ds"));
         assertThat(actual.getDataSources().get("ds").getMasterDataSourceName(), is("master"));
         assertThat(actual.getDataSources().get("ds").getSlaveDataSourceNames(), is(Collections.singletonList("slave")));
