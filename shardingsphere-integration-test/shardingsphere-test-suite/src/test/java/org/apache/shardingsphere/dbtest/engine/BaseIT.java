@@ -36,6 +36,7 @@ import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -58,9 +59,12 @@ public abstract class BaseIT {
     
     static {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+        if (IntegrateTestEnvironment.getInstance().isProxyEnvironment()) {
+            waitForProxy();
+        }
     }
     
-    public BaseIT(final String ruleType, final DatabaseType databaseType) throws IOException, JAXBException, SQLException {
+    BaseIT(final String ruleType, final DatabaseType databaseType) throws IOException, JAXBException, SQLException {
         this.ruleType = ruleType;
         this.databaseType = databaseType;
         dataSourceMap = createDataSourceMap();
@@ -151,6 +155,26 @@ public abstract class BaseIT {
         if (dataSource instanceof ShardingSphereDataSource) {
             ((ShardingSphereDataSource) dataSource).getSchemaContexts().getDefaultSchemaContext().getRuntimeContext().getExecutorKernel().close();
         }
+    }
+    
+    private static void waitForProxy() {
+        int retryCount = 1;
+        while (!isProxyAvailable() && retryCount < 30) {
+            try {
+                Thread.sleep(1000);
+            } catch (final InterruptedException ignore) {
+            }
+            retryCount++;
+        }
+    }
+    
+    private static boolean isProxyAvailable() {
+        try {
+            DriverManager.getConnection("jdbc:mysql://127.0.0.1:33070/?serverTimezone=UTC&useSSL=false&useLocalSessionState=true");
+        } catch (final SQLException ignore) {
+            return false;
+        }
+        return true;
     }
 }
 
