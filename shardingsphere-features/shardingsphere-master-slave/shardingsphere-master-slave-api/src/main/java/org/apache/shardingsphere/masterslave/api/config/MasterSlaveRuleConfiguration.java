@@ -32,7 +32,7 @@ import java.util.Collection;
 @Getter
 public final class MasterSlaveRuleConfiguration implements RuleConfiguration {
     
-    private final Collection<LoadBalanceAlgorithmConfiguration> loadBalanceStrategies;
+    private final Collection<LoadBalanceAlgorithmConfiguration> loadBalancer;
     
     private final Collection<MasterSlaveDataSourceRuleConfiguration> dataSources;
 }
