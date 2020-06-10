@@ -20,7 +20,7 @@ package org.apache.shardingsphere.masterslave.yaml.swapper;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
-import org.apache.shardingsphere.masterslave.api.config.strategy.LoadBalanceStrategyConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.algorithm.LoadBalanceAlgorithmConfiguration;
 import org.apache.shardingsphere.masterslave.constant.MasterSlaveOrder;
 import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveDataSourceRuleConfiguration;
 import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveLoadBalanceStrategyConfiguration;
@@ -55,7 +55,7 @@ public final class MasterSlaveRuleConfigurationYamlSwapper implements YamlRuleCo
     
     @Override
     public MasterSlaveRuleConfiguration swap(final YamlMasterSlaveRuleConfiguration yamlConfiguration) {
-        Collection<LoadBalanceStrategyConfiguration> loadBalanceStrategies = new LinkedList<>();
+        Collection<LoadBalanceAlgorithmConfiguration> loadBalanceStrategies = new LinkedList<>();
         for (Entry<String, YamlMasterSlaveLoadBalanceStrategyConfiguration> entry : yamlConfiguration.getLoadBalanceStrategies().entrySet()) {
             loadBalanceStrategies.add(swap(entry.getKey(), entry.getValue()));
         }
@@ -66,8 +66,8 @@ public final class MasterSlaveRuleConfigurationYamlSwapper implements YamlRuleCo
         return new MasterSlaveRuleConfiguration(loadBalanceStrategies, dataSources);
     }
     
-    private LoadBalanceStrategyConfiguration swap(final String name, final YamlMasterSlaveLoadBalanceStrategyConfiguration yamlLoadBalanceStrategyConfiguration) {
-        return new LoadBalanceStrategyConfiguration(name, yamlLoadBalanceStrategyConfiguration.getType(), yamlLoadBalanceStrategyConfiguration.getProps());
+    private LoadBalanceAlgorithmConfiguration swap(final String name, final YamlMasterSlaveLoadBalanceStrategyConfiguration yamlLoadBalanceStrategyConfiguration) {
+        return new LoadBalanceAlgorithmConfiguration(name, yamlLoadBalanceStrategyConfiguration.getType(), yamlLoadBalanceStrategyConfiguration.getProps());
     }
     
     private MasterSlaveDataSourceRuleConfiguration swap(final String name, final YamlMasterSlaveDataSourceRuleConfiguration yamlDataSourceRuleConfiguration) {
