@@ -461,8 +461,7 @@ public final class ConfigCenterTest {
             } else if (each instanceof EncryptRuleConfiguration) {
                 EncryptRuleConfiguration encryptRuleConfiguration = (EncryptRuleConfiguration) each;
                 assertThat(encryptRuleConfiguration.getEncryptAlgorithms().size(), is(2));
-                EncryptAlgorithmConfiguration encryptAlgorithmConfiguration = encryptRuleConfiguration.getEncryptAlgorithms().iterator().next();
-                assertThat(encryptAlgorithmConfiguration.getName(), is("aes_encrypt_strategy"));
+                EncryptAlgorithmConfiguration encryptAlgorithmConfiguration = encryptRuleConfiguration.getEncryptAlgorithms().get("aes_encrypt_strategy");
                 assertThat(encryptAlgorithmConfiguration.getType(), is("aes"));
                 assertThat(encryptAlgorithmConfiguration.getProperties().get("aes.key.value").toString(), is("123456abcd"));
             }
@@ -497,8 +496,7 @@ public final class ConfigCenterTest {
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
         EncryptRuleConfiguration actual = (EncryptRuleConfiguration) configurationService.loadRuleConfigurations("sharding_db").iterator().next();
         assertThat(actual.getEncryptAlgorithms().size(), is(1));
-        EncryptAlgorithmConfiguration encryptAlgorithmConfiguration = actual.getEncryptAlgorithms().iterator().next();
-        assertThat(encryptAlgorithmConfiguration.getName(), is("order_encrypt_strategy"));
+        EncryptAlgorithmConfiguration encryptAlgorithmConfiguration = actual.getEncryptAlgorithms().get("order_encrypt_strategy");
         assertThat(encryptAlgorithmConfiguration.getType(), is("aes"));
         assertThat(encryptAlgorithmConfiguration.getProperties().get("aes.key.value").toString(), is("123456"));
     }

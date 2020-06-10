@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.example.orchestration.raw.jdbc.config.local;
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.driver.orchestration.api.OrchestrationShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.algorithm.EncryptAlgorithmConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.algorithm.EncryptAlgorithmConfiguration;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
@@ -54,9 +55,9 @@ public final class LocalEncryptConfiguration implements ExampleConfiguration {
     private EncryptRuleConfiguration getEncryptRuleConfiguration() {
         Properties properties = new Properties();
         properties.setProperty("aes.key.value", "123456");
-        EncryptAlgorithmConfiguration encryptAlgorithmConfiguration = new EncryptAlgorithmConfiguration("status_encrypt_strategy", "aes", properties);
+        EncryptAlgorithmConfiguration encryptAlgorithmConfiguration = new EncryptAlgorithmConfiguration("aes", properties);
         EncryptColumnRuleConfiguration encryptColumnRuleConfiguration = new EncryptColumnRuleConfiguration("status", "status", "", "", "status_encrypt_strategy");
         EncryptTableRuleConfiguration tableRuleConfiguration = new EncryptTableRuleConfiguration("t_order", Collections.singleton(encryptColumnRuleConfiguration));
-        return new EncryptRuleConfiguration(Collections.singleton(encryptAlgorithmConfiguration), Collections.singleton(tableRuleConfiguration));
+        return new EncryptRuleConfiguration(ImmutableMap.of("status_encrypt_strategy", encryptAlgorithmConfiguration), Collections.singleton(tableRuleConfiguration));
     }
 }

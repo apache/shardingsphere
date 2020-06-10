@@ -29,30 +29,21 @@ public final class EncryptStrategyConfigurationTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertConstructorWithoutType() {
-        new EncryptAlgorithmConfiguration("test_encrypt_strategy", null, new Properties());
+        new EncryptAlgorithmConfiguration(null, new Properties());
     }
     
     @Test
-    public void assertConstructorWithoutAssistedQueryColumnsAndProperties() {
-        EncryptAlgorithmConfiguration actual = new EncryptAlgorithmConfiguration("test_encrypt_strategy", "TEST", new Properties());
+    public void assertConstructorWithoutProperties() {
+        EncryptAlgorithmConfiguration actual = new EncryptAlgorithmConfiguration("TEST", new Properties());
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getProperties(), is(new Properties()));
     }
     
     @Test
-    public void assertConstructorWithMinArguments() {
+    public void assertConstructorWithProperties() {
         Properties props = new Properties();
         props.setProperty("key", "value");
-        EncryptAlgorithmConfiguration actual = new EncryptAlgorithmConfiguration("test_encrypt_strategy", "TEST", props);
-        assertThat(actual.getType(), is("TEST"));
-        assertThat(actual.getProperties(), is(props));
-    }
-    
-    @Test
-    public void assertConstructorWithMaxArguments() {
-        Properties props = new Properties();
-        props.setProperty("key", "value");
-        EncryptAlgorithmConfiguration actual = new EncryptAlgorithmConfiguration("test_encrypt_strategy", "TEST", props);
+        EncryptAlgorithmConfiguration actual = new EncryptAlgorithmConfiguration("TEST", props);
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getProperties(), is(props));
     }

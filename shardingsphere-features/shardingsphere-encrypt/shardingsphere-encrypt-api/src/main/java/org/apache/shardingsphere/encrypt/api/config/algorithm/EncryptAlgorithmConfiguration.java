@@ -28,10 +28,7 @@ import java.util.Properties;
 @Getter
 public final class EncryptAlgorithmConfiguration extends TypedSPIConfiguration {
     
-    private final String name;
-    
-    public EncryptAlgorithmConfiguration(final String name, final String type, final Properties properties) {
+    public EncryptAlgorithmConfiguration(final String type, final Properties properties) {
         super(type, properties);
-        this.name = name;
     }
 }

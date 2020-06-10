@@ -68,9 +68,8 @@ public class OrchestrationSpringBootEncryptTest {
         EncryptRuleConfiguration configuration = 
                 (EncryptRuleConfiguration) shardingSphereDataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getConfigurations().iterator().next();
         assertThat(configuration.getEncryptAlgorithms().size(), is(1));
-        EncryptAlgorithmConfiguration encryptAlgorithmConfiguration = configuration.getEncryptAlgorithms().iterator().next();
+        EncryptAlgorithmConfiguration encryptAlgorithmConfiguration = configuration.getEncryptAlgorithms().get("order_encrypt");
         assertThat(encryptAlgorithmConfiguration, instanceOf(EncryptAlgorithmConfiguration.class));
-        assertThat(encryptAlgorithmConfiguration.getName(), is("order_encrypt"));
         assertThat(encryptAlgorithmConfiguration.getType(), is("aes"));
         assertThat(configuration.getTables().size(), is(1));
         assertThat(configuration.getTables().iterator().next().getColumns().iterator().next().getCipherColumn(), is("cipher_order_id"));

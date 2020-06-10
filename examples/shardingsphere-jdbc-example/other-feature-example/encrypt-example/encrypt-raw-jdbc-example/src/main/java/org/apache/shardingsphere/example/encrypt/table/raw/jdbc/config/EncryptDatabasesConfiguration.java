@@ -19,18 +19,18 @@ package org.apache.shardingsphere.example.encrypt.table.raw.jdbc.config;
 
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.algorithm.EncryptAlgorithmConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.algorithm.EncryptAlgorithmConfiguration;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
 
 public final class EncryptDatabasesConfiguration implements ExampleConfiguration {
@@ -43,9 +43,9 @@ public final class EncryptDatabasesConfiguration implements ExampleConfiguration
         EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("user_name", "user_name", "", "user_name_plain", "name_encrypt_strategy");
         EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", "pwd", "assisted_query_pwd", "", "pwd_encrypt_strategy");
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_user", Arrays.asList(columnConfigAes, columnConfigTest));
-        Collection<EncryptAlgorithmConfiguration> encryptAlgorithmConfigurations = new LinkedList<>();
-        encryptAlgorithmConfigurations.add(new EncryptAlgorithmConfiguration("name_encrypt_strategy", "aes", properties));
-        encryptAlgorithmConfigurations.add(new EncryptAlgorithmConfiguration("pwd_encrypt_strategy", "assistedTest", properties));
+        Map<String, EncryptAlgorithmConfiguration> encryptAlgorithmConfigurations = new LinkedHashMap<>(2, 1);
+        encryptAlgorithmConfigurations.put("name_encrypt_strategy", new EncryptAlgorithmConfiguration("aes", properties));
+        encryptAlgorithmConfigurations.put("pwd_encrypt_strategy", new EncryptAlgorithmConfiguration("assistedTest", properties));
         EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(encryptAlgorithmConfigurations, Collections.singleton(tableConfig));
         try {
             return ShardingSphereDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(encryptRuleConfiguration), properties);

@@ -23,7 +23,6 @@ import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncry
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.algorithm.EncryptAlgorithmConfiguration;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
@@ -54,7 +53,7 @@ public final class EncryptRule implements ShardingSphereRule {
     
     public EncryptRule(final EncryptRuleConfiguration configuration) {
         Preconditions.checkArgument(isValidRuleConfiguration(configuration), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
-        configuration.getEncryptAlgorithms().forEach(each -> encryptAlgorithms.put(each.getName(), ShardingSphereAlgorithmFactory.createAlgorithm(each, EncryptAlgorithm.class)));
+        configuration.getEncryptAlgorithms().forEach((key, value) -> encryptAlgorithms.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, EncryptAlgorithm.class)));
         configuration.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(each)));
     }
     
@@ -84,8 +83,8 @@ public final class EncryptRule implements ShardingSphereRule {
     }
     
     private boolean containsEncryptStrategies(final EncryptRuleConfiguration encryptRuleConfiguration, final EncryptColumnRuleConfiguration column) {
-        for (EncryptAlgorithmConfiguration each : encryptRuleConfiguration.getEncryptAlgorithms()) {
-            if (each.getName().equals(column.getEncryptStrategyName())) {
+        for (String each : encryptRuleConfiguration.getEncryptAlgorithms().keySet()) {
+            if (each.equals(column.getEncryptStrategyName())) {
                 return true;
             }
         }

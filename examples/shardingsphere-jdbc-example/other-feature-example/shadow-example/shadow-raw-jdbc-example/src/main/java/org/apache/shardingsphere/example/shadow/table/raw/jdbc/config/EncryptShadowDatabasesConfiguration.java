@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
@@ -51,12 +52,12 @@ public final class EncryptShadowDatabasesConfiguration implements ExampleConfigu
         return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Arrays.asList(shadowRuleConfiguration, encryptRuleConfiguration), properties);
     }
     
-    private Collection<EncryptAlgorithmConfiguration> getEncryptStrategyConfigurations() {
-        Collection<EncryptAlgorithmConfiguration> result = new LinkedList<>();
+    private Map<String, EncryptAlgorithmConfiguration> getEncryptStrategyConfigurations() {
+        Map<String, EncryptAlgorithmConfiguration> result = new LinkedHashMap<>(2, 1);
         Properties properties = new Properties();
         properties.setProperty("aes.key.value", "123456");
-        result.add(new EncryptAlgorithmConfiguration("name_encrypt_strategy", "aes", properties));
-        result.add(new EncryptAlgorithmConfiguration("pwd_encrypt_strategy", "assistedTest", null));
+        result.put("name_encrypt_strategy", new EncryptAlgorithmConfiguration("aes", properties));
+        result.put("pwd_encrypt_strategy", new EncryptAlgorithmConfiguration("assistedTest", null));
         return result;
     }
     

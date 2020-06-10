@@ -36,6 +36,6 @@ public final class EncryptStrategyConfigurationYamlSwapper implements YamlSwappe
     
     @Override
     public EncryptAlgorithmConfiguration swap(final YamlEncryptStrategyConfiguration yamlConfiguration) {
-        return new EncryptAlgorithmConfiguration(yamlConfiguration.getName(), yamlConfiguration.getType(), yamlConfiguration.getProps());
+        return new EncryptAlgorithmConfiguration(yamlConfiguration.getType(), yamlConfiguration.getProps());
     }
 }
