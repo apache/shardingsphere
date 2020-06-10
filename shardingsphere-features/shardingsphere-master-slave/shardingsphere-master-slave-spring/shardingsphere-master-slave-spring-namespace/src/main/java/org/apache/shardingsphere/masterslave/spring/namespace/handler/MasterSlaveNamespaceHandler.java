@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.masterslave.spring.namespace.handler;
 
-import org.apache.shardingsphere.masterslave.spring.namespace.tag.LoadBalanceAlgorithmBeanDefinitionTag;
-import org.apache.shardingsphere.masterslave.spring.namespace.tag.MasterSlaveRuleBeanDefinitionTag;
 import org.apache.shardingsphere.masterslave.spring.namespace.parser.MasterSlaveLoadBalanceAlgorithmBeanDefinitionParser;
 import org.apache.shardingsphere.masterslave.spring.namespace.parser.MasterSlaveRuleBeanDefinitionParser;
+import org.apache.shardingsphere.masterslave.spring.namespace.tag.LoadBalanceAlgorithmBeanDefinitionTag;
+import org.apache.shardingsphere.masterslave.spring.namespace.tag.MasterSlaveRuleBeanDefinitionTag;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
