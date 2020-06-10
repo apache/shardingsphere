@@ -127,7 +127,7 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
         try {
             for (int i = 0; i < record.getColumnCount(); i++) {
                 SQLType sqlType = extractTargetSQLType(record.getColumn(i).getValue());
-                if (sqlType != null) {
+                if (null != sqlType) {
                     ps.setObject(i + 1, record.getColumn(i).getValue(), sqlType);
                 } else {
                     ps.setObject(i + 1, record.getColumn(i).getValue());
