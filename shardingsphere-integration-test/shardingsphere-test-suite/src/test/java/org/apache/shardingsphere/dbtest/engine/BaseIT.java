@@ -36,8 +36,10 @@ import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -169,8 +171,10 @@ public abstract class BaseIT {
     }
     
     private static boolean isProxyAvailable() {
-        try {
-            DriverManager.getConnection("jdbc:mysql://127.0.0.1:33070/?serverTimezone=UTC&useSSL=false&useLocalSessionState=true");
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:33070/proxy_db/?serverTimezone=UTC&useSSL=false&useLocalSessionState=true");
+             Statement statement = connection.createStatement()) {
+            statement.execute("SELECT 1");
+            
         } catch (final SQLException ignore) {
             return false;
         }
