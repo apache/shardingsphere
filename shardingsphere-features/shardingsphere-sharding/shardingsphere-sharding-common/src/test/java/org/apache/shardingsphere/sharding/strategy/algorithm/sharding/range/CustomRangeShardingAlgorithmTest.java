@@ -19,14 +19,13 @@ package org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.strategy.route.standard.StandardShardingStrategy;
 import org.apache.shardingsphere.sharding.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.sharding.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.sharding.strategy.route.value.RouteValue;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -38,9 +37,9 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class CustomRangeShardingAlgorithmTest {
-
+    
     private StandardShardingStrategy shardingStrategy;
-
+    
     @Before
     public void setUp() {
         CustomRangeShardingAlgorithm shardingAlgorithm = new CustomRangeShardingAlgorithm();
@@ -49,7 +48,7 @@ public final class CustomRangeShardingAlgorithmTest {
         StandardShardingStrategyConfiguration shardingStrategyConfig = new StandardShardingStrategyConfiguration("order_id", shardingAlgorithm);
         shardingStrategy = new StandardShardingStrategy(shardingStrategyConfig);
     }
-
+    
     @Test
     public void assertPreciseDoSharding() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
@@ -60,7 +59,7 @@ public final class CustomRangeShardingAlgorithmTest {
         assertTrue(actual.contains("t_order_1"));
         assertTrue(actual.contains("t_order_3"));
     }
-
+    
     @Test
     public void assertRangeDoSharding() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
@@ -71,7 +70,7 @@ public final class CustomRangeShardingAlgorithmTest {
         assertTrue(actual.contains("t_order_2"));
         assertTrue(actual.contains("t_order_3"));
     }
-
+    
     @Test
     public void assertGetAutoTablesAmount() {
         CustomRangeShardingAlgorithm shardingAlgorithm = new CustomRangeShardingAlgorithm();
