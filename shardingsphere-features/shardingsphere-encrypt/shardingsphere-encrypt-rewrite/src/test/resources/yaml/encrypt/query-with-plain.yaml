@@ -30,7 +30,7 @@ rules:
         certificate_number:
           cipherColumn: cipher_certificate_number
           assistedQueryColumn: assisted_query_certificate_number
-          encryptorame: assisted_query
+          encryptorName: assisted_query
         password:
           cipherColumn: cipher_password
           assistedQueryColumn: assisted_query_password

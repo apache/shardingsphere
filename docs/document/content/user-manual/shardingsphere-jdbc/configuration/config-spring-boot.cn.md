@@ -87,12 +87,12 @@ spring.shardingsphere.datasource.ds.username=root
 spring.shardingsphere.datasource.ds.password=
 spring.shardingsphere.datasource.ds.max-total=100
 
-spring.shardingsphere.encrypt.encrypt-strategies.aes_encrypt_strategy.type=aes
-spring.shardingsphere.encrypt.encrypt-strategies.aes_encrypt_strategy.props.aes.key.value=123456
+spring.shardingsphere.encrypt.encryptors.aes_encrypt_strategy.type=aes
+spring.shardingsphere.encrypt.encryptors.aes_encrypt_strategy.props.aes.key.value=123456
 spring.shardingsphere.encrypt.tables.t_order.columns.user_id.cipher-column=user_encrypt
 spring.shardingsphere.encrypt.tables.t_order.columns.user_id.assisted-query-column=user_assisted
 spring.shardingsphere.encrypt.tables.t_order.columns.user_id.plain-column=user_decrypt
-spring.shardingsphere.encrypt.tables.t_order.columns.user_id.encrypt-strategy-name=aes_encrypt_strategy
+spring.shardingsphere.encrypt.tables.t_order.columns.user_id.encryptor-name=aes_encrypt_strategy
 
 spring.shardingsphere.props.sql.show=true
 spring.shardingsphere.props.query.with.cipher.column=true
@@ -194,7 +194,7 @@ spring.shardingsphere.sharding.encrypt-rule.encryptors.aes_encrypt_strategy.prop
 spring.shardingsphere.sharding.encrypt-rule.tables.t_order.columns.user_id.cipher-column=user_encrypt
 spring.shardingsphere.sharding.encrypt-rule.tables.t_order.columns.user_id.assisted-query-column=user_assisted
 spring.shardingsphere.sharding.encrypt-rule.tables.t_order.columns.user_id.plain-column=user_decrypt
-spring.shardingsphere.sharding.encrypt-rule.tables.t_order.columns.user_id.encrypt_strategy_name=aes_encrypt_strategy
+spring.shardingsphere.sharding.encrypt-rule.tables.t_order.columns.user_id.encryptor-name=aes_encrypt_strategy
 ```
 
 ### 治理
@@ -362,7 +362,7 @@ spring.shardingsphere.encrypt.encryptors.<encrypt-strategy-name>.props.<property
 spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.cipher-column= #存储密文的字段
 spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.assisted-query-column= #辅助查询字段，针对 QueryAssistedEncryptAlgorithm 类型的加解密算法进行辅助查询
 spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.plain-column= #存储明文的字段
-spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.encrypt-strategy-name= #加密策略名字
+spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.encryptor-name= #加密策略名字
 ```
 ### 治理
 
