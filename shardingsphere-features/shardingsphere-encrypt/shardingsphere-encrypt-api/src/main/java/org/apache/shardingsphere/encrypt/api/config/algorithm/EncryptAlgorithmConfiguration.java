@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.api.config.strategy;
+package org.apache.shardingsphere.encrypt.api.config.algorithm;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
@@ -23,14 +23,14 @@ import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
 import java.util.Properties;
 
 /**
- * Encrypt strategy configuration for SPI.
+ * Encrypt algorithm configuration.
  */
 @Getter
-public final class EncryptStrategyConfiguration extends TypedSPIConfiguration {
+public final class EncryptAlgorithmConfiguration extends TypedSPIConfiguration {
     
     private final String name;
     
-    public EncryptStrategyConfiguration(final String name, final String type, final Properties properties) {
+    public EncryptAlgorithmConfiguration(final String name, final String type, final Properties properties) {
         super(type, properties);
         this.name = name;
     }

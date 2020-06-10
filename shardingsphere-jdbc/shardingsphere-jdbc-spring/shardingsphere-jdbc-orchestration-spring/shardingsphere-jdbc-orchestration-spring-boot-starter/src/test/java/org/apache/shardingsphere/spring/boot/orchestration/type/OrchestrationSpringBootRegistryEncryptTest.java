@@ -21,7 +21,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.algorithm.EncryptAlgorithmConfiguration;
 import org.apache.shardingsphere.spring.boot.orchestration.registry.TestCenterRepository;
 import org.apache.shardingsphere.spring.boot.orchestration.util.EmbedTestingServer;
 import org.junit.BeforeClass;
@@ -90,10 +90,10 @@ public class OrchestrationSpringBootRegistryEncryptTest {
         assertThat(embedDataSource.getMaxTotal(), is(100));
         assertThat(embedDataSource.getUsername(), is("sa"));
         EncryptRuleConfiguration configuration = (EncryptRuleConfiguration) encryptDataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getConfigurations().iterator().next();
-        assertThat(configuration.getEncryptStrategies().size(), is(1));
-        org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration encryptStrategyConfiguration = configuration.getEncryptStrategies().iterator().next();
-        assertThat(encryptStrategyConfiguration, instanceOf(EncryptStrategyConfiguration.class));
-        assertThat(encryptStrategyConfiguration.getName(), is("order_encrypt"));
-        assertThat(((EncryptStrategyConfiguration) encryptStrategyConfiguration).getType(), is("aes"));
+        assertThat(configuration.getEncryptAlgorithms().size(), is(1));
+        EncryptAlgorithmConfiguration encryptAlgorithmConfiguration = configuration.getEncryptAlgorithms().iterator().next();
+        assertThat(encryptAlgorithmConfiguration, instanceOf(EncryptAlgorithmConfiguration.class));
+        assertThat(encryptAlgorithmConfiguration.getName(), is("order_encrypt"));
+        assertThat(encryptAlgorithmConfiguration.getType(), is("aes"));
     }
 }

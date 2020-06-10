@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.api.config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.algorithm.EncryptAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
 import java.util.Collection;
@@ -32,7 +32,7 @@ import java.util.Collection;
 @Getter
 public final class EncryptRuleConfiguration implements RuleConfiguration {
     
-    private final Collection<EncryptStrategyConfiguration> encryptStrategies;
+    private final Collection<EncryptAlgorithmConfiguration> encryptAlgorithms;
     
     private final Collection<EncryptTableRuleConfiguration> tables;
 }

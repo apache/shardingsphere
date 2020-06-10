@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.yaml.swapper;
 
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.algorithm.EncryptAlgorithmConfiguration;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptStrategyConfiguration;
@@ -42,7 +42,7 @@ public final class EncryptRuleConfigurationYamlSwapper implements YamlRuleConfig
     @Override
     public YamlEncryptRuleConfiguration swap(final EncryptRuleConfiguration data) {
         YamlEncryptRuleConfiguration result = new YamlEncryptRuleConfiguration();
-        data.getEncryptStrategies().forEach(each -> result.getEncryptStrategies().put(each.getName(), encryptStrategyConfigurationYamlSwapper.swap((EncryptStrategyConfiguration) each)));
+        data.getEncryptAlgorithms().forEach(each -> result.getEncryptStrategies().put(each.getName(), encryptStrategyConfigurationYamlSwapper.swap((EncryptAlgorithmConfiguration) each)));
         data.getTables().forEach(each -> result.getTables().put(each.getName(), encryptTableRuleConfigurationYamlSwapper.swap(each)));
         return result;
     }
@@ -52,8 +52,8 @@ public final class EncryptRuleConfigurationYamlSwapper implements YamlRuleConfig
         return new EncryptRuleConfiguration(swapEncryptStrategy(yamlConfiguration), swapTables(yamlConfiguration));
     }
     
-    private Collection<org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration> swapEncryptStrategy(final YamlEncryptRuleConfiguration yamlConfiguration) {
-        Collection<org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration> result = new LinkedList<>();
+    private Collection<EncryptAlgorithmConfiguration> swapEncryptStrategy(final YamlEncryptRuleConfiguration yamlConfiguration) {
+        Collection<EncryptAlgorithmConfiguration> result = new LinkedList<>();
         for (Entry<String, YamlEncryptStrategyConfiguration> entry : yamlConfiguration.getEncryptStrategies().entrySet()) {
             YamlEncryptStrategyConfiguration yamlEncryptStrategyConfiguration = entry.getValue();
             yamlEncryptStrategyConfiguration.setName(entry.getKey());

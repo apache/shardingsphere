@@ -21,7 +21,7 @@ import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.algorithm.EncryptAlgorithmConfiguration;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 
@@ -43,10 +43,10 @@ public final class EncryptDatabasesConfiguration implements ExampleConfiguration
         EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("user_name", "user_name", "", "user_name_plain", "name_encrypt_strategy");
         EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", "pwd", "assisted_query_pwd", "", "pwd_encrypt_strategy");
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_user", Arrays.asList(columnConfigAes, columnConfigTest));
-        Collection<org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration> encryptStrategyConfigurations = new LinkedList<>();
-        encryptStrategyConfigurations.add(new EncryptStrategyConfiguration("name_encrypt_strategy", "aes", properties));
-        encryptStrategyConfigurations.add(new EncryptStrategyConfiguration("pwd_encrypt_strategy", "assistedTest", properties));
-        EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(encryptStrategyConfigurations, Collections.singleton(tableConfig));
+        Collection<EncryptAlgorithmConfiguration> encryptAlgorithmConfigurations = new LinkedList<>();
+        encryptAlgorithmConfigurations.add(new EncryptAlgorithmConfiguration("name_encrypt_strategy", "aes", properties));
+        encryptAlgorithmConfigurations.add(new EncryptAlgorithmConfiguration("pwd_encrypt_strategy", "assistedTest", properties));
+        EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(encryptAlgorithmConfigurations, Collections.singleton(tableConfig));
         try {
             return ShardingSphereDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(encryptRuleConfiguration), properties);
         } catch (final SQLException ex) {

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.algorithm.EncryptAlgorithmConfiguration;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -51,14 +51,12 @@ public final class EncryptShadowDatabasesConfiguration implements ExampleConfigu
         return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Arrays.asList(shadowRuleConfiguration, encryptRuleConfiguration), properties);
     }
     
-    private Collection<org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration> getEncryptStrategyConfigurations() {
-        Collection<org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration> result = new LinkedList<>();
+    private Collection<EncryptAlgorithmConfiguration> getEncryptStrategyConfigurations() {
+        Collection<EncryptAlgorithmConfiguration> result = new LinkedList<>();
         Properties properties = new Properties();
         properties.setProperty("aes.key.value", "123456");
-        org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration nameEncryptStrategyConfiguration = new EncryptStrategyConfiguration("name_encrypt_strategy", "aes", properties);
-        org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration pwdEncryptStrategyConfiguration = new EncryptStrategyConfiguration("pwd_encrypt_strategy", "assistedTest", null);
-        result.add(nameEncryptStrategyConfiguration);
-        result.add(pwdEncryptStrategyConfiguration);
+        result.add(new EncryptAlgorithmConfiguration("name_encrypt_strategy", "aes", properties));
+        result.add(new EncryptAlgorithmConfiguration("pwd_encrypt_strategy", "assistedTest", null));
         return result;
     }
     

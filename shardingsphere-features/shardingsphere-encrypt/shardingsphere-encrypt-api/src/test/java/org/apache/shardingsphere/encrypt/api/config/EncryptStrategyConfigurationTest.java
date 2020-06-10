@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.api.config;
 
-import org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.algorithm.EncryptAlgorithmConfiguration;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -29,12 +29,12 @@ public final class EncryptStrategyConfigurationTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertConstructorWithoutType() {
-        new EncryptStrategyConfiguration("test_encrypt_strategy", null, new Properties());
+        new EncryptAlgorithmConfiguration("test_encrypt_strategy", null, new Properties());
     }
     
     @Test
     public void assertConstructorWithoutAssistedQueryColumnsAndProperties() {
-        EncryptStrategyConfiguration actual = new EncryptStrategyConfiguration("test_encrypt_strategy", "TEST", new Properties());
+        EncryptAlgorithmConfiguration actual = new EncryptAlgorithmConfiguration("test_encrypt_strategy", "TEST", new Properties());
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getProperties(), is(new Properties()));
     }
@@ -43,7 +43,7 @@ public final class EncryptStrategyConfigurationTest {
     public void assertConstructorWithMinArguments() {
         Properties props = new Properties();
         props.setProperty("key", "value");
-        EncryptStrategyConfiguration actual = new EncryptStrategyConfiguration("test_encrypt_strategy", "TEST", props);
+        EncryptAlgorithmConfiguration actual = new EncryptAlgorithmConfiguration("test_encrypt_strategy", "TEST", props);
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getProperties(), is(props));
     }
@@ -52,7 +52,7 @@ public final class EncryptStrategyConfigurationTest {
     public void assertConstructorWithMaxArguments() {
         Properties props = new Properties();
         props.setProperty("key", "value");
-        EncryptStrategyConfiguration actual = new EncryptStrategyConfiguration("test_encrypt_strategy", "TEST", props);
+        EncryptAlgorithmConfiguration actual = new EncryptAlgorithmConfiguration("test_encrypt_strategy", "TEST", props);
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getProperties(), is(props));
     }
