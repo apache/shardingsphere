@@ -142,10 +142,10 @@ public final class EncryptTable {
     }
     
     /**
-     * Find encrypt strategy name.
+     * Find encrypt algorithm name.
      *
      * @param logicColumn column name
-     * @return encrypt strategy name
+     * @return encrypt algorithm name
      */
     public Optional<String> findEncryptorName(final String logicColumn) {
         Optional<String> originLogicColumnName = findOriginLogicColumnName(logicColumn);

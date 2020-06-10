@@ -409,7 +409,7 @@ encryptRule:
           plainColumn: #plaintext column name
           cipherColumn: #ciphertext column name
           assistedQueryColumn: #AssistedColumns for query，when use QueryAssistedEncryptAlgorithm, it can help query encrypted data
-          encryptorName: #encrypt strategy name
+          encryptorName: #encrypt algorithm name
 props:
   query.with.cipher.column: true #Whether use cipherColumn to query or not
 ```

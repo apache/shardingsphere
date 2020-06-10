@@ -362,7 +362,7 @@ spring.shardingsphere.encrypt.encryptors.<encrypt-algorithm-name>.props.<propert
 spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.cipher-column= #存储密文的字段
 spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.assisted-query-column= #辅助查询字段，针对 QueryAssistedEncryptAlgorithm 类型的加解密算法进行辅助查询
 spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.plain-column= #存储明文的字段
-spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.encryptor-name= #加密策略名字
+spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.encryptor-name= #加密算法名字
 ```
 ### 治理
 

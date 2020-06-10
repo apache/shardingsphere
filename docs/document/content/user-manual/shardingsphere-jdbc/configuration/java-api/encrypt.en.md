@@ -9,10 +9,10 @@ Class name: org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguratio
 
 Attributes:
 
-| *Name*         | *DataType*                                  | *Description*       |
-| -------------- | ------------------------------------------- | ------------------- |
-| encryptors (+) | Collection\<EncryptAlgorithmConfiguration\> | Encrypt strategies  |
-| tables (+)     | Collection\<EncryptTableRuleConfiguration\> | Encrypt table rules |
+| *Name*         | *DataType*                                  | *Description*                     |
+| -------------- | ------------------------------------------- | --------------------------------- |
+| encryptors (+) | Collection\<EncryptAlgorithmConfiguration\> | Encrypt algorithm configurations  |
+| tables (+)     | Collection\<EncryptTableRuleConfiguration\> | Encrypt table rule configurations |
 
 ## Encrypt Table Rule Configuration
 
@@ -20,10 +20,10 @@ Class name: org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleCo
 
 Attributes:
 
-| *Name*      | *DataType*                                   | *Description*        |
-| ----------- | -------------------------------------------- | -------------------- |
-| name        | String                                       | Table name           |
-| columns (+) | Collection\<EncryptColumnRuleConfiguration\> | Encrypt column rules |
+| *Name*      | *DataType*                                   | *Description*                      |
+| ----------- | -------------------------------------------- | ---------------------------------- |
+| name        | String                                       | Table name                         |
+| columns (+) | Collection\<EncryptColumnRuleConfiguration\> | Encrypt column rule configurations |
 
 ### Encrypt Column Rule Configuration
 

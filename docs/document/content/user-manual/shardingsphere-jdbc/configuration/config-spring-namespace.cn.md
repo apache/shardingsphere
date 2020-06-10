@@ -640,7 +640,7 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
 
 | *名称*     | *类型* | *说明*                                                                   |
 | --------- | ----- | ------------------------------------------------------------------------ |
-| id        | 属性  | 加密策略的名称                                                              |
+| id        | 属性  | 加密算法的名称                                                              |
 | type      | 属性  | 加解密算法类型，可自定义或选择内置类型：MD5/AES                                |
 | props-ref | 属性  | 属性配置, 注意：使用AES加密算法，需要配置 AES 加密算法的 KEY 属性：aes.key.value |
 

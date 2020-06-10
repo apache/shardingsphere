@@ -401,7 +401,7 @@ encryptRule:
   encryptors:
     <encrypt-algorithm-name>:
       type: #加解密算法类型，可自定义或选择内置类型：MD5/AES 
-      props: #属性配置, 注意：使用 AES 加算法，需要配置AES加密算法的 KEY 属性：aes.key.value
+      props: #属性配置, 注意：使用 AES 加密算法，需要配置 AES 加密算法的 KEY 属性：aes.key.value
         aes.key.value: 
   tables:
     <table-name>:
@@ -410,7 +410,7 @@ encryptRule:
           plainColumn: #存储明文的字段
           cipherColumn: #存储密文的字段
           assistedQueryColumn: #辅助查询字段，针对 QueryAssistedEncryptAlgorithm 类型的加解密算法进行辅助查询
-          encryptorName: #加密策略名称
+          encryptorName: #加密算法名称
 props:
   query.with.cipher.column: true #是否使用密文列查询
 ```

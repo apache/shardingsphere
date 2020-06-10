@@ -665,7 +665,7 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encryp
 
 | *Name*    | *Type*    | *Description*                                                   |
 | --------- | --------- | --------------------------------------------------------------- |
-| id        | Attribute | Names of Encrypt strategy                                       |
+| id        | Attribute | Names of Encrypt algorithm                                      |
 | type      | Attribute | Types of Encrypt algorithm, including MD5/AES or customize type |
 | props-ref | Attribute | Attribute configurations                                        |
 

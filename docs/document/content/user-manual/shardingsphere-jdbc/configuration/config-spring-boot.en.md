@@ -360,7 +360,7 @@ spring.shardingsphere.encrypt.encryptors.<encrypt-algorithm-name>.props.<propert
 spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.cipher-column= #Cipher column name
 spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.assisted-query-column= #AssistedColumns for query，when use QueryAssistedEncryptAlgorithm, it can help query encrypted data
 spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.plain-column= #Plain column name
-spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.encryptor-name= #Encrypt strategy name
+spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.encryptor-name= #Encrypt algorithm name
 ```
 
 ### Orchestration

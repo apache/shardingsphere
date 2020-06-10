@@ -27,14 +27,14 @@ just like using ordinary data.
 ### Encryption Rule
 
 Before explaining the whole process in detail, we need to understand the encryption rules and configuration, which is the basis of understanding the whole process. 
-The encryption configuration is mainly divided into four parts: data source configuration, encrypt strategy configuration, encryption table rule configuration, and query attribute configuration.
+The encryption configuration is mainly divided into four parts: data source configuration, encrypt algorithm configuration, encryption table rule configuration, and query attribute configuration.
  The details are shown in the following figure:
 
 ![2](https://shardingsphere.apache.org/document/current/img/encrypt/2_en.png)
 
 **Datasource Configuration**：The configuration of DataSource.
 
-**Encrypt Strategy Configuration**：What kind of encryption strategy to use for encryption and decryption. 
+**Encrypt Algorithm Configuration**：What kind of encryption strategy to use for encryption and decryption. 
 Currently ShardingSphere has two built-in encryption/decryption strategies: AES / MD5. 
 Users can also implement a set of encryption/decryption algorithms by implementing the interface provided by Apache ShardingSphere.
 
