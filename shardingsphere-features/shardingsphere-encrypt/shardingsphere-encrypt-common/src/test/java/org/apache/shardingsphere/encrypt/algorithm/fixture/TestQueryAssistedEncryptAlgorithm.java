@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.strategy.fixture;
+package org.apache.shardingsphere.encrypt.algorithm.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 
 import java.util.Properties;
 
 @Getter
 @Setter
-public final class TestEncryptAlgorithm implements EncryptAlgorithm {
+public final class TestQueryAssistedEncryptAlgorithm implements QueryAssistedEncryptAlgorithm {
     
     private Properties properties = new Properties();
     
     @Override
     public String getType() {
-        return "test";
+        return "assistedTest";
     }
     
     @Override
@@ -46,5 +46,10 @@ public final class TestEncryptAlgorithm implements EncryptAlgorithm {
     @Override
     public Object decrypt(final String ciphertext) {
         return "decryptValue";
+    }
+    
+    @Override
+    public String queryAssistedEncrypt(final String plaintext) {
+        return "assistedEncryptValue";
     }
 }
