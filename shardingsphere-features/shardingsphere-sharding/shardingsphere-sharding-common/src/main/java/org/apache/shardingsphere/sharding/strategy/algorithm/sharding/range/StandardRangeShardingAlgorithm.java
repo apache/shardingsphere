@@ -21,13 +21,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Range;
 import com.google.common.math.LongMath;
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
-import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 
 import java.math.RoundingMode;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
 
@@ -53,26 +48,13 @@ public final class StandardRangeShardingAlgorithm extends AbstractRangeShardingA
     
     private static final String PARTITION_VOLUME = "partition.volume";
     
-    private Map<Integer, Range<Long>> partitionRangeMap;
-    
-    @Getter
-    @Setter
-    private Properties properties = new Properties();
-    
     @Override
-    public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Long> shardingValue) {
-        checkInit();
-        return getTargetNameByPreciseShardingValue(availableTargetNames, shardingValue, partitionRangeMap);
+    public String getType() {
+        return "STANDARD_RANGE";
     }
-    
+
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Long> shardingValue) {
-        checkInit();
-        return getTargetNameByRangeShardingValue(availableTargetNames, shardingValue, partitionRangeMap);
-    }
-    
-    @Override
-    public void initProperties() {
+    public Map<Integer, Range<Long>> createPartitionRangeMap(final Properties properties) {
         Preconditions.checkNotNull(properties.get(PARTITION_LOWER), "Standard range sharding algorithm partition lower cannot be null.");
         Preconditions.checkNotNull(properties.get(PARTITION_UPPER), "Standard range sharding algorithm partition upper cannot be null.");
         Preconditions.checkNotNull(properties.get(PARTITION_VOLUME), "Standard range sharding algorithm partition volume cannot be null.");
@@ -81,21 +63,12 @@ public final class StandardRangeShardingAlgorithm extends AbstractRangeShardingA
         long volume = Long.parseLong(properties.get(PARTITION_VOLUME).toString());
         Preconditions.checkArgument(upper - lower >= volume, "Standard range sharding algorithm partition range can not be smaller than volume.");
         int partitionSize = Math.toIntExact(LongMath.divide(upper - lower, volume, RoundingMode.CEILING));
-        partitionRangeMap = Maps.newHashMapWithExpectedSize(partitionSize + 2);
-        partitionRangeMap.put(0, Range.lessThan(lower));
+        Map<Integer, Range<Long>> result = Maps.newHashMapWithExpectedSize(partitionSize + 2);
+        result.put(0, Range.lessThan(lower));
         for (int i = 0; i < partitionSize; i++) {
-            partitionRangeMap.put(i + 1, Range.closedOpen(lower + i * volume, Math.min(lower + (i + 1) * volume, upper)));
+            result.put(i + 1, Range.closedOpen(lower + i * volume, Math.min(lower + (i + 1) * volume, upper)));
         }
-        partitionRangeMap.put(partitionSize + 1, Range.atLeast(upper));
-    }
-    
-    @Override
-    public String getType() {
-        return "STANDARD_RANGE";
-    }
-
-    @Override
-    public int getAutoTablesAmount() {
-        return partitionRangeMap.size();
+        result.put(partitionSize + 1, Range.atLeast(upper));
+        return result;
     }
 }

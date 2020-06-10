@@ -81,15 +81,37 @@ public final class CustomDateTimeShardingAlgorithm implements StandardShardingAl
     
     private int stepAmount;
     
-    private volatile boolean initialized;
-    
     @Getter
     @Setter
     private Properties properties = new Properties();
+
+    @Override
+    public String getType() {
+        return "CUSTOM_DATE_TIME";
+    }
+
+    @Override
+    public void init() {
+        Preconditions.checkNotNull(properties.getProperty(DATE_TIME_FORMAT));
+        Preconditions.checkNotNull(properties.getProperty(TABLE_SUFFIX_FORMAT));
+        Preconditions.checkNotNull(properties.getProperty(DEFAULT_LOWER));
+        stepUnit = properties.getProperty(STEP_UNIT) == null
+                ? ChronoUnit.DAYS
+                : generateStepUnit();
+        stepAmount = Integer.parseInt(properties.getProperty(STEP_AMOUNT, "1"));
+        datetimeFormatter = DateTimeFormatter.ofPattern(properties.getProperty(DATE_TIME_FORMAT));
+        try {
+            parseDateTimeForValue(properties.getProperty(DEFAULT_LOWER));
+            if (properties.getProperty(DEFAULT_UPPER) != null) {
+                parseDateTimeForValue(properties.getProperty(DEFAULT_UPPER));
+            }
+        } catch (DateTimeParseException e) {
+            throw new UnsupportedOperationException("can't apply shard value for default lower/upper values", e);
+        }
+    }
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
-        checkInit();
         return availableTargetNames.stream()
                 .filter(tableName -> tableName.endsWith(formatForDateTime(parseDateTimeForValue(shardingValue.getValue().toString()))))
                 .findFirst().orElseThrow(() -> new UnsupportedOperationException(
@@ -98,7 +120,6 @@ public final class CustomDateTimeShardingAlgorithm implements StandardShardingAl
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
-        checkInit();
         boolean hasStart = shardingValue.getValueRange().hasLowerBound();
         boolean hasEnd = shardingValue.getValueRange().hasUpperBound();
         Set<String> tables = new HashSet<>();
@@ -135,36 +156,6 @@ public final class CustomDateTimeShardingAlgorithm implements StandardShardingAl
         availableTargetNames.parallelStream().filter(tableName -> tableName.endsWith(suffix)).findAny().map(tables::add);
     }
     
-    private void checkInit() {
-        if (!initialized) {
-            synchronized (this) {
-                if (!initialized) {
-                    verifyProperties();
-                    initialized = true;
-                }
-            }
-        }
-    }
-    
-    private void verifyProperties() {
-        Preconditions.checkNotNull(properties.getProperty(DATE_TIME_FORMAT));
-        Preconditions.checkNotNull(properties.getProperty(TABLE_SUFFIX_FORMAT));
-        Preconditions.checkNotNull(properties.getProperty(DEFAULT_LOWER));
-        stepUnit = properties.getProperty(STEP_UNIT) == null
-                ? ChronoUnit.DAYS
-                : generateStepUnit();
-        stepAmount = Integer.parseInt(properties.getProperty(STEP_AMOUNT, "1"));
-        datetimeFormatter = DateTimeFormatter.ofPattern(properties.getProperty(DATE_TIME_FORMAT));
-        try {
-            parseDateTimeForValue(properties.getProperty(DEFAULT_LOWER));
-            if (properties.getProperty(DEFAULT_UPPER) != null) {
-                parseDateTimeForValue(properties.getProperty(DEFAULT_UPPER));
-            }
-        } catch (DateTimeParseException e) {
-            throw new UnsupportedOperationException("can't apply shard value for default lower/upper values", e);
-        }
-    }
-    
     private ChronoUnit generateStepUnit() {
         for (ChronoUnit unit : ChronoUnit.values()) {
             if (unit.toString().equalsIgnoreCase(properties.getProperty(STEP_UNIT))) {
@@ -173,10 +164,5 @@ public final class CustomDateTimeShardingAlgorithm implements StandardShardingAl
         }
         throw new UnsupportedOperationException(
                 String.format("can't find step unit for specified datetime.step.unit prop: %s", properties.getProperty(STEP_UNIT)));
-    }
-    
-    @Override
-    public String getType() {
-        return "CUSTOM_DATE_TIME";
     }
 }

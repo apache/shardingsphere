@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.sharding.spi.algorithm;
 
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
 import org.apache.shardingsphere.infra.spi.type.TypedSPI;
 
 /**
  * Sharding algorithm.
  */
-public interface ShardingAlgorithm extends TypedSPI {
+public interface ShardingAlgorithm extends TypedSPI, ShardingSphereAlgorithmPostProcessor {
 }

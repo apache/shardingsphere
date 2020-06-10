@@ -49,4 +49,8 @@ public final class HintShardingAlgorithmFixture implements HintShardingAlgorithm
     @Override
     public void setProperties(final Properties properties) {
     }
+
+    @Override
+    public void init() {
+    }
 }

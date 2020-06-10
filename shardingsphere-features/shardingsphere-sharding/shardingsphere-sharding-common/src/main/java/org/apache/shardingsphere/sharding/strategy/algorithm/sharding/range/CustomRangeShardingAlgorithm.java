@@ -22,13 +22,9 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Range;
 import com.google.common.primitives.Longs;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
-import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 
-import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -53,52 +49,30 @@ public final class CustomRangeShardingAlgorithm extends AbstractRangeShardingAlg
     
     private static final String PARTITION_RANGES = "partition.ranges";
     
-    private Map<Integer, Range<Long>> partitionRangeMap;
-    
-    @Getter
-    @Setter
-    private Properties properties = new Properties();
-    
-    @Override
-    public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Long> shardingValue) {
-        checkInit();
-        return getTargetNameByPreciseShardingValue(availableTargetNames, shardingValue, partitionRangeMap);
-    }
-    
-    @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Long> shardingValue) {
-        checkInit();
-        return getTargetNameByRangeShardingValue(availableTargetNames, shardingValue, partitionRangeMap);
-    }
-    
-    @Override
-    public void initProperties() {
-        Preconditions.checkNotNull(properties.get(PARTITION_RANGES), "Custom range sharding algorithm partition ranges cannot be null.");
-        List<Long> partitionRanges = Splitter.on(",").trimResults().splitToList(properties.get(PARTITION_RANGES).toString())
-                .stream().map(Longs::tryParse).filter(Objects::nonNull).sorted().collect(Collectors.toList());
-        Preconditions.checkArgument(CollectionUtils.isNotEmpty(partitionRanges), "Custom range sharding algorithm partition ranges is not valid.");
-        partitionRangeMap = Maps.newHashMapWithExpectedSize(partitionRanges.size() + 1);
-        for (int i = 0; i < partitionRanges.size(); i++) {
-            Long rangeValue = partitionRanges.get(i);
-            if (i == 0) {
-                partitionRangeMap.put(i, Range.lessThan(rangeValue));
-            } else {
-                Long previousRangeValue = partitionRanges.get(i - 1);
-                partitionRangeMap.put(i, Range.closedOpen(previousRangeValue, rangeValue));
-            }
-            if (i == partitionRanges.size() - 1) {
-                partitionRangeMap.put(i + 1, Range.atLeast(rangeValue));
-            }
-        }
-    }
-    
     @Override
     public String getType() {
         return "CUSTOM_RANGE";
     }
 
     @Override
-    public int getAutoTablesAmount() {
-        return partitionRangeMap.size();
+    public Map<Integer, Range<Long>> createPartitionRangeMap(final Properties properties) {
+        Preconditions.checkNotNull(properties.get(PARTITION_RANGES), "Custom range sharding algorithm partition ranges cannot be null.");
+        List<Long> partitionRanges = Splitter.on(",").trimResults().splitToList(properties.get(PARTITION_RANGES).toString())
+                .stream().map(Longs::tryParse).filter(Objects::nonNull).sorted().collect(Collectors.toList());
+        Preconditions.checkArgument(CollectionUtils.isNotEmpty(partitionRanges), "Custom range sharding algorithm partition ranges is not valid.");
+        Map<Integer, Range<Long>> result = Maps.newHashMapWithExpectedSize(partitionRanges.size() + 1);
+        for (int i = 0; i < partitionRanges.size(); i++) {
+            Long rangeValue = partitionRanges.get(i);
+            if (i == 0) {
+                result.put(i, Range.lessThan(rangeValue));
+            } else {
+                Long previousRangeValue = partitionRanges.get(i - 1);
+                result.put(i, Range.closedOpen(previousRangeValue, rangeValue));
+            }
+            if (i == partitionRanges.size() - 1) {
+                result.put(i + 1, Range.atLeast(rangeValue));
+            }
+        }
+        return result;
     }
 }

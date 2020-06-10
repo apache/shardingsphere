@@ -63,4 +63,8 @@ public final class StandardShardingAlgorithmFixture implements StandardShardingA
     @Override
     public void setProperties(final Properties properties) {
     }
+
+    @Override
+    public void init() {
+    }
 }

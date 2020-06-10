@@ -71,4 +71,8 @@ public final class StandardModuloAlgorithm implements StandardShardingAlgorithm<
     @Override
     public void setProperties(final Properties properties) {
     }
+
+    @Override
+    public void init() {
+    }
 }

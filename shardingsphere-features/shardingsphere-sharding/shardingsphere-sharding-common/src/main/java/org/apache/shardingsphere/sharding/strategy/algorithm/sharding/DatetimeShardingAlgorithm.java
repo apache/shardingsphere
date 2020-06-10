@@ -55,10 +55,17 @@ public final class DatetimeShardingAlgorithm implements StandardShardingAlgorith
     @Getter
     @Setter
     private Properties properties = new Properties();
+
+    @Override
+    public void init() {
+        Preconditions.checkNotNull(properties.get(PARTITION_SECONDS), "Sharding partition volume cannot be null.");
+        Preconditions.checkState(null != properties.get(EPOCH) && checkDatetimePattern(properties.get(EPOCH).toString()), "%s pattern is required.", DATETIME_PATTERN);
+        Preconditions.checkState(null != properties.get(TOP_DATETIME) && checkDatetimePattern(properties.get(TOP_DATETIME).toString()),
+                "%s pattern is required.", DATETIME_PATTERN);
+    }
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
-        checkProperties();
         for (String each : availableTargetNames) {
             if (each.endsWith(doSharding(parseDate(shardingValue.getValue())) + "")) {
                 return each;
@@ -69,7 +76,6 @@ public final class DatetimeShardingAlgorithm implements StandardShardingAlgorith
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
-        checkProperties();
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
         int firstPartition = doSharding(parseDate(shardingValue.getValueRange().lowerEndpoint()));
         int lastPartition = doSharding(parseDate(shardingValue.getValueRange().upperEndpoint()));
@@ -89,13 +95,6 @@ public final class DatetimeShardingAlgorithm implements StandardShardingAlgorith
     private int doSharding(final long shardingValue) {
         int position = (int) (Math.floor(shardingValue / getPartitionValue()));
         return Math.max(0, position);
-    }
-    
-    private void checkProperties() {
-        Preconditions.checkNotNull(properties.get(PARTITION_SECONDS), "Sharding partition volume cannot be null.");
-        Preconditions.checkState(null != properties.get(EPOCH) && checkDatetimePattern(properties.get(EPOCH).toString()), "%s pattern is required.", DATETIME_PATTERN);
-        Preconditions.checkState(null != properties.get(TOP_DATETIME) && checkDatetimePattern(properties.get(TOP_DATETIME).toString()),
-                "%s pattern is required.", DATETIME_PATTERN);
     }
     
     private boolean checkDatetimePattern(final String datetime) {
