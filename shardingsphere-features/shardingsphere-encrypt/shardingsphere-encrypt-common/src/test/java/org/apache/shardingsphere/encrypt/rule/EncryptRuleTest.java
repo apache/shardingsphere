@@ -53,7 +53,7 @@ public final class EncryptRuleTest {
         EncryptColumnRuleConfiguration idNumberConfig = new EncryptColumnRuleConfiguration(idNumber, "cipher_id_number", "", "plain_id_number", "aes");
         EncryptAlgorithmConfiguration encryptAlgorithmConfiguration = new EncryptAlgorithmConfiguration("assistedTest", props);
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration(table, Arrays.asList(columnConfig, idNumberConfig));
-        encryptRuleConfig = new EncryptRuleConfiguration(ImmutableMap.of("aes", encryptAlgorithmConfiguration), Collections.singleton(tableConfig));
+        encryptRuleConfig = new EncryptRuleConfiguration(Collections.singleton(tableConfig), ImmutableMap.of("aes", encryptAlgorithmConfiguration));
     }
     
     @Test

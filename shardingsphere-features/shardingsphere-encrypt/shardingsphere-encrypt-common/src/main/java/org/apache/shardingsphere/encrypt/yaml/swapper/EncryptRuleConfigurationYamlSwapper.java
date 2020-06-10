@@ -53,17 +53,7 @@ public final class EncryptRuleConfigurationYamlSwapper implements YamlRuleConfig
     
     @Override
     public EncryptRuleConfiguration swap(final YamlEncryptRuleConfiguration yamlConfiguration) {
-        return new EncryptRuleConfiguration(swapEncryptStrategy(yamlConfiguration), swapTables(yamlConfiguration));
-    }
-    
-    private Map<String, EncryptAlgorithmConfiguration> swapEncryptStrategy(final YamlEncryptRuleConfiguration yamlConfiguration) {
-        Map<String, EncryptAlgorithmConfiguration> result = new LinkedHashMap<>();
-        for (Entry<String, YamlEncryptAlgorithmConfiguration> entry : yamlConfiguration.getEncryptors().entrySet()) {
-            YamlEncryptAlgorithmConfiguration yamlEncryptStrategyConfiguration = entry.getValue();
-            yamlEncryptStrategyConfiguration.setName(entry.getKey());
-            result.put(entry.getKey(), encryptAlgorithmConfigurationYamlSwapper.swap(yamlEncryptStrategyConfiguration));
-        }
-        return result;
+        return new EncryptRuleConfiguration(swapTables(yamlConfiguration), swapEncryptAlgorithm(yamlConfiguration));
     }
     
     private Collection<EncryptTableRuleConfiguration> swapTables(final YamlEncryptRuleConfiguration yamlConfiguration) {
@@ -72,6 +62,16 @@ public final class EncryptRuleConfigurationYamlSwapper implements YamlRuleConfig
             YamlEncryptTableRuleConfiguration yamlEncryptTableRuleConfiguration = entry.getValue();
             yamlEncryptTableRuleConfiguration.setName(entry.getKey());
             result.add(encryptTableRuleConfigurationYamlSwapper.swap(yamlEncryptTableRuleConfiguration));
+        }
+        return result;
+    }
+    
+    private Map<String, EncryptAlgorithmConfiguration> swapEncryptAlgorithm(final YamlEncryptRuleConfiguration yamlConfiguration) {
+        Map<String, EncryptAlgorithmConfiguration> result = new LinkedHashMap<>();
+        for (Entry<String, YamlEncryptAlgorithmConfiguration> entry : yamlConfiguration.getEncryptors().entrySet()) {
+            YamlEncryptAlgorithmConfiguration yamlEncryptAlgorithmConfiguration = entry.getValue();
+            yamlEncryptAlgorithmConfiguration.setName(entry.getKey());
+            result.put(entry.getKey(), encryptAlgorithmConfigurationYamlSwapper.swap(yamlEncryptAlgorithmConfiguration));
         }
         return result;
     }

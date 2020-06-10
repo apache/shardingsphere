@@ -44,21 +44,12 @@ public final class EncryptShadowDatabasesConfiguration implements ExampleConfigu
         Map<String, DataSource> dataSourceMap = new HashMap<>();
         dataSourceMap.put("ds", DataSourceUtil.createDataSource("demo_ds"));
         dataSourceMap.put("ds_0", DataSourceUtil.createDataSource("shadow_demo_ds"));
-        EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(getEncryptAlgorithmConfigurations(), getEncryptTableRuleConfigurations());
+        EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(getEncryptTableRuleConfigurations(), getEncryptAlgorithmConfigurations());
         Properties properties = new Properties();
         properties.setProperty("sql.show", "true");
         properties.setProperty("query.with.cipher.column", "true");
         ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration("shadow", Collections.singletonMap("ds", "ds_0"));
         return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Arrays.asList(shadowRuleConfiguration, encryptRuleConfiguration), properties);
-    }
-    
-    private Map<String, EncryptAlgorithmConfiguration> getEncryptAlgorithmConfigurations() {
-        Map<String, EncryptAlgorithmConfiguration> result = new LinkedHashMap<>(2, 1);
-        Properties properties = new Properties();
-        properties.setProperty("aes.key.value", "123456");
-        result.put("name_encrypt_strategy", new EncryptAlgorithmConfiguration("aes", properties));
-        result.put("pwd_encrypt_strategy", new EncryptAlgorithmConfiguration("assistedTest", null));
-        return result;
     }
     
     private Collection<EncryptTableRuleConfiguration> getEncryptTableRuleConfigurations() {
@@ -67,6 +58,15 @@ public final class EncryptShadowDatabasesConfiguration implements ExampleConfigu
         columns.add(new EncryptColumnRuleConfiguration("user_name", "user_name", "", "user_name_plain", "name_encrypt_strategy"));
         columns.add(new EncryptColumnRuleConfiguration("pwd", "pwd", "assisted_query_pwd", "", "pwd_encrypt_strategy"));
         result.add(new EncryptTableRuleConfiguration("t_user", columns));
+        return result;
+    }
+    
+    private Map<String, EncryptAlgorithmConfiguration> getEncryptAlgorithmConfigurations() {
+        Map<String, EncryptAlgorithmConfiguration> result = new LinkedHashMap<>(2, 1);
+        Properties properties = new Properties();
+        properties.setProperty("aes.key.value", "123456");
+        result.put("name_encrypt_strategy", new EncryptAlgorithmConfiguration("aes", properties));
+        result.put("pwd_encrypt_strategy", new EncryptAlgorithmConfiguration("assistedTest", null));
         return result;
     }
 }

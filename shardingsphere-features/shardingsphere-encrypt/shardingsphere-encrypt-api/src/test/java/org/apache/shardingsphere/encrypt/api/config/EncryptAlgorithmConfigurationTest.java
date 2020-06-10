@@ -25,7 +25,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class EncryptStrategyConfigurationTest {
+public final class EncryptAlgorithmConfigurationTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertConstructorWithoutType() {

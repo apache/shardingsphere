@@ -9,10 +9,10 @@ Class name: org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguratio
 
 Attributes:
 
-| *Name*                | *DataType*                                  | *Description*       |
-| --------------------- | ------------------------------------------- | ------------------- |
-| encryptors (+) | Collection\<EncryptStrategyConfiguration\>  | Encrypt strategies  |
-| tables (+)            | Collection\<EncryptTableRuleConfiguration\> | Encrypt table rules |
+| *Name*         | *DataType*                                  | *Description*       |
+| -------------- | ------------------------------------------- | ------------------- |
+| encryptors (+) | Collection\<EncryptAlgorithmConfiguration\> | Encrypt strategies  |
+| tables (+)     | Collection\<EncryptTableRuleConfiguration\> | Encrypt table rules |
 
 ## Encrypt Table Rule Configuration
 
@@ -37,19 +37,19 @@ Attributes:
 | cipherColumn            | String     | Cipher column name         |
 | assistedQueryColumn (?) | String     | Assisted query column name |
 | plainColumn (?)         | String     | Plain column name          |
-| encryptorName     | String     | Encrypt strategy name      |
+| encryptorName           | String     | Encrypt algorithm name     |
 
-## Encrypt Strategy Configuration
+## Encrypt Algorithm Configuration
 
-Class name: org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration
+Class name: org.apache.shardingsphere.encrypt.api.config.strategy.EncryptAlgorithmConfiguration
 
 Attributes:
 
-| *Name*     | *DataType* | *Description*               |
-| ---------- | ---------- | --------------------------- |
-| name       | String     | Encrypt strategy name       |
-| type       | String     | Encrypt strategy type       |
-| properties | Properties | Encrypt strategy properties |
+| *Name*     | *DataType* | *Description*                |
+| ---------- | ---------- | ---------------------------- |
+| name       | String     | Encrypt algorithm name       |
+| type       | String     | Encrypt algorithm type       |
+| properties | Properties | Encrypt algorithm properties |
 
 Apache ShardingSphere built-in implemented classes of encrypt algorithm are:
 

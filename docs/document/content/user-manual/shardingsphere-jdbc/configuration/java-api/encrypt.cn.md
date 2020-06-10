@@ -9,10 +9,10 @@ weight = 3
 
 可配置属性：
 
-| *名称*                 | *数据类型*                                   | *说明*       |
-| --------------------- | ------------------------------------------- | ------------ |
-| encryptors (+) | Collection\<EncryptStrategyConfiguration\>  | 加解密策略列表 |
-| tables (+)            | Collection\<EncryptTableRuleConfiguration\> | 加密表规则列表 |
+| *名称*          | *数据类型*                                   | *说明*       |
+| -------------- | ------------------------------------------- | ------------ |
+| encryptors (+) | Collection\<EncryptAlgorithmConfiguration\> | 加解密算法列表 |
+| tables (+)     | Collection\<EncryptTableRuleConfiguration\> | 加密表规则列表 |
 
 ## 加密表规则配置
 
@@ -37,23 +37,23 @@ weight = 3
 | cipherColumn            | String   | 密文列名称     |
 | assistedQueryColumn (?) | String   | 查询辅助列名称 |
 | plainColumn (?)         | String   | 原文列名称     |
-| encryptorName     | String   | 加密策略名称   |
+| encryptorName           | String   | 加密算法名称   |
 
-## 加解密策略配置
+## 加解密算法配置
 
-类名称：org.apache.shardingsphere.encrypt.api.config.strategy.EncryptStrategyConfiguration
+类名称：org.apache.shardingsphere.encrypt.api.config.strategy.EncryptAlgorithmConfiguration
 
 可配置属性：
 
 | *名称*      |*数据类型*   | *说明*           |
 | ---------- | ---------- | ---------------- |
-| name       | String     | 加解密策略名称     |
-| type       | String     | 加解密策略类型     |
-| properties | Properties | 加解密策略属性配置 |
+| name       | String     | 加解密算法名称     |
+| type       | String     | 加解密算法类型     |
+| properties | Properties | 加解密算法属性配置 |
 
 Apache ShardingSphere 内置的加解密算法实现类包括：
 
-### MD5 加解密策略
+### MD5 加解密算法
 
 类名称：org.apache.shardingsphere.encrypt.algorithm.MD5EncryptAlgorithm
 

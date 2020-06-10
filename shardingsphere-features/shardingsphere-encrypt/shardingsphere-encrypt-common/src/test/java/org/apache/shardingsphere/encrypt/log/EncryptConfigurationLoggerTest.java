@@ -89,7 +89,7 @@ public final class EncryptConfigurationLoggerTest {
         EncryptAlgorithmConfiguration encryptAlgorithmConfiguration = new EncryptAlgorithmConfiguration("aes", properties);
         EncryptTableRuleConfiguration encryptTableRuleConfiguration = new EncryptTableRuleConfiguration(
                 "t_encrypt", Collections.singleton(new EncryptColumnRuleConfiguration("user_id", "user_encrypt", "user_assisted", "user_decrypt", "aes_encrypt_strategy")));
-        return new EncryptRuleConfiguration(ImmutableMap.of("aes_encrypt_strategy", encryptAlgorithmConfiguration), Collections.singleton(encryptTableRuleConfiguration));
+        return new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfiguration), ImmutableMap.of("aes_encrypt_strategy", encryptAlgorithmConfiguration));
     }
     
     private void assertLogInfo(final String logContent) {
