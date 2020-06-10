@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.NoneShardingStrate
 import org.apache.shardingsphere.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.spi.keygen.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.strategy.algorithm.keygen.fixture.IncrementKeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.ModuloShardingAlgorithm;
 import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.InlineShardingAlgorithm;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -89,12 +90,12 @@ public final class TableRuleTest {
     }
 
     @Test
-    public void assertCreateAutoTableRuleWithActualDataSources() {
+    public void assertCreateAutoTableRuleWithModAlgorithm() {
         ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
         ShardingAutoTableRuleConfiguration tableRuleConfig = new ShardingAutoTableRuleConfiguration("LOGIC_TABLE", "ds0,ds1");
-        InlineShardingAlgorithm shardingAlgorithm = new InlineShardingAlgorithm();
+        ModuloShardingAlgorithm shardingAlgorithm = new ModuloShardingAlgorithm();
         Properties properties = new Properties();
-        properties.setProperty("algorithm.expression", "ds${0..1}.logic_table_${0..1}");
+        properties.setProperty("mod.value", "4");
         shardingAlgorithm.setProperties(properties);
         tableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("col_1", shardingAlgorithm));
         TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1", "ds2"), null);
@@ -109,12 +110,12 @@ public final class TableRuleTest {
     }
 
     @Test
-    public void assertCreateAutoTableRuleWithoutActualDataSources() {
+    public void assertCreateAutoTableRuleWithModAlgorithmWithoutActualDataSources() {
         ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
         ShardingAutoTableRuleConfiguration tableRuleConfig = new ShardingAutoTableRuleConfiguration("LOGIC_TABLE", null);
-        InlineShardingAlgorithm shardingAlgorithm = new InlineShardingAlgorithm();
+        ModuloShardingAlgorithm shardingAlgorithm = new ModuloShardingAlgorithm();
         Properties properties = new Properties();
-        properties.setProperty("algorithm.expression", "ds${0..1}.logic_table_${0..1}");
+        properties.setProperty("mod.value", "4");
         shardingAlgorithm.setProperties(properties);
         tableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("col_1", shardingAlgorithm));
         TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1", "ds2"), null);

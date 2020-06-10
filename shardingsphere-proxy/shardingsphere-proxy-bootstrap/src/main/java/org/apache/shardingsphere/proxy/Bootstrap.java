@@ -159,6 +159,14 @@ public final class Bootstrap {
                 new SchemaContextsBuilder(createDataSourcesMap(schemaDataSources), schemaDataSources, authentication, databaseType, schemaRules, properties);
         SchemaContextsAware schemaContexts = isOrchestration ? new ProxyOrchestrationSchemaContexts(schemaContextsBuilder.build()) : schemaContextsBuilder.build();
         ProxySchemaContexts.getInstance().init(schemaContexts);
+        if (isOrchestration) {
+            persistMetaData(schemaContexts);
+        }
+    }
+    
+    private static void persistMetaData(final SchemaContextsAware schemaContexts) {
+        schemaContexts.getSchemaContexts().entrySet().forEach(entry -> ShardingOrchestrationFacade.getInstance()
+                .getMetaDataCenter().persistMetaDataCenterNode(entry.getKey(), entry.getValue().getSchema().getMetaData().getSchema()));
     }
     
     private static Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceParameter>> schemaDataSources) {

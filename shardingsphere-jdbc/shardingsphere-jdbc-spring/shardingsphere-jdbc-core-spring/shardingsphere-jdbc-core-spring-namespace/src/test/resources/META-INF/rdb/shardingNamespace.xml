@@ -45,12 +45,18 @@
             <prop key="algorithm.expression">t_order_${order_id % 4}</prop>
         </props>
     </sharding:sharding-algorithm>
+    <sharding:sharding-algorithm id="modStrategyShardingAlgorithm" type="MOD">
+        <props>
+            <prop key="mod.value">4</prop>
+        </props>
+    </sharding:sharding-algorithm>
     
     <sharding:key-generate-algorithm id="incrementAlgorithm" type="INCREMENT" />
     
     <sharding:standard-strategy id="standardStrategy" sharding-column="user_id" algorithm-ref="standardModuloDatabaseShardingAlgorithm" />
     <sharding:standard-strategy id="rangeStandardStrategy" sharding-column="order_id" algorithm-ref="standardModuloTableShardingAlgorithm" />
     <sharding:standard-strategy id="inlineStrategy" sharding-column="order_id" algorithm-ref="inlineStrategyShardingAlgorithm" />
+    <sharding:standard-strategy id="modStrategy" sharding-column="order_id" algorithm-ref="modStrategyShardingAlgorithm" />
     <sharding:complex-strategy id="complexStrategy" sharding-columns="order_id,user_id" algorithm-ref="defaultComplexKeysShardingAlgorithm" />
     <sharding:hint-strategy id="hintStrategy" algorithm-ref="defaultHintShardingAlgorithm" />
     <sharding:none-strategy id="noneStrategy" />
@@ -63,6 +69,12 @@
         <sharding:table-rules>
             <sharding:table-rule logic-table="t_order" />
         </sharding:table-rules>
+    </sharding:rule>
+
+    <sharding:rule id="autoShardingDataSourceWithAutoTableRule">
+        <sharding:auto-table-rules>
+            <sharding:auto-table-rule logic-table="t_order" actual-data-sources="dbtbl_0, dbtbl_1" sharding-strategy-ref="modStrategy" key-generator-ref="orderKeyGenerator" />
+        </sharding:auto-table-rules>
     </sharding:rule>
     
     <encrypt:encrypt-strategy id="aes_encrypt_strategy" type="AES">
@@ -80,7 +92,9 @@
     </encrypt:rule>
     
     <shardingsphere:data-source id="simpleShardingDataSource" data-source-names="dbtbl_0" rule-refs="simpleShardingDataSourceShardingRule, simpleShardingDataSourceEncryptRule" />
-    
+
+    <shardingsphere:data-source id="autoShardingDataSource" data-source-names="dbtbl_0, dbtbl_1" rule-refs="autoShardingDataSourceWithAutoTableRule" />
+
     <sharding:rule id="masterSlaveShardingDataSourceByDefaultStrategyShardingRule" default-key-generator-ref="defaultKeyGenerator">
         <sharding:table-rules>
             <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" key-generator-ref="orderKeyGenerator" />

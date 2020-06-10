@@ -1,3 +1,15 @@
+
+## 4.1.1
+
+### Enhancement
+
+1. Add Sharding-UI dockerfile
+2. Enhancement for Sharding-UI docker build 
+
+### Bug Fixes
+
+1. Fix faild to disable slave database through ui
+
 ## 4.1.0
 
 ### New Features

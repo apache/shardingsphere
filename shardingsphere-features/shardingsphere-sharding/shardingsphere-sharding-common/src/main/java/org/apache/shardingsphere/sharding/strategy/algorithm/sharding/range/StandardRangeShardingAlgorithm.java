@@ -93,4 +93,9 @@ public final class StandardRangeShardingAlgorithm extends AbstractRangeShardingA
     public String getType() {
         return "STANDARD_RANGE";
     }
+
+    @Override
+    public int getAutoTablesAmount() {
+        return partitionRangeMap.size();
+    }
 }

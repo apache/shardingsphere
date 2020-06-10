@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range;
 
 import com.google.common.collect.Range;
+import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
@@ -30,7 +31,7 @@ import java.util.Map.Entry;
 /**
  * Abstract range sharding algorithm.
  */
-public abstract class AbstractRangeShardingAlgorithm implements StandardShardingAlgorithm<Long> {
+public abstract class AbstractRangeShardingAlgorithm implements StandardShardingAlgorithm<Long>, ShardingAutoTableAlgorithm {
     
     private volatile boolean initialized;
     

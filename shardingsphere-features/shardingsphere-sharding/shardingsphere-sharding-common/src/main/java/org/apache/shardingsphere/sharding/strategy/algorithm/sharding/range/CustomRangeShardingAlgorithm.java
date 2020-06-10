@@ -96,4 +96,9 @@ public final class CustomRangeShardingAlgorithm extends AbstractRangeShardingAlg
     public String getType() {
         return "CUSTOM_RANGE";
     }
+
+    @Override
+    public int getAutoTablesAmount() {
+        return partitionRangeMap.size();
+    }
 }

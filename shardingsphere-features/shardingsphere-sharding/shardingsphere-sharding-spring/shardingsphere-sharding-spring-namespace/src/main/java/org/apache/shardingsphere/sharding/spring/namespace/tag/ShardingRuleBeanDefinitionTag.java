@@ -29,9 +29,13 @@ public final class ShardingRuleBeanDefinitionTag {
     public static final String ROOT_TAG = "rule";
     
     public static final String TABLE_RULES_TAG = "table-rules";
-    
+
+    public static final String AUTO_TABLE_RULES_TAG = "auto-table-rules";
+
     public static final String TABLE_RULE_TAG = "table-rule";
-    
+
+    public static final String AUTO_TABLE_RULE_TAG = "auto-table-rule";
+
     public static final String BINDING_TABLE_RULES_TAG = "binding-table-rules";
     
     public static final String BINDING_TABLE_RULE_TAG = "binding-table-rule";
@@ -45,13 +49,17 @@ public final class ShardingRuleBeanDefinitionTag {
     public static final String BROADCAST_TABLE_RULE_TAG = "broadcast-table-rule";
     
     public static final String TABLE_ATTRIBUTE = "table";
-    
+
     public static final String ACTUAL_DATA_NODES_ATTRIBUTE = "actual-data-nodes";
-    
+
+    public static final String ACTUAL_DATA_SOURCES_ATTRIBUTE = "actual-data-sources";
+
     public static final String DATABASE_STRATEGY_REF_ATTRIBUTE = "database-strategy-ref";
     
     public static final String TABLE_STRATEGY_REF_ATTRIBUTE = "table-strategy-ref";
-    
+
+    public static final String SHARDING_STRATEGY_REF_ATTRIBUTE = "sharding-strategy-ref";
+
     public static final String DEFAULT_DATABASE_STRATEGY_REF_ATTRIBUTE = "default-database-strategy-ref";
     
     public static final String DEFAULT_TABLE_STRATEGY_REF_ATTRIBUTE = "default-table-strategy-ref";
@@ -65,6 +73,4 @@ public final class ShardingRuleBeanDefinitionTag {
     public static final String GENERATE_KEY_COLUMN_ATTRIBUTE = "column";
     
     public static final String GENERATE_KEY_ALGORITHM_REF_TAG = "algorithm-ref";
-    
-    public static final String LOGIC_INDEX_ATTRIBUTE = "logic-index";
 }
