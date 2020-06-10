@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sharding.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.sharding.strategy.route.value.RouteValue;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -68,5 +69,12 @@ public final class CustomRangeShardingAlgorithmTest {
         assertTrue(actual.contains("t_order_1"));
         assertTrue(actual.contains("t_order_2"));
         assertTrue(actual.contains("t_order_3"));
+    }
+
+    @Ignore
+    public void assertGetAutoTablesAmount() {
+        CustomRangeShardingAlgorithm shardingAlgorithm = new CustomRangeShardingAlgorithm();
+        shardingAlgorithm.getProperties().setProperty("partition.ranges", "1,5,10");
+        assertThat(shardingAlgorithm.getAutoTablesAmount(), is(4));
     }
 }

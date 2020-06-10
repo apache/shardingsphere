@@ -45,6 +45,7 @@ public final class DatetimeShardingAlgorithmTest {
         DatetimeShardingAlgorithm shardingAlgorithm = new DatetimeShardingAlgorithm();
         shardingAlgorithm.getProperties().setProperty("partition.seconds", "4");
         shardingAlgorithm.getProperties().setProperty("epoch", "2020-01-01 00:00:00");
+        shardingAlgorithm.getProperties().setProperty("top.datetime", "2022-01-01 00:00:00");
         StandardShardingStrategyConfiguration shardingStrategyConfig = new StandardShardingStrategyConfiguration("create_time", shardingAlgorithm);
         shardingStrategy = new StandardShardingStrategy(shardingStrategyConfig);
     }
@@ -77,5 +78,14 @@ public final class DatetimeShardingAlgorithmTest {
         assertThat(actual.size(), is(2));
         assertTrue(actual.contains("t_order_1"));
         assertTrue(actual.contains("t_order_2"));
+    }
+
+    @Test
+    public void assertGetAutoTablesAmount() {
+        DatetimeShardingAlgorithm shardingAlgorithm = new DatetimeShardingAlgorithm();
+        shardingAlgorithm.getProperties().setProperty("partition.seconds", "86400");
+        shardingAlgorithm.getProperties().setProperty("epoch", "2020-01-01 00:00:00");
+        shardingAlgorithm.getProperties().setProperty("top.datetime", "2021-01-01 00:00:00");
+        assertThat(shardingAlgorithm.getAutoTablesAmount(), is(366));
     }
 }
