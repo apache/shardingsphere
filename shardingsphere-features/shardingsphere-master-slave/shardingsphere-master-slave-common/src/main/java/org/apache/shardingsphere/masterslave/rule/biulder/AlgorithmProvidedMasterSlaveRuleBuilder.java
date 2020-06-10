@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.rule;
+package org.apache.shardingsphere.masterslave.rule.biulder;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRuleBuilder;
 import org.apache.shardingsphere.masterslave.constant.MasterSlaveOrder;
+import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
 import org.apache.shardingsphere.masterslave.strategy.config.AlgorithmProvidedMasterSlaveRuleConfiguration;
 
 import java.util.Collection;
