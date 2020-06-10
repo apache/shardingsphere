@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.strategy.config;
+package org.apache.shardingsphere.masterslave.algorithm.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

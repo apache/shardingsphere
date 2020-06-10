@@ -44,17 +44,17 @@ public final class MasterSlaveDataSourceRule {
     
     private final List<String> slaveDataSourceNames;
     
-    private final MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm;
+    private final MasterSlaveLoadBalanceAlgorithm loadBalancer;
     
     @Getter(AccessLevel.NONE)
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
-    public MasterSlaveDataSourceRule(final MasterSlaveDataSourceRuleConfiguration configuration, final MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm) {
+    public MasterSlaveDataSourceRule(final MasterSlaveDataSourceRuleConfiguration configuration, final MasterSlaveLoadBalanceAlgorithm loadBalancer) {
         checkConfiguration(configuration);
         name = configuration.getName();
         masterDataSourceName = configuration.getMasterDataSourceName();
         slaveDataSourceNames = configuration.getSlaveDataSourceNames();
-        this.loadBalanceAlgorithm = loadBalanceAlgorithm;
+        this.loadBalancer = loadBalancer;
     }
     
     private void checkConfiguration(final MasterSlaveDataSourceRuleConfiguration configuration) {

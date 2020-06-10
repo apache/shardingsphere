@@ -61,6 +61,6 @@ public final class MasterSlaveRuleTest {
         assertThat(actual.getName(), is("test_ms"));
         assertThat(actual.getMasterDataSourceName(), is("master_db"));
         assertThat(actual.getSlaveDataSourceNames(), is(Arrays.asList("slave_db_0", "slave_db_1")));
-        assertThat(actual.getLoadBalanceAlgorithm().getType(), is("RANDOM"));
+        assertThat(actual.getLoadBalancer().getType(), is("RANDOM"));
     }
 }
