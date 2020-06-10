@@ -11,7 +11,7 @@ weight = 3
 
 | *名称*                 | *数据类型*                                   | *说明*       |
 | --------------------- | ------------------------------------------- | ------------ |
-| encryptStrategies (+) | Collection\<EncryptStrategyConfiguration\>  | 加解密策略列表 |
+| encryptors (+) | Collection\<EncryptStrategyConfiguration\>  | 加解密策略列表 |
 | tables (+)            | Collection\<EncryptTableRuleConfiguration\> | 加密表规则列表 |
 
 ## 加密表规则配置
@@ -37,7 +37,7 @@ weight = 3
 | cipherColumn            | String   | 密文列名称     |
 | assistedQueryColumn (?) | String   | 查询辅助列名称 |
 | plainColumn (?)         | String   | 原文列名称     |
-| encryptStrategyName     | String   | 加密策略名称   |
+| encryptorName     | String   | 加密策略名称   |
 
 ## 加解密策略配置
 

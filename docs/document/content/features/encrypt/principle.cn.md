@@ -73,7 +73,7 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
 
 ```yaml
 -!ENCRYPT
-  encryptStrategies:
+  encryptors:
     aes_encrypt_strategy:
       type: aes
       props:
@@ -83,7 +83,7 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
       columns:
         pwd:
           cipherColumn: pwd
-          encryptStrategyName: aes_encrypt_strategy
+          encryptorName: aes_encrypt_strategy
 ```
 
 使用这套配置， Apache ShardingSphere 只需将 logicColumn 和 cipherColumn 进行转换，底层数据表不存储明文，只存储了密文，这也是安全审计部分的要求所在。
@@ -113,7 +113,7 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
 
 ```yaml
 -!ENCRYPT
-  encryptStrategies:
+  encryptors:
     aes_encrypt_strategy:
       type: aes
       props:
@@ -124,7 +124,7 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
         pwd:
           plainColumn: pwd
           cipherColumn: pwd_cipher
-          encryptStrategyName: aes_encrypt_strategy
+          encryptorName: aes_encrypt_strategy
 props:
   query.with.cipher.column: false
 ```
@@ -168,7 +168,7 @@ props:
 
 ```yaml
 -!ENCRYPT
-  encryptStrategies:
+  encryptors:
     aes_encrypt_strategy:
       type: aes
       props:
@@ -178,7 +178,7 @@ props:
       columns:
         pwd: # pwd 与 pwd_cipher 的转换映射
           cipherColumn: pwd_cipher
-          encryptStrategyName: aes_encrypt_strategy
+          encryptorName: aes_encrypt_strategy
 props:
   query.with.cipher.column: true
 ```

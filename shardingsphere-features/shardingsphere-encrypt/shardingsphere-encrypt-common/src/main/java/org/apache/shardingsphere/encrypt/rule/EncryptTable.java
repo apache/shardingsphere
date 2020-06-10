@@ -147,10 +147,10 @@ public final class EncryptTable {
      * @param logicColumn column name
      * @return encrypt strategy name
      */
-    public Optional<String> findEncryptStrategyName(final String logicColumn) {
+    public Optional<String> findEncryptorName(final String logicColumn) {
         Optional<String> originLogicColumnName = findOriginLogicColumnName(logicColumn);
         return originLogicColumnName.isPresent() && columns.containsKey(originLogicColumnName.get())
-                ? Optional.of(columns.get(originLogicColumnName.get()).getEncryptStrategyName()) : Optional.empty();
+                ? Optional.of(columns.get(originLogicColumnName.get()).getEncryptorName()) : Optional.empty();
     }
     
     private Optional<String> findOriginLogicColumnName(final String logicColumn) {

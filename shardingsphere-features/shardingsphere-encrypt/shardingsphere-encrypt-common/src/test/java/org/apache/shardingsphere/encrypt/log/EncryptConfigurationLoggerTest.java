@@ -66,7 +66,7 @@ public final class EncryptConfigurationLoggerTest {
     public void assertLogEncryptRuleConfiguration() {
         String yaml = "rules:\n"
                 + "- !ENCRYPT\n"
-                + "  encryptStrategies:\n"
+                + "  encryptors:\n"
                 + "    aes_encrypt_strategy:\n"
                 + "      props:\n"
                 + "        aes.key.value: 123456abc\n"
@@ -77,7 +77,7 @@ public final class EncryptConfigurationLoggerTest {
                 + "        user_id:\n"
                 + "          assistedQueryColumn: user_assisted\n"
                 + "          cipherColumn: user_encrypt\n"
-                + "          encryptStrategyName: aes_encrypt_strategy\n"
+                + "          encryptorName: aes_encrypt_strategy\n"
                 + "          plainColumn: user_decrypt\n";
         assertLogInfo(yaml);
         ConfigurationLogger.log(Collections.singletonList(getEncryptConfiguration()));

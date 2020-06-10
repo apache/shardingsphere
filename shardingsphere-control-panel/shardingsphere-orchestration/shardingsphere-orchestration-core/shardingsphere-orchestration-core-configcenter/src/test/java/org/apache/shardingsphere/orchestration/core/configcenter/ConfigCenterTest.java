@@ -119,7 +119,7 @@ public final class ConfigCenterTest {
             + "        type: SNOWFLAKE\n"
             + "        column: order_id\n"
             + "- !ENCRYPT\n"
-            + "  encryptStrategies:\n"
+            + "  encryptors:\n"
             + "    aes_encrypt_strategy:\n"
             + "      type: aes\n"
             + "      props:\n"
@@ -132,10 +132,10 @@ public final class ConfigCenterTest {
             + "        user_id:\n"
             + "          plainColumn: user_plain\n"
             + "          cipherColumn: user_cipher\n"
-            + "          encryptStrategyName: aes_encrypt_strategy\n"
+            + "          encryptorName: aes_encrypt_strategy\n"
             + "        order_id:\n"
             + "          cipherColumn: order_cipher\n"
-            + "          encryptStrategyName: md5_encrypt_strategy";
+            + "          encryptorName: md5_encrypt_strategy";
     
     private static final String MASTER_SLAVE_RULE_YAML = ""
             + "rules:\n"
@@ -151,7 +151,7 @@ public final class ConfigCenterTest {
     private static final String ENCRYPT_RULE_YAML = ""
             + "rules:\n"
             + "- !ENCRYPT\n"
-            + "  encryptStrategies:\n"
+            + "  encryptors:\n"
             + "    order_encrypt_strategy:\n"
             + "      props:\n"
             + "        aes.key.value: 123456\n"
@@ -161,7 +161,7 @@ public final class ConfigCenterTest {
             + "      columns:\n"
             + "        order_id:\n"
             + "          cipherColumn: order_id\n"
-            + "          encryptStrategyName: order_encrypt_strategy\n";
+            + "          encryptorName: order_encrypt_strategy\n";
     
     private static final String SHADOW_RULE_YAML = ""
             + "rules:\n"

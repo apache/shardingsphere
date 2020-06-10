@@ -22,8 +22,8 @@ rules:
         columns:
           order_id:
             cipherColumn: order_id
-            encryptStrategyName: order_encrypt_strategy
-    encryptStrategies:
+            encryptorName: order_encrypt_strategy
+    encryptors:
       order_encrypt_strategy:
         type: aes
         props:

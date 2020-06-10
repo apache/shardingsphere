@@ -43,7 +43,7 @@
 #
 #rules:
 #- !ENCRYPT
-#  encryptStrategies:
+#  encryptors:
 #    aes_encrypt_strategy:
 #      type: aes
 #      props:
@@ -84,7 +84,7 @@
 #
 #rules:
 #- !ENCRYPT
-#  encryptStrategies:
+#  encryptors:
 #    aes_encrypt_strategy:
 #      type: aes
 #      props:

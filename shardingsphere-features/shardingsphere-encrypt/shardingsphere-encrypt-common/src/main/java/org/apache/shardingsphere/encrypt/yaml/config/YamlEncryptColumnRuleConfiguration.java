@@ -36,5 +36,5 @@ public final class YamlEncryptColumnRuleConfiguration implements YamlConfigurati
     
     private String plainColumn;
     
-    private String encryptStrategyName;
+    private String encryptorName;
 }

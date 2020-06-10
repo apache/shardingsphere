@@ -44,7 +44,7 @@ public final class EncryptShadowDatabasesConfiguration implements ExampleConfigu
         Map<String, DataSource> dataSourceMap = new HashMap<>();
         dataSourceMap.put("ds", DataSourceUtil.createDataSource("demo_ds"));
         dataSourceMap.put("ds_0", DataSourceUtil.createDataSource("shadow_demo_ds"));
-        EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(getEncryptStrategyConfigurations(), getEncryptTableRuleConfigurations());
+        EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(getEncryptAlgorithmConfigurations(), getEncryptTableRuleConfigurations());
         Properties properties = new Properties();
         properties.setProperty("sql.show", "true");
         properties.setProperty("query.with.cipher.column", "true");
@@ -52,7 +52,7 @@ public final class EncryptShadowDatabasesConfiguration implements ExampleConfigu
         return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Arrays.asList(shadowRuleConfiguration, encryptRuleConfiguration), properties);
     }
     
-    private Map<String, EncryptAlgorithmConfiguration> getEncryptStrategyConfigurations() {
+    private Map<String, EncryptAlgorithmConfiguration> getEncryptAlgorithmConfigurations() {
         Map<String, EncryptAlgorithmConfiguration> result = new LinkedHashMap<>(2, 1);
         Properties properties = new Properties();
         properties.setProperty("aes.key.value", "123456");

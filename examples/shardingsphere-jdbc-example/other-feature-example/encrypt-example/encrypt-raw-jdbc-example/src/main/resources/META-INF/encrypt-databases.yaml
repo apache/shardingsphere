@@ -24,24 +24,24 @@ dataSources:
 
 rules:
 - !ENCRYPT
-  encryptStrategies:
-    name_encrypt_strategy:
-      type: aes
-      props:
-        aes.key.value: 123456
-    pwd_encrypt_strategy:
-      type: assistedTest
   tables:
     t_user:
       columns:
         user_name:
           plainColumn: user_name_plain
           cipherColumn: user_name
-          encryptStrategyName: name_encrypt_strategy
+          encryptorName: name_encrypt_strategy
         pwd:
           cipherColumn: pwd
           assistedQueryColumn: assisted_query_pwd
-          encryptStrategyName: pwd_encrypt_strategy
+          encryptorName: pwd_encrypt_strategy
+  encryptors:
+    name_encrypt_strategy:
+      type: aes
+      props:
+        aes.key.value: 123456
+    pwd_encrypt_strategy:
+      type: assistedTest
 
 props:
   query.with.cipher.column: true

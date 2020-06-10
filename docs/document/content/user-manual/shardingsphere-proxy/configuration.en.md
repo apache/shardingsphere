@@ -121,7 +121,7 @@ dataSource:
   maxPoolSize: 50
 
 encryptRule:
-  encryptStrategies:
+  encryptors:
     aes_encrypt_strategy:
       type: aes
       props:
@@ -134,10 +134,10 @@ encryptRule:
         user_id:
           plainColumn: user_plain
           cipherColumn: user_cipher
-          encryptStrategyName: aes_encrypt_strategy
+          encryptorName: aes_encrypt_strategy
         order_id:
           cipherColumn: order_cipher
-          encryptStrategyName: md5_encrypt_strategy
+          encryptorName: md5_encrypt_strategy
 ```
 
 ### Data Sharding + Read-Write Split
@@ -305,7 +305,7 @@ shardingRule:
     none:
     
   encryptRule:
-    encryptStrategies:
+    encryptors:
       aes_encrypt_strategy:
         type: aes
         props:
@@ -316,7 +316,7 @@ shardingRule:
           order_id:
             plainColumn: order_plain
             cipherColumn: order_cipher
-            encryptStrategyName: aes_encrypt_strategy 
+            encryptorName: aes_encrypt_strategy 
 ```
 
 ## Overall Configuration Instance
@@ -397,7 +397,7 @@ masterSlaveRule: #Omit data source configurations; keep it consistent with Shard
 dataSource: #Ignore data sources configuration
 
 encryptRule:
-  encryptStrategies:
+  encryptors:
     <encrypt-strategy-name>:
       type: #encrypt algorithm type
       props: #Properties, e.g. `aes.key.value` for AES encrypt algorithm
@@ -409,7 +409,7 @@ encryptRule:
           plainColumn: #plaintext column name
           cipherColumn: #ciphertext column name
           assistedQueryColumn: #AssistedColumns for query，when use QueryAssistedEncryptAlgorithm, it can help query encrypted data
-          encryptStrategyName: #encrypt strategy name
+          encryptorName: #encrypt strategy name
 props:
   query.with.cipher.column: true #Whether use cipherColumn to query or not
 ```

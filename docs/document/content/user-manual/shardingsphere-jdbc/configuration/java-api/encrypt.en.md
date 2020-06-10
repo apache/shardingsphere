@@ -11,7 +11,7 @@ Attributes:
 
 | *Name*                | *DataType*                                  | *Description*       |
 | --------------------- | ------------------------------------------- | ------------------- |
-| encryptStrategies (+) | Collection\<EncryptStrategyConfiguration\>  | Encrypt strategies  |
+| encryptors (+) | Collection\<EncryptStrategyConfiguration\>  | Encrypt strategies  |
 | tables (+)            | Collection\<EncryptTableRuleConfiguration\> | Encrypt table rules |
 
 ## Encrypt Table Rule Configuration
@@ -37,7 +37,7 @@ Attributes:
 | cipherColumn            | String     | Cipher column name         |
 | assistedQueryColumn (?) | String     | Assisted query column name |
 | plainColumn (?)         | String     | Plain column name          |
-| encryptStrategyName     | String     | Encrypt strategy name      |
+| encryptorName     | String     | Encrypt strategy name      |
 
 ## Encrypt Strategy Configuration
 

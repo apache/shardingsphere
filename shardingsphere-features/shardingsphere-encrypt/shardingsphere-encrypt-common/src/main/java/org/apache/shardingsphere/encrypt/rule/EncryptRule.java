@@ -269,7 +269,7 @@ public final class EncryptRule implements ShardingSphereRule {
         if (!tables.containsKey(logicTable)) {
             return Optional.empty();
         }
-        return tables.get(logicTable).findEncryptStrategyName(logicColumn).map(encryptors::get);
+        return tables.get(logicTable).findEncryptorName(logicColumn).map(encryptors::get);
     }
     
     /**

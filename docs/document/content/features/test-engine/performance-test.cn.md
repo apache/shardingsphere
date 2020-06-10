@@ -249,7 +249,7 @@ shardingRule:
         - slave_ds_3
       loadBalanceAlgorithmType: ROUND_ROBIN
 encryptRule:
-  encryptStrategies:
+  encryptors:
     aes_encrypt_strategy:
       type: aes
       props:
@@ -262,10 +262,10 @@ encryptRule:
         c:
           plainColumn: c_plain
           cipherColumn: c_cipher
-          encryptStrategyName: aes_encrypt_strategy
+          encryptorName: aes_encrypt_strategy
         pad:
           cipherColumn: pad_cipher
-          encryptStrategyName: md5_encrypt_strategy    
+          encryptorName: md5_encrypt_strategy    
 ```
 
 #### 全路由
