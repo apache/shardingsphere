@@ -61,7 +61,7 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
     }
     
     private void assertEncryptRule(final AlgorithmProvidedEncryptRuleConfiguration configuration) {
-        assertThat(configuration.getAlgorithms().size(), is(2));
+        assertThat(configuration.getEncryptors().size(), is(2));
         assertThat(configuration.getTables().size(), is(1));
         EncryptTableRuleConfiguration encryptTableRuleConfiguration = configuration.getTables().iterator().next();
         Iterator<EncryptColumnRuleConfiguration> encryptColumnRuleConfigurations = encryptTableRuleConfiguration.getColumns().iterator();
@@ -69,7 +69,7 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
         EncryptColumnRuleConfiguration orderIdColumnRuleConfiguration = encryptColumnRuleConfigurations.next();
         assertThat(userIdColumnRuleConfiguration.getCipherColumn(), is("user_encrypt"));
         assertThat(orderIdColumnRuleConfiguration.getPlainColumn(), is("order_decrypt"));
-        Map<String, EncryptAlgorithm> encryptAlgorithms = configuration.getAlgorithms();
+        Map<String, EncryptAlgorithm> encryptAlgorithms = configuration.getEncryptors();
         assertThat(encryptAlgorithms.size(), is(2));
         assertThat(encryptAlgorithms.get("aes_encrypt_strategy").getType(), is("AES"));
         assertThat(encryptAlgorithms.get("aes_encrypt_strategy").getProperties().getProperty("aes.key.value"), is("123456"));

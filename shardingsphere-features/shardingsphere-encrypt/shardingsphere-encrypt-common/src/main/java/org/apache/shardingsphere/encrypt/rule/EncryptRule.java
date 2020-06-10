@@ -59,7 +59,7 @@ public final class EncryptRule implements ShardingSphereRule {
     
     public EncryptRule(final AlgorithmProvidedEncryptRuleConfiguration configuration) {
         Preconditions.checkArgument(isValidRuleConfigurationWithAlgorithmProvided(configuration), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
-        encryptors.putAll(configuration.getAlgorithms());
+        encryptors.putAll(configuration.getEncryptors());
         configuration.getTables().forEach(each -> tables.put(each.getName(), new EncryptTable(each)));
     }
     
@@ -87,7 +87,7 @@ public final class EncryptRule implements ShardingSphereRule {
     }
     
     private boolean isValidRuleConfigurationWithAlgorithmProvided(final AlgorithmProvidedEncryptRuleConfiguration configuration) {
-        return (configuration.getAlgorithms().isEmpty() && configuration.getTables().isEmpty()) || isValidTableConfigurationWithAlgorithmProvided(configuration);
+        return (configuration.getEncryptors().isEmpty() && configuration.getTables().isEmpty()) || isValidTableConfigurationWithAlgorithmProvided(configuration);
     }
     
     private boolean isValidTableConfigurationWithAlgorithmProvided(final AlgorithmProvidedEncryptRuleConfiguration configuration) {
@@ -103,7 +103,7 @@ public final class EncryptRule implements ShardingSphereRule {
     
     private boolean isValidColumnConfigurationWithAlgorithmProvided(final AlgorithmProvidedEncryptRuleConfiguration encryptRuleConfiguration, final EncryptColumnRuleConfiguration column) {
         return !Strings.isNullOrEmpty(column.getEncryptorName()) && !Strings.isNullOrEmpty(column.getCipherColumn())
-                && encryptRuleConfiguration.getAlgorithms().containsKey(column.getEncryptorName());
+                && encryptRuleConfiguration.getEncryptors().containsKey(column.getEncryptorName());
     }
     
     /**
