@@ -20,6 +20,7 @@ package org.apache.shardingsphere.scaling.core.execute.executor.importer;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.config.RdbmsConfiguration;
+import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
@@ -27,14 +28,16 @@ import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
-import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.RecordUtil;
 
 import javax.sql.DataSource;
+import java.math.BigInteger;
 import java.sql.Connection;
+import java.sql.JDBCType;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.sql.SQLType;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -123,11 +126,23 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
         ps.setQueryTimeout(30);
         try {
             for (int i = 0; i < record.getColumnCount(); i++) {
-                ps.setObject(i + 1, record.getColumn(i).getValue());
+                SQLType sqlType = extractTargetSQLType(record.getColumn(i).getValue());
+                if (sqlType != null) {
+                    ps.setObject(i + 1, record.getColumn(i).getValue(), sqlType);
+                } else {
+                    ps.setObject(i + 1, record.getColumn(i).getValue());
+                }
             }
             ps.execute();
         } catch (SQLIntegrityConstraintViolationException ignored) {
         }
+    }
+
+    private SQLType extractTargetSQLType(final Object recordValue) {
+        if (recordValue instanceof BigInteger) {
+            return JDBCType.BIGINT;
+        }
+        return null;
     }
     
     private void executeUpdate(final Connection connection, final DataRecord record) throws SQLException {
