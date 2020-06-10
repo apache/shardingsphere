@@ -17,26 +17,26 @@
 
 <template>
   <div style="width: 100%; height: 100%">
-    <v-chart :options="getOption()"/>
+    <div id="myChart" class="echarts"></div>
   </div>
 </template>
 <script>
-import ChartBase from '@/components/ChartBase'
+
+import echarts from 'echarts'
+import Vue from 'vue'
+Vue.prototype.$echarts = echarts
 import 'echarts-liquidfill'
 import API from '../api'
 export default {
   name: 'ClusterState',
-  components: {
-    'v-chart': ChartBase
-  },
   data() {
     return {
+      allData: {},
       instanceData: {},
       proxy: [],
       datasource: [],
       categories: [],
       linesData: [],
-      chartData: [],
       links: [],
       option: {},
       state: {
@@ -44,32 +44,59 @@ export default {
         OFFLINE: '#FF0A14',
         DISABLED: '#FF199D',
         UNKNOWN: '#ffb402'
-      }
+      },
+      myChart: {},
+      timer: {},
+      refreshInterval: 60000
     }
   },
-  created() {
+  mounted() {
+    this.initChart()
     this.loadAllInstanceStates()
   },
+  activated() {
+    this.myChart && this.myChart.resize()
+  },
+  destroyed() {
+    this.close()
+  },
   methods: {
+    refresh() {
+      this.loadAllInstanceStates()
+    },
     loadAllInstanceStates() {
       API.loadInstanceStates().then(res => {
         const data = res.model
-        const instanceStates = data.instanceStates
-        const dataSources = data.dataSourceStates
-        this.instanceData = instanceStates
-        this.initDatasource(dataSources)
-        this.initProxy(instanceStates)
-        this.initLines()
-        this.setChartData()
+        this.allData = data
+        this.instanceData = data.instanceStates
+        this.createChart()
       })
     },
-    initProxy(data) {
+    initChart() {
+      this.initCategories()
+      this.myChart = this.$echarts.init(document.getElementById('myChart'))
+      this.myChart.setOption(this.getOption(), true)
+      window.addEventListener("resize", () => { this.myChart.resize() })
+      this.startTimer()
+    },
+    createChart() {
+      this.initProxy()
+      this.initDatasource()
+      this.initLines()
+      this.setChartData()
+      this.myChart.setOption(this.option)
+    },
+    startTimer() {
+      this.timer = setInterval(this.refresh, this.refreshInterval, this.refreshInterval)
+    },
+    initProxy() {
+      this.proxy = []
       let x = 20
-      for (const key in data) {
+      for (const key in this.allData.instanceStates) {
         this.proxy.push({
           name: key,
           value: [x, 130],
-          category: this.getCategorie(data[key]),
+          category: this.getCategory(this.allData.instanceStates[key]),
           symbolSize: 100,
           label: {
             position: 'top'
@@ -78,13 +105,14 @@ export default {
         x += 50
       }
     },
-    initDatasource(data) {
+    initDatasource() {
+      this.datasource = []
       let x = 0
-      for (const key in data) {
+      for (const key in this.allData.dataSourceStates) {
         this.datasource.push({
           name: key,
           category: 0,
-          state: data[key].state,
+          state: this.allData.dataSourceStates[key].state,
           speed: '',
           value: [x, 20]
         })
@@ -92,8 +120,10 @@ export default {
       }
     },
     initLines() {
-      this.datasource.forEach((el) => {
-        this.proxy.forEach((e2) => {
+      this.links = []
+      this.linesData = []
+      this.datasource.slice().forEach((el) => {
+        this.proxy.slice().forEach((e2) => {
           const e3 = this.instanceData[e2.name].dataSources[el.name]
           if (e3) {
             if (e3.state === 'ONLINE') {
@@ -123,7 +153,7 @@ export default {
         name: this.$t('clusterState').legendLabel.onLine,
         itemStyle: {
           normal: {
-            color: new ChartBase.graphic.LinearGradient(0, 0, 1, 0, [{
+            color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [{
               offset: 0,
               color: '#01acca'
             }, {
@@ -141,7 +171,7 @@ export default {
         name: this.$t('clusterState').legendLabel.offLine,
         itemStyle: {
           normal: {
-            color: new ChartBase.graphic.LinearGradient(0, 0, 1, 0, [{
+            color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [{
               offset: 0,
               color: '#FF0A14'
             }, {
@@ -159,7 +189,7 @@ export default {
         name: this.$t('clusterState').legendLabel.disabled,
         itemStyle: {
           normal: {
-            color: new ChartBase.graphic.LinearGradient(0, 0, 1, 0, [{
+            color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [{
               offset: 0,
               color: '#FF199D'
             }, {
@@ -177,7 +207,7 @@ export default {
         name: this.$t('clusterState').legendLabel.unknown,
         itemStyle: {
           normal: {
-            color: new ChartBase.graphic.LinearGradient(0, 0, 1, 0, [{
+            color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [{
               offset: 0,
               color: '#ffb402'
             }, {
@@ -193,7 +223,7 @@ export default {
         }
       }]
     },
-    getCategorie(nodeState) {
+    getCategory(nodeState) {
       if (nodeState.state === 'ONLINE') {
         return 0
       } else if (nodeState.state === 'OFFLINE') {
@@ -209,11 +239,10 @@ export default {
       this.option.series[0].links = this.links
     },
     getOption() {
-      this.initCategories()
       this.option = {
         legend: [{
           formatter: function(name) {
-            return ChartBase.format.truncateText(name, 100, '14px Microsoft Yahei', '…');
+            return echarts.format.truncateText(name, 100, '14px Microsoft Yahei', '…');
           },
           tooltip: {
             show: true
@@ -235,7 +264,6 @@ export default {
           show: false,
           type: 'value'
         },
-
         series: [{
           type: 'graph',
           layout: 'none',
@@ -306,6 +334,9 @@ export default {
         }]
       }
       return this.option
+    },
+    close() {
+      clearTimeout(this.timer)
     }
   }
 }
