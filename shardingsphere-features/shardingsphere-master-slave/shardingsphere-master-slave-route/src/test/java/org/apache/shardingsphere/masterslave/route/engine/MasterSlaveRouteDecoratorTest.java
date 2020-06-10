@@ -77,7 +77,7 @@ public final class MasterSlaveRouteDecoratorTest {
     public void setUp() {
         routeDecorator = new MasterSlaveRouteDecorator();
         masterSlaveRule = new MasterSlaveRule(new MasterSlaveRuleConfiguration(
-                Collections.singleton(new MasterSlaveDataSourceRuleConfiguration(DATASOURCE_NAME, MASTER_DATASOURCE, Collections.singletonList(SLAVE_DATASOURCE), null)), Collections.emptyList()));
+                Collections.singleton(new MasterSlaveDataSourceRuleConfiguration(DATASOURCE_NAME, MASTER_DATASOURCE, Collections.singletonList(SLAVE_DATASOURCE), null)), Collections.emptyMap()));
     }
     
     @After

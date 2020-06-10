@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.masterslave.rule;
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.algorithm.LoadBalanceAlgorithmConfiguration;
@@ -35,7 +36,7 @@ public final class MasterSlaveRuleTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewWithEmptyDataSourceRule() {
-        new MasterSlaveRule(new MasterSlaveRuleConfiguration(Collections.emptyList(), Collections.emptyList()));
+        new MasterSlaveRule(new MasterSlaveRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
     }
     
     @Test
@@ -53,7 +54,7 @@ public final class MasterSlaveRuleTest {
     private MasterSlaveRule createMasterSlaveRule() {
         MasterSlaveDataSourceRuleConfiguration configuration = new MasterSlaveDataSourceRuleConfiguration("test_ms", "master_db", Arrays.asList("slave_db_0", "slave_db_1"), "random");
         return new MasterSlaveRule(new MasterSlaveRuleConfiguration(
-                Collections.singleton(configuration), Collections.singleton(new LoadBalanceAlgorithmConfiguration("random", "RANDOM", new Properties()))));
+                Collections.singleton(configuration), ImmutableMap.of("random", new LoadBalanceAlgorithmConfiguration("RANDOM", new Properties()))));
     }
     
     private void assertDataSourceRule(final MasterSlaveDataSourceRule actual) {

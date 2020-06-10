@@ -24,6 +24,7 @@ import org.apache.shardingsphere.masterslave.api.config.algorithm.LoadBalanceAlg
 import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Master-slave rule configuration.
@@ -34,5 +35,5 @@ public final class MasterSlaveRuleConfiguration implements RuleConfiguration {
     
     private final Collection<MasterSlaveDataSourceRuleConfiguration> dataSources;
     
-    private final Collection<LoadBalanceAlgorithmConfiguration> loadBalancers;
+    private final Map<String, LoadBalanceAlgorithmConfiguration> loadBalancers;
 }
