@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.config;
 
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptStrategyConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.algorithm.YamlEncryptAlgorithmConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
 import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveDataSourceRuleConfiguration;
 import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration;
@@ -127,10 +127,10 @@ public final class ShardingConfigurationLoaderTest {
         assertThat(actual.getEncryptors().size(), is(2));
         assertTrue(actual.getEncryptors().containsKey("aes_encrypt_strategy"));
         assertTrue(actual.getEncryptors().containsKey("md5_encrypt_strategy"));
-        YamlEncryptStrategyConfiguration aesEncryptStrategyConfiguration = actual.getEncryptors().get("aes_encrypt_strategy");
+        YamlEncryptAlgorithmConfiguration aesEncryptStrategyConfiguration = actual.getEncryptors().get("aes_encrypt_strategy");
         assertThat(aesEncryptStrategyConfiguration.getType(), is("aes"));
         assertThat(aesEncryptStrategyConfiguration.getProps().getProperty("aes.key.value"), is("123456abc"));
-        YamlEncryptStrategyConfiguration md5EncryptStrategyConfiguration = actual.getEncryptors().get("md5_encrypt_strategy");
+        YamlEncryptAlgorithmConfiguration md5EncryptStrategyConfiguration = actual.getEncryptors().get("md5_encrypt_strategy");
         assertThat(md5EncryptStrategyConfiguration.getType(), is("md5"));
     }
     

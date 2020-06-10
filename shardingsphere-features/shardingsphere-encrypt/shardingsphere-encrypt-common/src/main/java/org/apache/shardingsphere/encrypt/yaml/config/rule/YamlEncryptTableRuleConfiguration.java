@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.yaml.config;
+package org.apache.shardingsphere.encrypt.yaml.config.rule;
 
 import lombok.Getter;
 import lombok.Setter;

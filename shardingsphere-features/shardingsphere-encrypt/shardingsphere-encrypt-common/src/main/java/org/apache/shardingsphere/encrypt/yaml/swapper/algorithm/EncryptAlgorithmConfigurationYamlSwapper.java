@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.yaml.swapper;
+package org.apache.shardingsphere.encrypt.yaml.swapper.algorithm;
 
 import org.apache.shardingsphere.encrypt.api.config.algorithm.EncryptAlgorithmConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptStrategyConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.algorithm.YamlEncryptAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 
 /**
- * Encrypt strategy configuration YAML swapper.
+ * Encrypt algorithm configuration YAML swapper.
  */
-public final class EncryptStrategyConfigurationYamlSwapper implements YamlSwapper<YamlEncryptStrategyConfiguration, EncryptAlgorithmConfiguration> {
+public final class EncryptAlgorithmConfigurationYamlSwapper implements YamlSwapper<YamlEncryptAlgorithmConfiguration, EncryptAlgorithmConfiguration> {
     
     @Override
-    public YamlEncryptStrategyConfiguration swap(final EncryptAlgorithmConfiguration data) {
-        YamlEncryptStrategyConfiguration result = new YamlEncryptStrategyConfiguration();
+    public YamlEncryptAlgorithmConfiguration swap(final EncryptAlgorithmConfiguration data) {
+        YamlEncryptAlgorithmConfiguration result = new YamlEncryptAlgorithmConfiguration();
         result.setType(data.getType());
         result.setProps(data.getProperties());
         return result;
     }
     
     @Override
-    public EncryptAlgorithmConfiguration swap(final YamlEncryptStrategyConfiguration yamlConfiguration) {
+    public EncryptAlgorithmConfiguration swap(final YamlEncryptAlgorithmConfiguration yamlConfiguration) {
         return new EncryptAlgorithmConfiguration(yamlConfiguration.getType(), yamlConfiguration.getProps());
     }
 }
