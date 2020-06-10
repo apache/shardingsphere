@@ -63,7 +63,7 @@ public final class MasterSlaveRuleConfigurationYamlSwapperTest {
         yamlConfiguration.getDataSources().get("master_slave_ds").setLoadBalanceStrategyName("RANDOM");
         MasterSlaveRuleConfiguration actual = new MasterSlaveRuleConfigurationYamlSwapper().swap(yamlConfiguration);
         assertMasterSlaveRuleConfiguration(actual);
-        assertThat(actual.getDataSources().iterator().next().getLoadBalanceStrategyName(), is("RANDOM"));
+        assertThat(actual.getDataSources().iterator().next().getLoadBalancerName(), is("RANDOM"));
     }
     
     @Test
@@ -71,7 +71,7 @@ public final class MasterSlaveRuleConfigurationYamlSwapperTest {
         YamlMasterSlaveRuleConfiguration yamlConfiguration = createYamlMasterSlaveRuleConfiguration();
         MasterSlaveRuleConfiguration actual = new MasterSlaveRuleConfigurationYamlSwapper().swap(yamlConfiguration);
         assertMasterSlaveRuleConfiguration(actual);
-        assertNull(actual.getDataSources().iterator().next().getLoadBalanceStrategyName());
+        assertNull(actual.getDataSources().iterator().next().getLoadBalancerName());
     }
     
     private YamlMasterSlaveRuleConfiguration createYamlMasterSlaveRuleConfiguration() {

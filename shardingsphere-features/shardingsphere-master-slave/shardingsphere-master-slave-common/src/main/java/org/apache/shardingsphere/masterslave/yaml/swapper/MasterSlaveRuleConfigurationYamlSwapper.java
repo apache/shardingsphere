@@ -50,7 +50,7 @@ public final class MasterSlaveRuleConfigurationYamlSwapper implements YamlRuleCo
         result.setName(dataSourceRuleConfiguration.getName());
         result.setMasterDataSourceName(dataSourceRuleConfiguration.getMasterDataSourceName());
         result.setSlaveDataSourceNames(dataSourceRuleConfiguration.getSlaveDataSourceNames());
-        result.setLoadBalanceStrategyName(dataSourceRuleConfiguration.getLoadBalanceStrategyName());
+        result.setLoadBalanceStrategyName(dataSourceRuleConfiguration.getLoadBalancerName());
         return result;
     }
     

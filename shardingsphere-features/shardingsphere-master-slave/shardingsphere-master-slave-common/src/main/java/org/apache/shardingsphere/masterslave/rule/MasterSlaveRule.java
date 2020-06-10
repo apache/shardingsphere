@@ -57,8 +57,8 @@ public final class MasterSlaveRule implements DataSourceRoutedRule, StatusContai
         dataSourceRules = new HashMap<>(configuration.getDataSources().size(), 1);
         for (MasterSlaveDataSourceRuleConfiguration each : configuration.getDataSources()) {
             // TODO check if can not find load balance strategy should throw exception.
-            MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm = Strings.isNullOrEmpty(each.getLoadBalanceStrategyName()) || !loadBalancers.containsKey(each.getLoadBalanceStrategyName())
-                    ? TypedSPIRegistry.getRegisteredService(MasterSlaveLoadBalanceAlgorithm.class) : loadBalancers.get(each.getLoadBalanceStrategyName());
+            MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm = Strings.isNullOrEmpty(each.getLoadBalancerName()) || !loadBalancers.containsKey(each.getLoadBalancerName())
+                    ? TypedSPIRegistry.getRegisteredService(MasterSlaveLoadBalanceAlgorithm.class) : loadBalancers.get(each.getLoadBalancerName());
             dataSourceRules.put(each.getName(), new MasterSlaveDataSourceRule(each, loadBalanceAlgorithm));
         }
     }
@@ -69,8 +69,8 @@ public final class MasterSlaveRule implements DataSourceRoutedRule, StatusContai
         dataSourceRules = new HashMap<>(configuration.getDataSources().size(), 1);
         for (MasterSlaveDataSourceRuleConfiguration each : configuration.getDataSources()) {
             // TODO check if can not find load balance strategy should throw exception.
-            MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm = Strings.isNullOrEmpty(each.getLoadBalanceStrategyName()) || !loadBalancers.containsKey(each.getLoadBalanceStrategyName())
-                    ? TypedSPIRegistry.getRegisteredService(MasterSlaveLoadBalanceAlgorithm.class) : loadBalancers.get(each.getLoadBalanceStrategyName());
+            MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm = Strings.isNullOrEmpty(each.getLoadBalancerName()) || !loadBalancers.containsKey(each.getLoadBalancerName())
+                    ? TypedSPIRegistry.getRegisteredService(MasterSlaveLoadBalanceAlgorithm.class) : loadBalancers.get(each.getLoadBalancerName());
             dataSourceRules.put(each.getName(), new MasterSlaveDataSourceRule(each, loadBalanceAlgorithm));
         }
     }

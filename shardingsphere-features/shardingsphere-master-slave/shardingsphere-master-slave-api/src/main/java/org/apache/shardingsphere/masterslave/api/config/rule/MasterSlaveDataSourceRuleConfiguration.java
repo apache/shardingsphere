@@ -35,5 +35,5 @@ public final class MasterSlaveDataSourceRuleConfiguration {
     
     private final List<String> slaveDataSourceNames;
     
-    private final String loadBalanceStrategyName;
+    private final String loadBalancerName;
 }
