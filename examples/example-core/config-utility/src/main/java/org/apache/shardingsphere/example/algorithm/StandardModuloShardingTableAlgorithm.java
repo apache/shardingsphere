@@ -30,6 +30,10 @@ import java.util.Set;
 public final class StandardModuloShardingTableAlgorithm implements StandardShardingAlgorithm<Long> {
     
     @Override
+    public void init() {
+    }
+    
+    @Override
     public String doSharding(final Collection<String> tableNames, final PreciseShardingValue<Long> shardingValue) {
         for (String each : tableNames) {
             if (each.endsWith(shardingValue.getValue() % 2 + "")) {

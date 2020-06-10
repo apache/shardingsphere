@@ -69,7 +69,7 @@ spring.shardingsphere.datasource.slave1.password=
 spring.shardingsphere.masterslave.name=ms
 spring.shardingsphere.masterslave.master-data-source-name=master
 spring.shardingsphere.masterslave.slave-data-source-names=slave0,slave1
-spring.shardingsphere.masterslave.load-balance-strategy-name=round_robin
+spring.shardingsphere.masterslave.load-balancer-name=round_robin
 
 spring.shardingsphere.props.sql.show=true
 ```
@@ -318,14 +318,14 @@ spring.shardingsphere.sharding.default-table-strategy.xxx= #Default table shardi
 spring.shardingsphere.sharding.default-key-generator.type= #Default auto-increament key generator of type; it will use org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator in default; user defined generator or internal generator (SNOWFLAKE or UUID) can both be used
 spring.shardingsphere.sharding.default-key-generator.props.<property-name>= #Auto-increament key generator property configuration, such as worker.id and max.tolerate.time.difference.milliseconds of SNOWFLAKE algorithm
 
-spring.shardingsphere.rules.master-slave.load-balance-strategies.<load-balance-strategy-name>.type=#
+spring.shardingsphere.rules.master-slave.load-balancers.<load-balancer-name>.type=#
 
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.master-data-source-name= #Refer to read-write split part for more details
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[0]= #Refer to read-write split part for more details
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[1]= #Refer to read-write split part for more details
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[x]= #Refer to read-write split part for more details
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-class-name= #Refer to read-write split part for more details
-spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-strategy-name= #Refer to read-write split part for more details
+spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.load-balancer-name= #Refer to read-write split part for more details
 
 spring.shardingsphere.props.sql.show= #Show SQL or not; default value: false
 spring.shardingsphere.props.executor.size= #Executing thread number; default value: CPU core number
@@ -336,14 +336,14 @@ spring.shardingsphere.props.executor.size= #Executing thread number; default val
 ```properties
 #Omit data source configurations; keep it consistent with data sharding
 
-spring.shardingsphere.rules.master-slave.load-balance-strategies.<load-balance-strategy-name>.type=#
+spring.shardingsphere.rules.master-slave.load-balancers.<load-balancer-name>.type=#
 
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.master-data-source-name= #Data source name of master database
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[0]= #Data source name list of slave database
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[1]= #Data source name list of slave database
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[x]= #Data source name list of slave database
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-class-name= #Load balance algorithm class name; the class needs to implement MasterSlaveLoadBalanceAlgorithm interface and provide parameter-free constructor
-spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-strategy-name= #Load balance algorithm class of slave database; optional value: ROUND_ROBIN and RANDOM; if there is load-balance-algorithm-class-name, the configuration can be omitted
+spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.load-balancer-name= #Load balance algorithm class of slave database; optional value: ROUND_ROBIN and RANDOM; if there is load-balance-algorithm-class-name, the configuration can be omitted
 
 spring.shardingsphere.props.sql.show= #Show SQL or not; default value: false
 spring.shardingsphere.props.executor.size= #Executing thread number; default value: CPU core number

@@ -15,31 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.rule;
+package org.apache.shardingsphere.masterslave.rule.biulder;
 
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRuleBuilder;
 import org.apache.shardingsphere.masterslave.constant.MasterSlaveOrder;
-import org.apache.shardingsphere.masterslave.strategy.config.AlgorithmProvidedMasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
 
 import java.util.Collection;
 
 /**
- * Algorithm provided master-slave rule builder.
+ * Master-slave rule builder.
  */
-public final class AlgorithmProvidedMasterSlaveRuleBuilder implements ShardingSphereRuleBuilder<MasterSlaveRule, AlgorithmProvidedMasterSlaveRuleConfiguration> {
+public final class MasterSlaveRuleBuilder implements ShardingSphereRuleBuilder<MasterSlaveRule, MasterSlaveRuleConfiguration> {
     
     @Override
-    public MasterSlaveRule build(final AlgorithmProvidedMasterSlaveRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
+    public MasterSlaveRule build(final MasterSlaveRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
         return new MasterSlaveRule(ruleConfiguration);
     }
     
     @Override
     public int getOrder() {
-        return MasterSlaveOrder.ORDER + 1;
+        return MasterSlaveOrder.ORDER;
     }
     
     @Override
-    public Class<AlgorithmProvidedMasterSlaveRuleConfiguration> getTypeClass() {
-        return AlgorithmProvidedMasterSlaveRuleConfiguration.class;
+    public Class<MasterSlaveRuleConfiguration> getTypeClass() {
+        return MasterSlaveRuleConfiguration.class;
     }
 }

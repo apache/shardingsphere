@@ -49,21 +49,21 @@ dataSources:
 
 rules:
 - !MASTER_SLAVE
-  loadBalanceStrategies:
-    roundRobin:
-      type: ROUND_ROBIN
-    random:
-      type: RANDOM
   dataSources:
     ds_0:
       masterDataSourceName: master_ds_0
       slaveDataSourceNames:
         - master_ds_0_slave_0
         - master_ds_0_slave_1
-      loadBalanceStrategyName: roundRobin
+      loadBalancerName: roundRobin
     ds_1:
       masterDataSourceName: master_ds_1
       slaveDataSourceNames: 
         - master_ds_1_slave_0
         - master_ds_1_slave_1
-      loadBalanceStrategyName: random
+      loadBalancerName: random
+  loadBalancers:
+    roundRobin:
+      type: ROUND_ROBIN
+    random:
+      type: RANDOM

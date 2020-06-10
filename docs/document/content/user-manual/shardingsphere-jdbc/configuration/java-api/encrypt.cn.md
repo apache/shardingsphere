@@ -9,10 +9,10 @@ weight = 3
 
 可配置属性：
 
-| *名称*          | *数据类型*                                   | *说明*           |
-| -------------- | ------------------------------------------- | ---------------- |
-| encryptors (+) | Collection\<EncryptAlgorithmConfiguration\> | 加解密算法配置列表 |
-| tables (+)     | Collection\<EncryptTableRuleConfiguration\> | 加密表规则配置列表 |
+| *名称*          | *数据类型*                                    | *说明*             |
+| -------------- | -------------------------------------------- | ------------------ |
+| tables (+)     | Collection\<EncryptTableRuleConfiguration\>  | 加密表规则配置       |
+| encryptors (+) | Map\<String, EncryptAlgorithmConfiguration\> | 加解密算法名称和配置 |
 
 ## 加密表规则配置
 

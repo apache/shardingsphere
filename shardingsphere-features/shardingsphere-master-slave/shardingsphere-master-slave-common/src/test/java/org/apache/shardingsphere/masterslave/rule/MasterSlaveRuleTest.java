@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.masterslave.rule;
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
-import org.apache.shardingsphere.masterslave.api.config.strategy.LoadBalanceStrategyConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.algorithm.LoadBalanceAlgorithmConfiguration;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -35,7 +36,7 @@ public final class MasterSlaveRuleTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewWithEmptyDataSourceRule() {
-        new MasterSlaveRule(new MasterSlaveRuleConfiguration(Collections.emptyList(), Collections.emptyList()));
+        new MasterSlaveRule(new MasterSlaveRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
     }
     
     @Test
@@ -52,14 +53,14 @@ public final class MasterSlaveRuleTest {
     
     private MasterSlaveRule createMasterSlaveRule() {
         MasterSlaveDataSourceRuleConfiguration configuration = new MasterSlaveDataSourceRuleConfiguration("test_ms", "master_db", Arrays.asList("slave_db_0", "slave_db_1"), "random");
-        return new MasterSlaveRule(
-                new MasterSlaveRuleConfiguration(Collections.singleton(new LoadBalanceStrategyConfiguration("random", "RANDOM", new Properties())), Collections.singleton(configuration)));
+        return new MasterSlaveRule(new MasterSlaveRuleConfiguration(
+                Collections.singleton(configuration), ImmutableMap.of("random", new LoadBalanceAlgorithmConfiguration("RANDOM", new Properties()))));
     }
     
     private void assertDataSourceRule(final MasterSlaveDataSourceRule actual) {
         assertThat(actual.getName(), is("test_ms"));
         assertThat(actual.getMasterDataSourceName(), is("master_db"));
         assertThat(actual.getSlaveDataSourceNames(), is(Arrays.asList("slave_db_0", "slave_db_1")));
-        assertThat(actual.getLoadBalanceAlgorithm().getType(), is("RANDOM"));
+        assertThat(actual.getLoadBalancer().getType(), is("RANDOM"));
     }
 }

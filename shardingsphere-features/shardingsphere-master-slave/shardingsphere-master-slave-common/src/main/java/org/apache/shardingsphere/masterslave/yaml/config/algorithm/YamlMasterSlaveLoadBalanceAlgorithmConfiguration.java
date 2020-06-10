@@ -15,30 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.yaml.config;
+package org.apache.shardingsphere.masterslave.yaml.config.algorithm;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 
 /**
- * Master-slave data source rule configuration for YAML.
+ * Master-slave load balance algorithm configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlMasterSlaveDataSourceRuleConfiguration implements YamlConfiguration {
+public final class YamlMasterSlaveLoadBalanceAlgorithmConfiguration implements YamlConfiguration {
     
-    private String name;
-    
-    private String masterDataSourceName;
-    
-    private List<String> slaveDataSourceNames = new ArrayList<>();
-    
-    private String loadBalanceStrategyName;
+    private String type;
     
     private Properties props = new Properties();
 }

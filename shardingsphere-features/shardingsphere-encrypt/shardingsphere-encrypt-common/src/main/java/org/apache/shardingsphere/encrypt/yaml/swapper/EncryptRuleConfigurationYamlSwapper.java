@@ -70,7 +70,6 @@ public final class EncryptRuleConfigurationYamlSwapper implements YamlRuleConfig
         Map<String, EncryptAlgorithmConfiguration> result = new LinkedHashMap<>();
         for (Entry<String, YamlEncryptAlgorithmConfiguration> entry : yamlConfiguration.getEncryptors().entrySet()) {
             YamlEncryptAlgorithmConfiguration yamlEncryptAlgorithmConfiguration = entry.getValue();
-            yamlEncryptAlgorithmConfiguration.setName(entry.getKey());
             result.put(entry.getKey(), encryptAlgorithmConfigurationYamlSwapper.swap(yamlEncryptAlgorithmConfiguration));
         }
         return result;

@@ -71,12 +71,12 @@ public final class YamlRootRuleConfigurationsForYamlMasterSlaveRuleConfiguration
     private void assertMasterSlaveRuleForDs0(final YamlMasterSlaveRuleConfiguration actual) {
         assertThat(actual.getDataSources().get("ds_0").getMasterDataSourceName(), is("master_ds_0"));
         assertThat(actual.getDataSources().get("ds_0").getSlaveDataSourceNames(), is(Arrays.asList("master_ds_0_slave_0", "master_ds_0_slave_1")));
-        assertThat(actual.getDataSources().get("ds_0").getLoadBalanceStrategyName(), is("roundRobin"));
+        assertThat(actual.getDataSources().get("ds_0").getLoadBalancerName(), is("roundRobin"));
     }
     
     private void assertMasterSlaveRuleForDs1(final YamlMasterSlaveRuleConfiguration actual) {
         assertThat(actual.getDataSources().get("ds_1").getMasterDataSourceName(), is("master_ds_1"));
         assertThat(actual.getDataSources().get("ds_1").getSlaveDataSourceNames(), is(Arrays.asList("master_ds_1_slave_0", "master_ds_1_slave_1")));
-        assertThat(actual.getDataSources().get("ds_1").getLoadBalanceStrategyName(), is("random"));
+        assertThat(actual.getDataSources().get("ds_1").getLoadBalancerName(), is("random"));
     }
 }

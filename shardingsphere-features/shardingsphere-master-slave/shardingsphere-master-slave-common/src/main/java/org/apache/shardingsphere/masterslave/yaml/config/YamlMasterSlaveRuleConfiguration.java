@@ -19,8 +19,10 @@ package org.apache.shardingsphere.masterslave.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.masterslave.yaml.config.algorithm.YamlMasterSlaveLoadBalanceAlgorithmConfiguration;
+import org.apache.shardingsphere.masterslave.yaml.config.rule.YamlMasterSlaveDataSourceRuleConfiguration;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -32,9 +34,9 @@ import java.util.Map;
 @Setter
 public final class YamlMasterSlaveRuleConfiguration implements YamlRuleConfiguration {
     
-    private Map<String, YamlMasterSlaveLoadBalanceStrategyConfiguration> loadBalanceStrategies = new LinkedHashMap<>();
-    
     private Map<String, YamlMasterSlaveDataSourceRuleConfiguration> dataSources = new LinkedHashMap<>();
+    
+    private Map<String, YamlMasterSlaveLoadBalanceAlgorithmConfiguration> loadBalancers = new LinkedHashMap<>();
     
     @Override
     public Class<MasterSlaveRuleConfiguration> getRuleConfigurationType() {

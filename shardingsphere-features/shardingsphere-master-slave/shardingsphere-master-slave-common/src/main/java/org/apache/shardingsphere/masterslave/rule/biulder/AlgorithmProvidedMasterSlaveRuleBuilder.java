@@ -15,31 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rule;
+package org.apache.shardingsphere.masterslave.rule.biulder;
 
-import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRuleBuilder;
+import org.apache.shardingsphere.masterslave.constant.MasterSlaveOrder;
+import org.apache.shardingsphere.masterslave.rule.MasterSlaveRule;
+import org.apache.shardingsphere.masterslave.algorithm.config.AlgorithmProvidedMasterSlaveRuleConfiguration;
 
 import java.util.Collection;
 
 /**
- * Algorithm provided encrypt rule builder.
+ * Algorithm provided master-slave rule builder.
  */
-public final class AlgorithmProvidedEncryptRuleBuilder implements ShardingSphereRuleBuilder<EncryptRule, AlgorithmProvidedEncryptRuleConfiguration> {
+public final class AlgorithmProvidedMasterSlaveRuleBuilder implements ShardingSphereRuleBuilder<MasterSlaveRule, AlgorithmProvidedMasterSlaveRuleConfiguration> {
     
     @Override
-    public EncryptRule build(final AlgorithmProvidedEncryptRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
-        return new EncryptRule(ruleConfiguration);
+    public MasterSlaveRule build(final AlgorithmProvidedMasterSlaveRuleConfiguration ruleConfiguration, final Collection<String> dataSourceNames) {
+        return new MasterSlaveRule(ruleConfiguration);
     }
     
     @Override
     public int getOrder() {
-        return EncryptOrder.ORDER + 1;
+        return MasterSlaveOrder.ORDER + 1;
     }
     
     @Override
-    public Class<AlgorithmProvidedEncryptRuleConfiguration> getTypeClass() {
-        return AlgorithmProvidedEncryptRuleConfiguration.class;
+    public Class<AlgorithmProvidedMasterSlaveRuleConfiguration> getTypeClass() {
+        return AlgorithmProvidedMasterSlaveRuleConfiguration.class;
     }
 }

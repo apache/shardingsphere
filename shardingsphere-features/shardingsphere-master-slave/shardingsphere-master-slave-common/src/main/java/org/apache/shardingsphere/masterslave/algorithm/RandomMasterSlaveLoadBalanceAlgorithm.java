@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.strategy;
+package org.apache.shardingsphere.masterslave.algorithm;
 
 import lombok.Getter;
 import lombok.Setter;

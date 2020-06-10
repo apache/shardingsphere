@@ -20,8 +20,8 @@ package org.apache.shardingsphere.masterslave.spring.namespace.parser;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
+import org.apache.shardingsphere.masterslave.algorithm.config.AlgorithmProvidedMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.masterslave.spring.namespace.tag.MasterSlaveRuleBeanDefinitionTag;
-import org.apache.shardingsphere.masterslave.strategy.config.AlgorithmProvidedMasterSlaveRuleConfiguration;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -46,23 +46,9 @@ public final class MasterSlaveRuleBeanDefinitionParser extends AbstractBeanDefin
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(AlgorithmProvidedMasterSlaveRuleConfiguration.class);
-        factory.addConstructorArgValue(parseLoadBalanceStrategiesConfigurations(element));
         factory.addConstructorArgValue(parseMasterSlaveDataSourceRuleConfigurations(element));
+        factory.addConstructorArgValue(parseLoadBalanceAlgorithmsConfigurations(element));
         return factory.getBeanDefinition();
-    }
-    
-    private Map<String, RuntimeBeanReference> parseLoadBalanceStrategiesConfigurations(final Element element) {
-        Collection<String> loadBalanceStrategyRefs = findLoadBalanceStrategyRefs(DomUtils.getChildElementsByTagName(element, MasterSlaveRuleBeanDefinitionTag.DATA_SOURCE_TAG));
-        Map<String, RuntimeBeanReference> result = new ManagedMap<>(loadBalanceStrategyRefs.size());
-        for (String each : loadBalanceStrategyRefs) {
-            result.put(each, new RuntimeBeanReference(each));
-        }
-        return result;
-    }
-    
-    private Collection<String> findLoadBalanceStrategyRefs(final List<Element> masterSlaveDataSourceElements) {
-        return masterSlaveDataSourceElements.stream().filter(each -> !Strings.isNullOrEmpty(each.getAttribute(MasterSlaveRuleBeanDefinitionTag.LOAD_BALANCE_STRATEGY_REF_ATTRIBUTE)))
-                .map(each -> each.getAttribute(MasterSlaveRuleBeanDefinitionTag.LOAD_BALANCE_STRATEGY_REF_ATTRIBUTE)).collect(Collectors.toSet());
     }
     
     private List<BeanDefinition> parseMasterSlaveDataSourceRuleConfigurations(final Element element) {
@@ -79,7 +65,7 @@ public final class MasterSlaveRuleBeanDefinitionParser extends AbstractBeanDefin
         factory.addConstructorArgValue(element.getAttribute(MasterSlaveRuleBeanDefinitionTag.MASTER_SLAVE_DATA_SOURCE_ID_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(MasterSlaveRuleBeanDefinitionTag.MASTER_DATA_SOURCE_NAME_ATTRIBUTE));
         factory.addConstructorArgValue(parseSlaveDataSourcesRef(element));
-        factory.addConstructorArgValue(element.getAttribute(MasterSlaveRuleBeanDefinitionTag.LOAD_BALANCE_STRATEGY_REF_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(MasterSlaveRuleBeanDefinitionTag.LOAD_BALANCE_ALGORITHM_REF_ATTRIBUTE));
         return factory.getBeanDefinition();
     }
     
@@ -88,5 +74,19 @@ public final class MasterSlaveRuleBeanDefinitionParser extends AbstractBeanDefin
         Collection<String> result = new ManagedList<>(slaveDataSources.size());
         result.addAll(slaveDataSources);
         return result;
+    }
+    
+    private Map<String, RuntimeBeanReference> parseLoadBalanceAlgorithmsConfigurations(final Element element) {
+        Collection<String> loadBalanceAlgorithmRefs = findLoadBalanceAlgorithmRefs(DomUtils.getChildElementsByTagName(element, MasterSlaveRuleBeanDefinitionTag.DATA_SOURCE_TAG));
+        Map<String, RuntimeBeanReference> result = new ManagedMap<>(loadBalanceAlgorithmRefs.size());
+        for (String each : loadBalanceAlgorithmRefs) {
+            result.put(each, new RuntimeBeanReference(each));
+        }
+        return result;
+    }
+    
+    private Collection<String> findLoadBalanceAlgorithmRefs(final List<Element> masterSlaveDataSourceElements) {
+        return masterSlaveDataSourceElements.stream().filter(each -> !Strings.isNullOrEmpty(each.getAttribute(MasterSlaveRuleBeanDefinitionTag.LOAD_BALANCE_ALGORITHM_REF_ATTRIBUTE)))
+                .map(each -> each.getAttribute(MasterSlaveRuleBeanDefinitionTag.LOAD_BALANCE_ALGORITHM_REF_ATTRIBUTE)).collect(Collectors.toSet());
     }
 }

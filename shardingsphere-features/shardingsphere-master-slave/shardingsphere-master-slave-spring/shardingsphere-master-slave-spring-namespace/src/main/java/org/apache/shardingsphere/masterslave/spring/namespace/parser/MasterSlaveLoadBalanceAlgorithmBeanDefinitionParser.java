@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.masterslave.spring.namespace.parser;
 
 import org.apache.shardingsphere.masterslave.spring.namespace.factorybean.MasterSlaveLoadBalanceAlgorithmFactoryBean;
-import org.apache.shardingsphere.masterslave.spring.namespace.tag.LoadBalanceStrategyBeanDefinitionTag;
+import org.apache.shardingsphere.masterslave.spring.namespace.tag.LoadBalanceAlgorithmBeanDefinitionTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -29,21 +29,21 @@ import org.w3c.dom.Element;
 import java.util.Properties;
 
 /**
- * Master slave load balance strategy bean definition parser.
+ * Master slave load balance algorithm bean definition parser.
  */
-public final class MasterSlaveLoadBalanceStrategyBeanDefinitionParser extends AbstractBeanDefinitionParser {
+public final class MasterSlaveLoadBalanceAlgorithmBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(MasterSlaveLoadBalanceAlgorithmFactoryBean.class);
-        factory.addConstructorArgValue(element.getAttribute(LoadBalanceStrategyBeanDefinitionTag.NAME_ATTRIBUTE));
-        factory.addConstructorArgValue(element.getAttribute(LoadBalanceStrategyBeanDefinitionTag.TYPE_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(LoadBalanceAlgorithmBeanDefinitionTag.ID_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(LoadBalanceAlgorithmBeanDefinitionTag.TYPE_ATTRIBUTE));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
         return factory.getBeanDefinition();
     }
     
     private static Properties parseProperties(final Element element, final ParserContext parserContext) {
-        Element propsElement = DomUtils.getChildElementByTagName(element, LoadBalanceStrategyBeanDefinitionTag.PROPS_TAG);
+        Element propsElement = DomUtils.getChildElementByTagName(element, LoadBalanceAlgorithmBeanDefinitionTag.PROPS_TAG);
         return null == propsElement ? new Properties() : parserContext.getDelegate().parsePropsElement(propsElement);
     }
 }

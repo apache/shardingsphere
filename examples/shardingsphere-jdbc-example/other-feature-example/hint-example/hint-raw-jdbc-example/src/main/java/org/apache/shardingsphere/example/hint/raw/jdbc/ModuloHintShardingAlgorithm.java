@@ -27,6 +27,10 @@ import java.util.Properties;
 public final class ModuloHintShardingAlgorithm implements HintShardingAlgorithm<Long> {
     
     @Override
+    public void init() {
+    }
+    
+    @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final HintShardingValue<Long> shardingValue) {
         Collection<String> result = new ArrayList<>();
         for (String each : availableTargetNames) {

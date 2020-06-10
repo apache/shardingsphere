@@ -91,7 +91,7 @@ public final class ShardingMasterSlaveConfigurationRange implements ExampleConfi
                 "ds_0", "demo_ds_master_0", Arrays.asList("demo_ds_master_0_slave_0", "demo_ds_master_0_slave_1"), null);
         MasterSlaveDataSourceRuleConfiguration dataSourceConfiguration2 = new MasterSlaveDataSourceRuleConfiguration(
                 "ds_1", "demo_ds_master_1", Arrays.asList("demo_ds_master_1_slave_0", "demo_ds_master_1_slave_1"), null);
-        return new MasterSlaveRuleConfiguration(Collections.emptyList(), Arrays.asList(dataSourceConfiguration1, dataSourceConfiguration2));
+        return new MasterSlaveRuleConfiguration(Arrays.asList(dataSourceConfiguration1, dataSourceConfiguration2), Collections.emptyMap());
     }
     
     private static Properties createProperties() {

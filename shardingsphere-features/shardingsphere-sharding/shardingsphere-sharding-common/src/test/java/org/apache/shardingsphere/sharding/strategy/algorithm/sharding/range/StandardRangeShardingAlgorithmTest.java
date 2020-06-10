@@ -26,7 +26,6 @@ import org.apache.shardingsphere.sharding.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.sharding.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.sharding.strategy.route.value.RouteValue;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -37,10 +36,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class StandardRangeShardingAlgorithmTest {
-
+public final class StandardRangeShardingAlgorithmTest {
+    
     private StandardShardingStrategy shardingStrategy;
-
+    
     @Before
     public void setUp() {
         StandardRangeShardingAlgorithm shardingAlgorithm = new StandardRangeShardingAlgorithm();
@@ -51,7 +50,7 @@ public class StandardRangeShardingAlgorithmTest {
         StandardShardingStrategyConfiguration shardingStrategyConfig = new StandardShardingStrategyConfiguration("order_id", shardingAlgorithm);
         shardingStrategy = new StandardShardingStrategy(shardingStrategyConfig);
     }
-
+    
     @Test
     public void assertPreciseDoSharding() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5");
@@ -63,7 +62,7 @@ public class StandardRangeShardingAlgorithmTest {
         assertTrue(actual.contains("t_order_2"));
         assertTrue(actual.contains("t_order_5"));
     }
-
+    
     @Test
     public void assertRangeDoSharding() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5");
@@ -76,7 +75,7 @@ public class StandardRangeShardingAlgorithmTest {
         assertTrue(actual.contains("t_order_4"));
         assertTrue(actual.contains("t_order_5"));
     }
-
+    
     @Test
     public void assertGetAutoTablesAmount() {
         StandardRangeShardingAlgorithm shardingAlgorithm = new StandardRangeShardingAlgorithm();

@@ -30,6 +30,10 @@ import java.util.Set;
 public final class StandardModuloShardingDatabaseAlgorithm implements StandardShardingAlgorithm<Integer> {
     
     @Override
+    public void init() {
+    }
+    
+    @Override
     public String doSharding(final Collection<String> databaseNames, final PreciseShardingValue<Integer> shardingValue) {
         for (String each : databaseNames) {
             if (each.endsWith(shardingValue.getValue() % 2 + "")) {

@@ -15,23 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.api.config.strategy;
+package org.apache.shardingsphere.masterslave.algorithm.config;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
+import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
 
-import java.util.Properties;
+import java.util.Collection;
+import java.util.Map;
 
 /**
- * Master-slave load balance strategy configuration.
+ * Algorithm provided master-slave rule configuration.
  */
+@RequiredArgsConstructor
 @Getter
-public final class LoadBalanceStrategyConfiguration extends TypedSPIConfiguration {
+public final class AlgorithmProvidedMasterSlaveRuleConfiguration implements RuleConfiguration {
     
-    private final String name;
+    private final Collection<MasterSlaveDataSourceRuleConfiguration> dataSources;
     
-    public LoadBalanceStrategyConfiguration(final String name, final String type, final Properties properties) {
-        super(type, properties);
-        this.name = name;
-    }
+    private final Map<String, MasterSlaveLoadBalanceAlgorithm> loadBalanceAlgorithms;
 }
