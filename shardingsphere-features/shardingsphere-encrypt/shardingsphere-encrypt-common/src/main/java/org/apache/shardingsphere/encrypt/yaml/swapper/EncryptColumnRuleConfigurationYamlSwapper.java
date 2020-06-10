@@ -32,7 +32,7 @@ public final class EncryptColumnRuleConfigurationYamlSwapper implements YamlSwap
         result.setPlainColumn(data.getPlainColumn());
         result.setCipherColumn(data.getCipherColumn());
         result.setAssistedQueryColumn(data.getAssistedQueryColumn());
-        result.setEncryptStrategyName(data.getEncryptStrategyName());
+        result.setEncryptStrategyName(data.getEncryptorName());
         return result;
     }
     

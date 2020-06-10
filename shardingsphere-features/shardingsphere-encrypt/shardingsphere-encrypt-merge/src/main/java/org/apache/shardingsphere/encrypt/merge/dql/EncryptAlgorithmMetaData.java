@@ -40,28 +40,28 @@ public final class EncryptAlgorithmMetaData {
     private final SelectStatementContext selectStatementContext;
     
     /**
-     * Find encrypt algorithm.
+     * Find encryptor.
      *
      * @param columnIndex column index
-     * @return encrypt algorithm
+     * @return encryptor
      */
-    public Optional<EncryptAlgorithm> findEncryptAlgorithm(final int columnIndex) {
+    public Optional<EncryptAlgorithm> findEncryptor(final int columnIndex) {
         Projection projection = selectStatementContext.getProjectionsContext().getExpandProjections().get(columnIndex - 1);
         if (projection instanceof ColumnProjection) {
             String columnName = ((ColumnProjection) projection).getName();
             Optional<String> tableName = selectStatementContext.getTablesContext().findTableName((ColumnProjection) projection, schemaMetaData);
-            return tableName.isPresent() ? findEncryptAlgorithm(tableName.get(), columnName) : findEncryptAlgorithm(columnName);
+            return tableName.isPresent() ? findEncryptor(tableName.get(), columnName) : findEncryptor(columnName);
         }
         return Optional.empty();
     }
     
-    private Optional<EncryptAlgorithm> findEncryptAlgorithm(final String tableName, final String columnName) {
-        return encryptRule.findEncryptAlgorithm(tableName, columnName);
+    private Optional<EncryptAlgorithm> findEncryptor(final String tableName, final String columnName) {
+        return encryptRule.findEncryptor(tableName, columnName);
     }
     
-    private Optional<EncryptAlgorithm> findEncryptAlgorithm(final String columnName) {
+    private Optional<EncryptAlgorithm> findEncryptor(final String columnName) {
         for (String each : selectStatementContext.getTablesContext().getTableNames()) {
-            Optional<EncryptAlgorithm> result = encryptRule.findEncryptAlgorithm(each, columnName);
+            Optional<EncryptAlgorithm> result = encryptRule.findEncryptor(each, columnName);
             if (result.isPresent()) {
                 return result;
             }

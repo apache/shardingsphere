@@ -48,7 +48,7 @@ public final class EncryptMergedResult implements MergedResult {
         if (!queryWithCipherColumn) {
             return mergedResult.getValue(columnIndex, type);
         }
-        Optional<EncryptAlgorithm> encryptAlgorithm = metaData.findEncryptAlgorithm(columnIndex);
+        Optional<EncryptAlgorithm> encryptAlgorithm = metaData.findEncryptor(columnIndex);
         if (!encryptAlgorithm.isPresent()) {
             return mergedResult.getValue(columnIndex, type);
         }

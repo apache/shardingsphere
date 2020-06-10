@@ -39,7 +39,7 @@ public final class EncryptTable {
     public EncryptTable(final EncryptTableRuleConfiguration config) {
         columns = new LinkedHashMap<>(config.getColumns().size());
         for (EncryptColumnRuleConfiguration each : config.getColumns()) {
-            columns.put(each.getLogicColumn(), new EncryptColumn(each.getCipherColumn(), each.getAssistedQueryColumn(), each.getPlainColumn(), each.getEncryptStrategyName()));
+            columns.put(each.getLogicColumn(), new EncryptColumn(each.getCipherColumn(), each.getAssistedQueryColumn(), each.getPlainColumn(), each.getEncryptorName()));
         }
     }
     

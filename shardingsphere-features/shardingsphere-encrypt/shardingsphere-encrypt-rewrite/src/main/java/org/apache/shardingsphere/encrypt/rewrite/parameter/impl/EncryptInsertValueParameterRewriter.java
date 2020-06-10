@@ -50,7 +50,7 @@ public final class EncryptInsertValueParameterRewriter extends EncryptParameterR
         Iterator<String> descendingColumnNames = insertStatementContext.getDescendingColumnNames();
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
-            getEncryptRule().findEncryptAlgorithm(tableName, columnName).ifPresent(
+            getEncryptRule().findEncryptor(tableName, columnName).ifPresent(
                 encryptAlgorithm -> encryptInsertValues((GroupedParameterBuilder) parameterBuilder, insertStatementContext, encryptAlgorithm, tableName, columnName));
         }
     }
