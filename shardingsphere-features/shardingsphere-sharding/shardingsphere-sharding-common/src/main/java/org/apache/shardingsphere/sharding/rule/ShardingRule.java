@@ -132,11 +132,11 @@ public final class ShardingRule implements DataNodeRoutedRule {
     }
     
     private KeyGenerateAlgorithm createDefaultKeyGenerateAlgorithm(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
-        return containsKeyGenerateAlgorithm(keyGeneratorConfiguration) ? keyGeneratorConfiguration.getKeyGenerateAlgorithm() : TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class);
+        return containsKeyGenerateAlgorithm(keyGeneratorConfiguration) ? keyGeneratorConfiguration.getAlgorithm() : TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class);
     }
     
     private boolean containsKeyGenerateAlgorithm(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
-        return null != keyGeneratorConfiguration && null != keyGeneratorConfiguration.getKeyGenerateAlgorithm();
+        return null != keyGeneratorConfiguration && null != keyGeneratorConfiguration.getAlgorithm();
     }
     
     /**

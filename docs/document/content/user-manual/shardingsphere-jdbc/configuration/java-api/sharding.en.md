@@ -185,10 +185,10 @@ Class name: KeyGeneratorConfiguration
 
 Attributes:
 
-| *Name*               | *DataType*           | *Description*                |
-| -------------------- | -------------------- | ---------------------------- |
-| column               | String               | Column name of key generate  |
-| keyGenerateAlgorithm | KeyGenerateAlgorithm | Key generate algorithm class |
+| *Name*    | *DataType*           | *Description*                |
+| --------- | -------------------- | ---------------------------- |
+| column    | String               | Column name of key generate  |
+| algorithm | KeyGenerateAlgorithm | Key generate algorithm class |
 
 Apache ShardingSphere built-in implemented classes of KeyGenerateAlgorithm are:
 

@@ -99,7 +99,7 @@ public final class TableRule {
         tableShardingStrategy = null == tableRuleConfig.getTableShardingStrategy() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getTableShardingStrategy());
         final KeyGeneratorConfiguration keyGeneratorConfiguration = tableRuleConfig.getKeyGenerator();
         generateKeyColumn = null != keyGeneratorConfiguration && !Strings.isNullOrEmpty(keyGeneratorConfiguration.getColumn()) ? keyGeneratorConfiguration.getColumn() : defaultGenerateKeyColumn;
-        keyGenerateAlgorithm = containsKeyGenerateAlgorithm(tableRuleConfig.getKeyGenerator()) ? tableRuleConfig.getKeyGenerator().getKeyGenerateAlgorithm() : null;
+        keyGenerateAlgorithm = containsKeyGenerateAlgorithm(tableRuleConfig.getKeyGenerator()) ? tableRuleConfig.getKeyGenerator().getAlgorithm() : null;
         checkRule(dataNodes);
     }
 
@@ -115,7 +115,7 @@ public final class TableRule {
         actualTables = getActualTables();
         final KeyGeneratorConfiguration keyGeneratorConfiguration = tableRuleConfig.getKeyGenerator();
         generateKeyColumn = null != keyGeneratorConfiguration && !Strings.isNullOrEmpty(keyGeneratorConfiguration.getColumn()) ? keyGeneratorConfiguration.getColumn() : defaultGenerateKeyColumn;
-        keyGenerateAlgorithm = containsKeyGenerateAlgorithm(tableRuleConfig.getKeyGenerator()) ? tableRuleConfig.getKeyGenerator().getKeyGenerateAlgorithm() : null;
+        keyGenerateAlgorithm = containsKeyGenerateAlgorithm(tableRuleConfig.getKeyGenerator()) ? tableRuleConfig.getKeyGenerator().getAlgorithm() : null;
         checkRule(dataNodes);
     }
 
@@ -146,7 +146,7 @@ public final class TableRule {
     }
     
     private boolean containsKeyGenerateAlgorithm(final KeyGeneratorConfiguration keyGenerator) {
-        return null != keyGenerator && null != keyGenerator.getKeyGenerateAlgorithm();
+        return null != keyGenerator && null != keyGenerator.getAlgorithm();
     }
     
     private boolean isEmptyDataNodes(final List<String> dataNodes) {

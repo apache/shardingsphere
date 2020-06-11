@@ -163,10 +163,10 @@ Apache ShardingSphere 暂无内置复合分片算法实现类。
 
 可配置属性：
 
-| *名称*               | *数据类型*            | *说明*            |
-| -------------------- | -------------------- | ---------------- |
-| column               | String               | 自增列名称        |
-| keyGenerateAlgorithm | KeyGenerateAlgorithm | 自增主键算法实现类 |
+| *名称*    | *数据类型*            | *说明*            |
+| --------- | -------------------- | ---------------- |
+| column    | String               | 自增列名称        |
+| algorithm | KeyGenerateAlgorithm | 自增主键算法实现类 |
 
 Apache ShardingSphere 内置的自增主键算法实现类包括：
 

@@ -30,11 +30,11 @@ public final class KeyGeneratorConfiguration {
     
     private final String column;
     
-    private final KeyGenerateAlgorithm keyGenerateAlgorithm;
+    private final KeyGenerateAlgorithm algorithm;
     
-    public KeyGeneratorConfiguration(final String column, final KeyGenerateAlgorithm keyGenerateAlgorithm) {
+    public KeyGeneratorConfiguration(final String column, final KeyGenerateAlgorithm algorithm) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(column), "Column is required.");
         this.column = column;
-        this.keyGenerateAlgorithm = keyGenerateAlgorithm;
+        this.algorithm = algorithm;
     }
 }
