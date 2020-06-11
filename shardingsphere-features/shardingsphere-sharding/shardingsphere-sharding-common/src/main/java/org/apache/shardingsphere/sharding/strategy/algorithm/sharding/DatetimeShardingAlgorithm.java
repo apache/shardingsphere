@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.strategy.algorithm.sharding;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Range;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
@@ -25,6 +26,7 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingV
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
+import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -44,9 +46,9 @@ public final class DatetimeShardingAlgorithm implements StandardShardingAlgorith
     
     private static final String PARTITION_SECONDS = "partition.seconds";
     
-    private static final String EPOCH = "epoch";
+    private static final String DATETIME_LOWER = "datetime.lower";
 
-    private static final String TOP_DATETIME = "top.datetime";
+    private static final String DATETIME_UPPER = "datetime.upper";
 
     private static final String DATETIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
     
@@ -56,12 +58,16 @@ public final class DatetimeShardingAlgorithm implements StandardShardingAlgorith
     @Setter
     private Properties properties = new Properties();
 
+    @Getter
+    private int autoTablesAmount;
+
     @Override
     public void init() {
         Preconditions.checkNotNull(properties.get(PARTITION_SECONDS), "Sharding partition volume cannot be null.");
-        Preconditions.checkState(null != properties.get(EPOCH) && checkDatetimePattern(properties.get(EPOCH).toString()), "%s pattern is required.", DATETIME_PATTERN);
-        Preconditions.checkState(null != properties.get(TOP_DATETIME) && checkDatetimePattern(properties.get(TOP_DATETIME).toString()),
+        Preconditions.checkState(null != properties.get(DATETIME_LOWER) && checkDatetimePattern(properties.get(DATETIME_LOWER).toString()), "%s pattern is required.", DATETIME_PATTERN);
+        Preconditions.checkState(null != properties.get(DATETIME_UPPER) && checkDatetimePattern(properties.get(DATETIME_UPPER).toString()),
                 "%s pattern is required.", DATETIME_PATTERN);
+        autoTablesAmount = (int) (Math.ceil(parseDate(properties.get(DATETIME_UPPER).toString()) / getPartitionValue()) + 2);
     }
     
     @Override
@@ -77,8 +83,8 @@ public final class DatetimeShardingAlgorithm implements StandardShardingAlgorith
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
-        int firstPartition = doSharding(parseDate(shardingValue.getValueRange().lowerEndpoint()));
-        int lastPartition = doSharding(parseDate(shardingValue.getValueRange().upperEndpoint()));
+        int firstPartition = getFirstPartition(shardingValue.getValueRange());
+        int lastPartition = getLastPartition(shardingValue.getValueRange());
         for (int i = firstPartition; i <= lastPartition; i++) {
             for (String each : availableTargetNames) {
                 if (each.endsWith(i + "")) {
@@ -91,10 +97,19 @@ public final class DatetimeShardingAlgorithm implements StandardShardingAlgorith
         }
         return result;
     }
+
+    private int getFirstPartition(final Range<Comparable<?>> valueRange) {
+        return valueRange.hasLowerBound() ? doSharding(parseDate(valueRange.lowerEndpoint())) : 0;
+    }
+
+    private int getLastPartition(final Range<Comparable<?>> valueRange) {
+        return valueRange.hasUpperBound() ? doSharding(parseDate(valueRange.upperEndpoint())) : autoTablesAmount - 1;
+    }
     
     private int doSharding(final long shardingValue) {
-        int position = (int) (Math.floor(shardingValue / getPartitionValue()));
-        return Math.max(0, position);
+        DecimalFormat df = new DecimalFormat("0.00");
+        String position = df.format((float) shardingValue / getPartitionValue());
+        return Math.max(0, (int) Math.ceil(Float.parseFloat(position)));
     }
     
     private boolean checkDatetimePattern(final String datetime) {
@@ -108,7 +123,7 @@ public final class DatetimeShardingAlgorithm implements StandardShardingAlgorith
     
     private long parseDate(final Comparable<?> shardingValue) {
         LocalDateTime dateValue = LocalDateTime.parse(shardingValue.toString(), DATE_FORMAT);
-        LocalDateTime sinceDate = LocalDateTime.parse(properties.get(EPOCH).toString(), DATE_FORMAT);
+        LocalDateTime sinceDate = LocalDateTime.parse(properties.get(DATETIME_LOWER).toString(), DATE_FORMAT);
         return Duration.between(sinceDate, dateValue).toMillis() / 1000;
     }
     
@@ -119,10 +134,5 @@ public final class DatetimeShardingAlgorithm implements StandardShardingAlgorith
     @Override
     public String getType() {
         return "DATETIME";
-    }
-
-    @Override
-    public int getAutoTablesAmount() {
-        return (int) (Math.ceil(parseDate(properties.get(TOP_DATETIME).toString()) / getPartitionValue()));
     }
 }

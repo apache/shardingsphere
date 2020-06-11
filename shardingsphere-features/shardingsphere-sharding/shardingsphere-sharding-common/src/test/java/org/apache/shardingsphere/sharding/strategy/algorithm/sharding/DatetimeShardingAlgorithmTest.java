@@ -44,8 +44,8 @@ public final class DatetimeShardingAlgorithmTest {
     public void setup() {
         DatetimeShardingAlgorithm shardingAlgorithm = new DatetimeShardingAlgorithm();
         shardingAlgorithm.getProperties().setProperty("partition.seconds", "4");
-        shardingAlgorithm.getProperties().setProperty("epoch", "2020-01-01 00:00:00");
-        shardingAlgorithm.getProperties().setProperty("top.datetime", "2022-01-01 00:00:00");
+        shardingAlgorithm.getProperties().setProperty("datetime.lower", "2020-01-01 00:00:00");
+        shardingAlgorithm.getProperties().setProperty("datetime.upper", "2020-01-01 00:00:16");
         shardingAlgorithm.init();
         StandardShardingStrategyConfiguration shardingStrategyConfig = new StandardShardingStrategyConfiguration("create_time", shardingAlgorithm);
         shardingStrategy = new StandardShardingStrategy(shardingStrategyConfig);
@@ -58,36 +58,73 @@ public final class DatetimeShardingAlgorithmTest {
                 Lists.newArrayList("2020-01-01 00:00:01", "2020-01-01 00:00:02")));
         Collection<String> actual = shardingStrategy.doSharding(availableTargetNames, shardingValues, new ConfigurationProperties(new Properties()));
         assertThat(actual.size(), is(1));
+        assertTrue(actual.contains("t_order_1"));
+    }
+
+    @Test
+    public void assertPreciseDoShardingWithFirstPartition() {
+        List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
+        List<RouteValue> shardingValues = Lists.newArrayList(new ListRouteValue<>("create_time", "t_order",
+                Lists.newArrayList("2019-12-01 00:00:01", "2020-01-01 00:00:02")));
+        Collection<String> actual = shardingStrategy.doSharding(availableTargetNames, shardingValues, new ConfigurationProperties(new Properties()));
+        assertThat(actual.size(), is(2));
         assertTrue(actual.contains("t_order_0"));
+        assertTrue(actual.contains("t_order_1"));
     }
     
     @Test
-    public void assertDoShardingWithAllRange() {
-        List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        Range<String> rangeValue = Range.closed("2020-01-01 00:00:00", "2020-01-01 00:00:15");
+    public void assertRangeDoShardingWithAllRange() {
+        List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4");
+        Range<String> rangeValue = Range.closed("2019-01-01 00:00:00", "2020-01-01 00:00:15");
         List<RouteValue> shardingValues = Lists.newArrayList(new RangeRouteValue<>("create_time", "t_order", rangeValue));
         Collection<String> actual = shardingStrategy.doSharding(availableTargetNames, shardingValues, new ConfigurationProperties(new Properties()));
-        assertThat(actual.size(), is(4));
+        assertThat(actual.size(), is(5));
     }
     
     @Test
-    public void assertDoShardingWithPartRange() {
+    public void assertRangeDoShardingWithPartRange() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
         Range<String> rangeValue = Range.closed("2020-01-01 00:00:04", "2020-01-01 00:00:10");
         List<RouteValue> shardingValues = Lists.newArrayList(new RangeRouteValue<>("create_time", "t_order", rangeValue));
         Collection<String> actual = shardingStrategy.doSharding(availableTargetNames, shardingValues, new ConfigurationProperties(new Properties()));
-        assertThat(actual.size(), is(2));
+        assertThat(actual.size(), is(3));
         assertTrue(actual.contains("t_order_1"));
         assertTrue(actual.contains("t_order_2"));
+        assertTrue(actual.contains("t_order_3"));
+    }
+
+    @Test
+    public void assertPreciseDoShardingWithoutLowerBound() {
+        List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
+        Range<String> rangeValue = Range.lessThan("2020-01-01 00:00:11");
+        List<RouteValue> shardingValues = Lists.newArrayList(new RangeRouteValue<>("create_time", "t_order", rangeValue));
+        Collection<String> actual = shardingStrategy.doSharding(availableTargetNames, shardingValues, new ConfigurationProperties(new Properties()));
+        assertThat(actual.size(), is(4));
+        assertTrue(actual.contains("t_order_0"));
+        assertTrue(actual.contains("t_order_1"));
+        assertTrue(actual.contains("t_order_2"));
+        assertTrue(actual.contains("t_order_3"));
+    }
+
+    @Test
+    public void assertPreciseDoShardingWithoutUpperBound() {
+        List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5");
+        Range<String> rangeValue = Range.greaterThan("2020-01-01 00:00:09");
+        List<RouteValue> shardingValues = Lists.newArrayList(new RangeRouteValue<>("create_time", "t_order", rangeValue));
+        Collection<String> actual = shardingStrategy.doSharding(availableTargetNames, shardingValues, new ConfigurationProperties(new Properties()));
+        assertThat(actual.size(), is(3));
+        assertTrue(actual.contains("t_order_3"));
+        assertTrue(actual.contains("t_order_4"));
+        assertTrue(actual.contains("t_order_5"));
     }
 
     @Test
     public void assertGetAutoTablesAmount() {
         DatetimeShardingAlgorithm shardingAlgorithm = new DatetimeShardingAlgorithm();
         shardingAlgorithm.getProperties().setProperty("partition.seconds", "86400");
-        shardingAlgorithm.getProperties().setProperty("epoch", "2020-01-01 00:00:00");
-        shardingAlgorithm.getProperties().setProperty("top.datetime", "2021-01-01 00:00:00");
+        shardingAlgorithm.getProperties().setProperty("datetime.lower", "2020-01-01 00:00:00");
+        shardingAlgorithm.getProperties().setProperty("datetime.upper", "2021-01-01 00:00:00");
         shardingAlgorithm.init();
-        assertThat(shardingAlgorithm.getAutoTablesAmount(), is(366));
+        assertThat(shardingAlgorithm.getAutoTablesAmount(), is(368));
     }
 }
