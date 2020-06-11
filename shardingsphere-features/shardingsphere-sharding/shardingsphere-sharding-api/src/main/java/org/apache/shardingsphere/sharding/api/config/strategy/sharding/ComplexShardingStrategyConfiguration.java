@@ -15,22 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.api.config.strategy;
+package org.apache.shardingsphere.sharding.api.config.strategy.sharding;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
+import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
 
 /**
- * Hint sharding strategy configuration.
+ * Complex sharding strategy configuration.
  */
 @Getter
-public final class HintShardingStrategyConfiguration implements ShardingStrategyConfiguration {
+public final class ComplexShardingStrategyConfiguration implements ShardingStrategyConfiguration {
     
-    private final HintShardingAlgorithm shardingAlgorithm;
+    private final String shardingColumns;
     
-    public HintShardingStrategyConfiguration(final HintShardingAlgorithm shardingAlgorithm) {
+    private final ComplexKeysShardingAlgorithm shardingAlgorithm;
+    
+    public ComplexShardingStrategyConfiguration(final String shardingColumns, final ComplexKeysShardingAlgorithm shardingAlgorithm) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(shardingColumns), "ShardingColumns is required.");
         Preconditions.checkNotNull(shardingAlgorithm, "ShardingAlgorithm is required.");
+        this.shardingColumns = shardingColumns;
         this.shardingAlgorithm = shardingAlgorithm;
     }
 }

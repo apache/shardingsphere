@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.api.config.strategy;
+package org.apache.shardingsphere.sharding.api.config.strategy.sharding;
 
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 import org.junit.Test;

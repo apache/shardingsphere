@@ -15,26 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.api.config.strategy;
+package org.apache.shardingsphere.sharding.api.config.strategy.sharding;
 
-import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
+import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class HintShardingStrategyConfigurationTest {
+public final class ComplexShardingStrategyConfigurationTest {
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void assertConstructorWithoutShardingColumns() {
+        new ComplexShardingStrategyConfiguration("", mock(ComplexKeysShardingAlgorithm.class));
+    }
     
     @Test(expected = NullPointerException.class)
     public void assertConstructorWithoutShardingAlgorithm() {
-        new HintShardingStrategyConfiguration(null);
+        new ComplexShardingStrategyConfiguration("id, creation_date", null);
     }
     
     @Test
     public void assertConstructorWithFullArguments() {
-        HintShardingAlgorithm shardingAlgorithm = mock(HintShardingAlgorithm.class);
-        HintShardingStrategyConfiguration actual = new HintShardingStrategyConfiguration(shardingAlgorithm);
+        ComplexKeysShardingAlgorithm shardingAlgorithm = mock(ComplexKeysShardingAlgorithm.class);
+        ComplexShardingStrategyConfiguration actual = new ComplexShardingStrategyConfiguration("id, creation_date", shardingAlgorithm);
+        assertThat(actual.getShardingColumns(), is("id, creation_date"));
         assertThat(actual.getShardingAlgorithm(), is(shardingAlgorithm));
     }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.api.config.rule;
 
-import org.apache.shardingsphere.sharding.api.config.strategy.KeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.junit.Test;
 
 public final class KeyGeneratorConfigurationTest {

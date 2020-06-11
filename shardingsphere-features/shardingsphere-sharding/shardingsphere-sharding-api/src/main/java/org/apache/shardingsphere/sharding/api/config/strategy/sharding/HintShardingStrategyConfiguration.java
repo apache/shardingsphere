@@ -15,29 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.api.config.strategy;
+package org.apache.shardingsphere.sharding.api.config.strategy.sharding;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
+import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
 
 /**
- * Standard strategy configuration.
+ * Hint sharding strategy configuration.
  */
 @Getter
-public final class StandardShardingStrategyConfiguration implements ShardingStrategyConfiguration {
+public final class HintShardingStrategyConfiguration implements ShardingStrategyConfiguration {
     
-    private final String shardingColumn;
+    private final HintShardingAlgorithm shardingAlgorithm;
     
-    private final StandardShardingAlgorithm shardingAlgorithm;
-    
-    public StandardShardingStrategyConfiguration(final String shardingColumn, final StandardShardingAlgorithm shardingAlgorithm) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(shardingColumn), "ShardingColumns is required.");
+    public HintShardingStrategyConfiguration(final HintShardingAlgorithm shardingAlgorithm) {
         Preconditions.checkNotNull(shardingAlgorithm, "ShardingAlgorithm is required.");
-        // TODO When ShardingSphereAlgorithmFactory is used for Sharding Strategy, the following can be removed.
-        shardingAlgorithm.init();
-        this.shardingColumn = shardingColumn;
         this.shardingAlgorithm = shardingAlgorithm;
     }
 }
