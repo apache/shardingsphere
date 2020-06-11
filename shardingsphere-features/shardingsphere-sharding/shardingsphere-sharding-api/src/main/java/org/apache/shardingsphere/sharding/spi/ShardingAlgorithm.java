@@ -15,19 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.spi.keygen;
+package org.apache.shardingsphere.sharding.spi;
 
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
 import org.apache.shardingsphere.infra.spi.type.TypedSPI;
 
 /**
- * Key generate algorithm.
+ * Sharding algorithm.
  */
-public interface KeyGenerateAlgorithm extends TypedSPI {
-    
-    /**
-     * Generate key.
-     * 
-     * @return generated key
-     */
-    Comparable<?> generateKey();
+public interface ShardingAlgorithm extends TypedSPI, ShardingSphereAlgorithmPostProcessor {
 }

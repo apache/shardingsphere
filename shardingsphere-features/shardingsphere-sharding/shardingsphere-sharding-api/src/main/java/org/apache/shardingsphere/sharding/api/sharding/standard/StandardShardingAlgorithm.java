@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.api.sharding.standard;
 
-import org.apache.shardingsphere.sharding.spi.algorithm.ShardingAlgorithm;
+import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 
 import java.util.Collection;
 

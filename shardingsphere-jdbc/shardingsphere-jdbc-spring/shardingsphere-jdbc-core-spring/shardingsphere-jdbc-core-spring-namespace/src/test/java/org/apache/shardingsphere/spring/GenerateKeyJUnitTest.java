@@ -21,7 +21,7 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataS
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
-import org.apache.shardingsphere.sharding.spi.keygen.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.spring.fixture.DecrementKeyGenerateAlgorithm;
 import org.apache.shardingsphere.spring.fixture.IncrementKeyGenerateAlgorithm;
 import org.apache.shardingsphere.spring.util.FieldValueUtil;
