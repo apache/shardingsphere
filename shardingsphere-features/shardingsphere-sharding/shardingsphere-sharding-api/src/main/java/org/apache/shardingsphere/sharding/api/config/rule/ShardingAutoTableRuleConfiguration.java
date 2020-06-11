@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.api.config;
+package org.apache.shardingsphere.sharding.api.config.rule;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;

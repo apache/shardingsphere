@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.spring.namespace.parser;
 
-import org.apache.shardingsphere.sharding.api.config.KeyGeneratorConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.sharding.spring.namespace.tag.ShardingRuleBeanDefinitionTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
