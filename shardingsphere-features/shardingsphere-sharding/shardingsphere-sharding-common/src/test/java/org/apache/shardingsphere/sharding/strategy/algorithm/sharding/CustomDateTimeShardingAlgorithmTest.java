@@ -58,7 +58,7 @@ public class CustomDateTimeShardingAlgorithmTest {
         initShardStrategyByMonth();
         initShardStrategyByQuarter();
     }
-
+    
     @Test
     public void assertPreciseDoShardingByQuarter() {
         List<RouteValue> shardingValues = Lists.newArrayList(new ListRouteValue<>("create_time", "t_order",
@@ -68,7 +68,7 @@ public class CustomDateTimeShardingAlgorithmTest {
         assertTrue(actual.contains("t_order_202001"));
         assertTrue(actual.contains("t_order_202002"));
     }
-
+    
     @Test
     public void assertRangeDoShardingByQuarter() {
         Range<String> rangeValue = Range.closed("2019-10-15 10:59:08", "2020-04-08 10:59:08");
@@ -76,7 +76,7 @@ public class CustomDateTimeShardingAlgorithmTest {
         Collection<String> actual = shardingStrategyByQuarter.doSharding(availableTablesForQuarterStrategy, shardingValues, new ConfigurationProperties(new Properties()));
         assertThat(actual.size(), is(3));
     }
-
+    
     @Test
     public void assertPreciseDoShardingByMonth() {
         List<RouteValue> shardingValues = Lists.newArrayList(new ListRouteValue<>("create_time", "t_order",
@@ -86,7 +86,7 @@ public class CustomDateTimeShardingAlgorithmTest {
         assertTrue(actual.contains("t_order_202001"));
         assertTrue(actual.contains("t_order_202004"));
     }
-
+    
     @Test
     public void assertRangeDoShardingByMonth() {
         Range<String> rangeValue = Range.closed("2019-10-15 10:59:08", "2020-04-08 10:59:08");
@@ -94,7 +94,7 @@ public class CustomDateTimeShardingAlgorithmTest {
         Collection<String> actual = shardingStrategyByMonth.doSharding(availableTablesForMonthStrategy, shardingValues, new ConfigurationProperties(new Properties()));
         assertThat(actual.size(), is(7));
     }
-
+    
     @Test
     public void assertLowerHalfRangeDoSharding() {
         Range<String> rangeValue = Range.atLeast("2018-10-15 10:59:08");
@@ -102,7 +102,7 @@ public class CustomDateTimeShardingAlgorithmTest {
         Collection<String> actual = shardingStrategyByQuarter.doSharding(availableTablesForQuarterStrategy, shardingValues, new ConfigurationProperties(new Properties()));
         assertThat(actual.size(), is(9));
     }
-
+    
     @Test
     public void assertUpperHalfRangeDoSharding() {
         Range<String> rangeValue = Range.atMost("2019-09-01 00:00:00");
@@ -110,7 +110,7 @@ public class CustomDateTimeShardingAlgorithmTest {
         Collection<String> actual = shardingStrategyByQuarter.doSharding(availableTablesForQuarterStrategy, shardingValues, new ConfigurationProperties(new Properties()));
         assertThat(actual.size(), is(15));
     }
-
+    
     @Test
     public void assertFormat() {
         String inputFormat = "yyyy-MM-dd HH:mm:ss.SSS";
@@ -123,7 +123,7 @@ public class CustomDateTimeShardingAlgorithmTest {
         assertEquals("202004", tableNameShardedByQuarter);
         assertEquals("202010", tableNameShardedByMonth);
     }
-
+    
     private void initShardStrategyByQuarter() {
         CustomDateTimeShardingAlgorithm shardingAlgorithm = new CustomDateTimeShardingAlgorithm();
         shardingAlgorithm.getProperties().setProperty("datetime.format", "yyyy-MM-dd HH:mm:ss");
@@ -141,7 +141,7 @@ public class CustomDateTimeShardingAlgorithmTest {
             }
         }
     }
-
+    
     private void initShardStrategyByMonth() {
         CustomDateTimeShardingAlgorithm shardingAlgorithm = new CustomDateTimeShardingAlgorithm();
         shardingAlgorithm.getProperties().setProperty("datetime.format", "yyyy-MM-dd HH:mm:ss");

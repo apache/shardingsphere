@@ -42,7 +42,7 @@ public final class ModuloShardingAlgorithm implements StandardShardingAlgorithm<
     @Getter
     @Setter
     private Properties properties = new Properties();
-
+    
     @Override
     public void init() {
         Preconditions.checkNotNull(properties.get(MODULO_VALUE), "Modulo value cannot be null.");
@@ -90,7 +90,7 @@ public final class ModuloShardingAlgorithm implements StandardShardingAlgorithm<
     public String getType() {
         return "MOD";
     }
-
+    
     @Override
     public int getAutoTablesAmount() {
         Preconditions.checkNotNull(properties.get(MODULO_VALUE), "Modulo value cannot be null.");

@@ -52,7 +52,7 @@ public final class StandardRangeShardingAlgorithm extends AbstractRangeShardingA
     public String getType() {
         return "STANDARD_RANGE";
     }
-
+    
     @Override
     public Map<Integer, Range<Long>> createPartitionRangeMap(final Properties properties) {
         Preconditions.checkNotNull(properties.get(RANGE_LOWER), "Standard range sharding algorithm partition lower cannot be null.");

@@ -84,12 +84,12 @@ public final class CustomDateTimeShardingAlgorithm implements StandardShardingAl
     @Getter
     @Setter
     private Properties properties = new Properties();
-
+    
     @Override
     public String getType() {
         return "CUSTOM_DATE_TIME";
     }
-
+    
     @Override
     public void init() {
         Preconditions.checkNotNull(properties.getProperty(DATE_TIME_FORMAT));

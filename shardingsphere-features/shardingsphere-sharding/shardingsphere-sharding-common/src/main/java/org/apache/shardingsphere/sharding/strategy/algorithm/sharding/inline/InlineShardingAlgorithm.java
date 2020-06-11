@@ -35,7 +35,7 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     private static final String ALGORITHM_EXPRESSION = "algorithm.expression";
     
     private static final String ALLOW_RANGE_QUERY = "allow.range.query.with.inline.sharding";
-
+    
     private Closure<?> closure;
     
     private Properties properties = new Properties();
@@ -72,7 +72,7 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     public void setProperties(final Properties properties) {
         this.properties = properties;
     }
-
+    
     @Override
     public void init() {
         Preconditions.checkNotNull(properties.get(ALGORITHM_EXPRESSION), "Inline sharding algorithm expression cannot be null.");

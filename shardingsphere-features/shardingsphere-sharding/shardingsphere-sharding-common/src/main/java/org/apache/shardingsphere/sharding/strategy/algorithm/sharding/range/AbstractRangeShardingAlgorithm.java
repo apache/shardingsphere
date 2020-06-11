@@ -35,26 +35,26 @@ import java.util.Properties;
  * Abstract range sharding algorithm.
  */
 public abstract class AbstractRangeShardingAlgorithm implements StandardShardingAlgorithm<Long>, ShardingAutoTableAlgorithm {
-
+    
     private Map<Integer, Range<Long>> partitionRangeMap;
-
+    
     @Getter
     @Setter
     private Properties properties = new Properties();
-
+    
     @Override
     public final void init() {
         partitionRangeMap = createPartitionRangeMap(properties);
     }
-
+    
     abstract Map<Integer, Range<Long>> createPartitionRangeMap(Properties properties);
-
+    
     @Override
     public final String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Long> shardingValue) {
         return availableTargetNames.stream().filter(each -> each.endsWith(getPartition(partitionRangeMap, shardingValue.getValue()) + ""))
                 .findFirst().orElseThrow(UnsupportedOperationException::new);
     }
-
+    
     @Override
     public final Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Long> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
@@ -69,15 +69,15 @@ public abstract class AbstractRangeShardingAlgorithm implements StandardSharding
         }
         return result;
     }
-
+    
     private int getFirstPartition(final Range<Long> valueRange) {
         return valueRange.hasLowerBound() ? getPartition(partitionRangeMap, valueRange.lowerEndpoint()) : 0;
     }
-
+    
     private int getLastPartition(final Range<Long> valueRange) {
         return valueRange.hasUpperBound() ? getPartition(partitionRangeMap, valueRange.upperEndpoint()) : partitionRangeMap.size() - 1;
     }
-
+    
     private Integer getPartition(final Map<Integer, Range<Long>> partitionRangeMap, final Long value) {
         for (Entry<Integer, Range<Long>> entry : partitionRangeMap.entrySet()) {
             if (entry.getValue().contains(value)) {
@@ -86,7 +86,7 @@ public abstract class AbstractRangeShardingAlgorithm implements StandardSharding
         }
         throw new UnsupportedOperationException();
     }
-
+    
     @Override
     public final int getAutoTablesAmount() {
         return partitionRangeMap.size();

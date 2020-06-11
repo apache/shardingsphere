@@ -48,7 +48,7 @@ public final class DatetimeShardingAlgorithm implements StandardShardingAlgorith
     private static final String PARTITION_SECONDS = "partition.seconds";
     
     private static final String DATETIME_LOWER = "datetime.lower";
-
+    
     private static final String DATETIME_UPPER = "datetime.upper";
 
     private static final String DATETIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
@@ -58,10 +58,10 @@ public final class DatetimeShardingAlgorithm implements StandardShardingAlgorith
     @Getter
     @Setter
     private Properties properties = new Properties();
-
+    
     @Getter
     private int autoTablesAmount;
-
+    
     @Override
     public void init() {
         Preconditions.checkNotNull(properties.get(PARTITION_SECONDS), "Sharding partition volume cannot be null.");
@@ -98,21 +98,21 @@ public final class DatetimeShardingAlgorithm implements StandardShardingAlgorith
         }
         return result;
     }
-
+    
     private int doSharding(final long shardingValue) {
         DecimalFormat decimalFormat = new DecimalFormat("0.00");
         String position = decimalFormat.format((float) shardingValue / getPartitionValue());
         return Math.min(Math.max(0, (int) Math.ceil(Float.parseFloat(position))), autoTablesAmount - 1);
     }
-
+    
     private int getFirstPartition(final Range<Comparable<?>> valueRange) {
         return valueRange.hasLowerBound() ? doSharding(parseDate(valueRange.lowerEndpoint())) : 0;
     }
-
+    
     private int getLastPartition(final Range<Comparable<?>> valueRange) {
         return valueRange.hasUpperBound() ? doSharding(parseDate(valueRange.upperEndpoint())) : autoTablesAmount - 1;
     }
-
+    
     private boolean checkDatetimePattern(final String datetime) {
         try {
             DATE_FORMAT.parse(datetime);
