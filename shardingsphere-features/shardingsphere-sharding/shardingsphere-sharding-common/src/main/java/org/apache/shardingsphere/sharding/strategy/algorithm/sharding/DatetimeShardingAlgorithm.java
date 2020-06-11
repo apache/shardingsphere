@@ -98,6 +98,12 @@ public final class DatetimeShardingAlgorithm implements StandardShardingAlgorith
         return result;
     }
 
+    private int doSharding(final long shardingValue) {
+        DecimalFormat df = new DecimalFormat("0.00");
+        String position = df.format((float) shardingValue / getPartitionValue());
+        return Math.max(0, (int) Math.ceil(Float.parseFloat(position)));
+    }
+
     private int getFirstPartition(final Range<Comparable<?>> valueRange) {
         return valueRange.hasLowerBound() ? doSharding(parseDate(valueRange.lowerEndpoint())) : 0;
     }
@@ -105,13 +111,7 @@ public final class DatetimeShardingAlgorithm implements StandardShardingAlgorith
     private int getLastPartition(final Range<Comparable<?>> valueRange) {
         return valueRange.hasUpperBound() ? doSharding(parseDate(valueRange.upperEndpoint())) : autoTablesAmount - 1;
     }
-    
-    private int doSharding(final long shardingValue) {
-        DecimalFormat df = new DecimalFormat("0.00");
-        String position = df.format((float) shardingValue / getPartitionValue());
-        return Math.max(0, (int) Math.ceil(Float.parseFloat(position)));
-    }
-    
+
     private boolean checkDatetimePattern(final String datetime) {
         try {
             DATE_FORMAT.parse(datetime);
