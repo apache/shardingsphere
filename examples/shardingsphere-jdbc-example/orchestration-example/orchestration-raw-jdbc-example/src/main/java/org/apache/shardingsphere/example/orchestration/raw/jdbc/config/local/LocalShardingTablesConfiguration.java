@@ -22,7 +22,7 @@ import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
-import org.apache.shardingsphere.sharding.api.config.rule.KeyGeneratorConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
@@ -77,8 +77,8 @@ public final class LocalShardingTablesConfiguration implements ExampleConfigurat
         return result;
     }
     
-    private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
-        return new KeyGeneratorConfiguration("order_id", getSnowflakeKeyGenerateAlgorithm());
+    private static KeyGenerateStrategyConfiguration getKeyGeneratorConfiguration() {
+        return new KeyGenerateStrategyConfiguration("order_id", getSnowflakeKeyGenerateAlgorithm());
     }
     
     private static KeyGenerateAlgorithm getSnowflakeKeyGenerateAlgorithm() {

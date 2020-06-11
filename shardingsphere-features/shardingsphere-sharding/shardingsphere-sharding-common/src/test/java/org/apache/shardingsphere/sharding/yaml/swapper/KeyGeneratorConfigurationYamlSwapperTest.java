@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.yaml.swapper;
 
-import org.apache.shardingsphere.sharding.api.config.rule.KeyGeneratorConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlKeyGeneratorConfiguration;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
@@ -33,7 +33,7 @@ public final class KeyGeneratorConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToYaml() {
         KeyGenerateAlgorithm keyGenerateAlgorithm = TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class, "UUID", new Properties());
-        YamlKeyGeneratorConfiguration actual = new KeyGeneratorConfigurationYamlSwapper().swap(new KeyGeneratorConfiguration("id", keyGenerateAlgorithm));
+        YamlKeyGeneratorConfiguration actual = new KeyGeneratorConfigurationYamlSwapper().swap(new KeyGenerateStrategyConfiguration("id", keyGenerateAlgorithm));
         assertThat(actual.getType(), is("UUID"));
         assertThat(actual.getColumn(), is("id"));
         assertThat(actual.getProps(), is(new Properties()));
@@ -44,7 +44,7 @@ public final class KeyGeneratorConfigurationYamlSwapperTest {
         YamlKeyGeneratorConfiguration yamlConfiguration = new YamlKeyGeneratorConfiguration();
         yamlConfiguration.setType("UUID");
         yamlConfiguration.setColumn("id");
-        KeyGeneratorConfiguration actual = new KeyGeneratorConfigurationYamlSwapper().swap(yamlConfiguration);
+        KeyGenerateStrategyConfiguration actual = new KeyGeneratorConfigurationYamlSwapper().swap(yamlConfiguration);
         assertThat(actual.getAlgorithm().getType(), is("UUID"));
         assertThat(actual.getColumn(), is("id"));
         assertThat(actual.getAlgorithm().getProperties(), is(new Properties()));

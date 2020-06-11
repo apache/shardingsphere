@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.api.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sharding.api.config.rule.KeyGeneratorConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.ShardingStrategyConfiguration;
@@ -47,5 +47,5 @@ public final class ShardingRuleConfiguration implements RuleConfiguration {
     
     private ShardingStrategyConfiguration defaultTableShardingStrategy;
     
-    private KeyGeneratorConfiguration defaultKeyGeneratorConfig;
+    private KeyGenerateStrategyConfiguration defaultKeyGeneratorConfig;
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.rule;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import lombok.Getter;
-import org.apache.shardingsphere.sharding.api.config.rule.KeyGeneratorConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.ShardingStrategyConfiguration;
@@ -116,7 +116,7 @@ public final class ShardingRule implements DataNodeRoutedRule {
     }
     
     private String getDefaultGenerateKeyColumn(final ShardingRuleConfiguration shardingRuleConfig) {
-        return Optional.ofNullable(shardingRuleConfig.getDefaultKeyGeneratorConfig()).map(KeyGeneratorConfiguration::getColumn).orElse(null);
+        return Optional.ofNullable(shardingRuleConfig.getDefaultKeyGeneratorConfig()).map(KeyGenerateStrategyConfiguration::getColumn).orElse(null);
     }
     
     private Collection<BindingTableRule> createBindingTableRules(final Collection<String> bindingTableGroups) {
@@ -131,11 +131,11 @@ public final class ShardingRule implements DataNodeRoutedRule {
         return Optional.ofNullable(shardingStrategyConfiguration).map(ShardingStrategyFactory::newInstance).orElse(new NoneShardingStrategy());
     }
     
-    private KeyGenerateAlgorithm createDefaultKeyGenerateAlgorithm(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
+    private KeyGenerateAlgorithm createDefaultKeyGenerateAlgorithm(final KeyGenerateStrategyConfiguration keyGeneratorConfiguration) {
         return containsKeyGenerateAlgorithm(keyGeneratorConfiguration) ? keyGeneratorConfiguration.getAlgorithm() : TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class);
     }
     
-    private boolean containsKeyGenerateAlgorithm(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
+    private boolean containsKeyGenerateAlgorithm(final KeyGenerateStrategyConfiguration keyGeneratorConfiguration) {
         return null != keyGeneratorConfiguration && null != keyGeneratorConfiguration.getAlgorithm();
     }
     

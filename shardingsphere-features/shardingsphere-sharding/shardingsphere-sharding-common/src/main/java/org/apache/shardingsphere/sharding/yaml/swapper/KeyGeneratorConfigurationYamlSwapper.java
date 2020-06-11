@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.yaml.swapper;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.sharding.api.config.rule.KeyGeneratorConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlKeyGeneratorConfiguration;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
@@ -28,14 +28,14 @@ import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 /**
  * Key generator configuration YAML swapper.
  */
-public final class KeyGeneratorConfigurationYamlSwapper implements YamlSwapper<YamlKeyGeneratorConfiguration, KeyGeneratorConfiguration> {
+public final class KeyGeneratorConfigurationYamlSwapper implements YamlSwapper<YamlKeyGeneratorConfiguration, KeyGenerateStrategyConfiguration> {
     
     static {
         ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
     }
     
     @Override
-    public YamlKeyGeneratorConfiguration swap(final KeyGeneratorConfiguration data) {
+    public YamlKeyGeneratorConfiguration swap(final KeyGenerateStrategyConfiguration data) {
         YamlKeyGeneratorConfiguration result = new YamlKeyGeneratorConfiguration();
         result.setType(data.getAlgorithm().getType());
         result.setColumn(data.getColumn());
@@ -44,9 +44,9 @@ public final class KeyGeneratorConfigurationYamlSwapper implements YamlSwapper<Y
     }
     
     @Override
-    public KeyGeneratorConfiguration swap(final YamlKeyGeneratorConfiguration yamlConfiguration) {
+    public KeyGenerateStrategyConfiguration swap(final YamlKeyGeneratorConfiguration yamlConfiguration) {
         KeyGenerateAlgorithm keyGenerateAlgorithm = !Strings.isNullOrEmpty(yamlConfiguration.getType())
                 ? TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class, yamlConfiguration.getType(), yamlConfiguration.getProps()) : null;
-        return new KeyGeneratorConfiguration(yamlConfiguration.getColumn(), keyGenerateAlgorithm);
+        return new KeyGenerateStrategyConfiguration(yamlConfiguration.getColumn(), keyGenerateAlgorithm);
     }
 }

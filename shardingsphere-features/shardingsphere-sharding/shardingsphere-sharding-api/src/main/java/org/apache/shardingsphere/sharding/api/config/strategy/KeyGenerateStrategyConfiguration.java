@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.api.config.rule;
+package org.apache.shardingsphere.sharding.api.config.strategy;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -23,16 +23,16 @@ import lombok.Getter;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
 /**
- * Key generator configuration.
+ * Key generate strategy configuration.
 */
 @Getter
-public final class KeyGeneratorConfiguration {
+public final class KeyGenerateStrategyConfiguration {
     
     private final String column;
     
     private final KeyGenerateAlgorithm algorithm;
     
-    public KeyGeneratorConfiguration(final String column, final KeyGenerateAlgorithm algorithm) {
+    public KeyGenerateStrategyConfiguration(final String column, final KeyGenerateAlgorithm algorithm) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(column), "Column is required.");
         this.column = column;
         this.algorithm = algorithm;
