@@ -14,7 +14,7 @@ ShardingSphere治理模块旨在提供更高效，更自动化的集群管理功
 ![设计方案](https://shardingsphere.apache.org/document/current/img/control-panel/cluster/heartbeat.png)
 
 - 应用程序启动时根据配置初始化心跳检测模块
-- 心跳检测模块启动心跳检测任务，定时获取与实例管理的数据库连接并执行心跳检测`SQL`
+- 心跳检测模块启动心跳检测任务，定时获取与实例关联的数据库连接并执行心跳检测`SQL`
 - 处理心跳检测结果并保存至注册中心
 
 ## 数据结构
@@ -43,7 +43,7 @@ master_slave_db.slave_ds_1:
 
 ### Sharding-Proxy
 
-在ShardingSphere-Proxy 的server.yaml文件中新增以下配置：
+在ShardingSphere-Proxy 的`server.yaml`文件中新增以下配置：
 ```
 cluster:
   heartbeat:
