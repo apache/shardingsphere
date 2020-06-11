@@ -165,8 +165,8 @@ public final class Bootstrap {
     }
     
     private static void persistMetaData(final SchemaContextsAware schemaContexts) {
-        schemaContexts.getSchemaContexts().entrySet().forEach(entry -> ShardingOrchestrationFacade.getInstance()
-                .getMetaDataCenter().persistMetaDataCenterNode(entry.getKey(), entry.getValue().getSchema().getMetaData().getSchema()));
+        schemaContexts.getSchemaContexts().forEach((key, value) -> ShardingOrchestrationFacade.getInstance()
+                .getMetaDataCenter().persistMetaDataCenterNode(key, value.getSchema().getMetaData().getSchema()));
     }
     
     private static Map<String, Map<String, DataSource>> createDataSourcesMap(final Map<String, Map<String, DataSourceParameter>> schemaDataSources) {
