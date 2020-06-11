@@ -167,23 +167,7 @@ public final class EncryptRule implements ShardingSphereRule {
      * @return cipher column or not
      */
     public boolean isCipherColumn(final String tableName, final String columnName) {
-        return tables.containsKey(tableName) && isCipherColumn(tables.get(tableName).getCipherColumns(), columnName);
-    }
-
-    /**
-     * Is cipher column or not.
-     *
-     * @param cipherColumns cipher columns
-     * @param columnName column name
-     * @return cipher column or not
-     */
-    private boolean isCipherColumn(final Collection<String> cipherColumns, final String columnName) {
-        for (String each : cipherColumns) {
-            if (each.equalsIgnoreCase(columnName)) {
-                return true;
-            }
-        }
-        return false;
+        return tables.containsKey(tableName) && tables.get(tableName).getCipherColumns().stream().anyMatch(each -> each.equalsIgnoreCase(columnName));
     }
     
     /**
