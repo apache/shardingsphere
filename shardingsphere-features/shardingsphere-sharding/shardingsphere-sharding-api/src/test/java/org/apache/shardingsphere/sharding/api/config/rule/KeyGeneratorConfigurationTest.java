@@ -15,26 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.api.config;
+package org.apache.shardingsphere.sharding.api.config.rule;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import lombok.Getter;
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import org.junit.Test;
 
-/**
- * Key generator configuration.
-*/
-@Getter
-public final class KeyGeneratorConfiguration {
+public final class KeyGeneratorConfigurationTest {
     
-    private final String column;
+    @Test
+    public void assertConstructorWithoutKeyGenerator() {
+        new KeyGeneratorConfiguration("id", null);
+    }
     
-    private final KeyGenerateAlgorithm keyGenerateAlgorithm;
-    
-    public KeyGeneratorConfiguration(final String column, final KeyGenerateAlgorithm keyGenerateAlgorithm) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(column), "Column is required.");
-        this.column = column;
-        this.keyGenerateAlgorithm = keyGenerateAlgorithm;
+    @Test(expected = IllegalArgumentException.class)
+    public void assertConstructorWithoutColumn() {
+        new KeyGeneratorConfiguration("", null);
     }
 }

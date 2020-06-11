@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.api.config;
+package org.apache.shardingsphere.sharding.api.config.rule;
 
-import org.junit.Test;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import lombok.Getter;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class TableRuleConfigurationTest {
+/**
+ * Key generator configuration.
+*/
+@Getter
+public final class KeyGeneratorConfiguration {
     
-    @Test(expected = IllegalArgumentException.class)
-    public void assertConstructorWithoutLogicTable() {
-        new ShardingTableRuleConfiguration("");
-    }
+    private final String column;
     
-    @Test
-    public void assertConstructorWithFullArguments() {
-        ShardingTableRuleConfiguration actual = new ShardingTableRuleConfiguration("tbl", "ds_$->{0..15}.tbl_$->{0..15}");
-        assertThat(actual.getLogicTable(), is("tbl"));
-        assertThat(actual.getActualDataNodes(), is("ds_$->{0..15}.tbl_$->{0..15}"));
+    private final KeyGenerateAlgorithm keyGenerateAlgorithm;
+    
+    public KeyGeneratorConfiguration(final String column, final KeyGenerateAlgorithm keyGenerateAlgorithm) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(column), "Column is required.");
+        this.column = column;
+        this.keyGenerateAlgorithm = keyGenerateAlgorithm;
     }
 }
