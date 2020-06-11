@@ -104,7 +104,7 @@ public final class DatetimeShardingAlgorithmTest {
     }
 
     @Test
-    public void assertPreciseDoShardingWithoutLowerBound() {
+    public void assertRangeDoShardingWithoutLowerBound() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
         Range<String> rangeValue = Range.lessThan("2020-01-01 00:00:11");
         List<RouteValue> shardingValues = Lists.newArrayList(new RangeRouteValue<>("create_time", "t_order", rangeValue));
@@ -117,7 +117,7 @@ public final class DatetimeShardingAlgorithmTest {
     }
 
     @Test
-    public void assertPreciseDoShardingWithoutUpperBound() {
+    public void assertRangeDoShardingWithoutUpperBound() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5");
         Range<String> rangeValue = Range.greaterThan("2020-01-01 00:00:09");
         List<RouteValue> shardingValues = Lists.newArrayList(new RangeRouteValue<>("create_time", "t_order", rangeValue));

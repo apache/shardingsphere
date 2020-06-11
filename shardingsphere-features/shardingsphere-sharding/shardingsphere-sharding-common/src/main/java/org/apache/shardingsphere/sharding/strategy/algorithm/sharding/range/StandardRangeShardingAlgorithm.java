@@ -31,20 +31,20 @@ import java.util.Properties;
  * 
  * <p>
  * Standard range sharding algorithm is similar to the rule of partition table, but it can only be split by the same size.
- * User can specify the range by setting `partition.lower`, `partition.upper` and `partition.volume` parameters.
+ * User can specify the range by setting `range.lower`, `range.upper` and `partition.volume` parameters.
  * The `partition.volume` parameter determines the size of each partition.
  * </p>
  * <p>
- * For example: If the `partition.lower` parameter is set to `10`, the `partition.upper` parameter is set to `45`,
+ * For example: If the `range.lower` parameter is set to `10`, the `range.upper` parameter is set to `45`,
  * and the `partition.volume` parameter is set to `10`. The values in range [10,45] will be split to different partitions
  * ——[10,20), [20, 30), [30, 40), [40, 45), and other values will be split to (-∞, 10) and [45, +∞).
  * </p>
  */
 public final class StandardRangeShardingAlgorithm extends AbstractRangeShardingAlgorithm {
     
-    private static final String PARTITION_LOWER = "partition.lower";
+    private static final String RANGE_LOWER = "range.lower";
     
-    private static final String PARTITION_UPPER = "partition.upper";
+    private static final String RANGE_UPPER = "range.upper";
     
     private static final String PARTITION_VOLUME = "partition.volume";
     
@@ -55,11 +55,11 @@ public final class StandardRangeShardingAlgorithm extends AbstractRangeShardingA
 
     @Override
     public Map<Integer, Range<Long>> createPartitionRangeMap(final Properties properties) {
-        Preconditions.checkNotNull(properties.get(PARTITION_LOWER), "Standard range sharding algorithm partition lower cannot be null.");
-        Preconditions.checkNotNull(properties.get(PARTITION_UPPER), "Standard range sharding algorithm partition upper cannot be null.");
+        Preconditions.checkNotNull(properties.get(RANGE_LOWER), "Standard range sharding algorithm partition lower cannot be null.");
+        Preconditions.checkNotNull(properties.get(RANGE_UPPER), "Standard range sharding algorithm partition upper cannot be null.");
         Preconditions.checkNotNull(properties.get(PARTITION_VOLUME), "Standard range sharding algorithm partition volume cannot be null.");
-        long lower = Long.parseLong(properties.get(PARTITION_LOWER).toString());
-        long upper = Long.parseLong(properties.get(PARTITION_UPPER).toString());
+        long lower = Long.parseLong(properties.get(RANGE_LOWER).toString());
+        long upper = Long.parseLong(properties.get(RANGE_UPPER).toString());
         long volume = Long.parseLong(properties.get(PARTITION_VOLUME).toString());
         Preconditions.checkArgument(upper - lower >= volume, "Standard range sharding algorithm partition range can not be smaller than volume.");
         int partitionSize = Math.toIntExact(LongMath.divide(upper - lower, volume, RoundingMode.CEILING));

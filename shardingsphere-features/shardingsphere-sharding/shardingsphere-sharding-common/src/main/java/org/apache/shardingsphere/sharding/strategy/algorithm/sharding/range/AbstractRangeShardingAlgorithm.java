@@ -58,9 +58,9 @@ public abstract class AbstractRangeShardingAlgorithm implements StandardSharding
     @Override
     public final Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Long> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
-        int lowerEndpointPartition = getPartition(partitionRangeMap, shardingValue.getValueRange().lowerEndpoint());
-        int upperEndpointPartition = getPartition(partitionRangeMap, shardingValue.getValueRange().upperEndpoint());
-        for (int partition = lowerEndpointPartition; partition <= upperEndpointPartition; partition++) {
+        int firstPartition = getFirstPartition(shardingValue.getValueRange());
+        int lastPartition = getLastPartition(shardingValue.getValueRange());
+        for (int partition = firstPartition; partition <= lastPartition; partition++) {
             for (String each : availableTargetNames) {
                 if (each.endsWith(partition + "")) {
                     result.add(each);
@@ -68,6 +68,14 @@ public abstract class AbstractRangeShardingAlgorithm implements StandardSharding
             }
         }
         return result;
+    }
+
+    private int getFirstPartition(final Range<Long> valueRange) {
+        return valueRange.hasLowerBound() ? getPartition(partitionRangeMap, valueRange.lowerEndpoint()) : 0;
+    }
+
+    private int getLastPartition(final Range<Long> valueRange) {
+        return valueRange.hasUpperBound() ? getPartition(partitionRangeMap, valueRange.upperEndpoint()) : partitionRangeMap.size() - 1;
     }
 
     private Integer getPartition(final Map<Integer, Range<Long>> partitionRangeMap, final Long value) {
