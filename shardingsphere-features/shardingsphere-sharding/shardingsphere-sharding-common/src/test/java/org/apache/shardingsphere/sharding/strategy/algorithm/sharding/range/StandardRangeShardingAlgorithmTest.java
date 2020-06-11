@@ -62,7 +62,7 @@ public final class StandardRangeShardingAlgorithmTest {
         assertTrue(actual.contains("t_order_2"));
         assertTrue(actual.contains("t_order_5"));
     }
-
+    
     @Test
     public void assertRangeDoShardingWithoutLowerBound() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5");
@@ -72,7 +72,7 @@ public final class StandardRangeShardingAlgorithmTest {
         assertTrue(actual.contains("t_order_0"));
         assertTrue(actual.contains("t_order_1"));
     }
-
+    
     @Test
     public void assertRangeDoShardingWithoutUpperBound() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5");

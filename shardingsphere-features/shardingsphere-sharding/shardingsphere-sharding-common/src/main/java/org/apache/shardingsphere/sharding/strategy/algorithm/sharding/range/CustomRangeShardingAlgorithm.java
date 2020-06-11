@@ -51,7 +51,7 @@ public final class CustomRangeShardingAlgorithm extends AbstractRangeShardingAlg
     public String getType() {
         return "CUSTOM_RANGE";
     }
-
+    
     @Override
     public Map<Integer, Range<Long>> createPartitionRangeMap(final Properties properties) {
         Preconditions.checkNotNull(properties.get(PARTITION_RANGES), "Custom range sharding algorithm partition ranges cannot be null.");

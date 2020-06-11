@@ -42,7 +42,7 @@ public final class HashShardingAlgorithm implements StandardShardingAlgorithm<Co
     @Getter
     @Setter
     private Properties properties = new Properties();
-
+    
     @Override
     public void init() {
         Preconditions.checkNotNull(properties.get(MODULO_VALUE), "Modulo value cannot be null.");
@@ -75,7 +75,7 @@ public final class HashShardingAlgorithm implements StandardShardingAlgorithm<Co
     public String getType() {
         return "HASH_MOD";
     }
-
+    
     @Override
     public int getAutoTablesAmount() {
         Preconditions.checkNotNull(properties.get(MODULO_VALUE), "Modulo value cannot be null.");
