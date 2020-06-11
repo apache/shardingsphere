@@ -99,9 +99,9 @@ public final class DatetimeShardingAlgorithm implements StandardShardingAlgorith
     }
 
     private int doSharding(final long shardingValue) {
-        DecimalFormat df = new DecimalFormat("0.00");
-        String position = df.format((float) shardingValue / getPartitionValue());
-        return Math.max(0, (int) Math.ceil(Float.parseFloat(position)));
+        DecimalFormat decimalFormat = new DecimalFormat("0.00");
+        String position = decimalFormat.format((float) shardingValue / getPartitionValue());
+        return Math.min(Math.max(0, (int) Math.ceil(Float.parseFloat(position))), autoTablesAmount - 1);
     }
 
     private int getFirstPartition(final Range<Comparable<?>> valueRange) {
