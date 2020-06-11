@@ -40,7 +40,8 @@ import java.util.Properties;
  * 
  * <p>Shard by `y = floor(x/v)` algorithm, which means y begins from 0.
  * v is `PARTITION_SECONDS`, and the minimum time unit is 1 sec.
- * `EPOCH` decides the beginning datetime to shard. </p>
+ * `DATETIME_LOWER` decides the beginning datetime to shard. On the other hand, `DATETIME_UPPER` decides the end datetime to shard.</p>
+ * <p>Notice: Anytime less then `DATETIME_LOWER` will route to the first partition, and anytime great than `DATETIME_UPPER` will route to the last partition.</p>
  */
 public final class DatetimeShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
     

@@ -43,8 +43,8 @@ public final class StandardRangeShardingAlgorithmTest {
     @Before
     public void setUp() {
         StandardRangeShardingAlgorithm shardingAlgorithm = new StandardRangeShardingAlgorithm();
-        shardingAlgorithm.getProperties().setProperty("partition.lower", "10");
-        shardingAlgorithm.getProperties().setProperty("partition.upper", "45");
+        shardingAlgorithm.getProperties().setProperty("range.lower", "10");
+        shardingAlgorithm.getProperties().setProperty("range.upper", "45");
         shardingAlgorithm.getProperties().setProperty("partition.volume", "10");
         shardingAlgorithm.init();
         StandardShardingStrategyConfiguration shardingStrategyConfig = new StandardShardingStrategyConfiguration("order_id", shardingAlgorithm);
@@ -60,6 +60,26 @@ public final class StandardRangeShardingAlgorithmTest {
         assertTrue(actual.contains("t_order_0"));
         assertTrue(actual.contains("t_order_1"));
         assertTrue(actual.contains("t_order_2"));
+        assertTrue(actual.contains("t_order_5"));
+    }
+
+    @Test
+    public void assertRangeDoShardingWithoutLowerBound() {
+        List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5");
+        List<RouteValue> shardingValues = Lists.newArrayList(new RangeRouteValue<>("order_id", "t_order", Range.lessThan(12L)));
+        Collection<String> actual = shardingStrategy.doSharding(availableTargetNames, shardingValues, new ConfigurationProperties(new Properties()));
+        assertThat(actual.size(), is(2));
+        assertTrue(actual.contains("t_order_0"));
+        assertTrue(actual.contains("t_order_1"));
+    }
+
+    @Test
+    public void assertRangeDoShardingWithoutUpperBound() {
+        List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5");
+        List<RouteValue> shardingValues = Lists.newArrayList(new RangeRouteValue<>("order_id", "t_order", Range.greaterThan(40L)));
+        Collection<String> actual = shardingStrategy.doSharding(availableTargetNames, shardingValues, new ConfigurationProperties(new Properties()));
+        assertThat(actual.size(), is(2));
+        assertTrue(actual.contains("t_order_4"));
         assertTrue(actual.contains("t_order_5"));
     }
     
@@ -79,8 +99,8 @@ public final class StandardRangeShardingAlgorithmTest {
     @Test
     public void assertGetAutoTablesAmount() {
         StandardRangeShardingAlgorithm shardingAlgorithm = new StandardRangeShardingAlgorithm();
-        shardingAlgorithm.getProperties().setProperty("partition.lower", "10");
-        shardingAlgorithm.getProperties().setProperty("partition.upper", "45");
+        shardingAlgorithm.getProperties().setProperty("range.lower", "10");
+        shardingAlgorithm.getProperties().setProperty("range.upper", "45");
         shardingAlgorithm.getProperties().setProperty("partition.volume", "10");
         shardingAlgorithm.init();
         assertThat(shardingAlgorithm.getAutoTablesAmount(), is(6));
