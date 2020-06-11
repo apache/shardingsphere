@@ -36,8 +36,6 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -247,12 +245,7 @@ public final class ShardingRule implements DataNodeRoutedRule {
         if (logicTableNames.isEmpty()) {
             return false;
         }
-        for (String each : logicTableNames) {
-            if (!isBroadcastTable(each)) {
-                return false;
-            }
-        }
-        return true;
+        return logicTableNames.stream().allMatch(this::isBroadcastTable);
     }
     
     /**
@@ -368,20 +361,12 @@ public final class ShardingRule implements DataNodeRoutedRule {
     
     @Override
     public Map<String, Collection<DataNode>> getAllDataNodes() {
-        Map<String, Collection<DataNode>> result = new HashMap<>(tableRules.size(), 1);
-        for (TableRule each : tableRules) {
-            result.put(each.getLogicTable(), each.getActualDataNodes());
-        }
-        return result;
+        return tableRules.stream().collect(Collectors.toMap(TableRule::getLogicTable, TableRule::getActualDataNodes));
     }
     
     @Override
     public Collection<String> getAllActualTables() {
-        Collection<String> result = new HashSet<>();
-        for (TableRule each : tableRules) {
-            result.addAll(each.getActualDataNodes().stream().map(DataNode::getTableName).collect(Collectors.toSet()));
-        }
-        return result;
+        return tableRules.stream().flatMap(each -> each.getActualDataNodes().stream().map(DataNode::getTableName)).collect(Collectors.toSet());
     }
     
     @Override
