@@ -152,5 +152,8 @@ The list here will be shown according to the registration date.
 1. <a href="https://www.tansun.com/" rel="nofollow">TANSUN</a>
 1. <a href="https://www.keking.com" rel="nofollow">KeKing</a>
 1. <a href="http://www.dzzd.com" rel="nofollow">dzzd</a>
+1. <a href="https://zowiesunglasses.com/" rel="nofollow">Zowie</a>
+1. <a href="http://www.hydee.cn/" rel="nofollow">HYDEE</a>
+1. <a href="http://www.chiscdc.com/" rel="nofollow">CHISCDC</a>
 
 <img src="https://shardingsphere.apache.org/community/image/powered-by.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />
