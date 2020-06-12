@@ -39,6 +39,24 @@ rules:
       keyGenerateStrategy:
         column: id
         keyGeneratorName: reset_increment
+  autoTables:
+    t_order_auto:
+      actualDataSources: jdbc_0, jdbc_1
+      shardingStrategy:
+        standard:
+          shardingColumn: order_id
+          shardingAlgorithm:
+            type: MOD
+            props:
+              mod.value: 2
+    t_order_item_auto:
+      shardingStrategy:
+        standard:
+          shardingColumn: order_id
+          shardingAlgorithm:
+            type: MOD
+            props:
+              mod.value: 2
   bindingTables:
     - t_order,t_order_item
   broadcastTables:
@@ -53,7 +71,7 @@ rules:
       shardingColumn: user_id
       shardingAlgorithm:
         type: STANDARD_TEST
-  
+
   keyGenerators:
     increment:
       type: INCREMENT
