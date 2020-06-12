@@ -42,7 +42,7 @@ export default {
       state: {
         ONLINE: '#01acca',
         OFFLINE: '#FF0A14',
-        DISABLED: '#FF199D',
+        DISABLED: '#A9A9A9',
         UNKNOWN: '#ffb402'
       },
       myChart: {},
@@ -111,7 +111,7 @@ export default {
       for (const key in this.allData.dataSourceStates) {
         this.datasource.push({
           name: key,
-          category: 0,
+          category: this.getCategory(this.allData.dataSourceStates[key]),
           state: this.allData.dataSourceStates[key].state,
           speed: '',
           value: [x, 20]
@@ -124,26 +124,40 @@ export default {
       this.linesData = []
       this.datasource.slice().forEach((el) => {
         this.proxy.slice().forEach((e2) => {
-          const e3 = this.instanceData[e2.name].dataSources[el.name]
-          if (e3) {
-            if (e3.state === 'ONLINE') {
-              this.linesData.push([{
-                coord: e2.value
-              }, {
-                coord: el.value
-              }])
-            }
+          if (e2.category === 2) {
             this.links.push({
               source: e2.name,
               target: el.name,
               speed: el.speed,
               lineStyle: {
                 normal: {
-                  color: this.state[e3.state],
+                  color: this.state.DISABLED,
                   curveness: 0
                 }
               }
             })
+          } else {
+            const e3 = this.instanceData[e2.name].dataSources[el.name]
+            if (e3) {
+              if (e3.state === 'ONLINE') {
+                this.linesData.push([{
+                  coord: e2.value
+                }, {
+                  coord: el.value
+                }])
+              }
+              this.links.push({
+                source: e2.name,
+                target: el.name,
+                speed: el.speed,
+                lineStyle: {
+                  normal: {
+                    color: this.state[e3.state],
+                    curveness: 0
+                  }
+                }
+              })
+            }
           }
         })
       })
