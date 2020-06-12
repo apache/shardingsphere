@@ -43,8 +43,8 @@ rules:
           encryptorName: md5_encryptor
   encryptors:
     aes_encryptor:
-      type: aes
+      type: AES
       props:
         aes.key.value: 123456abc
     md5_encryptor:
-          type: md5
+          type: MD5

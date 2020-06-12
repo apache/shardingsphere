@@ -91,7 +91,7 @@ spring.shardingsphere.datasource.ds.username=root
 spring.shardingsphere.datasource.ds.password=
 spring.shardingsphere.datasource.ds.max-total=100
 
-spring.shardingsphere.encrypt.encryptors.aes_encryptor.type=aes
+spring.shardingsphere.encrypt.encryptors.aes_encryptor.type=AES
 spring.shardingsphere.encrypt.encryptors.aes_encryptor.properties.aes.key.value=123456
 spring.shardingsphere.encrypt.tables.t_order.columns.user_id.cipher-column=user_encrypt
 spring.shardingsphere.encrypt.tables.t_order.columns.user_id.assisted-query-column=user_assisted
@@ -203,7 +203,7 @@ spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.algorit
 spring.shardingsphere.sharding.tables.t_order_item.key-generate-strategy.column=order_item_id
 spring.shardingsphere.sharding.tables.t_order_item.key-generate-strategy.key-generator-name=snowflake
 
-spring.shardingsphere.sharding.encrypt-rule.encryptors.aes_encryptor.type=aes
+spring.shardingsphere.sharding.encrypt-rule.encryptors.aes_encryptor.type=AES
 spring.shardingsphere.sharding.encrypt-rule.encryptors.aes_encryptor.properties.aes.key.value=123456
 spring.shardingsphere.sharding.encrypt-rule.tables.t_order.columns.user_id.cipher-column=user_encrypt
 spring.shardingsphere.sharding.encrypt-rule.tables.t_order.columns.user_id.assisted-query-column=user_assisted

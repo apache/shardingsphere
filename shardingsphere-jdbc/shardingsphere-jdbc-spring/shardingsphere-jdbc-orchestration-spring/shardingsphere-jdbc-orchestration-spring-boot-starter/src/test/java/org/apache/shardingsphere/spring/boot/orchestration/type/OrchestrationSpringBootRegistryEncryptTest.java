@@ -67,9 +67,9 @@ public class OrchestrationSpringBootRegistryEncryptTest {
                 + "- !ENCRYPT\n"
                 + "  encryptors:\n"
                 + "    order_encrypt:\n"
-                + "      properties:\n"
+                + "      props:\n"
                 + "        aes.key.value: '123456'\n"
-                + "      type: aes\n"
+                + "      type: AES\n"
                 + "  tables:\n" 
                 + "    t_order:\n" 
                 + "      columns:\n"
@@ -93,6 +93,6 @@ public class OrchestrationSpringBootRegistryEncryptTest {
         assertThat(configuration.getEncryptors().size(), is(1));
         EncryptAlgorithmConfiguration encryptAlgorithmConfiguration = configuration.getEncryptors().get("order_encrypt");
         assertThat(encryptAlgorithmConfiguration, instanceOf(EncryptAlgorithmConfiguration.class));
-        assertThat(encryptAlgorithmConfiguration.getType(), is("aes"));
+        assertThat(encryptAlgorithmConfiguration.getType(), is("AES"));
     }
 }

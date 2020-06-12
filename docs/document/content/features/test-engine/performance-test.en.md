@@ -252,11 +252,11 @@ shardingRule:
 encryptRule:
   encryptors:
     aes_encryptor:
-      type: aes
-      properties:
+      type: AES
+      props:
         aes.key.value: 123456abc
     md5_encryptor:
-      type: md5
+      type: MD5
   tables:
     sbtest:
       columns:

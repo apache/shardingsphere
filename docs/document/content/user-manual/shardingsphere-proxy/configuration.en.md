@@ -123,11 +123,11 @@ dataSource:
 encryptRule:
   encryptors:
     aes_encryptor:
-      type: aes
-      properties:
+      type: AES
+      props:
         aes.key.value: 123456abc
     md5_encryptor:
-      type: md5
+      type: MD5
   tables:
     t_encrypt:
       columns:
@@ -307,8 +307,8 @@ shardingRule:
   encryptRule:
     encryptors:
       aes_encryptor:
-        type: aes
-        properties:
+        type: AES
+        props:
           aes.key.value: 123456abc
     tables:
       t_order:
@@ -400,7 +400,7 @@ encryptRule:
   encryptors:
     <encrypt-algorithm-name>:
       type: #encrypt algorithm type
-      properties: #Properties, e.g. `aes.key.value` for AES encrypt algorithm
+      props: #Properties, e.g. `aes.key.value` for AES encrypt algorithm
         aes.key.value: 
   tables:
     <table-name>:

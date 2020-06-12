@@ -48,7 +48,7 @@
     <sharding:hint-strategy id="hintStrategy" algorithm-ref="defaultHintShardingAlgorithm" />
     <sharding:none-strategy id="noneStrategy" />
     
-    <sharding:key-generate-strategy id="keyGenerator" column="order_id" algorithm-ref="incrementAlgorithm" />
+    <sharding:key-generate-strategy id="keyGenerateStrategy" column="order_id" algorithm-ref="incrementAlgorithm" />
     
     <sharding:rule id="simpleShardingDataSourceShardingRule">
         <sharding:table-rules>

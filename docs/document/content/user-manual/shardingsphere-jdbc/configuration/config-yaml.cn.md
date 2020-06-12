@@ -103,11 +103,11 @@ dataSource:  !!org.apache.commons.dbcp2.BasicDataSource
 encryptRule:
   encryptors:
     aes_encryptor:
-      type: aes
-      properties:
+      type: AES
+      props:
         aes.key.value: 123456abc
     md5_encryptor:
-      type: md5
+      type: MD5
   tables:
     t_encrypt:
       columns:
@@ -260,8 +260,8 @@ shardingRule:
   encryptRule:
     encryptors:
       aes_encryptor:
-        type: aes
-        properties:
+        type: AES
+        props:
           aes.key.value: 123456abc
     tables:
       t_order:
@@ -387,7 +387,7 @@ encryptRule:
   encryptors:
     <encrypt-algorithm-name>:
       type: #加解密算法类型，可自定义或选择内置类型：MD5/AES 
-      properties: #属性配置, 注意：使用AES加密算法，需要配置AES加密算法的KEY属性：aes.key.value
+      props: #属性配置, 注意：使用AES加密算法，需要配置AES加密算法的KEY属性：aes.key.value
         aes.key.value: 
   tables:
     <table-name>:

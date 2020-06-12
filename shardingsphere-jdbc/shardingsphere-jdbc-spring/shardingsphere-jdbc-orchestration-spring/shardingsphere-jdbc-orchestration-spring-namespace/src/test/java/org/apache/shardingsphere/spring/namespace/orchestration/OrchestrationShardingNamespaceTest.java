@@ -95,7 +95,7 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
                 new String[]{applicationContext.getBean("inlineStrategy", StandardShardingStrategyConfiguration.class).getShardingColumn()}));
         assertTrue(tableRule.getGenerateKeyColumn().isPresent());
         assertThat(tableRule.getGenerateKeyColumn().get(), is("order_id"));
-        assertThat(tableRule.getKeyGeneratorName(), is("increment"));
+        assertThat(tableRule.getKeyGeneratorName(), is("incrementAlgorithm"));
     }
     
     @Test

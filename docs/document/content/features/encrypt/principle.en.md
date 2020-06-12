@@ -97,8 +97,8 @@ It can also be different **. The recommended configuration is as follows (shown 
 -!ENCRYPT
   encryptors:
     aes_encryptor:
-      type: aes
-      properties:
+      type: AES
+      props:
         aes.key.value: 123456abc
   tables:
     t_user:
@@ -153,8 +153,8 @@ In addition, demonstrate a set of encryption configuration rules, as follows:
 -!ENCRYPT
   encryptors:
     aes_encryptor:
-      type: aes
-      properties:
+      type: AES
+      props:
         aes.key.value: 123456abc
   tables:
     t_user:
@@ -220,8 +220,8 @@ So the encryption configuration after migration is:
 -!ENCRYPT
   encryptors:
     aes_encryptor:
-      type: aes
-      properties:
+      type: AES
+      props:
         aes.key.value: 123456abc
   tables:
     t_user:

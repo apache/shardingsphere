@@ -128,10 +128,10 @@ public final class ShardingConfigurationLoaderTest {
         assertTrue(actual.getEncryptors().containsKey("aes_encryptor"));
         assertTrue(actual.getEncryptors().containsKey("md5_encryptor"));
         YamlEncryptAlgorithmConfiguration aesEncryptAlgorithmConfiguration = actual.getEncryptors().get("aes_encryptor");
-        assertThat(aesEncryptAlgorithmConfiguration.getType(), is("aes"));
+        assertThat(aesEncryptAlgorithmConfiguration.getType(), is("AES"));
         assertThat(aesEncryptAlgorithmConfiguration.getProps().getProperty("aes.key.value"), is("123456abc"));
         YamlEncryptAlgorithmConfiguration md5EncryptAlgorithmConfiguration = actual.getEncryptors().get("md5_encryptor");
-        assertThat(md5EncryptAlgorithmConfiguration.getType(), is("md5"));
+        assertThat(md5EncryptAlgorithmConfiguration.getType(), is("MD5"));
     }
     
     private void assertDataSourceParameter(final YamlDataSourceParameter actual, final String expectedURL) {

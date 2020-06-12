@@ -97,7 +97,7 @@ public final class ConfigCenterTest {
             + "      tableStrategy:\n"
             + "        standard:\n"
             + "          shardingAlgorithm:\n"
-            + "            properties:\n"
+            + "            props:\n"
             + "              algorithm.expression: t_order_${order_id % 2}\n"
             + "            type: INLINE\n"
             + "          shardingColumn: order_id\n";
@@ -113,19 +113,22 @@ public final class ConfigCenterTest {
             + "          shardingColumn: order_id\n"
             + "          shardingAlgorithm:\n"
             + "            type: INLINE\n"
-            + "            properties:\n"
+            + "            props:\n"
             + "              algorithm.expression: t_order_${order_id % 2}\n"
             + "      keyGenerateStrategy:\n"
-            + "        type: SNOWFLAKE\n"
             + "        column: order_id\n"
+            + "        keyGeneratorName: snowflake\n"
+            + "  keyGenerators:\n"
+            + "    snowflake:\n"
+            + "      type: SNOWFLAKE\n"
             + "- !ENCRYPT\n"
             + "  encryptors:\n"
             + "    aes_encryptor:\n"
-            + "      type: aes\n"
-            + "      properties:\n"
+            + "      type: AES\n"
+            + "      props:\n"
             + "        aes.key.value: 123456abcd\n"
             + "    md5_encryptor:\n"
-            + "      type: md5\n"
+            + "      type: MD5\n"
             + "  tables:\n"
             + "    t_encrypt:\n"
             + "      columns:\n"
@@ -153,9 +156,9 @@ public final class ConfigCenterTest {
             + "- !ENCRYPT\n"
             + "  encryptors:\n"
             + "    order_encryptor:\n"
-            + "      properties:\n"
+            + "      props:\n"
             + "        aes.key.value: 123456\n"
-            + "      type: aes\n"
+            + "      type: AES\n"
             + "  tables:\n"
             + "    t_order:\n"
             + "      columns:\n"
@@ -462,7 +465,7 @@ public final class ConfigCenterTest {
                 EncryptRuleConfiguration encryptRuleConfiguration = (EncryptRuleConfiguration) each;
                 assertThat(encryptRuleConfiguration.getEncryptors().size(), is(2));
                 EncryptAlgorithmConfiguration encryptAlgorithmConfiguration = encryptRuleConfiguration.getEncryptors().get("aes_encryptor");
-                assertThat(encryptAlgorithmConfiguration.getType(), is("aes"));
+                assertThat(encryptAlgorithmConfiguration.getType(), is("AES"));
                 assertThat(encryptAlgorithmConfiguration.getProperties().get("aes.key.value").toString(), is("123456abcd"));
             }
         }
@@ -497,7 +500,7 @@ public final class ConfigCenterTest {
         EncryptRuleConfiguration actual = (EncryptRuleConfiguration) configurationService.loadRuleConfigurations("sharding_db").iterator().next();
         assertThat(actual.getEncryptors().size(), is(1));
         EncryptAlgorithmConfiguration encryptAlgorithmConfiguration = actual.getEncryptors().get("order_encryptor");
-        assertThat(encryptAlgorithmConfiguration.getType(), is("aes"));
+        assertThat(encryptAlgorithmConfiguration.getType(), is("AES"));
         assertThat(encryptAlgorithmConfiguration.getProperties().get("aes.key.value").toString(), is("123456"));
     }
     

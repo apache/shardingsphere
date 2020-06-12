@@ -34,5 +34,5 @@ public final class SPIBeanDefinitionTag {
     
     public static final String SHARDING_ALGORITHM_TYPE_ATTRIBUTE = "type";
     
-    public static final String PROPS_TAG = "properties";
+    public static final String PROPS_TAG = "props";
 }

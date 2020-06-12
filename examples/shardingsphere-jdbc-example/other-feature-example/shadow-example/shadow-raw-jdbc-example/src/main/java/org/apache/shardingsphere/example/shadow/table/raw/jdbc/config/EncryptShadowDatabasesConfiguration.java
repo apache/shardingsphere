@@ -65,7 +65,7 @@ public final class EncryptShadowDatabasesConfiguration implements ExampleConfigu
         Map<String, EncryptAlgorithmConfiguration> result = new LinkedHashMap<>(2, 1);
         Properties properties = new Properties();
         properties.setProperty("aes.key.value", "123456");
-        result.put("name_encryptor", new EncryptAlgorithmConfiguration("aes", properties));
+        result.put("name_encryptor", new EncryptAlgorithmConfiguration("AES", properties));
         result.put("pwd_encryptor", new EncryptAlgorithmConfiguration("assistedTest", null));
         return result;
     }

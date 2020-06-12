@@ -50,7 +50,7 @@
     <sharding:hint-strategy id="hintStrategy" algorithm-ref="defaultHintShardingAlgorithm" />
     <sharding:none-strategy id="noneStrategy" />
     
-    <sharding:key-generate-strategy id="keyGenerator" column="order_id" algorithm-ref="incrementAlgorithm" />
+    <sharding:key-generate-strategy id="keyGenerateStrategy" column="order_id" algorithm-ref="incrementAlgorithm" />
     <master-slave:load-balance-algorithm id="randomLoadBalanceAlgorithm" type="RANDOM" />
     
     <sharding:rule id="masterSlaveShardingDataSourceByDefaultStrategyShardingRule" default-key-generate-strategy-ref="keyGenerateStrategy">
