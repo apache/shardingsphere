@@ -47,7 +47,7 @@ public final class NacosCenterRepository implements ConfigCenterRepository {
     
     @Getter
     @Setter
-    private Properties properties = new Properties();
+    private Properties props = new Properties();
     
     /**
      * Initialize nacos instance.
@@ -57,7 +57,7 @@ public final class NacosCenterRepository implements ConfigCenterRepository {
     @Override
     public void init(final CenterConfiguration config) {
         try {
-            nacosProperties = new NacosProperties(properties);
+            nacosProperties = new NacosProperties(props);
             Properties properties = new Properties();
             properties.put(PropertyKeyConst.SERVER_ADDR, config.getServerLists());
             properties.put(PropertyKeyConst.NAMESPACE, null == config.getNamespace() ? "" : config.getNamespace());

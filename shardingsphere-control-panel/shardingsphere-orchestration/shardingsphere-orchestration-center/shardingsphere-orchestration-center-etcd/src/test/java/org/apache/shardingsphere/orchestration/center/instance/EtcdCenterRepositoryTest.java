@@ -226,8 +226,8 @@ public final class EtcdCenterRepositoryTest {
         CenterConfiguration configuration = new CenterConfiguration(CENTER_TYPE, new Properties());
         configuration.setServerLists("127.0.0.1");
         Properties properties = new Properties();
-        centerRepository.setProperties(properties);
-        assertThat(centerRepository.getProperties(), is(properties));
+        centerRepository.setProps(properties);
+        assertThat(centerRepository.getProps(), is(properties));
     }
     
     @Test

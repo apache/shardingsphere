@@ -35,17 +35,17 @@ import java.util.Properties;
  * v is `MODULO_VALUE`.
  * All available targets will be returned if sharding value is `RangeShardingValue`</p>
  */
+@Getter
+@Setter
 public final class HashShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
     
     private static final String MODULO_VALUE = "mod.value";
     
-    @Getter
-    @Setter
-    private Properties properties = new Properties();
+    private Properties props = new Properties();
     
     @Override
     public void init() {
-        Preconditions.checkNotNull(properties.get(MODULO_VALUE), "Modulo value cannot be null.");
+        Preconditions.checkNotNull(props.get(MODULO_VALUE), "Modulo value cannot be null.");
     }
     
     @Override
@@ -68,17 +68,17 @@ public final class HashShardingAlgorithm implements StandardShardingAlgorithm<Co
     }
     
     private long getModuloValue() {
-        return Long.parseLong(properties.get(MODULO_VALUE).toString());
+        return Long.parseLong(props.get(MODULO_VALUE).toString());
+    }
+    
+    @Override
+    public int getAutoTablesAmount() {
+        Preconditions.checkNotNull(props.get(MODULO_VALUE), "Modulo value cannot be null.");
+        return Integer.parseInt(props.get(MODULO_VALUE).toString());
     }
     
     @Override
     public String getType() {
         return "HASH_MOD";
-    }
-    
-    @Override
-    public int getAutoTablesAmount() {
-        Preconditions.checkNotNull(properties.get(MODULO_VALUE), "Modulo value cannot be null.");
-        return Integer.parseInt(properties.get(MODULO_VALUE).toString());
     }
 }

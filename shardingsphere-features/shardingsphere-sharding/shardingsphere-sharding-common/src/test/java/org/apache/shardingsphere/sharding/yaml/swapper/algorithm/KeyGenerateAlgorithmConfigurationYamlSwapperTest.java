@@ -32,7 +32,7 @@ public final class KeyGenerateAlgorithmConfigurationYamlSwapperTest {
     public void assertSwapToYaml() {
         YamlKeyGenerateAlgorithmConfiguration actual = new KeyGenerateAlgorithmConfigurationYamlSwapper().swap(new KeyGenerateAlgorithmConfiguration("UUID", new Properties()));
         assertThat(actual.getType(), is("UUID"));
-        assertThat(actual.getProperties(), is(new Properties()));
+        assertThat(actual.getProps(), is(new Properties()));
     }
     
     @Test

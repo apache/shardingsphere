@@ -20,6 +20,8 @@ package org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline;
 import com.google.common.base.Preconditions;
 import groovy.lang.Closure;
 import groovy.util.Expando;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
@@ -38,7 +40,18 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     
     private Closure<?> closure;
     
-    private Properties properties = new Properties();
+    @Getter
+    @Setter
+    private Properties props = new Properties();
+    
+    @Override
+    public void init() {
+        Preconditions.checkNotNull(props.get(ALGORITHM_EXPRESSION), "Inline sharding algorithm expression cannot be null.");
+        String algorithmExpression = InlineExpressionParser.handlePlaceHolder(props.get(ALGORITHM_EXPRESSION).toString().trim());
+        Closure<?> closure = new InlineExpressionParser(algorithmExpression).evaluateClosure();
+        this.closure = closure.rehydrate(new Expando(), null, null);
+        this.closure.setResolveStrategy(Closure.DELEGATE_ONLY);
+    }
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
@@ -55,30 +68,11 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     }
     
     private boolean isAllowRangeQuery() {
-        return null != properties.get(ALLOW_RANGE_QUERY) && Boolean.parseBoolean(properties.get(ALLOW_RANGE_QUERY).toString());
+        return null != props.get(ALLOW_RANGE_QUERY) && Boolean.parseBoolean(props.get(ALLOW_RANGE_QUERY).toString());
     }
     
     @Override
     public String getType() {
         return "INLINE";
-    }
-    
-    @Override
-    public Properties getProperties() {
-        return properties;
-    }
-    
-    @Override
-    public void setProperties(final Properties properties) {
-        this.properties = properties;
-    }
-    
-    @Override
-    public void init() {
-        Preconditions.checkNotNull(properties.get(ALGORITHM_EXPRESSION), "Inline sharding algorithm expression cannot be null.");
-        String algorithmExpression = InlineExpressionParser.handlePlaceHolder(properties.get(ALGORITHM_EXPRESSION).toString().trim());
-        Closure<?> closure = new InlineExpressionParser(algorithmExpression).evaluateClosure();
-        this.closure = closure.rehydrate(new Expando(), null, null);
-        this.closure.setResolveStrategy(Closure.DELEGATE_ONLY);
     }
 }

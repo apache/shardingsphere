@@ -62,13 +62,13 @@ public final class ShardingShadowDatabasesConfiguration implements ExampleConfig
     
     private StandardShardingStrategyConfiguration getTableStandardShardingStrategyConfiguration() {
         InlineShardingAlgorithm inlineShardingAlgorithm = new InlineShardingAlgorithm();
-        inlineShardingAlgorithm.getProperties().setProperty("algorithm.expression", "t_user");
+        inlineShardingAlgorithm.getProps().setProperty("algorithm.expression", "t_user");
         return new StandardShardingStrategyConfiguration("user_id", inlineShardingAlgorithm);
     }
     
     private StandardShardingStrategyConfiguration getDatabaseStandardShardingStrategyConfiguration() {
         InlineShardingAlgorithm inlineShardingAlgorithm = new InlineShardingAlgorithm();
-        inlineShardingAlgorithm.getProperties().setProperty("algorithm.expression", "ds_${user_id % 2}");
+        inlineShardingAlgorithm.getProps().setProperty("algorithm.expression", "ds_${user_id % 2}");
         return new StandardShardingStrategyConfiguration("user_id", inlineShardingAlgorithm);
     }
 }

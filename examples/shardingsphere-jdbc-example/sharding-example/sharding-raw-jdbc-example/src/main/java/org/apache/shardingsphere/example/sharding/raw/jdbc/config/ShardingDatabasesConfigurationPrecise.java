@@ -47,7 +47,7 @@ public final class ShardingDatabasesConfigurationPrecise implements ExampleConfi
         result.getTables().add(getOrderItemTableRuleConfiguration());
         result.getBroadcastTables().add("t_address");
         InlineShardingAlgorithm shardingAlgorithm = new InlineShardingAlgorithm();
-        shardingAlgorithm.getProperties().setProperty("algorithm.expression", "demo_ds_${user_id % 2}");
+        shardingAlgorithm.getProps().setProperty("algorithm.expression", "demo_ds_${user_id % 2}");
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", shardingAlgorithm));
         result.getKeyGenerators().put("snowflake", new KeyGenerateAlgorithmConfiguration("SNOWFLAKE", getProperties()));
         return result;

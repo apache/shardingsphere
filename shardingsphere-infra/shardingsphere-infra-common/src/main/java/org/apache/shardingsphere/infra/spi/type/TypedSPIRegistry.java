@@ -41,7 +41,7 @@ public final class TypedSPIRegistry {
         Optional<T> serviceInstance = ShardingSphereServiceLoader.newServiceInstances(typedSPIClass).stream().filter(each -> type.equalsIgnoreCase(each.getType())).findFirst();
         if (serviceInstance.isPresent()) {
             T result = serviceInstance.get();
-            result.setProperties(props);
+            result.setProps(props);
             return result;
         }
         throw new ServiceProviderNotFoundException(typedSPIClass, type);

@@ -126,7 +126,7 @@ public final class ShardingStrategyConfigurationYamlSwapper implements YamlSwapp
     private YamlShardingAlgorithmConfiguration createYamlShardingAlgorithmConfiguration(final ShardingAlgorithm shardingAlgorithm) {
         YamlShardingAlgorithmConfiguration result = new YamlShardingAlgorithmConfiguration();
         result.setType(shardingAlgorithm.getType());
-        result.setProps(shardingAlgorithm.getProperties());
+        result.setProps(shardingAlgorithm.getProps());
         return result;
     }
     

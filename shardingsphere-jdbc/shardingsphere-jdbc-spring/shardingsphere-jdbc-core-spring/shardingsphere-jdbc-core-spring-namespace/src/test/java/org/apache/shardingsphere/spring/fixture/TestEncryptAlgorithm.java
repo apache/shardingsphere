@@ -17,28 +17,17 @@
 
 package org.apache.shardingsphere.spring.fixture;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 
 import java.util.Properties;
 
+@Getter
+@Setter
 public final class TestEncryptAlgorithm implements EncryptAlgorithm {
     
-    private Properties properties = new Properties();
-    
-    @Override
-    public String getType() {
-        return "test";
-    }
-    
-    @Override
-    public Properties getProperties() {
-        return properties;
-    }
-    
-    @Override
-    public void setProperties(final Properties properties) {
-        this.properties = properties;
-    }
+    private Properties props = new Properties();
     
     @Override
     public void init() {
@@ -52,5 +41,10 @@ public final class TestEncryptAlgorithm implements EncryptAlgorithm {
     @Override
     public Object decrypt(final String ciphertext) {
         return "";
+    }
+    
+    @Override
+    public String getType() {
+        return "test";
     }
 }

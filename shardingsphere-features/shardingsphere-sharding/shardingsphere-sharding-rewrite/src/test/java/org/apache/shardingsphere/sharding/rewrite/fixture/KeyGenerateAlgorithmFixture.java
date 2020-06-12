@@ -27,7 +27,7 @@ import java.util.Properties;
 @Setter
 public final class KeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
     
-    private Properties properties = new Properties();
+    private Properties props = new Properties();
     
     @Override
     public Comparable<?> generateKey() {

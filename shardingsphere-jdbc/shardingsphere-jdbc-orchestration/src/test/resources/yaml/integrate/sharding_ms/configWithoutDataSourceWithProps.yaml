@@ -60,7 +60,7 @@ rules:
       shardingColumns: id, order_id
       shardingAlgorithm:
         type: COMPLEX_TEST
-
+  
   keyGenerators:
     increment:
       type: INCREMENT

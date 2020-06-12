@@ -27,12 +27,7 @@ import java.util.Properties;
 @Setter
 public final class TestQueryAssistedEncryptAlgorithm implements QueryAssistedEncryptAlgorithm {
     
-    private Properties properties = new Properties();
-    
-    @Override
-    public String getType() {
-        return "assistedTest";
-    }
+    private Properties props = new Properties();
     
     @Override
     public void init() {
@@ -51,5 +46,10 @@ public final class TestQueryAssistedEncryptAlgorithm implements QueryAssistedEnc
     @Override
     public String queryAssistedEncrypt(final String plaintext) {
         return "assistedEncryptValue";
+    }
+    
+    @Override
+    public String getType() {
+        return "assistedTest";
     }
 }

@@ -93,7 +93,7 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     public void assertInlineStrategy() {
         StandardShardingStrategyConfiguration inlineStrategy = applicationContext.getBean("inlineStrategy", StandardShardingStrategyConfiguration.class);
         assertThat(inlineStrategy.getShardingColumn(), is("order_id"));
-        assertThat(inlineStrategy.getShardingAlgorithm().getProperties().getProperty("algorithm.expression"), is("t_order_${order_id % 4}"));
+        assertThat(inlineStrategy.getShardingAlgorithm().getProps().getProperty("algorithm.expression"), is("t_order_${order_id % 4}"));
     }
     
     @Test

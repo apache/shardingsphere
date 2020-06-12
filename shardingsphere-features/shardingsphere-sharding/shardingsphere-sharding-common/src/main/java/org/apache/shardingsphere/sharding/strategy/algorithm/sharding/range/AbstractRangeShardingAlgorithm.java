@@ -40,14 +40,14 @@ public abstract class AbstractRangeShardingAlgorithm implements StandardSharding
     
     @Getter
     @Setter
-    private Properties properties = new Properties();
+    private Properties props = new Properties();
     
     @Override
     public final void init() {
-        partitionRangeMap = createPartitionRangeMap(properties);
+        partitionRangeMap = createPartitionRangeMap(props);
     }
     
-    abstract Map<Integer, Range<Long>> createPartitionRangeMap(Properties properties);
+    abstract Map<Integer, Range<Long>> createPartitionRangeMap(Properties props);
     
     @Override
     public final String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Long> shardingValue) {

@@ -126,12 +126,12 @@ public class CustomDateTimeShardingAlgorithmTest {
     
     private void initShardStrategyByQuarter() {
         CustomDateTimeShardingAlgorithm shardingAlgorithm = new CustomDateTimeShardingAlgorithm();
-        shardingAlgorithm.getProperties().setProperty("datetime.format", "yyyy-MM-dd HH:mm:ss");
-        shardingAlgorithm.getProperties().setProperty("table.suffix.format", "yyyyQQ");
-        shardingAlgorithm.getProperties().setProperty("datetime.lower", "2016-01-01 00:00:00.000");
-        shardingAlgorithm.getProperties().setProperty("datetime.upper", "2021-12-31 00:00:00.000");
-        shardingAlgorithm.getProperties().setProperty("datetime.step.unit", "Months");
-        shardingAlgorithm.getProperties().setProperty("datetime.step.amount", "3");
+        shardingAlgorithm.getProps().setProperty("datetime.format", "yyyy-MM-dd HH:mm:ss");
+        shardingAlgorithm.getProps().setProperty("table.suffix.format", "yyyyQQ");
+        shardingAlgorithm.getProps().setProperty("datetime.lower", "2016-01-01 00:00:00.000");
+        shardingAlgorithm.getProps().setProperty("datetime.upper", "2021-12-31 00:00:00.000");
+        shardingAlgorithm.getProps().setProperty("datetime.step.unit", "Months");
+        shardingAlgorithm.getProps().setProperty("datetime.step.amount", "3");
         shardingAlgorithm.init();
         StandardShardingStrategyConfiguration shardingStrategyConfig = new StandardShardingStrategyConfiguration("create_time", shardingAlgorithm);
         this.shardingStrategyByQuarter = new StandardShardingStrategy(shardingStrategyConfig);
@@ -144,12 +144,12 @@ public class CustomDateTimeShardingAlgorithmTest {
     
     private void initShardStrategyByMonth() {
         CustomDateTimeShardingAlgorithm shardingAlgorithm = new CustomDateTimeShardingAlgorithm();
-        shardingAlgorithm.getProperties().setProperty("datetime.format", "yyyy-MM-dd HH:mm:ss");
-        shardingAlgorithm.getProperties().setProperty("table.suffix.format", "yyyyMM");
-        shardingAlgorithm.getProperties().setProperty("datetime.lower", "2016-01-01 00:00:00.000");
-        shardingAlgorithm.getProperties().setProperty("datetime.upper", "2021-12-31 00:00:00.000");
-        shardingAlgorithm.getProperties().setProperty("datetime.step.unit", "Months");
-        shardingAlgorithm.getProperties().setProperty("datetime.step.amount", "1");
+        shardingAlgorithm.getProps().setProperty("datetime.format", "yyyy-MM-dd HH:mm:ss");
+        shardingAlgorithm.getProps().setProperty("table.suffix.format", "yyyyMM");
+        shardingAlgorithm.getProps().setProperty("datetime.lower", "2016-01-01 00:00:00.000");
+        shardingAlgorithm.getProps().setProperty("datetime.upper", "2021-12-31 00:00:00.000");
+        shardingAlgorithm.getProps().setProperty("datetime.step.unit", "Months");
+        shardingAlgorithm.getProps().setProperty("datetime.step.amount", "1");
         shardingAlgorithm.init();
         StandardShardingStrategyConfiguration shardingStrategyConfig = new StandardShardingStrategyConfiguration("create_time", shardingAlgorithm);
         this.shardingStrategyByMonth = new StandardShardingStrategy(shardingStrategyConfig);

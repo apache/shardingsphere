@@ -176,10 +176,10 @@ public final class NacosCenterRepositoryTest {
     }
     
     @Test
-    public void assertProperties() {
-        Properties properties = new Properties();
-        REPOSITORY.setProperties(properties);
-        assertThat(REPOSITORY.getProperties(), is(properties));
+    public void assertProps() {
+        Properties props = new Properties();
+        REPOSITORY.setProps(props);
+        assertThat(REPOSITORY.getProps(), is(props));
     }
     
     @Test

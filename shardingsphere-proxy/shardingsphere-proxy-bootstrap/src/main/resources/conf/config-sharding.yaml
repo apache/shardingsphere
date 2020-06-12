@@ -54,7 +54,7 @@
 #          shardingColumn: order_id
 #          shardingAlgorithm:
 #            type: INLINE
-#            properties:
+#            props:
 #              algorithm.expression: t_order_${order_id % 2}
 #      keyGenerateStrategy:
 #        type: SNOWFLAKE
@@ -66,7 +66,7 @@
 #          shardingColumn: order_id
 #          shardingAlgorithm:
 #            type: INLINE
-#            properties:
+#            props:
 #              algorithm.expression: t_order_item_${order_id % 2}
 #      keyGenerateStrategy:
 #        type: SNOWFLAKE
@@ -78,7 +78,7 @@
 #      shardingColumn: user_id
 #      shardingAlgorithm:
 #        type: INLINE
-#        properties:
+#        props:
 #          algorithm.expression: ds_${user_id % 2}
 #  defaultTableStrategy:
 #    none:
@@ -117,7 +117,7 @@
 #          shardingColumn: order_id
 #          shardingAlgorithm:
 #            type: INLINE
-#            properties:
+#            props:
 #              algorithm.expression: t_order_${order_id % 2}
 #      keyGenerateStrategy:
 #        type: SNOWFLAKE
@@ -129,7 +129,7 @@
 #          shardingColumn: order_id
 #          shardingAlgorithm:
 #            type: INLINE
-#            properties:
+#            props:
 #              algorithm.expression: t_order_item_${order_id % 2}
 #      keyGenerateStrategy:
 #        type: SNOWFLAKE
@@ -141,7 +141,7 @@
 #      shardingColumn: user_id
 #      shardingAlgorithm:
 #        type: INLINE
-#        properties:
+#        props:
 #          algorithm.expression: ds_${user_id % 2}
 #  defaultTableStrategy:
 #    none:

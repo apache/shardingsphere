@@ -32,9 +32,9 @@ public final class AESEncryptAlgorithmTest {
     
     @Before
     public void setUp() {
-        Properties properties = new Properties();
-        properties.setProperty("aes.key.value", "test");
-        encryptAlgorithm.setProperties(properties);
+        Properties props = new Properties();
+        props.setProperty("aes.key.value", "test");
+        encryptAlgorithm.setProps(props);
     }
     
     @Test
@@ -49,8 +49,8 @@ public final class AESEncryptAlgorithmTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertEncodeWithoutKey() {
-        Properties properties = new Properties();
-        encryptAlgorithm.setProperties(properties);
+        Properties props = new Properties();
+        encryptAlgorithm.setProps(props);
         assertThat(encryptAlgorithm.encrypt("test"), is("dSpPiyENQGDUXMKFMJPGWA=="));
     }
     
@@ -67,12 +67,12 @@ public final class AESEncryptAlgorithmTest {
     @Test(expected = IllegalArgumentException.class)
     public void assertDecodeWithoutKey() {
         Properties properties = new Properties();
-        encryptAlgorithm.setProperties(properties);
+        encryptAlgorithm.setProps(properties);
         assertThat(encryptAlgorithm.decrypt("dSpPiyENQGDUXMKFMJPGWA==").toString(), is("test"));
     }
     
     @Test
     public void assertGetProperties() {
-        assertThat(encryptAlgorithm.getProperties().get("aes.key.value").toString(), is("test"));
+        assertThat(encryptAlgorithm.getProps().get("aes.key.value").toString(), is("test"));
     }
 }

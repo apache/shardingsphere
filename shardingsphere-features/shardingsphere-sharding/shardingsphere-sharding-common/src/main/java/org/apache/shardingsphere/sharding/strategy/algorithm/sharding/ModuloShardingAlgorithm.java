@@ -35,17 +35,17 @@ import java.util.Properties;
  * <p>Shard by `y = x mod v` algorithm. 
  * v is `MODULO_VALUE`. </p>
  */
+@Getter
+@Setter
 public final class ModuloShardingAlgorithm implements StandardShardingAlgorithm<Long>, ShardingAutoTableAlgorithm {
     
     private static final String MODULO_VALUE = "mod.value";
     
-    @Getter
-    @Setter
-    private Properties properties = new Properties();
+    private Properties props = new Properties();
     
     @Override
     public void init() {
-        Preconditions.checkNotNull(properties.get(MODULO_VALUE), "Modulo value cannot be null.");
+        Preconditions.checkNotNull(props.get(MODULO_VALUE), "Modulo value cannot be null.");
     }
     
     @Override
@@ -83,17 +83,17 @@ public final class ModuloShardingAlgorithm implements StandardShardingAlgorithm<
     }
     
     private long getModuloValue() {
-        return Long.parseLong(properties.get(MODULO_VALUE).toString());
+        return Long.parseLong(props.get(MODULO_VALUE).toString());
+    }
+    
+    @Override
+    public int getAutoTablesAmount() {
+        Preconditions.checkNotNull(props.get(MODULO_VALUE), "Modulo value cannot be null.");
+        return Integer.parseInt(props.get(MODULO_VALUE).toString());
     }
     
     @Override
     public String getType() {
         return "MOD";
-    }
-    
-    @Override
-    public int getAutoTablesAmount() {
-        Preconditions.checkNotNull(properties.get(MODULO_VALUE), "Modulo value cannot be null.");
-        return Integer.parseInt(properties.get(MODULO_VALUE).toString());
     }
 }

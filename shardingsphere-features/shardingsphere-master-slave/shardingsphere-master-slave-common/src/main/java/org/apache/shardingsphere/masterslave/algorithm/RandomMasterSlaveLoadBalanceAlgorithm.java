@@ -32,15 +32,15 @@ import java.util.concurrent.ThreadLocalRandom;
 @Setter
 public final class RandomMasterSlaveLoadBalanceAlgorithm implements MasterSlaveLoadBalanceAlgorithm {
     
-    private Properties properties = new Properties();
-    
-    @Override
-    public String getType() {
-        return "RANDOM";
-    }
+    private Properties props = new Properties();
     
     @Override
     public String getDataSource(final String name, final String masterDataSourceName, final List<String> slaveDataSourceNames) {
         return slaveDataSourceNames.get(ThreadLocalRandom.current().nextInt(slaveDataSourceNames.size()));
+    }
+    
+    @Override
+    public String getType() {
+        return "RANDOM";
     }
 }

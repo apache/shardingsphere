@@ -59,11 +59,11 @@ public final class CuratorZookeeperCenterRepository implements ConfigCenterRepos
     
     @Getter
     @Setter
-    private Properties properties = new Properties();
+    private Properties props = new Properties();
     
     @Override
     public void init(final CenterConfiguration config) {
-        ZookeeperProperties zookeeperProperties = new ZookeeperProperties(properties);
+        ZookeeperProperties zookeeperProperties = new ZookeeperProperties(props);
         client = buildCuratorClient(config, zookeeperProperties);
         initCuratorClient(zookeeperProperties);
     }

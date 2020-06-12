@@ -32,5 +32,5 @@ public final class YamlKeyGenerateAlgorithmConfiguration implements YamlConfigur
     
     private String type;
     
-    private Properties properties = new Properties();
+    private Properties props = new Properties();
 }

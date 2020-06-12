@@ -43,9 +43,9 @@ public final class DatetimeShardingAlgorithmTest {
     @Before
     public void setup() {
         DatetimeShardingAlgorithm shardingAlgorithm = new DatetimeShardingAlgorithm();
-        shardingAlgorithm.getProperties().setProperty("partition.seconds", "4");
-        shardingAlgorithm.getProperties().setProperty("datetime.lower", "2020-01-01 00:00:00");
-        shardingAlgorithm.getProperties().setProperty("datetime.upper", "2020-01-01 00:00:16");
+        shardingAlgorithm.getProps().setProperty("partition.seconds", "4");
+        shardingAlgorithm.getProps().setProperty("datetime.lower", "2020-01-01 00:00:00");
+        shardingAlgorithm.getProps().setProperty("datetime.upper", "2020-01-01 00:00:16");
         shardingAlgorithm.init();
         StandardShardingStrategyConfiguration shardingStrategyConfig = new StandardShardingStrategyConfiguration("create_time", shardingAlgorithm);
         shardingStrategy = new StandardShardingStrategy(shardingStrategyConfig);
@@ -54,8 +54,7 @@ public final class DatetimeShardingAlgorithmTest {
     @Test
     public void assertPreciseDoSharding() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        List<RouteValue> shardingValues = Lists.newArrayList(new ListRouteValue<>("create_time", "t_order", 
-                Lists.newArrayList("2020-01-01 00:00:01", "2020-01-01 00:00:02")));
+        List<RouteValue> shardingValues = Lists.newArrayList(new ListRouteValue<>("create_time", "t_order", Lists.newArrayList("2020-01-01 00:00:01", "2020-01-01 00:00:02")));
         Collection<String> actual = shardingStrategy.doSharding(availableTargetNames, shardingValues, new ConfigurationProperties(new Properties()));
         assertThat(actual.size(), is(1));
         assertTrue(actual.contains("t_order_1"));
@@ -131,9 +130,9 @@ public final class DatetimeShardingAlgorithmTest {
     @Test
     public void assertGetAutoTablesAmount() {
         DatetimeShardingAlgorithm shardingAlgorithm = new DatetimeShardingAlgorithm();
-        shardingAlgorithm.getProperties().setProperty("partition.seconds", "86400");
-        shardingAlgorithm.getProperties().setProperty("datetime.lower", "2020-01-01 00:00:00");
-        shardingAlgorithm.getProperties().setProperty("datetime.upper", "2021-01-01 00:00:00");
+        shardingAlgorithm.getProps().setProperty("partition.seconds", "86400");
+        shardingAlgorithm.getProps().setProperty("datetime.lower", "2020-01-01 00:00:00");
+        shardingAlgorithm.getProps().setProperty("datetime.upper", "2021-01-01 00:00:00");
         shardingAlgorithm.init();
         assertThat(shardingAlgorithm.getAutoTablesAmount(), is(368));
     }

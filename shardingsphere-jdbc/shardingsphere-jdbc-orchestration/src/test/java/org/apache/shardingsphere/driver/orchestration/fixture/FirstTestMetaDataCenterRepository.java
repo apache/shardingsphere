@@ -29,13 +29,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+@Getter
+@Setter
 public final class FirstTestMetaDataCenterRepository implements ConfigCenterRepository {
     
     private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
-    @Getter
-    @Setter
-    private Properties properties;
+    private Properties props = new Properties();
     
     @Override
     public void init(final CenterConfiguration config) {

@@ -44,12 +44,7 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
     
     private static final String AES_KEY = "aes.key.value";
     
-    private Properties properties = new Properties();
-    
-    @Override
-    public String getType() {
-        return "AES";
-    }
+    private Properties props = new Properties();
     
     @Override
     public void init() {
@@ -76,14 +71,19 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
     }
     
     private Cipher getCipher(final int decryptMode) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
-        Preconditions.checkArgument(properties.containsKey(AES_KEY), "No available secret key for `%s`.", AESEncryptAlgorithm.class.getName());
+        Preconditions.checkArgument(props.containsKey(AES_KEY), "No available secret key for `%s`.", AESEncryptAlgorithm.class.getName());
         Cipher result = Cipher.getInstance(getType());
         result.init(decryptMode, new SecretKeySpec(createSecretKey(), getType()));
         return result;
     }
     
     private byte[] createSecretKey() {
-        Preconditions.checkArgument(null != properties.get(AES_KEY), String.format("%s can not be null.", AES_KEY));
-        return Arrays.copyOf(DigestUtils.sha1(properties.get(AES_KEY).toString()), 16);
+        Preconditions.checkArgument(null != props.get(AES_KEY), String.format("%s can not be null.", AES_KEY));
+        return Arrays.copyOf(DigestUtils.sha1(props.get(AES_KEY).toString()), 16);
+    }
+    
+    @Override
+    public String getType() {
+        return "AES";
     }
 }

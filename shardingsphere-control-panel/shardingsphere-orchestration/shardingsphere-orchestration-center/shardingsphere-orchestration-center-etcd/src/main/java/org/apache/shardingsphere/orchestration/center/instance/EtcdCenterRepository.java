@@ -51,13 +51,13 @@ public final class EtcdCenterRepository implements ConfigCenterRepository, Regis
     
     @Getter
     @Setter
-    private Properties properties;
+    private Properties props = new Properties();
 
     private EtcdProperties etcdProperties;
 
     @Override
     public void init(final CenterConfiguration config) { 
-        this.etcdProperties = new EtcdProperties(this.properties);
+        this.etcdProperties = new EtcdProperties(props);
         client = Client.builder().endpoints(Util.toURIs(Splitter.on(",").trimResults().splitToList(config.getServerLists()))).build();
     }
     
