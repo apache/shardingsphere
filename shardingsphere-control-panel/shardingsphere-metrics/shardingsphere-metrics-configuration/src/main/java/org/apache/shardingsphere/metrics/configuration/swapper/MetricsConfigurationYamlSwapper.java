@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.metrics.configuration.swapper;
 
+import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.metrics.configuration.yaml.YamlMetricsConfiguration;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 
 /**
  * Metrics configuration YAML swapper.
@@ -32,7 +32,7 @@ public final class MetricsConfigurationYamlSwapper implements YamlSwapper<YamlMe
         configuration.setHost(metricsConfiguration.getHost());
         configuration.setName(metricsConfiguration.getMetricsName());
         configuration.setPort(metricsConfiguration.getPort());
-        configuration.setAsync(metricsConfiguration.isAsync());
+        configuration.setAsync(metricsConfiguration.getAsync());
         configuration.setThreadCount(metricsConfiguration.getThreadCount());
         configuration.setProps(metricsConfiguration.getProps());
         return configuration;
@@ -42,7 +42,7 @@ public final class MetricsConfigurationYamlSwapper implements YamlSwapper<YamlMe
     public MetricsConfiguration swap(final YamlMetricsConfiguration metricsConfiguration) {
         return new MetricsConfiguration(metricsConfiguration.getName(), metricsConfiguration.getHost(),
                 null == metricsConfiguration.getPort() ? 9190 : metricsConfiguration.getPort(),
-                metricsConfiguration.isAsync(),
+                null == metricsConfiguration.getAsync(),
                 null == metricsConfiguration.getThreadCount() ? Runtime.getRuntime().availableProcessors() << 1 : metricsConfiguration.getThreadCount(),
                 metricsConfiguration.getProps());
     }

@@ -37,7 +37,7 @@ public final class MetricsConfiguration {
     
     private Integer port;
     
-    private boolean async;
+    private Boolean async;
     
     private Integer threadCount;
     

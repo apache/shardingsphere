@@ -57,6 +57,6 @@ public final class MetricsConfigurationChangedListenerTest {
         assertThat(actual.getMetricsName(), is("prometheus"));
         assertThat(actual.getPort(), is(9190));
         assertThat(actual.getHost(), is("127.0.0.1"));
-        assertThat(actual.isAsync(), is(false));
+        assertThat(actual.getAsync(), is(true));
     }
 }
