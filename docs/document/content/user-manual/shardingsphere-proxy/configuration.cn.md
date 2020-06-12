@@ -45,7 +45,7 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order${order_id % 2}
-      keyGenerator:
+      keyGenerateStrategy:
         type: SNOWFLAKE
         column: order_id
     t_order_item:
@@ -58,7 +58,7 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_item${order_id % 2}
-      keyGenerator:
+      keyGenerateStrategy:
         type: SNOWFLAKE
         column: order_item_id
   bindingTables:
@@ -124,7 +124,7 @@ encryptRule:
   encryptors:
     aes_encryptor:
       type: aes
-      props:
+      properties:
         aes.key.value: 123456abc
     md5_encryptor:
       type: md5
@@ -207,7 +207,7 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order${order_id % 2}
-      keyGenerator:
+      keyGenerateStrategy:
         type: SNOWFLAKE
         column: order_id
     t_order_item:
@@ -220,7 +220,7 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_item${order_id % 2}
-      keyGenerator:
+      keyGenerateStrategy:
         type: SNOWFLAKE
         column: order_item_id
   bindingTables:
@@ -284,7 +284,7 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order${order_id % 2}
-      keyGenerator:
+      keyGenerateStrategy:
         type: SNOWFLAKE
         column: order_id
     t_order_item:
@@ -297,7 +297,7 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_item${order_id % 2}
-      keyGenerator:
+      keyGenerateStrategy:
         type: SNOWFLAKE
         column: order_item_id
   bindingTables:
@@ -309,7 +309,7 @@ shardingRule:
     encryptors:
       aes_encryptor:
         type: aes
-        props:
+        properties:
           aes.key.value: 123456abc
     tables:
       t_order:
@@ -339,7 +339,7 @@ orchestration:
     instanceType: zookeeper
     serverLists: localhost:2181
     namespace: orchestration
-    props:
+    properties:
       overwrite: true
 ```
 
@@ -358,7 +358,7 @@ authentication:
 ### 公用属性
 
 ```yaml
-props:
+properties:
   executor.size: 16
   sql.show: false
 ```
@@ -401,7 +401,7 @@ encryptRule:
   encryptors:
     <encrypt-algorithm-name>:
       type: #加解密算法类型，可自定义或选择内置类型：MD5/AES 
-      props: #属性配置, 注意：使用 AES 加密算法，需要配置 AES 加密算法的 KEY 属性：aes.key.value
+      properties: #属性配置, 注意：使用 AES 加密算法，需要配置 AES 加密算法的 KEY 属性：aes.key.value
         aes.key.value: 
   tables:
     <table-name>:
@@ -411,7 +411,7 @@ encryptRule:
           cipherColumn: #存储密文的字段
           assistedQueryColumn: #辅助查询字段，针对 QueryAssistedEncryptAlgorithm 类型的加解密算法进行辅助查询
           encryptorName: #加密算法名称
-props:
+properties:
   query.with.cipher.column: true #是否使用密文列查询
 ```
 
@@ -425,7 +425,7 @@ props:
 
 ```yaml
 #省略与ShardingSphere-JDBC一致的配置属性
-props:
+properties:
   acceptor.size: #用于设置接收客户端请求的工作线程个数，默认为CPU核数*2
   proxy.transaction.type: #默认为LOCAL事务，允许LOCAL，XA，BASE三个值，XA采用Atomikos作为事务管理器，BASE类型需要拷贝实现ShardingTransactionManager的接口的jar包至lib目录中
   proxy.opentracing.enabled: #是否开启链路追踪功能，默认为不开启。详情请参见[链路追踪](/cn/features/orchestration/apm/)

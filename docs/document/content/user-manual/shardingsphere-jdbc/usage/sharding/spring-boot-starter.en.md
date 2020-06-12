@@ -39,12 +39,12 @@ spring.shardingsphere.rules.sharding.tables.t_order.actual-data-nodes=ds$->{0..1
 # Configure database sharding strategy
 spring.shardingsphere.rules.sharding.tables.t_order.database-strategy.standard.sharding-column=user_id
 spring.shardingsphere.rules.sharding.tables.t_order.database-strategy.standard.sharding-algorithm.type=INLINE
-spring.shardingsphere.rules.sharding.tables.t_order.database-strategy.standard.sharding-algorithm.props.algorithm.expression=ds$->{user_id % 2}
+spring.shardingsphere.rules.sharding.tables.t_order.database-strategy.standard.sharding-algorithm.properties.algorithm.expression=ds$->{user_id % 2}
 
 # Configure table sharding strategy
 spring.shardingsphere.rules.sharding.tables.t_order.table-strategy.standard.sharding-column=order_id
 spring.shardingsphere.rules.sharding.tables.t_order.table-strategy.standard.sharding-algorithm.type=INLINE
-spring.shardingsphere.rules.sharding.tables.t_order.table-strategy.standard.sharding-algorithm.props.algorithm.expression=t_order$->{order_id % 2}
+spring.shardingsphere.rules.sharding.tables.t_order.table-strategy.standard.sharding-algorithm.properties.algorithm.expression=t_order$->{order_id % 2}
 
 # Omit t_order_item table rule configuration ...
 # ...

@@ -28,16 +28,16 @@ public final class OrchestrationPropertiesTest {
     
     @Test
     public void assertGetValue() {
-        Properties props = new Properties();
-        props.setProperty(OrchestrationPropertyKey.OVERWRITE.getKey(), "true");
-        OrchestrationProperties actual = new OrchestrationProperties(props);
+        Properties properties = new Properties();
+        properties.setProperty(OrchestrationPropertyKey.OVERWRITE.getKey(), "true");
+        OrchestrationProperties actual = new OrchestrationProperties(properties);
         assertTrue(actual.getValue(OrchestrationPropertyKey.OVERWRITE));
     }
     
     @Test
     public void assertGetDefaultValue() {
-        Properties props = new Properties();
-        OrchestrationProperties actual = new OrchestrationProperties(props);
+        Properties properties = new Properties();
+        OrchestrationProperties actual = new OrchestrationProperties(properties);
         assertFalse(actual.getValue(OrchestrationPropertyKey.OVERWRITE));
     }
 }

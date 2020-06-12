@@ -15,26 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.yaml.config;
+package org.apache.shardingsphere.sharding.yaml.config.strategy.keygen;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 
 /**
- * Table rule configuration for YAML.
+ * Key generate strategy configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlTableRuleConfiguration implements YamlConfiguration {
+public final class YamlKeyGenerateStrategyConfiguration implements YamlConfiguration {
     
-    private String logicTable;
+    private String column;
     
-    private String actualDataNodes;
-    
-    private YamlShardingStrategyConfiguration databaseStrategy;
-    
-    private YamlShardingStrategyConfiguration tableStrategy;
-    
-    private YamlKeyGeneratorConfiguration keyGenerator;
+    private String keyGeneratorName;
 }

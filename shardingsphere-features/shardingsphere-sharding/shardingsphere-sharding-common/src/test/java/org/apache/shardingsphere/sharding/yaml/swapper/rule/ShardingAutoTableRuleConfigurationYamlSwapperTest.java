@@ -15,16 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.yaml.swapper;
+package org.apache.shardingsphere.sharding.yaml.swapper.rule;
 
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
-import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.YamlKeyGeneratorConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.YamlShardingAutoTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.YamlShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.yaml.swapper.strategy.KeyGenerateStrategyConfigurationYamlSwapper;
+import org.apache.shardingsphere.sharding.yaml.swapper.strategy.ShardingStrategyConfigurationYamlSwapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,7 +50,7 @@ public final class ShardingAutoTableRuleConfigurationYamlSwapperTest {
     private ShardingStrategyConfigurationYamlSwapper shardingStrategyConfigurationYamlSwapper;
     
     @Mock
-    private KeyGeneratorConfigurationYamlSwapper keyGeneratorConfigurationYamlSwapper;
+    private KeyGenerateStrategyConfigurationYamlSwapper keyGenerateStrategyConfigurationYamlSwapper;
     
     private final ShardingAutoTableRuleConfigurationYamlSwapper tableRuleConfigurationYamlSwapper = new ShardingAutoTableRuleConfigurationYamlSwapper();
     
@@ -56,8 +58,8 @@ public final class ShardingAutoTableRuleConfigurationYamlSwapperTest {
     public void setUp() throws ReflectiveOperationException {
         setSwapper("shardingStrategyConfigurationYamlSwapper", shardingStrategyConfigurationYamlSwapper);
         when(shardingStrategyConfigurationYamlSwapper.swap(ArgumentMatchers.<ShardingStrategyConfiguration>any())).thenReturn(mock(YamlShardingStrategyConfiguration.class));
-        setSwapper("keyGeneratorConfigurationYamlSwapper", keyGeneratorConfigurationYamlSwapper);
-        when(keyGeneratorConfigurationYamlSwapper.swap(ArgumentMatchers.<KeyGenerateStrategyConfiguration>any())).thenReturn(mock(YamlKeyGeneratorConfiguration.class));
+        setSwapper("keyGenerateStrategyConfigurationYamlSwapper", keyGenerateStrategyConfigurationYamlSwapper);
+        when(keyGenerateStrategyConfigurationYamlSwapper.swap(ArgumentMatchers.<KeyGenerateStrategyConfiguration>any())).thenReturn(mock(YamlKeyGenerateStrategyConfiguration.class));
     }
     
     private void setSwapper(final String swapperFieldName, final YamlSwapper swapperFieldValue) throws ReflectiveOperationException {
@@ -72,19 +74,19 @@ public final class ShardingAutoTableRuleConfigurationYamlSwapperTest {
         assertThat(actual.getLogicTable(), is("tbl"));
         assertThat(actual.getActualDataSources(), is("ds0,ds1"));
         assertNull(actual.getShardingStrategy());
-        assertNull(actual.getKeyGenerator());
+        assertNull(actual.getKeyGenerateStrategy());
     }
     
     @Test
     public void assertSwapToYamlWithMaxProperties() {
         ShardingAutoTableRuleConfiguration shardingTableRuleConfiguration = new ShardingAutoTableRuleConfiguration("tbl", "ds0,ds1");
         shardingTableRuleConfiguration.setShardingStrategy(mock(StandardShardingStrategyConfiguration.class));
-        shardingTableRuleConfiguration.setKeyGenerator(mock(KeyGenerateStrategyConfiguration.class));
+        shardingTableRuleConfiguration.setKeyGenerateStrategy(mock(KeyGenerateStrategyConfiguration.class));
         YamlShardingAutoTableRuleConfiguration actual = tableRuleConfigurationYamlSwapper.swap(shardingTableRuleConfiguration);
         assertThat(actual.getLogicTable(), is("tbl"));
         assertThat(actual.getActualDataSources(), is("ds0,ds1"));
         assertNotNull(actual.getShardingStrategy());
-        assertNotNull(actual.getKeyGenerator());
+        assertNotNull(actual.getKeyGenerateStrategy());
     }
     
     @Test(expected = NullPointerException.class)

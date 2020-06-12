@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.api.config.strategy.keygen;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
 /**
  * Key generate strategy configuration.
@@ -30,11 +29,11 @@ public final class KeyGenerateStrategyConfiguration {
     
     private final String column;
     
-    private final KeyGenerateAlgorithm algorithm;
+    private final String keyGeneratorName;
     
-    public KeyGenerateStrategyConfiguration(final String column, final KeyGenerateAlgorithm algorithm) {
+    public KeyGenerateStrategyConfiguration(final String column, final String keyGeneratorName) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(column), "Column is required.");
         this.column = column;
-        this.algorithm = algorithm;
+        this.keyGeneratorName = keyGeneratorName;
     }
 }

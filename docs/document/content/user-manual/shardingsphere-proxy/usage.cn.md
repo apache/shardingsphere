@@ -68,7 +68,7 @@ SCTL为ShardingSphere-Proxy特有的控制语句，可以在运行时修改和�
 |sctl:hint show status                    | 针对当前TCP连接，查询hint状态，master_only:true/false，sharding_type:databases_only/databases_tables |
 |sctl:hint show table status              | 针对当前TCP连接，查询逻辑表的hint分片值                                                               |
 
-ShardingSphere-Proxy 默认不支持hint，如需支持，请在conf/server.yaml中，将`props`的属性`proxy.hint.enabled`设置为true。在ShardingSphere-Proxy中，HintShardingAlgorithm的泛型只能是String类型。
+ShardingSphere-Proxy 默认不支持hint，如需支持，请在conf/server.yaml中，将`properties`的属性`proxy.hint.enabled`设置为true。在ShardingSphere-Proxy中，HintShardingAlgorithm的泛型只能是String类型。
 
 
 

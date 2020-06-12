@@ -26,15 +26,15 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
 
 /**
- * Key generator bean parser for spring namespace.
+ * Key generate strategy bean parser for spring namespace.
  */
-public final class KeyGeneratorBeanDefinitionParser extends AbstractBeanDefinitionParser {
+public final class KeyGenerateStrategyBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(KeyGenerateStrategyConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(ShardingRuleBeanDefinitionTag.GENERATE_KEY_COLUMN_ATTRIBUTE));
-        factory.addConstructorArgReference(element.getAttribute(ShardingRuleBeanDefinitionTag.GENERATE_KEY_ALGORITHM_REF_TAG));
+        factory.addConstructorArgValue(element.getAttribute(ShardingRuleBeanDefinitionTag.GENERATE_KEY_ALGORITHM_REF_TAG));
         return factory.getBeanDefinition();
     }
 }

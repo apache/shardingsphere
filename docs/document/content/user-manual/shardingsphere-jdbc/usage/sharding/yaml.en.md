@@ -48,7 +48,7 @@ rules:
           shardingColumn: user_id
           shardingAlgorithm:
             type: INLINE
-            props:
+            properties:
               algorithm.expression: ds${user_id % 2}
       # Configure table sharding strategy
       tableStrategy:
@@ -56,7 +56,7 @@ rules:
           shardingColumn: order_id
             shardingAlgorithm:
               type: INLINE
-                props:
+                properties:
                   algorithm.expression: t_order${order_id % 2}
     t_order_item: 
     # Omit t_order_item table rule configuration ...

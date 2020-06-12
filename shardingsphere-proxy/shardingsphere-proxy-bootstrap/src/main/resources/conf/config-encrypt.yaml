@@ -42,7 +42,7 @@
 #  encryptors:
 #    aes_encryptor:
 #      type: aes
-#      props:
+#      properties:
 #        aes.key.value: 123456abc
 #    md5_encryptor:
 #      type: md5
@@ -79,7 +79,7 @@
 #  encryptors:
 #    aes_encryptor:
 #      type: aes
-#      props:
+#      properties:
 #        aes.key.value: 123456abc
 #    md5_encryptor:
 #      type: md5

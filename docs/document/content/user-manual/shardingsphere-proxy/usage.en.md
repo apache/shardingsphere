@@ -60,7 +60,7 @@ SCTL supports modify and query the state of Sharing-Proxy at runtime. The curren
 |sctl:hint show status                    | For current TCP connection, query hint status, master_only:true/false, sharding_type:databases_only/databases_tables | sctl:hint show status                          |
 |sctl:hint show table status              | For current TCP connection, query sharding values of logic tables                                                    | sctl:hint show table status                    |
 
-ShardingSphere-Proxy does not support hint by default, to support it, set the `props` property `proxy.hint.enabled` to true in conf/server.yaml.In ShardingSphere-Proxy. In ShardingSphere-Proxy, the generic of HintShardingAlgorithm can only be a String type.
+ShardingSphere-Proxy does not support hint by default, to support it, set the `properties` property `proxy.hint.enabled` to true in conf/server.yaml.In ShardingSphere-Proxy. In ShardingSphere-Proxy, the generic of HintShardingAlgorithm can only be a String type.
 
 ## Notices
 

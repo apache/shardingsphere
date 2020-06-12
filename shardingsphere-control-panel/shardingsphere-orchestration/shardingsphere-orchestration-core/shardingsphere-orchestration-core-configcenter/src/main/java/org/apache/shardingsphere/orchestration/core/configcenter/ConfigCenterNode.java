@@ -44,7 +44,7 @@ public final class ConfigCenterNode {
     
     private static final String AUTHENTICATION_NODE = "authentication";
     
-    private static final String PROPS_NODE = "props";
+    private static final String PROPS_NODE = "properties";
     
     private static final String COMMA_SEPARATOR = ",";
     
@@ -101,9 +101,9 @@ public final class ConfigCenterNode {
     }
     
     /**
-     * Get props path.
+     * Get properties path.
      *
-     * @return props path
+     * @return properties path
      */
     public String getPropsPath() {
         return getFullPath(PROPS_NODE);

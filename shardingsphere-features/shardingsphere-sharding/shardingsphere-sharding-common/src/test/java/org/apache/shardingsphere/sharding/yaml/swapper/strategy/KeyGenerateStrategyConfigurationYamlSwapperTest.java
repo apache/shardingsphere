@@ -15,38 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.yaml.swapper;
+package org.apache.shardingsphere.sharding.yaml.swapper.strategy;
 
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.YamlKeyGeneratorConfiguration;
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
+import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration;
 import org.junit.Test;
-
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class KeyGeneratorConfigurationYamlSwapperTest {
+public final class KeyGenerateStrategyConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYaml() {
-        KeyGenerateAlgorithm keyGenerateAlgorithm = TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class, "UUID", new Properties());
-        YamlKeyGeneratorConfiguration actual = new KeyGeneratorConfigurationYamlSwapper().swap(new KeyGenerateStrategyConfiguration("id", keyGenerateAlgorithm));
-        assertThat(actual.getType(), is("UUID"));
+        YamlKeyGenerateStrategyConfiguration actual = new KeyGenerateStrategyConfigurationYamlSwapper().swap(new KeyGenerateStrategyConfiguration("id", "test"));
         assertThat(actual.getColumn(), is("id"));
-        assertThat(actual.getProps(), is(new Properties()));
+        assertThat(actual.getKeyGeneratorName(), is("test"));
     }
     
     @Test
     public void assertSwapToObject() {
-        YamlKeyGeneratorConfiguration yamlConfiguration = new YamlKeyGeneratorConfiguration();
-        yamlConfiguration.setType("UUID");
+        YamlKeyGenerateStrategyConfiguration yamlConfiguration = new YamlKeyGenerateStrategyConfiguration();
         yamlConfiguration.setColumn("id");
-        KeyGenerateStrategyConfiguration actual = new KeyGeneratorConfigurationYamlSwapper().swap(yamlConfiguration);
-        assertThat(actual.getAlgorithm().getType(), is("UUID"));
+        yamlConfiguration.setKeyGeneratorName("test");
+        KeyGenerateStrategyConfiguration actual = new KeyGenerateStrategyConfigurationYamlSwapper().swap(yamlConfiguration);
         assertThat(actual.getColumn(), is("id"));
-        assertThat(actual.getAlgorithm().getProperties(), is(new Properties()));
+        assertThat(actual.getKeyGeneratorName(), is("test"));
     }
 }

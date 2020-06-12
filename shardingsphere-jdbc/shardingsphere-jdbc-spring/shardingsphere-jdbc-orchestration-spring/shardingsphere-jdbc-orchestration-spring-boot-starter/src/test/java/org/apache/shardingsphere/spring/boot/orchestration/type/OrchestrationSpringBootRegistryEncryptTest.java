@@ -67,7 +67,7 @@ public class OrchestrationSpringBootRegistryEncryptTest {
                 + "- !ENCRYPT\n"
                 + "  encryptors:\n"
                 + "    order_encrypt:\n"
-                + "      props:\n"
+                + "      properties:\n"
                 + "        aes.key.value: '123456'\n"
                 + "      type: aes\n"
                 + "  tables:\n" 
@@ -76,7 +76,7 @@ public class OrchestrationSpringBootRegistryEncryptTest {
                 + "         user_id:\n"
                 + "           cipherColumn: user_id\n"
                 + "           encryptorName: order_encrypt\n");
-        testCenter.persist("/demo_spring_boot_ds_center/config/props", "sql.show: 'true'\n");
+        testCenter.persist("/demo_spring_boot_ds_center/config/properties", "sql.show: 'true'\n");
         testCenter.persist("/demo_spring_boot_ds_center/registry/datasources", "");
     }
     

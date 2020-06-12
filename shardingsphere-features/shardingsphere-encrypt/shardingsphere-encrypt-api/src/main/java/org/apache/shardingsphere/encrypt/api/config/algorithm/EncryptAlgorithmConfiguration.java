@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.api.config.algorithm;
 
-import lombok.Getter;
 import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
 
 import java.util.Properties;
@@ -25,7 +24,6 @@ import java.util.Properties;
 /**
  * Encrypt algorithm configuration.
  */
-@Getter
 public final class EncryptAlgorithmConfiguration extends TypedSPIConfiguration {
     
     public EncryptAlgorithmConfiguration(final String type, final Properties properties) {

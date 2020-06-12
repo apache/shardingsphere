@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.spring.namespace.handler;
 
 import org.apache.shardingsphere.sharding.spring.namespace.parser.KeyGenerateAlgorithmBeanDefinitionParser;
-import org.apache.shardingsphere.sharding.spring.namespace.parser.KeyGeneratorBeanDefinitionParser;
+import org.apache.shardingsphere.sharding.spring.namespace.parser.KeyGenerateStrategyBeanDefinitionParser;
 import org.apache.shardingsphere.sharding.spring.namespace.parser.ShardingAlgorithmBeanDefinitionParser;
 import org.apache.shardingsphere.sharding.spring.namespace.parser.ShardingRuleBeanDefinitionParser;
 import org.apache.shardingsphere.sharding.spring.namespace.parser.ShardingStrategyBeanDefinitionParser;
@@ -39,7 +39,7 @@ public final class ShardingNamespaceHandler extends NamespaceHandlerSupport {
         registerBeanDefinitionParser(ShardingStrategyBeanDefinitionTag.COMPLEX_STRATEGY_ROOT_TAG, new ShardingStrategyBeanDefinitionParser());
         registerBeanDefinitionParser(ShardingStrategyBeanDefinitionTag.HINT_STRATEGY_ROOT_TAG, new ShardingStrategyBeanDefinitionParser());
         registerBeanDefinitionParser(ShardingStrategyBeanDefinitionTag.NONE_STRATEGY_ROOT_TAG, new ShardingStrategyBeanDefinitionParser());
-        registerBeanDefinitionParser(ShardingRuleBeanDefinitionTag.KEY_GENERATOR_REF_TAG, new KeyGeneratorBeanDefinitionParser());
+        registerBeanDefinitionParser(ShardingRuleBeanDefinitionTag.KEY_GENERATE_STRATEGY_REF_TAG, new KeyGenerateStrategyBeanDefinitionParser());
         registerBeanDefinitionParser(SPIBeanDefinitionTag.KEY_GENERATE_ALGORITHM_TAG, new KeyGenerateAlgorithmBeanDefinitionParser());
         registerBeanDefinitionParser(SPIBeanDefinitionTag.SHARDING_ALGORITHM_TAG, new ShardingAlgorithmBeanDefinitionParser());
     }

@@ -27,7 +27,7 @@
 #    instanceType: zookeeper
 #    serverLists: localhost:2181
 #    namespace: orchestration
-#    props:
+#    properties:
 #      overwrite: false
 #      retryIntervalMilliseconds: 500
 #      timeToLiveSeconds: 60
@@ -42,7 +42,7 @@
 #      password: sharding 
 #      authorizedSchemas: sharding_db
 #
-#props:
+#properties:
 #  max.connections.size.per.query: 1
 #  acceptor.size: 16  # The default value is available processors count * 2.
 #  executor.size: 16  # Infinite by default.

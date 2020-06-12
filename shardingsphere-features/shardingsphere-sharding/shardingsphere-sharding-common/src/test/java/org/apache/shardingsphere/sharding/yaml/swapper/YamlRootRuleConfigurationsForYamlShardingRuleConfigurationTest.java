@@ -100,8 +100,8 @@ public final class YamlRootRuleConfigurationsForYamlShardingRuleConfigurationTes
         assertThat(actual.getTables().get("t_order").getTableStrategy().getStandard().getShardingColumn(), is("order_id"));
         assertThat(actual.getTables().get("t_order").getTableStrategy().getStandard().getShardingAlgorithm().getProps().getProperty("algorithm.expression"), 
                 is("t_order_${order_id % 2}"));
-        assertThat(actual.getTables().get("t_order").getKeyGenerator().getColumn(), is("order_id"));
-        assertThat(actual.getTables().get("t_order").getKeyGenerator().getType(), is("SNOWFLAKE"));
+        assertThat(actual.getTables().get("t_order").getKeyGenerateStrategy().getColumn(), is("order_id"));
+        assertThat(actual.getTables().get("t_order").getKeyGenerateStrategy().getKeyGeneratorName(), is("snowflake"));
     }
     
     private void assertTOrderItem(final YamlShardingRuleConfiguration actual) {

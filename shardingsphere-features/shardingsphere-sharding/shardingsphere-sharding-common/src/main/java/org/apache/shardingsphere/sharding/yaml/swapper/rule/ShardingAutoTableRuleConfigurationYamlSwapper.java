@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.yaml.swapper;
+package org.apache.shardingsphere.sharding.yaml.swapper.rule;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.YamlShardingAutoTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.yaml.swapper.strategy.KeyGenerateStrategyConfigurationYamlSwapper;
+import org.apache.shardingsphere.sharding.yaml.swapper.strategy.ShardingStrategyConfigurationYamlSwapper;
 
 /**
  * Sharding auto table rule configuration YAML swapper.
@@ -29,7 +31,7 @@ public final class ShardingAutoTableRuleConfigurationYamlSwapper implements Yaml
     
     private final ShardingStrategyConfigurationYamlSwapper shardingStrategyConfigurationYamlSwapper = new ShardingStrategyConfigurationYamlSwapper();
     
-    private final KeyGeneratorConfigurationYamlSwapper keyGeneratorConfigurationYamlSwapper = new KeyGeneratorConfigurationYamlSwapper();
+    private final KeyGenerateStrategyConfigurationYamlSwapper keyGenerateStrategyConfigurationYamlSwapper = new KeyGenerateStrategyConfigurationYamlSwapper();
     
     @Override
     public YamlShardingAutoTableRuleConfiguration swap(final ShardingAutoTableRuleConfiguration data) {
@@ -39,8 +41,8 @@ public final class ShardingAutoTableRuleConfigurationYamlSwapper implements Yaml
         if (null != data.getShardingStrategy()) {
             result.setShardingStrategy(shardingStrategyConfigurationYamlSwapper.swap(data.getShardingStrategy()));
         }
-        if (null != data.getKeyGenerator()) {
-            result.setKeyGenerator(keyGeneratorConfigurationYamlSwapper.swap(data.getKeyGenerator()));
+        if (null != data.getKeyGenerateStrategy()) {
+            result.setKeyGenerateStrategy(keyGenerateStrategyConfigurationYamlSwapper.swap(data.getKeyGenerateStrategy()));
         }
         return result;
     }
@@ -52,8 +54,8 @@ public final class ShardingAutoTableRuleConfigurationYamlSwapper implements Yaml
         if (null != yamlConfiguration.getShardingStrategy()) {
             result.setShardingStrategy(shardingStrategyConfigurationYamlSwapper.swap(yamlConfiguration.getShardingStrategy()));
         }
-        if (null != yamlConfiguration.getKeyGenerator()) {
-            result.setKeyGenerator(keyGeneratorConfigurationYamlSwapper.swap(yamlConfiguration.getKeyGenerator()));
+        if (null != yamlConfiguration.getKeyGenerateStrategy()) {
+            result.setKeyGenerateStrategy(keyGenerateStrategyConfigurationYamlSwapper.swap(yamlConfiguration.getKeyGenerateStrategy()));
         }
         return result;
     }

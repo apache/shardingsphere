@@ -28,13 +28,13 @@ public final class ZookeeperPropertiesTest {
     
     @Test
     public void assertGetValue() {
-        Properties props = new Properties();
-        props.setProperty(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS.getKey(), "3000");
-        props.setProperty(ZookeeperPropertyKey.MAX_RETRIES.getKey(), "2");
-        props.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "600");
-        props.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "6000");
-        props.setProperty(ZookeeperPropertyKey.DIGEST.getKey(), "any");
-        ZookeeperProperties actual = new ZookeeperProperties(props);
+        Properties properties = new Properties();
+        properties.setProperty(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS.getKey(), "3000");
+        properties.setProperty(ZookeeperPropertyKey.MAX_RETRIES.getKey(), "2");
+        properties.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "600");
+        properties.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "6000");
+        properties.setProperty(ZookeeperPropertyKey.DIGEST.getKey(), "any");
+        ZookeeperProperties actual = new ZookeeperProperties(properties);
         assertThat(actual.getValue(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS), is(3000));
         assertThat(actual.getValue(ZookeeperPropertyKey.MAX_RETRIES), is(2));
         assertThat(actual.getValue(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS), is(600));
@@ -44,8 +44,8 @@ public final class ZookeeperPropertiesTest {
     
     @Test
     public void assertGetDefaultValue() {
-        Properties props = new Properties();
-        ZookeeperProperties actual = new ZookeeperProperties(props);
+        Properties properties = new Properties();
+        ZookeeperProperties actual = new ZookeeperProperties(properties);
         assertThat(actual.getValue(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS), is(500));
         assertThat(actual.getValue(ZookeeperPropertyKey.MAX_RETRIES), is(3));
         assertThat(actual.getValue(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS), is(60));

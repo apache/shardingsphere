@@ -68,26 +68,26 @@ public final class SchemaContextsBuilder {
     private final Authentication authentication;
     
     public SchemaContextsBuilder(final Map<String, Map<String, DataSource>> dataSources,
-                                 final DatabaseType databaseType, final Map<String, Collection<RuleConfiguration>> configurations, final Properties props) {
+                                 final DatabaseType databaseType, final Map<String, Collection<RuleConfiguration>> configurations, final Properties properties) {
         this.dataSources = dataSources;
         this.databaseType = databaseType;
         this.configurations = configurations;
-        properties = new ConfigurationProperties(null == props ? new Properties() : props);
-        executorKernel = new ExecutorKernel(properties.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
+        this.properties = new ConfigurationProperties(null == properties ? new Properties() : properties);
+        executorKernel = new ExecutorKernel(this.properties.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
         authentication = new Authentication();
-        log(configurations, props);
+        log(configurations, properties);
     }
     
     public SchemaContextsBuilder(final Map<String, Map<String, DataSource>> dataSources, final Map<String, Map<String, DataSourceParameter>> dataSourceParameters, final Authentication authentication, 
-                                 final DatabaseType databaseType, final Map<String, Collection<RuleConfiguration>> configurations, final Properties props) {
+                                 final DatabaseType databaseType, final Map<String, Collection<RuleConfiguration>> configurations, final Properties properties) {
         this.dataSources = dataSources;
         this.databaseType = databaseType;
         this.configurations = configurations;
-        properties = new ConfigurationProperties(null == props ? new Properties() : props);
-        executorKernel = new ExecutorKernel(properties.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
+        this.properties = new ConfigurationProperties(null == properties ? new Properties() : properties);
+        executorKernel = new ExecutorKernel(this.properties.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
         this.dataSourceParameters.putAll(dataSourceParameters);
         this.authentication = authentication;
-        log(configurations, props);
+        log(configurations, properties);
     }
     
     /**
@@ -154,8 +154,8 @@ public final class SchemaContextsBuilder {
         }
     }
     
-    private void log(final Map<String, Collection<RuleConfiguration>> configurations, final Properties props) {
+    private void log(final Map<String, Collection<RuleConfiguration>> configurations, final Properties properties) {
         configurations.values().forEach(ConfigurationLogger::log);
-        ConfigurationLogger.log(props);
+        ConfigurationLogger.log(properties);
     }
 }

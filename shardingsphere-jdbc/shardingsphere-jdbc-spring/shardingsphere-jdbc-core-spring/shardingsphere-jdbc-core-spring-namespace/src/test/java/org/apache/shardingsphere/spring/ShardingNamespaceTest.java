@@ -153,7 +153,7 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
                 new String[]{applicationContext.getBean("inlineStrategy", StandardShardingStrategyConfiguration.class).getShardingColumn()}));
         assertTrue(tableRule.getGenerateKeyColumn().isPresent());
         assertThat(tableRule.getGenerateKeyColumn().get(), is("order_id"));
-        assertThat(tableRule.getKeyGenerateAlgorithm(), instanceOf(IncrementKeyGenerateAlgorithm.class));
+        assertThat(tableRule.getKeyGeneratorName(), is("incrementAlgorithm"));
     }
     
     @Test
@@ -177,7 +177,7 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
                 new String[]{applicationContext.getBean("inlineStrategy", StandardShardingStrategyConfiguration.class).getShardingColumn()}));
         assertTrue(tableRule.getGenerateKeyColumn().isPresent());
         assertThat(tableRule.getGenerateKeyColumn().get(), is("order_id"));
-        assertThat(tableRule.getKeyGenerateAlgorithm(), instanceOf(IncrementKeyGenerateAlgorithm.class));
+        assertThat(tableRule.getKeyGeneratorName(), is("incrementAlgorithm"));
     }
     
     @Test

@@ -26,7 +26,7 @@ import java.util.Properties;
  */
 public final class ZookeeperProperties extends TypedProperties<ZookeeperPropertyKey> {
     
-    public ZookeeperProperties(final Properties props) {
-        super(ZookeeperPropertyKey.class, props);
+    public ZookeeperProperties(final Properties properties) {
+        super(ZookeeperPropertyKey.class, properties);
     }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.yaml.swapper;
+package org.apache.shardingsphere.sharding.yaml.swapper.strategy;
 
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
@@ -27,12 +27,12 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.StandardSharding
 import org.apache.shardingsphere.sharding.fixture.ComplexKeysShardingAlgorithmFixture;
 import org.apache.shardingsphere.sharding.fixture.HintShardingAlgorithmFixture;
 import org.apache.shardingsphere.sharding.fixture.StandardShardingAlgorithmFixture;
-import org.apache.shardingsphere.sharding.yaml.config.YamlShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.strategy.YamlComplexShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.strategy.YamlHintShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.strategy.YamlNoneShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.strategy.YamlShardingAlgorithmConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.strategy.YamlStandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlComplexShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlHintShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlNoneShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingAlgorithmConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStandardShardingStrategyConfiguration;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;

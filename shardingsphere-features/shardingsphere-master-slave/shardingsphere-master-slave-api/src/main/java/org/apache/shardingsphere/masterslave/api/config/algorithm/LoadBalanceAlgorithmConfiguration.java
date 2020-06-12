@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.masterslave.api.config.algorithm;
 
-import lombok.Getter;
 import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
 
 import java.util.Properties;
@@ -25,7 +24,6 @@ import java.util.Properties;
 /**
  * Master-slave load balance algorithm configuration.
  */
-@Getter
 public final class LoadBalanceAlgorithmConfiguration extends TypedSPIConfiguration {
     
     public LoadBalanceAlgorithmConfiguration(final String type, final Properties properties) {

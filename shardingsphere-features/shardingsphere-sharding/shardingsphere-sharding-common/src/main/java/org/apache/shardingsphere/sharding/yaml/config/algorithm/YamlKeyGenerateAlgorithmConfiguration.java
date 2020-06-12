@@ -15,28 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.yaml.config;
+package org.apache.shardingsphere.sharding.yaml.config.algorithm;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sharding.yaml.config.strategy.YamlComplexShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.strategy.YamlHintShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.strategy.YamlNoneShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.strategy.YamlStandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 
+import java.util.Properties;
+
 /**
- * Sharding strategy configuration for YAML.
+ * Key generate algorithm configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlShardingStrategyConfiguration implements YamlConfiguration {
+public final class YamlKeyGenerateAlgorithmConfiguration implements YamlConfiguration {
     
-    private YamlStandardShardingStrategyConfiguration standard;
+    private String type;
     
-    private YamlComplexShardingStrategyConfiguration complex;
-    
-    private YamlHintShardingStrategyConfiguration hint;
-    
-    private YamlNoneShardingStrategyConfiguration none;
+    private Properties properties = new Properties();
 }

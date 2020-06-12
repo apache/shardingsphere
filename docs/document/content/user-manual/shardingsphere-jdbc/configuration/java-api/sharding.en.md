@@ -16,7 +16,7 @@ Attributes:
 | broadcastTables (*)                 | Collection\<String\>                         | Broadcast table rules              | Empty           |
 | defaultDatabaseShardingStrategy (?) | ShardingStrategyConfiguration                | Default database sharding strategy | Not sharding    |
 | defaultTableShardingStrategy (?)    | ShardingStrategyConfiguration                | Default table sharding strategy    | Not sharding    |
-| defaultKeyGeneratorConfig (?)       | KeyGeneratorConfiguration                    | Default key generator              | Snowflake       |
+| defaultKeyGenerateStrategy (?)       | KeyGeneratorConfiguration                    | Default key generator              | Snowflake       |
 
 ## Sharding Table Configuration
 
@@ -30,7 +30,7 @@ Attributes:
 | actualDataNodes (?)          | String                        | Describe data source names and actual tables, delimiter as point.<br /> Multiple data nodes split by comma, support inline expression | Broadcast table or databases sharding only. |
 | databaseShardingStrategy (?) | ShardingStrategyConfiguration | Databases sharding strategy                                                                                                           | Use default databases sharding strategy     |
 | tableShardingStrategy (?)    | ShardingStrategyConfiguration | Tables sharding strategy                                                                                                              | Use default tables sharding strategy        |
-| keyGenerator (?)             | KeyGeneratorConfiguration     | Key generator configuration                                                                                                           | Use default key generator                   |
+| keyGenerateStrategy (?)             | KeyGeneratorConfiguration     | Key generator configuration                                                                                                           | Use default key generator                   |
 
 ## Sharding Strategy Configuration
 
