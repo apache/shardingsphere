@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.example.sharding.raw.jdbc.config;
 
+import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.algorithm.StandardModuloShardingDatabaseAlgorithm;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
-import org.apache.shardingsphere.sharding.api.config.rule.KeyGeneratorConfiguration;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.strategy.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.algorithm.KeyGenerateAlgorithmConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -41,25 +40,31 @@ public final class ShardingDatabasesConfigurationRange implements ExampleConfigu
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTables().add(getOrderTableRuleConfiguration());
-        shardingRuleConfig.getTables().add(getOrderItemTableRuleConfiguration());
-        shardingRuleConfig.getBroadcastTables().add("t_address");
-        shardingRuleConfig.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", new StandardModuloShardingDatabaseAlgorithm()));
+        ShardingRuleConfiguration shardingRuleConfig = createShardingRuleConfiguration();
         Collection<RuleConfiguration> configurations = new LinkedList<>();
         configurations.add(shardingRuleConfig);
         return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), configurations, new Properties());
     }
     
+    private ShardingRuleConfiguration createShardingRuleConfiguration() {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        result.getTables().add(getOrderTableRuleConfiguration());
+        result.getTables().add(getOrderItemTableRuleConfiguration());
+        result.getBroadcastTables().add("t_address");
+        result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", new StandardModuloShardingDatabaseAlgorithm()));
+        result.getKeyGenerators().put("snowflake", new KeyGenerateAlgorithmConfiguration("SNOWFLAKE", getProperties()));
+        return result;
+    }
+    
     private static ShardingTableRuleConfiguration getOrderTableRuleConfiguration() {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order");
-        result.setKeyGenerator(new KeyGeneratorConfiguration("order_id", getSnowflakeKeyGenerateAlgorithm()));
+        result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake"));
         return result;
     }
     
     private static ShardingTableRuleConfiguration getOrderItemTableRuleConfiguration() {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order_item");
-        result.setKeyGenerator(new KeyGeneratorConfiguration("order_item_id", getSnowflakeKeyGenerateAlgorithm()));
+        result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_item_id", "snowflake"));
         return result;
     }
     
@@ -67,12 +72,6 @@ public final class ShardingDatabasesConfigurationRange implements ExampleConfigu
         Map<String, DataSource> result = new HashMap<>();
         result.put("demo_ds_0", DataSourceUtil.createDataSource("demo_ds_0"));
         result.put("demo_ds_1", DataSourceUtil.createDataSource("demo_ds_1"));
-        return result;
-    }
-    
-    private static KeyGenerateAlgorithm getSnowflakeKeyGenerateAlgorithm() {
-        KeyGenerateAlgorithm result = new SnowflakeKeyGenerateAlgorithm();
-        result.setProperties(getProperties());
         return result;
     }
     

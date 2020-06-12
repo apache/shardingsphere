@@ -59,11 +59,9 @@ rules:
             type: INLINE
             props:
               algorithm.expression: t_order_${order_id % 2}
-      keyGenerator:
-        type: SNOWFLAKE
+      keyGenerateStrategy:
         column: order_id
-        props:
-          worker.id: 123
+        keyGeneratorName: snowflake
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item_${0..1}
       tableStrategy:
@@ -73,11 +71,9 @@ rules:
             type: INLINE
             props:
               algorithm.expression: t_order_item_${order_id % 2}
-      keyGenerator:
-        type: SNOWFLAKE
-        column: order_item_id
-        props:
-          worker.id: 123
+      keyGenerateStrategy:
+        column: order_id
+        keyGeneratorName: snowflake
   bindingTables:
     - t_order,t_order_item
   broadcastTables:
@@ -89,6 +85,12 @@ rules:
         type: INLINE
         props:
           algorithm.expression: ds_${user_id % 2}
+  
+  keyGenerators:
+    snowflake:
+      type: SNOWFLAKE
+      properties:
+          worker.id: 123
 
 - !MASTER_SLAVE
   dataSources:

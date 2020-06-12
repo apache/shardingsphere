@@ -50,12 +50,12 @@
     <sharding:hint-strategy id="hintStrategy" algorithm-ref="defaultHintShardingAlgorithm" />
     <sharding:none-strategy id="noneStrategy" />
     
-    <sharding:key-generator id="keyGenerator" column="order_id" algorithm-ref="incrementAlgorithm" />
+    <sharding:key-generate-strategy id="keyGenerateStrategy" column="order_id" algorithm-ref="incrementAlgorithm" />
     <master-slave:load-balance-algorithm id="randomLoadBalanceAlgorithm" type="RANDOM" />
     
-    <sharding:rule id="masterSlaveShardingDataSourceByDefaultStrategyShardingRule" default-key-generator-ref="keyGenerator">
+    <sharding:rule id="masterSlaveShardingDataSourceByDefaultStrategyShardingRule" default-key-generate-strategy-ref="keyGenerateStrategy">
         <sharding:table-rules>
-            <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" key-generator-ref="keyGenerator" />
+            <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" key-generate-strategy-ref="keyGenerateStrategy" />
         </sharding:table-rules>
     </sharding:rule>
     <master-slave:rule id="masterSlaveShardingDataSourceByDefaultStrategyMasterSlaveRule">
@@ -65,9 +65,9 @@
     
     <shardingsphere:data-source id="masterSlaveShardingDataSourceByDefaultStrategy" data-source-names="dbtbl_0_master,dbtbl_0_slave_0,dbtbl_0_slave_1,dbtbl_1_master,dbtbl_1_slave_0,dbtbl_1_slave_1" rule-refs="masterSlaveShardingDataSourceByDefaultStrategyShardingRule, masterSlaveShardingDataSourceByDefaultStrategyMasterSlaveRule" />
     
-    <sharding:rule id="masterSlaveShardingDataSourceByUserStrategyShardingRule" default-key-generator-ref="keyGenerator">
+    <sharding:rule id="masterSlaveShardingDataSourceByUserStrategyShardingRule" default-key-generate-strategy-ref="keyGenerateStrategy">
         <sharding:table-rules>
-            <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" key-generator-ref="keyGenerator" />
+            <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" key-generate-strategy-ref="keyGenerateStrategy" />
         </sharding:table-rules>
     </sharding:rule>
     <master-slave:rule id="masterSlaveShardingDataSourceByUserStrategyMasterSlaveRule">

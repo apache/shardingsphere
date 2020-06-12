@@ -22,9 +22,9 @@ rules:
       actualDataNodes: jdbc_${0..1}.t_order_${0..1}
     t_order_item:
       actualDataNodes: jdbc_${0..1}.t_order_item_${0..1}
-      keyGenerator:
-        type: INCREMENT
+      keyGenerateStrategy:
         column: item_id
+        keyGeneratorName: increment
     t_config:
       actualDataNodes: jdbc_${0..1}.t_config
     t_user:
@@ -36,9 +36,9 @@ rules:
             type: INLINE
             props:
               algorithm.expression: t_user_${id % 2}
-      keyGenerator:
-        type: RESET_INCREMENT
+      keyGenerateStrategy:
         column: id
+        keyGeneratorName: reset_increment
   bindingTables:
     - t_order,t_order_item
   broadcastTables:
@@ -53,3 +53,9 @@ rules:
       shardingColumn: user_id
       shardingAlgorithm:
         type: STANDARD_TEST
+  
+  keyGenerators:
+    increment:
+      type: INCREMENT
+    reset_increment:
+      type: RESET_INCREMENT

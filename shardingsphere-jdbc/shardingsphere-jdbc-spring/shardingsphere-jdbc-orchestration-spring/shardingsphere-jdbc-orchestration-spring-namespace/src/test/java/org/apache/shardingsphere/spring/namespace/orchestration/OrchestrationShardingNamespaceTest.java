@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.spring.namespace.orchestration;
 
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.spring.namespace.orchestration.fixture.IncrementKeyGenerateAlgorithm;
-import org.apache.shardingsphere.spring.namespace.orchestration.util.EmbedTestingServer;
-import org.apache.shardingsphere.spring.namespace.orchestration.util.FieldValueUtil;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.rule.BindingTableRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
+import org.apache.shardingsphere.spring.namespace.orchestration.fixture.IncrementKeyGenerateAlgorithm;
+import org.apache.shardingsphere.spring.namespace.orchestration.util.EmbedTestingServer;
+import org.apache.shardingsphere.spring.namespace.orchestration.util.FieldValueUtil;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
@@ -95,7 +95,7 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
                 new String[]{applicationContext.getBean("inlineStrategy", StandardShardingStrategyConfiguration.class).getShardingColumn()}));
         assertTrue(tableRule.getGenerateKeyColumn().isPresent());
         assertThat(tableRule.getGenerateKeyColumn().get(), is("order_id"));
-        assertThat(tableRule.getKeyGenerateAlgorithm().getClass().getName(), is(IncrementKeyGenerateAlgorithm.class.getCanonicalName()));
+        assertThat(tableRule.getKeyGeneratorName(), is("incrementAlgorithm"));
     }
     
     @Test

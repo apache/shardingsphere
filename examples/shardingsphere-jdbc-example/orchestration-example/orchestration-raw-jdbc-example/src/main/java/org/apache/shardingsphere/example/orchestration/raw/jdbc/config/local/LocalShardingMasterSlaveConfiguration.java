@@ -23,16 +23,15 @@ import org.apache.shardingsphere.example.algorithm.StandardModuloShardingTableAl
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
-import org.apache.shardingsphere.sharding.api.config.rule.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.algorithm.KeyGenerateAlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.sharding.strategy.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -62,19 +61,20 @@ public final class LocalShardingMasterSlaveConfiguration implements ExampleConfi
     }
     
     private ShardingRuleConfiguration getShardingRuleConfiguration() {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTables().add(getOrderTableRuleConfiguration());
-        shardingRuleConfig.getTables().add(getOrderItemTableRuleConfiguration());
-        shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
-        shardingRuleConfig.getBroadcastTables().add("t_address");
-        shardingRuleConfig.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", new StandardModuloShardingDatabaseAlgorithm()));
-        shardingRuleConfig.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", new StandardModuloShardingTableAlgorithm()));
-        return shardingRuleConfig;
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        result.getTables().add(getOrderTableRuleConfiguration());
+        result.getTables().add(getOrderItemTableRuleConfiguration());
+        result.getBindingTableGroups().add("t_order, t_order_item");
+        result.getBroadcastTables().add("t_address");
+        result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", new StandardModuloShardingDatabaseAlgorithm()));
+        result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", new StandardModuloShardingTableAlgorithm()));
+        result.getKeyGenerators().put("snowflake", new KeyGenerateAlgorithmConfiguration("SNOWFLAKE", getProperties()));
+        return result;
     }
     
     private ShardingTableRuleConfiguration getOrderTableRuleConfiguration() {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${[0, 1]}");
-        result.setKeyGenerator(getKeyGeneratorConfiguration());
+        result.setKeyGenerateStrategy(getKeyGeneratorConfiguration());
         return result;
     }
     
@@ -82,14 +82,8 @@ public final class LocalShardingMasterSlaveConfiguration implements ExampleConfi
         return new ShardingTableRuleConfiguration("t_order_item", "ds_${0..1}.t_order_item_${[0, 1]}");
     }
     
-    private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
-        return new KeyGeneratorConfiguration("order_id", getSnowflakeKeyGenerateAlgorithm());
-    }
-    
-    private static KeyGenerateAlgorithm getSnowflakeKeyGenerateAlgorithm() {
-        KeyGenerateAlgorithm result = new SnowflakeKeyGenerateAlgorithm();
-        result.setProperties(getProperties());
-        return result;
+    private static KeyGenerateStrategyConfiguration getKeyGeneratorConfiguration() {
+        return new KeyGenerateStrategyConfiguration("order_id", "snowflake");
     }
     
     private MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() {

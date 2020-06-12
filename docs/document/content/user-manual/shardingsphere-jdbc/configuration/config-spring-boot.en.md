@@ -29,18 +29,24 @@ spring.shardingsphere.datasource.ds1.password=
 spring.shardingsphere.sharding.tables.t_order.actual-data-nodes=ds$->{0..1}.t_order$->{0..1}
 spring.shardingsphere.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id
 spring.shardingsphere.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order$->{order_id % 2}
-spring.shardingsphere.sharding.tables.t_order.key-generator.column=order_id
+spring.shardingsphere.sharding.tables.t_order.key-generate-strategy.column=order_id
+spring.shardingsphere.sharding.tables.t_order.key-generate-strategy.key-generator-name=snowflake
+
 spring.shardingsphere.sharding.tables.t_order_item.actual-data-nodes=ds$->{0..1}.t_order_item$->{0..1}
-spring.shardingsphere.sharding.tables.t_order.key-generator.type=SNOWFLAKE
+
 spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id
 spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item$->{order_id % 2}
-spring.shardingsphere.sharding.tables.t_order_item.key-generator.column=order_item_id
-spring.shardingsphere.sharding.tables.t_order_item.key-generator.type=SNOWFLAKE
+
+spring.shardingsphere.sharding.tables.t_order_item.key-generate-strategy.column=order_item_id
+spring.shardingsphere.sharding.tables.t_order_item.key-generate-strategy.key-generator-name=snowflake
+
 spring.shardingsphere.sharding.binding-tables=t_order,t_order_item
 spring.shardingsphere.sharding.broadcast-tables=t_config
 
 spring.shardingsphere.sharding.default-database-strategy.inline.sharding-column=user_id
 spring.shardingsphere.sharding.default-database-strategy.inline.algorithm-expression=ds$->{user_id % 2}
+
+spring.shardingsphere.sharding.key-generators.snowflake.type=SNOWFLAKE
 ```
 
 ### Read-Write Split
@@ -71,7 +77,7 @@ spring.shardingsphere.masterslave.master-data-source-name=master
 spring.shardingsphere.masterslave.slave-data-source-names=slave0,slave1
 spring.shardingsphere.masterslave.load-balancer-name=round_robin
 
-spring.shardingsphere.props.sql.show=true
+spring.shardingsphere.properties.sql.show=true
 ```
 ### data encryption
 
@@ -85,15 +91,15 @@ spring.shardingsphere.datasource.ds.username=root
 spring.shardingsphere.datasource.ds.password=
 spring.shardingsphere.datasource.ds.max-total=100
 
-spring.shardingsphere.encrypt.encryptors.aes_encryptor.type=aes
-spring.shardingsphere.encrypt.encryptors.aes_encryptor.props.aes.key.value=123456
+spring.shardingsphere.encrypt.encryptors.aes_encryptor.type=AES
+spring.shardingsphere.encrypt.encryptors.aes_encryptor.properties.aes.key.value=123456
 spring.shardingsphere.encrypt.tables.t_order.columns.user_id.cipher-column=user_encrypt
 spring.shardingsphere.encrypt.tables.t_order.columns.user_id.assisted-query-column=user_assisted
 spring.shardingsphere.encrypt.tables.t_order.columns.user_id.plain-column=user_decrypt
 spring.shardingsphere.encrypt.tables.t_order.columns.user_id.encryptor-name=aes_encryptor
 
-spring.shardingsphere.props.sql.show=true
-spring.shardingsphere.props.query.with.cipher.column=true
+spring.shardingsphere.properties.sql.show=true
+spring.shardingsphere.properties.query.with.cipher.column=true
 ```
 
 ### Data Sharding + Read-Write Split
@@ -138,13 +144,17 @@ spring.shardingsphere.datasource.master1slave1.password=
 spring.shardingsphere.sharding.tables.t_order.actual-data-nodes=ds$->{0..1}.t_order$->{0..1}
 spring.shardingsphere.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id
 spring.shardingsphere.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order$->{order_id % 2}
-spring.shardingsphere.sharding.tables.t_order.key-generator.column=order_id
-spring.shardingsphere.sharding.tables.t_order.key-generator.type=SNOWFLAKE
+
+spring.shardingsphere.sharding.tables.t_order.key-generate-strategy.column=order_id
+spring.shardingsphere.sharding.tables.t_order.key-generate-strategy.key-generator-name=snowflake
+
 spring.shardingsphere.sharding.tables.t_order_item.actual-data-nodes=ds$->{0..1}.t_order_item$->{0..1}
 spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id
 spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item$->{order_id % 2}
-spring.shardingsphere.sharding.tables.t_order_item.key-generator.column=order_item_id
-spring.shardingsphere.sharding.tables.t_order_item.key-generator.type=SNOWFLAKE
+
+spring.shardingsphere.sharding.tables.t_order_item.key-generate-strategy.column=order_item_id
+spring.shardingsphere.sharding.tables.t_order_item.key-generate-strategy.key-generator-name=snowflake
+
 spring.shardingsphere.sharding.binding-tables=t_order,t_order_item
 spring.shardingsphere.sharding.broadcast-tables=t_config
 
@@ -155,6 +165,8 @@ spring.shardingsphere.sharding.master-slave-rules.ds0.master-data-source-name=ma
 spring.shardingsphere.sharding.master-slave-rules.ds0.slave-data-source-names=master0slave0, master0slave1
 spring.shardingsphere.sharding.master-slave-rules.ds1.master-data-source-name=master1
 spring.shardingsphere.sharding.master-slave-rules.ds1.slave-data-source-names=master1slave0, master1slave1
+
+spring.shardingsphere.sharding.key-generators.snowflake.type=SNOWFLAKE
 ```
 
 ### Data Sharding + data encryption
@@ -180,19 +192,25 @@ spring.shardingsphere.sharding.default-database-strategy.inline.algorithm-expres
 spring.shardingsphere.sharding.tables.t_order.actual-data-nodes=ds_$->{0..1}.t_order_$->{0..1}
 spring.shardingsphere.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id
 spring.shardingsphere.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order_$->{order_id % 2}
-spring.shardingsphere.sharding.tables.t_order.key-generator.column=order_id
-spring.shardingsphere.sharding.tables.t_order.key-generator.type=SNOWFLAKE
+
+spring.shardingsphere.sharding.tables.t_order.key-generate-strategy.column=order_id
+spring.shardingsphere.sharding.tables.t_order.key-generate-strategy.key-generator-name=snowflake
+
 spring.shardingsphere.sharding.tables.t_order_item.actual-data-nodes=ds_$->{0..1}.t_order_item_$->{0..1}
 spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id
 spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item_$->{order_id % 2}
-spring.shardingsphere.sharding.tables.t_order_item.key-generator.column=order_item_id
-spring.shardingsphere.sharding.tables.t_order_item.key-generator.type=SNOWFLAKE
-spring.shardingsphere.sharding.encrypt-rule.encryptors.aes_encryptor.type=aes
-spring.shardingsphere.sharding.encrypt-rule.encryptors.aes_encryptor.props.aes.key.value=123456
+
+spring.shardingsphere.sharding.tables.t_order_item.key-generate-strategy.column=order_item_id
+spring.shardingsphere.sharding.tables.t_order_item.key-generate-strategy.key-generator-name=snowflake
+
+spring.shardingsphere.sharding.encrypt-rule.encryptors.aes_encryptor.type=AES
+spring.shardingsphere.sharding.encrypt-rule.encryptors.aes_encryptor.properties.aes.key.value=123456
 spring.shardingsphere.sharding.encrypt-rule.tables.t_order.columns.user_id.cipher-column=user_encrypt
 spring.shardingsphere.sharding.encrypt-rule.tables.t_order.columns.user_id.assisted-query-column=user_assisted
 spring.shardingsphere.sharding.encrypt-rule.tables.t_order.columns.user_id.plain-column=user_decrypt
 spring.shardingsphere.sharding.encrypt-rule.tables.t_order.columns.user_id.encryptor-name=aes_encryptor
+
+spring.shardingsphere.sharding.key-generators.snowflake.type=SNOWFLAKE
 ```
 
 ### Orchestration
@@ -235,7 +253,7 @@ spring.shardingsphere.orchestration.spring_boot_ds_sharding.orchestration-type=r
 spring.shardingsphere.orchestration.spring_boot_ds_sharding.instance-type=zookeeper
 spring.shardingsphere.orchestration.spring_boot_ds_sharding.server-lists=localhost:2181
 spring.shardingsphere.orchestration.spring_boot_ds_sharding.namespace=orchestration-spring-boot-sharding-test
-spring.shardingsphere.orchestration.spring_boot_ds_sharding.props.overwrite=true
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.properties.overwrite=true
 ```
 
 ### JNDI
@@ -249,18 +267,24 @@ spring.shardingsphere.datasource.ds1.jndi-name=jdbc/ds1
 spring.shardingsphere.sharding.tables.t_order.actual-data-nodes=ds$->{0..1}.t_order$->{0..1}
 spring.shardingsphere.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id
 spring.shardingsphere.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order$->{order_id % 2}
-spring.shardingsphere.sharding.tables.t_order.key-generator.column=order_id
-spring.shardingsphere.sharding.tables.t_order.key-generator.type=SNOWFLAKE
+
+spring.shardingsphere.sharding.tables.t_order.key-generate-strategy.column=order_id
+spring.shardingsphere.sharding.tables.t_order.key-generate-strategy.key-generator-name=snowflake
+
 spring.shardingsphere.sharding.tables.t_order_item.actual-data-nodes=ds$->{0..1}.t_order_item$->{0..1}
 spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id
 spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item$->{order_id % 2}
-spring.shardingsphere.sharding.tables.t_order_item.key-generator.column=order_item_id
-spring.shardingsphere.sharding.tables.t_order_item.key-generator.type=SNOWFLAKE
+
+spring.shardingsphere.sharding.tables.t_order_item.key-generate-strategy.column=order_item_id
+spring.shardingsphere.sharding.tables.t_order_item.key-generate-strategy.key-generator-name=snowflake
+
 spring.shardingsphere.sharding.binding-tables=t_order,t_order_item
 spring.shardingsphere.sharding.broadcast-tables=t_config
 
 spring.shardingsphere.sharding.default-database-strategy.inline.sharding-column=user_id
 spring.shardingsphere.sharding.default-database-strategy.inline.algorithm-expression=ds$->{user_id % 2}
+
+spring.shardingsphere.sharding.key-generators.snowflake.type=SNOWFLAKE
 ```
 
 ## Configuration Item Explanation
@@ -300,9 +324,11 @@ spring.shardingsphere.sharding.tables.<logic-table-name>.database-strategy.hint.
 #Table sharding strategy, same as database sharding strategy
 spring.shardingsphere.sharding.tables.<logic-table-name>.table-strategy.xxx= #Omitted
 
-spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.column= #Auto-increment column name; default means not using auto-increment key generator
-spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.type= #Auto-increament key generator type; default means using default auto-increament key generator; user defined generator or internal generator (SNOWFLAKE, UUID) can both be selected
-spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.props.<property-name>= #Properties, Notice: when use SNOWFLAKE, `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` need to be set. To use the generated value of this algorithm as sharding value, it is recommended to configure `max.vibration.offset`
+spring.shardingsphere.sharding.key-generators.snowflake.type= #Auto-increament key generator type; default means using default auto-increament key generator; user defined generator or internal generator (SNOWFLAKE, UUID) can both be selected
+spring.shardingsphere.sharding.key-generators.snowflake.properties.<property-name>= #Properties, Notice: when use SNOWFLAKE, `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` need to be set. To use the generated value of this algorithm as sharding value, it is recommended to configure `max.vibration.offset`
+
+spring.shardingsphere.sharding.tables.<logic-table-name>.key-generate-strategy.column= #Auto-increment column name; default means not using auto-increment key generator
+spring.shardingsphere.sharding.tables.<logic-table-name>.key-generate-strategy.key-generator-name= #Auto-increment algorithm name; default means use snowflake algorithm
 
 spring.shardingsphere.sharding.binding-tables[0]= #Binding table rule list
 spring.shardingsphere.sharding.binding-tables[1]= #Binding table rule list
@@ -315,8 +341,6 @@ spring.shardingsphere.sharding.broadcast-tables[x]= #Broadcast table rule list
 spring.shardingsphere.sharding.default-data-source-name= #Tables without sharding rules will be located through default data source
 spring.shardingsphere.sharding.default-database-strategy.xxx= #Default database sharding strategy
 spring.shardingsphere.sharding.default-table-strategy.xxx= #Default table sharding strategy
-spring.shardingsphere.sharding.default-key-generator.type= #Default auto-increament key generator of type; it will use org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator in default; user defined generator or internal generator (SNOWFLAKE or UUID) can both be used
-spring.shardingsphere.sharding.default-key-generator.props.<property-name>= #Auto-increament key generator property configuration, such as worker.id and max.tolerate.time.difference.milliseconds of SNOWFLAKE algorithm
 
 spring.shardingsphere.rules.master-slave.load-balancers.<load-balancer-name>.type=#
 
@@ -327,8 +351,8 @@ spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-class-name= #Refer to read-write split part for more details
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.load-balancer-name= #Refer to read-write split part for more details
 
-spring.shardingsphere.props.sql.show= #Show SQL or not; default value: false
-spring.shardingsphere.props.executor.size= #Executing thread number; default value: CPU core number
+spring.shardingsphere.properties.sql.show= #Show SQL or not; default value: false
+spring.shardingsphere.properties.executor.size= #Executing thread number; default value: CPU core number
 ```
 
 ### Read-Write Split
@@ -345,9 +369,9 @@ spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-class-name= #Load balance algorithm class name; the class needs to implement MasterSlaveLoadBalanceAlgorithm interface and provide parameter-free constructor
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.load-balancer-name= #Load balance algorithm class of slave database; optional value: ROUND_ROBIN and RANDOM; if there is load-balance-algorithm-class-name, the configuration can be omitted
 
-spring.shardingsphere.props.sql.show= #Show SQL or not; default value: false
-spring.shardingsphere.props.executor.size= #Executing thread number; default value: CPU core number
-spring.shardingsphere.props.check.table.metadata.enabled= #Whether to check meta-data consistency of sharding table when it initializes; default value: false
+spring.shardingsphere.properties.sql.show= #Show SQL or not; default value: false
+spring.shardingsphere.properties.executor.size= #Executing thread number; default value: CPU core number
+spring.shardingsphere.properties.check.table.metadata.enabled= #Whether to check meta-data consistency of sharding table when it initializes; default value: false
 ```
 
 ### data encryption
@@ -356,7 +380,7 @@ spring.shardingsphere.props.check.table.metadata.enabled= #Whether to check meta
 #Omit data source configurations; keep it consistent with data sharding
 
 spring.shardingsphere.encrypt.encryptors.<encrypt-algorithm-name>.type= #Type of encrypt algorithm，use user-defined ones or built-in ones, e.g. MD5/AES
-spring.shardingsphere.encrypt.encryptors.<encrypt-algorithm-name>.props.<property-name>= #Properties, Notice: when use AES encrypt algorithm, `aes.key.value` for AES encrypt algorithm need to be set
+spring.shardingsphere.encrypt.encryptors.<encrypt-algorithm-name>.properties.<property-name>= #Properties, Notice: when use AES encrypt algorithm, `aes.key.value` for AES encrypt algorithm need to be set
 spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.cipher-column= #Cipher column name
 spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.assisted-query-column= #AssistedColumns for query，when use QueryAssistedEncryptAlgorithm, it can help query encrypted data
 spring.shardingsphere.encrypt.tables.<table-name>.columns.<logic-column-name>.plain-column= #Plain column name
@@ -372,10 +396,10 @@ spring.shardingsphere.orchestration.spring_boot_ds_sharding.orchestration-type= 
 spring.shardingsphere.orchestration.spring_boot_ds_sharding.instance-type= #Center instance type. Example:zookeeper#Registry center type. Example:zookeeper
 spring.shardingsphere.orchestration.spring_boot_ds_sharding.server-lists= #The list of servers that connect to registry center, including IP and port number; use commas to separate
 spring.shardingsphere.orchestration.spring_boot_ds_sharding.namespace= #Center namespace
-spring.shardingsphere.orchestration.spring_boot_ds_sharding.props.overwrite= #Whether to overwrite local configurations with config center configurations; if it can, each initialization should refer to local configurations
-spring.shardingsphere.orchestration.spring_boot_ds_sharding.props.digest= #The token that connects to the center; default means there is no need for authentication
-spring.shardingsphere.orchestration.spring_boot_ds_sharding.props.operation-timeout-milliseconds= #The millisecond number for operation timeout; default value: 500 milliseconds
-spring.shardingsphere.orchestration.spring_boot_ds_sharding.props.max-retries= #Maximum retry time after failing; default value: 3 times
-spring.shardingsphere.orchestration.spring_boot_ds_sharding.props.retry-interval-milliseconds= #Interval time to retry; default value: 500 milliseconds
-spring.shardingsphere.orchestration.spring_boot_ds_sharding.props.time-to-live-seconds= #Living time of temporary nodes; default value: 60 seconds
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.properties.overwrite= #Whether to overwrite local configurations with config center configurations; if it can, each initialization should refer to local configurations
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.properties.digest= #The token that connects to the center; default means there is no need for authentication
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.properties.operation-timeout-milliseconds= #The millisecond number for operation timeout; default value: 500 milliseconds
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.properties.max-retries= #Maximum retry time after failing; default value: 3 times
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.properties.retry-interval-milliseconds= #Interval time to retry; default value: 500 milliseconds
+spring.shardingsphere.orchestration.spring_boot_ds_sharding.properties.time-to-live-seconds= #Living time of temporary nodes; default value: 60 seconds
 ```

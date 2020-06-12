@@ -481,11 +481,11 @@ GET /api/reg-center/activated
 {"success":true,"errorCode":0,"errorMsg":null,"model":null}
 ```
 
-## 6.Configuration center props configuration related interfaces
+## 6.Configuration center properties configuration related interfaces
 
 ### 6.1 Get property configuration
 
-`GET /api/props`
+`GET /api/properties`
 
 #### Request
 
@@ -506,16 +506,16 @@ GET /api/reg-center/activated
 
 ### 6.2 Modify property configuration
 
-`PUT /api/props`
+`PUT /api/properties`
 
 #### Request
 
 | Parameter | Field type | Essential | Describe    |
 | --------- | ---------- | --------- | ----------- |
-| props     | String     | Y         | yaml string |
+| properties     | String     | Y         | yaml string |
 
 ```
-{"props":"yaml string"}
+{"properties":"yaml string"}
 ```
 
 #### Response
@@ -798,7 +798,7 @@ curl -X POST \
  -d '{
 "ruleConfiguration": {
 "sourceDatasource": "ds*0: !!YamlDataSourceConfiguration\n dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n properties:\n jdbcUrl: jdbc:mysql://127.0.0.1:3306/test?serverTimezone=UTC&useSSL=false\n username: root\n password: '\''123456'\''\n connectionTimeout: 30000\n idleTimeout: 60000\n maxLifetime: 1800000\n maxPoolSize: 50\n minPoolSize: 1\n maintenanceIntervalMilliseconds: 30000\n readOnly: false\n",
-"sourceRule": "defaultDatabaseStrategy:\n inline:\n algorithmExpression: ds*\${user_id % 2}\n shardingColumn: user_id\ntables:\n t1:\n actualDataNodes: ds_0.t1\n keyGenerator:\n column: order_id\n type: SNOWFLAKE\n logicTable: t1\n tableStrategy:\n inline:\n algorithmExpression: t1\n shardingColumn: order_id\n t2:\n actualDataNodes: ds_0.t2\n keyGenerator:\n column: order_item_id\n type: SNOWFLAKE\n logicTable: t2\n tableStrategy:\n inline:\n algorithmExpression: t2\n shardingColumn: order_id\n",
+"sourceRule": "defaultDatabaseStrategy:\n inline:\n algorithmExpression: ds*\${user_id % 2}\n shardingColumn: user_id\ntables:\n t1:\n actualDataNodes: ds_0.t1\n keyGenerateStrategy:\n column: order_id\n type: SNOWFLAKE\n logicTable: t1\n tableStrategy:\n inline:\n algorithmExpression: t1\n shardingColumn: order_id\n t2:\n actualDataNodes: ds_0.t2\n keyGenerateStrategy:\n column: order_item_id\n type: SNOWFLAKE\n logicTable: t2\n tableStrategy:\n inline:\n algorithmExpression: t2\n shardingColumn: order_id\n",
 "destinationDataSources": {
 "name": "dt_0",
 "password": "123456",

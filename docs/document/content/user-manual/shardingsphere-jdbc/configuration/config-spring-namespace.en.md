@@ -38,11 +38,11 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
         </property>
         <property name="packagesToScan" value="org.apache.shardingsphere.example.core.jpa.entity" />
         <property name="jpaProperties">
-            <props>
+            <properties>
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
                 <prop key="hibernate.hbm2ddl.auto">create</prop>
                 <prop key="hibernate.show_sql">true</prop>
-            </props>
+            </properties>
         </property>
     </bean>
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" p:entityManagerFactory-ref="entityManagerFactory" />
@@ -68,14 +68,14 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
     <sharding:standard-strategy id="databaseShardingStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
     <sharding:standard-strategy id="tableShardingStrategy" sharding-column="order_id" precise-algorithm-ref="preciseModuloTableShardingAlgorithm" />
 
-    <sharding:key-generator id="orderKeyGenerator" type="SNOWFLAKE" column="order_id" />
-    <sharding:key-generator id="itemKeyGenerator" type="SNOWFLAKE" column="order_item_id" />
+    <sharding:key-generate-strategy id="orderKeyGenerator" type="SNOWFLAKE" column="order_id" />
+    <sharding:key-generate-strategy id="itemKeyGenerator" type="SNOWFLAKE" column="order_item_id" />
 
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-source-names="ds0,ds1">
             <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" actual-data-nodes="ds$->{0..1}.t_order$->{0..1}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" key-generator-ref="orderKeyGenerator" />
-                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="ds$->{0..1}.t_order_item$->{0..1}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" key-generator-ref="itemKeyGenerator" />
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="ds$->{0..1}.t_order$->{0..1}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" key-generate-strategy-ref="orderKeyGenerator" />
+                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="ds$->{0..1}.t_order_item$->{0..1}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" key-generate-strategy-ref="itemKeyGenerator" />
             </sharding:table-rules>
             <sharding:binding-table-rules>
                 <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
@@ -116,11 +116,11 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
         </property>
         <property name="packagesToScan" value="org.apache.shardingsphere.example.core.jpa.entity" />
         <property name="jpaProperties">
-            <props>
+            <properties>
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
                 <prop key="hibernate.hbm2ddl.auto">create</prop>
                 <prop key="hibernate.show_sql">true</prop>
-            </props>
+            </properties>
         </property>
     </bean>
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" p:entityManagerFactory-ref="entityManagerFactory" />
@@ -154,11 +154,11 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
     <master-slave:load-balance-algorithm id="randomStrategy" type="RANDOM" />
 
     <master-slave:data-source id="masterSlaveDataSource" master-data-source-name="ds_master" slave-data-source-names="ds_slave0, ds_slave1" strategy-ref="randomStrategy">
-        <master-slave:props>
+        <master-slave:properties>
             <prop key="sql.show">true</prop>
             <prop key="executor.size">10</prop>
             <prop key="foo">bar</prop>
-        </master-slave:props>
+        </master-slave:properties>
     </master-slave:data-source>
 </beans>
 ```
@@ -185,14 +185,14 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
         <property name="password" value=""/>
     </bean>
     
-    <bean:properties id="props">
+    <bean:properties id="properties">
         <prop key="aes.key.value">123456</prop>
     </bean:properties>
     
     <encrypt:encrypt-algorithm id="aes_encryptor" type="AES">
-        <props>
+        <properties>
             <prop key="aes.key.value">123456</prop>
-        </props>
+        </properties>
     </encrypt:encrypt-algorithm>
     <encrypt:encrypt-algorithm id="md5_encryptor" type="MD5" />
             
@@ -205,10 +205,10 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
                 </encrypt:table>
             </encrypt:tables>
         </encrypt:encrypt-rule>
-        <encrypt:props>
+        <encrypt:properties>
             <prop key="sql.show">true</prop>
             <prop key="query.with.cipher.column">true</prop>
-        </encrypt:props>
+        </encrypt:properties>
     </encrypt:data-source>
  </beans>
 ```
@@ -244,11 +244,11 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
         </property>
         <property name="packagesToScan" value="org.apache.shardingsphere.example.core.jpa.entity" />
         <property name="jpaProperties">
-            <props>
+            <properties>
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
                 <prop key="hibernate.hbm2ddl.auto">create</prop>
                 <prop key="hibernate.show_sql">true</prop>
-            </props>
+            </properties>
         </property>
     </bean>
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" p:entityManagerFactory-ref="entityManagerFactory" />
@@ -310,8 +310,8 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
         <property name="type" value="SNOWFLAKE" />
     </bean>
 
-    <sharding:key-generator id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
-    <sharding:key-generator id="itemKeyGenerator" column="order_item_id" algorithm-ref="snowflakeAlgorithm" />
+    <sharding:key-generate-strategy id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
+    <sharding:key-generate-strategy id="itemKeyGenerator" column="order_item_id" algorithm-ref="snowflakeAlgorithm" />
 
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-source-names="ds_master0,ds_master0_slave0,ds_master0_slave1,ds_master1,ds_master1_slave0,ds_master1_slave1">
@@ -320,8 +320,8 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
                 <sharding:master-slave-rule id="ds_ms1" master-data-source-name="ds_master1" slave-data-source-names="ds_master1_slave0, ds_master1_slave1" strategy-ref="randomStrategy" />
             </sharding:master-slave-rules>
             <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" actual-data-nodes="ds_ms$->{0..1}.t_order$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" key-generator-ref="orderKeyGenerator" />
-                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="ds_ms$->{0..1}.t_order_item$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" key-generator-ref="itemKeyGenerator" />
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="ds_ms$->{0..1}.t_order$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" key-generate-strategy-ref="orderKeyGenerator" />
+                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="ds_ms$->{0..1}.t_order_item$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" key-generate-strategy-ref="itemKeyGenerator" />
             </sharding:table-rules>
             <sharding:binding-table-rules>
                 <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
@@ -368,11 +368,11 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
         </property>
         <property name="packagesToScan" value="org.apache.shardingsphere.example.core.jpa.entity" />
         <property name="jpaProperties">
-            <props>
+            <properties>
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
                 <prop key="hibernate.hbm2ddl.auto">create-drop</prop>
                 <prop key="hibernate.show_sql">true</prop>
-            </props>
+            </properties>
         </property>
     </bean>
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" p:entityManagerFactory-ref="entityManagerFactory" />
@@ -399,25 +399,25 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
     <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item_${order_id % 2}" />
     <sharding:inline-strategy id="orderEncryptTableStrategy" sharding-column="order_id" algorithm-expression="t_order_encrypt_${order_id % 2}" />
 
-    <sharding:key-generator id="orderKeyGenerator" type="SNOWFLAKE" column="order_id" />
-    <sharding:key-generator id="itemKeyGenerator" type="SNOWFLAKE" column="order_item_id" />
+    <sharding:key-generate-strategy id="orderKeyGenerator" type="SNOWFLAKE" column="order_id" />
+    <sharding:key-generate-strategy id="itemKeyGenerator" type="SNOWFLAKE" column="order_item_id" />
 
     <bean:properties id="dataProtectorProps">
         <prop key="appToken">business</prop>
     </bean:properties>
     
     <encrypt:encrypt-algorithm id="aes_encryptor" type="AES">
-        <props>
+        <properties>
             <prop key="aes.key.value">123456</prop>
-        </props>
+        </properties>
     </encrypt:encrypt-algorithm>
     <encrypt:encrypt-algorithm id="md5_encryptor" type="MD5" />
     
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-source-names="demo_ds_0, demo_ds_1">
             <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" actual-data-nodes="demo_ds_${0..1}.t_order_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" key-generator-ref="orderKeyGenerator" />
-                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_ds_${0..1}.t_order_item_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" key-generator-ref="itemKeyGenerator" />
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="demo_ds_${0..1}.t_order_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" key-generate-strategy-ref="orderKeyGenerator" />
+                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_ds_${0..1}.t_order_item_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" key-generate-strategy-ref="itemKeyGenerator" />
             </sharding:table-rules>
             <sharding:encrypt-rule>
                 <encrypt:tables>
@@ -429,9 +429,9 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
             </sharding:encrypt-rule>
         </sharding:sharding-rule>
 
-        <sharding:props>
+        <sharding:properties>
             <prop key="sql.show">true</prop>
-        </sharding:props>
+        </sharding:properties>
     </sharding:data-source>
 </beans>
 ```
@@ -455,12 +455,12 @@ example: [shardingsphere-example](https://github.com/apache/shardingsphere/tree/
                            http://shardingsphere.apache.org/schema/shardingsphere/orchestration/masterslave  
                            http://shardingsphere.apache.org/schema/shardingsphere/orchestration/masterslave/master-slave.xsd">
     
-    <util:properties id="instance-props">
+    <util:properties id="instance-properties">
         <prop key="max-retries">3</prop>
         <prop key="operation-timeout-milliseconds">3000</prop>
     </util:properties>
     <orchestration:instance id="regCenter" orchestration-type="registry_center,config_center,metadata_center" instance-type="zookeeper" server-lists="localhost:2181" namespace="orchestration-spring-namespace-demo"
-                           props-ref="instance-props" />
+                           properties-ref="instance-properties" />
     <orchestration:data-source id="shardingDatabasesTablesDataSource" data-source-ref="realShardingDatabasesTablesDataSource" instance-ref="regCenter" overwrite="true" />
     <orchestration:slave-data-source id="masterSlaveDataSource" data-source-ref="realMasterSlaveDataSource" instance-ref="regCenter" overwrite="true" />
     <orchestration:data-source id="encryptDataSource" data-source-ref="realEncryptDataSource" instance-ref="regCenter" overwrite="true" />
@@ -479,7 +479,7 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/sharding/shard
 | ------------- | --------- | --------------------------- |
 | id            | Attribute | Spring Bean Id              |
 | sharding-rule | Tag       | Sharding rule configuration |
-| props (?)     | Tag       | Properties                  |
+| properties (?)     | Tag       | Properties                  |
 
 #### \<sharding:sharding-rule />
 
@@ -492,7 +492,7 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/sharding/shard
 | default-data-source-name (?)      | Attribute | Tables without sharding rules will be located through default data source |
 | default-database-strategy-ref (?) | Attribute | Default database sharding strategy, which corresponds to id of \<sharding:xxx-strategy>; default means the database is not split |
 | default-table-strategy-ref (?)    | Attribute | Default table sharding strategy,which corresponds to id of \<sharding:xxx-strategy>;  default means the database is not split |
-| default-key-generator (?)         | Attribute | Default key generator configuration, use user-defined ones or built-in ones, e.g. SNOWFLAKE/UUID. Default key generator is `org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator` |
+| key-generate-strategy-ref (?)     | Attribute | Default key generator configuration, use user-defined ones or built-in ones, e.g. SNOWFLAKE/UUID. Default key generator is `org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator` |
 | encrypt-rule (?)                  | Tag       | Encrypt rule                                                 |
 
 #### \<sharding:table-rules />
@@ -503,13 +503,13 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/sharding/shard
 
 #### \<sharding:table-rule />
 
-| *Name*                    | *Type*    | *Description*                                                |
-| ------------------------- | --------- | ------------------------------------------------------------ |
-| logic-table               | Attribute | Name of logic table                                          |
-| actual-data-nodes (?)     | Attribute | Describe data source names and actual tables, delimiter as point, multiple data nodes separated with comma, support inline expression. Absent means sharding databases only. Example: ds${0..7}.tbl${0..7} |
-| database-strategy-ref (?) | Attribute | Databases sharding strategy, use default databases sharding strategy if absent |
-| table-strategy-ref (?)    | Attribute | Tables sharding strategy, use default tables sharding strategy if absent |
-| key-generator (?)         | Attribute | Key generator, use default key generator if absent.          |
+| *Name*                        | *Type*    | *Description*                                                |
+| ----------------------------- | --------- | ------------------------------------------------------------ |
+| logic-table                   | Attribute | Name of logic table                                          |
+| actual-data-nodes (?)         | Attribute | Describe data source names and actual tables, delimiter as point, multiple data nodes separated with comma, support inline expression. Absent means sharding databases only. Example: ds${0..7}.tbl${0..7} |
+| database-strategy-ref (?)     | Attribute | Databases sharding strategy, use default databases sharding strategy if absent |
+| table-strategy-ref (?)        | Attribute | Tables sharding strategy, use default tables sharding strategy if absent |
+| key-generate-strategy-ref (?) | Attribute | Key generator, use default key generator if absent.          |
 
 #### \<sharding:binding-table-rules />
 
@@ -573,13 +573,13 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/sharding/shard
 | ------ | --------- | -------------- |
 | id     | Attribute | Spring Bean Id |
 
-#### \<sharding:key-generator />
+#### \<sharding:key-generate-strategy />
 
 | *Name*    | *Type*    | *Description*                                                |
 | --------- | --------- | ------------------------------------------------------------ |
 | column    | Attribute | Auto-increment column name                                   |
 | type      | Attribute | Auto-increment key generator `Type`; self-defined generator or internal Type generator (SNOWFLAKE/UUID) can both be selected |
-| props-ref | Attribute | The Property configuration reference of key generators       |
+| properties-ref | Attribute | The Property configuration reference of key generators       |
 
 #### Properties
 
@@ -605,7 +605,7 @@ Property configuration that can include these properties of these key generators
 | ----------------------- | --------- | ------------------------------------------------------------ |
 | encrypt:encrypt-rule(?) | Tag       | Encrypt rule                                                  
 
-#### \<sharding:props />
+#### \<sharding:properties />
 
 | *Name*                             | *Type*    | *Description*                                                |
 | ---------------------------------- | --------- | ------------------------------------------------------------ |
@@ -629,9 +629,9 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/masterslave/ma
 | strategy-ref (?)        | Attribute | Slave database load balance algorithm reference; the class needs to implement `MasterSlaveLoadBalanceAlgorithm` interface |
 | strategy-type (?)       | Attribute | Load balance algorithm type of slave database; optional value: ROUND_ROBIN and RANDOM; if there is `load-balance-algorithm-class-name`, the configuration can be omitted |
 | config-map (?)          | Tag       | Users' self-defined configurations                           |
-| props (?)               | Tag       | Attribute configurations                                     |
+| properties (?)               | Tag       | Attribute configurations                                     |
 
-#### \<master-slave:props />
+#### \<master-slave:properties />
 
 | *Name*                             | *Type*    | *Description*                                                |
 | ---------------------------------- | --------- | ------------------------------------------------------------ |
@@ -647,7 +647,7 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/masterslave/ma
 | ---------------------------------- | --------- | ------------------------------------------------------------ |
 | id                                 | Attribute | Spring Bean Id                                               |
 | type                               | Attribute | Type of load balance algorithm, 'RANDOM'或'ROUND_ROBIN', support custom extension|
-| props-ref (?)                      | Attribute | Properties of load balance algorithm                         |
+| properties-ref (?)                      | Attribute | Properties of load balance algorithm                         |
 
 ### data encryption
 
@@ -659,7 +659,7 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encryp
 | ----------------------- | --------- | --------------------------- |
 | id                      | Attribute | Spring Bean Id              |
 | data-source-name        | Attribute | Encrypt data source Bean Id |
-| props (?)               | Tag       | Attribute configurations    |
+| properties (?)               | Tag       | Attribute configurations    |
 
 #### \<encrypt:encrypt-algorithm />
 
@@ -667,7 +667,7 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encryp
 | --------- | --------- | --------------------------------------------------------------- |
 | id        | Attribute | Names of Encrypt algorithm                                      |
 | type      | Attribute | Types of Encrypt algorithm, including MD5/AES or customize type |
-| props-ref | Attribute | Attribute configurations                                        |
+| properties-ref | Attribute | Attribute configurations                                        |
 
 #### \<encrypt:tables />
 
@@ -690,7 +690,7 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encryp
 | cipher-column           | Attribute | Cipher column name                                                                                  |
 | assisted-query-columns  | Attribute | AssistedColumns for query，when use QueryAssistedEncryptAlgorithm, it can help query encrypted data|
 
-#### \<encrypt:props />
+#### \<encrypt:properties />
 
 | *Name*                             | *Type*    | *Description*                                                |
 | ---------------------------------- | --------- | ------------------------------------------------------------ |
@@ -750,4 +750,4 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/orchestration/
 | orchestration-type                 | Attribute | The type of orchestration center: config_center or registry_center or metadata_center  |
 | server-lists                       | Attribute | Center servers list, multiple split as comma. Example: host1:2181,host2:2181  |
 | namespace (?)                      | Attribute | Namespace of center                                                           |
-| props-ref (?)                      | Attribute | Other customize properties of registry center                                   |
+| properties-ref (?)                      | Attribute | Other customize properties of registry center                                   |

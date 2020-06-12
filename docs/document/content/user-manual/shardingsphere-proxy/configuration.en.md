@@ -45,7 +45,7 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order${order_id % 2}
-      keyGenerator:
+      keyGenerateStrategy:
         type: SNOWFLAKE
         column: order_id
     t_order_item:
@@ -58,7 +58,7 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_item${order_id % 2}
-      keyGenerator:
+      keyGenerateStrategy:
         type: SNOWFLAKE
         column: order_item_id
   bindingTables:
@@ -123,11 +123,11 @@ dataSource:
 encryptRule:
   encryptors:
     aes_encryptor:
-      type: aes
+      type: AES
       props:
         aes.key.value: 123456abc
     md5_encryptor:
-      type: md5
+      type: MD5
   tables:
     t_encrypt:
       columns:
@@ -207,7 +207,7 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order${order_id % 2}
-      keyGenerator:
+      keyGenerateStrategy:
         type: SNOWFLAKE
         column: order_id
     t_order_item:
@@ -220,7 +220,7 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_item${order_id % 2}
-      keyGenerator:
+      keyGenerateStrategy:
         type: SNOWFLAKE
         column: order_item_id
   bindingTables:
@@ -283,7 +283,7 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order${order_id % 2}
-      keyGenerator:
+      keyGenerateStrategy:
         type: SNOWFLAKE
         column: order_id
     t_order_item:
@@ -296,7 +296,7 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_item${order_id % 2}
-      keyGenerator:
+      keyGenerateStrategy:
         type: SNOWFLAKE
         column: order_item_id
   bindingTables:
@@ -307,7 +307,7 @@ shardingRule:
   encryptRule:
     encryptors:
       aes_encryptor:
-        type: aes
+        type: AES
         props:
           aes.key.value: 123456abc
     tables:
@@ -338,7 +338,7 @@ orchestration:
     instanceType: zookeeper
     serverLists: localhost:2181
     namespace: orchestration
-    props:
+    properties:
       overwrite: true
 ```
 
@@ -357,7 +357,7 @@ authentication:
 ### Common property
 
 ```yaml
-props:
+properties:
   executor.size: 16
   sql.show: false
 ```
@@ -410,7 +410,7 @@ encryptRule:
           cipherColumn: #ciphertext column name
           assistedQueryColumn: #AssistedColumns for query，when use QueryAssistedEncryptAlgorithm, it can help query encrypted data
           encryptorName: #encrypt algorithm name
-props:
+properties:
   query.with.cipher.column: true #Whether use cipherColumn to query or not
 ```
 
@@ -424,7 +424,7 @@ It is the same with ShardingSphere-JDBC configuration.
 
 ```yaml
 #Omit configurations that are the same with ShardingSphere-JDBC
-props:
+properties:
   acceptor.size: #The thread number of accept connection; default to be 2 times of cpu core
   proxy.transaction.type: #Support LOCAL, XA, BASE; Default is LOCAL transaction, for BASE type you should copy ShardingTransactionManager associated jar to lib directory
   proxy.opentracing.enabled: #Whether to enable opentracing, default not to enable; refer to [APM](/en/features/orchestration/apm/) for more details

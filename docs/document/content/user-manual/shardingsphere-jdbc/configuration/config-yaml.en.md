@@ -32,7 +32,7 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order${order_id % 2}
-      keyGenerator:
+      keyGenerateStrategy:
         type: SNOWFLAKE
         column: order_id
     t_order_item:
@@ -53,11 +53,11 @@ shardingRule:
   defaultDataSourceName: ds0
   defaultTableStrategy:
     none:
-  defaultKeyGenerator:
+  defaultKeyGenerateStrategy:
     type: SNOWFLAKE
     column: order_id
   
-props:
+properties:
   sql.show: true
 ```
 
@@ -88,7 +88,7 @@ masterSlaveRule:
     - ds_slave0
     - ds_slave1
        
-props: 
+properties: 
   sql.show: true
 ```
 
@@ -104,11 +104,11 @@ dataSource:  !!org.apache.commons.dbcp2.BasicDataSource
 encryptRule:
   encryptors:
     aes_encryptor:
-      type: aes
+      type: AES
       props:
         aes.key.value: 123456abc
     md5_encryptor:
-      type: md5
+      type: MD5
   tables:
     t_encrypt:
       columns:
@@ -119,7 +119,7 @@ encryptRule:
         order_id:
           cipherColumn: order_cipher
           encryptorName: md5_encryptor
-props:
+properties:
   query.with.cipher.column: true
 ```
 
@@ -170,7 +170,7 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order${order_id % 2}
-      keyGenerator:
+      keyGenerateStrategy:
         type: SNOWFLAKE
         column: order_id
     t_order_item:
@@ -191,7 +191,7 @@ shardingRule:
   defaultDataSourceName: ds0
   defaultTableStrategy:
     none:
-  defaultKeyGenerator:
+  defaultKeyGenerateStrategy:
     type: SNOWFLAKE
     column: order_id
   
@@ -208,7 +208,7 @@ shardingRule:
           - ds1_slave0
           - ds1_slave1
         loadBalanceAlgorithmType: ROUND_ROBIN
-props:
+properties:
   sql.show: true
 ```
 
@@ -239,7 +239,7 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_${order_id % 2}
-      keyGenerator:
+      keyGenerateStrategy:
         type: SNOWFLAKE
         column: order_id
     t_order_item:
@@ -261,7 +261,7 @@ shardingRule:
   encryptRule:
     encryptors:
       aes_encryptor:
-        type: aes
+        type: AES
         props:
           aes.key.value: 123456abc
     tables:
@@ -272,7 +272,7 @@ shardingRule:
             cipherColumn: order_cipher
             encryptorName: aes_encryptor
 
-props:
+properties:
   sql.show: true
 ```
 
@@ -287,7 +287,7 @@ orchestration:
     instanceType: zookeeper
     serverLists: localhost:2181
     namespace: orchestration
-    props:
+    properties:
       overwrite: true
 ```
 
@@ -324,10 +324,10 @@ shardingRule:
             algorithmClassName: #Hint sharding algorithm class name. This class need to implements HintShardingAlgorithm, and require a no argument constructor
            none: #Do not sharding
       tableStrategy: #Tables sharding strategy, Same as databases sharding strategy
-      keyGenerator:   
+      keyGenerateStrategy:   
         column: #Column name of key generator
         type: #Type of key generator, use default key generator if absent, and there are three types to choose, that is, SNOWFLAKE/UUID
-        props: #Properties, Notice: when use SNOWFLAKE, `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` need to be set. To use the generated value of this algorithm as sharding value, it is recommended to configure `max.vibration.offset`         
+        properties: #Properties, Notice: when use SNOWFLAKE, `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` need to be set. To use the generated value of this algorithm as sharding value, it is recommended to configure `max.vibration.offset`         
 
   bindingTables: #Binding table rule configurations
   - <logic_table_name1, logic_table_name2, ...> 
@@ -341,20 +341,20 @@ shardingRule:
   defaultDataSourceName: #If table not configure at table rule, will route to defaultDataSourceName  
   defaultDatabaseStrategy: #Default strategy for sharding databases, same as databases sharding strategy
   defaultTableStrategy: #Default strategy for sharding tables, same as tables sharding strategy
-  defaultKeyGenerator:
+  defaultKeyGenerateStrategy:
     type: #Type of default key generator, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID. Default key generator is `org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator`
     column: #Column name of default key generator
-    props: #Properties of default key generator, e.g. `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` 
+    properties: #Properties of default key generator, e.g. `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` 
   
   masterSlaveRules: #Read-write splitting rule configuration, more details can reference Read-write splitting part
     <data_source_name>: #Data sources configuration, need consist with data source map, multiple `data_source_name` available
       masterDataSourceName: #more details can reference Read-write splitting part
       slaveDataSourceNames: #more details can reference Read-write splitting part
       loadBalanceAlgorithmType: #more details can reference Read-write splitting part
-      props: #Properties configuration of load balance algorithm
+      properties: #Properties configuration of load balance algorithm
             <property-name>: #property key value pair
 
-props: #Properties
+properties: #Properties
   sql.show: #To show SQLS or not, default value: false
   executor.size: #The number of working threads, default value: CPU count
   check.table.metadata.enabled: #To check the metadata consistency of all the tables or not, default value : false
@@ -374,10 +374,10 @@ masterSlaveRule:
     - <data_source_name2>
     - <data_source_name_x>
   loadBalanceAlgorithmType: #Slave database load balance algorithm type; optional value, ROUND_ROBIN and RANDOM, can be omitted if `loadBalanceAlgorithmClassName` exists
-  props: #Properties configuration of load balance algorithm
+  properties: #Properties configuration of load balance algorithm
       <property-name>: #property key value pair
   
-props: #Property configuration
+properties: #Property configuration
   sql.show: #Show SQL or not; default value: false
   executor.size: #Executing thread number; default value: CPU core number
   check.table.metadata.enabled: # Whether to check table metadata consistency when it initializes; default value: false
@@ -418,7 +418,7 @@ orchestration:
     instanceType: #Center instance type. Example:zookeeper
     serverLists: #The list of servers that connect to registry center, including IP and port number; use commas to seperate addresses, such as: host1:2181,host2:2181
     namespace: #Center namespace
-    props: #Other properties
+    properties: #Other properties
       overwrite: #Whether to overwrite local configurations with config center configurations; if it can, each initialization should refer to local configurations
       digest: #The token that connects to the center; default means there is no need for authentication
       operationTimeoutMilliseconds: #Default value: 500 milliseconds

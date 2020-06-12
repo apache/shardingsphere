@@ -56,7 +56,7 @@ public final class ShardingPropertiesController {
      */
     @RequestMapping(value = "", method = RequestMethod.PUT)
     public ResponseResult updateShardingProperties(@RequestBody final Map<String, String> configMap) {
-        shardingPropertiesService.updateShardingProperties(configMap.get("props"));
+        shardingPropertiesService.updateShardingProperties(configMap.get("properties"));
         return ResponseResultUtil.success();
     }
 }

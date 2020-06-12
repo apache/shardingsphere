@@ -70,7 +70,7 @@ public final class EncryptConfigurationLoggerTest {
                 + "    aes_encryptor:\n"
                 + "      props:\n"
                 + "        aes.key.value: 123456abc\n"
-                + "      type: aes\n"
+                + "      type: AES\n"
                 + "  tables:\n"
                 + "    t_encrypt:\n"
                 + "      columns:\n"
@@ -86,7 +86,7 @@ public final class EncryptConfigurationLoggerTest {
     private EncryptRuleConfiguration getEncryptConfiguration() {
         Properties properties = new Properties();
         properties.put("aes.key.value", "123456abc");
-        EncryptAlgorithmConfiguration encryptAlgorithmConfiguration = new EncryptAlgorithmConfiguration("aes", properties);
+        EncryptAlgorithmConfiguration encryptAlgorithmConfiguration = new EncryptAlgorithmConfiguration("AES", properties);
         EncryptTableRuleConfiguration encryptTableRuleConfiguration = new EncryptTableRuleConfiguration(
                 "t_encrypt", Collections.singleton(new EncryptColumnRuleConfiguration("user_id", "user_encrypt", "user_assisted", "user_decrypt", "aes_encryptor")));
         return new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfiguration), ImmutableMap.of("aes_encryptor", encryptAlgorithmConfiguration));

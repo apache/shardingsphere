@@ -81,13 +81,13 @@
         </props>
     </sharding:key-generate-algorithm>
     
-    <sharding:key-generator id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
-    <sharding:key-generator id="itemKeyGenerator" column="order_item_id" algorithm-ref="snowflakeAlgorithm" />
+    <sharding:key-generate-strategy id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
+    <sharding:key-generate-strategy id="itemKeyGenerator" column="order_item_id" algorithm-ref="snowflakeAlgorithm" />
     
     <sharding:rule id="shardingRule">
         <sharding:table-rules>
-            <sharding:table-rule logic-table="t_order" actual-data-nodes="demo_ds.t_order_${0..1}" table-strategy-ref="orderTableStrategy" key-generator-ref="orderKeyGenerator" />
-            <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_ds.t_order_item_${0..1}" table-strategy-ref="orderItemTableStrategy" key-generator-ref="itemKeyGenerator" />
+            <sharding:table-rule logic-table="t_order" actual-data-nodes="demo_ds.t_order_${0..1}" table-strategy-ref="orderTableStrategy" key-generate-strategy-ref="orderKeyGenerator" />
+            <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_ds.t_order_item_${0..1}" table-strategy-ref="orderItemTableStrategy" key-generate-strategy-ref="itemKeyGenerator" />
         </sharding:table-rules>
         <sharding:binding-table-rules>
             <sharding:binding-table-rule logic-tables="t_order,t_order_item"/>

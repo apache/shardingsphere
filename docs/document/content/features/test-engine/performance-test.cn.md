@@ -97,7 +97,7 @@ shardingRule:
           inline:
             shardingColumn: k
             algorithmExpression: tbl${k % 1024}
-        keyGenerator:
+        keyGenerateStrategy:
             type: SNOWFLAKE
             column: id
     defaultDatabaseStrategy:
@@ -219,7 +219,7 @@ shardingRule:
         inline:
           shardingColumn: k
           algorithmExpression: tbl${k % 1024}
-      keyGenerator:
+      keyGenerateStrategy:
         type: SNOWFLAKE
         column: id
   bindingTables:
@@ -251,11 +251,11 @@ shardingRule:
 encryptRule:
   encryptors:
     aes_encryptor:
-      type: aes
+      type: AES
       props:
         aes.key.value: 123456abc
     md5_encryptor:
-      type: md5
+      type: MD5
   tables:
     sbtest:
       columns:
@@ -314,7 +314,7 @@ shardingRule:
         inline:
           shardingColumn: k
           algorithmExpression: tbl1
-      keyGenerator:
+      keyGenerateStrategy:
           type: SNOWFLAKE
           column: id
   defaultDatabaseStrategy:

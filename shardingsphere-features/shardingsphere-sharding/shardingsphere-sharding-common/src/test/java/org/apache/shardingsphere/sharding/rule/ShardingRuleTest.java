@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.sharding.rule;
 
-import org.apache.shardingsphere.sharding.api.config.rule.KeyGeneratorConfiguration;
+import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.algorithm.KeyGenerateAlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.NoneShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.fixture.StandardShardingAlgorithmFixture;
 import org.apache.shardingsphere.sharding.strategy.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.strategy.algorithm.keygen.fixture.IncrementKeyGenerateAlgorithm;
@@ -29,10 +32,6 @@ import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.Inl
 import org.apache.shardingsphere.sharding.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.sharding.strategy.route.none.NoneShardingStrategy;
 import org.apache.shardingsphere.sharding.strategy.route.standard.StandardShardingStrategy;
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
-import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -304,7 +303,7 @@ public final class ShardingRuleTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertConstructShardingRuleWithNullShardingRuleConfiguration() {
-        new ShardingRule(null, createDataSourceNames());
+        new ShardingRule((ShardingRuleConfiguration) null, createDataSourceNames());
     }
     
     @Test(expected = IllegalArgumentException.class)
@@ -333,8 +332,7 @@ public final class ShardingRuleTest {
     private ShardingRule createMaximumShardingRule() {
         ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
         ShardingTableRuleConfiguration shardingTableRuleConfiguration = createTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
-        KeyGenerateAlgorithm keyGenerateAlgorithm = TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class, "INCREMENT", new Properties());
-        shardingTableRuleConfiguration.setKeyGenerator(new KeyGeneratorConfiguration("id", keyGenerateAlgorithm));
+        shardingTableRuleConfiguration.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("id", "increment"));
         ShardingTableRuleConfiguration subTableRuleConfiguration = createTableRuleConfiguration("SUB_LOGIC_TABLE", "ds_${0..1}.sub_table_${0..2}");
         shardingRuleConfiguration.getTables().add(shardingTableRuleConfiguration);
         shardingRuleConfiguration.getTables().add(subTableRuleConfiguration);
@@ -346,8 +344,9 @@ public final class ShardingRuleTest {
         InlineShardingAlgorithm shardingAlgorithmTBL = new InlineShardingAlgorithm();
         shardingAlgorithmTBL.getProperties().setProperty("algorithm.expression", "table_%{table_id % 2}");
         shardingRuleConfiguration.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("table_id", shardingAlgorithmTBL));
-        KeyGenerateAlgorithm defaultKeyGenerateAlgorithm = TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class, "INCREMENT", new Properties());
-        shardingRuleConfiguration.setDefaultKeyGeneratorConfig(new KeyGeneratorConfiguration("id", defaultKeyGenerateAlgorithm));
+        shardingRuleConfiguration.setDefaultKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("id", "default"));
+        shardingRuleConfiguration.getKeyGenerators().put("increment", new KeyGenerateAlgorithmConfiguration("INCREMENT", new Properties()));
+        shardingRuleConfiguration.getKeyGenerators().put("default", new KeyGenerateAlgorithmConfiguration("INCREMENT", new Properties()));
         return new ShardingRule(shardingRuleConfiguration, createDataSourceNames());
     }
     

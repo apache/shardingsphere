@@ -17,19 +17,18 @@
 
 package org.apache.shardingsphere.example.sharding.raw.jdbc.config;
 
+import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.algorithm.StandardModuloShardingDatabaseAlgorithm;
 import org.apache.shardingsphere.example.algorithm.StandardModuloShardingTableAlgorithm;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
-import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.rule.KeyGeneratorConfiguration;
+import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.algorithm.KeyGenerateAlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.strategy.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -65,24 +64,19 @@ public final class ShardingMasterSlaveConfigurationPrecise implements ExampleCon
         result.getBroadcastTables().add("t_address");
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", new StandardModuloShardingDatabaseAlgorithm()));
         result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", new StandardModuloShardingTableAlgorithm()));
+        result.getKeyGenerators().put("snowflake", new KeyGenerateAlgorithmConfiguration("SNOWFLAKE", getProperties()));
         return result;
     }
     
     private static ShardingTableRuleConfiguration createOrderTableRuleConfiguration() {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${[0, 1]}");
-        result.setKeyGenerator(new KeyGeneratorConfiguration("order_id", createSnowflakeKeyGenerateAlgorithm()));
+        result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake"));
         return result;
     }
     
     private static ShardingTableRuleConfiguration createOrderItemTableRuleConfiguration() {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order_item", "ds_${0..1}.t_order_item_${[0, 1]}");
-        result.setKeyGenerator(new KeyGeneratorConfiguration("order_item_id", createSnowflakeKeyGenerateAlgorithm()));
-        return result;
-    }
-    
-    private static KeyGenerateAlgorithm createSnowflakeKeyGenerateAlgorithm() {
-        KeyGenerateAlgorithm result = new SnowflakeKeyGenerateAlgorithm();
-        result.setProperties(createProperties());
+        result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_item_id", "snowflake"));
         return result;
     }
     
@@ -94,7 +88,7 @@ public final class ShardingMasterSlaveConfigurationPrecise implements ExampleCon
         return new MasterSlaveRuleConfiguration(Arrays.asList(dataSourceConfiguration1, dataSourceConfiguration2), Collections.emptyMap());
     }
     
-    private static Properties createProperties() {
+    private static Properties getProperties() {
         Properties result = new Properties();
         result.setProperty("worker.id", "123");
         return result;

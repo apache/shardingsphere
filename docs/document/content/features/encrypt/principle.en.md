@@ -97,7 +97,7 @@ It can also be different **. The recommended configuration is as follows (shown 
 -!ENCRYPT
   encryptors:
     aes_encryptor:
-      type: aes
+      type: AES
       props:
         aes.key.value: 123456abc
   tables:
@@ -153,7 +153,7 @@ In addition, demonstrate a set of encryption configuration rules, as follows:
 -!ENCRYPT
   encryptors:
     aes_encryptor:
-      type: aes
+      type: AES
       props:
         aes.key.value: 123456abc
   tables:
@@ -163,7 +163,7 @@ In addition, demonstrate a set of encryption configuration rules, as follows:
           plainColumn: pwd
           cipherColumn: pwd_cipher
           encryptorName: aes_encryptor
-props:
+properties:
   query.with.cipher.column: false
 ```
 
@@ -220,7 +220,7 @@ So the encryption configuration after migration is:
 -!ENCRYPT
   encryptors:
     aes_encryptor:
-      type: aes
+      type: AES
       props:
         aes.key.value: 123456abc
   tables:
@@ -229,7 +229,7 @@ So the encryption configuration after migration is:
         pwd: # pwd与pwd_cipher的转换映射
           cipherColumn: pwd_cipher
           encryptorName: aes_encryptor
-props:
+properties:
   query.with.cipher.column: true
 ```
 

@@ -34,7 +34,7 @@ spring.shardingsphere.orchestration.spring_boot_ds.orchestration-type=registry_c
 spring.shardingsphere.orchestration.spring_boot_ds.instance-type=zookeeper
 spring.shardingsphere.orchestration.spring_boot_ds.server-lists=localhost:2181
 spring.shardingsphere.orchestration.spring_boot_ds.namespace=orchestration-spring-boot-shardingsphere-test
-spring.shardingsphere.orchestration.spring_boot_ds.props.overwrite=true
+spring.shardingsphere.orchestration.spring_boot_ds.properties.overwrite=true
 ```
 
 ## Use OrchestrationShardingSphereDataSource in Spring

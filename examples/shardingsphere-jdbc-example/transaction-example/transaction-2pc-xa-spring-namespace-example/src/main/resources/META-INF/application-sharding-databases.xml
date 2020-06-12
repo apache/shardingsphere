@@ -63,11 +63,11 @@
         </props>
     </sharding:key-generate-algorithm>
     
-    <sharding:key-generator id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
+    <sharding:key-generate-strategy id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
     
     <sharding:rule id="shardingRule">
         <sharding:table-rules>
-            <sharding:table-rule logic-table="t_order" database-strategy-ref="databaseStrategy" key-generator-ref="orderKeyGenerator" />
+            <sharding:table-rule logic-table="t_order" database-strategy-ref="databaseStrategy" key-generate-strategy-ref="orderKeyGenerator" />
         </sharding:table-rules>
     </sharding:rule>
     

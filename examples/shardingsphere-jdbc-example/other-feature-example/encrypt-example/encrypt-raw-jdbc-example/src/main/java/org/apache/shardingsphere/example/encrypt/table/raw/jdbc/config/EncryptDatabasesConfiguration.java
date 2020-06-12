@@ -44,7 +44,7 @@ public final class EncryptDatabasesConfiguration implements ExampleConfiguration
         EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", "pwd", "assisted_query_pwd", "", "pwd_encryptor");
         EncryptTableRuleConfiguration encryptTableRuleConfiguration = new EncryptTableRuleConfiguration("t_user", Arrays.asList(columnConfigAes, columnConfigTest));
         Map<String, EncryptAlgorithmConfiguration> encryptAlgorithmConfigurations = new LinkedHashMap<>(2, 1);
-        encryptAlgorithmConfigurations.put("name_encryptor", new EncryptAlgorithmConfiguration("aes", properties));
+        encryptAlgorithmConfigurations.put("name_encryptor", new EncryptAlgorithmConfiguration("AES", properties));
         encryptAlgorithmConfigurations.put("pwd_encryptor", new EncryptAlgorithmConfiguration("assistedTest", properties));
         EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfiguration), encryptAlgorithmConfigurations);
         try {

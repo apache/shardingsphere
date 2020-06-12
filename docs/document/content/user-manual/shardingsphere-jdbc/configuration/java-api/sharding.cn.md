@@ -16,7 +16,7 @@ weight = 1
 | broadcastTables (*)                 | Collection\<String\>                         | 广播表规则列表      | 无      |
 | defaultDatabaseShardingStrategy (?) | ShardingStrategyConfiguration                | 默认分库策略        | 不分片   |
 | defaultTableShardingStrategy (?)    | ShardingStrategyConfiguration                | 默认分表策略        | 不分片   |
-| defaultKeyGeneratorConfig (?)       | KeyGeneratorConfiguration                    | 默认自增列生成器配置 | 雪花算法 |
+| defaultKeyGenerateStrategy (?)       | KeyGeneratorConfiguration                    | 默认自增列生成器配置 | 雪花算法 |
 
 ## 逻辑表配置
 
@@ -30,7 +30,7 @@ weight = 1
 | actualDataNodes (?)          | String                        | 由数据源名 + 表名组成，以小数点分隔。<br />多个表以逗号分隔，支持行表达式 | 使用已知数据源与逻辑表名称生成数据节点，用于广播表或只分库不分表且所有库的表结构完全一致的情况 |
 | databaseShardingStrategy (?) | ShardingStrategyConfiguration | 分库策略                                                           | 使用默认分库策略                                                                     |
 | tableShardingStrategy (?)    | ShardingStrategyConfiguration | 分表策略                                                           | 使用默认分表策略                                                                     |
-| keyGenerator (?)             | KeyGeneratorConfiguration     | 自增列生成器                                                        | 使用默认自增主键生成器                                                               |
+| keyGenerateStrategy (?)             | KeyGeneratorConfiguration     | 自增列生成器                                                        | 使用默认自增主键生成器                                                               |
 
 ## 分片策略配置
 
@@ -163,10 +163,10 @@ Apache ShardingSphere 暂无内置复合分片算法实现类。
 
 可配置属性：
 
-| *名称*               | *数据类型*            | *说明*            |
-| -------------------- | -------------------- | ---------------- |
-| column               | String               | 自增列名称        |
-| keyGenerateAlgorithm | KeyGenerateAlgorithm | 自增主键算法实现类 |
+| *名称*    | *数据类型*            | *说明*            |
+| --------- | -------------------- | ---------------- |
+| column    | String               | 自增列名称        |
+| algorithm | KeyGenerateAlgorithm | 自增主键算法实现类 |
 
 Apache ShardingSphere 内置的自增主键算法实现类包括：
 

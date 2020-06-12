@@ -69,14 +69,14 @@ public class OrchestrationSpringBootRegistryEncryptTest {
                 + "    order_encrypt:\n"
                 + "      props:\n"
                 + "        aes.key.value: '123456'\n"
-                + "      type: aes\n"
+                + "      type: AES\n"
                 + "  tables:\n" 
                 + "    t_order:\n" 
                 + "      columns:\n"
                 + "         user_id:\n"
                 + "           cipherColumn: user_id\n"
                 + "           encryptorName: order_encrypt\n");
-        testCenter.persist("/demo_spring_boot_ds_center/config/props", "sql.show: 'true'\n");
+        testCenter.persist("/demo_spring_boot_ds_center/config/properties", "sql.show: 'true'\n");
         testCenter.persist("/demo_spring_boot_ds_center/registry/datasources", "");
     }
     
@@ -93,6 +93,6 @@ public class OrchestrationSpringBootRegistryEncryptTest {
         assertThat(configuration.getEncryptors().size(), is(1));
         EncryptAlgorithmConfiguration encryptAlgorithmConfiguration = configuration.getEncryptors().get("order_encrypt");
         assertThat(encryptAlgorithmConfiguration, instanceOf(EncryptAlgorithmConfiguration.class));
-        assertThat(encryptAlgorithmConfiguration.getType(), is("aes"));
+        assertThat(encryptAlgorithmConfiguration.getType(), is("AES"));
     }
 }

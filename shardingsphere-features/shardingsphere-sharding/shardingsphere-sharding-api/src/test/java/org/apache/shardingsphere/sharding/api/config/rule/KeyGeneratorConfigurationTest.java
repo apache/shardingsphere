@@ -17,17 +17,18 @@
 
 package org.apache.shardingsphere.sharding.api.config.rule;
 
+import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.junit.Test;
 
 public final class KeyGeneratorConfigurationTest {
     
     @Test
     public void assertConstructorWithoutKeyGenerator() {
-        new KeyGeneratorConfiguration("id", null);
+        new KeyGenerateStrategyConfiguration("id", null);
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertConstructorWithoutColumn() {
-        new KeyGeneratorConfiguration("", null);
+        new KeyGenerateStrategyConfiguration("", null);
     }
 }

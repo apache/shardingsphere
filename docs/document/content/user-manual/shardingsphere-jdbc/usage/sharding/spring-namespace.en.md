@@ -43,17 +43,17 @@ weight = 4
     
     <!-- Configure database sharding strategy -->
     <sharding:sharding-algorithm id="dbShardingAlgorithm" type="INLINE">
-        <props>
+        <properties>
             <prop key="algorithm.expression">ds$->{user_id % 2}</prop>
-        </props>
+        </properties>
     </sharding:sharding-algorithm>
     <sharding:standard-strategy id="dbStrategy" sharding-column="user_id" algorithm-ref="dbShardingAlgorithm" />
     
     <!-- Configure table sharding strategy -->
     <sharding:sharding-algorithm id="tableShardingAlgorithm" type="INLINE">
-        <props>
+        <properties>
             <prop key="algorithm.expression">t_order$->{order_id % 2}</prop>
-        </props>
+        </properties>
     </sharding:sharding-algorithm>
     <sharding:standard-strategy id="tableStrategy" sharding-column="user_id" algorithm-ref="tableShardingAlgorithm" />
     

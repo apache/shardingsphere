@@ -33,15 +33,15 @@ public final class TypedPropertiesTest {
     
     @Test
     public void assertGetValue() {
-        Properties props = new Properties();
-        props.setProperty(TestTypedPropertyKey.BOOLEAN_VALUE.getKey(), Boolean.TRUE.toString());
-        props.setProperty(TestTypedPropertyKey.BOOLEAN_OBJECT_VALUE.getKey(), Boolean.TRUE.toString());
-        props.setProperty(TestTypedPropertyKey.INT_VALUE.getKey(), "100");
-        props.setProperty(TestTypedPropertyKey.INT_OBJECT_VALUE.getKey(), "100");
-        props.setProperty(TestTypedPropertyKey.LONG_VALUE.getKey(), "10000");
-        props.setProperty(TestTypedPropertyKey.LONG_OBJECT_VALUE.getKey(), "10000");
-        props.setProperty(TestTypedPropertyKey.STRING_VALUE.getKey(), "new_value");
-        TestTypedProperties actual = new TestTypedProperties(props);
+        Properties properties = new Properties();
+        properties.setProperty(TestTypedPropertyKey.BOOLEAN_VALUE.getKey(), Boolean.TRUE.toString());
+        properties.setProperty(TestTypedPropertyKey.BOOLEAN_OBJECT_VALUE.getKey(), Boolean.TRUE.toString());
+        properties.setProperty(TestTypedPropertyKey.INT_VALUE.getKey(), "100");
+        properties.setProperty(TestTypedPropertyKey.INT_OBJECT_VALUE.getKey(), "100");
+        properties.setProperty(TestTypedPropertyKey.LONG_VALUE.getKey(), "10000");
+        properties.setProperty(TestTypedPropertyKey.LONG_OBJECT_VALUE.getKey(), "10000");
+        properties.setProperty(TestTypedPropertyKey.STRING_VALUE.getKey(), "new_value");
+        TestTypedProperties actual = new TestTypedProperties(properties);
         assertTrue(actual.getValue(TestTypedPropertyKey.BOOLEAN_VALUE));
         assertTrue(actual.getValue(TestTypedPropertyKey.BOOLEAN_OBJECT_VALUE));
         assertThat(actual.getValue(TestTypedPropertyKey.INT_VALUE), is(100));
@@ -65,12 +65,12 @@ public final class TypedPropertiesTest {
     
     @Test(expected = ShardingSphereConfigurationException.class)
     public void assertGetInvalidValue() {
-        Properties props = new Properties();
-        props.setProperty(TestTypedPropertyKey.BOOLEAN_VALUE.getKey(), "test");
-        props.setProperty(TestTypedPropertyKey.BOOLEAN_OBJECT_VALUE.getKey(), "test");
-        props.setProperty(TestTypedPropertyKey.INT_VALUE.getKey(), "test");
-        props.setProperty(TestTypedPropertyKey.INT_OBJECT_VALUE.getKey(), "test");
-        props.setProperty(TestTypedPropertyKey.LONG_VALUE.getKey(), "test");
-        new TestTypedProperties(props);
+        Properties properties = new Properties();
+        properties.setProperty(TestTypedPropertyKey.BOOLEAN_VALUE.getKey(), "test");
+        properties.setProperty(TestTypedPropertyKey.BOOLEAN_OBJECT_VALUE.getKey(), "test");
+        properties.setProperty(TestTypedPropertyKey.INT_VALUE.getKey(), "test");
+        properties.setProperty(TestTypedPropertyKey.INT_OBJECT_VALUE.getKey(), "test");
+        properties.setProperty(TestTypedPropertyKey.LONG_VALUE.getKey(), "test");
+        new TestTypedProperties(properties);
     }
 }

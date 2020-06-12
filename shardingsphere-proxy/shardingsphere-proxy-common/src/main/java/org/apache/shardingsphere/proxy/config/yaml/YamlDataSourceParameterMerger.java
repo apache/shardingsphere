@@ -32,7 +32,7 @@ public final class YamlDataSourceParameterMerger {
      * Merged datasource parameter.
      *
      * @param source source of YAML datasource parameter
-     * @param commonProps common props
+     * @param commonProps common properties
      */
     public static void merged(final Object source, final Map<String, Object> commonProps) {
         if (commonProps.isEmpty()) {

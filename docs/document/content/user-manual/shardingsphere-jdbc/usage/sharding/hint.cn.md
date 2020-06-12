@@ -38,11 +38,11 @@ rules:
           algorithmClassName: xxx.xxx.xxx.HintXXXAlgorithm
   defaultTableStrategy:
     none:
-  defaultKeyGenerator:
+  defaultKeyGenerateStrategy:
     type: SNOWFLAKE
     column: order_id
 
-props:
+properties:
     sql.show: true
 ```
 

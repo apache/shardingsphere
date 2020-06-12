@@ -70,7 +70,7 @@ public class OrchestrationSpringBootEncryptTest {
         assertThat(configuration.getEncryptors().size(), is(1));
         EncryptAlgorithmConfiguration encryptAlgorithmConfiguration = configuration.getEncryptors().get("order_encrypt");
         assertThat(encryptAlgorithmConfiguration, instanceOf(EncryptAlgorithmConfiguration.class));
-        assertThat(encryptAlgorithmConfiguration.getType(), is("aes"));
+        assertThat(encryptAlgorithmConfiguration.getType(), is("AES"));
         assertThat(configuration.getTables().size(), is(1));
         assertThat(configuration.getTables().iterator().next().getColumns().iterator().next().getCipherColumn(), is("cipher_order_id"));
     }

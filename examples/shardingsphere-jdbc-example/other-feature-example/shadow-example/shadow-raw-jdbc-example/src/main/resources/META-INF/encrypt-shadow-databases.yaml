@@ -47,7 +47,7 @@ rules:
           encryptorName: pwd_encryptor
   encryptors:
     name_encryptor:
-      type: aes
+      type: AES
       props:
         aes.key.value: 123456
     pwd_encryptor:

@@ -39,8 +39,12 @@ rules:
             type: INLINE
             props:
               algorithm.expression: t_order_item
-      keyGenerator:
-        type: Constant
+      keyGenerateStrategy:
         column: item_id
+        keyGeneratorName: constant
   defaultTableStrategy:
     none:
+
+  keyGenerators:
+    constant:
+      type: Constant

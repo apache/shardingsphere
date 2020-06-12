@@ -19,10 +19,10 @@ package org.apache.shardingsphere.sharding.spring.namespace.parser;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sharding.api.config.strategy.ComplexShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.HintShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.NoneShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.spring.namespace.tag.ShardingStrategyBeanDefinitionTag;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;

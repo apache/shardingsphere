@@ -32,7 +32,7 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order${order_id % 2}
-      keyGenerator:
+      keyGenerateStrategy:
         type: SNOWFLAKE
         column: order_id
     t_order_item:
@@ -53,11 +53,11 @@ shardingRule:
   defaultDataSourceName: ds0
   defaultTableStrategy:
     none:
-  defaultKeyGenerator:
+  defaultKeyGenerateStrategy:
     type: SNOWFLAKE
     column: order_id
   
-props:
+properties:
   sql.show: true
 ```
 
@@ -88,7 +88,7 @@ masterSlaveRule:
     - ds_slave0
     - ds_slave1
 
-props:
+properties:
     sql.show: true
 ```
 
@@ -103,11 +103,11 @@ dataSource:  !!org.apache.commons.dbcp2.BasicDataSource
 encryptRule:
   encryptors:
     aes_encryptor:
-      type: aes
+      type: AES
       props:
         aes.key.value: 123456abc
     md5_encryptor:
-      type: md5
+      type: MD5
   tables:
     t_encrypt:
       columns:
@@ -118,7 +118,7 @@ encryptRule:
         order_id:
           cipherColumn: order_cipher
           encryptorName: md5_encryptor
-props:
+properties:
   query.with.cipher.column: true #是否使用密文列查询
 ```
 
@@ -169,7 +169,7 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order${order_id % 2}
-      keyGenerator:
+      keyGenerateStrategy:
         type: SNOWFLAKE
         column: order_id
     t_order_item:
@@ -190,7 +190,7 @@ shardingRule:
   defaultDataSourceName: ds_0
   defaultTableStrategy:
     none:
-  defaultKeyGenerator:
+  defaultKeyGenerateStrategy:
     type: SNOWFLAKE
     column: order_id
   
@@ -207,7 +207,7 @@ shardingRule:
           - ds1_slave0
           - ds1_slave1
         loadBalanceAlgorithmType: ROUND_ROBIN
-props:
+properties:
   sql.show: true
 ```
 
@@ -238,7 +238,7 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_${order_id % 2}
-      keyGenerator:
+      keyGenerateStrategy:
         type: SNOWFLAKE
         column: order_id
     t_order_item:
@@ -260,7 +260,7 @@ shardingRule:
   encryptRule:
     encryptors:
       aes_encryptor:
-        type: aes
+        type: AES
         props:
           aes.key.value: 123456abc
     tables:
@@ -271,7 +271,7 @@ shardingRule:
             cipherColumn: order_cipher
             encryptorName: aes_encryptor
 
-props:
+properties:
   sql.show: true
 ```
 
@@ -286,7 +286,7 @@ orchestration:
     instanceType: zookeeper
     serverLists: localhost:2181
     namespace: orchestration
-    props:
+    properties:
       overwrite: true
 ```
 
@@ -323,10 +323,10 @@ shardingRule:
           algorithmClassName: #Hint分片算法类名称。该类需实现HintShardingAlgorithm接口并提供无参数的构造器
         none: #不分片
       tableStrategy: #分表策略，同分库策略
-      keyGenerator: 
+      keyGenerateStrategy: 
         column: #自增列名称，缺省表示不使用自增主键生成器
         type: #自增列值生成器类型，缺省表示使用默认自增列值生成器。可使用用户自定义的列值生成器或选择内置类型：SNOWFLAKE/UUID
-        props: #属性配置, 注意：使用SNOWFLAKE算法，需要配置worker.id与max.tolerate.time.difference.milliseconds属性。若使用此算法生成值作分片值，建议配置max.vibration.offset属性
+        properties: #属性配置, 注意：使用SNOWFLAKE算法，需要配置worker.id与max.tolerate.time.difference.milliseconds属性。若使用此算法生成值作分片值，建议配置max.vibration.offset属性
           <property-name>: 属性名称
       
   bindingTables: #绑定表规则列表
@@ -341,9 +341,9 @@ shardingRule:
   defaultDataSourceName: #未配置分片规则的表将通过默认数据源定位  
   defaultDatabaseStrategy: #默认数据库分片策略，同分库策略
   defaultTableStrategy: #默认表分片策略，同分库策略
-  defaultKeyGenerator: #默认的主键生成算法 如果没有设置,默认为SNOWFLAKE算法
+  defaultKeyGenerateStrategy: #默认的主键生成算法 如果没有设置,默认为SNOWFLAKE算法
     type: #默认自增列值生成器类型，缺省将使用org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator。可使用用户自定义的列值生成器或选择内置类型：SNOWFLAKE/UUID
-    props:
+    properties:
       <property-name>: #自增列值生成器属性配置, 比如SNOWFLAKE算法的worker.id与max.tolerate.time.difference.milliseconds
 
   masterSlaveRules: #读写分离规则，详见读写分离部分
@@ -351,10 +351,10 @@ shardingRule:
       masterDataSourceName: #详见读写分离部分
       slaveDataSourceNames: #详见读写分离部分
       loadBalanceAlgorithmType: #详见读写分离部分
-      props: #读写分离负载算法的属性配置
+      properties: #读写分离负载算法的属性配置
         <property-name>: #属性值
       
-props: #属性配置
+properties: #属性配置
   sql.show: #是否开启SQL显示，默认值: false
   executor.size: #工作线程数量，默认值: CPU核数
   max.connections.size.per.query: # 每个查询可以打开的最大连接数量,默认为1
@@ -374,7 +374,7 @@ masterSlaveRule:
     - <data_source_name2>
     - <data_source_name_x>
   loadBalanceAlgorithmType: #从库负载均衡算法类型，可选值：ROUND_ROBIN，RANDOM。若`loadBalanceAlgorithmClassName`存在则忽略该配置
-  props: #读写分离负载算法的属性配置
+  properties: #读写分离负载算法的属性配置
     <property-name>: #属性值
 ```
 
@@ -413,7 +413,7 @@ orchestration:
     instanceType: #配置/注册/元数据中心类型。如：zookeeper
     serverLists: #连接配置/注册/元数据中心服务器的列表。包括IP地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181
     namespace: #配置/注册/元数据中心的命名空间
-    props: #其它配置
+    properties: #其它配置
       overwrite: #本地配置是否覆盖配置中心配置。如果可覆盖，每次启动都以本地配置为准
       digest: #连接注册中心的权限令牌。缺省为不需要权限验证
       operationTimeoutMilliseconds: #操作超时的毫秒数，默认500毫秒
