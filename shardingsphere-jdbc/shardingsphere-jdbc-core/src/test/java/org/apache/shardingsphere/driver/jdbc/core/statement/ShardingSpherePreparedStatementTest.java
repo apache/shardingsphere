@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
+import com.google.common.collect.Lists;
 import org.apache.shardingsphere.driver.common.base.AbstractShardingSphereDataSourceForShardingTest;
 import org.apache.shardingsphere.driver.fixture.ResetIncrementKeyGenerateAlgorithm;
 import org.junit.Ignore;
@@ -27,8 +28,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -52,7 +55,11 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     
     private static final String SELECT_SQL_WITH_PARAMETER_MARKER_RETURN_STATUS = "SELECT item_id, user_id, status FROM t_order_item WHERE  order_id= ? AND user_id = ?";
     
+    private static final String SELECT_AUTO_SQL = "SELECT item_id, order_id, status FROM t_order_item_auto WHERE order_id >= ?";
+    
     private static final String UPDATE_SQL = "UPDATE t_order SET status = ? WHERE user_id = ? AND order_id = ?";
+    
+    private static final String UPDATE_AUTO_SQL = "UPDATE t_order_auto SET status = ? WHERE order_id = ?";
     
     private static final String UPDATE_BATCH_SQL = "UPDATE t_order SET status=? WHERE status=?";
     
@@ -430,6 +437,32 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
             preparedStatement.setInt(3, 11);
             preparedStatement.executeUpdate();
             assertNull(preparedStatement.getResultSet());
+        }
+    }
+    
+    @Test
+    public void assertExecuteUpdateAutoTableGetResultSet() throws SQLException {
+        try (PreparedStatement preparedStatement = getShardingSphereDataSource().getConnection().prepareStatement(UPDATE_AUTO_SQL)) {
+            preparedStatement.setString(1, "OK");
+            preparedStatement.setInt(2, 10);
+            preparedStatement.executeUpdate();
+            assertNull(preparedStatement.getResultSet());
+        }
+    }
+    
+    @Test
+    public void assertExecuteSelectAutoTableGetResultSet() throws SQLException {
+        Collection<Integer> result = Lists.newArrayList(1001, 1100, 1101);
+        try (PreparedStatement preparedStatement = getShardingSphereDataSource().getConnection().prepareStatement(SELECT_AUTO_SQL)) {
+            preparedStatement.setInt(1, 1001);
+            int count = 0;
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    result.contains(resultSet.getInt(2));
+                    count++;
+                }
+            }
+            assertEquals(result.size(), count);
         }
     }
     
