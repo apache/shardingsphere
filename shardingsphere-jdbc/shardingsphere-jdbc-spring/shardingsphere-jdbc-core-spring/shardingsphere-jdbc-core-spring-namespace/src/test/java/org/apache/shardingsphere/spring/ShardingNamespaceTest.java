@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sharding.rule.BindingTableRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.strategy.route.none.NoneShardingStrategy;
 import org.apache.shardingsphere.spring.algorithm.DefaultComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.spring.algorithm.DefaultHintShardingAlgorithm;
 import org.apache.shardingsphere.spring.algorithm.StandardModuloDatabaseShardingAlgorithm;
@@ -148,7 +149,7 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
         assertTrue(tableRule.getActualDataNodes().contains(new DataNode("dbtbl_1", "t_order_1")));
         assertTrue(tableRule.getActualDataNodes().contains(new DataNode("dbtbl_0", "t_order_2")));
         assertTrue(tableRule.getActualDataNodes().contains(new DataNode("dbtbl_1", "t_order_3")));
-        assertTrue(null == tableRule.getDatabaseShardingStrategy());
+        assertThat(tableRule.getDatabaseShardingStrategy(), instanceOf(NoneShardingStrategy.class));
         assertTrue(Arrays.equals(tableRule.getTableShardingStrategy().getShardingColumns().toArray(new String[]{}),
                 new String[]{applicationContext.getBean("inlineStrategy", StandardShardingStrategyConfiguration.class).getShardingColumn()}));
         assertTrue(tableRule.getGenerateKeyColumn().isPresent());
