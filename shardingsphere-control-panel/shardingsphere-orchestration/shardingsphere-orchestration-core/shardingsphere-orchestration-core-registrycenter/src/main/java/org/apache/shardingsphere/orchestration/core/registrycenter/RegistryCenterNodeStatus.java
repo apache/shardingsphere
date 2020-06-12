@@ -30,5 +30,10 @@ public enum RegistryCenterNodeStatus {
     /**
      * Online state.
      */
-    ONLINE;
+    ONLINE,
+    
+    /**
+     *  Offline state.
+     */
+    OFFLINE;
 }

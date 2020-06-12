@@ -35,10 +35,14 @@ public abstract class AbstractHeartbeatDetect implements Callable<Map<String, He
     
     private Integer retryInterval;
     
-    public AbstractHeartbeatDetect(final Boolean retryEnable, final Integer retryMaximum, final Integer retryInterval) {
+    private Boolean needDetect;
+    
+    public AbstractHeartbeatDetect(final Boolean retryEnable, final Integer retryMaximum,
+                                   final Integer retryInterval, final Boolean needDetect) {
         this.retryEnable = retryEnable;
         this.retryMaximum = retryMaximum;
         this.retryInterval = retryInterval;
+        this.needDetect = needDetect;
     }
     
     /**
@@ -58,6 +62,9 @@ public abstract class AbstractHeartbeatDetect implements Callable<Map<String, He
     
     @Override
     public Map<String, HeartbeatResult> call() {
+        if (!needDetect) {
+            return buildResult(Boolean.FALSE);
+        }
         if (retryEnable && retryMaximum > 0) {
             Boolean result = Boolean.FALSE;
             for (int i = 0; i < retryMaximum; i++) {
