@@ -22,6 +22,7 @@ import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
@@ -135,6 +136,15 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
         registryCenter.persistInstanceOnline();
         registryCenter.persistDataSourcesNode();
         listenerManager.initListeners();
+    }
+    
+    /**
+     * Init metrics configuration to config center.
+     *
+     * @param metricsConfiguration metrics configuration.
+     */
+    public void initMetricsConfiguration(final MetricsConfiguration metricsConfiguration) {
+        configCenter.persistMetricsConfiguration(metricsConfiguration, isOverwrite);
     }
     
     @Override

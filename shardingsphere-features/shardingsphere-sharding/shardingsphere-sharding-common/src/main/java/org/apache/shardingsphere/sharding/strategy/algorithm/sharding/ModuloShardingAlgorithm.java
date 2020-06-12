@@ -35,44 +35,45 @@ import java.util.Properties;
  * <p>Shard by `y = x mod v` algorithm. 
  * v is `MODULO_VALUE`. </p>
  */
-@Getter
-@Setter
-public final class ModuloShardingAlgorithm implements StandardShardingAlgorithm<Long>, ShardingAutoTableAlgorithm {
+public final class ModuloShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
     
     private static final String MODULO_VALUE = "mod.value";
     
-    private Properties props = new Properties();
+    @Getter
+    @Setter
+    private Properties properties = new Properties();
     
     @Override
     public void init() {
-        Preconditions.checkNotNull(props.get(MODULO_VALUE), "Modulo value cannot be null.");
+        Preconditions.checkNotNull(properties.get(MODULO_VALUE), "Modulo value cannot be null.");
     }
     
     @Override
-    public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Long> shardingValue) {
+    public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         for (String each : availableTargetNames) {
-            if (each.endsWith(shardingValue.getValue() % getModuloValue() + "")) {
+            if (each.endsWith(getLongValue(shardingValue.getValue()) % getModuloValue() + "")) {
                 return each;
             }
         }
-        throw new UnsupportedOperationException();
+        return null;
     }
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Long> shardingValue) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
         if (isContainAllTargets(shardingValue)) {
             return availableTargetNames;
         }
         return getAvailableTargetNames(availableTargetNames, shardingValue);
     }
     
-    private boolean isContainAllTargets(final RangeShardingValue<Long> shardingValue) {
-        return (shardingValue.getValueRange().upperEndpoint() - shardingValue.getValueRange().lowerEndpoint()) >= getModuloValue() - 1;
+    private boolean isContainAllTargets(final RangeShardingValue<Comparable<?>> shardingValue) {
+        return !shardingValue.getValueRange().hasUpperBound() || shardingValue.getValueRange().hasLowerBound()
+                && getLongValue(shardingValue.getValueRange().upperEndpoint()) - getLongValue(shardingValue.getValueRange().lowerEndpoint()) >= getModuloValue() - 1;
     }
     
-    private Collection<String> getAvailableTargetNames(final Collection<String> availableTargetNames, final RangeShardingValue<Long> shardingValue) {
+    private Collection<String> getAvailableTargetNames(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
-        for (Long i = shardingValue.getValueRange().lowerEndpoint(); i <= shardingValue.getValueRange().upperEndpoint(); i++) {
+        for (long i = getLongValue(shardingValue.getValueRange().lowerEndpoint()); i <= getLongValue(shardingValue.getValueRange().upperEndpoint()); i++) {
             for (String each : availableTargetNames) {
                 if (each.endsWith(i % getModuloValue() + "")) {
                     result.add(each);
@@ -83,17 +84,21 @@ public final class ModuloShardingAlgorithm implements StandardShardingAlgorithm<
     }
     
     private long getModuloValue() {
-        return Long.parseLong(props.get(MODULO_VALUE).toString());
-    }
-    
-    @Override
-    public int getAutoTablesAmount() {
-        Preconditions.checkNotNull(props.get(MODULO_VALUE), "Modulo value cannot be null.");
-        return Integer.parseInt(props.get(MODULO_VALUE).toString());
+        return Long.parseLong(properties.get(MODULO_VALUE).toString());
     }
     
     @Override
     public String getType() {
         return "MOD";
+    }
+    
+    @Override
+    public int getAutoTablesAmount() {
+        Preconditions.checkNotNull(properties.get(MODULO_VALUE), "Modulo value cannot be null.");
+        return Integer.parseInt(properties.get(MODULO_VALUE).toString());
+    }
+    
+    private long getLongValue(final Comparable<?> value) {
+        return Long.parseLong(value.toString());
     }
 }

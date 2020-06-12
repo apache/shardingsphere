@@ -23,6 +23,9 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
+import org.apache.shardingsphere.metrics.configuration.swapper.MetricsConfigurationYamlSwapper;
+import org.apache.shardingsphere.metrics.configuration.yaml.YamlMetricsConfiguration;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.core.configuration.DataSourceConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration;
@@ -145,6 +148,22 @@ public final class ConfigCenter {
         return !Strings.isNullOrEmpty(repository.get(node.getRulePath(shardingSchemaName)));
     }
     
+    /**
+     * Persist metrics configuration.
+     *
+     * @param metricsConfiguration  metrics configuration.
+     * @param isOverwrite is overwrite registry center's configuration
+     */
+    public void persistMetricsConfiguration(final MetricsConfiguration metricsConfiguration, final boolean isOverwrite) {
+        if (null != metricsConfiguration && (isOverwrite || !hasMetricsConfiguration())) {
+            repository.persist(node.getMetricsPath(), YamlEngine.marshal(new MetricsConfigurationYamlSwapper().swap(metricsConfiguration)));
+        }
+    }
+    
+    private boolean hasMetricsConfiguration() {
+        return !Strings.isNullOrEmpty(repository.get(node.getMetricsPath()));
+    }
+    
     private void persistAuthentication(final Authentication authentication, final boolean isOverwrite) {
         if (null != authentication && (isOverwrite || !hasAuthentication())) {
             repository.persist(node.getAuthenticationPath(), YamlEngine.marshal(new AuthenticationYamlSwapper().swap(authentication)));
@@ -202,6 +221,15 @@ public final class ConfigCenter {
     public Collection<RuleConfiguration> loadRuleConfigurations(final String shardingSchemaName) {
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
                 YamlEngine.unmarshal(repository.get(node.getRulePath(shardingSchemaName)), YamlRootRuleConfigurations.class).getRules());
+    }
+    
+    /**
+     * Load metrics configuration.
+     *
+     * @return metrics configuration
+     */
+    public MetricsConfiguration loadMetricsConfiguration() {
+        return new MetricsConfigurationYamlSwapper().swap(YamlEngine.unmarshal(repository.get(node.getMetricsPath()), YamlMetricsConfiguration.class));
     }
     
     /**

@@ -104,5 +104,11 @@ public final class MetricsTrackerFacadeTest {
         Optional<SummaryMetricsTrackerDelegate> empty = metricsTrackerFacade.summaryStartTimer("request");
         assertThat(empty, is(Optional.empty()));
     }
+    
+    @Test
+    public void testStop() {
+        metricsTrackerFacade.stop();
+        assertThat(metricsTrackerFacade.isEnabled(), is(false));
+    }
 }
 

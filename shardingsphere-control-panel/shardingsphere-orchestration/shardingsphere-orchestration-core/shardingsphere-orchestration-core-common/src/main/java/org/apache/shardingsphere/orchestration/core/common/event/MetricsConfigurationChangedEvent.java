@@ -15,24 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.orchestration.internal.yaml;
+package org.apache.shardingsphere.orchestration.core.common.event;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.cluster.configuration.yaml.YamlClusterConfiguration;
-import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
-
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 
 /**
- * YAML root rule configurations for orchestration.
+ * Metrics configuration changed event.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class YamlOrchestrationRootRuleConfigurations extends YamlRootRuleConfigurations {
+public final class MetricsConfigurationChangedEvent implements ShardingOrchestrationEvent {
     
-    private Map<String, YamlCenterRepositoryConfiguration> orchestration;
-    
-    private YamlClusterConfiguration cluster;
+    private final MetricsConfiguration metricsConfiguration;
 }

@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardS
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.ModuloShardingAlgorithm;
 import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.InlineShardingAlgorithm;
+import org.apache.shardingsphere.sharding.strategy.route.none.NoneShardingStrategy;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -36,6 +37,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -100,7 +102,7 @@ public final class TableRuleTest {
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds1", "logic_table_1")));
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", "logic_table_2")));
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds1", "logic_table_3")));
-        assertNull(actual.getDatabaseShardingStrategy());
+        assertThat(actual.getDatabaseShardingStrategy(), instanceOf(NoneShardingStrategy.class));
         assertNotNull(actual.getTableShardingStrategy());
     }
 
@@ -120,7 +122,7 @@ public final class TableRuleTest {
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds1", "logic_table_1")));
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds2", "logic_table_2")));
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", "logic_table_3")));
-        assertNull(actual.getDatabaseShardingStrategy());
+        assertThat(actual.getDatabaseShardingStrategy(), instanceOf(NoneShardingStrategy.class));
         assertNotNull(actual.getTableShardingStrategy());
     }
     

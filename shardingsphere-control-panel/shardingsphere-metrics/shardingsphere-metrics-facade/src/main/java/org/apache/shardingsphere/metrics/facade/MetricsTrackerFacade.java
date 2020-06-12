@@ -167,6 +167,15 @@ public final class MetricsTrackerFacade {
         }
     }
     
+    /**
+     * Stop to metrics.
+     */
+    public void stop() {
+        enabled = false;
+        metricsTrackerManager.stop();
+        MetricsTrackerHandler.getInstance().close();
+    }
+    
     private void loadMetricsManager() {
         for (MetricsTrackerManager each : ServiceLoader.load(MetricsTrackerManager.class)) {
             if (METRICS_MAP.containsKey(each.getType())) {
