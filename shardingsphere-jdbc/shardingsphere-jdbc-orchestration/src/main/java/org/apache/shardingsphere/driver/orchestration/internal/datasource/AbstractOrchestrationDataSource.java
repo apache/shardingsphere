@@ -21,6 +21,7 @@ import com.google.common.collect.Maps;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.cluster.heartbeat.eventbus.HeartbeatEventBus;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.util.DataSourceConverter;
@@ -63,6 +64,7 @@ public abstract class AbstractOrchestrationDataSource extends AbstractUnsupporte
     public AbstractOrchestrationDataSource(final ShardingOrchestrationFacade shardingOrchestrationFacade) {
         this.shardingOrchestrationFacade = shardingOrchestrationFacade;
         ShardingOrchestrationEventBus.getInstance().register(this);
+        HeartbeatEventBus.getInstance().register(this);
     }
     
     protected abstract DataSource getDataSource();

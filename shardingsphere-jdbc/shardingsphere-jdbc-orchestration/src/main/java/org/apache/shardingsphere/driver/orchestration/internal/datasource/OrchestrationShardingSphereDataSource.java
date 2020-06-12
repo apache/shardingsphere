@@ -22,6 +22,9 @@ import com.google.common.eventbus.Subscribe;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
+import org.apache.shardingsphere.cluster.facade.ClusterFacade;
+import org.apache.shardingsphere.cluster.heartbeat.event.HeartbeatDetectNoticeEvent;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.util.DataSourceConverter;
@@ -79,6 +82,28 @@ public class OrchestrationShardingSphereDataSource extends AbstractOrchestration
         dataSource = shardingSphereDataSource;
         initShardingOrchestrationFacade(Collections.singletonMap(DefaultSchema.LOGIC_NAME, DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap())),
                 getRuleConfigurationMap(), dataSource.getSchemaContexts().getProperties().getProps());
+        persistMetaData(dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getMetaData().getSchema());
+    }
+    
+    public OrchestrationShardingSphereDataSource(final OrchestrationConfiguration orchestrationConfig, final ClusterConfiguration clusterConfiguration) throws SQLException {
+        super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(DefaultSchema.LOGIC_NAME)));
+        ConfigCenter configService = getShardingOrchestrationFacade().getConfigCenter();
+        Collection<RuleConfiguration> configurations = configService.loadRuleConfigurations(DefaultSchema.LOGIC_NAME);
+        Preconditions.checkState(!configurations.isEmpty(), "Missing the sharding rule configuration on registry center");
+        Map<String, DataSourceConfiguration> dataSourceConfigurations = configService.loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME);
+        dataSource = new ShardingSphereDataSource(DataSourceConverter.getDataSourceMap(dataSourceConfigurations), configurations, configService.loadProperties());
+        initShardingOrchestrationFacade();
+        ClusterFacade.getInstance().init(clusterConfiguration);
+        persistMetaData(dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getMetaData().getSchema());
+    }
+    
+    public OrchestrationShardingSphereDataSource(final ShardingSphereDataSource shardingSphereDataSource,
+                                                 final OrchestrationConfiguration orchestrationConfig, final ClusterConfiguration clusterConfiguration) {
+        super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(DefaultSchema.LOGIC_NAME)));
+        dataSource = shardingSphereDataSource;
+        initShardingOrchestrationFacade(Collections.singletonMap(DefaultSchema.LOGIC_NAME, DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap())),
+                getRuleConfigurationMap(), dataSource.getSchemaContexts().getProperties().getProps());
+        ClusterFacade.getInstance().init(clusterConfiguration);
         persistMetaData(dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getMetaData().getSchema());
     }
     
@@ -184,6 +209,16 @@ public class OrchestrationShardingSphereDataSource extends AbstractOrchestration
                 }
             }
         }
+    }
+    
+    /**
+     * Heart beat detect.
+     *
+     * @param event heart beat detect notice event
+     */
+    @Subscribe
+    public synchronized void heartbeat(final HeartbeatDetectNoticeEvent event) {
+        ClusterFacade.getInstance().detectHeartbeat(dataSource.getSchemaContexts().getSchemaContexts());
     }
     
     private ShardingSphereSchema getChangedShardingSphereSchema(final ShardingSphereSchema oldShardingSphereSchema, final RuleSchemaMetaData newRuleSchemaMetaData) {
