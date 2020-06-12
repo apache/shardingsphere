@@ -32,18 +32,14 @@ rules:
   tables:
     t_order: 
       actualDataNodes: ds_${0..1}.t_order
-      keyGenerator:
-        type: SNOWFLAKE
+      keyGenerateStrategy:
         column: order_id
-        props:
-          worker.id: 123
+        keyGeneratorName: snowflake
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item
-      keyGenerator:
-        type: SNOWFLAKE
+      keyGenerateStrategy:
         column: order_item_id
-        props:
-           worker.id: 123
+        keyGeneratorName: snowflake
   bindingTables:
     - t_order,t_order_item
   broadcastTables:
@@ -57,6 +53,12 @@ rules:
           algorithm.expression: ds_${user_id % 2}
   defaultTableStrategy:
     none:
+  
+  keyGenerators:
+    snowflake:
+      type: SNOWFLAKE
+      properties:
+          worker.id: 123
 
 props:
   sql.show: false

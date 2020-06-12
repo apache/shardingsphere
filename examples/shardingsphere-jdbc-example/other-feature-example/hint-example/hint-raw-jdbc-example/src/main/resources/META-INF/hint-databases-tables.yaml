@@ -40,11 +40,9 @@ rules:
         hint:
           shardingAlgorithm:
             type: HINT_TEST
-      keyGenerator:
-        type: SNOWFLAKE
+      keyGenerateStrategy:
         column: order_id
-        props:
-          worker.id: 123
+        keyGeneratorName: snowflake
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item_${0..1}
   bindingTables:
@@ -61,6 +59,12 @@ rules:
           algorithm.expression: ds_${user_id % 2}
   defaultTableStrategy:
     none:
+  
+  keyGenerators:
+    snowflake:
+      type: SNOWFLAKE
+      properties:
+          worker.id: 123
 
 props:
   sql.show: true

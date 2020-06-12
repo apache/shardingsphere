@@ -39,11 +39,9 @@ rules:
             type: INLINE
             props:
               algorithm.expression: t_order_${order_id % 2}
-      keyGenerator:
+      keyGenerateStrategy:
         column: order_id
-        type: SNOWFLAKE
-        props:
-          worker.id: 123
+        keyGeneratorName: snowflake
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item_${0..1}
       tableStrategy:
@@ -67,6 +65,12 @@ rules:
           algorithm.expression: ds_${user_id % 2}
   defaultTableStrategy:
     none:
+  
+  keyGenerators:
+    snowflake:
+      type: SNOWFLAKE
+      properties:
+          worker.id: 123
 
 props:
   sql.show: true

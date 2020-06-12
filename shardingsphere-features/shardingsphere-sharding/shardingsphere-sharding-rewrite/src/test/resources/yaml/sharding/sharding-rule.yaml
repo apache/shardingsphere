@@ -34,9 +34,9 @@ rules:
             type: INLINE
             props:
               algorithm.expression: t_account_${account_id % 2}
-      keyGenerator:
-        type: TEST
+      keyGenerateStrategy:
         column: account_id
+        keyGeneratorName: test
     t_account_detail:
       actualDataNodes: db.t_account_detail_${0..1}
       tableStrategy: 
@@ -48,3 +48,7 @@ rules:
               algorithm.expression: t_account_detail_${account_id % 2}
   bindingTables:
     - t_account, t_account_detail
+
+  keyGenerators:
+    test:
+      type: TEST

@@ -34,9 +34,9 @@ rules:
             type: INLINE
             props:
               algorithm.expression: t_order_${order_id % 2}
-      keyGenerator:
-        type: INCREMENT
+      keyGenerateStrategy:
         column: order_id
+        keyGeneratorName: increment
     t_order_item:
       actualDataNodes: db_ms_${0..1}.t_order_item_${0..1}
       databaseStrategy:
@@ -60,6 +60,10 @@ rules:
       shardingColumns: id, order_id
       shardingAlgorithm:
         type: COMPLEX_TEST
+
+  keyGenerators:
+    increment:
+      type: INCREMENT
 
 - !MASTER_SLAVE
   dataSources:
