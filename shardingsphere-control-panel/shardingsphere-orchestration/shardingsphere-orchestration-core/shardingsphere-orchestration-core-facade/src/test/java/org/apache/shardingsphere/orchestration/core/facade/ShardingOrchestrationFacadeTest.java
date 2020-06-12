@@ -19,6 +19,7 @@ package org.apache.shardingsphere.orchestration.core.facade;
 
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.ProxyUser;
+import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
@@ -103,6 +104,13 @@ public final class ShardingOrchestrationFacadeTest {
         verify(registryCenter).persistInstanceOnline();
         verify(registryCenter).persistDataSourcesNode();
         verify(listenerManager).initListeners();
+    }
+    
+    @Test
+    public void assertInitMetricsConfiguration() {
+        MetricsConfiguration metricsConfiguration = new MetricsConfiguration("fixture", null, null, false, 8, null);
+        shardingOrchestrationFacade.initMetricsConfiguration(metricsConfiguration);
+        verify(configCenter).persistMetricsConfiguration(metricsConfiguration, false);
     }
     
     @Test
