@@ -55,7 +55,7 @@ public final class HashShardingAlgorithm implements StandardShardingAlgorithm<Co
                 return each;
             }
         }
-        throw new UnsupportedOperationException();
+        return null;
     }
     
     @Override

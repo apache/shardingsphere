@@ -105,7 +105,7 @@ public final class TableRule {
 
     public TableRule(final ShardingAutoTableRuleConfiguration tableRuleConfig, final Collection<String> dataSourceNames, final String defaultGenerateKeyColumn) {
         logicTable = tableRuleConfig.getLogicTable().toLowerCase();
-        databaseShardingStrategy = null;
+        databaseShardingStrategy = new NoneShardingStrategy();
         tableShardingStrategy = null == tableRuleConfig.getShardingStrategy() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getShardingStrategy());
         Preconditions.checkArgument(null == tableRuleConfig.getShardingStrategy() || tableShardingStrategy.getShardingAlgorithm() instanceof ShardingAutoTableAlgorithm,
                 "ShardingAutoTableAlgorithm is required.");
