@@ -43,10 +43,6 @@ import java.util.Properties;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlOrchestrationShardingSphereDataSourceFactory {
     
-    private static final YamlRuleConfigurationSwapperEngine SWAPPER_ENGINE = new YamlRuleConfigurationSwapperEngine();
-    
-    private static final ClusterConfigurationYamlSwapper CLUSTER_SWAPPER = new ClusterConfigurationYamlSwapper();
-    
     /**
      * Create ShardingSphere data source.
      *
@@ -108,14 +104,15 @@ public final class YamlOrchestrationShardingSphereDataSourceFactory {
             return null == yamlClusterConfiguration
                     ? new OrchestrationShardingSphereDataSource(new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)))
                     : new OrchestrationShardingSphereDataSource(new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)),
-                            CLUSTER_SWAPPER.swap(yamlClusterConfiguration));
+                    new ClusterConfigurationYamlSwapper().swap(yamlClusterConfiguration));
         } else {
-            ShardingSphereDataSource shardingSphereDataSource = new ShardingSphereDataSource(dataSourceMap, SWAPPER_ENGINE.swapToRuleConfigurations(configurations.getRules()), props);
+            ShardingSphereDataSource shardingSphereDataSource = new ShardingSphereDataSource(dataSourceMap,
+                    new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(configurations.getRules()), props);
             return null == yamlClusterConfiguration ? new OrchestrationShardingSphereDataSource(shardingSphereDataSource,
                     new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)))
                     : new OrchestrationShardingSphereDataSource(shardingSphereDataSource,
                     new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)),
-                            CLUSTER_SWAPPER.swap(yamlClusterConfiguration));
+                    new ClusterConfigurationYamlSwapper().swap(yamlClusterConfiguration));
         }
     }
     
