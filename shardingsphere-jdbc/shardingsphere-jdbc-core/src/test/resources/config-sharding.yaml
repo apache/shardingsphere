@@ -57,9 +57,6 @@ rules:
             type: MOD
             props:
               mod.value: 2
-      keyGenerator:
-        keyGeneratorName: reset_increment
-        column: order_id
   bindingTables:
     - t_order,t_order_item
   broadcastTables:
