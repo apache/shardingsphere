@@ -32,4 +32,6 @@ public final class HeartbeatResult {
     private Boolean enable;
     
     private Long detectTimeStamp;
+    
+    private Boolean disabled;
 }

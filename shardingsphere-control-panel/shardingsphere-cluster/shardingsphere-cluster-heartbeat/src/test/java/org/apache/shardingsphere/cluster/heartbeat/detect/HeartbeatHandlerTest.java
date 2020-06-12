@@ -33,6 +33,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -72,7 +73,7 @@ public final class HeartbeatHandlerTest {
     @Test
     public void assertHandleWithoutRetry() {
         handler.init(getHeartbeatConfiguration(Boolean.FALSE));
-        HeartbeatResponse response = handler.handle(getSchemaContext());
+        HeartbeatResponse response = handler.handle(getSchemaContext(), Collections.emptyList());
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.getHeartbeatResultMap());
         assertTrue(response.getHeartbeatResultMap().keySet().contains(SCHEMA_NAME));
@@ -87,7 +88,7 @@ public final class HeartbeatHandlerTest {
     public void assertHandleWhenDetectExceptionWithoutRetry() {
         enableExecuteQuery = Boolean.FALSE;
         handler.init(getHeartbeatConfiguration(Boolean.FALSE));
-        HeartbeatResponse response = handler.handle(getSchemaContext());
+        HeartbeatResponse response = handler.handle(getSchemaContext(), Collections.emptyList());
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.getHeartbeatResultMap());
         assertTrue(response.getHeartbeatResultMap().keySet().contains(SCHEMA_NAME));
@@ -101,7 +102,7 @@ public final class HeartbeatHandlerTest {
     @Test
     public void assertHandleWithRetry() {
         handler.init(getHeartbeatConfiguration(Boolean.TRUE));
-        HeartbeatResponse response = handler.handle(getSchemaContext());
+        HeartbeatResponse response = handler.handle(getSchemaContext(), Collections.emptyList());
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.getHeartbeatResultMap());
         assertTrue(response.getHeartbeatResultMap().keySet().contains(SCHEMA_NAME));
@@ -116,7 +117,7 @@ public final class HeartbeatHandlerTest {
     public void assertHandleWhenDetectExceptionWithRetry() {
         enableExecuteQuery = Boolean.FALSE;
         handler.init(getHeartbeatConfiguration(Boolean.TRUE));
-        HeartbeatResponse response = handler.handle(getSchemaContext());
+        HeartbeatResponse response = handler.handle(getSchemaContext(), Collections.emptyList());
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.getHeartbeatResultMap());
         assertTrue(response.getHeartbeatResultMap().keySet().contains(SCHEMA_NAME));
@@ -131,7 +132,7 @@ public final class HeartbeatHandlerTest {
     public void assertMultipleDataSource() {
         multipleDataSource = Boolean.TRUE;
         handler.init(getHeartbeatConfiguration(Boolean.FALSE));
-        HeartbeatResponse response = handler.handle(getSchemaContext());
+        HeartbeatResponse response = handler.handle(getSchemaContext(), Collections.emptyList());
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.getHeartbeatResultMap());
         assertTrue(response.getHeartbeatResultMap().keySet().contains(SCHEMA_NAME));

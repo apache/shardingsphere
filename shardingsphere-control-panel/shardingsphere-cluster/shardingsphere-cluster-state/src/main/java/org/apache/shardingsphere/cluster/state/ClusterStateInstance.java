@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.cluster.state;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import com.google.common.eventbus.Subscribe;
+import org.apache.shardingsphere.cluster.state.enums.NodeState;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
+import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,8 +34,11 @@ import java.util.Map;
 /**
  * Cluster state instance.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ClusterStateInstance {
+    
+    private ClusterStateInstance() {
+        ShardingOrchestrationEventBus.getInstance().register(this);
+    }
     
     /**
      * Get cluster state instance.
@@ -74,6 +80,20 @@ public final class ClusterStateInstance {
         String instanceData = ShardingOrchestrationFacade.getInstance().getRegistryCenter().loadInstanceData(instanceId);
         Preconditions.checkState(!Strings.isNullOrEmpty(instanceData), "Can not load instance state of '%s' from registry center", instanceId);
         return YamlEngine.unmarshal(instanceData, InstanceState.class);
+    }
+    
+    /**
+     * Disabled data source after state changed.
+     *
+     * @param event disabled state changed event
+     */
+    @Subscribe
+    public void dataSourceStateChanged(final DisabledStateChangedEvent event) {
+        String dataSourceName = Joiner.on(".").join(event.getOrchestrationSchema().getSchemaName(), event.getOrchestrationSchema().getDataSourceName());
+        NodeState state = event.isDisabled() ? NodeState.DISABLED : NodeState.ONLINE;
+        InstanceState instanceState = loadInstanceState();
+        instanceState.getDataSources().entrySet().stream().filter(entry -> dataSourceName.equals(entry.getKey())).findFirst().get().getValue().setState(state);
+        persistInstanceState(instanceState);
     }
     
     /**

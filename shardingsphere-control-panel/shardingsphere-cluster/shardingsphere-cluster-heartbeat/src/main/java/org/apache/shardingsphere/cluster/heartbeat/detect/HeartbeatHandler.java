@@ -17,18 +17,22 @@
 
 package org.apache.shardingsphere.cluster.heartbeat.detect;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.cluster.configuration.config.HeartbeatConfiguration;
 import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResponse;
 import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResult;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
+import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
+import org.apache.shardingsphere.orchestration.core.registrycenter.RegistryCenterNodeStatus;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -47,6 +51,8 @@ public final class HeartbeatHandler {
     private static final int FUTURE_GET_TIME_OUT_MILLISECONDS = 5000;
     
     private HeartbeatConfiguration configuration;
+    
+    private Collection<String> disabledDataSources = Collections.emptyList();
     
     /**
      * Init heartbeat handler.
@@ -71,13 +77,15 @@ public final class HeartbeatHandler {
      * Handle heartbeat detect event.
      *
      * @param schemaContexts schema contexts
+     * @param disabledDataSources collection of disabled data sources
      * @return heartbeat response
      */
-    public HeartbeatResponse handle(final Map<String, SchemaContext> schemaContexts) {
+    public HeartbeatResponse handle(final Map<String, SchemaContext> schemaContexts, final Collection<String> disabledDataSources) {
+        this.disabledDataSources = disabledDataSources;
         ExecutorService executorService = Executors.newFixedThreadPool(configuration.getThreadCount());
         List<Future<Map<String, HeartbeatResult>>> futureTasks = new ArrayList<>();
         schemaContexts.forEach((key, value) -> value.getSchema().getDataSources().forEach((innerKey, innerValue) -> {
-            futureTasks.add(executorService.submit(new HeartbeatDetect(key, innerKey, innerValue, configuration)));
+            futureTasks.add(executorService.submit(new HeartbeatDetect(key, innerKey, innerValue, configuration, isDisabled(key, innerKey))));
         }));
         HeartbeatResponse heartbeatResponse = buildHeartbeatResponse(futureTasks);
         closeExecutor(executorService);
@@ -100,6 +108,15 @@ public final class HeartbeatHandler {
         if (null != executorService && !executorService.isShutdown()) {
             executorService.shutdown();
         }
+    }
+    
+    private boolean isDisabled(final String schemaName, final String dataSourceName) {
+        return disabledDataSources.isEmpty() ? Boolean.FALSE : isDisabled(Joiner.on(".").join(schemaName, dataSourceName));
+    }
+    
+    private boolean isDisabled(final String schemaDataSourceName) {
+        return disabledDataSources.contains(schemaDataSourceName) && RegistryCenterNodeStatus.DISABLED.toString()
+                .equals(ShardingOrchestrationFacade.getInstance().getRegistryCenter().getDataSourcesNodeData(schemaDataSourceName));
     }
     
     private static final class HeartbeatHandlerHolder {

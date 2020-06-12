@@ -44,12 +44,16 @@ public final class HeartbeatDetect extends AbstractHeartbeatDetect {
     
     private DataSource dataSource;
     
-    public HeartbeatDetect(final String schemaName, final String dataSourceName, final DataSource dataSource, final HeartbeatConfiguration configuration) {
-        super(configuration.getRetryEnable(), configuration.getRetryMaximum(), configuration.getRetryInterval());
+    private Boolean dataSourceDisabled;
+    
+    public HeartbeatDetect(final String schemaName, final String dataSourceName, final DataSource dataSource,
+                           final HeartbeatConfiguration configuration, final Boolean dataSourceDisabled) {
+        super(configuration.getRetryEnable(), configuration.getRetryMaximum(), configuration.getRetryInterval(), !dataSourceDisabled);
         this.sql = configuration.getSql();
         this.schemaName = schemaName;
         this.dataSourceName = dataSourceName;
         this.dataSource = dataSource;
+        this.dataSourceDisabled = dataSourceDisabled;
     }
     
     @Override
@@ -68,7 +72,7 @@ public final class HeartbeatDetect extends AbstractHeartbeatDetect {
     @Override
     protected Map<String, HeartbeatResult> buildResult(final Boolean result) {
         Map<String, HeartbeatResult> heartBeatResultMap = new HashMap<>(1, 1);
-        heartBeatResultMap.put(schemaName, new HeartbeatResult(dataSourceName, result, System.currentTimeMillis()));
+        heartBeatResultMap.put(schemaName, new HeartbeatResult(dataSourceName, result, System.currentTimeMillis(), dataSourceDisabled));
         return heartBeatResultMap;
     }
 }

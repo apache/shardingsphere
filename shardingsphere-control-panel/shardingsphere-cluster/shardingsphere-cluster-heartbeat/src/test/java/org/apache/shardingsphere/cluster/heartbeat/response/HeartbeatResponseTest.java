@@ -34,7 +34,7 @@ public final class HeartbeatResponseTest {
     @Test
     public void getHeartbeatResultMap() {
         Map<String, Collection<HeartbeatResult>> heartbeatResultMap = new HashMap<>();
-        heartbeatResultMap.put("sharding_db", Collections.singleton(new HeartbeatResult("ds_1", true, 123L)));
+        heartbeatResultMap.put("sharding_db", Collections.singleton(new HeartbeatResult("ds_1", true, 123L, Boolean.FALSE)));
         HeartbeatResponse heartbeatResponse = new HeartbeatResponse(heartbeatResultMap);
         assertThat(heartbeatResponse.getHeartbeatResultMap(), is(heartbeatResultMap));
         assertTrue(heartbeatResponse.getHeartbeatResultMap().keySet().contains("sharding_db"));

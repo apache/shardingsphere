@@ -25,6 +25,7 @@ import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResponse;
 import org.apache.shardingsphere.cluster.heartbeat.task.HeartbeatTask;
 import org.apache.shardingsphere.cluster.heartbeat.task.HeartbeatTaskManager;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
+import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 
 import java.util.Map;
 
@@ -66,7 +67,7 @@ public final class ClusterHeartbeatInstance {
      * @return heartbeat response
      */
     public HeartbeatResponse detect(final Map<String, SchemaContext> schemaContexts) {
-        return heartbeatHandler.handle(schemaContexts);
+        return heartbeatHandler.handle(schemaContexts, ShardingOrchestrationFacade.getInstance().getRegistryCenter().loadAllDataSourcesNodes());
     }
     
     private static final class ClusterHeartbeatInstanceHolder {

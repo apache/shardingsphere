@@ -87,4 +87,23 @@ public final class RegistryCenter {
     public Collection<String> loadAllInstances() {
         return repository.getChildrenKeys(node.getInstanceNodeRootPath());
     }
+    
+    /**
+     * Load all data sources nodes.
+     *
+     * @return Collection of all data sources nodes
+     */
+    public Collection<String> loadAllDataSourcesNodes() {
+        return repository.getChildrenKeys(node.getDataSourcesNodeFullRootPath());
+    }
+    
+    /**
+     * Get data sources node data.
+     *
+     * @param schemaDataSourceName schema name and data source name
+     * @return data sources node data
+     */
+    public String getDataSourcesNodeData(final String schemaDataSourceName) {
+        return repository.get(node.getDataSourcesNodeFullPath(schemaDataSourceName));
+    }
 }
