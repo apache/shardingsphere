@@ -77,7 +77,7 @@ public final class MetricsTrackerFacade {
         metricsTrackerManager = findMetricsTrackerManager(metricsConfiguration.getMetricsName());
         Preconditions.checkNotNull(metricsTrackerManager, "Can not find metrics tracker manager with metrics name in metrics configuration.");
         metricsTrackerManager.start(metricsConfiguration);
-        MetricsTrackerHandler.getInstance().init(metricsConfiguration.getAsync(), metricsConfiguration.getThreadCount(), metricsTrackerManager);
+        MetricsTrackerHandler.getInstance().init(metricsConfiguration.isAsync(), metricsConfiguration.getThreadCount(), metricsTrackerManager);
         enabled = true;
     }
     
@@ -165,6 +165,15 @@ public final class MetricsTrackerFacade {
         if (enabled) {
             MetricsTrackerHandler.getInstance().summaryObserveDuration(delegate);
         }
+    }
+    
+    /**
+     * Stop to metrics.
+     */
+    public void stop() {
+        enabled = false;
+        metricsTrackerManager.stop();
+        MetricsTrackerHandler.getInstance().close();
     }
     
     private void loadMetricsManager() {

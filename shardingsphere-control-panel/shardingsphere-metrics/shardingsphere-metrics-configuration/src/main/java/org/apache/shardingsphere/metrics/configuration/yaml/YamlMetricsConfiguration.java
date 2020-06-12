@@ -36,7 +36,7 @@ public final class YamlMetricsConfiguration implements YamlConfiguration {
     
     private Integer port;
     
-    private Boolean async;
+    private boolean async;
     
     private Integer threadCount;
     

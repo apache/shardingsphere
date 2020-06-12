@@ -21,6 +21,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.algorithm.EncryptAlgorithmConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -178,6 +179,11 @@ public final class ConfigCenterTest {
             + "  root2:\n"
             + "    authorizedSchemas: sharding_db,ms_db\n"
             + "    password: root2\n";
+    
+    private static final String METRICS_YAML = ""
+            + "  name: prometheus\n"
+            + "  host: 127.0.0.1\n"
+            + "  port: 9190\n";
     
     private static final String PROPS_YAML = "sql.show: false\n";
     
@@ -519,6 +525,17 @@ public final class ConfigCenterTest {
         Authentication actual = configurationService.loadAuthentication();
         assertThat(actual.getUsers().size(), is(2));
         assertThat(actual.getUsers().get("root1").getPassword(), is("root1"));
+    }
+    
+    @Test
+    public void assertLoadMetricsConfiguration() {
+        when(configCenterRepository.get("/test/config/metrics")).thenReturn(METRICS_YAML);
+        ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
+        MetricsConfiguration actual = configurationService.loadMetricsConfiguration();
+        assertThat(actual.getMetricsName(), is("prometheus"));
+        assertThat(actual.getPort(), is(9190));
+        assertThat(actual.getHost(), is("127.0.0.1"));
+        assertThat(actual.isAsync(), is(false));
     }
     
     @Test

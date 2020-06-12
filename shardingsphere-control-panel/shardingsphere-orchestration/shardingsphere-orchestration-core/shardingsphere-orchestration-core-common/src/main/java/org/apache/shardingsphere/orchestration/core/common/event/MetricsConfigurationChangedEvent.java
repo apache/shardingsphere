@@ -15,32 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metrics.configuration.config;
+package org.apache.shardingsphere.orchestration.core.common.event;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
-
-import java.util.Properties;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 
 /**
- * Metrics configuration.
+ * Metrics configuration changed event.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-@AllArgsConstructor
-public final class MetricsConfiguration {
+public final class MetricsConfigurationChangedEvent implements ShardingOrchestrationEvent {
     
-    private String metricsName;
-    
-    private String host;
-    
-    private Integer port;
-    
-    private boolean async;
-    
-    private Integer threadCount;
-    
-    private Properties props;
+    private final MetricsConfiguration metricsConfiguration;
 }
-
