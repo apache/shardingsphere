@@ -48,7 +48,7 @@ public final class HintShardingStrategy implements ShardingStrategy {
     
     @SuppressWarnings("unchecked")
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<RouteValue> shardingValues, final ConfigurationProperties properties) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<RouteValue> shardingValues, final ConfigurationProperties props) {
         ListRouteValue shardingValue = (ListRouteValue) shardingValues.iterator().next();
         Collection<String> shardingResult = shardingAlgorithm.doSharding(availableTargetNames, 
                 new HintShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), shardingValue.getValues()));

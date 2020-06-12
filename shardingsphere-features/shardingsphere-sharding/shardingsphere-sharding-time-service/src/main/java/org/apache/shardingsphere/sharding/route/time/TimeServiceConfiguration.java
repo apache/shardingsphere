@@ -51,16 +51,16 @@ public final class TimeServiceConfiguration {
     
     private void init() {
         try (InputStream inputStream = TimeServiceConfiguration.class.getResourceAsStream("/time-service.properties")) {
-            Properties properties = new Properties();
-            properties.load(inputStream);
-            String dataSourceType = (String) properties.remove("dataSourceType");
-            driverClassName = (String) properties.get("driverClassName");
+            Properties props = new Properties();
+            props.load(inputStream);
+            String dataSourceType = (String) props.remove("dataSourceType");
+            driverClassName = (String) props.get("driverClassName");
             Class dataSourceClass = Class.forName(dataSourceType);
             dataSource = (DataSource) dataSourceClass.newInstance();
-            for (String each : properties.stringPropertyNames()) {
+            for (String each : props.stringPropertyNames()) {
                 PropertyDescriptor propertyDescriptor = new PropertyDescriptor(each, dataSourceClass);
                 Method writeMethod = propertyDescriptor.getWriteMethod();
-                writeMethod.invoke(dataSource, properties.getProperty(each));
+                writeMethod.invoke(dataSource, props.getProperty(each));
             }
         } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException | IntrospectionException | InvocationTargetException | IOException ex) {
             throw new TimeServiceInitException("please check your time-service.properties", ex);

@@ -339,7 +339,7 @@ orchestration:
     instanceType: zookeeper
     serverLists: localhost:2181
     namespace: orchestration
-    properties:
+    props:
       overwrite: true
 ```
 
@@ -358,7 +358,7 @@ authentication:
 ### 公用属性
 
 ```yaml
-properties:
+props:
   executor.size: 16
   sql.show: false
 ```
@@ -411,7 +411,7 @@ encryptRule:
           cipherColumn: #存储密文的字段
           assistedQueryColumn: #辅助查询字段，针对 QueryAssistedEncryptAlgorithm 类型的加解密算法进行辅助查询
           encryptorName: #加密算法名称
-properties:
+props:
   query.with.cipher.column: true #是否使用密文列查询
 ```
 
@@ -424,8 +424,8 @@ properties:
 ### Proxy属性
 
 ```yaml
-#省略与ShardingSphere-JDBC一致的配置属性
-properties:
+#省略与 ShardingSphere-JDBC 一致的配置属性
+props:
   acceptor.size: #用于设置接收客户端请求的工作线程个数，默认为CPU核数*2
   proxy.transaction.type: #默认为LOCAL事务，允许LOCAL，XA，BASE三个值，XA采用Atomikos作为事务管理器，BASE类型需要拷贝实现ShardingTransactionManager的接口的jar包至lib目录中
   proxy.opentracing.enabled: #是否开启链路追踪功能，默认为不开启。详情请参见[链路追踪](/cn/features/orchestration/apm/)

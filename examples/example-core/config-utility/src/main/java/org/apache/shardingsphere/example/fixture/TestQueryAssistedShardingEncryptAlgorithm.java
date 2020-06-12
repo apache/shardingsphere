@@ -55,7 +55,7 @@ public final class TestQueryAssistedShardingEncryptAlgorithm implements QueryAss
     }
     
     @Override
-    public void setProps(final Properties properties) {
-        this.props = properties;
+    public void setProps(final Properties props) {
+        this.props = props;
     }
 }

@@ -39,7 +39,7 @@ import java.util.Optional;
 public final class ReplicaRouteDecorator implements RouteDecorator<ReplicaRule> {
     
     @Override
-    public RouteContext decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final ReplicaRule replicaRule, final ConfigurationProperties properties) {
+    public RouteContext decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final ReplicaRule replicaRule, final ConfigurationProperties props) {
         if (routeContext.getRouteResult().getRouteUnits().isEmpty()) {
             RouteResult routeResult = new RouteResult();
             for (String each : replicaRule.getSingleReplicaDataSources()) {

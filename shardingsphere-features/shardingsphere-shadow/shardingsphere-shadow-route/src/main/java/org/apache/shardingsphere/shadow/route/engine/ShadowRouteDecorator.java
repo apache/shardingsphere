@@ -43,7 +43,7 @@ import java.util.List;
 public final class ShadowRouteDecorator implements RouteDecorator<ShadowRule> {
     
     @Override
-    public RouteContext decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final ShadowRule shadowRule, final ConfigurationProperties properties) {
+    public RouteContext decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final ShadowRule shadowRule, final ConfigurationProperties props) {
         return routeContext.getRouteResult().getRouteUnits().isEmpty() ? getRouteContext(routeContext, shadowRule) : getRouteContextWithRouteResult(routeContext, shadowRule);
     }
     

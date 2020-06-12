@@ -38,7 +38,7 @@ orchestration:
       instanceType: zookeeper
       serverLists: localhost:2181
       namespace: orchestration
-      properties:
+      props:
         overwrite: true
 ```
 

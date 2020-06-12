@@ -36,7 +36,7 @@ public final class EncryptAlgorithmConfigurationTest {
     public void assertConstructorWithoutProperties() {
         EncryptAlgorithmConfiguration actual = new EncryptAlgorithmConfiguration("TEST", new Properties());
         assertThat(actual.getType(), is("TEST"));
-        assertThat(actual.getProperties(), is(new Properties()));
+        assertThat(actual.getProps(), is(new Properties()));
     }
     
     @Test
@@ -45,6 +45,6 @@ public final class EncryptAlgorithmConfigurationTest {
         props.setProperty("key", "value");
         EncryptAlgorithmConfiguration actual = new EncryptAlgorithmConfiguration("TEST", props);
         assertThat(actual.getType(), is("TEST"));
-        assertThat(actual.getProperties(), is(props));
+        assertThat(actual.getProps(), is(props));
     }
 }

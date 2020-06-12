@@ -41,16 +41,16 @@ public final class ApolloOpenApiWrapper {
     
     private final String administrator;
     
-    public ApolloOpenApiWrapper(final CenterConfiguration config, final ApolloProperties properties) {
+    public ApolloOpenApiWrapper(final CenterConfiguration config, final ApolloProperties props) {
         namespace = config.getNamespace();
-        appId = properties.getValue(ApolloPropertyKey.APP_ID);
-        env = properties.getValue(ApolloPropertyKey.ENV);
-        clusterName = properties.getValue(ApolloPropertyKey.CLUSTER_NAME);
-        administrator = properties.getValue(ApolloPropertyKey.ADMINISTRATOR);
-        String apolloToken = properties.getValue(ApolloPropertyKey.TOKEN);
-        String portalUrl = properties.getValue(ApolloPropertyKey.PORTAL_URL);
-        Integer connectTimeout = properties.getValue(ApolloPropertyKey.CONNECT_TIMEOUT);
-        Integer readTimeout = properties.getValue(ApolloPropertyKey.READ_TIMEOUT);
+        appId = props.getValue(ApolloPropertyKey.APP_ID);
+        env = props.getValue(ApolloPropertyKey.ENV);
+        clusterName = props.getValue(ApolloPropertyKey.CLUSTER_NAME);
+        administrator = props.getValue(ApolloPropertyKey.ADMINISTRATOR);
+        String apolloToken = props.getValue(ApolloPropertyKey.TOKEN);
+        String portalUrl = props.getValue(ApolloPropertyKey.PORTAL_URL);
+        Integer connectTimeout = props.getValue(ApolloPropertyKey.CONNECT_TIMEOUT);
+        Integer readTimeout = props.getValue(ApolloPropertyKey.READ_TIMEOUT);
         client = ApolloOpenApiClient.newBuilder().withPortalUrl(portalUrl).withConnectTimeout(connectTimeout).withReadTimeout(readTimeout).withToken(apolloToken).build();
     }
     

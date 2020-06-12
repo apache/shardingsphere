@@ -26,7 +26,7 @@ import java.util.Properties;
  */
 public final class KeyGenerateAlgorithmConfiguration extends TypedSPIConfiguration {
     
-    public KeyGenerateAlgorithmConfiguration(final String type, final Properties properties) {
-        super(type, properties);
+    public KeyGenerateAlgorithmConfiguration(final String type, final Properties props) {
+        super(type, props);
     }
 }

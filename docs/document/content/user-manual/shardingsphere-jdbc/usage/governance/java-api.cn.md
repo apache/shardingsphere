@@ -36,9 +36,9 @@ weight = 1
 // ...
 
 // 配置配置/注册/元数据中心
-Properties properties = new Properties();
-properties.setProperty("overwrite", overwrite);
-CenterConfiguration centerConfiguration = new CenterConfiguration("zookeeper", properties);
+Properties props = new Properties();
+props.setProperty("overwrite", overwrite);
+CenterConfiguration centerConfiguration = new CenterConfiguration("zookeeper", props);
 centerConfiguration.setServerLists("localhost:2181");
 centerConfiguration.setNamespace("shardingsphere-orchestration");
 centerConfiguration.setOrchestrationType("registry_center,config_center,metadata_center");

@@ -47,7 +47,7 @@ ShardingTableRuleConfiguration orderTableRuleConfig = new ShardingTableRuleConfi
 StandardShardingAlgorithm dbShardingAlgorithm = new InlineShardingAlgorithm();
 Properties dbProps = new Properties();
 dbProps.setProperty(InlineShardingAlgorithm.ALGORITHM_EXPRESSION, "ds${user_id % 2}");
-dbShardingAlgorithm.setProperties(dbProps);
+dbShardingAlgorithm.setProps(dbProps);
 StandardShardingStrategyConfiguration dbShardingStrategyConfig = new StandardShardingStrategyConfiguration("user_id", dbShardingAlgorithm);
 orderTableRuleConfig.setDatabaseShardingStrategy(dbShardingStrategyConfig);
 
@@ -55,7 +55,7 @@ orderTableRuleConfig.setDatabaseShardingStrategy(dbShardingStrategyConfig);
 StandardShardingAlgorithm tableShardingAlgorithm = new InlineShardingAlgorithm();
 Properties tableProps = new Properties();
 tableProps.setProperty(InlineShardingAlgorithm.ALGORITHM_EXPRESSION, "t_order${order_id % 2}");
-tableShardingAlgorithm.setProperties(tableProps);
+tableShardingAlgorithm.setProps(tableProps);
 StandardShardingStrategyConfiguration tableShardingStrategy = new StandardShardingStrategyConfiguration("order_id", tableShardingAlgorithm);
 orderTableRuleConfig.setTableShardingStrategy(tableShardingStrategy);
 

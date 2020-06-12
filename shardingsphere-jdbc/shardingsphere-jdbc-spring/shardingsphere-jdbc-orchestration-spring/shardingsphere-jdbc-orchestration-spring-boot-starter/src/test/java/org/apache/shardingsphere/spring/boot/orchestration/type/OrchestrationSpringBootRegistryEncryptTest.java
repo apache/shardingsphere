@@ -57,7 +57,7 @@ public class OrchestrationSpringBootRegistryEncryptTest {
         testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/datasource", ""
                 + "dataSource: !!org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration\n" 
                 + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
-                + "  properties:\n"
+                + "  props:\n"
                 + "    url: jdbc:h2:mem:ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL\n"
                 + "    maxTotal: 100\n"
                 + "    password: ''\n"

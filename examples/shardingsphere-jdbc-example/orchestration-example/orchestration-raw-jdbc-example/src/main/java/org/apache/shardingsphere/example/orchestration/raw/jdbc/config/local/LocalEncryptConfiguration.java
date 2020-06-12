@@ -62,8 +62,8 @@ public final class LocalEncryptConfiguration implements ExampleConfiguration {
     }
     
     private EncryptAlgorithmConfiguration createEncryptAlgorithmConfiguration() {
-        Properties properties = new Properties();
-        properties.setProperty("aes.key.value", "123456");
-        return new EncryptAlgorithmConfiguration("AES", properties);
+        Properties props = new Properties();
+        props.setProperty("aes.key.value", "123456");
+        return new EncryptAlgorithmConfiguration("AES", props);
     }
 }

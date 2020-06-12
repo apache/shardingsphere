@@ -39,17 +39,17 @@ public final class ShardingAlgorithmFactoryBean implements FactoryBean<ShardingA
 
     private String type;
 
-    private Properties properties;
+    private Properties props;
 
-    public ShardingAlgorithmFactoryBean(final String type, final Properties properties) {
+    public ShardingAlgorithmFactoryBean(final String type, final Properties props) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(type), "The type of shardingAlgorithm is required.");
         this.type = type;
-        this.properties = properties;
+        this.props = props;
     }
 
     @Override
     public ShardingAlgorithm getObject() {
-        return TypedSPIRegistry.getRegisteredService(ShardingAlgorithm.class, type, properties);
+        return TypedSPIRegistry.getRegisteredService(ShardingAlgorithm.class, type, props);
     }
 
     @Override

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.binder.metadata;
 
+import lombok.RequiredArgsConstructor;
+
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.CallableStatement;
@@ -35,7 +37,6 @@ import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Meta data connection.
@@ -274,8 +275,8 @@ public final class MetaDataConnection implements Connection {
     }
     
     @Override
-    public void setClientInfo(final Properties properties) throws SQLClientInfoException {
-        connection.setClientInfo(properties);
+    public void setClientInfo(final Properties props) throws SQLClientInfoException {
+        connection.setClientInfo(props);
     }
     
     @Override

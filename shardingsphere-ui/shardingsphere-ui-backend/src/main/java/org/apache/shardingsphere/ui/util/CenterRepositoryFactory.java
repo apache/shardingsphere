@@ -91,7 +91,7 @@ public final class CenterRepositoryFactory {
         CenterConfiguration result = new CenterConfiguration(config.getInstanceType(), new Properties());
         result.setServerLists(config.getServerLists());
         result.setNamespace(config.getNamespace());
-        result.getProperties().put("digest", config.getDigest());
+        result.getProps().put("digest", config.getDigest());
         return result;
     }
     

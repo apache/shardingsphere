@@ -73,10 +73,10 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     @Test
     public void assertLastDigitalOfGenerateKeySameMillisecond() {
         SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
-        Properties properties = new Properties();
+        Properties props = new Properties();
         SnowflakeKeyGenerateAlgorithm.setTimeService(new FixedTimeService(5));
-        properties.setProperty("max.vibration.offset", String.valueOf(3));
-        keyGenerateAlgorithm.setProps(properties);
+        props.setProperty("max.vibration.offset", String.valueOf(3));
+        keyGenerateAlgorithm.setProps(props);
         assertThat(keyGenerateAlgorithm.generateKey(), is((Comparable) 0L));
         assertThat(keyGenerateAlgorithm.generateKey(), is((Comparable) 1L));
         assertThat(keyGenerateAlgorithm.generateKey(), is((Comparable) 2L));
@@ -87,10 +87,10 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     @Test
     public void assertLastDigitalOfGenerateKeyDifferentMillisecond() throws InterruptedException {
         SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
-        Properties properties = new Properties();
+        Properties props = new Properties();
         SnowflakeKeyGenerateAlgorithm.setTimeService(new TimeService());
-        properties.setProperty("max.vibration.offset", String.valueOf(3));
-        keyGenerateAlgorithm.setProps(properties);
+        props.setProperty("max.vibration.offset", String.valueOf(3));
+        keyGenerateAlgorithm.setProps(props);
         String actualGenerateKeyBinaryString0 = Long.toBinaryString(Long.parseLong(keyGenerateAlgorithm.generateKey().toString()));
         assertThat(Integer.parseInt(actualGenerateKeyBinaryString0.substring(actualGenerateKeyBinaryString0.length() - 3), 2), is(0));
         Thread.sleep(2L);
@@ -128,9 +128,9 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
         TimeService timeService = new FixedTimeService(1);
         SnowflakeKeyGenerateAlgorithm.setTimeService(timeService);
         keyGenerateAlgorithm.setProps(new Properties());
-        Properties properties = new Properties();
-        properties.setProperty("max.tolerate.time.difference.milliseconds", String.valueOf(0));
-        keyGenerateAlgorithm.setProps(properties);
+        Properties props = new Properties();
+        props.setProperty("max.tolerate.time.difference.milliseconds", String.valueOf(0));
+        keyGenerateAlgorithm.setProps(props);
         setLastMilliseconds(keyGenerateAlgorithm, timeService.getCurrentMillis() + 2);
         List<Comparable<?>> actual = new ArrayList<>();
         for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
@@ -172,36 +172,36 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     @Test(expected = IllegalArgumentException.class)
     public void assertSetWorkerIdFailureWhenNegative() {
         SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
-        Properties properties = new Properties();
-        properties.setProperty("worker.id", String.valueOf(-1L));
-        keyGenerateAlgorithm.setProps(properties);
+        Properties props = new Properties();
+        props.setProperty("worker.id", String.valueOf(-1L));
+        keyGenerateAlgorithm.setProps(props);
         keyGenerateAlgorithm.generateKey();
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertSetMaxVibrationOffsetFailureWhenNegative() {
         SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
-        Properties properties = new Properties();
-        properties.setProperty("max.vibration.offset", String.valueOf(-1));
-        keyGenerateAlgorithm.setProps(properties);
+        Properties props = new Properties();
+        props.setProperty("max.vibration.offset", String.valueOf(-1));
+        keyGenerateAlgorithm.setProps(props);
         keyGenerateAlgorithm.generateKey();
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertSetWorkerIdFailureWhenOutOfRange() {
         SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
-        Properties properties = new Properties();
-        properties.setProperty("worker.id", String.valueOf(Long.MIN_VALUE));
-        keyGenerateAlgorithm.setProps(properties);
+        Properties props = new Properties();
+        props.setProperty("worker.id", String.valueOf(Long.MIN_VALUE));
+        keyGenerateAlgorithm.setProps(props);
         keyGenerateAlgorithm.generateKey();
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertSetMaxVibrationOffsetFailureWhenOutOfRange() {
         SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
-        Properties properties = new Properties();
-        properties.setProperty("max.vibration.offset", String.valueOf(4096));
-        keyGenerateAlgorithm.setProps(properties);
+        Properties props = new Properties();
+        props.setProperty("max.vibration.offset", String.valueOf(4096));
+        keyGenerateAlgorithm.setProps(props);
         keyGenerateAlgorithm.generateKey();
     }
     

@@ -36,9 +36,9 @@ Using ZooKeeper as config center and registry center for example.
 // ...
 
 // Configure config/registry/metadata center
-Properties properties = new Properties();
-properties.setProperty("overwrite", overwrite);
-CenterConfiguration centerConfiguration = new CenterConfiguration("zookeeper", properties);
+Properties props = new Properties();
+props.setProperty("overwrite", overwrite);
+CenterConfiguration centerConfiguration = new CenterConfiguration("zookeeper", props);
 centerConfiguration.setServerLists("localhost:2181");
 centerConfiguration.setNamespace("shardingsphere-orchestration");
 centerConfiguration.setOrchestrationType("registry_center,config_center,metadata_center");

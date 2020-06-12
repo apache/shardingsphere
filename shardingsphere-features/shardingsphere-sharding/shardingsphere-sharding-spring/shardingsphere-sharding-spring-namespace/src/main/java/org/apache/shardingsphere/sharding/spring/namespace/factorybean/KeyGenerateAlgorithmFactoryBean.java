@@ -39,17 +39,17 @@ public final class KeyGenerateAlgorithmFactoryBean implements FactoryBean<KeyGen
     
     private String type;
     
-    private Properties properties;
+    private Properties props;
     
-    public KeyGenerateAlgorithmFactoryBean(final String type, final Properties properties) {
+    public KeyGenerateAlgorithmFactoryBean(final String type, final Properties props) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(type), "The type of keyGenerateAlgorithm is required.");
         this.type = type;
-        this.properties = properties;
+        this.props = props;
     }
     
     @Override
     public KeyGenerateAlgorithm getObject() {
-        return TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class, type, properties);
+        return TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class, type, props);
     }
     
     @Override

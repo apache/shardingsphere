@@ -26,7 +26,7 @@ import java.util.Properties;
  */
 public final class LoadBalanceAlgorithmConfiguration extends TypedSPIConfiguration {
     
-    public LoadBalanceAlgorithmConfiguration(final String type, final Properties properties) {
-        super(type, properties);
+    public LoadBalanceAlgorithmConfiguration(final String type, final Properties props) {
+        super(type, props);
     }
 }

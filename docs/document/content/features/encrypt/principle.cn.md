@@ -125,7 +125,7 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
           plainColumn: pwd
           cipherColumn: pwd_cipher
           encryptorName: aes_encryptor
-properties:
+props:
   query.with.cipher.column: false
 ```
 
@@ -179,7 +179,7 @@ properties:
         pwd: # pwd 与 pwd_cipher 的转换映射
           cipherColumn: pwd_cipher
           encryptorName: aes_encryptor
-properties:
+props:
   query.with.cipher.column: true
 ```
 

@@ -102,7 +102,7 @@ public final class SyncConfigurationUtil {
     
     private static RdbmsConfiguration createDumperConfiguration(final DataSourceConfiguration dataSourceConfiguration) {
         RdbmsConfiguration result = new RdbmsConfiguration();
-        Map<String, Object> dataSourceProperties = dataSourceConfiguration.getProperties();
+        Map<String, Object> dataSourceProperties = dataSourceConfiguration.getProps();
         JDBCDataSourceConfiguration dumperDataSourceConfiguration = new JDBCDataSourceConfiguration(
                 dataSourceProperties.containsKey("jdbcUrl") ? dataSourceProperties.get("jdbcUrl").toString() : dataSourceProperties.get("url").toString(),
                 dataSourceProperties.get("username").toString(), dataSourceProperties.get("password").toString());

@@ -45,7 +45,7 @@ public final class CenterConfiguration extends TypedSPIConfiguration {
      */
     private String namespace;
     
-    public CenterConfiguration(final String type, final Properties properties) {
-        super(type, properties);
+    public CenterConfiguration(final String type, final Properties props) {
+        super(type, props);
     }
 }

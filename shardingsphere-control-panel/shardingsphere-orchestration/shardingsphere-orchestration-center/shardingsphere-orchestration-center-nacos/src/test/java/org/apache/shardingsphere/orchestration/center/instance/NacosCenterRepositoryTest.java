@@ -57,10 +57,10 @@ public final class NacosCenterRepositoryTest {
     
     @Before
     public void init() {
-        Properties properties = new Properties();
-        properties.setProperty("group", group);
-        properties.setProperty("timeout", "3000");
-        CenterConfiguration configuration = new CenterConfiguration(REPOSITORY.getType(), properties);
+        Properties props = new Properties();
+        props.setProperty("group", group);
+        props.setProperty("timeout", "3000");
+        CenterConfiguration configuration = new CenterConfiguration(REPOSITORY.getType(), props);
         configuration.setServerLists("127.0.0.1:8848");
         REPOSITORY.init(configuration);
         setConfigService(configService);

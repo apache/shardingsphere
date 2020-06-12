@@ -34,7 +34,7 @@ public final class BackendExecutorContext {
     private static final BackendExecutorContext INSTANCE = new BackendExecutorContext();
     
     private final ExecutorKernel executorKernel = 
-            new ExecutorKernel(ProxySchemaContexts.getInstance().getSchemaContexts().getProperties().<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
+            new ExecutorKernel(ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
     
     /**
      * Get executor context instance.

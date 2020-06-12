@@ -284,11 +284,11 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         SchemaContext schemaContext = schemaContexts.getDefaultSchemaContext();
         SQLStatement sqlStatement = schemaContext.getRuntimeContext().getSqlParserEngine().parse(sql, false);
         RouteContext routeContext = new DataNodeRouter(
-                schemaContext.getSchema().getMetaData(), schemaContexts.getProperties(), schemaContext.getSchema().getRules()).route(sqlStatement, sql, Collections.emptyList());
+                schemaContext.getSchema().getMetaData(), schemaContexts.getProps(), schemaContext.getSchema().getRules()).route(sqlStatement, sql, Collections.emptyList());
         SQLRewriteResult sqlRewriteResult = new SQLRewriteEntry(schemaContext.getSchema().getMetaData().getSchema().getConfiguredSchemaMetaData(),
-                schemaContexts.getProperties(), schemaContext.getSchema().getRules()).rewrite(sql, Collections.emptyList(), routeContext);
+                schemaContexts.getProps(), schemaContext.getSchema().getRules()).rewrite(sql, Collections.emptyList(), routeContext);
         ExecutionContext result = new ExecutionContext(routeContext.getSqlStatementContext(), ExecutionContextBuilder.build(schemaContext.getSchema().getMetaData(), sqlRewriteResult));
-        logSQL(sql, schemaContexts.getProperties(), result);
+        logSQL(sql, schemaContexts.getProps(), result);
         return result;
     }
     
@@ -299,20 +299,20 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         statements.clear();
     }
     
-    private void logSQL(final String sql, final ConfigurationProperties properties, final ExecutionContext executionContext) {
-        if (properties.<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
-            SQLLogger.logSQL(sql, properties.<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
+    private void logSQL(final String sql, final ConfigurationProperties props, final ExecutionContext executionContext) {
+        if (props.<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
+            SQLLogger.logSQL(sql, props.<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
         }
     }
     
     private Collection<InputGroup<StatementExecuteUnit>> getInputGroups() throws SQLException {
-        int maxConnectionsSizePerQuery = schemaContexts.getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        int maxConnectionsSizePerQuery = schemaContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new StatementExecuteGroupEngine(maxConnectionsSizePerQuery, connection, statementOption, 
                 schemaContexts.getDefaultSchemaContext().getSchema().getRules()).generate(executionContext.getExecutionUnits());
     }
     
     private Collection<InputGroup<RawSQLExecuteUnit>> getRawInputGroups() throws SQLException {
-        int maxConnectionsSizePerQuery = schemaContexts.getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        int maxConnectionsSizePerQuery = schemaContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new RawExecuteGroupEngine(maxConnectionsSizePerQuery, schemaContexts.getDefaultSchemaContext().getSchema().getRules()).generate(executionContext.getExecutionUnits());
     }
     
@@ -365,7 +365,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {
         SchemaContext schemaContext = schemaContexts.getDefaultSchemaContext();
         MergeEngine mergeEngine = new MergeEngine(schemaContext.getSchema().getDatabaseType(), 
-                schemaContext.getSchema().getMetaData().getSchema().getConfiguredSchemaMetaData(), schemaContexts.getProperties(), schemaContext.getSchema().getRules());
+                schemaContext.getSchema().getMetaData().getSchema().getConfiguredSchemaMetaData(), schemaContexts.getProps(), schemaContext.getSchema().getRules());
         return mergeEngine.merge(queryResults, executionContext.getSqlStatementContext());
     }
     

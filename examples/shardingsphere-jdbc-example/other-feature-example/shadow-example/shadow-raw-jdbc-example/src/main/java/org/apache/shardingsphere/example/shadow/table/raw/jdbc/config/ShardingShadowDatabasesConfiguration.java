@@ -47,10 +47,10 @@ public final class ShardingShadowDatabasesConfiguration implements ExampleConfig
         dataSourceMap.put("shadow_ds_1", DataSourceUtil.createDataSource("shadow_demo_ds_1"));
         ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
         shardingRuleConfiguration.getTables().add(getUserTableConfiguration());
-        Properties properties = new Properties();
-        properties.setProperty("sql.show", "true");
+        Properties props = new Properties();
+        props.setProperty("sql.show", "true");
         ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration("shadow", shadowMappings);
-        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Arrays.asList(shadowRuleConfiguration, shardingRuleConfiguration), properties);
+        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Arrays.asList(shadowRuleConfiguration, shardingRuleConfiguration), props);
     }
     
     private ShardingTableRuleConfiguration getUserTableConfiguration() {

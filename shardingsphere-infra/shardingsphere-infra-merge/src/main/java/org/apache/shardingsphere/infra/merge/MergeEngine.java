@@ -53,14 +53,14 @@ public final class MergeEngine {
     
     private final SchemaMetaData schemaMetaData;
     
-    private final ConfigurationProperties properties;
+    private final ConfigurationProperties props;
     
     private final Map<ShardingSphereRule, ResultProcessEngine> engines;
     
-    public MergeEngine(final DatabaseType databaseType, final SchemaMetaData schemaMetaData, final ConfigurationProperties properties, final Collection<ShardingSphereRule> rules) {
+    public MergeEngine(final DatabaseType databaseType, final SchemaMetaData schemaMetaData, final ConfigurationProperties props, final Collection<ShardingSphereRule> rules) {
         this.databaseType = databaseType;
         this.schemaMetaData = schemaMetaData;
-        this.properties = properties;
+        this.props = props;
         engines = OrderedSPIRegistry.getRegisteredServices(rules, ResultProcessEngine.class);
     }
     
@@ -82,7 +82,7 @@ public final class MergeEngine {
     private Optional<MergedResult> executeMerge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
         for (Entry<ShardingSphereRule, ResultProcessEngine> entry : engines.entrySet()) {
             if (entry.getValue() instanceof ResultMergerEngine) {
-                ResultMerger resultMerger = ((ResultMergerEngine) entry.getValue()).newInstance(databaseType, entry.getKey(), properties, sqlStatementContext);
+                ResultMerger resultMerger = ((ResultMergerEngine) entry.getValue()).newInstance(databaseType, entry.getKey(), props, sqlStatementContext);
                 return Optional.of(resultMerger.merge(queryResults, sqlStatementContext, schemaMetaData));
             }
         }
@@ -94,7 +94,7 @@ public final class MergeEngine {
         MergedResult result = null;
         for (Entry<ShardingSphereRule, ResultProcessEngine> entry : engines.entrySet()) {
             if (entry.getValue() instanceof ResultDecoratorEngine) {
-                ResultDecorator resultDecorator = ((ResultDecoratorEngine) entry.getValue()).newInstance(databaseType, schemaMetaData, entry.getKey(), properties, sqlStatementContext);
+                ResultDecorator resultDecorator = ((ResultDecoratorEngine) entry.getValue()).newInstance(databaseType, schemaMetaData, entry.getKey(), props, sqlStatementContext);
                 result = null == result ? resultDecorator.decorate(mergedResult, sqlStatementContext, schemaMetaData) : resultDecorator.decorate(result, sqlStatementContext, schemaMetaData);
             }
         }
@@ -106,7 +106,7 @@ public final class MergeEngine {
         MergedResult result = null;
         for (Entry<ShardingSphereRule, ResultProcessEngine> entry : engines.entrySet()) {
             if (entry.getValue() instanceof ResultDecoratorEngine) {
-                ResultDecorator resultDecorator = ((ResultDecoratorEngine) entry.getValue()).newInstance(databaseType, schemaMetaData, entry.getKey(), properties, sqlStatementContext);
+                ResultDecorator resultDecorator = ((ResultDecoratorEngine) entry.getValue()).newInstance(databaseType, schemaMetaData, entry.getKey(), props, sqlStatementContext);
                 result = null == result ? resultDecorator.decorate(queryResult, sqlStatementContext, schemaMetaData) : resultDecorator.decorate(result, sqlStatementContext, schemaMetaData);
             }
         }

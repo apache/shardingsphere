@@ -53,8 +53,8 @@ public final class PropertyUtil {
     @SuppressWarnings("unchecked")
     public static boolean containPropertyPrefix(final Environment environment, final String prefix) {
         try {
-            Map<String, Object> properties = (Map<String, Object>) (1 == springBootVersion ? v1(environment, prefix, false) : v2(environment, prefix, Map.class));
-            return !properties.isEmpty();
+            Map<String, Object> props = (Map<String, Object>) (1 == springBootVersion ? v1(environment, prefix, false) : v2(environment, prefix, Map.class));
+            return !props.isEmpty();
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON

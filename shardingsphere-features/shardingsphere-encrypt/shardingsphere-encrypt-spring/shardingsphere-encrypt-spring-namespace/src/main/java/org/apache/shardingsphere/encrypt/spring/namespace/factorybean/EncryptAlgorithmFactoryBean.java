@@ -41,11 +41,11 @@ public final class EncryptAlgorithmFactoryBean implements FactoryBean<EncryptAlg
     
     private final String type;
     
-    private final Properties properties;
+    private final Properties props;
     
     @Override
     public EncryptAlgorithm getObject() {
-        return TypedSPIRegistry.getRegisteredService(EncryptAlgorithm.class, type, properties);
+        return TypedSPIRegistry.getRegisteredService(EncryptAlgorithm.class, type, props);
     }
     
     @Override

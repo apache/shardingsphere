@@ -33,9 +33,9 @@ public interface SQLRewriteContextDecorator<T extends ShardingSphereRule> extend
      * Decorate SQL rewrite context.
      *
      * @param rule rule
-     * @param properties ShardingSphere properties
+     * @param props ShardingSphere properties
      * @param sqlRewriteContext SQL rewrite context to be decorated
      * @param routeContext route context
      */
-    void decorate(T rule, ConfigurationProperties properties, SQLRewriteContext sqlRewriteContext, RouteContext routeContext);
+    void decorate(T rule, ConfigurationProperties props, SQLRewriteContext sqlRewriteContext, RouteContext routeContext);
 }

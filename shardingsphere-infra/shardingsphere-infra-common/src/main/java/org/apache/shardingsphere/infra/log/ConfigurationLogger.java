@@ -62,11 +62,11 @@ public final class ConfigurationLogger {
     /**
      * Log properties.
      *
-     * @param properties properties
+     * @param props properties
      */
-    public static void log(final Properties properties) {
-        if (null != properties) {
-            log(properties.getClass().getSimpleName(), YamlEngine.marshal(properties));
+    public static void log(final Properties props) {
+        if (null != props) {
+            log(props.getClass().getSimpleName(), YamlEngine.marshal(props));
         }
     }
     

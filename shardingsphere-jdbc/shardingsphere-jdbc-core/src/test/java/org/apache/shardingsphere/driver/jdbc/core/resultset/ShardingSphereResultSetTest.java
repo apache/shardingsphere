@@ -66,7 +66,7 @@ public final class ShardingSphereResultSetTest {
     public void setUp() throws SQLException {
         mergeResultSet = mock(MergedResult.class);
         RuntimeContext runtimeContext = mock(RuntimeContext.class);
-        when(runtimeContext.getProperties()).thenReturn(new ConfigurationProperties(new Properties()));
+        when(runtimeContext.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         shardingSphereResultSet = new ShardingSphereResultSet(getResultSets(), mergeResultSet, getShardingSphereStatement(), createExecutionContext());
     }
     
@@ -92,7 +92,7 @@ public final class ShardingSphereResultSetTest {
     private ShardingSphereStatement getShardingSphereStatement() {
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class);
         SchemaContexts schemaContexts = mock(SchemaContexts.class);
-        when(schemaContexts.getProperties()).thenReturn(new ConfigurationProperties(new Properties()));
+        when(schemaContexts.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         when(connection.getSchemaContexts()).thenReturn(schemaContexts);
         ShardingSphereStatement result = mock(ShardingSphereStatement.class);
         when(result.getConnection()).thenReturn(connection);

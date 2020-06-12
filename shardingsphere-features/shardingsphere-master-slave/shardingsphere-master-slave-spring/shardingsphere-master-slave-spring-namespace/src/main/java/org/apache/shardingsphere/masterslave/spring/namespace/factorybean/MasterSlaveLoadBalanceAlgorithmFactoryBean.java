@@ -41,11 +41,11 @@ public final class MasterSlaveLoadBalanceAlgorithmFactoryBean implements Factory
     
     private final String type;
     
-    private final Properties properties;
+    private final Properties props;
     
     @Override
     public MasterSlaveLoadBalanceAlgorithm getObject() {
-        return TypedSPIRegistry.getRegisteredService(MasterSlaveLoadBalanceAlgorithm.class, type, properties);
+        return TypedSPIRegistry.getRegisteredService(MasterSlaveLoadBalanceAlgorithm.class, type, props);
     }
     
     @Override

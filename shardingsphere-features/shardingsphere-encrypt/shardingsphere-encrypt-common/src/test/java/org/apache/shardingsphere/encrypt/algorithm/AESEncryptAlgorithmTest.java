@@ -66,8 +66,8 @@ public final class AESEncryptAlgorithmTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertDecodeWithoutKey() {
-        Properties properties = new Properties();
-        encryptAlgorithm.setProps(properties);
+        Properties props = new Properties();
+        encryptAlgorithm.setProps(props);
         assertThat(encryptAlgorithm.decrypt("dSpPiyENQGDUXMKFMJPGWA==").toString(), is("test"));
     }
     

@@ -55,7 +55,7 @@ public final class ShardingRouteDecorator implements RouteDecorator<ShardingRule
     
     @SuppressWarnings("unchecked")
     @Override
-    public RouteContext decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final ShardingRule shardingRule, final ConfigurationProperties properties) {
+    public RouteContext decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final ShardingRule shardingRule, final ConfigurationProperties props) {
         SQLStatementContext sqlStatementContext = routeContext.getSqlStatementContext();
         List<Object> parameters = routeContext.getParameters();
         ShardingStatementValidatorFactory.newInstance(
@@ -66,7 +66,7 @@ public final class ShardingRouteDecorator implements RouteDecorator<ShardingRule
             checkSubqueryShardingValues(sqlStatementContext, shardingRule, shardingConditions);
             mergeShardingConditions(shardingConditions);
         }
-        ShardingRouteEngine shardingRouteEngine = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, properties);
+        ShardingRouteEngine shardingRouteEngine = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props);
         RouteResult routeResult = shardingRouteEngine.route(shardingRule);
         if (needMergeShardingValues) {
             Preconditions.checkState(1 == routeResult.getRouteUnits().size(), "Must have one sharding with subquery.");
