@@ -21,14 +21,14 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * SPI bean definition tag.
+ * Sharding algorithm bean definition tag.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SPIBeanDefinitionTag {
+public final class ShardingAlgorithmBeanDefinitionTag {
     
-    public static final String SHARDING_ALGORITHM_TAG = "sharding-algorithm";
+    public static final String ROOT_TAG = "sharding-algorithm";
     
-    public static final String SHARDING_ALGORITHM_TYPE_ATTRIBUTE = "type";
+    public static final String TYPE_ATTRIBUTE = "type";
     
     public static final String PROPS_TAG = "props";
 }

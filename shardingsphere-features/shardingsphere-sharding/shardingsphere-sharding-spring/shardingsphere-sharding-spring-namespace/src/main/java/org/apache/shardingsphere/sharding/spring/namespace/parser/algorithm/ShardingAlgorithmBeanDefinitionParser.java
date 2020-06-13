@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.spring.namespace.parser.algorithm;
 
 import org.apache.shardingsphere.sharding.spring.namespace.factorybean.ShardingAlgorithmFactoryBean;
-import org.apache.shardingsphere.sharding.spring.namespace.tag.algorithm.SPIBeanDefinitionTag;
+import org.apache.shardingsphere.sharding.spring.namespace.tag.algorithm.ShardingAlgorithmBeanDefinitionTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -36,13 +36,13 @@ public final class ShardingAlgorithmBeanDefinitionParser extends AbstractBeanDef
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingAlgorithmFactoryBean.class);
-        factory.addConstructorArgValue(element.getAttribute(SPIBeanDefinitionTag.SHARDING_ALGORITHM_TYPE_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(ShardingAlgorithmBeanDefinitionTag.TYPE_ATTRIBUTE));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
         return factory.getBeanDefinition();
     }
     
     private Properties parseProperties(final Element element, final ParserContext parserContext) {
-        Element propsElement = DomUtils.getChildElementByTagName(element, SPIBeanDefinitionTag.PROPS_TAG);
+        Element propsElement = DomUtils.getChildElementByTagName(element, ShardingAlgorithmBeanDefinitionTag.PROPS_TAG);
         return null == propsElement ? new Properties() : parserContext.getDelegate().parsePropsElement(propsElement);
     }
 }
