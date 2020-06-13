@@ -21,14 +21,20 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * SPI bean definition tag.
+ * Key generate algorithm bean definition tag.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SPIBeanDefinitionTag {
+public final class KeyGenerateAlgorithmBeanDefinitionTag {
     
-    public static final String SHARDING_ALGORITHM_TAG = "sharding-algorithm";
+    public static final String ALGORITHM_TAG = "key-generate-algorithm";
     
-    public static final String SHARDING_ALGORITHM_TYPE_ATTRIBUTE = "type";
+    public static final String TYPE_ATTRIBUTE = "type";
     
-    public static final String PROPS_TAG = "props";
+    public static final String STRATEGY_REF_ATTRIBUTE = "key-generate-strategy-ref";
+    
+    public static final String STRATEGY_TAG = "key-generate-strategy";
+    
+    public static final String COLUMN_ATTRIBUTE = "column";
+    
+    public static final String ALGORITHM_REF_TAG = "algorithm-ref";
 }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.spring.namespace.parser;
 
 import org.apache.shardingsphere.sharding.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean;
+import org.apache.shardingsphere.sharding.spring.namespace.tag.KeyGenerateAlgorithmBeanDefinitionTag;
 import org.apache.shardingsphere.sharding.spring.namespace.tag.SPIBeanDefinitionTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -36,7 +37,7 @@ public final class KeyGenerateAlgorithmBeanDefinitionParser extends AbstractBean
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(KeyGenerateAlgorithmFactoryBean.class);
-        factory.addConstructorArgValue(element.getAttribute(SPIBeanDefinitionTag.KEY_GENERATE_ALGORITHM_TYPE_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(KeyGenerateAlgorithmBeanDefinitionTag.TYPE_ATTRIBUTE));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
         return factory.getBeanDefinition();
     }
