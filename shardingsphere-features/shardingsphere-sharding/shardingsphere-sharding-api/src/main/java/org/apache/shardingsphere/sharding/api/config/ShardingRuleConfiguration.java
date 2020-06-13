@@ -39,9 +39,9 @@ import java.util.Map;
 public final class ShardingRuleConfiguration implements RuleConfiguration {
     
     private Collection<ShardingTableRuleConfiguration> tables = new LinkedList<>();
-
+    
     private Collection<ShardingAutoTableRuleConfiguration> autoTables = new LinkedList<>();
-
+    
     private Collection<String> bindingTableGroups = new LinkedList<>();
     
     private Collection<String> broadcastTables = new LinkedList<>();
