@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.sharding.spring.namespace.handler;
 
-import org.apache.shardingsphere.sharding.spring.namespace.parser.KeyGenerateAlgorithmBeanDefinitionParser;
-import org.apache.shardingsphere.sharding.spring.namespace.parser.KeyGenerateStrategyBeanDefinitionParser;
-import org.apache.shardingsphere.sharding.spring.namespace.parser.ShardingAlgorithmBeanDefinitionParser;
-import org.apache.shardingsphere.sharding.spring.namespace.parser.ShardingRuleBeanDefinitionParser;
-import org.apache.shardingsphere.sharding.spring.namespace.parser.ShardingStrategyBeanDefinitionParser;
+import org.apache.shardingsphere.sharding.spring.namespace.parser.algorithm.KeyGenerateAlgorithmBeanDefinitionParser;
+import org.apache.shardingsphere.sharding.spring.namespace.parser.strategy.KeyGenerateStrategyBeanDefinitionParser;
+import org.apache.shardingsphere.sharding.spring.namespace.parser.algorithm.ShardingAlgorithmBeanDefinitionParser;
+import org.apache.shardingsphere.sharding.spring.namespace.parser.rule.ShardingRuleBeanDefinitionParser;
+import org.apache.shardingsphere.sharding.spring.namespace.parser.strategy.ShardingStrategyBeanDefinitionParser;
 import org.apache.shardingsphere.sharding.spring.namespace.tag.KeyGenerateAlgorithmBeanDefinitionTag;
 import org.apache.shardingsphere.sharding.spring.namespace.tag.SPIBeanDefinitionTag;
 import org.apache.shardingsphere.sharding.spring.namespace.tag.ShardingRuleBeanDefinitionTag;

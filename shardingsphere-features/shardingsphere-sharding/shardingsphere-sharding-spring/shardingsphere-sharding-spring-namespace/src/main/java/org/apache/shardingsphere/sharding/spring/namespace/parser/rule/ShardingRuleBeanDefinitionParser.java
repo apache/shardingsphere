@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.spring.namespace.parser;
+package org.apache.shardingsphere.sharding.spring.namespace.parser.rule;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
