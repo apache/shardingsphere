@@ -53,7 +53,7 @@ public final class ConfigCenterNodeTest {
     
     @Test
     public void assertGetPropsPath() {
-        assertThat(configurationNode.getPropsPath(), is("/test/config/properties"));
+        assertThat(configurationNode.getPropsPath(), is("/test/config/props"));
     }
     
     @Test

@@ -26,5 +26,5 @@ public final class LoadBalanceAlgorithmBeanDefinitionTag {
     
     public static final String TYPE_ATTRIBUTE = "type";
     
-    public static final String PROPS_TAG = "properties";
+    public static final String PROPS_TAG = "props";
 }
