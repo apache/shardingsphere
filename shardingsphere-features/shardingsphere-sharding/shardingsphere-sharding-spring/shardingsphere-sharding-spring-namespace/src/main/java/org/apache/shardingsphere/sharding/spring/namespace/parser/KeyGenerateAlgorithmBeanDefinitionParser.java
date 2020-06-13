@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.spring.namespace.parser;
 
 import org.apache.shardingsphere.sharding.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean;
 import org.apache.shardingsphere.sharding.spring.namespace.tag.KeyGenerateAlgorithmBeanDefinitionTag;
-import org.apache.shardingsphere.sharding.spring.namespace.tag.SPIBeanDefinitionTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -43,7 +42,7 @@ public final class KeyGenerateAlgorithmBeanDefinitionParser extends AbstractBean
     }
     
     private Properties parseProperties(final Element element, final ParserContext parserContext) {
-        Element propsElement = DomUtils.getChildElementByTagName(element, SPIBeanDefinitionTag.PROPS_TAG);
+        Element propsElement = DomUtils.getChildElementByTagName(element, KeyGenerateAlgorithmBeanDefinitionTag.PROPS_TAG);
         return null == propsElement ? new Properties() : parserContext.getDelegate().parsePropsElement(propsElement);
     }
 }

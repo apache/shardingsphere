@@ -30,6 +30,8 @@ public final class KeyGenerateAlgorithmBeanDefinitionTag {
     
     public static final String TYPE_ATTRIBUTE = "type";
     
+    public static final String PROPS_TAG = "props";
+    
     public static final String STRATEGY_REF_ATTRIBUTE = "key-generate-strategy-ref";
     
     public static final String STRATEGY_TAG = "key-generate-strategy";
