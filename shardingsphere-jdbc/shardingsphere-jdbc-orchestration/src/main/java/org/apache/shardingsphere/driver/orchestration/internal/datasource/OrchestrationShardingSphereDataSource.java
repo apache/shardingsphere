@@ -102,7 +102,7 @@ public class OrchestrationShardingSphereDataSource extends AbstractOrchestration
         super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(DefaultSchema.LOGIC_NAME)));
         dataSource = shardingSphereDataSource;
         initShardingOrchestrationFacade(Collections.singletonMap(DefaultSchema.LOGIC_NAME, DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap())),
-                getRuleConfigurationMap(), dataSource.getSchemaContexts().getProperties().getProps());
+                getRuleConfigurationMap(), dataSource.getSchemaContexts().getProps().getProps());
         ClusterFacade.getInstance().init(clusterConfiguration);
         persistMetaData(dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getMetaData().getSchema());
     }
