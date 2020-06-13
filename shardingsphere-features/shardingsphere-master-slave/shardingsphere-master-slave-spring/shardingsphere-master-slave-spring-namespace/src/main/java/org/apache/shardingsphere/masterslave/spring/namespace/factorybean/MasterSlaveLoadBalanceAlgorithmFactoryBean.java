@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.masterslave.spring.namespace.factorybean;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
@@ -30,14 +29,11 @@ import java.util.Properties;
  * Master-slave load balance algorithm factory bean.
  */
 @RequiredArgsConstructor
-@Getter
 public final class MasterSlaveLoadBalanceAlgorithmFactoryBean implements FactoryBean<MasterSlaveLoadBalanceAlgorithm> {
     
     static {
         ShardingSphereServiceLoader.register(MasterSlaveLoadBalanceAlgorithm.class);
     }
-    
-    private final String id;
     
     private final String type;
     

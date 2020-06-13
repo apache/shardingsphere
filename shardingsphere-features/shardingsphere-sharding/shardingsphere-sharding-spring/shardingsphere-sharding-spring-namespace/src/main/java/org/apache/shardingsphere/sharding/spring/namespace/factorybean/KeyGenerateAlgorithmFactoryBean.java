@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.spring.namespace.factorybean;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import lombok.Getter;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
@@ -30,7 +29,6 @@ import java.util.Properties;
 /**
  * Key generate algorithm factory bean.
  */
-@Getter
 public final class KeyGenerateAlgorithmFactoryBean implements FactoryBean<KeyGenerateAlgorithm> {
     
     static {

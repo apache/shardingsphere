@@ -36,7 +36,6 @@ public final class MasterSlaveLoadBalanceAlgorithmBeanDefinitionParser extends A
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(MasterSlaveLoadBalanceAlgorithmFactoryBean.class);
-        factory.addConstructorArgValue(element.getAttribute(LoadBalanceAlgorithmBeanDefinitionTag.ID_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(LoadBalanceAlgorithmBeanDefinitionTag.TYPE_ATTRIBUTE));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
         return factory.getBeanDefinition();

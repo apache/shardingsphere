@@ -19,10 +19,9 @@ package org.apache.shardingsphere.sharding.spring.namespace.factorybean;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import lombok.Getter;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
+import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.springframework.beans.factory.FactoryBean;
 
 import java.util.Properties;
@@ -30,7 +29,6 @@ import java.util.Properties;
 /**
  * Sharding algorithm factory bean.
  */
-@Getter
 public final class ShardingAlgorithmFactoryBean implements FactoryBean<ShardingAlgorithm> {
 
     static {
