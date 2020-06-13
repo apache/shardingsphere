@@ -36,7 +36,6 @@ public final class EncryptAlgorithmBeanDefinitionParser extends AbstractBeanDefi
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(EncryptAlgorithmFactoryBean.class);
-        factory.addConstructorArgValue(element.getAttribute(EncryptAlgorithmBeanDefinitionTag.ID_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(EncryptAlgorithmBeanDefinitionTag.TYPE_ATTRIBUTE));
         factory.addConstructorArgValue(parseProperties(element, parserContext));
         return factory.getBeanDefinition();

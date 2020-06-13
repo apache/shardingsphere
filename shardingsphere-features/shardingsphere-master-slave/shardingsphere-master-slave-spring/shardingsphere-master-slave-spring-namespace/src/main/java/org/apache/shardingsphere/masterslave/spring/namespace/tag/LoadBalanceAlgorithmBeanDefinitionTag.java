@@ -24,8 +24,6 @@ public final class LoadBalanceAlgorithmBeanDefinitionTag {
     
     public static final String ROOT_TAG = "load-balance-algorithm";
     
-    public static final String ID_ATTRIBUTE = "id";
-    
     public static final String TYPE_ATTRIBUTE = "type";
     
     public static final String PROPS_TAG = "properties";
