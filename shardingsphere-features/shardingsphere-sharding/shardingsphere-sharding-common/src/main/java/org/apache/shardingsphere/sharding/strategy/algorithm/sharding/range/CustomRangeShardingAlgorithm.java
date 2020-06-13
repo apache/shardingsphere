@@ -48,11 +48,6 @@ public final class CustomRangeShardingAlgorithm extends AbstractRangeShardingAlg
     private static final String PARTITION_RANGES = "partition.ranges";
     
     @Override
-    public String getType() {
-        return "CUSTOM_RANGE";
-    }
-    
-    @Override
     public Map<Integer, Range<Long>> createPartitionRangeMap(final Properties props) {
         Preconditions.checkNotNull(props.get(PARTITION_RANGES), "Custom range sharding algorithm partition ranges cannot be null.");
         List<Long> partitionRanges = Splitter.on(",").trimResults().splitToList(props.get(PARTITION_RANGES).toString())
@@ -72,5 +67,10 @@ public final class CustomRangeShardingAlgorithm extends AbstractRangeShardingAlg
             }
         }
         return result;
+    }
+    
+    @Override
+    public String getType() {
+        return "CUSTOM_RANGE";
     }
 }

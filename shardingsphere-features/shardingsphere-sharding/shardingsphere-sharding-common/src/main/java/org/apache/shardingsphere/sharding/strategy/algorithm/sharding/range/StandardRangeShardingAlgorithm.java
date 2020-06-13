@@ -49,11 +49,6 @@ public final class StandardRangeShardingAlgorithm extends AbstractRangeShardingA
     private static final String PARTITION_VOLUME = "partition.volume";
     
     @Override
-    public String getType() {
-        return "STANDARD_RANGE";
-    }
-    
-    @Override
     public Map<Integer, Range<Long>> createPartitionRangeMap(final Properties props) {
         Preconditions.checkNotNull(props.get(RANGE_LOWER), "Standard range sharding algorithm partition lower cannot be null.");
         Preconditions.checkNotNull(props.get(RANGE_UPPER), "Standard range sharding algorithm partition upper cannot be null.");
@@ -70,5 +65,10 @@ public final class StandardRangeShardingAlgorithm extends AbstractRangeShardingA
         }
         result.put(partitionSize + 1, Range.atLeast(upper));
         return result;
+    }
+    
+    @Override
+    public String getType() {
+        return "STANDARD_RANGE";
     }
 }
