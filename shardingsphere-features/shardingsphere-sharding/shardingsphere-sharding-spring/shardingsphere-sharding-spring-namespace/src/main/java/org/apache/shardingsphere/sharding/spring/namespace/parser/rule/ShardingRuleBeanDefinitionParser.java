@@ -23,12 +23,11 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean;
 import org.apache.shardingsphere.sharding.spring.namespace.tag.rule.ShardingRuleBeanDefinitionTag;
 import org.apache.shardingsphere.sharding.strategy.algorithm.keygen.config.AlgorithmProvidedShardingRuleConfiguration;
+import org.apache.shardingsphere.spring.namespace.parser.ShardingSphereAlgorithmBeanRegistry;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.ManagedList;
-import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
@@ -37,7 +36,6 @@ import org.w3c.dom.Element;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Sharding rule parser for spring namespace.
@@ -54,7 +52,7 @@ public final class ShardingRuleBeanDefinitionParser extends AbstractBeanDefiniti
         factory.addPropertyValue("bindingTableGroups", parseBindingTablesConfiguration(element));
         factory.addPropertyValue("broadcastTables", parseBroadcastTables(element));
         parseDefaultKeyGenerateStrategy(factory, element);
-        factory.addPropertyValue("keyGenerators", getKeyGenerateAlgorithmBeanRefs(parserContext));
+        factory.addPropertyValue("keyGenerators", ShardingSphereAlgorithmBeanRegistry.getAlgorithmBeanReferences(parserContext, KeyGenerateAlgorithmFactoryBean.class));
         return factory.getBeanDefinition();
     }
     
@@ -188,16 +186,6 @@ public final class ShardingRuleBeanDefinitionParser extends AbstractBeanDefiniti
         List<String> result = new LinkedList<>();
         for (Element each : broadcastTableRuleElements) {
             result.add(each.getAttribute(ShardingRuleBeanDefinitionTag.TABLE_ATTRIBUTE));
-        }
-        return result;
-    }
-    
-    private Map<String, RuntimeBeanReference> getKeyGenerateAlgorithmBeanRefs(final ParserContext parserContext) {
-        Map<String, RuntimeBeanReference> result = new ManagedMap<>();
-        for (String each : parserContext.getRegistry().getBeanDefinitionNames()) {
-            if (parserContext.getRegistry().getBeanDefinition(each).getBeanClassName().equals(KeyGenerateAlgorithmFactoryBean.class.getName())) {
-                result.put(each, new RuntimeBeanReference(each));
-            }
         }
         return result;
     }
