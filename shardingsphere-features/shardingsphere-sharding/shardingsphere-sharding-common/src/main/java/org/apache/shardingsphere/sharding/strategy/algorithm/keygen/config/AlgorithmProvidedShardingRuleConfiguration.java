@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.strategy.algorithm.keygen.config;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -27,29 +27,28 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingS
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
 
 /**
  * Algorithm provided sharding rule configuration.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
 public final class AlgorithmProvidedShardingRuleConfiguration implements RuleConfiguration {
     
-    private Collection<ShardingTableRuleConfiguration> tables = new LinkedList<>();
+    private final Collection<ShardingTableRuleConfiguration> tables;
     
-    private Collection<ShardingAutoTableRuleConfiguration> autoTables = new LinkedList<>();
+    private final Collection<ShardingAutoTableRuleConfiguration> autoTables;
     
-    private Collection<String> bindingTableGroups = new LinkedList<>();
+    private final Collection<String> bindingTableGroups;
     
-    private Collection<String> broadcastTables = new LinkedList<>();
+    private final Collection<String> broadcastTables;
     
-    private ShardingStrategyConfiguration defaultDatabaseShardingStrategy;
+    private final ShardingStrategyConfiguration defaultDatabaseShardingStrategy;
     
-    private ShardingStrategyConfiguration defaultTableShardingStrategy;
+    private final ShardingStrategyConfiguration defaultTableShardingStrategy;
     
-    private KeyGenerateStrategyConfiguration defaultKeyGenerateStrategy;
+    private final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategy;
     
-    private Map<String, KeyGenerateAlgorithm> keyGenerators;
+    private final Map<String, KeyGenerateAlgorithm> keyGenerators;
 }
