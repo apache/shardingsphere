@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.spring.boot.orchestration.type;
 
+import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
@@ -35,6 +36,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -46,46 +50,32 @@ import static org.junit.Assert.assertTrue;
 @SpringBootApplication
 @ActiveProfiles("registry")
 public class OrchestrationSpringBootRegistryEncryptTest {
-    
+
+    private static final String DATA_SOURCE_FILE = "yaml/data-source.yaml";
+
+    private static final String ENCRYPT_RULE_FILE = "yaml/encrypt-rule.yaml";
+
     @Resource
     private DataSource dataSource;
     
     @BeforeClass
     public static void init() {
         EmbedTestingServer.start();
+        String dataSource = readYAML(DATA_SOURCE_FILE);
+        String encryptRule = readYAML(ENCRYPT_RULE_FILE);
         TestCenterRepository testCenter = new TestCenterRepository();
-        testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/datasource", ""
-                + "dataSource: !!org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration\n" 
-                + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
-                + "  props:\n"
-                + "    url: jdbc:h2:mem:ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL\n"
-                + "    maxTotal: 100\n"
-                + "    password: ''\n"
-                + "    username: sa\n");
-        testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/rule", ""
-                + "rules:\n"
-                + "- !ENCRYPT\n"
-                + "  encryptors:\n"
-                + "    order_encrypt:\n"
-                + "      props:\n"
-                + "        aes.key.value: '123456'\n"
-                + "      type: AES\n"
-                + "  tables:\n" 
-                + "    t_order:\n" 
-                + "      columns:\n"
-                + "         user_id:\n"
-                + "           cipherColumn: user_id\n"
-                + "           encryptorName: order_encrypt\n");
+        testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/datasource", dataSource);
+        testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/rule", encryptRule);
         testCenter.persist("/demo_spring_boot_ds_center/config/props", "sql.show: 'true'\n");
         testCenter.persist("/demo_spring_boot_ds_center/registry/datasources", "");
     }
-    
+
     @Test
     public void assertWithEncryptDataSource() throws NoSuchFieldException, IllegalAccessException {
-        assertTrue(dataSource instanceof OrchestrationShardingSphereDataSource);
+        assertTrue(this.dataSource instanceof OrchestrationShardingSphereDataSource);
         Field field = OrchestrationShardingSphereDataSource.class.getDeclaredField("dataSource");
         field.setAccessible(true);
-        ShardingSphereDataSource encryptDataSource = (ShardingSphereDataSource) field.get(dataSource);
+        ShardingSphereDataSource encryptDataSource = (ShardingSphereDataSource) field.get(this.dataSource);
         BasicDataSource embedDataSource = (BasicDataSource) encryptDataSource.getDataSourceMap().values().iterator().next();
         assertThat(embedDataSource.getMaxTotal(), is(100));
         assertThat(embedDataSource.getUsername(), is("sa"));
@@ -94,5 +84,10 @@ public class OrchestrationSpringBootRegistryEncryptTest {
         EncryptAlgorithmConfiguration encryptAlgorithmConfiguration = configuration.getEncryptors().get("order_encrypt");
         assertThat(encryptAlgorithmConfiguration, instanceOf(EncryptAlgorithmConfiguration.class));
         assertThat(encryptAlgorithmConfiguration.getType(), is("AES"));
+    }
+
+    @SneakyThrows
+    private static String readYAML(final String yamlFile) {
+        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI())).stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
 }
