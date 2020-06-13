@@ -15,28 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.spring.namespace.tag;
+package org.apache.shardingsphere.sharding.spring.namespace.parser.strategy;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
+import org.springframework.beans.factory.xml.ParserContext;
+import org.w3c.dom.Element;
 
 /**
- * Key generate algorithm bean definition tag.
+ * Sharding strategy bean parser for spring namespace.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class KeyGenerateAlgorithmBeanDefinitionTag {
+public final class ShardingStrategyBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
-    public static final String ALGORITHM_TAG = "key-generate-algorithm";
-    
-    public static final String TYPE_ATTRIBUTE = "type";
-    
-    public static final String PROPS_TAG = "props";
-    
-    public static final String STRATEGY_REF_ATTRIBUTE = "key-generate-strategy-ref";
-    
-    public static final String STRATEGY_TAG = "key-generate-strategy";
-    
-    public static final String COLUMN_ATTRIBUTE = "column";
-    
-    public static final String ALGORITHM_REF_TAG = "algorithm-ref";
+    @Override
+    protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
+        return ShardingStrategyBeanDefinition.getBeanDefinitionByElement(element);
+    }
 }

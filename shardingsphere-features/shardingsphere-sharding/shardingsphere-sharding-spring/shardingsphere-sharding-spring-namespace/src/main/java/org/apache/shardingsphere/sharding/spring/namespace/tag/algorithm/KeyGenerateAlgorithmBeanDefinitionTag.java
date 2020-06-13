@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.spring.namespace.tag;
+package org.apache.shardingsphere.sharding.spring.namespace.tag.algorithm;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * SPI bean definition tag.
+ * Key generate algorithm bean definition tag.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SPIBeanDefinitionTag {
+public final class KeyGenerateAlgorithmBeanDefinitionTag {
     
-    public static final String SHARDING_ALGORITHM_TAG = "sharding-algorithm";
+    public static final String ROOT_TAG = "key-generate-algorithm";
     
-    public static final String SHARDING_ALGORITHM_TYPE_ATTRIBUTE = "type";
+    public static final String TYPE_ATTRIBUTE = "type";
     
     public static final String PROPS_TAG = "props";
 }

@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.spring.namespace.parser;
+package org.apache.shardingsphere.sharding.spring.namespace.tag.algorithm;
 
-import org.springframework.beans.factory.support.AbstractBeanDefinition;
-import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
-import org.springframework.beans.factory.xml.ParserContext;
-import org.w3c.dom.Element;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Sharding strategy bean parser for spring namespace.
+ * Sharding algorithm bean definition tag.
  */
-public final class ShardingStrategyBeanDefinitionParser extends AbstractBeanDefinitionParser {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShardingAlgorithmBeanDefinitionTag {
     
-    @Override
-    protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        return ShardingStrategyBeanDefinition.getBeanDefinitionByElement(element);
-    }
+    public static final String ROOT_TAG = "sharding-algorithm";
+    
+    public static final String TYPE_ATTRIBUTE = "type";
+    
+    public static final String PROPS_TAG = "props";
 }

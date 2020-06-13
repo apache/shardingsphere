@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.spring.namespace.tag;
+package org.apache.shardingsphere.sharding.spring.namespace.tag.rule;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -63,6 +63,8 @@ public final class ShardingRuleBeanDefinitionTag {
     public static final String DEFAULT_DATABASE_STRATEGY_REF_ATTRIBUTE = "default-database-strategy-ref";
     
     public static final String DEFAULT_TABLE_STRATEGY_REF_ATTRIBUTE = "default-table-strategy-ref";
+    
+    public static final String STRATEGY_REF_ATTRIBUTE = "key-generate-strategy-ref";
     
     public static final String DEFAULT_KEY_GENERATE_STRATEGY_REF_ATTRIBUTE = "default-key-generate-strategy-ref";
 }

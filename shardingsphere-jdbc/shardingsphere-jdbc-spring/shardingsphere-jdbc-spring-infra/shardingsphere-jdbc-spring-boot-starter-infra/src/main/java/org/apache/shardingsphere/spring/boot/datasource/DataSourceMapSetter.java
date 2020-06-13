@@ -60,6 +60,7 @@ public final class DataSourceMapSetter {
      * @param environment spring boot environment
      * @return data source map
      */
+    @SuppressWarnings("unchecked")
     public static Map<String, DataSource> getDataSourceMap(final Environment environment) {
         Map<String, DataSource> result = new LinkedHashMap<>();
         Map<String, Object> dataSourceCommonProps = PropertyUtil.handle(environment, COMMON_PREFIX, Map.class);
