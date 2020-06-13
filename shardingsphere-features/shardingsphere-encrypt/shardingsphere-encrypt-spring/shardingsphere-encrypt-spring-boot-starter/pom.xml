@@ -41,7 +41,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-jdbc-spring-boot-util</artifactId>
+            <artifactId>shardingsphere-jdbc-spring-boot-starter-infra</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>

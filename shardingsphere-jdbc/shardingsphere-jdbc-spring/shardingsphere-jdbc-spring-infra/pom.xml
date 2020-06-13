@@ -30,6 +30,6 @@
     <packaging>pom</packaging>
     
     <modules>
-        <module>shardingsphere-jdbc-spring-boot-util</module>
+        <module>shardingsphere-jdbc-spring-boot-starter-infra</module>
     </modules>
 </project>
