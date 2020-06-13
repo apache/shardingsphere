@@ -15,17 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.spring.namespace.parser;
+package org.apache.shardingsphere.spring.namespace.tag;
 
-import org.apache.shardingsphere.encrypt.spring.namespace.factorybean.EncryptAlgorithmFactoryBean;
-import org.apache.shardingsphere.spring.namespace.parser.ShardingSphereAlgorithmBeanDefinitionParser;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Encrypt algorithm bean definition parser.
+ * ShardingSphere algorithm bean definition tag.
  */
-public final class EncryptAlgorithmBeanDefinitionParser extends ShardingSphereAlgorithmBeanDefinitionParser {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShardingSphereAlgorithmBeanDefinitionTag {
     
-    public EncryptAlgorithmBeanDefinitionParser() {
-        super(EncryptAlgorithmFactoryBean.class);
-    }
+    public static final String TYPE_ATTRIBUTE = "type";
+    
+    public static final String PROPS_TAG = "props";
 }
