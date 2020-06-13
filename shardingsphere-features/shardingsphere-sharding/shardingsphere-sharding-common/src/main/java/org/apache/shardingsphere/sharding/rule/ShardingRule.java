@@ -273,10 +273,7 @@ public final class ShardingRule implements DataNodeRoutedRule {
      * @return logic tables is all belong to broadcast encryptors or not
      */
     public boolean isAllBroadcastTables(final Collection<String> logicTableNames) {
-        if (logicTableNames.isEmpty()) {
-            return false;
-        }
-        return logicTableNames.stream().allMatch(this::isBroadcastTable);
+        return !logicTableNames.isEmpty() && logicTableNames.stream().allMatch(this::isBroadcastTable);
     }
     
     /**
