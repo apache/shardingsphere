@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.encrypt.spring.namespace.handler;
 
+import org.apache.shardingsphere.encrypt.spring.namespace.factorybean.EncryptAlgorithmFactoryBean;
 import org.apache.shardingsphere.encrypt.spring.namespace.parser.EncryptRuleBeanDefinitionParser;
-import org.apache.shardingsphere.encrypt.spring.namespace.parser.EncryptAlgorithmBeanDefinitionParser;
-import org.apache.shardingsphere.encrypt.spring.namespace.tag.EncryptRuleBeanDefinitionTag;
 import org.apache.shardingsphere.encrypt.spring.namespace.tag.EncryptAlgorithmBeanDefinitionTag;
+import org.apache.shardingsphere.encrypt.spring.namespace.tag.EncryptRuleBeanDefinitionTag;
+import org.apache.shardingsphere.spring.namespace.parser.ShardingSphereAlgorithmBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
@@ -31,6 +32,6 @@ public final class EncryptRuleNamespaceHandler extends NamespaceHandlerSupport {
     @Override
     public void init() {
         registerBeanDefinitionParser(EncryptRuleBeanDefinitionTag.ROOT_TAG, new EncryptRuleBeanDefinitionParser());
-        registerBeanDefinitionParser(EncryptAlgorithmBeanDefinitionTag.ROOT_TAG, new EncryptAlgorithmBeanDefinitionParser());
+        registerBeanDefinitionParser(EncryptAlgorithmBeanDefinitionTag.ROOT_TAG, new ShardingSphereAlgorithmBeanDefinitionParser(EncryptAlgorithmFactoryBean.class));
     }
 }

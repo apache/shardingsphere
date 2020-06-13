@@ -33,12 +33,12 @@ import java.util.Properties;
  * ShardingSphere algorithm bean parser for spring namespace.
  */
 @RequiredArgsConstructor
-public abstract class ShardingSphereAlgorithmBeanDefinitionParser extends AbstractBeanDefinitionParser {
+public final class ShardingSphereAlgorithmBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
     private final Class<? extends ShardingSphereAlgorithmFactoryBean> beanClass;
     
     @Override
-    protected final AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
+    protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(beanClass);
         factory.addConstructorArgValue(element.getAttribute(ShardingSphereAlgorithmBeanDefinitionTag.TYPE_ATTRIBUTE));
         factory.addConstructorArgValue(parsePropsElement(element, parserContext));
