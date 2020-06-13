@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.spring.namespace.parser.strategy;
 
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
-import org.apache.shardingsphere.sharding.spring.namespace.tag.KeyGenerateAlgorithmBeanDefinitionTag;
+import org.apache.shardingsphere.sharding.spring.namespace.tag.strategy.KeyGenerateStrategyBeanDefinitionTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -33,8 +33,8 @@ public final class KeyGenerateStrategyBeanDefinitionParser extends AbstractBeanD
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(KeyGenerateStrategyConfiguration.class);
-        factory.addConstructorArgValue(element.getAttribute(KeyGenerateAlgorithmBeanDefinitionTag.COLUMN_ATTRIBUTE));
-        factory.addConstructorArgValue(element.getAttribute(KeyGenerateAlgorithmBeanDefinitionTag.ALGORITHM_REF_TAG));
+        factory.addConstructorArgValue(element.getAttribute(KeyGenerateStrategyBeanDefinitionTag.COLUMN_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(KeyGenerateStrategyBeanDefinitionTag.ALGORITHM_REF_TAG));
         return factory.getBeanDefinition();
     }
 }

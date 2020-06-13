@@ -15,28 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.spring.namespace.tag;
+package org.apache.shardingsphere.sharding.spring.namespace.tag.strategy;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Sharding strategy bean definition tag.
+ * Key generate strategy bean definition tag.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingStrategyBeanDefinitionTag {
+public final class KeyGenerateStrategyBeanDefinitionTag {
     
-    public static final String STANDARD_STRATEGY_ROOT_TAG = "standard-strategy";
+    public static final String STRATEGY_REF_ATTRIBUTE = "key-generate-strategy-ref";
     
-    public static final String COMPLEX_STRATEGY_ROOT_TAG = "complex-strategy";
+    public static final String STRATEGY_TAG = "key-generate-strategy";
     
-    public static final String HINT_STRATEGY_ROOT_TAG = "hint-strategy";
+    public static final String COLUMN_ATTRIBUTE = "column";
     
-    public static final String NONE_STRATEGY_ROOT_TAG = "none-strategy";
-    
-    public static final String SHARDING_COLUMN_ATTRIBUTE = "sharding-column";
-    
-    public static final String SHARDING_COLUMNS_ATTRIBUTE = "sharding-columns";
-    
-    public static final String ALGORITHM_REF_ATTRIBUTE = "algorithm-ref";
+    public static final String ALGORITHM_REF_TAG = "algorithm-ref";
 }

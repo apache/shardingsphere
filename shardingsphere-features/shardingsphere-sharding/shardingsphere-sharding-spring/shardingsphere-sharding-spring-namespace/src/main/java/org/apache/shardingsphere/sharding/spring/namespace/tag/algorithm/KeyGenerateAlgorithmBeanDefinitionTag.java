@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.spring.namespace.tag;
+package org.apache.shardingsphere.sharding.spring.namespace.tag.algorithm;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -31,12 +31,4 @@ public final class KeyGenerateAlgorithmBeanDefinitionTag {
     public static final String TYPE_ATTRIBUTE = "type";
     
     public static final String PROPS_TAG = "props";
-    
-    public static final String STRATEGY_REF_ATTRIBUTE = "key-generate-strategy-ref";
-    
-    public static final String STRATEGY_TAG = "key-generate-strategy";
-    
-    public static final String COLUMN_ATTRIBUTE = "column";
-    
-    public static final String ALGORITHM_REF_TAG = "algorithm-ref";
 }

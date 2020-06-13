@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.spring.namespace.parser.algorithm;
 
 import org.apache.shardingsphere.sharding.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean;
-import org.apache.shardingsphere.sharding.spring.namespace.tag.KeyGenerateAlgorithmBeanDefinitionTag;
+import org.apache.shardingsphere.sharding.spring.namespace.tag.algorithm.KeyGenerateAlgorithmBeanDefinitionTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
