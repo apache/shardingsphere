@@ -34,12 +34,10 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Sharding rule parser for spring namespace.
@@ -202,24 +200,5 @@ public final class ShardingRuleBeanDefinitionParser extends AbstractBeanDefiniti
             }
         }
         return result;
-    }
-    
-    private Map<String, RuntimeBeanReference> parseKeyGenerateStrategyConfigurations(final Element element) {
-        Map<String, RuntimeBeanReference> result = new ManagedMap<>();
-        for (Element each : DomUtils.getChildElementsByTagName(element, ShardingRuleBeanDefinitionTag.TABLE_RULES_TAG)) {
-            for (String ref : findKeyGenerateStrategyRefsFromTable(DomUtils.getChildElementsByTagName(each, ShardingRuleBeanDefinitionTag.TABLE_RULE_TAG))) {
-                result.put(ref, new RuntimeBeanReference(ref));
-            }
-        }
-        String defaultKeyGenerateStrategyRef = element.getAttribute(ShardingRuleBeanDefinitionTag.DEFAULT_KEY_GENERATE_STRATEGY_REF_ATTRIBUTE);
-        if (!Strings.isNullOrEmpty(defaultKeyGenerateStrategyRef)) {
-            result.put(defaultKeyGenerateStrategyRef, new RuntimeBeanReference(defaultKeyGenerateStrategyRef));
-        }
-        return result;
-    }
-    
-    private Collection<String> findKeyGenerateStrategyRefsFromTable(final List<Element> shardingTableElements) {
-        return shardingTableElements.stream().filter(each -> !Strings.isNullOrEmpty(each.getAttribute(ShardingRuleBeanDefinitionTag.STRATEGY_REF_ATTRIBUTE)))
-                .map(each -> each.getAttribute(ShardingRuleBeanDefinitionTag.STRATEGY_REF_ATTRIBUTE)).collect(Collectors.toSet());
     }
 }
