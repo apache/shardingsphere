@@ -34,7 +34,7 @@ public final class KeyGenerateStrategyBeanDefinitionParser extends AbstractBeanD
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(KeyGenerateStrategyConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(KeyGenerateStrategyBeanDefinitionTag.COLUMN_ATTRIBUTE));
-        factory.addConstructorArgValue(element.getAttribute(KeyGenerateStrategyBeanDefinitionTag.ALGORITHM_REF_TAG));
+        factory.addConstructorArgValue(element.getAttribute(KeyGenerateStrategyBeanDefinitionTag.ALGORITHM_REF_ATTRIBUTE));
         return factory.getBeanDefinition();
     }
 }

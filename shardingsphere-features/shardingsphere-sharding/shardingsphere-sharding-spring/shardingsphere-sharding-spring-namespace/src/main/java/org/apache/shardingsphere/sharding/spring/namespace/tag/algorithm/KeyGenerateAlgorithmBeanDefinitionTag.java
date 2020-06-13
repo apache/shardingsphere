@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class KeyGenerateAlgorithmBeanDefinitionTag {
     
-    public static final String ALGORITHM_TAG = "key-generate-algorithm";
+    public static final String ROOT_TAG = "key-generate-algorithm";
     
     public static final String TYPE_ATTRIBUTE = "type";
     
