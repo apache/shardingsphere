@@ -27,8 +27,4 @@ import lombok.NoArgsConstructor;
 public final class ShardingAlgorithmBeanDefinitionTag {
     
     public static final String ROOT_TAG = "sharding-algorithm";
-    
-    public static final String TYPE_ATTRIBUTE = "type";
-    
-    public static final String PROPS_TAG = "props";
 }
