@@ -47,15 +47,15 @@ public final class DataNodeRouter {
     
     private final ShardingSphereMetaData metaData;
     
-    private final ConfigurationProperties properties;
+    private final ConfigurationProperties props;
     
     private final Map<ShardingSphereRule, RouteDecorator> decorators;
     
     private SPIRoutingHook routingHook;
     
-    public DataNodeRouter(final ShardingSphereMetaData metaData, final ConfigurationProperties properties, final Collection<ShardingSphereRule> rules) {
+    public DataNodeRouter(final ShardingSphereMetaData metaData, final ConfigurationProperties props, final Collection<ShardingSphereRule> rules) {
         this.metaData = metaData;
-        this.properties = properties;
+        this.props = props;
         decorators = OrderedSPIRegistry.getRegisteredServices(rules, RouteDecorator.class);
         routingHook = new SPIRoutingHook();
     }
@@ -86,7 +86,7 @@ public final class DataNodeRouter {
     private RouteContext executeRoute(final SQLStatement sqlStatement, final String sql, final List<Object> parameters) {
         RouteContext result = createRouteContext(sqlStatement, sql, parameters);
         for (Entry<ShardingSphereRule, RouteDecorator> entry : decorators.entrySet()) {
-            result = entry.getValue().decorate(result, metaData, entry.getKey(), properties);
+            result = entry.getValue().decorate(result, metaData, entry.getKey(), props);
         }
         return result;
     }

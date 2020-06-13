@@ -27,7 +27,7 @@
 #    instanceType: zookeeper
 #    serverLists: localhost:2181
 #    namespace: orchestration
-#    properties:
+#    props:
 #      overwrite: false
 #      retryIntervalMilliseconds: 500
 #      timeToLiveSeconds: 60

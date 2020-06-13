@@ -64,11 +64,11 @@ public final class StandardModuloShardingTableAlgorithm implements StandardShard
     }
     
     @Override
-    public Properties getProperties() {
+    public Properties getProps() {
         return new Properties();
     }
     
     @Override
-    public void setProperties(final Properties properties) {
+    public void setProps(final Properties props) {
     }
 }

@@ -33,7 +33,7 @@ public final class CenterRepositoryConfigurationYamlSwapper implements YamlSwapp
         result.setInstanceType(configuration.getType());
         result.setServerLists(configuration.getServerLists());
         result.setNamespace(configuration.getNamespace());
-        result.setProps(configuration.getProperties());
+        result.setProps(configuration.getProps());
         return result;
     }
     

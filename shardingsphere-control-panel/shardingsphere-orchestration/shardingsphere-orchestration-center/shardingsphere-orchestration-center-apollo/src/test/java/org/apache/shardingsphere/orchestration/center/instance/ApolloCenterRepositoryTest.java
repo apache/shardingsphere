@@ -67,12 +67,12 @@ public final class ApolloCenterRepositoryTest {
         CenterConfiguration configuration = new CenterConfiguration("apollo", new Properties());
         configuration.setServerLists("http://config-service-url");
         configuration.setNamespace("orchestration");
-        Properties properties = new Properties();
-        properties.setProperty(ApolloPropertyKey.PORTAL_URL.getKey(), PORTAL_URL);
-        properties.setProperty(ApolloPropertyKey.TOKEN.getKey(), TOKEN);
-        REPOSITORY.setProperties(properties);
+        Properties props = new Properties();
+        props.setProperty(ApolloPropertyKey.PORTAL_URL.getKey(), PORTAL_URL);
+        props.setProperty(ApolloPropertyKey.TOKEN.getKey(), TOKEN);
+        REPOSITORY.setProps(props);
         REPOSITORY.init(configuration);
-        ApolloConfigWrapper configWrapper = new ApolloConfigWrapper(configuration, new ApolloProperties(properties));
+        ApolloConfigWrapper configWrapper = new ApolloConfigWrapper(configuration, new ApolloProperties(props));
         FieldSetter.setField(REPOSITORY, ApolloCenterRepository.class.getDeclaredField("configWrapper"), configWrapper);
         FieldSetter.setField(REPOSITORY, ApolloCenterRepository.class.getDeclaredField("openApiWrapper"), OPEN_API_WRAPPER);
     }

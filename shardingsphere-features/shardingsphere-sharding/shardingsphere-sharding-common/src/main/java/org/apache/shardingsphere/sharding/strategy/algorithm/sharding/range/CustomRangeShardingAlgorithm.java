@@ -53,9 +53,9 @@ public final class CustomRangeShardingAlgorithm extends AbstractRangeShardingAlg
     }
     
     @Override
-    public Map<Integer, Range<Long>> createPartitionRangeMap(final Properties properties) {
-        Preconditions.checkNotNull(properties.get(PARTITION_RANGES), "Custom range sharding algorithm partition ranges cannot be null.");
-        List<Long> partitionRanges = Splitter.on(",").trimResults().splitToList(properties.get(PARTITION_RANGES).toString())
+    public Map<Integer, Range<Long>> createPartitionRangeMap(final Properties props) {
+        Preconditions.checkNotNull(props.get(PARTITION_RANGES), "Custom range sharding algorithm partition ranges cannot be null.");
+        List<Long> partitionRanges = Splitter.on(",").trimResults().splitToList(props.get(PARTITION_RANGES).toString())
                 .stream().map(Longs::tryParse).filter(Objects::nonNull).sorted().collect(Collectors.toList());
         Preconditions.checkArgument(CollectionUtils.isNotEmpty(partitionRanges), "Custom range sharding algorithm partition ranges is not valid.");
         Map<Integer, Range<Long>> result = Maps.newHashMapWithExpectedSize(partitionRanges.size() + 1);

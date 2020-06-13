@@ -36,12 +36,12 @@ public final class KeyGenerateAlgorithmConfigurationYamlSwapper implements YamlS
     public YamlKeyGenerateAlgorithmConfiguration swap(final KeyGenerateAlgorithmConfiguration data) {
         YamlKeyGenerateAlgorithmConfiguration result = new YamlKeyGenerateAlgorithmConfiguration();
         result.setType(data.getType());
-        result.setProperties(data.getProperties());
+        result.setProps(data.getProps());
         return result;
     }
     
     @Override
     public KeyGenerateAlgorithmConfiguration swap(final YamlKeyGenerateAlgorithmConfiguration yamlConfiguration) {
-        return new KeyGenerateAlgorithmConfiguration(yamlConfiguration.getType(), yamlConfiguration.getProperties());
+        return new KeyGenerateAlgorithmConfiguration(yamlConfiguration.getType(), yamlConfiguration.getProps());
     }
 }

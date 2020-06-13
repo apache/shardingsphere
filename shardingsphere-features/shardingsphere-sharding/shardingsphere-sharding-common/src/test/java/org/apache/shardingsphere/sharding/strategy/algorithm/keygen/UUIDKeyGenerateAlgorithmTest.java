@@ -33,15 +33,15 @@ public final class UUIDKeyGenerateAlgorithmTest {
     }
     
     @Test
-    public void assertGetProperties() {
-        assertThat(uuidKeyGenerateAlgorithm.getProperties().entrySet().size(), is(0));
+    public void assertGetProps() {
+        assertThat(uuidKeyGenerateAlgorithm.getProps().entrySet().size(), is(0));
     }
     
     @Test
-    public void assertSetProperties() {
-        Properties properties = new Properties();
-        properties.setProperty("key1", "value1");
-        uuidKeyGenerateAlgorithm.setProperties(properties);
-        assertThat(uuidKeyGenerateAlgorithm.getProperties().get("key1"), is("value1"));
+    public void assertSetProps() {
+        Properties props = new Properties();
+        props.setProperty("key1", "value1");
+        uuidKeyGenerateAlgorithm.setProps(props);
+        assertThat(uuidKeyGenerateAlgorithm.getProps().get("key1"), is("value1"));
     }
 }

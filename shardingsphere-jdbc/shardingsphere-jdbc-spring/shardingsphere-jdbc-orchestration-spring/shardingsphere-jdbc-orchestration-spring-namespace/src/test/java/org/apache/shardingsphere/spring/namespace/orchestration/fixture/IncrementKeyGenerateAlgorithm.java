@@ -26,19 +26,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public final class IncrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     
-    @Getter
-    @Setter
-    private Properties properties = new Properties();
-    
     private final AtomicInteger sequence = new AtomicInteger(100);
     
-    @Override
-    public String getType() {
-        return "INCREMENT";
-    }
+    @Getter
+    @Setter
+    private Properties props = new Properties();
     
     @Override
     public Comparable<?> generateKey() {
         return sequence.incrementAndGet();
+    }
+    
+    @Override
+    public String getType() {
+        return "INCREMENT";
     }
 }

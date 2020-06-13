@@ -41,7 +41,7 @@ public class EncryptNamespaceTest extends AbstractJUnit4SpringContextTests {
         assertTrue(encryptRule.findEncryptor("t_order", "user_id").isPresent());
         assertThat(encryptRule.getCipherColumn("t_order", "user_id"), is("user_encrypt"));
         assertTrue(encryptRule.findEncryptor("t_order", "user_id").get() instanceof AESEncryptAlgorithm);
-        assertThat(encryptRule.findEncryptor("t_order", "user_id").get().getProperties().getProperty("aes.key.value"), is("123456"));
+        assertThat(encryptRule.findEncryptor("t_order", "user_id").get().getProps().getProperty("aes.key.value"), is("123456"));
         assertThat(encryptRule.findPlainColumn("t_order", "order_id"), is(Optional.of("order_decrypt")));
         assertTrue(getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
         assertTrue(getProperties().<Boolean>getValue(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN));
@@ -54,6 +54,6 @@ public class EncryptNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     private ConfigurationProperties getProperties() {
         ShardingSphereDataSource dataSource = applicationContext.getBean("encryptDataSource", ShardingSphereDataSource.class);
-        return dataSource.getSchemaContexts().getProperties();
+        return dataSource.getSchemaContexts().getProps();
     }
 }

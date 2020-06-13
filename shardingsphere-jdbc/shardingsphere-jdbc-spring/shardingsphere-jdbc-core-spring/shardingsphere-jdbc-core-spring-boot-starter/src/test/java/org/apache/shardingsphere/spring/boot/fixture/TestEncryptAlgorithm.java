@@ -27,12 +27,7 @@ import java.util.Properties;
 @Setter
 public final class TestEncryptAlgorithm implements EncryptAlgorithm {
     
-    private Properties properties = new Properties();
-    
-    @Override
-    public String getType() {
-        return "test";
-    }
+    private Properties props = new Properties();
     
     @Override
     public void init() {
@@ -46,5 +41,10 @@ public final class TestEncryptAlgorithm implements EncryptAlgorithm {
     @Override
     public Object decrypt(final String ciphertext) {
         return "";
+    }
+    
+    @Override
+    public String getType() {
+        return "test";
     }
 }

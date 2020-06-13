@@ -38,10 +38,10 @@ public final class ApolloConfigWrapper {
     
     private final Config apolloConfig;
     
-    public ApolloConfigWrapper(final CenterConfiguration config, final ApolloProperties properties) {
-        String appId = properties.getValue(ApolloPropertyKey.APP_ID);
-        String env = properties.getValue(ApolloPropertyKey.ENV);
-        String clusterName = properties.getValue(ApolloPropertyKey.CLUSTER_NAME);
+    public ApolloConfigWrapper(final CenterConfiguration config, final ApolloProperties props) {
+        String appId = props.getValue(ApolloPropertyKey.APP_ID);
+        String env = props.getValue(ApolloPropertyKey.ENV);
+        String clusterName = props.getValue(ApolloPropertyKey.CLUSTER_NAME);
         System.setProperty(APOLLO_KEY_APP_ID, appId);
         System.setProperty(APOLLO_KEY_ENV, env);
         System.setProperty(ConfigConsts.APOLLO_CLUSTER_KEY, clusterName);

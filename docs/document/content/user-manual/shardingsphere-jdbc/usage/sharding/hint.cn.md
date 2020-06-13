@@ -42,7 +42,7 @@ rules:
     type: SNOWFLAKE
     column: order_id
 
-properties:
+props:
     sql.show: true
 ```
 

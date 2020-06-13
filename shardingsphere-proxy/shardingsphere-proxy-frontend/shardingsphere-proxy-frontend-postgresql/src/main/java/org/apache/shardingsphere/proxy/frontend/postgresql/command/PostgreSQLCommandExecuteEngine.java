@@ -85,7 +85,7 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
             return;
         }
         int count = 0;
-        int proxyFrontendFlushThreshold = ProxySchemaContexts.getInstance().getSchemaContexts().getProperties().<Integer>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD);
+        int proxyFrontendFlushThreshold = ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD);
         while (queryCommandExecutor.next()) {
             count++;
             while (!context.channel().isWritable() && context.channel().isActive()) {

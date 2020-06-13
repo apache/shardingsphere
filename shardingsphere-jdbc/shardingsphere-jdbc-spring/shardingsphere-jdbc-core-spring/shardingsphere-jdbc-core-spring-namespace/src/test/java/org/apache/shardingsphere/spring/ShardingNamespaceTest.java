@@ -19,7 +19,6 @@ package org.apache.shardingsphere.spring;
 
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -94,7 +93,7 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     public void assertInlineStrategy() {
         StandardShardingStrategyConfiguration inlineStrategy = applicationContext.getBean("inlineStrategy", StandardShardingStrategyConfiguration.class);
         assertThat(inlineStrategy.getShardingColumn(), is("order_id"));
-        assertThat(inlineStrategy.getShardingAlgorithm().getProperties().getProperty("algorithm.expression"), is("t_order_${order_id % 4}"));
+        assertThat(inlineStrategy.getShardingAlgorithm().getProps().getProperty("algorithm.expression"), is("t_order_${order_id % 4}"));
     }
     
     @Test
@@ -231,11 +230,10 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     public void assertPropsDataSource() {
         ShardingSphereDataSource shardingSphereDataSource = applicationContext.getBean("propsDataSource", ShardingSphereDataSource.class);
         SchemaContexts schemaContexts = shardingSphereDataSource.getSchemaContexts();
-        assertTrue(schemaContexts.getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
-        ConfigurationProperties properties = schemaContexts.getProperties();
-        boolean showSql = properties.getValue(ConfigurationPropertyKey.SQL_SHOW);
+        assertTrue(schemaContexts.getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
+        boolean showSql = schemaContexts.getProps().getValue(ConfigurationPropertyKey.SQL_SHOW);
         assertTrue(showSql);
-        int executorSize = properties.getValue(ConfigurationPropertyKey.EXECUTOR_SIZE);
+        int executorSize = schemaContexts.getProps().getValue(ConfigurationPropertyKey.EXECUTOR_SIZE);
         assertThat(executorSize, is(10));
     }
     

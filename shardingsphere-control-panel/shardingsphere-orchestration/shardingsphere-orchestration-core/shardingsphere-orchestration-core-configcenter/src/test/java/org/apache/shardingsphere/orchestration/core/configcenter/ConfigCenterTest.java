@@ -66,13 +66,13 @@ public final class ConfigCenterTest {
     private static final String DATA_SOURCE_YAML = ""
             + "ds_0: !!" + YamlDataSourceConfiguration.class.getName() + "\n"
             + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
-            + "  properties:\n"
+            + "  props:\n"
             + "    driverClassName: com.mysql.jdbc.Driver\n"
             + "    url: jdbc:mysql://localhost:3306/ds_0\n"
             + "    username: root\n" + "    password: root\n"
             + "ds_1: !!" + YamlDataSourceConfiguration.class.getName() + "\n"
             + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
-            + "  properties:\n"
+            + "  props:\n"
             + "    driverClassName: com.mysql.jdbc.Driver\n"
             + "    url: jdbc:mysql://localhost:3306/ds_1\n"
             + "    username: root\n"
@@ -193,7 +193,7 @@ public final class ConfigCenterTest {
     private static final String DATA_SOURCE_YAML_WITH_CONNECTION_INIT_SQLS = ""
             + "ds_0: !!" + YamlDataSourceConfiguration.class.getName() + "\n"
             + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
-            + "  properties:\n"
+            + "  props:\n"
             + "    driverClassName: com.mysql.jdbc.Driver\n"
             + "    url: jdbc:mysql://localhost:3306/ds_0\n"
             + "    username: root\n"
@@ -203,7 +203,7 @@ public final class ConfigCenterTest {
             + "        - set names utf8;\n"
             + "ds_1: !!" + YamlDataSourceConfiguration.class.getName() + "\n"
             + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
-            + "  properties:\n"
+            + "  props:\n"
             + "    driverClassName: com.mysql.jdbc.Driver\n"
             + "    url: jdbc:mysql://localhost:3306/ds_1\n"
             + "    username: root\n"
@@ -451,9 +451,9 @@ public final class ConfigCenterTest {
     
     private void assertDataSourceConfiguration(final DataSourceConfiguration actual, final DataSourceConfiguration expected) {
         assertThat(actual.getDataSourceClassName(), is(expected.getDataSourceClassName()));
-        assertThat(actual.getProperties().get("url"), is(expected.getProperties().get("url")));
-        assertThat(actual.getProperties().get("username"), is(expected.getProperties().get("username")));
-        assertThat(actual.getProperties().get("password"), is(expected.getProperties().get("password")));
+        assertThat(actual.getProps().get("url"), is(expected.getProps().get("url")));
+        assertThat(actual.getProps().get("username"), is(expected.getProps().get("username")));
+        assertThat(actual.getProps().get("password"), is(expected.getProps().get("password")));
     }
     
     @Test
@@ -472,7 +472,7 @@ public final class ConfigCenterTest {
                 assertThat(encryptRuleConfiguration.getEncryptors().size(), is(2));
                 EncryptAlgorithmConfiguration encryptAlgorithmConfiguration = encryptRuleConfiguration.getEncryptors().get("aes_encryptor");
                 assertThat(encryptAlgorithmConfiguration.getType(), is("AES"));
-                assertThat(encryptAlgorithmConfiguration.getProperties().get("aes.key.value").toString(), is("123456abcd"));
+                assertThat(encryptAlgorithmConfiguration.getProps().get("aes.key.value").toString(), is("123456abcd"));
             }
         }
     }
@@ -507,7 +507,7 @@ public final class ConfigCenterTest {
         assertThat(actual.getEncryptors().size(), is(1));
         EncryptAlgorithmConfiguration encryptAlgorithmConfiguration = actual.getEncryptors().get("order_encryptor");
         assertThat(encryptAlgorithmConfiguration.getType(), is("AES"));
-        assertThat(encryptAlgorithmConfiguration.getProperties().get("aes.key.value").toString(), is("123456"));
+        assertThat(encryptAlgorithmConfiguration.getProps().get("aes.key.value").toString(), is("123456"));
     }
     
     @Test
@@ -581,9 +581,9 @@ public final class ConfigCenterTest {
     
     private void assertDataSourceConfigurationWithConnectionInitSqls(final DataSourceConfiguration actual, final DataSourceConfiguration expected) {
         assertThat(actual.getDataSourceClassName(), is(expected.getDataSourceClassName()));
-        assertThat(actual.getProperties().get("url"), is(expected.getProperties().get("url")));
-        assertThat(actual.getProperties().get("username"), is(expected.getProperties().get("username")));
-        assertThat(actual.getProperties().get("password"), is(expected.getProperties().get("password")));
-        assertThat(actual.getProperties().get("connectionInitSqls"), is(expected.getProperties().get("connectionInitSqls")));
+        assertThat(actual.getProps().get("url"), is(expected.getProps().get("url")));
+        assertThat(actual.getProps().get("username"), is(expected.getProps().get("username")));
+        assertThat(actual.getProps().get("password"), is(expected.getProps().get("password")));
+        assertThat(actual.getProps().get("connectionInitSqls"), is(expected.getProps().get("connectionInitSqls")));
     }
 }

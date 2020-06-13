@@ -339,10 +339,14 @@ public final class ShardingRuleTest {
         shardingRuleConfiguration.getBindingTableGroups().add(shardingTableRuleConfiguration.getLogicTable() + "," + subTableRuleConfiguration.getLogicTable());
         shardingRuleConfiguration.getBroadcastTables().add("BROADCAST_TABLE");
         InlineShardingAlgorithm shardingAlgorithmDB = new InlineShardingAlgorithm();
-        shardingAlgorithmDB.getProperties().setProperty("algorithm.expression", "ds_%{ds_id % 2}");
+        Properties props = new Properties();
+        props.setProperty("algorithm.expression", "ds_%{ds_id % 2}");
+        shardingAlgorithmDB.setProps(props);
         shardingRuleConfiguration.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("ds_id", shardingAlgorithmDB));
         InlineShardingAlgorithm shardingAlgorithmTBL = new InlineShardingAlgorithm();
-        shardingAlgorithmTBL.getProperties().setProperty("algorithm.expression", "table_%{table_id % 2}");
+        props = new Properties();
+        props.setProperty("algorithm.expression", "table_%{table_id % 2}");
+        shardingAlgorithmTBL.setProps(props);
         shardingRuleConfiguration.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("table_id", shardingAlgorithmTBL));
         shardingRuleConfiguration.setDefaultKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("id", "default"));
         shardingRuleConfiguration.getKeyGenerators().put("increment", new KeyGenerateAlgorithmConfiguration("INCREMENT", new Properties()));

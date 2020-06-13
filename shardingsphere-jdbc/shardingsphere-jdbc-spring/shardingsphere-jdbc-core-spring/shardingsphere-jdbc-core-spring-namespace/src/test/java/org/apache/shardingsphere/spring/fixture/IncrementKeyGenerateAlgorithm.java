@@ -30,15 +30,15 @@ public final class IncrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     
     @Getter
     @Setter
-    private Properties properties = new Properties();
-    
-    @Override
-    public String getType() {
-        return "INCREMENT";
-    }
+    private Properties props = new Properties();
     
     @Override
     public Comparable<?> generateKey() {
         return sequence.incrementAndGet();
+    }
+    
+    @Override
+    public String getType() {
+        return "INCREMENT";
     }
 }

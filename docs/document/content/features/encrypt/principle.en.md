@@ -163,7 +163,7 @@ In addition, demonstrate a set of encryption configuration rules, as follows:
           plainColumn: pwd
           cipherColumn: pwd_cipher
           encryptorName: aes_encryptor
-properties:
+props:
   query.with.cipher.column: false
 ```
 
@@ -229,7 +229,7 @@ So the encryption configuration after migration is:
         pwd: # pwd与pwd_cipher的转换映射
           cipherColumn: pwd_cipher
           encryptorName: aes_encryptor
-properties:
+props:
   query.with.cipher.column: true
 ```
 

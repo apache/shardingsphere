@@ -42,7 +42,7 @@ public final class PrometheusMetricsTrackerManager implements MetricsTrackerMana
     
     private final MetricsTrackerFactory metricsTrackerFactory = new PrometheusMetricsTrackerFactory();
     
-    private Properties properties = new Properties();
+    private Properties props = new Properties();
     
     private HTTPServer server;
     

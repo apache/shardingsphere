@@ -54,13 +54,13 @@ public final class StandardRangeShardingAlgorithm extends AbstractRangeShardingA
     }
     
     @Override
-    public Map<Integer, Range<Long>> createPartitionRangeMap(final Properties properties) {
-        Preconditions.checkNotNull(properties.get(RANGE_LOWER), "Standard range sharding algorithm partition lower cannot be null.");
-        Preconditions.checkNotNull(properties.get(RANGE_UPPER), "Standard range sharding algorithm partition upper cannot be null.");
-        Preconditions.checkNotNull(properties.get(PARTITION_VOLUME), "Standard range sharding algorithm partition volume cannot be null.");
-        long lower = Long.parseLong(properties.get(RANGE_LOWER).toString());
-        long upper = Long.parseLong(properties.get(RANGE_UPPER).toString());
-        long volume = Long.parseLong(properties.get(PARTITION_VOLUME).toString());
+    public Map<Integer, Range<Long>> createPartitionRangeMap(final Properties props) {
+        Preconditions.checkNotNull(props.get(RANGE_LOWER), "Standard range sharding algorithm partition lower cannot be null.");
+        Preconditions.checkNotNull(props.get(RANGE_UPPER), "Standard range sharding algorithm partition upper cannot be null.");
+        Preconditions.checkNotNull(props.get(PARTITION_VOLUME), "Standard range sharding algorithm partition volume cannot be null.");
+        long lower = Long.parseLong(props.get(RANGE_LOWER).toString());
+        long upper = Long.parseLong(props.get(RANGE_UPPER).toString());
+        long volume = Long.parseLong(props.get(PARTITION_VOLUME).toString());
         Preconditions.checkArgument(upper - lower >= volume, "Standard range sharding algorithm partition range can not be smaller than volume.");
         int partitionSize = Math.toIntExact(LongMath.divide(upper - lower, volume, RoundingMode.CEILING));
         Map<Integer, Range<Long>> result = Maps.newHashMapWithExpectedSize(partitionSize + 2);

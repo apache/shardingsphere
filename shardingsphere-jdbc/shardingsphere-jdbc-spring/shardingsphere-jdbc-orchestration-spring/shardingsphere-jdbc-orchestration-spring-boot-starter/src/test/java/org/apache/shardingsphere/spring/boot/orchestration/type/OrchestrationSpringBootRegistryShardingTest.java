@@ -21,15 +21,14 @@ import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
-import org.apache.shardingsphere.spring.boot.orchestration.registry.TestCenterRepository;
-import org.apache.shardingsphere.spring.boot.orchestration.util.EmbedTestingServer;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.kernel.context.SchemaContexts;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.sharding.strategy.route.standard.StandardShardingStrategy;
+import org.apache.shardingsphere.spring.boot.orchestration.registry.TestCenterRepository;
+import org.apache.shardingsphere.spring.boot.orchestration.util.EmbedTestingServer;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -63,21 +62,21 @@ public class OrchestrationSpringBootRegistryShardingTest {
         testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/datasource", ""
                 + "ds: !!org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration\n"
                 + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
-                + "  properties:\n"
+                + "  props:\n"
                 + "    url: jdbc:h2:mem:ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL\n"
                 + "    maxTotal: 16\n"
                 + "    password: ''\n"
                 + "    username: sa\n"
                 + "ds_0: !!org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration\n"
                 + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
-                + "  properties:\n"
+                + "  props:\n"
                 + "    url: jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL\n"
                 + "    maxTotal: 16\n"
                 + "    password: ''\n"
                 + "    username: sa\n"
                 + "ds_1: !!org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration\n"
                 + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
-                + "  properties:\n"
+                + "  props:\n"
                 + "    url: jdbc:h2:mem:ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL\n"
                 + "    maxTotal: 16\n"
                 + "    password: ''\n"
@@ -141,10 +140,9 @@ public class OrchestrationSpringBootRegistryShardingTest {
         for (DataSource each : shardingSphereDataSource.getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
         }
-        assertTrue(schemaContexts.getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
-        ConfigurationProperties properties = schemaContexts.getProperties();
-        assertTrue(properties.getValue(ConfigurationPropertyKey.SQL_SHOW));
-        assertThat(properties.getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), is(100));
+        assertTrue(schemaContexts.getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
+        assertTrue(schemaContexts.getProps().getValue(ConfigurationPropertyKey.SQL_SHOW));
+        assertThat(schemaContexts.getProps().getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), is(100));
     }
     
     @Test

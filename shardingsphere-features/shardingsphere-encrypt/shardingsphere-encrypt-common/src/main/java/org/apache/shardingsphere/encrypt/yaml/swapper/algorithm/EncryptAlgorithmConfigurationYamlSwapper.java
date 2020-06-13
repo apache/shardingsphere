@@ -30,7 +30,7 @@ public final class EncryptAlgorithmConfigurationYamlSwapper implements YamlSwapp
     public YamlEncryptAlgorithmConfiguration swap(final EncryptAlgorithmConfiguration data) {
         YamlEncryptAlgorithmConfiguration result = new YamlEncryptAlgorithmConfiguration();
         result.setType(data.getType());
-        result.setProps(data.getProperties());
+        result.setProps(data.getProps());
         return result;
     }
     

@@ -97,7 +97,7 @@ public abstract class AbstractSpringJUnitTest extends AbstractJUnit4SpringContex
         DatabaseType databaseType = shardingSphereDataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getDatabaseType();
         Map<String, Collection<RuleConfiguration>> configurations = 
                 Collections.singletonMap(DefaultSchema.LOGIC_NAME, shardingSphereDataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getConfigurations());
-        return new SchemaContextsBuilder(dataSources, databaseType, configurations, shardingSphereDataSource.getSchemaContexts().getProperties().getProps());
+        return new SchemaContextsBuilder(dataSources, databaseType, configurations, shardingSphereDataSource.getSchemaContexts().getProps().getProps());
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

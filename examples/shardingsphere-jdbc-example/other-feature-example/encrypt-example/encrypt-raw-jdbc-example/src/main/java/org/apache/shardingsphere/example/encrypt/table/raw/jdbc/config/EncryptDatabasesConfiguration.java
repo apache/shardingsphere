@@ -37,18 +37,18 @@ public final class EncryptDatabasesConfiguration implements ExampleConfiguration
     
     @Override
     public DataSource getDataSource() {
-        Properties properties = new Properties();
-        properties.setProperty("aes.key.value", "123456");
-        properties.setProperty("query.with.cipher.column", "true");
+        Properties props = new Properties();
+        props.setProperty("aes.key.value", "123456");
+        props.setProperty("query.with.cipher.column", "true");
         EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("user_name", "user_name", "", "user_name_plain", "name_encryptor");
         EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", "pwd", "assisted_query_pwd", "", "pwd_encryptor");
         EncryptTableRuleConfiguration encryptTableRuleConfiguration = new EncryptTableRuleConfiguration("t_user", Arrays.asList(columnConfigAes, columnConfigTest));
         Map<String, EncryptAlgorithmConfiguration> encryptAlgorithmConfigurations = new LinkedHashMap<>(2, 1);
-        encryptAlgorithmConfigurations.put("name_encryptor", new EncryptAlgorithmConfiguration("AES", properties));
-        encryptAlgorithmConfigurations.put("pwd_encryptor", new EncryptAlgorithmConfiguration("assistedTest", properties));
+        encryptAlgorithmConfigurations.put("name_encryptor", new EncryptAlgorithmConfiguration("AES", props));
+        encryptAlgorithmConfigurations.put("pwd_encryptor", new EncryptAlgorithmConfiguration("assistedTest", props));
         EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfiguration), encryptAlgorithmConfigurations);
         try {
-            return ShardingSphereDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(encryptRuleConfiguration), properties);
+            return ShardingSphereDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(encryptRuleConfiguration), props);
         } catch (final SQLException ex) {
             ex.printStackTrace();
             return null;

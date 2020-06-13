@@ -149,13 +149,13 @@ public final class OrchestrationShardingSphereDataSourceTest {
     @Test
     public void assertRenewProperties() {
         orchestrationDataSource.renew(getPropertiesChangedEvent());
-        assertThat(orchestrationDataSource.getDataSource().getSchemaContexts().getProperties().getProps().getProperty("sql.show"), is("true"));
+        assertThat(orchestrationDataSource.getDataSource().getSchemaContexts().getProps().getProps().getProperty("sql.show"), is("true"));
     }
     
     private PropertiesChangedEvent getPropertiesChangedEvent() {
-        Properties properties = new Properties();
-        properties.setProperty("sql.show", "true");
-        return new PropertiesChangedEvent(properties);
+        Properties props = new Properties();
+        props.setProperty("sql.show", "true");
+        return new PropertiesChangedEvent(props);
     }
     
     @Test

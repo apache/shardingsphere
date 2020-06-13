@@ -91,9 +91,9 @@ public final class TableRuleTest {
         ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
         ShardingAutoTableRuleConfiguration tableRuleConfig = new ShardingAutoTableRuleConfiguration("LOGIC_TABLE", "ds0,ds1");
         ModuloShardingAlgorithm shardingAlgorithm = new ModuloShardingAlgorithm();
-        Properties properties = new Properties();
-        properties.setProperty("mod.value", "4");
-        shardingAlgorithm.setProperties(properties);
+        Properties props = new Properties();
+        props.setProperty("mod.value", "4");
+        shardingAlgorithm.setProps(props);
         tableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("col_1", shardingAlgorithm));
         TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1", "ds2"), null);
         assertThat(actual.getLogicTable(), is("logic_table"));
@@ -111,9 +111,9 @@ public final class TableRuleTest {
         ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
         ShardingAutoTableRuleConfiguration tableRuleConfig = new ShardingAutoTableRuleConfiguration("LOGIC_TABLE", null);
         ModuloShardingAlgorithm shardingAlgorithm = new ModuloShardingAlgorithm();
-        Properties properties = new Properties();
-        properties.setProperty("mod.value", "4");
-        shardingAlgorithm.setProperties(properties);
+        Properties props = new Properties();
+        props.setProperty("mod.value", "4");
+        shardingAlgorithm.setProps(props);
         tableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("col_1", shardingAlgorithm));
         TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1", "ds2"), null);
         assertThat(actual.getLogicTable(), is("logic_table"));
@@ -168,7 +168,7 @@ public final class TableRuleTest {
     public void assertActualDataNodesNotConfigured() {
         ShardingTableRuleConfiguration shardingTableRuleConfiguration = new ShardingTableRuleConfiguration("LOGIC_TABLE", "");
         InlineShardingAlgorithm shardingAlgorithm = new InlineShardingAlgorithm();
-        shardingAlgorithm.getProperties().setProperty("algorithm.expression", "table_${shardingColumn % 3}");
+        shardingAlgorithm.getProps().setProperty("algorithm.expression", "table_${shardingColumn % 3}");
         shardingTableRuleConfiguration.setTableShardingStrategy(new StandardShardingStrategyConfiguration("shardingColumn", shardingAlgorithm));
         new TableRule(shardingTableRuleConfiguration, Arrays.asList("ds0", "ds1"), null);
     }

@@ -48,6 +48,6 @@ public class ShadowNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     private ConfigurationProperties getProperties() {
         ShardingSphereDataSource dataSource = applicationContext.getBean("shadowDataSource", ShardingSphereDataSource.class);
-        return dataSource.getSchemaContexts().getProperties();
+        return dataSource.getSchemaContexts().getProps();
     }
 }

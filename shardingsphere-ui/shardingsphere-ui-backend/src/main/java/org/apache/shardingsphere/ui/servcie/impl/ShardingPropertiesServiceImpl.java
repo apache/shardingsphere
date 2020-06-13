@@ -48,8 +48,8 @@ public final class ShardingPropertiesServiceImpl implements ShardingPropertiesSe
     
     private void checkShardingProperties(final String configData) {
         try {
-            Properties properties = ConfigurationYamlConverter.loadProperties(configData);
-            new ConfigurationProperties(properties);
+            Properties props = ConfigurationYamlConverter.loadProperties(configData);
+            new ConfigurationProperties(props);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON

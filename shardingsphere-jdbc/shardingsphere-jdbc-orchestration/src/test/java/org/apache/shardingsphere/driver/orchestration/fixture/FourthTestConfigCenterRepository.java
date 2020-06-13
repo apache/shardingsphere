@@ -17,24 +17,25 @@
 
 package org.apache.shardingsphere.driver.orchestration.fixture;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
+
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
-import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
-import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 
+@Getter
+@Setter
 public final class FourthTestConfigCenterRepository implements ConfigCenterRepository {
     
     private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
-    @Getter
-    @Setter
-    private Properties properties;
+    private Properties props = new Properties();
     
     @Override
     public void init(final CenterConfiguration config) {

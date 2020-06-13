@@ -23,22 +23,7 @@ import java.util.Properties;
 
 public final class TestQueryAssistedShardingEncryptAlgorithm implements QueryAssistedEncryptAlgorithm {
     
-    private Properties properties = new Properties();
-    
-    @Override
-    public String getType() {
-        return "assistedTest";
-    }
-    
-    @Override
-    public Properties getProperties() {
-        return properties;
-    }
-    
-    @Override
-    public void setProperties(final Properties properties) {
-        this.properties = properties;
-    }
+    private Properties props = new Properties();
     
     @Override
     public void init() {
@@ -57,5 +42,20 @@ public final class TestQueryAssistedShardingEncryptAlgorithm implements QueryAss
     @Override
     public String queryAssistedEncrypt(final String plaintext) {
         return "assistedEncryptValue";
+    }
+    
+    @Override
+    public String getType() {
+        return "assistedTest";
+    }
+    
+    @Override
+    public Properties getProps() {
+        return props;
+    }
+    
+    @Override
+    public void setProps(final Properties props) {
+        this.props = props;
     }
 }

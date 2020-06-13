@@ -27,12 +27,7 @@ import java.util.Properties;
 @Setter
 public final class QueryAssistedEncryptAlgorithmFixture implements QueryAssistedEncryptAlgorithm {
     
-    private Properties properties = new Properties();
-    
-    @Override
-    public String getType() {
-        return "ASSISTED_QUERY_ENCRYPT";
-    }
+    private Properties props = new Properties();
     
     @Override
     public void init() {
@@ -51,5 +46,10 @@ public final class QueryAssistedEncryptAlgorithmFixture implements QueryAssisted
     @Override
     public String queryAssistedEncrypt(final String plaintext) {
         return "assisted_query_" + plaintext;
+    }
+    
+    @Override
+    public String getType() {
+        return "ASSISTED_QUERY_ENCRYPT";
     }
 }

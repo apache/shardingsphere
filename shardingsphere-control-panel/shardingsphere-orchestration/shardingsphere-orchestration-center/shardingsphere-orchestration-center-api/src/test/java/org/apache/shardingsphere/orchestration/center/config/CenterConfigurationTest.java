@@ -35,10 +35,10 @@ public final class CenterConfigurationTest {
     @Test
     public void assertConstructorWithTypeAndProperties() {
         String type = "zookeeper";
-        Properties properties = new Properties();
-        CenterConfiguration configuration = new CenterConfiguration(type, properties);
+        Properties props = new Properties();
+        CenterConfiguration configuration = new CenterConfiguration(type, props);
         assertThat(configuration.getType(), is(type));
-        assertThat(configuration.getProperties(), is(properties));
+        assertThat(configuration.getProps(), is(props));
     }
     
     @Test

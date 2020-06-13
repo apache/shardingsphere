@@ -54,8 +54,7 @@ public final class ApolloConfigWrapperTest {
         CenterConfiguration configuration = new CenterConfiguration("apollo", new Properties());
         configuration.setServerLists("http://config-service-url");
         configuration.setNamespace("orchestration");
-        Properties properties = new Properties();
-        configWrapper = new ApolloConfigWrapper(configuration, new ApolloProperties(properties));
+        configWrapper = new ApolloConfigWrapper(configuration, new ApolloProperties(new Properties()));
     }
     
     @Test

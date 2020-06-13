@@ -81,7 +81,7 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     
     @Getter
     @Setter
-    private Properties properties = new Properties();
+    private Properties props = new Properties();
     
     private int sequenceOffset = -1;
     
@@ -135,19 +135,19 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     }
     
     private long getWorkerId() {
-        long result = Long.valueOf(properties.getProperty(WORKER_ID_PROPERTY_KEY, String.valueOf(WORKER_ID)));
+        long result = Long.valueOf(props.getProperty(WORKER_ID_PROPERTY_KEY, String.valueOf(WORKER_ID)));
         Preconditions.checkArgument(result >= 0L && result < WORKER_ID_MAX_VALUE);
         return result;
     }
     
     private int getMaxVibrationOffset() {
-        int result = Integer.parseInt(properties.getProperty(MAX_VIBRATION_OFFSET_PROPERTY_KEY, String.valueOf(DEFAULT_VIBRATION_VALUE)));
+        int result = Integer.parseInt(props.getProperty(MAX_VIBRATION_OFFSET_PROPERTY_KEY, String.valueOf(DEFAULT_VIBRATION_VALUE)));
         Preconditions.checkArgument(result >= 0 && result <= SEQUENCE_MASK, "Illegal max vibration offset");
         return result;
     }
     
     private int getMaxTolerateTimeDifferenceMilliseconds() {
-        return Integer.valueOf(properties.getProperty(MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS_PROPERTY_KEY, String.valueOf(MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS)));
+        return Integer.valueOf(props.getProperty(MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS_PROPERTY_KEY, String.valueOf(MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS)));
     }
     
     private long waitUntilNextTime(final long lastTime) {

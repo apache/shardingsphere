@@ -86,22 +86,22 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
         CenterConfiguration configCenterConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(configCenterName.get());
         Preconditions.checkNotNull(configCenterConfiguration, "Config center configuration cannot be null.");
         configCenterRepository = TypedSPIRegistry.getRegisteredService(
-                ConfigCenterRepository.class, configCenterConfiguration.getType(), configCenterConfiguration.getProperties());
+                ConfigCenterRepository.class, configCenterConfiguration.getType(), configCenterConfiguration.getProps());
         configCenterRepository.init(configCenterConfiguration);
-        isOverwrite = new OrchestrationProperties(configCenterConfiguration.getProperties()).getValue(OrchestrationPropertyKey.OVERWRITE);
+        isOverwrite = new OrchestrationProperties(configCenterConfiguration.getProps()).getValue(OrchestrationPropertyKey.OVERWRITE);
         configCenter = new ConfigCenter(configCenterName.get(), configCenterRepository);
         Optional<String> registryCenterName = getInstanceNameByOrchestrationType(orchestrationConfig.getInstanceConfigurationMap(), CenterType.REGISTRY_CENTER.getValue());
         Preconditions.checkArgument(registryCenterName.isPresent(), "Can not find instance configuration with registry center orchestration type.");
         CenterConfiguration registryCenterConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(registryCenterName.get());
         Preconditions.checkNotNull(registryCenterConfiguration, "Registry center configuration cannot be null.");
-        registryCenterRepository = TypedSPIRegistry.getRegisteredService(RegistryCenterRepository.class, registryCenterConfiguration.getType(), registryCenterConfiguration.getProperties());
+        registryCenterRepository = TypedSPIRegistry.getRegisteredService(RegistryCenterRepository.class, registryCenterConfiguration.getType(), registryCenterConfiguration.getProps());
         registryCenterRepository.init(registryCenterConfiguration);
         registryCenter = new RegistryCenter(registryCenterName.get(), registryCenterRepository);
         Optional<String> metaDataCenterName = getInstanceNameByOrchestrationType(orchestrationConfig.getInstanceConfigurationMap(), CenterType.METADATA_CENTER.getValue());
         Preconditions.checkArgument(metaDataCenterName.isPresent(), "Can not find instance configuration with metadata center orchestration type.");
         CenterConfiguration metaDataCenterConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(metaDataCenterName.get());
         Preconditions.checkNotNull(metaDataCenterConfiguration, "MetaData center configuration cannot be null.");
-        centerRepository = TypedSPIRegistry.getRegisteredService(ConfigCenterRepository.class, metaDataCenterConfiguration.getType(), metaDataCenterConfiguration.getProperties());
+        centerRepository = TypedSPIRegistry.getRegisteredService(ConfigCenterRepository.class, metaDataCenterConfiguration.getType(), metaDataCenterConfiguration.getProps());
         centerRepository.init(metaDataCenterConfiguration);
         metaDataCenter = new MetaDataCenter(metaDataCenterName.get(), centerRepository);
         listenerManager = shardingSchemaNames.isEmpty()

@@ -251,7 +251,7 @@ public final class StatementExecutor {
         if (refreshStrategy.isPresent()) {
             RuleSchemaMetaDataLoader metaDataLoader = new RuleSchemaMetaDataLoader(schemaContext.getSchema().getRules());
             refreshStrategy.get().refreshMetaData(schemaContext.getSchema().getMetaData(), schemaContext.getSchema().getDatabaseType(), dataSourceMap, sqlStatementContext,
-                tableName -> metaDataLoader.load(schemaContext.getSchema().getDatabaseType(), dataSourceMap, tableName, schemaContexts.getProperties()));
+                tableName -> metaDataLoader.load(schemaContext.getSchema().getDatabaseType(), dataSourceMap, tableName, schemaContexts.getProps()));
         }
     }
     

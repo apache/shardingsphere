@@ -43,7 +43,7 @@ public final class CustomRangeShardingAlgorithmTest {
     @Before
     public void setUp() {
         CustomRangeShardingAlgorithm shardingAlgorithm = new CustomRangeShardingAlgorithm();
-        shardingAlgorithm.getProperties().setProperty("partition.ranges", "1,5,10");
+        shardingAlgorithm.getProps().setProperty("partition.ranges", "1,5,10");
         shardingAlgorithm.init();
         StandardShardingStrategyConfiguration shardingStrategyConfig = new StandardShardingStrategyConfiguration("order_id", shardingAlgorithm);
         shardingStrategy = new StandardShardingStrategy(shardingStrategyConfig);
@@ -74,7 +74,7 @@ public final class CustomRangeShardingAlgorithmTest {
     @Test
     public void assertGetAutoTablesAmount() {
         CustomRangeShardingAlgorithm shardingAlgorithm = new CustomRangeShardingAlgorithm();
-        shardingAlgorithm.getProperties().setProperty("partition.ranges", "1,5,10");
+        shardingAlgorithm.getProps().setProperty("partition.ranges", "1,5,10");
         shardingAlgorithm.init();
         assertThat(shardingAlgorithm.getAutoTablesAmount(), is(4));
     }

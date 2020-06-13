@@ -338,7 +338,7 @@ orchestration:
     instanceType: zookeeper
     serverLists: localhost:2181
     namespace: orchestration
-    properties:
+    props:
       overwrite: true
 ```
 
@@ -357,7 +357,7 @@ authentication:
 ### Common property
 
 ```yaml
-properties:
+props:
   executor.size: 16
   sql.show: false
 ```
@@ -410,7 +410,7 @@ encryptRule:
           cipherColumn: #ciphertext column name
           assistedQueryColumn: #AssistedColumns for query，when use QueryAssistedEncryptAlgorithm, it can help query encrypted data
           encryptorName: #encrypt algorithm name
-properties:
+props:
   query.with.cipher.column: true #Whether use cipherColumn to query or not
 ```
 
@@ -424,7 +424,7 @@ It is the same with ShardingSphere-JDBC configuration.
 
 ```yaml
 #Omit configurations that are the same with ShardingSphere-JDBC
-properties:
+props:
   acceptor.size: #The thread number of accept connection; default to be 2 times of cpu core
   proxy.transaction.type: #Support LOCAL, XA, BASE; Default is LOCAL transaction, for BASE type you should copy ShardingTransactionManager associated jar to lib directory
   proxy.opentracing.enabled: #Whether to enable opentracing, default not to enable; refer to [APM](/en/features/orchestration/apm/) for more details

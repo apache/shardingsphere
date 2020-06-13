@@ -43,6 +43,7 @@ import java.util.Properties;
  * `DATETIME_LOWER` decides the beginning datetime to shard. On the other hand, `DATETIME_UPPER` decides the end datetime to shard.</p>
  * <p>Notice: Anytime less then `DATETIME_LOWER` will route to the first partition, and anytime great than `DATETIME_UPPER` will route to the last partition.</p>
  */
+@Getter
 public final class DatetimeShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
     
     private static final String PARTITION_SECONDS = "partition.seconds";
@@ -50,25 +51,23 @@ public final class DatetimeShardingAlgorithm implements StandardShardingAlgorith
     private static final String DATETIME_LOWER = "datetime.lower";
     
     private static final String DATETIME_UPPER = "datetime.upper";
-
+    
     private static final String DATETIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
     
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern(DATETIME_PATTERN);
     
-    @Getter
-    @Setter
-    private Properties properties = new Properties();
-    
-    @Getter
     private int autoTablesAmount;
+    
+    @Setter
+    private Properties props = new Properties();
     
     @Override
     public void init() {
-        Preconditions.checkNotNull(properties.get(PARTITION_SECONDS), "Sharding partition volume cannot be null.");
-        Preconditions.checkState(null != properties.get(DATETIME_LOWER) && checkDatetimePattern(properties.get(DATETIME_LOWER).toString()), "%s pattern is required.", DATETIME_PATTERN);
-        Preconditions.checkState(null != properties.get(DATETIME_UPPER) && checkDatetimePattern(properties.get(DATETIME_UPPER).toString()),
+        Preconditions.checkNotNull(props.get(PARTITION_SECONDS), "Sharding partition volume cannot be null.");
+        Preconditions.checkState(null != props.get(DATETIME_LOWER) && checkDatetimePattern(props.get(DATETIME_LOWER).toString()), "%s pattern is required.", DATETIME_PATTERN);
+        Preconditions.checkState(null != props.get(DATETIME_UPPER) && checkDatetimePattern(props.get(DATETIME_UPPER).toString()),
                 "%s pattern is required.", DATETIME_PATTERN);
-        autoTablesAmount = (int) (Math.ceil(parseDate(properties.get(DATETIME_UPPER).toString()) / getPartitionValue()) + 2);
+        autoTablesAmount = (int) (Math.ceil(parseDate(props.get(DATETIME_UPPER).toString()) / getPartitionValue()) + 2);
     }
     
     @Override
@@ -124,12 +123,12 @@ public final class DatetimeShardingAlgorithm implements StandardShardingAlgorith
     
     private long parseDate(final Comparable<?> shardingValue) {
         LocalDateTime dateValue = LocalDateTime.parse(shardingValue.toString(), DATE_FORMAT);
-        LocalDateTime sinceDate = LocalDateTime.parse(properties.get(DATETIME_LOWER).toString(), DATE_FORMAT);
+        LocalDateTime sinceDate = LocalDateTime.parse(props.get(DATETIME_LOWER).toString(), DATE_FORMAT);
         return Duration.between(sinceDate, dateValue).toMillis() / 1000;
     }
     
     private long getPartitionValue() {
-        return Long.parseLong(properties.get(PARTITION_SECONDS).toString());
+        return Long.parseLong(props.get(PARTITION_SECONDS).toString());
     }
     
     @Override

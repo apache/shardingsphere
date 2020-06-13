@@ -35,12 +35,7 @@ public final class RoundRobinMasterSlaveLoadBalanceAlgorithm implements MasterSl
     
     private static final ConcurrentHashMap<String, AtomicInteger> COUNTS = new ConcurrentHashMap<>();
     
-    private Properties properties = new Properties();
-    
-    @Override
-    public String getType() {
-        return "ROUND_ROBIN";
-    }
+    private Properties props = new Properties();
     
     @Override
     public String getDataSource(final String name, final String masterDataSourceName, final List<String> slaveDataSourceNames) {
@@ -48,5 +43,10 @@ public final class RoundRobinMasterSlaveLoadBalanceAlgorithm implements MasterSl
         COUNTS.putIfAbsent(name, count);
         count.compareAndSet(slaveDataSourceNames.size(), 0);
         return slaveDataSourceNames.get(Math.abs(count.getAndIncrement()) % slaveDataSourceNames.size());
+    }
+    
+    @Override
+    public String getType() {
+        return "ROUND_ROBIN";
     }
 }

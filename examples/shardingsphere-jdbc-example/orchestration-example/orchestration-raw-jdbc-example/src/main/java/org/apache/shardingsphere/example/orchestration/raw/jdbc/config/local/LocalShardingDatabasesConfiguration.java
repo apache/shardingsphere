@@ -27,8 +27,6 @@ import org.apache.shardingsphere.sharding.api.config.algorithm.KeyGenerateAlgori
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.sharding.strategy.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.InlineShardingAlgorithm;
 
 import javax.sql.DataSource;
@@ -63,9 +61,9 @@ public final class LocalShardingDatabasesConfiguration implements ExampleConfigu
         result.getBindingTableGroups().add("t_order, t_order_item");
         result.getBroadcastTables().add("t_address");
         InlineShardingAlgorithm shardingAlgorithm = new InlineShardingAlgorithm();
-        shardingAlgorithm.getProperties().setProperty("algorithm.expression", "demo_ds_${user_id % 2}");
+        shardingAlgorithm.getProps().setProperty("algorithm.expression", "demo_ds_${user_id % 2}");
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", shardingAlgorithm));
-        result.getKeyGenerators().put("snowflake", new KeyGenerateAlgorithmConfiguration("SNOWFLAKE", getProperties()));
+        result.getKeyGenerators().put("snowflake", new KeyGenerateAlgorithmConfiguration("SNOWFLAKE", getProps()));
         return result;
     }
     
@@ -86,13 +84,7 @@ public final class LocalShardingDatabasesConfiguration implements ExampleConfigu
         return result;
     }
     
-    private static KeyGenerateAlgorithm getSnowflakeKeyGenerateAlgorithm() {
-        KeyGenerateAlgorithm result = new SnowflakeKeyGenerateAlgorithm();
-        result.setProperties(getProperties());
-        return result;
-    }
-    
-    private static Properties getProperties() {
+    private static Properties getProps() {
         Properties result = new Properties();
         result.setProperty("worker.id", "123");
         return result;

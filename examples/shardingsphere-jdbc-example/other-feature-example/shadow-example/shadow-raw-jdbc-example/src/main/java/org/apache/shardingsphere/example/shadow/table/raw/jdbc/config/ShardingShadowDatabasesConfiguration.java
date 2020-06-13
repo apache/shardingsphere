@@ -47,10 +47,10 @@ public final class ShardingShadowDatabasesConfiguration implements ExampleConfig
         dataSourceMap.put("shadow_ds_1", DataSourceUtil.createDataSource("shadow_demo_ds_1"));
         ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
         shardingRuleConfiguration.getTables().add(getUserTableConfiguration());
-        Properties properties = new Properties();
-        properties.setProperty("sql.show", "true");
+        Properties props = new Properties();
+        props.setProperty("sql.show", "true");
         ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration("shadow", shadowMappings);
-        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Arrays.asList(shadowRuleConfiguration, shardingRuleConfiguration), properties);
+        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Arrays.asList(shadowRuleConfiguration, shardingRuleConfiguration), props);
     }
     
     private ShardingTableRuleConfiguration getUserTableConfiguration() {
@@ -62,13 +62,13 @@ public final class ShardingShadowDatabasesConfiguration implements ExampleConfig
     
     private StandardShardingStrategyConfiguration getTableStandardShardingStrategyConfiguration() {
         InlineShardingAlgorithm inlineShardingAlgorithm = new InlineShardingAlgorithm();
-        inlineShardingAlgorithm.getProperties().setProperty("algorithm.expression", "t_user");
+        inlineShardingAlgorithm.getProps().setProperty("algorithm.expression", "t_user");
         return new StandardShardingStrategyConfiguration("user_id", inlineShardingAlgorithm);
     }
     
     private StandardShardingStrategyConfiguration getDatabaseStandardShardingStrategyConfiguration() {
         InlineShardingAlgorithm inlineShardingAlgorithm = new InlineShardingAlgorithm();
-        inlineShardingAlgorithm.getProperties().setProperty("algorithm.expression", "ds_${user_id % 2}");
+        inlineShardingAlgorithm.getProps().setProperty("algorithm.expression", "ds_${user_id % 2}");
         return new StandardShardingStrategyConfiguration("user_id", inlineShardingAlgorithm);
     }
 }
