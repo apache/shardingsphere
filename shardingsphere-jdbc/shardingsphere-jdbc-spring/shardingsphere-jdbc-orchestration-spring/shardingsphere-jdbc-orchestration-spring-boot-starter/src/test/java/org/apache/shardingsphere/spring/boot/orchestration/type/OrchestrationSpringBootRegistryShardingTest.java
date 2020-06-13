@@ -126,7 +126,7 @@ public class OrchestrationSpringBootRegistryShardingTest {
                 + "  keyGenerators:\n"
                 + "    snowflake:\n"
                 + "      type: SNOWFLAKE\n");
-        testCenter.persist("/demo_spring_boot_ds_center/config/properties", ""
+        testCenter.persist("/demo_spring_boot_ds_center/config/props", ""
                 + "executor.size: '100'\n"
                 + "sql.show: 'true'\n");
         testCenter.persist("/demo_spring_boot_ds_center/registry/datasources", "");

@@ -15,16 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.spring.namespace.tag;
+package org.apache.shardingsphere.sharding.spring.namespace.tag;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Load balance algorithm bean definition tag.
+ * Key generate algorithm bean definition tag.
  */
-public final class LoadBalanceAlgorithmBeanDefinitionTag {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class KeyGenerateAlgorithmBeanDefinitionTag {
     
-    public static final String ROOT_TAG = "load-balance-algorithm";
+    public static final String ALGORITHM_TAG = "key-generate-algorithm";
     
     public static final String TYPE_ATTRIBUTE = "type";
     
     public static final String PROPS_TAG = "props";
+    
+    public static final String STRATEGY_REF_ATTRIBUTE = "key-generate-strategy-ref";
+    
+    public static final String STRATEGY_TAG = "key-generate-strategy";
+    
+    public static final String COLUMN_ATTRIBUTE = "column";
+    
+    public static final String ALGORITHM_REF_TAG = "algorithm-ref";
 }

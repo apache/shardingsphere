@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean;
+import org.apache.shardingsphere.sharding.spring.namespace.tag.KeyGenerateAlgorithmBeanDefinitionTag;
 import org.apache.shardingsphere.sharding.spring.namespace.tag.ShardingRuleBeanDefinitionTag;
 import org.apache.shardingsphere.sharding.strategy.algorithm.keygen.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -162,7 +163,7 @@ public final class ShardingRuleBeanDefinitionParser extends AbstractBeanDefiniti
     }
     
     private void parseKeyGenerateStrategyConfiguration(final Element tableElement, final BeanDefinitionBuilder factory) {
-        String keyGenerator = tableElement.getAttribute(ShardingRuleBeanDefinitionTag.KEY_GENERATE_STRATEGY_REF_ATTRIBUTE);
+        String keyGenerator = tableElement.getAttribute(KeyGenerateAlgorithmBeanDefinitionTag.STRATEGY_REF_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(keyGenerator)) {
             factory.addPropertyReference("keyGenerateStrategy", keyGenerator);
         }
@@ -219,7 +220,7 @@ public final class ShardingRuleBeanDefinitionParser extends AbstractBeanDefiniti
     }
     
     private Collection<String> findKeyGenerateStrategyRefsFromTable(final List<Element> shardingTableElements) {
-        return shardingTableElements.stream().filter(each -> !Strings.isNullOrEmpty(each.getAttribute(ShardingRuleBeanDefinitionTag.KEY_GENERATE_STRATEGY_REF_ATTRIBUTE)))
-                .map(each -> each.getAttribute(ShardingRuleBeanDefinitionTag.KEY_GENERATE_STRATEGY_REF_ATTRIBUTE)).collect(Collectors.toSet());
+        return shardingTableElements.stream().filter(each -> !Strings.isNullOrEmpty(each.getAttribute(KeyGenerateAlgorithmBeanDefinitionTag.STRATEGY_REF_ATTRIBUTE)))
+                .map(each -> each.getAttribute(KeyGenerateAlgorithmBeanDefinitionTag.STRATEGY_REF_ATTRIBUTE)).collect(Collectors.toSet());
     }
 }

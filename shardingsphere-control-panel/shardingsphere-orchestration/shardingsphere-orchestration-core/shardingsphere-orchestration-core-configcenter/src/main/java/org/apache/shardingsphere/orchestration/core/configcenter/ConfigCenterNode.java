@@ -44,7 +44,7 @@ public final class ConfigCenterNode {
     
     private static final String AUTHENTICATION_NODE = "authentication";
     
-    private static final String PROPS_NODE = "properties";
+    private static final String PROPS_NODE = "props";
     
     private static final String CLUSTER_NODE = "cluster";
     

@@ -26,10 +26,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SPIBeanDefinitionTag {
     
-    public static final String KEY_GENERATE_ALGORITHM_TAG = "key-generate-algorithm";
-    
-    public static final String KEY_GENERATE_ALGORITHM_TYPE_ATTRIBUTE = "type";
-    
     public static final String SHARDING_ALGORITHM_TAG = "sharding-algorithm";
     
     public static final String SHARDING_ALGORITHM_TYPE_ATTRIBUTE = "type";
