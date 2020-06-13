@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.spring.namespace.parser;
+package org.apache.shardingsphere.spring.namespace.parser;
 
-import org.apache.shardingsphere.masterslave.spring.namespace.factorybean.MasterSlaveLoadBalanceAlgorithmFactoryBean;
-import org.apache.shardingsphere.masterslave.spring.namespace.tag.LoadBalanceAlgorithmBeanDefinitionTag;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.spring.namespace.factorybean.ShardingSphereAlgorithmFactoryBean;
+import org.apache.shardingsphere.spring.namespace.tag.ShardingSphereAlgorithmBeanDefinitionTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -29,20 +30,23 @@ import org.w3c.dom.Element;
 import java.util.Properties;
 
 /**
- * Master slave load balance algorithm bean definition parser.
+ * ShardingSphere algorithm bean parser for spring namespace.
  */
-public final class MasterSlaveLoadBalanceAlgorithmBeanDefinitionParser extends AbstractBeanDefinitionParser {
+@RequiredArgsConstructor
+public final class ShardingSphereAlgorithmBeanDefinitionParser extends AbstractBeanDefinitionParser {
+    
+    private final Class<? extends ShardingSphereAlgorithmFactoryBean> beanClass;
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(MasterSlaveLoadBalanceAlgorithmFactoryBean.class);
-        factory.addConstructorArgValue(element.getAttribute(LoadBalanceAlgorithmBeanDefinitionTag.TYPE_ATTRIBUTE));
-        factory.addConstructorArgValue(parseProperties(element, parserContext));
+        BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(beanClass);
+        factory.addConstructorArgValue(element.getAttribute(ShardingSphereAlgorithmBeanDefinitionTag.TYPE_ATTRIBUTE));
+        factory.addConstructorArgValue(parsePropsElement(element, parserContext));
         return factory.getBeanDefinition();
     }
     
-    private static Properties parseProperties(final Element element, final ParserContext parserContext) {
-        Element propsElement = DomUtils.getChildElementByTagName(element, LoadBalanceAlgorithmBeanDefinitionTag.PROPS_TAG);
+    private Properties parsePropsElement(final Element element, final ParserContext parserContext) {
+        Element propsElement = DomUtils.getChildElementByTagName(element, ShardingSphereAlgorithmBeanDefinitionTag.PROPS_TAG);
         return null == propsElement ? new Properties() : parserContext.getDelegate().parsePropsElement(propsElement);
     }
 }

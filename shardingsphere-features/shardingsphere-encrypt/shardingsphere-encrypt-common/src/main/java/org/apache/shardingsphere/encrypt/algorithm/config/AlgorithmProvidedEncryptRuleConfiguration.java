@@ -33,7 +33,7 @@ import java.util.Map;
 @Getter
 public final class AlgorithmProvidedEncryptRuleConfiguration implements RuleConfiguration {
     
-    private final Map<String, EncryptAlgorithm> encryptors;
-    
     private final Collection<EncryptTableRuleConfiguration> tables;
+    
+    private final Map<String, EncryptAlgorithm> encryptors;
 }

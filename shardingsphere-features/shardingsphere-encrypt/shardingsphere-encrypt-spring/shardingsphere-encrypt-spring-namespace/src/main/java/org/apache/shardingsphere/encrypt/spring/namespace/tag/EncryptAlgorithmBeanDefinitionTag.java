@@ -23,8 +23,4 @@ package org.apache.shardingsphere.encrypt.spring.namespace.tag;
 public final class EncryptAlgorithmBeanDefinitionTag {
     
     public static final String ROOT_TAG = "encrypt-algorithm";
-    
-    public static final String TYPE_ATTRIBUTE = "type";
-    
-    public static final String PROPS_TAG = "props";
 }

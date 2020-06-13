@@ -15,13 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.spi;
+package org.apache.shardingsphere.spring.namespace.factorybean;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
+import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
+import org.springframework.beans.factory.FactoryBean;
+
+import java.util.Properties;
 
 /**
- * Sharding algorithm.
+ * ShardingSphere algorithm factory bean.
  */
-public interface ShardingAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
+@RequiredArgsConstructor
+public abstract class ShardingSphereAlgorithmFactoryBean<T extends ShardingSphereAlgorithm> implements FactoryBean<T> {
+    
+    private final String type;
+    
+    private final Properties props;
+    
+    @Getter
+    private final Class<T> objectType;
+    
+    @Override
+    public final T getObject() {
+        return TypedSPIRegistry.getRegisteredService(objectType, type, props);
+    }
+    
+    @Override
+    public final boolean isSingleton() {
+        return true;
+    }
 }

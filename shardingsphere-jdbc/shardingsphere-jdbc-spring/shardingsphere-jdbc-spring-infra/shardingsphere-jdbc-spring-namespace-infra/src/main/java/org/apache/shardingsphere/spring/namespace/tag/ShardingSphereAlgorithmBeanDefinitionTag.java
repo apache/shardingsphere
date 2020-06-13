@@ -15,13 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.spi;
+package org.apache.shardingsphere.spring.namespace.tag;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Sharding algorithm.
+ * ShardingSphere algorithm bean definition tag.
  */
-public interface ShardingAlgorithm extends ShardingSphereAlgorithm, ShardingSphereAlgorithmPostProcessor {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShardingSphereAlgorithmBeanDefinitionTag {
+    
+    public static final String TYPE_ATTRIBUTE = "type";
+    
+    public static final String PROPS_TAG = "props";
 }

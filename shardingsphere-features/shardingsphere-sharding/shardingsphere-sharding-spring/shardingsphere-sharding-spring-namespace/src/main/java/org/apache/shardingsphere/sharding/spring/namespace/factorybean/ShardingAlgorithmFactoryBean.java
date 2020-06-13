@@ -17,46 +17,22 @@
 
 package org.apache.shardingsphere.sharding.spring.namespace.factorybean;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-import org.springframework.beans.factory.FactoryBean;
+import org.apache.shardingsphere.spring.namespace.factorybean.ShardingSphereAlgorithmFactoryBean;
 
 import java.util.Properties;
 
 /**
  * Sharding algorithm factory bean.
  */
-public final class ShardingAlgorithmFactoryBean implements FactoryBean<ShardingAlgorithm> {
+public final class ShardingAlgorithmFactoryBean extends ShardingSphereAlgorithmFactoryBean<ShardingAlgorithm> {
 
     static {
         ShardingSphereServiceLoader.register(ShardingAlgorithm.class);
     }
-
-    private String type;
-
-    private Properties props;
-
+    
     public ShardingAlgorithmFactoryBean(final String type, final Properties props) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(type), "The type of shardingAlgorithm is required.");
-        this.type = type;
-        this.props = props;
-    }
-
-    @Override
-    public ShardingAlgorithm getObject() {
-        return TypedSPIRegistry.getRegisteredService(ShardingAlgorithm.class, type, props);
-    }
-
-    @Override
-    public Class<?> getObjectType() {
-        return ShardingAlgorithm.class;
-    }
-
-    @Override
-    public boolean isSingleton() {
-        return true;
+        super(type, props, ShardingAlgorithm.class);
     }
 }
