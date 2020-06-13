@@ -21,4 +21,11 @@ package org.apache.shardingsphere.sharding.api.config.strategy.sharding;
  * Sharding strategy configuration.
  */
 public interface ShardingStrategyConfiguration {
+    
+    /**
+     * Get sharding algorithm name.
+     * 
+     * @return sharding algorithm name
+     */
+    String getShardingAlgorithmName();
 }

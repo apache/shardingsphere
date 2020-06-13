@@ -21,4 +21,9 @@ package org.apache.shardingsphere.sharding.api.config.strategy.sharding;
  * None sharding strategy configuration.
  */
 public final class NoneShardingStrategyConfiguration implements ShardingStrategyConfiguration {
+    
+    @Override
+    public String getShardingAlgorithmName() {
+        return "";
+    }
 }

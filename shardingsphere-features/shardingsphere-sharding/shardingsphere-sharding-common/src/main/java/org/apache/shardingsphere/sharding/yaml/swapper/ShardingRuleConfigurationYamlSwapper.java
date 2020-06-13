@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfigurat
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.algorithm.KeyGenerateAlgorithmConfigurationYamlSwapper;
+import org.apache.shardingsphere.sharding.yaml.swapper.algorithm.ShardingAlgorithmConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.rule.ShardingAutoTableRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.rule.ShardingTableRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.KeyGenerateStrategyConfigurationYamlSwapper;
@@ -45,6 +46,8 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
     private final ShardingStrategyConfigurationYamlSwapper shardingStrategyConfigurationYamlSwapper = new ShardingStrategyConfigurationYamlSwapper();
     
     private final KeyGenerateStrategyConfigurationYamlSwapper keyGenerateStrategyConfigurationYamlSwapper = new KeyGenerateStrategyConfigurationYamlSwapper();
+    
+    private final ShardingAlgorithmConfigurationYamlSwapper shardingAlgorithmConfigurationYamlSwapper = new ShardingAlgorithmConfigurationYamlSwapper();
     
     private final KeyGenerateAlgorithmConfigurationYamlSwapper keyGenerateAlgorithmConfigurationYamlSwapper = new KeyGenerateAlgorithmConfigurationYamlSwapper();
     
@@ -97,6 +100,9 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
         }
         if (null != yamlConfiguration.getDefaultKeyGenerateStrategy()) {
             result.setDefaultKeyGenerateStrategy(keyGenerateStrategyConfigurationYamlSwapper.swap(yamlConfiguration.getDefaultKeyGenerateStrategy()));
+        }
+        if (null != yamlConfiguration.getShardingAlgorithms()) {
+            yamlConfiguration.getShardingAlgorithms().forEach((key, value) -> result.getShardingAlgorithms().put(key, shardingAlgorithmConfigurationYamlSwapper.swap(value)));
         }
         if (null != yamlConfiguration.getKeyGenerators()) {
             yamlConfiguration.getKeyGenerators().forEach((key, value) -> result.getKeyGenerators().put(key, keyGenerateAlgorithmConfigurationYamlSwapper.swap(value)));

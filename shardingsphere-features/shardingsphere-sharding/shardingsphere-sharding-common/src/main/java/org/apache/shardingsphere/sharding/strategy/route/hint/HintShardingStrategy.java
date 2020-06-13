@@ -19,13 +19,12 @@ package org.apache.shardingsphere.sharding.strategy.route.hint;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
 import org.apache.shardingsphere.sharding.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.sharding.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.sharding.strategy.route.value.RouteValue;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 
 import java.util.Collection;
 import java.util.TreeSet;
@@ -40,10 +39,10 @@ public final class HintShardingStrategy implements ShardingStrategy {
     
     private final HintShardingAlgorithm shardingAlgorithm;
     
-    public HintShardingStrategy(final HintShardingStrategyConfiguration hintShardingStrategyConfig) {
-        Preconditions.checkNotNull(hintShardingStrategyConfig.getShardingAlgorithm(), "Sharding algorithm cannot be null.");
+    public HintShardingStrategy(final HintShardingAlgorithm shardingAlgorithm) {
+        Preconditions.checkNotNull(shardingAlgorithm, "Sharding algorithm cannot be null.");
         shardingColumns = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        shardingAlgorithm = hintShardingStrategyConfig.getShardingAlgorithm();
+        this.shardingAlgorithm = shardingAlgorithm;
     }
     
     @SuppressWarnings("unchecked")

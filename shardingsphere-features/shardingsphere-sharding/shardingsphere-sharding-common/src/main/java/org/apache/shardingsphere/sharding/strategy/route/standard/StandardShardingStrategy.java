@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.strategy.route.standard;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
@@ -27,7 +27,6 @@ import org.apache.shardingsphere.sharding.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.sharding.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.sharding.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.sharding.strategy.route.value.RouteValue;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -43,11 +42,11 @@ public final class StandardShardingStrategy implements ShardingStrategy {
     @Getter
     private final StandardShardingAlgorithm shardingAlgorithm;
     
-    public StandardShardingStrategy(final StandardShardingStrategyConfiguration standardShardingStrategyConfig) {
-        Preconditions.checkNotNull(standardShardingStrategyConfig.getShardingColumn(), "Sharding column cannot be null.");
-        Preconditions.checkState(null != standardShardingStrategyConfig.getShardingAlgorithm(), "sharding algorithm cannot be null.");
-        shardingColumn = standardShardingStrategyConfig.getShardingColumn();
-        shardingAlgorithm = standardShardingStrategyConfig.getShardingAlgorithm();
+    public StandardShardingStrategy(final String shardingColumn, final StandardShardingAlgorithm shardingAlgorithm) {
+        Preconditions.checkNotNull(shardingColumn, "Sharding column cannot be null.");
+        Preconditions.checkNotNull(shardingAlgorithm, "sharding algorithm cannot be null.");
+        this.shardingColumn = shardingColumn;
+        this.shardingAlgorithm = shardingAlgorithm;
     }
     
     @Override

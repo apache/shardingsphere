@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.strategy.route.standard.StandardShardingStrategy;
 import org.apache.shardingsphere.sharding.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.sharding.strategy.route.value.RangeRouteValue;
@@ -47,8 +46,7 @@ public final class StandardRangeShardingAlgorithmTest {
         shardingAlgorithm.getProps().setProperty("range.upper", "45");
         shardingAlgorithm.getProps().setProperty("partition.volume", "10");
         shardingAlgorithm.init();
-        StandardShardingStrategyConfiguration shardingStrategyConfig = new StandardShardingStrategyConfiguration("order_id", shardingAlgorithm);
-        shardingStrategy = new StandardShardingStrategy(shardingStrategyConfig);
+        shardingStrategy = new StandardShardingStrategy("order_id", shardingAlgorithm);
     }
     
     @Test

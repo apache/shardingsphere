@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.yaml.config.strategy.sharding;
+package org.apache.shardingsphere.sharding.api.config.algorithm;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
+
+import java.util.Properties;
 
 /**
- * Complex sharding strategy configuration for YAML.
+ * Sharding algorithm configuration.
  */
-@Getter
-@Setter
-public final class YamlComplexShardingStrategyConfiguration implements YamlBaseShardingStrategyConfiguration {
+public final class ShardingAlgorithmConfiguration extends TypedSPIConfiguration {
     
-    private String shardingColumns;
-    
-    private String shardingAlgorithmName;
+    public ShardingAlgorithmConfiguration(final String type, final Properties props) {
+        super(type, props);
+    }
 }

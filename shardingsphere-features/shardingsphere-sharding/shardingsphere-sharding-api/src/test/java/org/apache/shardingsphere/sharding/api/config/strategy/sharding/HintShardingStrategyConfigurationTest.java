@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.sharding.api.config.strategy.sharding;
 
-import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 
 public final class HintShardingStrategyConfigurationTest {
     
@@ -33,8 +31,7 @@ public final class HintShardingStrategyConfigurationTest {
     
     @Test
     public void assertConstructorWithFullArguments() {
-        HintShardingAlgorithm shardingAlgorithm = mock(HintShardingAlgorithm.class);
-        HintShardingStrategyConfiguration actual = new HintShardingStrategyConfiguration(shardingAlgorithm);
-        assertThat(actual.getShardingAlgorithm(), is(shardingAlgorithm));
+        HintShardingStrategyConfiguration actual = new HintShardingStrategyConfiguration("test");
+        assertThat(actual.getShardingAlgorithmName(), is("test"));
     }
 }

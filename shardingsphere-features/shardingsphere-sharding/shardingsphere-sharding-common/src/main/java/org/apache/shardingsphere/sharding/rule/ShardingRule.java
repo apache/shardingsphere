@@ -27,10 +27,12 @@ import org.apache.shardingsphere.infra.rule.DataNodeRoutedRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sharding.strategy.algorithm.keygen.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.strategy.route.ShardingStrategy;
@@ -53,10 +55,13 @@ import java.util.stream.Collectors;
 public final class ShardingRule implements DataNodeRoutedRule {
     
     static {
+        ShardingSphereServiceLoader.register(ShardingAlgorithm.class);
         ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
     }
     
     private final Collection<String> dataSourceNames;
+    
+    private final Map<String, ShardingAlgorithm> shardingAlgorithms = new LinkedHashMap<>();
     
     private final Map<String, KeyGenerateAlgorithm> keyGenerators = new LinkedHashMap<>();
     
@@ -76,9 +81,10 @@ public final class ShardingRule implements DataNodeRoutedRule {
         Preconditions.checkArgument(null != configuration, "ShardingRuleConfig cannot be null.");
         Preconditions.checkArgument(null != dataSourceNames && !dataSourceNames.isEmpty(), "Data sources cannot be empty.");
         this.dataSourceNames = getDataSourceNames(configuration.getTables(), dataSourceNames);
+        configuration.getShardingAlgorithms().forEach((key, value) -> shardingAlgorithms.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, ShardingAlgorithm.class)));
         configuration.getKeyGenerators().forEach((key, value) -> keyGenerators.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, KeyGenerateAlgorithm.class)));
-        tableRules = new LinkedList<>(createTableRules(configuration));
-        tableRules.addAll(createAutoTableRules(configuration));
+        tableRules = new LinkedList<>(createTableRules(configuration.getTables(), configuration.getDefaultKeyGenerateStrategy()));
+        tableRules.addAll(createAutoTableRules(configuration.getAutoTables(), configuration.getDefaultKeyGenerateStrategy()));
         broadcastTables = configuration.getBroadcastTables();
         bindingTableRules = createBindingTableRules(configuration.getBindingTableGroups());
         defaultDatabaseShardingStrategy = createDefaultShardingStrategy(configuration.getDefaultDatabaseShardingStrategy());
@@ -91,9 +97,10 @@ public final class ShardingRule implements DataNodeRoutedRule {
         Preconditions.checkArgument(null != configuration, "ShardingRuleConfig cannot be null.");
         Preconditions.checkArgument(null != dataSourceNames && !dataSourceNames.isEmpty(), "Data sources cannot be empty.");
         this.dataSourceNames = getDataSourceNames(configuration.getTables(), dataSourceNames);
+        shardingAlgorithms.putAll(configuration.getShardingAlgorithms());
         keyGenerators.putAll(configuration.getKeyGenerators());
-        tableRules = new LinkedList<>(createTableRules(configuration));
-        tableRules.addAll(createAutoTableRules(configuration));
+        tableRules = new LinkedList<>(createTableRules(configuration.getTables(), configuration.getDefaultKeyGenerateStrategy()));
+        tableRules.addAll(createAutoTableRules(configuration.getAutoTables(), configuration.getDefaultKeyGenerateStrategy()));
         broadcastTables = configuration.getBroadcastTables();
         bindingTableRules = createBindingTableRules(configuration.getBindingTableGroups());
         defaultDatabaseShardingStrategy = createDefaultShardingStrategy(configuration.getDefaultDatabaseShardingStrategy());
@@ -124,24 +131,24 @@ public final class ShardingRule implements DataNodeRoutedRule {
         return result;
     }
     
-    private Collection<TableRule> createTableRules(final ShardingRuleConfiguration configuration) {
-        return configuration.getTables().stream().map(
-            each -> new TableRule(each, dataSourceNames, getDefaultGenerateKeyColumn(configuration.getDefaultKeyGenerateStrategy()))).collect(Collectors.toList());
+    private Collection<TableRule> createTableRules(
+            final Collection<ShardingTableRuleConfiguration> tableRuleConfigurations, final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfiguration) {
+        return tableRuleConfigurations.stream().map(
+            each -> {
+                ShardingAlgorithm databaseShardingAlgorithm = null == each.getDatabaseShardingStrategy()
+                        ? null : shardingAlgorithms.get(each.getDatabaseShardingStrategy().getShardingAlgorithmName());
+                ShardingAlgorithm tableShardingAlgorithm = null == each.getTableShardingStrategy() ? null : shardingAlgorithms.get(each.getTableShardingStrategy().getShardingAlgorithmName());
+                return new TableRule(each, dataSourceNames, databaseShardingAlgorithm, tableShardingAlgorithm, getDefaultGenerateKeyColumn(defaultKeyGenerateStrategyConfiguration));
+            }).collect(Collectors.toList());
     }
     
-    private Collection<TableRule> createTableRules(final AlgorithmProvidedShardingRuleConfiguration configuration) {
-        return configuration.getTables().stream().map(
-            each -> new TableRule(each, dataSourceNames, getDefaultGenerateKeyColumn(configuration.getDefaultKeyGenerateStrategy()))).collect(Collectors.toList());
-    }
-    
-    private Collection<TableRule> createAutoTableRules(final ShardingRuleConfiguration shardingRuleConfig) {
-        return shardingRuleConfig.getAutoTables().stream().map(
-            each -> new TableRule(each, dataSourceNames, getDefaultGenerateKeyColumn(shardingRuleConfig.getDefaultKeyGenerateStrategy()))).collect(Collectors.toList());
-    }
-    
-    private Collection<TableRule> createAutoTableRules(final AlgorithmProvidedShardingRuleConfiguration shardingRuleConfig) {
-        return shardingRuleConfig.getAutoTables().stream().map(
-            each -> new TableRule(each, dataSourceNames, getDefaultGenerateKeyColumn(shardingRuleConfig.getDefaultKeyGenerateStrategy()))).collect(Collectors.toList());
+    private Collection<TableRule> createAutoTableRules(
+            final Collection<ShardingAutoTableRuleConfiguration> autoTableRuleConfigurations, final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfiguration) {
+        return autoTableRuleConfigurations.stream().map(
+            each -> {
+                ShardingAlgorithm shardingAlgorithm = null == each.getShardingStrategy() ? null : shardingAlgorithms.get(each.getShardingStrategy().getShardingAlgorithmName());
+                return new TableRule(each, dataSourceNames, shardingAlgorithm, getDefaultGenerateKeyColumn(defaultKeyGenerateStrategyConfiguration));
+            }).collect(Collectors.toList());
     }
     
     private String getDefaultGenerateKeyColumn(final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfiguration) {
@@ -157,7 +164,8 @@ public final class ShardingRule implements DataNodeRoutedRule {
     }
     
     private ShardingStrategy createDefaultShardingStrategy(final ShardingStrategyConfiguration shardingStrategyConfiguration) {
-        return Optional.ofNullable(shardingStrategyConfiguration).map(ShardingStrategyFactory::newInstance).orElse(new NoneShardingStrategy());
+        return null == shardingStrategyConfiguration ? new NoneShardingStrategy()
+                : ShardingStrategyFactory.newInstance(shardingStrategyConfiguration, shardingAlgorithms.get(shardingStrategyConfiguration.getShardingAlgorithmName()));
     }
     
     /**

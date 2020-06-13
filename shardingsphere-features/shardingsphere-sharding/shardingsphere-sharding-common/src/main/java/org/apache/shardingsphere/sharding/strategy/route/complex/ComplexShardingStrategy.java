@@ -21,14 +21,13 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Range;
 import lombok.Getter;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 import org.apache.shardingsphere.sharding.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.sharding.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.sharding.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.sharding.strategy.route.value.RouteValue;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -45,12 +44,12 @@ public final class ComplexShardingStrategy implements ShardingStrategy {
     
     private final ComplexKeysShardingAlgorithm shardingAlgorithm;
     
-    public ComplexShardingStrategy(final ComplexShardingStrategyConfiguration complexShardingStrategyConfig) {
-        Preconditions.checkNotNull(complexShardingStrategyConfig.getShardingColumns(), "Sharding columns cannot be null.");
-        Preconditions.checkNotNull(complexShardingStrategyConfig.getShardingAlgorithm(), "Sharding algorithm cannot be null.");
-        shardingColumns = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        shardingColumns.addAll(Splitter.on(",").trimResults().splitToList(complexShardingStrategyConfig.getShardingColumns()));
-        shardingAlgorithm = complexShardingStrategyConfig.getShardingAlgorithm();
+    public ComplexShardingStrategy(final String shardingColumns, final ComplexKeysShardingAlgorithm shardingAlgorithm) {
+        Preconditions.checkNotNull(shardingColumns, "Sharding columns cannot be null.");
+        Preconditions.checkNotNull(shardingAlgorithm, "Sharding algorithm cannot be null.");
+        this.shardingColumns = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        this.shardingColumns.addAll(Splitter.on(",").trimResults().splitToList(shardingColumns));
+        this.shardingAlgorithm = shardingAlgorithm;
     }
     
     @SuppressWarnings("unchecked")

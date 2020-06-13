@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.algorithm.KeyGenerateAlgorithmConfiguration;
+import org.apache.shardingsphere.sharding.api.config.algorithm.ShardingAlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -51,6 +52,8 @@ public final class ShardingRuleConfiguration implements RuleConfiguration {
     private ShardingStrategyConfiguration defaultTableShardingStrategy;
     
     private KeyGenerateStrategyConfiguration defaultKeyGenerateStrategy;
+    
+    private Map<String, ShardingAlgorithmConfiguration> shardingAlgorithms = new LinkedHashMap<>();
     
     private Map<String, KeyGenerateAlgorithmConfiguration> keyGenerators = new LinkedHashMap<>();
 }

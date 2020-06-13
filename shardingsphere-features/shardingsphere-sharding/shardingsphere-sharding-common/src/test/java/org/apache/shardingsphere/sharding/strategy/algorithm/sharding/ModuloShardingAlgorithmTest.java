@@ -19,12 +19,11 @@ package org.apache.shardingsphere.sharding.strategy.algorithm.sharding;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.sharding.strategy.route.standard.StandardShardingStrategy;
 import org.apache.shardingsphere.sharding.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.sharding.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.sharding.strategy.route.value.RouteValue;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -45,8 +44,7 @@ public final class ModuloShardingAlgorithmTest {
         ModuloShardingAlgorithm shardingAlgorithm = new ModuloShardingAlgorithm();
         shardingAlgorithm.getProps().setProperty("mod.value", "4");
         shardingAlgorithm.init();
-        StandardShardingStrategyConfiguration shardingStrategyConfig = new StandardShardingStrategyConfiguration("order_id", shardingAlgorithm);
-        shardingStrategy = new StandardShardingStrategy(shardingStrategyConfig);
+        shardingStrategy = new StandardShardingStrategy("order_id", shardingAlgorithm);
     }
     
     @Test
