@@ -22,7 +22,6 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleC
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean;
 import org.apache.shardingsphere.sharding.spring.namespace.tag.rule.ShardingRuleBeanDefinitionTag;
-import org.apache.shardingsphere.sharding.spring.namespace.tag.strategy.KeyGenerateStrategyBeanDefinitionTag;
 import org.apache.shardingsphere.sharding.strategy.algorithm.keygen.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
@@ -163,7 +162,7 @@ public final class ShardingRuleBeanDefinitionParser extends AbstractBeanDefiniti
     }
     
     private void parseKeyGenerateStrategyConfiguration(final Element tableElement, final BeanDefinitionBuilder factory) {
-        String keyGenerator = tableElement.getAttribute(KeyGenerateStrategyBeanDefinitionTag.STRATEGY_REF_ATTRIBUTE);
+        String keyGenerator = tableElement.getAttribute(ShardingRuleBeanDefinitionTag.STRATEGY_REF_ATTRIBUTE);
         if (!Strings.isNullOrEmpty(keyGenerator)) {
             factory.addPropertyReference("keyGenerateStrategy", keyGenerator);
         }
@@ -220,7 +219,7 @@ public final class ShardingRuleBeanDefinitionParser extends AbstractBeanDefiniti
     }
     
     private Collection<String> findKeyGenerateStrategyRefsFromTable(final List<Element> shardingTableElements) {
-        return shardingTableElements.stream().filter(each -> !Strings.isNullOrEmpty(each.getAttribute(KeyGenerateStrategyBeanDefinitionTag.STRATEGY_REF_ATTRIBUTE)))
-                .map(each -> each.getAttribute(KeyGenerateStrategyBeanDefinitionTag.STRATEGY_REF_ATTRIBUTE)).collect(Collectors.toSet());
+        return shardingTableElements.stream().filter(each -> !Strings.isNullOrEmpty(each.getAttribute(ShardingRuleBeanDefinitionTag.STRATEGY_REF_ATTRIBUTE)))
+                .map(each -> each.getAttribute(ShardingRuleBeanDefinitionTag.STRATEGY_REF_ATTRIBUTE)).collect(Collectors.toSet());
     }
 }

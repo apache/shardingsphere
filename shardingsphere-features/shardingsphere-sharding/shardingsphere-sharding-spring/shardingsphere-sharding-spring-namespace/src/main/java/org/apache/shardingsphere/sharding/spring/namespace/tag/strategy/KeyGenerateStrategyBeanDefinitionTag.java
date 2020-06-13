@@ -26,8 +26,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class KeyGenerateStrategyBeanDefinitionTag {
     
-    public static final String STRATEGY_REF_ATTRIBUTE = "key-generate-strategy-ref";
-    
     public static final String STRATEGY_TAG = "key-generate-strategy";
     
     public static final String COLUMN_ATTRIBUTE = "column";
