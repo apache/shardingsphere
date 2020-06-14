@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.yaml.config.algorithm;
+package org.apache.shardingsphere.infra.yaml.config.algorithm;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -24,11 +24,11 @@ import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 import java.util.Properties;
 
 /**
- * Sharding algorithm configuration for YAML.
+ * ShardingSphere algorithm configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlShardingAlgorithmConfiguration implements YamlConfiguration {
+public final class YamlShardingSphereAlgorithmConfiguration implements YamlConfiguration {
     
     private String type;
     

@@ -20,9 +20,8 @@ package org.apache.shardingsphere.sharding.yaml.config;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.algorithm.YamlKeyGenerateAlgorithmConfiguration;
-import org.apache.shardingsphere.sharding.yaml.config.algorithm.YamlShardingAlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration;
@@ -54,9 +53,9 @@ public final class YamlShardingRuleConfiguration implements YamlRuleConfiguratio
     
     private YamlKeyGenerateStrategyConfiguration defaultKeyGenerateStrategy;
     
-    private Map<String, YamlShardingAlgorithmConfiguration> shardingAlgorithms = new LinkedHashMap<>();
+    private Map<String, YamlShardingSphereAlgorithmConfiguration> shardingAlgorithms = new LinkedHashMap<>();
     
-    private Map<String, YamlKeyGenerateAlgorithmConfiguration> keyGenerators = new LinkedHashMap<>();
+    private Map<String, YamlShardingSphereAlgorithmConfiguration> keyGenerators = new LinkedHashMap<>();
     
     @Override
     public Class<ShardingRuleConfiguration> getRuleConfigurationType() {

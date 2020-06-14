@@ -18,30 +18,30 @@
 package org.apache.shardingsphere.sharding.yaml.swapper.algorithm;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 import org.apache.shardingsphere.sharding.api.config.algorithm.ShardingAlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-import org.apache.shardingsphere.sharding.yaml.config.algorithm.YamlShardingAlgorithmConfiguration;
 
 /**
  * Sharding algorithm configuration YAML swapper.
  */
-public final class ShardingAlgorithmConfigurationYamlSwapper implements YamlSwapper<YamlShardingAlgorithmConfiguration, ShardingAlgorithmConfiguration> {
+public final class ShardingAlgorithmConfigurationYamlSwapper implements YamlSwapper<YamlShardingSphereAlgorithmConfiguration, ShardingAlgorithmConfiguration> {
     
     static {
         ShardingSphereServiceLoader.register(ShardingAlgorithm.class);
     }
     
     @Override
-    public YamlShardingAlgorithmConfiguration swap(final ShardingAlgorithmConfiguration data) {
-        YamlShardingAlgorithmConfiguration result = new YamlShardingAlgorithmConfiguration();
+    public YamlShardingSphereAlgorithmConfiguration swap(final ShardingAlgorithmConfiguration data) {
+        YamlShardingSphereAlgorithmConfiguration result = new YamlShardingSphereAlgorithmConfiguration();
         result.setType(data.getType());
         result.setProps(data.getProps());
         return result;
     }
     
     @Override
-    public ShardingAlgorithmConfiguration swap(final YamlShardingAlgorithmConfiguration yamlConfiguration) {
+    public ShardingAlgorithmConfiguration swap(final YamlShardingSphereAlgorithmConfiguration yamlConfiguration) {
         return new ShardingAlgorithmConfiguration(yamlConfiguration.getType(), yamlConfiguration.getProps());
     }
 }
