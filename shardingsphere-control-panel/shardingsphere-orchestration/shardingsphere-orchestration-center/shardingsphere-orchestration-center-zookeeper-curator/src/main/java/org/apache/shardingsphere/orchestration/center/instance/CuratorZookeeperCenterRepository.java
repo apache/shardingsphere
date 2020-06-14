@@ -212,19 +212,26 @@ public final class CuratorZookeeperCenterRepository implements ConfigCenterRepos
     public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
         final String path = key + "/";
         if (!caches.containsKey(path)) {
-            addCacheData(key);
+            TreeCache cache = new TreeCache(client, key);
+            cache.getListenable().addListener((client, event) -> {
+                ChildData data = event.getData();
+                if (null == data || null == data.getPath()) {
+                    return;
+                }
+                DataChangedEvent.ChangedType changedType = getChangedType(event);
+                if (DataChangedEvent.ChangedType.IGNORED != changedType) {
+                    dataChangedEventListener.onChange(new DataChangedEvent(data.getPath(), null == data.getData() ? null : new String(data.getData(), Charsets.UTF_8), changedType));
+                }
+            });
+            try {
+                cache.start();
+                // CHECKSTYLE:OFF
+            } catch (final Exception ex) {
+                // CHECKSTYLE:ON
+                CuratorZookeeperExceptionHandler.handleException(ex);
+            }
+            caches.put(path, cache);
         }
-        TreeCache cache = caches.get(path);
-        cache.getListenable().addListener((client, event) -> {
-            ChildData data = event.getData();
-            if (null == data || null == data.getPath()) {
-                return;
-            }
-            DataChangedEvent.ChangedType changedType = getChangedType(event);
-            if (DataChangedEvent.ChangedType.IGNORED != changedType) {
-                dataChangedEventListener.onChange(new DataChangedEvent(data.getPath(), null == data.getData() ? null : new String(data.getData(), Charsets.UTF_8), changedType));
-            }
-        });
     }
     
     @Override
@@ -251,18 +258,6 @@ public final class CuratorZookeeperCenterRepository implements ConfigCenterRepos
             default:
                 return DataChangedEvent.ChangedType.IGNORED;
         }
-    }
-    
-    private void addCacheData(final String cachePath) {
-        TreeCache cache = new TreeCache(client, cachePath);
-        try {
-            cache.start();
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(ex);
-        }
-        caches.put(cachePath + "/", cache);
     }
     
     @Override
