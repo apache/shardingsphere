@@ -46,30 +46,30 @@ import static org.mockito.Mockito.when;
 public final class ShardingAutoTableRuleConfigurationYamlSwapperTest {
     
     @Mock
-    private ShardingStrategyConfigurationYamlSwapper shardingStrategyConfigurationYamlSwapper;
+    private ShardingStrategyConfigurationYamlSwapper shardingStrategyYamlSwapper;
     
     @Mock
-    private KeyGenerateStrategyConfigurationYamlSwapper keyGenerateStrategyConfigurationYamlSwapper;
+    private KeyGenerateStrategyConfigurationYamlSwapper keyGenerateStrategyYamlSwapper;
     
-    private final ShardingAutoTableRuleConfigurationYamlSwapper tableRuleConfigurationYamlSwapper = new ShardingAutoTableRuleConfigurationYamlSwapper();
+    private final ShardingAutoTableRuleConfigurationYamlSwapper tableYamlSwapper = new ShardingAutoTableRuleConfigurationYamlSwapper();
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        setSwapper("shardingStrategyConfigurationYamlSwapper", shardingStrategyConfigurationYamlSwapper);
-        when(shardingStrategyConfigurationYamlSwapper.swapToYamlConfiguration(ArgumentMatchers.any())).thenReturn(mock(YamlShardingStrategyConfiguration.class));
-        setSwapper("keyGenerateStrategyConfigurationYamlSwapper", keyGenerateStrategyConfigurationYamlSwapper);
-        when(keyGenerateStrategyConfigurationYamlSwapper.swapToYamlConfiguration(ArgumentMatchers.any())).thenReturn(mock(YamlKeyGenerateStrategyConfiguration.class));
+        setSwapper("shardingStrategyYamlSwapper", shardingStrategyYamlSwapper);
+        when(shardingStrategyYamlSwapper.swapToYamlConfiguration(ArgumentMatchers.any())).thenReturn(mock(YamlShardingStrategyConfiguration.class));
+        setSwapper("keyGenerateStrategyYamlSwapper", keyGenerateStrategyYamlSwapper);
+        when(keyGenerateStrategyYamlSwapper.swapToYamlConfiguration(ArgumentMatchers.any())).thenReturn(mock(YamlKeyGenerateStrategyConfiguration.class));
     }
     
     private void setSwapper(final String swapperFieldName, final YamlSwapper swapperFieldValue) throws ReflectiveOperationException {
         Field field = ShardingAutoTableRuleConfigurationYamlSwapper.class.getDeclaredField(swapperFieldName);
         field.setAccessible(true);
-        field.set(tableRuleConfigurationYamlSwapper, swapperFieldValue);
+        field.set(tableYamlSwapper, swapperFieldValue);
     }
     
     @Test
     public void assertSwapToYamlWithMinProperties() {
-        YamlShardingAutoTableRuleConfiguration actual = tableRuleConfigurationYamlSwapper.swapToYamlConfiguration(new ShardingAutoTableRuleConfiguration("tbl", "ds0,ds1"));
+        YamlShardingAutoTableRuleConfiguration actual = tableYamlSwapper.swapToYamlConfiguration(new ShardingAutoTableRuleConfiguration("tbl", "ds0,ds1"));
         assertThat(actual.getLogicTable(), is("tbl"));
         assertThat(actual.getActualDataSources(), is("ds0,ds1"));
         assertNull(actual.getShardingStrategy());
@@ -81,7 +81,7 @@ public final class ShardingAutoTableRuleConfigurationYamlSwapperTest {
         ShardingAutoTableRuleConfiguration shardingTableRuleConfiguration = new ShardingAutoTableRuleConfiguration("tbl", "ds0,ds1");
         shardingTableRuleConfiguration.setShardingStrategy(mock(StandardShardingStrategyConfiguration.class));
         shardingTableRuleConfiguration.setKeyGenerateStrategy(mock(KeyGenerateStrategyConfiguration.class));
-        YamlShardingAutoTableRuleConfiguration actual = tableRuleConfigurationYamlSwapper.swapToYamlConfiguration(shardingTableRuleConfiguration);
+        YamlShardingAutoTableRuleConfiguration actual = tableYamlSwapper.swapToYamlConfiguration(shardingTableRuleConfiguration);
         assertThat(actual.getLogicTable(), is("tbl"));
         assertThat(actual.getActualDataSources(), is("ds0,ds1"));
         assertNotNull(actual.getShardingStrategy());
