@@ -38,16 +38,20 @@ spring.shardingsphere.rules.sharding.tables.t_order.actual-data-nodes=ds$->{0..1
 
 # 配置分库策略
 spring.shardingsphere.rules.sharding.tables.t_order.database-strategy.standard.sharding-column=user_id
-spring.shardingsphere.rules.sharding.tables.t_order.database-strategy.standard.sharding-algorithm.type=INLINE
-spring.shardingsphere.rules.sharding.tables.t_order.database-strategy.standard.sharding-algorithm.properties.algorithm.expression=ds$->{user_id % 2}
+spring.shardingsphere.rules.sharding.tables.t_order.database-strategy.standard.sharding-algorithm-name=database_inline
 
 # 配置分表策略
 spring.shardingsphere.rules.sharding.tables.t_order.table-strategy.standard.sharding-column=order_id
-spring.shardingsphere.rules.sharding.tables.t_order.table-strategy.standard.sharding-algorithm.type=INLINE
-spring.shardingsphere.rules.sharding.tables.t_order.table-strategy.standard.sharding-algorithm.properties.algorithm.expression=t_order$->{order_id % 2}
+spring.shardingsphere.rules.sharding.tables.t_order.table-strategy.standard.sharding-algorithm-name=table_inline
 
 # 省略配置 t_order_item 表规则...
 # ...
+
+# 配置 分片算法
+spring.shardingsphere.rules.sharding.sharding-algorithms.database_inline.type=INLINE
+spring.shardingsphere.rules.sharding.sharding-algorithms.database_inline.props.algorithm.expression=ds_${user_id % 2}
+spring.shardingsphere.rules.sharding.sharding-algorithms.table_inline.type=INLINE
+spring.shardingsphere.rules.sharding.sharding-algorithms.table_inline.props.algorithm.expression=t_order_${order_id % 2}
 
 ```
 
