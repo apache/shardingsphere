@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.encrypt.yaml.swapper;
 
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.algorithm.EncryptAlgorithmConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.config.algorithm.YamlEncryptAlgorithmConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.algorithm.EncryptAlgorithmConfigurationYamlSwapper;
 import org.apache.shardingsphere.encrypt.yaml.swapper.rule.EncryptTableRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
 
 import java.util.Collection;
@@ -68,8 +68,8 @@ public final class EncryptRuleConfigurationYamlSwapper implements YamlRuleConfig
     
     private Map<String, EncryptAlgorithmConfiguration> swapEncryptAlgorithm(final YamlEncryptRuleConfiguration yamlConfiguration) {
         Map<String, EncryptAlgorithmConfiguration> result = new LinkedHashMap<>();
-        for (Entry<String, YamlEncryptAlgorithmConfiguration> entry : yamlConfiguration.getEncryptors().entrySet()) {
-            YamlEncryptAlgorithmConfiguration yamlEncryptAlgorithmConfiguration = entry.getValue();
+        for (Entry<String, YamlShardingSphereAlgorithmConfiguration> entry : yamlConfiguration.getEncryptors().entrySet()) {
+            YamlShardingSphereAlgorithmConfiguration yamlEncryptAlgorithmConfiguration = entry.getValue();
             result.put(entry.getKey(), encryptAlgorithmConfigurationYamlSwapper.swap(yamlEncryptAlgorithmConfiguration));
         }
         return result;
