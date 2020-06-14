@@ -40,6 +40,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -52,84 +55,21 @@ import static org.junit.Assert.assertTrue;
 @ActiveProfiles("registry")
 public class OrchestrationSpringBootRegistryShardingTest {
     
+    private static final String SHARDING_DATABASES_FILE = "yaml/sharding-databases.yaml";
+    
+    private static final String SHARDING_RULE_FILE = "yaml/sharding-rule.yaml";
+    
     @Resource
     private DataSource dataSource;
     
     @BeforeClass
     public static void init() {
         EmbedTestingServer.start();
+        String shardingDatabases = readYAML(SHARDING_DATABASES_FILE);
+        String shardingRule = readYAML(SHARDING_RULE_FILE);
         TestCenterRepository testCenter = new TestCenterRepository();
-        testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/datasource", ""
-                + "ds: !!org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration\n"
-                + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
-                + "  props:\n"
-                + "    url: jdbc:h2:mem:ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL\n"
-                + "    maxTotal: 16\n"
-                + "    password: ''\n"
-                + "    username: sa\n"
-                + "ds_0: !!org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration\n"
-                + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
-                + "  props:\n"
-                + "    url: jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL\n"
-                + "    maxTotal: 16\n"
-                + "    password: ''\n"
-                + "    username: sa\n"
-                + "ds_1: !!org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration\n"
-                + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
-                + "  props:\n"
-                + "    url: jdbc:h2:mem:ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL\n"
-                + "    maxTotal: 16\n"
-                + "    password: ''\n"
-                + "    username: sa\n");
-        testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/rule", ""
-                + "rules:\n"
-                + "- !SHARDING\n"
-                + "  bindingTables:\n"
-                + "  - t_order\n"
-                + "  - t_order_item\n"
-                + "  broadcastTables:\n"
-                + "  - t_config\n"
-                + "  defaultDatabaseStrategy:\n"
-                + "    standard:\n"
-                + "      shardingAlgorithmName: database_inline\n" 
-                + "      shardingColumn: user_id\n"
-                + "  tables:\n"
-                + "    t_order:\n"
-                + "      actualDataNodes: ds_${0..1}.t_order_${0..1}\n"
-                + "      keyGenerateStrategy:\n"
-                + "        column: order_id\n"
-                + "        keyGeneratorName: snowflake\n"
-                + "      logicTable: t_order\n"
-                + "      tableStrategy:\n"
-                + "        standard:\n"
-                + "          shardingAlgorithmName: t_order_inline\n"
-                + "          shardingColumn: order_id\n"
-                + "    t_order_item:\n"
-                + "      actualDataNodes: ds_${0..1}.t_order_item_${0..1}\n"
-                + "      keyGenerateStrategy:\n"
-                + "        column: order_item_id\n"
-                + "        keyGeneratorName: snowflake\n"
-                + "      logicTable: t_order_item\n"
-                + "      tableStrategy:\n"
-                + "        standard:\n"
-                + "          shardingAlgorithmName: t_order_item_inline\n"
-                + "          shardingColumn: order_id\n"
-                + "  shardingAlgorithms:\n"
-                + "    database_inline:\n"
-                + "      type: INLINE\n"
-                + "      props:\n"
-                + "        algorithm.expression: ds_${user_id % 2}\n"
-                + "    t_order_inline:\n"
-                + "      type: INLINE\n"
-                + "      props:\n"
-                + "        algorithm.expression: t_order_${order_id % 2}\n"
-                + "    t_order_item_inline:\n"
-                + "      type: INLINE\n"
-                + "      props:\n"
-                + "        algorithm.expression: t_order_item_${order_id % 2}\n"
-                + "  keyGenerators:\n"
-                + "    snowflake:\n"
-                + "      type: SNOWFLAKE\n");
+        testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/datasource", shardingDatabases);
+        testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/rule", shardingRule);
         testCenter.persist("/demo_spring_boot_ds_center/config/props", ""
                 + "executor.size: '100'\n"
                 + "sql.show: 'true'\n");
@@ -235,5 +175,10 @@ public class OrchestrationSpringBootRegistryShardingTest {
         Field field = fieldClass.getDeclaredField(fieldName);
         field.setAccessible(true);
         return (T) field.get(target);
+    }
+    
+    @SneakyThrows
+    private static String readYAML(final String yamlFile) {
+        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI())).stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
 }
