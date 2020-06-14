@@ -30,7 +30,8 @@ public final class ShardingSphereAlgorithmConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYaml() {
-        YamlShardingSphereAlgorithmConfiguration actual = new ShardingSphereAlgorithmConfigurationYamlSwapper().swapToYamlConfiguration(new ShardingSphereAlgorithmConfiguration("TEST", createProps()));
+        YamlShardingSphereAlgorithmConfiguration actual = new ShardingSphereAlgorithmConfigurationYamlSwapper().swapToYamlConfiguration(
+                new ShardingSphereAlgorithmConfiguration("TEST", createProps()));
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getProps().getProperty("key"), is("value"));
     }
