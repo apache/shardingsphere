@@ -20,8 +20,6 @@ package org.apache.shardingsphere.sharding.yaml.swapper;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.swapper.algorithm.ShardingSphereAlgorithmConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
@@ -38,35 +36,31 @@ import java.util.Map.Entry;
  */
 public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfigurationSwapper<YamlShardingRuleConfiguration, ShardingRuleConfiguration> {
     
-    private final ShardingTableRuleConfigurationYamlSwapper tableRuleConfigurationYamlSwapper = new ShardingTableRuleConfigurationYamlSwapper();
-
-    private final ShardingAutoTableRuleConfigurationYamlSwapper autoTableRuleConfigurationYamlSwapper = new ShardingAutoTableRuleConfigurationYamlSwapper();
+    private final ShardingTableRuleConfigurationYamlSwapper tableYamlSwapper = new ShardingTableRuleConfigurationYamlSwapper();
     
-    private final ShardingStrategyConfigurationYamlSwapper shardingStrategyConfigurationYamlSwapper = new ShardingStrategyConfigurationYamlSwapper();
+    private final ShardingAutoTableRuleConfigurationYamlSwapper autoTableYamlSwapper = new ShardingAutoTableRuleConfigurationYamlSwapper();
     
-    private final KeyGenerateStrategyConfigurationYamlSwapper keyGenerateStrategyConfigurationYamlSwapper = new KeyGenerateStrategyConfigurationYamlSwapper();
+    private final ShardingStrategyConfigurationYamlSwapper shardingStrategyYamlSwapper = new ShardingStrategyConfigurationYamlSwapper();
+    
+    private final KeyGenerateStrategyConfigurationYamlSwapper keyGenerateStrategyYamlSwapper = new KeyGenerateStrategyConfigurationYamlSwapper();
     
     private final ShardingSphereAlgorithmConfigurationYamlSwapper algorithmSwapper = new ShardingSphereAlgorithmConfigurationYamlSwapper();
     
     @Override
     public YamlShardingRuleConfiguration swap(final ShardingRuleConfiguration data) {
         YamlShardingRuleConfiguration result = new YamlShardingRuleConfiguration();
-        for (ShardingTableRuleConfiguration each : data.getTables()) {
-            result.getTables().put(each.getLogicTable(), tableRuleConfigurationYamlSwapper.swap(each));
-        }
-        for (ShardingAutoTableRuleConfiguration each : data.getAutoTables()) {
-            result.getAutoTables().put(each.getLogicTable(), autoTableRuleConfigurationYamlSwapper.swap(each));
-        }
+        data.getTables().forEach(each -> result.getTables().put(each.getLogicTable(), tableYamlSwapper.swap(each)));
+        data.getAutoTables().forEach(each -> result.getAutoTables().put(each.getLogicTable(), autoTableYamlSwapper.swap(each)));
         result.getBindingTables().addAll(data.getBindingTableGroups());
         result.getBroadcastTables().addAll(data.getBroadcastTables());
         if (null != data.getDefaultDatabaseShardingStrategy()) {
-            result.setDefaultDatabaseStrategy(shardingStrategyConfigurationYamlSwapper.swap(data.getDefaultDatabaseShardingStrategy()));
+            result.setDefaultDatabaseStrategy(shardingStrategyYamlSwapper.swap(data.getDefaultDatabaseShardingStrategy()));
         }
         if (null != data.getDefaultTableShardingStrategy()) {
-            result.setDefaultTableStrategy(shardingStrategyConfigurationYamlSwapper.swap(data.getDefaultTableShardingStrategy()));
+            result.setDefaultTableStrategy(shardingStrategyYamlSwapper.swap(data.getDefaultTableShardingStrategy()));
         }
         if (null != data.getDefaultKeyGenerateStrategy()) {
-            result.setDefaultKeyGenerateStrategy(keyGenerateStrategyConfigurationYamlSwapper.swap(data.getDefaultKeyGenerateStrategy()));
+            result.setDefaultKeyGenerateStrategy(keyGenerateStrategyYamlSwapper.swap(data.getDefaultKeyGenerateStrategy()));
         }
         if (null != data.getShardingAlgorithms()) {
             data.getShardingAlgorithms().forEach((key, value) -> result.getShardingAlgorithms().put(key, algorithmSwapper.swap(value)));
@@ -83,23 +77,23 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
         for (Entry<String, YamlTableRuleConfiguration> entry : yamlConfiguration.getTables().entrySet()) {
             YamlTableRuleConfiguration tableRuleConfig = entry.getValue();
             tableRuleConfig.setLogicTable(entry.getKey());
-            result.getTables().add(tableRuleConfigurationYamlSwapper.swap(tableRuleConfig));
+            result.getTables().add(tableYamlSwapper.swap(tableRuleConfig));
         }
         for (Entry<String, YamlShardingAutoTableRuleConfiguration> entry : yamlConfiguration.getAutoTables().entrySet()) {
             YamlShardingAutoTableRuleConfiguration tableRuleConfig = entry.getValue();
             tableRuleConfig.setLogicTable(entry.getKey());
-            result.getAutoTables().add(autoTableRuleConfigurationYamlSwapper.swap(tableRuleConfig));
+            result.getAutoTables().add(autoTableYamlSwapper.swap(tableRuleConfig));
         }
         result.getBindingTableGroups().addAll(yamlConfiguration.getBindingTables());
         result.getBroadcastTables().addAll(yamlConfiguration.getBroadcastTables());
         if (null != yamlConfiguration.getDefaultDatabaseStrategy()) {
-            result.setDefaultDatabaseShardingStrategy(shardingStrategyConfigurationYamlSwapper.swap(yamlConfiguration.getDefaultDatabaseStrategy()));
+            result.setDefaultDatabaseShardingStrategy(shardingStrategyYamlSwapper.swap(yamlConfiguration.getDefaultDatabaseStrategy()));
         }
         if (null != yamlConfiguration.getDefaultTableStrategy()) {
-            result.setDefaultTableShardingStrategy(shardingStrategyConfigurationYamlSwapper.swap(yamlConfiguration.getDefaultTableStrategy()));
+            result.setDefaultTableShardingStrategy(shardingStrategyYamlSwapper.swap(yamlConfiguration.getDefaultTableStrategy()));
         }
         if (null != yamlConfiguration.getDefaultKeyGenerateStrategy()) {
-            result.setDefaultKeyGenerateStrategy(keyGenerateStrategyConfigurationYamlSwapper.swap(yamlConfiguration.getDefaultKeyGenerateStrategy()));
+            result.setDefaultKeyGenerateStrategy(keyGenerateStrategyYamlSwapper.swap(yamlConfiguration.getDefaultKeyGenerateStrategy()));
         }
         if (null != yamlConfiguration.getShardingAlgorithms()) {
             yamlConfiguration.getShardingAlgorithms().forEach((key, value) -> result.getShardingAlgorithms().put(key, algorithmSwapper.swap(value)));
