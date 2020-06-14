@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.api.config.algorithm;
+package org.apache.shardingsphere.infra.config.algorithm;
 
 import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
 
 import java.util.Properties;
 
 /**
- * Sharding algorithm configuration.
+ * ShardingSphere algorithm configuration.
  */
-public final class ShardingAlgorithmConfiguration extends TypedSPIConfiguration {
+public final class ShardingSphereAlgorithmConfiguration extends TypedSPIConfiguration {
     
-    public ShardingAlgorithmConfiguration(final String type, final Properties props) {
+    public ShardingSphereAlgorithmConfiguration(final String type, final Properties props) {
         super(type, props);
     }
 }
