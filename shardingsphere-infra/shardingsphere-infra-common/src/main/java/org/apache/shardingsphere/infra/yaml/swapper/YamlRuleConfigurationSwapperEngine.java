@@ -50,7 +50,7 @@ public final class YamlRuleConfigurationSwapperEngine {
     public Collection<YamlRuleConfiguration> swapToYamlConfigurations(final Collection<RuleConfiguration> ruleConfigurations) {
         Collection<YamlRuleConfiguration> result = new LinkedList<>();
         for (Entry<RuleConfiguration, YamlRuleConfigurationSwapper> entry : OrderedSPIRegistry.getRegisteredServices(ruleConfigurations, YamlRuleConfigurationSwapper.class).entrySet()) {
-            result.add((YamlRuleConfiguration) entry.getValue().swap(entry.getKey()));
+            result.add((YamlRuleConfiguration) entry.getValue().swapToYamlConfiguration(entry.getKey()));
         }
         return result;
     }
@@ -76,7 +76,7 @@ public final class YamlRuleConfigurationSwapperEngine {
         Collection<RuleConfiguration> result = new LinkedList<>();
         for (YamlRuleConfiguration each : yamlRuleConfigurations) {
             if (each.getRuleConfigurationType().equals(ruleConfigurationType)) {
-                result.add((RuleConfiguration) swapper.swap(each));
+                result.add((RuleConfiguration) swapper.swapToObject(each));
             }
         }
         return result;

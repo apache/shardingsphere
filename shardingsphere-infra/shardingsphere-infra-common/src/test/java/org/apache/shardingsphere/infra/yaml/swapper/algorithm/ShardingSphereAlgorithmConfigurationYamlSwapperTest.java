@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.yaml.swapper.algorithm;
+package org.apache.shardingsphere.infra.yaml.swapper.algorithm;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
@@ -26,21 +26,29 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class KeyGenerateAlgorithmConfigurationYamlSwapperTest {
+public final class ShardingSphereAlgorithmConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYaml() {
-        YamlShardingSphereAlgorithmConfiguration actual = new KeyGenerateAlgorithmConfigurationYamlSwapper().swap(new ShardingSphereAlgorithmConfiguration("UUID", new Properties()));
-        assertThat(actual.getType(), is("UUID"));
-        assertThat(actual.getProps(), is(new Properties()));
+        YamlShardingSphereAlgorithmConfiguration actual = new ShardingSphereAlgorithmConfigurationYamlSwapper().swapToYamlConfiguration(
+                new ShardingSphereAlgorithmConfiguration("TEST", createProps()));
+        assertThat(actual.getType(), is("TEST"));
+        assertThat(actual.getProps().getProperty("key"), is("value"));
     }
     
     @Test
     public void assertSwapToObject() {
         YamlShardingSphereAlgorithmConfiguration yamlConfiguration = new YamlShardingSphereAlgorithmConfiguration();
-        yamlConfiguration.setType("UUID");
-        ShardingSphereAlgorithmConfiguration actual = new KeyGenerateAlgorithmConfigurationYamlSwapper().swap(yamlConfiguration);
-        assertThat(actual.getType(), is("UUID"));
-        assertThat(actual.getProps(), is(new Properties()));
+        yamlConfiguration.setType("TEST");
+        yamlConfiguration.setProps(createProps());
+        ShardingSphereAlgorithmConfiguration actual = new ShardingSphereAlgorithmConfigurationYamlSwapper().swapToObject(yamlConfiguration);
+        assertThat(actual.getType(), is("TEST"));
+        assertThat(actual.getProps().getProperty("key"), is("value"));
+    }
+    
+    private Properties createProps() {
+        Properties result = new Properties();
+        result.setProperty("key", "value");
+        return result;
     }
 }

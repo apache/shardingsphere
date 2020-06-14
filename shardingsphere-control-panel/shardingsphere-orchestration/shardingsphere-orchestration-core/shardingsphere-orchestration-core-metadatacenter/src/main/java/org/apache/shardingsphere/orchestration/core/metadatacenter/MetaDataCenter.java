@@ -47,7 +47,7 @@ public final class MetaDataCenter {
      * @param ruleSchemaMetaData rule schema meta data of the schema
      */
     public void persistMetaDataCenterNode(final String schemaName, final RuleSchemaMetaData ruleSchemaMetaData) {
-        repository.persist(node.getMetaDataCenterNodeFullPath(schemaName), YamlEngine.marshal(new RuleSchemaMetaDataYamlSwapper().swap(ruleSchemaMetaData)));
+        repository.persist(node.getMetaDataCenterNodeFullPath(schemaName), YamlEngine.marshal(new RuleSchemaMetaDataYamlSwapper().swapToYamlConfiguration(ruleSchemaMetaData)));
     }
 
     /**
@@ -61,7 +61,7 @@ public final class MetaDataCenter {
         if (Strings.isNullOrEmpty(path)) {
             return Optional.empty();
         }
-        return Optional.of(new RuleSchemaMetaDataYamlSwapper().swap(YamlEngine.unmarshal(path, YamlRuleSchemaMetaData.class)));
+        return Optional.of(new RuleSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(path, YamlRuleSchemaMetaData.class)));
     }
     
 }

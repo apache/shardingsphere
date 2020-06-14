@@ -54,7 +54,7 @@ public final class ConfigurationYamlConverter {
     public static Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String data) {
         Map<String, YamlDataSourceConfiguration> result = (Map) YamlEngine.unmarshal(data);
         Preconditions.checkState(null != result && !result.isEmpty(), "No available data sources to load for orchestration.");
-        return Maps.transformValues(result, new DataSourceConfigurationYamlSwapper()::swap);
+        return Maps.transformValues(result, new DataSourceConfigurationYamlSwapper()::swapToObject);
     }
     
     /**
@@ -88,7 +88,7 @@ public final class ConfigurationYamlConverter {
      * @return authentication
      */
     public static Authentication loadAuthentication(final String data) {
-        return new AuthenticationYamlSwapper().swap(YamlEngine.unmarshal(data, YamlAuthenticationConfiguration.class));
+        return new AuthenticationYamlSwapper().swapToObject(YamlEngine.unmarshal(data, YamlAuthenticationConfiguration.class));
     }
     
     /**

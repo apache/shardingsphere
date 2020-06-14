@@ -42,7 +42,7 @@ public final class ShardingStrategyConfigurationYamlSwapper implements YamlSwapp
     }
     
     @Override
-    public YamlShardingStrategyConfiguration swap(final ShardingStrategyConfiguration data) {
+    public YamlShardingStrategyConfiguration swapToYamlConfiguration(final ShardingStrategyConfiguration data) {
         YamlShardingStrategyConfiguration result = new YamlShardingStrategyConfiguration();
         if (data instanceof StandardShardingStrategyConfiguration) {
             result.setStandard(createYamlStandardShardingStrategyConfiguration((StandardShardingStrategyConfiguration) data));
@@ -60,7 +60,7 @@ public final class ShardingStrategyConfigurationYamlSwapper implements YamlSwapp
     }
     
     @Override
-    public ShardingStrategyConfiguration swap(final YamlShardingStrategyConfiguration yamlConfiguration) {
+    public ShardingStrategyConfiguration swapToObject(final YamlShardingStrategyConfiguration yamlConfiguration) {
         int shardingStrategyConfigCount = 0;
         ShardingStrategyConfiguration result = null;
         if (null != yamlConfiguration.getStandard()) {

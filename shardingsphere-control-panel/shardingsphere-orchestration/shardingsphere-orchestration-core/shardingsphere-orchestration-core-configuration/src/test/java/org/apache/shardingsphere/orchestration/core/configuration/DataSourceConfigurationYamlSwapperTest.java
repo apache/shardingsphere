@@ -32,7 +32,7 @@ public final class DataSourceConfigurationYamlSwapperTest {
         DataSourceConfiguration dataSourceConfiguration = new DataSourceConfiguration("xxx.jdbc.driver");
         dataSourceConfiguration.getProps().put("url", "xx:xxx");
         dataSourceConfiguration.getProps().put("username", "root");
-        YamlDataSourceConfiguration actual = dataSourceConfigurationYamlSwapper.swap(dataSourceConfiguration);
+        YamlDataSourceConfiguration actual = dataSourceConfigurationYamlSwapper.swapToYamlConfiguration(dataSourceConfiguration);
         assertThat(actual.getDataSourceClassName(), is("xxx.jdbc.driver"));
         assertThat(actual.getProps().size(), is(2));
         assertThat(actual.getProps().get("url").toString(), is("xx:xxx"));
@@ -45,7 +45,7 @@ public final class DataSourceConfigurationYamlSwapperTest {
         yamlConfiguration.setDataSourceClassName("xxx.jdbc.driver");
         yamlConfiguration.getProps().put("url", "xx:xxx");
         yamlConfiguration.getProps().put("username", "root");
-        DataSourceConfiguration actual = dataSourceConfigurationYamlSwapper.swap(yamlConfiguration);
+        DataSourceConfiguration actual = dataSourceConfigurationYamlSwapper.swapToObject(yamlConfiguration);
         assertThat(actual.getDataSourceClassName(), is("xxx.jdbc.driver"));
         assertThat(actual.getProps().size(), is(2));
         assertThat(actual.getProps().get("url").toString(), is("xx:xxx"));

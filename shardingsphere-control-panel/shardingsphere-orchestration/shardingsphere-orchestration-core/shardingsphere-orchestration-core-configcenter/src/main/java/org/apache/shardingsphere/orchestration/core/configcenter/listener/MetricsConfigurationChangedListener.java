@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.orchestration.core.configcenter.listener;
 
-import java.util.Collections;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.metrics.configuration.swapper.MetricsConfigurationYamlSwapper;
 import org.apache.shardingsphere.metrics.configuration.yaml.YamlMetricsConfiguration;
@@ -26,6 +25,8 @@ import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.MetricsConfigurationChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.listener.PostShardingCenterRepositoryEventListener;
 import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenterNode;
+
+import java.util.Collections;
 
 /**
  * Metrics configuration changed listener.
@@ -38,6 +39,6 @@ public final class MetricsConfigurationChangedListener extends PostShardingCente
     
     @Override
     protected MetricsConfigurationChangedEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
-        return new MetricsConfigurationChangedEvent(new MetricsConfigurationYamlSwapper().swap(YamlEngine.unmarshal(event.getValue(), YamlMetricsConfiguration.class)));
+        return new MetricsConfigurationChangedEvent(new MetricsConfigurationYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlMetricsConfiguration.class)));
     }
 }

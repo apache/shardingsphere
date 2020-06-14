@@ -33,13 +33,11 @@ public final class MetricsConfigurationYamlSwapperTest {
         YamlMetricsConfiguration yaml = new YamlMetricsConfiguration();
         yaml.setHost("127.0.0.1");
         yaml.setName("prometheus");
-        
-        MetricsConfiguration metricsConfiguration = swapper.swap(yaml);
+        MetricsConfiguration metricsConfiguration = swapper.swapToObject(yaml);
         assertThat(metricsConfiguration.getPort(), is(9190));
         assertThat(metricsConfiguration.getAsync(), is(true));
         assertThat(metricsConfiguration.getThreadCount(), is(Runtime.getRuntime().availableProcessors() << 1));
-    
-        YamlMetricsConfiguration yamlSwap = swapper.swap(metricsConfiguration);
+        YamlMetricsConfiguration yamlSwap = swapper.swapToYamlConfiguration(metricsConfiguration);
         assertNotNull(yamlSwap);
         assertThat(yamlSwap.getPort(), is(9190));
         assertThat(yamlSwap.getName(), is("prometheus"));
@@ -57,13 +55,11 @@ public final class MetricsConfigurationYamlSwapperTest {
         yaml.setPort(9195);
         yaml.setThreadCount(8);
         yaml.setAsync(false);
-        
-        MetricsConfiguration metricsConfiguration = swapper.swap(yaml);
+        MetricsConfiguration metricsConfiguration = swapper.swapToObject(yaml);
         assertThat(metricsConfiguration.getPort(), is(9195));
         assertThat(metricsConfiguration.getAsync(), is(false));
         assertThat(metricsConfiguration.getThreadCount(), is(8));
-        
-        YamlMetricsConfiguration yamlSwap = swapper.swap(metricsConfiguration);
+        YamlMetricsConfiguration yamlSwap = swapper.swapToYamlConfiguration(metricsConfiguration);
         assertNotNull(yamlSwap);
         assertThat(yamlSwap.getPort(), is(9195));
         assertThat(yamlSwap.getName(), is("prometheus"));

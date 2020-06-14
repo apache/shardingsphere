@@ -42,11 +42,9 @@ public final class ClusterConfigurationYamlSwapperTest {
         yamlHeartBeatConfiguration.setInterval(INTERVAL);
         yamlHeartBeatConfiguration.setRetryEnable(Boolean.TRUE);
         yamlHeartBeatConfiguration.setRetryMaximum(MAXIMUM);
-    
         YamlClusterConfiguration yamlClusterConfiguration = new YamlClusterConfiguration();
         yamlClusterConfiguration.setHeartbeat(yamlHeartBeatConfiguration);
-    
-        ClusterConfiguration clusterConfiguration = new ClusterConfigurationYamlSwapper().swap(yamlClusterConfiguration);
+        ClusterConfiguration clusterConfiguration = new ClusterConfigurationYamlSwapper().swapToObject(yamlClusterConfiguration);
         assertThat(clusterConfiguration.getHeartbeat().getSql(), is(SQL));
         assertThat(clusterConfiguration.getHeartbeat().getInterval(), is(INTERVAL));
         assertThat(clusterConfiguration.getHeartbeat().getRetryMaximum(), is(MAXIMUM));
@@ -60,11 +58,9 @@ public final class ClusterConfigurationYamlSwapperTest {
         heartBeatConfiguration.setInterval(INTERVAL);
         heartBeatConfiguration.setRetryEnable(Boolean.TRUE);
         heartBeatConfiguration.setRetryMaximum(MAXIMUM);
-    
         ClusterConfiguration clusterConfiguration = new ClusterConfiguration();
         clusterConfiguration.setHeartbeat(heartBeatConfiguration);
-    
-        YamlClusterConfiguration yamlClusterConfiguration = new ClusterConfigurationYamlSwapper().swap(clusterConfiguration);
+        YamlClusterConfiguration yamlClusterConfiguration = new ClusterConfigurationYamlSwapper().swapToYamlConfiguration(clusterConfiguration);
         assertThat(yamlClusterConfiguration.getHeartbeat().getSql(), is(SQL));
         assertThat(yamlClusterConfiguration.getHeartbeat().getInterval(), is(INTERVAL));
         assertThat(yamlClusterConfiguration.getHeartbeat().getRetryMaximum(), is(MAXIMUM));

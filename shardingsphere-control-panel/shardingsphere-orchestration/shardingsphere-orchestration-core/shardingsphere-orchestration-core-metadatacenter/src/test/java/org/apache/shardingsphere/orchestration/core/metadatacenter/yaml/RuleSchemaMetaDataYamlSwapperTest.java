@@ -32,8 +32,8 @@ public final class RuleSchemaMetaDataYamlSwapperTest {
     
     @Test
     public void assertSwapToYamlRuleSchemaMetaData() {
-        RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataYamlSwapper().swap(YamlEngine.unmarshal(MetaDataTest.META_DATA, YamlRuleSchemaMetaData.class));
-        YamlRuleSchemaMetaData yamlRuleSchemaMetaData = new RuleSchemaMetaDataYamlSwapper().swap(ruleSchemaMetaData);
+        RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(MetaDataTest.META_DATA, YamlRuleSchemaMetaData.class));
+        YamlRuleSchemaMetaData yamlRuleSchemaMetaData = new RuleSchemaMetaDataYamlSwapper().swapToYamlConfiguration(ruleSchemaMetaData);
         assertNotNull(yamlRuleSchemaMetaData);
         assertNotNull(yamlRuleSchemaMetaData.getConfiguredSchemaMetaData());
         assertNotNull(yamlRuleSchemaMetaData.getUnconfiguredSchemaMetaDataMap());
@@ -49,7 +49,7 @@ public final class RuleSchemaMetaDataYamlSwapperTest {
     @Test
     public void assertSwapToRuleSchemaMetaData() {
         YamlRuleSchemaMetaData yamlRuleSchemaMetaData = YamlEngine.unmarshal(MetaDataTest.META_DATA, YamlRuleSchemaMetaData.class);
-        RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataYamlSwapper().swap(yamlRuleSchemaMetaData);
+        RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataYamlSwapper().swapToObject(yamlRuleSchemaMetaData);
         assertNotNull(ruleSchemaMetaData);
         assertNotNull(ruleSchemaMetaData.getConfiguredSchemaMetaData());
         assertNotNull(ruleSchemaMetaData.getConfiguredSchemaMetaData());

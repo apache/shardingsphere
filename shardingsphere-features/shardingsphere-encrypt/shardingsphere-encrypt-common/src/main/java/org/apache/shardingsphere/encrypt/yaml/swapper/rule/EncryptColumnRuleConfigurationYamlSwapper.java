@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 public final class EncryptColumnRuleConfigurationYamlSwapper implements YamlSwapper<YamlEncryptColumnRuleConfiguration, EncryptColumnRuleConfiguration> {
     
     @Override
-    public YamlEncryptColumnRuleConfiguration swap(final EncryptColumnRuleConfiguration data) {
+    public YamlEncryptColumnRuleConfiguration swapToYamlConfiguration(final EncryptColumnRuleConfiguration data) {
         YamlEncryptColumnRuleConfiguration result = new YamlEncryptColumnRuleConfiguration();
         result.setPlainColumn(data.getPlainColumn());
         result.setCipherColumn(data.getCipherColumn());
@@ -37,7 +37,7 @@ public final class EncryptColumnRuleConfigurationYamlSwapper implements YamlSwap
     }
     
     @Override
-    public EncryptColumnRuleConfiguration swap(final YamlEncryptColumnRuleConfiguration yamlConfiguration) {
+    public EncryptColumnRuleConfiguration swapToObject(final YamlEncryptColumnRuleConfiguration yamlConfiguration) {
         return new EncryptColumnRuleConfiguration(yamlConfiguration.getLogicColumn(), 
                 yamlConfiguration.getCipherColumn(), yamlConfiguration.getAssistedQueryColumn(), yamlConfiguration.getPlainColumn(), yamlConfiguration.getEncryptorName());
     }

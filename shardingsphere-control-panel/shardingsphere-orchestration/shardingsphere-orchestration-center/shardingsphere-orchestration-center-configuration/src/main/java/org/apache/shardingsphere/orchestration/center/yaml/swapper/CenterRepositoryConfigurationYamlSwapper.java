@@ -27,7 +27,7 @@ import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepo
 public final class CenterRepositoryConfigurationYamlSwapper implements YamlSwapper<YamlCenterRepositoryConfiguration, CenterConfiguration> {
     
     @Override
-    public YamlCenterRepositoryConfiguration swap(final CenterConfiguration configuration) {
+    public YamlCenterRepositoryConfiguration swapToYamlConfiguration(final CenterConfiguration configuration) {
         YamlCenterRepositoryConfiguration result = new YamlCenterRepositoryConfiguration();
         result.setOrchestrationType(configuration.getOrchestrationType());
         result.setInstanceType(configuration.getType());
@@ -38,7 +38,7 @@ public final class CenterRepositoryConfigurationYamlSwapper implements YamlSwapp
     }
     
     @Override
-    public CenterConfiguration swap(final YamlCenterRepositoryConfiguration yamlConfiguration) {
+    public CenterConfiguration swapToObject(final YamlCenterRepositoryConfiguration yamlConfiguration) {
         CenterConfiguration result = new CenterConfiguration(yamlConfiguration.getInstanceType(), yamlConfiguration.getProps());
         result.setOrchestrationType(yamlConfiguration.getOrchestrationType());
         result.setServerLists(yamlConfiguration.getServerLists());

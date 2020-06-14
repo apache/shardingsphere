@@ -37,7 +37,7 @@ public final class OrchestrationConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToYamlOrchestrationConfiguration() {
         OrchestrationConfiguration data = getOrchestrationConfiguration();
-        YamlOrchestrationConfiguration result = new OrchestrationConfigurationYamlSwapper().swap(data);
+        YamlOrchestrationConfiguration result = new OrchestrationConfigurationYamlSwapper().swapToYamlConfiguration(data);
         for (String each : result.getCenterRepositoryConfigurationMap().keySet()) {
             assertNotNull(result.getCenterRepositoryConfigurationMap().get(each));
             assertThat(result.getCenterRepositoryConfigurationMap().get(each).getOrchestrationType(), is(data.getInstanceConfigurationMap().get(each).getOrchestrationType()));
@@ -51,7 +51,7 @@ public final class OrchestrationConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToOrchestrationConfiguration() {
         YamlOrchestrationConfiguration data = getYamlOrchestrationConfiguration();
-        OrchestrationConfiguration result = new OrchestrationConfigurationYamlSwapper().swap(data);
+        OrchestrationConfiguration result = new OrchestrationConfigurationYamlSwapper().swapToObject(data);
         for (String each : result.getInstanceConfigurationMap().keySet()) {
             assertNotNull(result.getInstanceConfigurationMap().get(each));
             assertThat(result.getInstanceConfigurationMap().get(each).getOrchestrationType(), is(data.getCenterRepositoryConfigurationMap().get(each).getOrchestrationType()));
