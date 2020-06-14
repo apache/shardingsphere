@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.yaml.swapper;
 
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.swapper.algorithm.ShardingSphereAlgorithmConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -25,7 +26,6 @@ import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.swapper.algorithm.KeyGenerateAlgorithmConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.algorithm.ShardingAlgorithmConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.rule.ShardingAutoTableRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.rule.ShardingTableRuleConfigurationYamlSwapper;
@@ -49,7 +49,7 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
     
     private final ShardingAlgorithmConfigurationYamlSwapper shardingAlgorithmConfigurationYamlSwapper = new ShardingAlgorithmConfigurationYamlSwapper();
     
-    private final KeyGenerateAlgorithmConfigurationYamlSwapper keyGenerateAlgorithmConfigurationYamlSwapper = new KeyGenerateAlgorithmConfigurationYamlSwapper();
+    private final ShardingSphereAlgorithmConfigurationYamlSwapper shardingSphereAlgorithmConfigurationYamlSwapper = new ShardingSphereAlgorithmConfigurationYamlSwapper();
     
     @Override
     public YamlShardingRuleConfiguration swap(final ShardingRuleConfiguration data) {
@@ -75,7 +75,7 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
             data.getShardingAlgorithms().forEach((key, value) -> result.getShardingAlgorithms().put(key, shardingAlgorithmConfigurationYamlSwapper.swap(value)));
         }
         if (null != data.getKeyGenerators()) {
-            data.getKeyGenerators().forEach((key, value) -> result.getKeyGenerators().put(key, keyGenerateAlgorithmConfigurationYamlSwapper.swap(value)));
+            data.getKeyGenerators().forEach((key, value) -> result.getKeyGenerators().put(key, shardingSphereAlgorithmConfigurationYamlSwapper.swap(value)));
         }
         return result;
     }
@@ -108,7 +108,7 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
             yamlConfiguration.getShardingAlgorithms().forEach((key, value) -> result.getShardingAlgorithms().put(key, shardingAlgorithmConfigurationYamlSwapper.swap(value)));
         }
         if (null != yamlConfiguration.getKeyGenerators()) {
-            yamlConfiguration.getKeyGenerators().forEach((key, value) -> result.getKeyGenerators().put(key, keyGenerateAlgorithmConfigurationYamlSwapper.swap(value)));
+            yamlConfiguration.getKeyGenerators().forEach((key, value) -> result.getKeyGenerators().put(key, shardingSphereAlgorithmConfigurationYamlSwapper.swap(value)));
         }
         return result;
     }
