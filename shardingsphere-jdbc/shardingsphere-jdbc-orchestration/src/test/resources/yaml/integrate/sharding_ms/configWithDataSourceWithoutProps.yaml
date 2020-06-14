@@ -83,8 +83,6 @@ rules:
       type: STANDARD_TEST
     complex_test:
       type: COMPLEX_TEST
-    hint_test:
-      type: HINT_TEST
     database_inline:
       type: INLINE
       props:
