@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.masterslave.yaml.swapper;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.swapper.algorithm.ShardingSphereAlgorithmConfigurationYamlSwapper;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
 import org.apache.shardingsphere.masterslave.constant.MasterSlaveOrder;
@@ -38,10 +38,15 @@ import java.util.stream.Collectors;
  */
 public final class MasterSlaveRuleConfigurationYamlSwapper implements YamlRuleConfigurationSwapper<YamlMasterSlaveRuleConfiguration, MasterSlaveRuleConfiguration> {
     
+    private final ShardingSphereAlgorithmConfigurationYamlSwapper algorithmSwapper = new ShardingSphereAlgorithmConfigurationYamlSwapper();
+    
     @Override
     public YamlMasterSlaveRuleConfiguration swap(final MasterSlaveRuleConfiguration data) {
         YamlMasterSlaveRuleConfiguration result = new YamlMasterSlaveRuleConfiguration();
         result.setDataSources(data.getDataSources().stream().collect(Collectors.toMap(MasterSlaveDataSourceRuleConfiguration::getName, this::swap, (a, b) -> b, LinkedHashMap::new)));
+        if (null != data.getLoadBalancers()) {
+            data.getLoadBalancers().forEach((key, value) -> result.getLoadBalancers().put(key, algorithmSwapper.swap(value)));
+        }
         return result;
     }
     
@@ -61,8 +66,8 @@ public final class MasterSlaveRuleConfigurationYamlSwapper implements YamlRuleCo
             dataSources.add(swap(entry.getKey(), entry.getValue()));
         }
         Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = new LinkedHashMap<>(yamlConfiguration.getLoadBalancers().entrySet().size(), 1);
-        for (Entry<String, YamlShardingSphereAlgorithmConfiguration> entry : yamlConfiguration.getLoadBalancers().entrySet()) {
-            loadBalancers.put(entry.getKey(), swap(entry.getValue()));
+        if (null != yamlConfiguration.getLoadBalancers()) {
+            yamlConfiguration.getLoadBalancers().forEach((key, value) -> loadBalancers.put(key, algorithmSwapper.swap(value)));
         }
         return new MasterSlaveRuleConfiguration(dataSources, loadBalancers);
     }
@@ -70,10 +75,6 @@ public final class MasterSlaveRuleConfigurationYamlSwapper implements YamlRuleCo
     private MasterSlaveDataSourceRuleConfiguration swap(final String name, final YamlMasterSlaveDataSourceRuleConfiguration yamlDataSourceRuleConfiguration) {
         return new MasterSlaveDataSourceRuleConfiguration(name, 
                 yamlDataSourceRuleConfiguration.getMasterDataSourceName(), yamlDataSourceRuleConfiguration.getSlaveDataSourceNames(), yamlDataSourceRuleConfiguration.getLoadBalancerName());
-    }
-    
-    private ShardingSphereAlgorithmConfiguration swap(final YamlShardingSphereAlgorithmConfiguration yamlLoadBalanceAlgorithmConfiguration) {
-        return new ShardingSphereAlgorithmConfiguration(yamlLoadBalanceAlgorithmConfiguration.getType(), yamlLoadBalanceAlgorithmConfiguration.getProps());
     }
     
     @Override
