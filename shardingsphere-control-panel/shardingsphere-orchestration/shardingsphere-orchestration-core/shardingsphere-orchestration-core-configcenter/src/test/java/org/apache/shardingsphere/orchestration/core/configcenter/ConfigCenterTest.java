@@ -19,22 +19,22 @@ package org.apache.shardingsphere.orchestration.core.configcenter;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.algorithm.EncryptAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
+import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
+import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.infra.auth.Authentication;
-import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.infra.auth.yaml.swapper.AuthenticationYamlSwapper;
-import org.apache.shardingsphere.infra.config.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -474,7 +474,7 @@ public final class ConfigCenterTest {
             } else if (each instanceof EncryptRuleConfiguration) {
                 EncryptRuleConfiguration encryptRuleConfiguration = (EncryptRuleConfiguration) each;
                 assertThat(encryptRuleConfiguration.getEncryptors().size(), is(2));
-                EncryptAlgorithmConfiguration encryptAlgorithmConfiguration = encryptRuleConfiguration.getEncryptors().get("aes_encryptor");
+                ShardingSphereAlgorithmConfiguration encryptAlgorithmConfiguration = encryptRuleConfiguration.getEncryptors().get("aes_encryptor");
                 assertThat(encryptAlgorithmConfiguration.getType(), is("AES"));
                 assertThat(encryptAlgorithmConfiguration.getProps().get("aes.key.value").toString(), is("123456abcd"));
             }
@@ -509,7 +509,7 @@ public final class ConfigCenterTest {
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
         EncryptRuleConfiguration actual = (EncryptRuleConfiguration) configurationService.loadRuleConfigurations("sharding_db").iterator().next();
         assertThat(actual.getEncryptors().size(), is(1));
-        EncryptAlgorithmConfiguration encryptAlgorithmConfiguration = actual.getEncryptors().get("order_encryptor");
+        ShardingSphereAlgorithmConfiguration encryptAlgorithmConfiguration = actual.getEncryptors().get("order_encryptor");
         assertThat(encryptAlgorithmConfiguration.getType(), is("AES"));
         assertThat(encryptAlgorithmConfiguration.getProps().get("aes.key.value").toString(), is("123456"));
     }

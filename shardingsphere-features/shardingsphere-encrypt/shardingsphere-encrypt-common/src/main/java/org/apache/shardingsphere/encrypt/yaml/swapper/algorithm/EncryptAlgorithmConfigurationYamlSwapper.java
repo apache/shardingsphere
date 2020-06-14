@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.encrypt.yaml.swapper.algorithm;
 
-import org.apache.shardingsphere.encrypt.api.config.algorithm.EncryptAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 
 /**
  * Encrypt algorithm configuration YAML swapper.
  */
-public final class EncryptAlgorithmConfigurationYamlSwapper implements YamlSwapper<YamlShardingSphereAlgorithmConfiguration, EncryptAlgorithmConfiguration> {
+public final class EncryptAlgorithmConfigurationYamlSwapper implements YamlSwapper<YamlShardingSphereAlgorithmConfiguration, ShardingSphereAlgorithmConfiguration> {
     
     @Override
-    public YamlShardingSphereAlgorithmConfiguration swap(final EncryptAlgorithmConfiguration data) {
+    public YamlShardingSphereAlgorithmConfiguration swap(final ShardingSphereAlgorithmConfiguration data) {
         YamlShardingSphereAlgorithmConfiguration result = new YamlShardingSphereAlgorithmConfiguration();
         result.setType(data.getType());
         result.setProps(data.getProps());
@@ -35,7 +35,7 @@ public final class EncryptAlgorithmConfigurationYamlSwapper implements YamlSwapp
     }
     
     @Override
-    public EncryptAlgorithmConfiguration swap(final YamlShardingSphereAlgorithmConfiguration yamlConfiguration) {
-        return new EncryptAlgorithmConfiguration(yamlConfiguration.getType(), yamlConfiguration.getProps());
+    public ShardingSphereAlgorithmConfiguration swap(final YamlShardingSphereAlgorithmConfiguration yamlConfiguration) {
+        return new ShardingSphereAlgorithmConfiguration(yamlConfiguration.getType(), yamlConfiguration.getProps());
     }
 }
