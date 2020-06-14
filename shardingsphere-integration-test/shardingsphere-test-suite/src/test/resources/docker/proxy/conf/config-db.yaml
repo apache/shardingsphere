@@ -45,45 +45,56 @@
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
 #
-#rules:
-#- !SHARDING
-#  tables:
-#    t_order:
-#      actualDataNodes: ds_${0..1}.t_order_${0..1}
-#      tableStrategy:
-#        standard:
-#          shardingColumn: order_id
-#          shardingAlgorithm:
-#            type: INLINE
-#            props:
-#              algorithm.expression: t_order_${order_id % 2}
-#      keyGenerateStrategy:
-#        type: SNOWFLAKE
-#        column: order_id
-#    t_order_item:
-#      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
-#      tableStrategy:
-#        standard:
-#          shardingColumn: order_id
-#          shardingAlgorithm:
-#            type: INLINE
-#            props:
-#              algorithm.expression: t_order_item_${order_id % 2}
-#      keyGenerateStrategy:
-#        type: SNOWFLAKE
-#        column: order_item_id
-#  bindingTables:
-#    - t_order,t_order_item
-#  defaultDatabaseStrategy:
-#    standard:
-#      shardingColumn: user_id
-#      shardingAlgorithm:
-#        type: INLINE
-#        props:
-#          algorithm.expression: ds_${user_id % 2}
-#  defaultTableStrategy:
-#    none:
-
+rules:
+- !SHARDING
+  tables:
+    t_order:
+      actualDataNodes: ds_${0..1}.t_order_${0..1}
+      tableStrategy:
+        standard:
+          shardingColumn: order_id
+          shardingAlgorithmName: t_order_inline
+      keyGenerateStrategy:
+        column: order_id
+        keyGeneratorName: snowflake
+    t_order_item:
+      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
+      tableStrategy:
+        standard:
+          shardingColumn: order_id
+          shardingAlgorithmName: t_order_item_inline
+      keyGenerateStrategy:
+        column: order_item_id
+        keyGeneratorName: snowflake
+  bindingTables:
+    - t_order,t_order_item
+  defaultDatabaseStrategy:
+    standard:
+      shardingColumn: user_id
+      shardingAlgorithmName: database_inline
+  defaultTableStrategy:
+    none:
+  
+  shardingAlgorithms:
+    database_inline:
+      type: INLINE
+      props:
+        algorithm.expression: ds_${user_id % 2}
+    t_order_inline:
+      type: INLINE
+      props:
+        algorithm.expression: t_order_${order_id % 2}
+    t_order_item_inline:
+      type: INLINE
+      props:
+        algorithm.expression: t_order_item_${order_id % 2}
+  
+  keyGenerators:
+      snowflake:
+        type: SNOWFLAKE
+        props:
+          worder.id: 123
+        
 ######################################################################################################
 #
 # If you want to connect to MySQL, you should manually copy MySQL driver to lib directory.
@@ -132,21 +143,23 @@ rules:
       databaseStrategy:
         standard:
           shardingColumn: user_id
-          shardingAlgorithm:
-            type: STANDARD_TEST
+          shardingAlgorithmName: standard_test
     t_order_item:
       actualDataNodes: ds_${0..9}.t_order_item
       databaseStrategy:
         standard:
           shardingColumn: user_id
-          shardingAlgorithm:
-            type: STANDARD_TEST
+          shardingAlgorithmName: standard_test
       keyGenerateStrategy:
         column: item_id
         keyGeneratorName: constant
   bindingTables:
     - t_order,t_order_item
-
-  keyGenerateStrategy:
-    column: item_id
-    keyGeneratorName: constant
+  
+  shardingAlgorithms:
+    standard_test:
+      type: STANDARD_TEST
+  
+  keyGenerators:
+      constant:
+        type: CONSTANT

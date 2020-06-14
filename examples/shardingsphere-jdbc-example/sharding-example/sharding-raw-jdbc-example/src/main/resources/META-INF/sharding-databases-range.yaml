@@ -47,10 +47,13 @@ rules:
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
-      shardingAlgorithm:
-        type: STANDARD_TEST_DB
+      shardingAlgorithmName: standard_test_db
   defaultTableStrategy:
     none:
+  
+  shardingAlgorithms:
+    standard_test_db:
+      type: STANDARD_TEST_DB
   
   keyGenerators:
     snowflake:

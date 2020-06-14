@@ -23,21 +23,23 @@ rules:
       databaseStrategy:
         standard:
           shardingColumn: user_id
-          shardingAlgorithm:
-            type: STANDARD_TEST
+          shardingAlgorithmName: standard_test
     t_order_item:
       actualDataNodes: db_${0..9}.t_order_item
       databaseStrategy:
         standard:
           shardingColumn: user_id
-          shardingAlgorithm:
-            type: STANDARD_TEST
+          shardingAlgorithmName: standard_test
       keyGenerateStrategy:
         column: item_id
         keyGeneratorName: constant
   bindingTables:
     - t_order,t_order_item
-
+  
+  shardingAlgorithms:
+    standard_test:
+      type: STANDARD_TEST
+  
   keyGenerators:
     constant:
       type: Constant

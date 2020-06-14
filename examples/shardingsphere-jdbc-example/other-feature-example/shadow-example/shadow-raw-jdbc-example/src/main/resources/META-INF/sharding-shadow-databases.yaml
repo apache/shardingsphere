@@ -38,32 +38,38 @@ dataSources:
     password:
 
 rules:
-  - !SHADOW
-    column: shadow
-    shadowMappings:
-      ds_0: shadow_ds_0
-      ds_1: shadow_ds_1
-  - !SHARDING
-    tables:
-      t_user:
-        actualDataNodes: ds_${0..1}.t_user
-        databaseStrategy:
-          standard:
-            shardingColumn: user_id
-            shardingAlgorithm:
-              type: INLINE
-              props:
-                algorithm.expression: ds_${user_id % 2}
-        tableStrategy:
-          standard:
-            shardingColumn: user_id
-            shardingAlgorithm:
-              type: INLINE
-              props:
-                algorithm.expression: t_user
-    defaultDatabaseStrategy:
-      none:
-    defaultTableStrategy:
-      none:
+- !SHADOW
+  column: shadow
+  shadowMappings:
+    ds_0: shadow_ds_0
+    ds_1: shadow_ds_1
+
+- !SHARDING
+  tables:
+    t_user:
+      actualDataNodes: ds_${0..1}.t_user
+      databaseStrategy:
+        standard:
+          shardingColumn: user_id
+          shardingAlgorithmName: database_inline
+      tableStrategy:
+        standard:
+          shardingColumn: user_id
+          shardingAlgorithmName: table_inline
+  defaultDatabaseStrategy:
+    none:
+  defaultTableStrategy:
+    none:
+
+shardingAlgorithms:
+  database_inline:
+    type: INLINE
+    props:
+      algorithm.expression: ds_${user_id % 2}
+  table_inline:
+    type: INLINE
+    props:
+      algorithm.expression: t_user
+
 props:
   sql.show: true

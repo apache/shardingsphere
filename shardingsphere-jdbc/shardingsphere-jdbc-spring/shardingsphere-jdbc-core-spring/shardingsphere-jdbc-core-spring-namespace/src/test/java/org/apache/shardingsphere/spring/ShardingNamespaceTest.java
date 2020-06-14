@@ -32,10 +32,6 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.strategy.route.none.NoneShardingStrategy;
-import org.apache.shardingsphere.spring.algorithm.DefaultComplexKeysShardingAlgorithm;
-import org.apache.shardingsphere.spring.algorithm.DefaultHintShardingAlgorithm;
-import org.apache.shardingsphere.spring.algorithm.StandardModuloDatabaseShardingAlgorithm;
-import org.apache.shardingsphere.spring.algorithm.StandardModuloTableShardingAlgorithm;
 import org.apache.shardingsphere.spring.fixture.IncrementKeyGenerateAlgorithm;
 import org.apache.shardingsphere.spring.transaction.ShardingTransactionTypeScanner;
 import org.junit.Test;
@@ -72,34 +68,34 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     public void assertStandardStrategy() {
         StandardShardingStrategyConfiguration standardStrategy = applicationContext.getBean("standardStrategy", StandardShardingStrategyConfiguration.class);
         assertThat(standardStrategy.getShardingColumn(), is("user_id"));
-        assertThat(standardStrategy.getShardingAlgorithm(), instanceOf(StandardModuloDatabaseShardingAlgorithm.class));
+        assertThat(standardStrategy.getShardingAlgorithmName(), is("standardModuloDatabaseShardingAlgorithm"));
     }
     
     @Test
     public void assertRangeStandardStrategy() {
         StandardShardingStrategyConfiguration rangeStandardStrategy = applicationContext.getBean("rangeStandardStrategy", StandardShardingStrategyConfiguration.class);
         assertThat(rangeStandardStrategy.getShardingColumn(), is("order_id"));
-        assertThat(rangeStandardStrategy.getShardingAlgorithm(), instanceOf(StandardModuloTableShardingAlgorithm.class));
+        assertThat(rangeStandardStrategy.getShardingAlgorithmName(), is("standardModuloTableShardingAlgorithm"));
     }
     
     @Test
     public void assertComplexStrategy() {
         ComplexShardingStrategyConfiguration complexStrategy = applicationContext.getBean("complexStrategy", ComplexShardingStrategyConfiguration.class);
         assertThat(complexStrategy.getShardingColumns(), is("order_id,user_id"));
-        assertThat(complexStrategy.getShardingAlgorithm(), instanceOf(DefaultComplexKeysShardingAlgorithm.class));
+        assertThat(complexStrategy.getShardingAlgorithmName(), is("defaultComplexKeysShardingAlgorithm"));
     }
     
     @Test
     public void assertInlineStrategy() {
         StandardShardingStrategyConfiguration inlineStrategy = applicationContext.getBean("inlineStrategy", StandardShardingStrategyConfiguration.class);
         assertThat(inlineStrategy.getShardingColumn(), is("order_id"));
-        assertThat(inlineStrategy.getShardingAlgorithm().getProps().getProperty("algorithm.expression"), is("t_order_${order_id % 4}"));
+        assertThat(inlineStrategy.getShardingAlgorithmName(), is("inlineStrategyShardingAlgorithm"));
     }
     
     @Test
     public void assertHintStrategy() {
         HintShardingStrategyConfiguration hintStrategy = applicationContext.getBean("hintStrategy", HintShardingStrategyConfiguration.class);
-        assertThat(hintStrategy.getShardingAlgorithm(), instanceOf(DefaultHintShardingAlgorithm.class));
+        assertThat(hintStrategy.getShardingAlgorithmName(), is("defaultHintShardingAlgorithm"));
     }
     
     @Test

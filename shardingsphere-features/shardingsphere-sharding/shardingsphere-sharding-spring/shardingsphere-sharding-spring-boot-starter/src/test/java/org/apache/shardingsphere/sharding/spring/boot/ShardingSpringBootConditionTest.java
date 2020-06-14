@@ -58,4 +58,3 @@ public final class ShardingSpringBootConditionTest {
         assertThat(matchOutcome.isMatch(), is(true));
     }
 }
-

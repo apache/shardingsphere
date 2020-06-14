@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.sharding.strategy.route.standard.StandardShardingStrategy;
 import org.apache.shardingsphere.sharding.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.sharding.strategy.route.value.RouteValue;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -41,16 +40,22 @@ public final class InlineShardingAlgorithmTest {
     
     @Before
     public void setUp() {
+        shardingStrategy = createShardingStrategy();
+        shardingStrategyWithSimplified = createShardingStrategyWithSimplified();
+    }
+    
+    private StandardShardingStrategy createShardingStrategy() {
         InlineShardingAlgorithm shardingAlgorithm = new InlineShardingAlgorithm();
         shardingAlgorithm.getProps().setProperty("algorithm.expression", "t_order_$->{order_id % 4}");
         shardingAlgorithm.init();
-        StandardShardingStrategyConfiguration shardingStrategyConfig = new StandardShardingStrategyConfiguration("order_id", shardingAlgorithm);
-        shardingStrategy = new StandardShardingStrategy(shardingStrategyConfig);
+        return new StandardShardingStrategy("order_id", shardingAlgorithm);
+    }
+    
+    private StandardShardingStrategy createShardingStrategyWithSimplified() {
         InlineShardingAlgorithm shardingAlgorithmWithSimplified = new InlineShardingAlgorithm();
         shardingAlgorithmWithSimplified.getProps().setProperty("algorithm.expression", "t_order_${order_id % 4}");
         shardingAlgorithmWithSimplified.init();
-        StandardShardingStrategyConfiguration shardingStrategyConfigWithSimplified = new StandardShardingStrategyConfiguration("order_id", shardingAlgorithmWithSimplified);
-        shardingStrategyWithSimplified = new StandardShardingStrategy(shardingStrategyConfigWithSimplified);
+        return new StandardShardingStrategy("order_id", shardingAlgorithmWithSimplified);
     }
     
     @Test

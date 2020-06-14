@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 
 import java.util.Collection;
 import java.util.Map;
@@ -49,6 +50,8 @@ public final class AlgorithmProvidedShardingRuleConfiguration implements RuleCon
     private final ShardingStrategyConfiguration defaultTableShardingStrategy;
     
     private final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategy;
+    
+    private final Map<String, ShardingAlgorithm> shardingAlgorithms;
     
     private final Map<String, KeyGenerateAlgorithm> keyGenerators;
 }

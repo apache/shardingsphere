@@ -22,6 +22,7 @@ import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.algorithm.ShardingAlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.InlineShardingAlgorithm;
@@ -48,6 +49,11 @@ public final class ShardingShadowDatabasesConfiguration implements ExampleConfig
         ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
         shardingRuleConfiguration.getTables().add(getUserTableConfiguration());
         Properties props = new Properties();
+        props.setProperty("algorithm.expression", "ds_${user_id % 2}");
+        shardingRuleConfiguration.getShardingAlgorithms() .put("database_inline", new ShardingAlgorithmConfiguration("INLINE", props));
+        props = new Properties();
+        props.setProperty("algorithm.expression", "t_user");
+        shardingRuleConfiguration.getShardingAlgorithms() .put("table_inline", new ShardingAlgorithmConfiguration("INLINE", props));
         props.setProperty("sql.show", "true");
         ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration("shadow", shadowMappings);
         return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Arrays.asList(shadowRuleConfiguration, shardingRuleConfiguration), props);
@@ -63,12 +69,12 @@ public final class ShardingShadowDatabasesConfiguration implements ExampleConfig
     private StandardShardingStrategyConfiguration getTableStandardShardingStrategyConfiguration() {
         InlineShardingAlgorithm inlineShardingAlgorithm = new InlineShardingAlgorithm();
         inlineShardingAlgorithm.getProps().setProperty("algorithm.expression", "t_user");
-        return new StandardShardingStrategyConfiguration("user_id", inlineShardingAlgorithm);
+        return new StandardShardingStrategyConfiguration("user_id", "table_inline");
     }
     
     private StandardShardingStrategyConfiguration getDatabaseStandardShardingStrategyConfiguration() {
         InlineShardingAlgorithm inlineShardingAlgorithm = new InlineShardingAlgorithm();
         inlineShardingAlgorithm.getProps().setProperty("algorithm.expression", "ds_${user_id % 2}");
-        return new StandardShardingStrategyConfiguration("user_id", inlineShardingAlgorithm);
+        return new StandardShardingStrategyConfiguration("user_id", "database_inline");
     }
 }

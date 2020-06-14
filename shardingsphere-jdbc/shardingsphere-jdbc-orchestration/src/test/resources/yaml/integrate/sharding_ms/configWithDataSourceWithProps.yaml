@@ -51,15 +51,11 @@ rules:
       databaseStrategy: 
         standard:
           shardingColumn: user_id
-          shardingAlgorithm:
-            type: STANDARD_TEST
+          shardingAlgorithmName: standard_test
       tableStrategy: 
         standard:
           shardingColumn: order_id
-          shardingAlgorithm:
-            type: INLINE
-            props:
-              algorithm.expression: t_order_${order_id % 2}
+          shardingAlgorithmName: t_order_inline
       keyGenerateStrategy:
         column: order_id
         keyGeneratorName: increment
@@ -68,15 +64,11 @@ rules:
       databaseStrategy: 
         standard:
           shardingColumn: order_id
-          shardingAlgorithm:
-            type: STANDARD_TEST
+          shardingAlgorithmName: standard_test
       tableStrategy: 
         standard:
           shardingColumn: id
-          shardingAlgorithm:
-            type: INLINE
-            props:
-              algorithm.expression: t_order_item_${id % 2}
+          shardingAlgorithmName: t_order_item_inline
   bindingTables:
     - t_order,t_order_item
   defaultDatabaseStrategy:
@@ -84,9 +76,26 @@ rules:
   defaultTableStrategy:
     complex:
       shardingColumns: id, order_id
-      shardingAlgorithm:
-        type: COMPLEX_TEST
-
+      shardingAlgorithmName: complex_test
+  
+  shardingAlgorithms:
+    standard_test:
+      type: STANDARD_TEST
+    complex_test:
+      type: COMPLEX_TEST
+    database_inline:
+      type: INLINE
+      props:
+        algorithm.expression: ds_${order_id % 2}
+    t_order_inline:
+      type: INLINE
+      props:
+        algorithm.expression: t_order_${order_id % 2}
+    t_order_item_inline:
+      type: INLINE
+      props:
+        algorithm.expression: t_order_item_${id % 2}
+  
   keyGenerators:
     increment:
       type: INCREMENT

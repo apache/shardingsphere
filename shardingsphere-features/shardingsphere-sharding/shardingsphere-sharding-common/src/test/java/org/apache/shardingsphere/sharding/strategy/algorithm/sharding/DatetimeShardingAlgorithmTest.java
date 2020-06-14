@@ -19,12 +19,11 @@ package org.apache.shardingsphere.sharding.strategy.algorithm.sharding;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.sharding.strategy.route.standard.StandardShardingStrategy;
 import org.apache.shardingsphere.sharding.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.sharding.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.sharding.strategy.route.value.RouteValue;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -47,8 +46,7 @@ public final class DatetimeShardingAlgorithmTest {
         shardingAlgorithm.getProps().setProperty("datetime.lower", "2020-01-01 00:00:00");
         shardingAlgorithm.getProps().setProperty("datetime.upper", "2020-01-01 00:00:16");
         shardingAlgorithm.init();
-        StandardShardingStrategyConfiguration shardingStrategyConfig = new StandardShardingStrategyConfiguration("create_time", shardingAlgorithm);
-        shardingStrategy = new StandardShardingStrategy(shardingStrategyConfig);
+        shardingStrategy = new StandardShardingStrategy("create_time", shardingAlgorithm);
     }
     
     @Test

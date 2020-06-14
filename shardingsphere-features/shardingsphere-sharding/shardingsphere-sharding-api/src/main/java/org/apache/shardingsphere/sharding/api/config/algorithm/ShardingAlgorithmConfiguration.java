@@ -15,33 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.algorithm;
+package org.apache.shardingsphere.sharding.api.config.algorithm;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
-import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
+import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
 
-import java.util.Collection;
 import java.util.Properties;
 
-@Getter
-@Setter
-public final class DefaultComplexKeysShardingAlgorithm implements ComplexKeysShardingAlgorithm<Integer> {
+/**
+ * Sharding algorithm configuration.
+ */
+public final class ShardingAlgorithmConfiguration extends TypedSPIConfiguration {
     
-    private Properties props = new Properties();
-    
-    @Override
-    public void init() {
-    }
-    
-    @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<Integer> shardingValue) {
-        return availableTargetNames;
-    }
-    
-    @Override
-    public String getType() {
-        return "COMPLEX_TEST";
+    public ShardingAlgorithmConfiguration(final String type, final Properties props) {
+        super(type, props);
     }
 }

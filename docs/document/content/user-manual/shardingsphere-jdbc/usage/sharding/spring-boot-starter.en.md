@@ -38,16 +38,20 @@ spring.shardingsphere.rules.sharding.tables.t_order.actual-data-nodes=ds$->{0..1
 
 # Configure database sharding strategy
 spring.shardingsphere.rules.sharding.tables.t_order.database-strategy.standard.sharding-column=user_id
-spring.shardingsphere.rules.sharding.tables.t_order.database-strategy.standard.sharding-algorithm.type=INLINE
-spring.shardingsphere.rules.sharding.tables.t_order.database-strategy.standard.sharding-algorithm.properties.algorithm.expression=ds$->{user_id % 2}
+spring.shardingsphere.rules.sharding.tables.t_order.database-strategy.standard.sharding-algorithm-name=database_inline
 
 # Configure table sharding strategy
 spring.shardingsphere.rules.sharding.tables.t_order.table-strategy.standard.sharding-column=order_id
-spring.shardingsphere.rules.sharding.tables.t_order.table-strategy.standard.sharding-algorithm.type=INLINE
-spring.shardingsphere.rules.sharding.tables.t_order.table-strategy.standard.sharding-algorithm.properties.algorithm.expression=t_order$->{order_id % 2}
+spring.shardingsphere.rules.sharding.tables.t_order.table-strategy.standard.sharding-algorithm-name=table_inline
 
 # Omit t_order_item table rule configuration ...
 # ...
+
+# Configure sharding algorithm
+spring.shardingsphere.rules.sharding.sharding-algorithms.database_inline.type=INLINE
+spring.shardingsphere.rules.sharding.sharding-algorithms.database_inline.props.algorithm.expression=ds_${user_id % 2}
+spring.shardingsphere.rules.sharding.sharding-algorithms.table_inline.type=INLINE
+spring.shardingsphere.rules.sharding.sharding-algorithms.table_inline.props.algorithm.expression=t_order_${order_id % 2}
 ```
 
 ### Use JNDI Data Source

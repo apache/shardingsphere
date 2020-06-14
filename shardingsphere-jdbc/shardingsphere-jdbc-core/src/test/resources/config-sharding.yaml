@@ -32,10 +32,7 @@ rules:
       tableStrategy:
         standard:
           shardingColumn: id
-          shardingAlgorithm:
-            type: INLINE
-            props:
-              algorithm.expression: t_user_${id % 2}
+          shardingAlgorithmName: table_inline
       keyGenerateStrategy:
         column: id
         keyGeneratorName: reset_increment
@@ -45,18 +42,12 @@ rules:
       shardingStrategy:
         standard:
           shardingColumn: order_id
-          shardingAlgorithm:
-            type: MOD
-            props:
-              mod.value: 2
+          shardingAlgorithmName: mod
     t_order_item_auto:
       shardingStrategy:
         standard:
           shardingColumn: order_id
-          shardingAlgorithm:
-            type: MOD
-            props:
-              mod.value: 2
+          shardingAlgorithmName: mod
   bindingTables:
     - t_order,t_order_item
   broadcastTables:
@@ -64,14 +55,24 @@ rules:
   defaultTableStrategy:
     standard:
       shardingColumn: order_id
-      shardingAlgorithm:
-        type: STANDARD_TEST
+      shardingAlgorithmName: standard_test
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
-      shardingAlgorithm:
+      shardingAlgorithmName: standard_test
+  
+  shardingAlgorithms:
+    standard_test:
         type: STANDARD_TEST
-
+    table_inline:
+      type: INLINE
+      props:
+        algorithm.expression: t_user_${id % 2}
+    mod:
+      type: MOD
+      props:
+        mod.value: 2
+  
   keyGenerators:
     increment:
       type: INCREMENT

@@ -17,18 +17,16 @@
 
 package org.apache.shardingsphere.sharding.api.config.strategy.sharding;
 
-import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 
 public final class StandardShardingStrategyConfigurationTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertConstructorWithoutShardingColumn() {
-        new StandardShardingStrategyConfiguration("", mock(StandardShardingAlgorithm.class));
+        new StandardShardingStrategyConfiguration("", "test");
     }
     
     @Test(expected = NullPointerException.class)
@@ -38,9 +36,8 @@ public final class StandardShardingStrategyConfigurationTest {
     
     @Test
     public void assertConstructorWithArguments() {
-        StandardShardingAlgorithm standardShardingAlgorithm = mock(StandardShardingAlgorithm.class);
-        StandardShardingStrategyConfiguration actual = new StandardShardingStrategyConfiguration("id", standardShardingAlgorithm);
+        StandardShardingStrategyConfiguration actual = new StandardShardingStrategyConfiguration("id", "test");
         assertThat(actual.getShardingColumn(), is("id"));
-        assertThat(actual.getShardingAlgorithm(), is(standardShardingAlgorithm));
+        assertThat(actual.getShardingAlgorithmName(), is("test"));
     }
 }

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.api.config.strategy.sharding;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
 
 /**
  * Complex sharding strategy configuration.
@@ -30,12 +29,12 @@ public final class ComplexShardingStrategyConfiguration implements ShardingStrat
     
     private final String shardingColumns;
     
-    private final ComplexKeysShardingAlgorithm shardingAlgorithm;
+    private final String shardingAlgorithmName;
     
-    public ComplexShardingStrategyConfiguration(final String shardingColumns, final ComplexKeysShardingAlgorithm shardingAlgorithm) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(shardingColumns), "ShardingColumns is required.");
-        Preconditions.checkNotNull(shardingAlgorithm, "ShardingAlgorithm is required.");
+    public ComplexShardingStrategyConfiguration(final String shardingColumns, final String shardingAlgorithmName) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(shardingColumns), "Sharding columns are required.");
+        Preconditions.checkNotNull(shardingAlgorithmName, "Sharding algorithm name is required.");
         this.shardingColumns = shardingColumns;
-        this.shardingAlgorithm = shardingAlgorithm;
+        this.shardingAlgorithmName = shardingAlgorithmName;
     }
 }

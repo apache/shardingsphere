@@ -19,12 +19,11 @@ package org.apache.shardingsphere.sharding.strategy.algorithm.sharding;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.sharding.strategy.route.standard.StandardShardingStrategy;
 import org.apache.shardingsphere.sharding.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.sharding.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.sharding.strategy.route.value.RouteValue;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -133,8 +132,7 @@ public class CustomDateTimeShardingAlgorithmTest {
         shardingAlgorithm.getProps().setProperty("datetime.step.unit", "Months");
         shardingAlgorithm.getProps().setProperty("datetime.step.amount", "3");
         shardingAlgorithm.init();
-        StandardShardingStrategyConfiguration shardingStrategyConfig = new StandardShardingStrategyConfiguration("create_time", shardingAlgorithm);
-        this.shardingStrategyByQuarter = new StandardShardingStrategy(shardingStrategyConfig);
+        this.shardingStrategyByQuarter = new StandardShardingStrategy("create_time", shardingAlgorithm);
         for (int i = 2016; i <= 2020; i++) {
             for (int j = 1; j <= 4; j++) {
                 availableTablesForQuarterStrategy.add(String.format("t_order_%04d%02d", i, j));
@@ -151,8 +149,7 @@ public class CustomDateTimeShardingAlgorithmTest {
         shardingAlgorithm.getProps().setProperty("datetime.step.unit", "Months");
         shardingAlgorithm.getProps().setProperty("datetime.step.amount", "1");
         shardingAlgorithm.init();
-        StandardShardingStrategyConfiguration shardingStrategyConfig = new StandardShardingStrategyConfiguration("create_time", shardingAlgorithm);
-        this.shardingStrategyByMonth = new StandardShardingStrategy(shardingStrategyConfig);
+        this.shardingStrategyByMonth = new StandardShardingStrategy("create_time", shardingAlgorithm);
         for (int i = 2016; i <= 2020; i++) {
             for (int j = 1; j <= 12; j++) {
                 availableTablesForMonthStrategy.add(String.format("t_order_%04d%02d", i, j));

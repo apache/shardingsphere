@@ -20,9 +20,12 @@ package org.apache.shardingsphere.sharding.strategy.route;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
+import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
+import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
+import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sharding.strategy.route.complex.ComplexShardingStrategy;
 import org.apache.shardingsphere.sharding.strategy.route.hint.HintShardingStrategy;
 import org.apache.shardingsphere.sharding.strategy.route.none.NoneShardingStrategy;
@@ -35,20 +38,21 @@ import org.apache.shardingsphere.sharding.strategy.route.standard.StandardShardi
 public final class ShardingStrategyFactory {
     
     /**
-     * Create sharding algorithm.
+     * Create sharding strategy.
      * 
-     * @param shardingStrategyConfig sharding strategy configuration
+     * @param shardingStrategyConfiguration sharding strategy configuration
+     * @param shardingAlgorithm sharding algorithm
      * @return sharding strategy instance
      */
-    public static ShardingStrategy newInstance(final ShardingStrategyConfiguration shardingStrategyConfig) {
-        if (shardingStrategyConfig instanceof StandardShardingStrategyConfiguration) {
-            return new StandardShardingStrategy((StandardShardingStrategyConfiguration) shardingStrategyConfig);
+    public static ShardingStrategy newInstance(final ShardingStrategyConfiguration shardingStrategyConfiguration, final ShardingAlgorithm shardingAlgorithm) {
+        if (shardingAlgorithm instanceof StandardShardingAlgorithm) {
+            return new StandardShardingStrategy(((StandardShardingStrategyConfiguration) shardingStrategyConfiguration).getShardingColumn(), (StandardShardingAlgorithm) shardingAlgorithm);
         }
-        if (shardingStrategyConfig instanceof ComplexShardingStrategyConfiguration) {
-            return new ComplexShardingStrategy((ComplexShardingStrategyConfiguration) shardingStrategyConfig);
+        if (shardingAlgorithm instanceof ComplexKeysShardingAlgorithm) {
+            return new ComplexShardingStrategy(((ComplexShardingStrategyConfiguration) shardingStrategyConfiguration).getShardingColumns(), (ComplexKeysShardingAlgorithm) shardingAlgorithm);
         }
-        if (shardingStrategyConfig instanceof HintShardingStrategyConfiguration) {
-            return new HintShardingStrategy((HintShardingStrategyConfiguration) shardingStrategyConfig);
+        if (shardingAlgorithm instanceof HintShardingAlgorithm) {
+            return new HintShardingStrategy((HintShardingAlgorithm) shardingAlgorithm);
         }
         return new NoneShardingStrategy();
     }

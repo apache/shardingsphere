@@ -17,18 +17,16 @@
 
 package org.apache.shardingsphere.sharding.api.config.strategy.sharding;
 
-import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 
 public final class ComplexShardingStrategyConfigurationTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertConstructorWithoutShardingColumns() {
-        new ComplexShardingStrategyConfiguration("", mock(ComplexKeysShardingAlgorithm.class));
+        new ComplexShardingStrategyConfiguration("", "test");
     }
     
     @Test(expected = NullPointerException.class)
@@ -38,9 +36,8 @@ public final class ComplexShardingStrategyConfigurationTest {
     
     @Test
     public void assertConstructorWithFullArguments() {
-        ComplexKeysShardingAlgorithm shardingAlgorithm = mock(ComplexKeysShardingAlgorithm.class);
-        ComplexShardingStrategyConfiguration actual = new ComplexShardingStrategyConfiguration("id, creation_date", shardingAlgorithm);
+        ComplexShardingStrategyConfiguration actual = new ComplexShardingStrategyConfiguration("id, creation_date", "test");
         assertThat(actual.getShardingColumns(), is("id, creation_date"));
-        assertThat(actual.getShardingAlgorithm(), is(shardingAlgorithm));
+        assertThat(actual.getShardingAlgorithmName(), is("test"));
     }
 }

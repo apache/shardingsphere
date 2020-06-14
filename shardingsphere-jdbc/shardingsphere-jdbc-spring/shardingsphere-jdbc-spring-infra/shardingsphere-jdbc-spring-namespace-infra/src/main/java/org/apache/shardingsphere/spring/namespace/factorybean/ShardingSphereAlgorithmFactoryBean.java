@@ -20,6 +20,7 @@ package org.apache.shardingsphere.spring.namespace.factorybean;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmPostProcessor;
 import org.apache.shardingsphere.infra.spi.type.TypedSPIRegistry;
 import org.springframework.beans.factory.FactoryBean;
 
@@ -40,7 +41,11 @@ public abstract class ShardingSphereAlgorithmFactoryBean<T extends ShardingSpher
     
     @Override
     public final T getObject() {
-        return TypedSPIRegistry.getRegisteredService(objectType, type, props);
+        T result = TypedSPIRegistry.getRegisteredService(objectType, type, props);
+        if (result instanceof ShardingSphereAlgorithmPostProcessor) {
+            ((ShardingSphereAlgorithmPostProcessor) result).init();
+        }
+        return result;
     }
     
     @Override
