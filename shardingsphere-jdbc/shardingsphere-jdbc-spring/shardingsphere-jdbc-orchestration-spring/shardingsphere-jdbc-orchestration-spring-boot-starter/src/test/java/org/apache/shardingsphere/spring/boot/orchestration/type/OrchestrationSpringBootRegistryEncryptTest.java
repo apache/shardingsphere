@@ -50,11 +50,11 @@ import static org.junit.Assert.assertTrue;
 @SpringBootApplication
 @ActiveProfiles("registry")
 public class OrchestrationSpringBootRegistryEncryptTest {
-
+    
     private static final String DATA_SOURCE_FILE = "yaml/data-source.yaml";
-
+    
     private static final String ENCRYPT_RULE_FILE = "yaml/encrypt-rule.yaml";
-
+    
     @Resource
     private DataSource dataSource;
     
@@ -69,13 +69,13 @@ public class OrchestrationSpringBootRegistryEncryptTest {
         testCenter.persist("/demo_spring_boot_ds_center/config/props", "sql.show: 'true'\n");
         testCenter.persist("/demo_spring_boot_ds_center/registry/datasources", "");
     }
-
+    
     @Test
     public void assertWithEncryptDataSource() throws NoSuchFieldException, IllegalAccessException {
-        assertTrue(this.dataSource instanceof OrchestrationShardingSphereDataSource);
+        assertTrue(dataSource instanceof OrchestrationShardingSphereDataSource);
         Field field = OrchestrationShardingSphereDataSource.class.getDeclaredField("dataSource");
         field.setAccessible(true);
-        ShardingSphereDataSource encryptDataSource = (ShardingSphereDataSource) field.get(this.dataSource);
+        ShardingSphereDataSource encryptDataSource = (ShardingSphereDataSource) field.get(dataSource);
         BasicDataSource embedDataSource = (BasicDataSource) encryptDataSource.getDataSourceMap().values().iterator().next();
         assertThat(embedDataSource.getMaxTotal(), is(100));
         assertThat(embedDataSource.getUsername(), is("sa"));
@@ -85,7 +85,7 @@ public class OrchestrationSpringBootRegistryEncryptTest {
         assertThat(encryptAlgorithmConfiguration, instanceOf(EncryptAlgorithmConfiguration.class));
         assertThat(encryptAlgorithmConfiguration.getType(), is("AES"));
     }
-
+    
     @SneakyThrows
     private static String readYAML(final String yamlFile) {
         return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI())).stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
