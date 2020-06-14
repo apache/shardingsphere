@@ -18,30 +18,30 @@
 package org.apache.shardingsphere.sharding.yaml.swapper.algorithm;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 import org.apache.shardingsphere.sharding.api.config.algorithm.KeyGenerateAlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.sharding.yaml.config.algorithm.YamlKeyGenerateAlgorithmConfiguration;
 
 /**
  * Key generate algorithm configuration YAML swapper.
  */
-public final class KeyGenerateAlgorithmConfigurationYamlSwapper implements YamlSwapper<YamlKeyGenerateAlgorithmConfiguration, KeyGenerateAlgorithmConfiguration> {
+public final class KeyGenerateAlgorithmConfigurationYamlSwapper implements YamlSwapper<YamlShardingSphereAlgorithmConfiguration, KeyGenerateAlgorithmConfiguration> {
     
     static {
         ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
     }
     
     @Override
-    public YamlKeyGenerateAlgorithmConfiguration swap(final KeyGenerateAlgorithmConfiguration data) {
-        YamlKeyGenerateAlgorithmConfiguration result = new YamlKeyGenerateAlgorithmConfiguration();
+    public YamlShardingSphereAlgorithmConfiguration swap(final KeyGenerateAlgorithmConfiguration data) {
+        YamlShardingSphereAlgorithmConfiguration result = new YamlShardingSphereAlgorithmConfiguration();
         result.setType(data.getType());
         result.setProps(data.getProps());
         return result;
     }
     
     @Override
-    public KeyGenerateAlgorithmConfiguration swap(final YamlKeyGenerateAlgorithmConfiguration yamlConfiguration) {
+    public KeyGenerateAlgorithmConfiguration swap(final YamlShardingSphereAlgorithmConfiguration yamlConfiguration) {
         return new KeyGenerateAlgorithmConfiguration(yamlConfiguration.getType(), yamlConfiguration.getProps());
     }
 }
