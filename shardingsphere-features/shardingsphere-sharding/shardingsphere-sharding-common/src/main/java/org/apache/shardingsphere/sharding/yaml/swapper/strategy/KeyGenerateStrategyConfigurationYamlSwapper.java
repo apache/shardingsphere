@@ -33,7 +33,7 @@ public final class KeyGenerateStrategyConfigurationYamlSwapper implements YamlSw
     }
     
     @Override
-    public YamlKeyGenerateStrategyConfiguration swap(final KeyGenerateStrategyConfiguration data) {
+    public YamlKeyGenerateStrategyConfiguration swapToYamlConfiguration(final KeyGenerateStrategyConfiguration data) {
         YamlKeyGenerateStrategyConfiguration result = new YamlKeyGenerateStrategyConfiguration();
         result.setColumn(data.getColumn());
         result.setKeyGeneratorName(data.getKeyGeneratorName());
@@ -41,7 +41,7 @@ public final class KeyGenerateStrategyConfigurationYamlSwapper implements YamlSw
     }
     
     @Override
-    public KeyGenerateStrategyConfiguration swap(final YamlKeyGenerateStrategyConfiguration yamlConfiguration) {
+    public KeyGenerateStrategyConfiguration swapToObject(final YamlKeyGenerateStrategyConfiguration yamlConfiguration) {
         return new KeyGenerateStrategyConfiguration(yamlConfiguration.getColumn(), yamlConfiguration.getKeyGeneratorName());
     }
 }

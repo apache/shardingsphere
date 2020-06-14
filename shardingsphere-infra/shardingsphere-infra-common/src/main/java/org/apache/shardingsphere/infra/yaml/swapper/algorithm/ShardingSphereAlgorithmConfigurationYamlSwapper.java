@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 public final class ShardingSphereAlgorithmConfigurationYamlSwapper implements YamlSwapper<YamlShardingSphereAlgorithmConfiguration, ShardingSphereAlgorithmConfiguration> {
     
     @Override
-    public YamlShardingSphereAlgorithmConfiguration swap(final ShardingSphereAlgorithmConfiguration data) {
+    public YamlShardingSphereAlgorithmConfiguration swapToYamlConfiguration(final ShardingSphereAlgorithmConfiguration data) {
         YamlShardingSphereAlgorithmConfiguration result = new YamlShardingSphereAlgorithmConfiguration();
         result.setType(data.getType());
         result.setProps(data.getProps());
@@ -35,7 +35,7 @@ public final class ShardingSphereAlgorithmConfigurationYamlSwapper implements Ya
     }
     
     @Override
-    public ShardingSphereAlgorithmConfiguration swap(final YamlShardingSphereAlgorithmConfiguration yamlConfiguration) {
+    public ShardingSphereAlgorithmConfiguration swapToObject(final YamlShardingSphereAlgorithmConfiguration yamlConfiguration) {
         return new ShardingSphereAlgorithmConfiguration(yamlConfiguration.getType(), yamlConfiguration.getProps());
     }
 }

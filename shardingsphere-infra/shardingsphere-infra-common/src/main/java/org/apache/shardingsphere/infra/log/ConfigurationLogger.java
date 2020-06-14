@@ -55,7 +55,7 @@ public final class ConfigurationLogger {
      */
     public static void log(final Authentication authentication) {
         if (null != authentication) {
-            log(authentication.getClass().getSimpleName(), YamlEngine.marshal(new AuthenticationYamlSwapper().swap(authentication)));
+            log(authentication.getClass().getSimpleName(), YamlEngine.marshal(new AuthenticationYamlSwapper().swapToYamlConfiguration(authentication)));
         }
     }
     

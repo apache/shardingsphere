@@ -37,7 +37,7 @@ public final class AuthenticationYamlSwapperTest {
         Authentication authentication = new Authentication();
         authentication.getUsers().put("user1", user1);
         authentication.getUsers().put("user2", user2);
-        YamlAuthenticationConfiguration actual = new AuthenticationYamlSwapper().swap(authentication);
+        YamlAuthenticationConfiguration actual = new AuthenticationYamlSwapper().swapToYamlConfiguration(authentication);
         assertThat(actual.getUsers().size(), is(2));
         assertThat(actual.getUsers().get("user2").getPassword(), is("pwd2"));
     }
@@ -53,7 +53,7 @@ public final class AuthenticationYamlSwapperTest {
         YamlAuthenticationConfiguration configuration = new YamlAuthenticationConfiguration();
         configuration.getUsers().put("user1", user1);
         configuration.getUsers().put("user2", user2);
-        Authentication actual = new AuthenticationYamlSwapper().swap(configuration);
+        Authentication actual = new AuthenticationYamlSwapper().swapToObject(configuration);
         assertThat(actual.getUsers().size(), is(2));
         assertThat(actual.getUsers().get("user2").getAuthorizedSchemas().size(), is(2));
     }

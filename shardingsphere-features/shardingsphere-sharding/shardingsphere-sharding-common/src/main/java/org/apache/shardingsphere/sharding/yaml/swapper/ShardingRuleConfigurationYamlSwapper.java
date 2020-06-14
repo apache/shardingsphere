@@ -47,59 +47,59 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
     private final ShardingSphereAlgorithmConfigurationYamlSwapper algorithmSwapper = new ShardingSphereAlgorithmConfigurationYamlSwapper();
     
     @Override
-    public YamlShardingRuleConfiguration swap(final ShardingRuleConfiguration data) {
+    public YamlShardingRuleConfiguration swapToYamlConfiguration(final ShardingRuleConfiguration data) {
         YamlShardingRuleConfiguration result = new YamlShardingRuleConfiguration();
-        data.getTables().forEach(each -> result.getTables().put(each.getLogicTable(), tableYamlSwapper.swap(each)));
-        data.getAutoTables().forEach(each -> result.getAutoTables().put(each.getLogicTable(), autoTableYamlSwapper.swap(each)));
+        data.getTables().forEach(each -> result.getTables().put(each.getLogicTable(), tableYamlSwapper.swapToYamlConfiguration(each)));
+        data.getAutoTables().forEach(each -> result.getAutoTables().put(each.getLogicTable(), autoTableYamlSwapper.swapToYamlConfiguration(each)));
         result.getBindingTables().addAll(data.getBindingTableGroups());
         result.getBroadcastTables().addAll(data.getBroadcastTables());
         if (null != data.getDefaultDatabaseShardingStrategy()) {
-            result.setDefaultDatabaseStrategy(shardingStrategyYamlSwapper.swap(data.getDefaultDatabaseShardingStrategy()));
+            result.setDefaultDatabaseStrategy(shardingStrategyYamlSwapper.swapToYamlConfiguration(data.getDefaultDatabaseShardingStrategy()));
         }
         if (null != data.getDefaultTableShardingStrategy()) {
-            result.setDefaultTableStrategy(shardingStrategyYamlSwapper.swap(data.getDefaultTableShardingStrategy()));
+            result.setDefaultTableStrategy(shardingStrategyYamlSwapper.swapToYamlConfiguration(data.getDefaultTableShardingStrategy()));
         }
         if (null != data.getDefaultKeyGenerateStrategy()) {
-            result.setDefaultKeyGenerateStrategy(keyGenerateStrategyYamlSwapper.swap(data.getDefaultKeyGenerateStrategy()));
+            result.setDefaultKeyGenerateStrategy(keyGenerateStrategyYamlSwapper.swapToYamlConfiguration(data.getDefaultKeyGenerateStrategy()));
         }
         if (null != data.getShardingAlgorithms()) {
-            data.getShardingAlgorithms().forEach((key, value) -> result.getShardingAlgorithms().put(key, algorithmSwapper.swap(value)));
+            data.getShardingAlgorithms().forEach((key, value) -> result.getShardingAlgorithms().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
         }
         if (null != data.getKeyGenerators()) {
-            data.getKeyGenerators().forEach((key, value) -> result.getKeyGenerators().put(key, algorithmSwapper.swap(value)));
+            data.getKeyGenerators().forEach((key, value) -> result.getKeyGenerators().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
         }
         return result;
     }
     
     @Override
-    public ShardingRuleConfiguration swap(final YamlShardingRuleConfiguration yamlConfiguration) {
+    public ShardingRuleConfiguration swapToObject(final YamlShardingRuleConfiguration yamlConfiguration) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         for (Entry<String, YamlTableRuleConfiguration> entry : yamlConfiguration.getTables().entrySet()) {
             YamlTableRuleConfiguration tableRuleConfig = entry.getValue();
             tableRuleConfig.setLogicTable(entry.getKey());
-            result.getTables().add(tableYamlSwapper.swap(tableRuleConfig));
+            result.getTables().add(tableYamlSwapper.swapToObject(tableRuleConfig));
         }
         for (Entry<String, YamlShardingAutoTableRuleConfiguration> entry : yamlConfiguration.getAutoTables().entrySet()) {
             YamlShardingAutoTableRuleConfiguration tableRuleConfig = entry.getValue();
             tableRuleConfig.setLogicTable(entry.getKey());
-            result.getAutoTables().add(autoTableYamlSwapper.swap(tableRuleConfig));
+            result.getAutoTables().add(autoTableYamlSwapper.swapToObject(tableRuleConfig));
         }
         result.getBindingTableGroups().addAll(yamlConfiguration.getBindingTables());
         result.getBroadcastTables().addAll(yamlConfiguration.getBroadcastTables());
         if (null != yamlConfiguration.getDefaultDatabaseStrategy()) {
-            result.setDefaultDatabaseShardingStrategy(shardingStrategyYamlSwapper.swap(yamlConfiguration.getDefaultDatabaseStrategy()));
+            result.setDefaultDatabaseShardingStrategy(shardingStrategyYamlSwapper.swapToObject(yamlConfiguration.getDefaultDatabaseStrategy()));
         }
         if (null != yamlConfiguration.getDefaultTableStrategy()) {
-            result.setDefaultTableShardingStrategy(shardingStrategyYamlSwapper.swap(yamlConfiguration.getDefaultTableStrategy()));
+            result.setDefaultTableShardingStrategy(shardingStrategyYamlSwapper.swapToObject(yamlConfiguration.getDefaultTableStrategy()));
         }
         if (null != yamlConfiguration.getDefaultKeyGenerateStrategy()) {
-            result.setDefaultKeyGenerateStrategy(keyGenerateStrategyYamlSwapper.swap(yamlConfiguration.getDefaultKeyGenerateStrategy()));
+            result.setDefaultKeyGenerateStrategy(keyGenerateStrategyYamlSwapper.swapToObject(yamlConfiguration.getDefaultKeyGenerateStrategy()));
         }
         if (null != yamlConfiguration.getShardingAlgorithms()) {
-            yamlConfiguration.getShardingAlgorithms().forEach((key, value) -> result.getShardingAlgorithms().put(key, algorithmSwapper.swap(value)));
+            yamlConfiguration.getShardingAlgorithms().forEach((key, value) -> result.getShardingAlgorithms().put(key, algorithmSwapper.swapToObject(value)));
         }
         if (null != yamlConfiguration.getKeyGenerators()) {
-            yamlConfiguration.getKeyGenerators().forEach((key, value) -> result.getKeyGenerators().put(key, algorithmSwapper.swap(value)));
+            yamlConfiguration.getKeyGenerators().forEach((key, value) -> result.getKeyGenerators().put(key, algorithmSwapper.swapToObject(value)));
         }
         return result;
     }

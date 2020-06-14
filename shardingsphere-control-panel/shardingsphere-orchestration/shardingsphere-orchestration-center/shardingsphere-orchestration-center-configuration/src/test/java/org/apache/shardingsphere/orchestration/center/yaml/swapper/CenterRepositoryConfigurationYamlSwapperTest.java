@@ -29,9 +29,9 @@ import static org.junit.Assert.assertThat;
 public class CenterRepositoryConfigurationYamlSwapperTest {
     
     @Test
-    public void assertToYaml() {
+    public void assertToYamlConfiguration() {
         CenterConfiguration configuration = getConfiguration();
-        YamlCenterRepositoryConfiguration yamlConfiguration = new CenterRepositoryConfigurationYamlSwapper().swap(configuration);
+        YamlCenterRepositoryConfiguration yamlConfiguration = new CenterRepositoryConfigurationYamlSwapper().swapToYamlConfiguration(configuration);
         assertThat(yamlConfiguration.getOrchestrationType(), is(configuration.getOrchestrationType()));
         assertThat(yamlConfiguration.getInstanceType(), is(configuration.getType()));
         assertThat(yamlConfiguration.getServerLists(), is(configuration.getServerLists()));
@@ -48,9 +48,9 @@ public class CenterRepositoryConfigurationYamlSwapperTest {
     }
     
     @Test
-    public void assertSwapToConfiguration() {
+    public void assertSwapToObject() {
         YamlCenterRepositoryConfiguration yamlConfiguration = getYamlInstanceConfiguration();
-        CenterConfiguration instanceConfiguration = new CenterRepositoryConfigurationYamlSwapper().swap(yamlConfiguration);
+        CenterConfiguration instanceConfiguration = new CenterRepositoryConfigurationYamlSwapper().swapToObject(yamlConfiguration);
         assertThat(instanceConfiguration.getOrchestrationType(), is(yamlConfiguration.getOrchestrationType()));
         assertThat(instanceConfiguration.getType(), is(yamlConfiguration.getInstanceType()));
         assertThat(instanceConfiguration.getServerLists(), is(yamlConfiguration.getServerLists()));

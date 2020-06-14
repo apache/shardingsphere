@@ -36,13 +36,13 @@ import java.util.stream.Collectors;
 public final class ReplicaRuleConfigurationYamlSwapper implements YamlRuleConfigurationSwapper<YamlReplicaRuleConfiguration, ReplicaRuleConfiguration> {
     
     @Override
-    public YamlReplicaRuleConfiguration swap(final ReplicaRuleConfiguration data) {
+    public YamlReplicaRuleConfiguration swapToYamlConfiguration(final ReplicaRuleConfiguration data) {
         YamlReplicaRuleConfiguration result = new YamlReplicaRuleConfiguration();
-        result.setDataSources(data.getDataSources().stream().collect(Collectors.toMap(ReplicaDataSourceConfiguration::getName, this::swap, (a, b) -> b, LinkedHashMap::new)));
+        result.setDataSources(data.getDataSources().stream().collect(Collectors.toMap(ReplicaDataSourceConfiguration::getName, this::swapToYamlConfiguration, (a, b) -> b, LinkedHashMap::new)));
         return result;
     }
     
-    private YamlReplicaDataSourceConfiguration swap(final ReplicaDataSourceConfiguration group) {
+    private YamlReplicaDataSourceConfiguration swapToYamlConfiguration(final ReplicaDataSourceConfiguration group) {
         YamlReplicaDataSourceConfiguration result = new YamlReplicaDataSourceConfiguration();
         result.setName(group.getName());
         result.setReplicaDataSourceNames(group.getReplicaSourceNames());
@@ -50,15 +50,15 @@ public final class ReplicaRuleConfigurationYamlSwapper implements YamlRuleConfig
     }
     
     @Override
-    public ReplicaRuleConfiguration swap(final YamlReplicaRuleConfiguration yamlConfiguration) {
+    public ReplicaRuleConfiguration swapToObject(final YamlReplicaRuleConfiguration yamlConfiguration) {
         Collection<ReplicaDataSourceConfiguration> groups = new LinkedList<>();
         for (Entry<String, YamlReplicaDataSourceConfiguration> entry : yamlConfiguration.getDataSources().entrySet()) {
-            groups.add(swap(entry.getKey(), entry.getValue()));
+            groups.add(swapToObject(entry.getKey(), entry.getValue()));
         }
         return new ReplicaRuleConfiguration(groups);
     }
     
-    private ReplicaDataSourceConfiguration swap(final String name, final YamlReplicaDataSourceConfiguration yamlGroup) {
+    private ReplicaDataSourceConfiguration swapToObject(final String name, final YamlReplicaDataSourceConfiguration yamlGroup) {
         return new ReplicaDataSourceConfiguration(name, yamlGroup.getReplicaDataSourceNames());
     }
     

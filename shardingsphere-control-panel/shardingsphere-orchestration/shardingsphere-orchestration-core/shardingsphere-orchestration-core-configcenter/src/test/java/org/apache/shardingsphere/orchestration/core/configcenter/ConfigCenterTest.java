@@ -434,7 +434,7 @@ public final class ConfigCenterTest {
     }
     
     private Authentication createAuthentication() {
-        return new AuthenticationYamlSwapper().swap(YamlEngine.unmarshal(AUTHENTICATION_YAML, YamlAuthenticationConfiguration.class));
+        return new AuthenticationYamlSwapper().swapToObject(YamlEngine.unmarshal(AUTHENTICATION_YAML, YamlAuthenticationConfiguration.class));
     }
     
     private Properties createProperties() {

@@ -104,7 +104,7 @@ public final class YamlOrchestrationShardingSphereDataSourceFactory {
             return null == yamlClusterConfiguration
                     ? new OrchestrationShardingSphereDataSource(new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)))
                     : new OrchestrationShardingSphereDataSource(new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)),
-                    new ClusterConfigurationYamlSwapper().swap(yamlClusterConfiguration));
+                    new ClusterConfigurationYamlSwapper().swapToObject(yamlClusterConfiguration));
         } else {
             ShardingSphereDataSource shardingSphereDataSource = new ShardingSphereDataSource(dataSourceMap,
                     new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(configurations.getRules()), props);
@@ -112,7 +112,7 @@ public final class YamlOrchestrationShardingSphereDataSourceFactory {
                     new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)))
                     : new OrchestrationShardingSphereDataSource(shardingSphereDataSource,
                     new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)),
-                    new ClusterConfigurationYamlSwapper().swap(yamlClusterConfiguration));
+                    new ClusterConfigurationYamlSwapper().swapToObject(yamlClusterConfiguration));
         }
     }
     

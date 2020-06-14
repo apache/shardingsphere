@@ -27,8 +27,8 @@ import static org.junit.Assert.assertThat;
 public final class KeyGenerateStrategyConfigurationYamlSwapperTest {
     
     @Test
-    public void assertSwapToYaml() {
-        YamlKeyGenerateStrategyConfiguration actual = new KeyGenerateStrategyConfigurationYamlSwapper().swap(new KeyGenerateStrategyConfiguration("id", "test"));
+    public void assertSwapToYamlConfiguration() {
+        YamlKeyGenerateStrategyConfiguration actual = new KeyGenerateStrategyConfigurationYamlSwapper().swapToYamlConfiguration(new KeyGenerateStrategyConfiguration("id", "test"));
         assertThat(actual.getColumn(), is("id"));
         assertThat(actual.getKeyGeneratorName(), is("test"));
     }
@@ -38,7 +38,7 @@ public final class KeyGenerateStrategyConfigurationYamlSwapperTest {
         YamlKeyGenerateStrategyConfiguration yamlConfiguration = new YamlKeyGenerateStrategyConfiguration();
         yamlConfiguration.setColumn("id");
         yamlConfiguration.setKeyGeneratorName("test");
-        KeyGenerateStrategyConfiguration actual = new KeyGenerateStrategyConfigurationYamlSwapper().swap(yamlConfiguration);
+        KeyGenerateStrategyConfiguration actual = new KeyGenerateStrategyConfigurationYamlSwapper().swapToObject(yamlConfiguration);
         assertThat(actual.getColumn(), is("id"));
         assertThat(actual.getKeyGeneratorName(), is("test"));
     }

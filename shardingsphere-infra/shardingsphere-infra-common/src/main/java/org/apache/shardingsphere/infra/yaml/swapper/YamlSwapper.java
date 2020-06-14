@@ -33,7 +33,7 @@ public interface YamlSwapper<Y extends YamlConfiguration, T> {
      * @param data data to be swapped
      * @return YAML configuration
      */
-    Y swap(T data);
+    Y swapToYamlConfiguration(T data);
     
     /**
      * Swap from YAML configuration to object.
@@ -41,5 +41,5 @@ public interface YamlSwapper<Y extends YamlConfiguration, T> {
      * @param yamlConfiguration YAML configuration
      * @return swapped object
      */
-    T swap(Y yamlConfiguration);
+    T swapToObject(Y yamlConfiguration);
 }

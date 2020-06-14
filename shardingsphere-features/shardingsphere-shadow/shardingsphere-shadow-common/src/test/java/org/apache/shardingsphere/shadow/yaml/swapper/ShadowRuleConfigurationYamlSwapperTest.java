@@ -29,9 +29,9 @@ import static org.junit.Assert.assertThat;
 public final class ShadowRuleConfigurationYamlSwapperTest {
     
     @Test
-    public void assertSwapToYaml() {
+    public void assertSwapToYamlConfiguration() {
         ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration("shadow", Collections.singletonMap("ds", "shadow_ds"));
-        YamlShadowRuleConfiguration actual = new ShadowRuleConfigurationYamlSwapper().swap(shadowRuleConfiguration);
+        YamlShadowRuleConfiguration actual = new ShadowRuleConfigurationYamlSwapper().swapToYamlConfiguration(shadowRuleConfiguration);
         assertThat(actual.getColumn(), is("shadow"));
         assertThat(actual.getShadowMappings().size(), is(1));
         assertThat(actual.getShadowMappings().get("ds"), is("shadow_ds"));
