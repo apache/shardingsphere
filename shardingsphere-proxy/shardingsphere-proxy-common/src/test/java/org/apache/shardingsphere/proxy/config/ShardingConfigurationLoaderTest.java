@@ -76,9 +76,9 @@ public final class ShardingConfigurationLoaderTest {
         assertThat(actual.getTables().size(), is(1));
         assertThat(actual.getTables().get("t_order").getActualDataNodes(), is("ds_${0..1}.t_order_${0..1}"));
         assertThat(actual.getTables().get("t_order").getDatabaseStrategy().getStandard().getShardingColumn(), is("user_id"));
-        assertThat(actual.getTables().get("t_order").getDatabaseStrategy().getStandard().getShardingAlgorithm().getProps().getProperty("algorithm.expression"), is("ds_${user_id % 2}"));
+        assertThat(actual.getTables().get("t_order").getDatabaseStrategy().getStandard().getShardingAlgorithmName(), is("database_inline"));
         assertThat(actual.getTables().get("t_order").getTableStrategy().getStandard().getShardingColumn(), is("order_id"));
-        assertThat(actual.getTables().get("t_order").getTableStrategy().getStandard().getShardingAlgorithm().getProps().getProperty("algorithm.expression"), is("t_order_${order_id % 2}"));
+        assertThat(actual.getTables().get("t_order").getTableStrategy().getStandard().getShardingAlgorithmName(), is("table_inline"));
         assertNotNull(actual.getDefaultDatabaseStrategy().getNone());
     }
     

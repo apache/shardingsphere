@@ -111,14 +111,13 @@ public abstract class AbstractRoutingEngineTest {
         shardingRuleConfig.getBroadcastTables().add("t_product");
         Properties props = new Properties();
         props.setProperty("algorithm.expression", "ds_${user_id % 2}");
-        ShardingAlgorithmConfiguration shardingAlgorithmConfiguration = new ShardingAlgorithmConfiguration("INLINE", props);
         shardingRuleConfig.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "ds_inline"));
         shardingRuleConfig.getTables().add(createInlineTableRuleConfig("t_order", "ds_${0..1}.t_order_${0..1}", "t_order_${user_id % 2}", "ds_${user_id % 2}"));
         shardingRuleConfig.getTables().add(createInlineTableRuleConfig("t_order_item", "ds_${0..1}.t_order_item_${0..1}", "t_order_item_${user_id % 2}", "ds_${user_id % 2}"));
         shardingRuleConfig.getTables().add(createInlineTableRuleConfig("t_user", "ds_${0..1}.t_user_${0..1}", "t_user_${user_id % 2}", "ds_${user_id % 2}"));
         shardingRuleConfig.getTables().add(createTableRuleWithHintConfig());
         shardingRuleConfig.getBindingTableGroups().add("t_order,t_order_item");
-        shardingRuleConfig.getShardingAlgorithms().put("ds_inline", shardingAlgorithmConfiguration);
+        shardingRuleConfig.getShardingAlgorithms().put("ds_inline", new ShardingAlgorithmConfiguration("INLINE", props));
         props = new Properties();
         props.setProperty("algorithm.expression", "t_order_${user_id % 2}");
         shardingRuleConfig.getShardingAlgorithms().put("t_order_inline", new ShardingAlgorithmConfiguration("INLINE", props));
@@ -151,7 +150,7 @@ public abstract class AbstractRoutingEngineTest {
         return result;
     }
     
-    protected final ShardingTableRuleConfiguration createTableRuleConfig(final String tableName, final String actualDataNodes, final ShardingStrategyConfiguration dsShardingStrategyConfiguration, 
+    private ShardingTableRuleConfiguration createTableRuleConfig(final String tableName, final String actualDataNodes, final ShardingStrategyConfiguration dsShardingStrategyConfiguration, 
                                                                          final ShardingStrategyConfiguration tableShardingStrategyConfiguration) {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration(tableName, actualDataNodes);
         result.setDatabaseShardingStrategy(dsShardingStrategyConfiguration);

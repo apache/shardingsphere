@@ -22,10 +22,10 @@ import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.algorithm.KeyGenerateAlgorithmConfiguration;
+import org.apache.shardingsphere.sharding.api.config.algorithm.ShardingAlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.InlineShardingAlgorithm;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -46,9 +46,10 @@ public final class ShardingDatabasesConfigurationPrecise implements ExampleConfi
         result.getTables().add(getOrderTableRuleConfiguration());
         result.getTables().add(getOrderItemTableRuleConfiguration());
         result.getBroadcastTables().add("t_address");
-        InlineShardingAlgorithm shardingAlgorithm = new InlineShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("algorithm.expression", "demo_ds_${user_id % 2}");
-        result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", shardingAlgorithm));
+        result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "inline"));
+        Properties props = new Properties();
+        props.setProperty("algorithm.expression", "demo_ds_${user_id % 2}");
+        result.getShardingAlgorithms() .put("inline", new ShardingAlgorithmConfiguration("INLINE", props));
         result.getKeyGenerators().put("snowflake", new KeyGenerateAlgorithmConfiguration("SNOWFLAKE", getProperties()));
         return result;
     }
