@@ -123,7 +123,8 @@ public final class OrchestrationShardingSphereDataSourceTest {
     
     private MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() {
         MasterSlaveDataSourceRuleConfiguration dataSourceConfiguration = new MasterSlaveDataSourceRuleConfiguration("ds_ms", "ds_m", Collections.singletonList("ds_s"), "roundRobin");
-        return new MasterSlaveRuleConfiguration(Collections.singleton(dataSourceConfiguration), ImmutableMap.of("roundRobin", new ShardingSphereAlgorithmConfiguration("ROUND_ROBIN", new Properties())));
+        return new MasterSlaveRuleConfiguration(
+                Collections.singleton(dataSourceConfiguration), ImmutableMap.of("roundRobin", new ShardingSphereAlgorithmConfiguration("ROUND_ROBIN", new Properties())));
     }
     
     @Test
