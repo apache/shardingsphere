@@ -36,10 +36,6 @@ public final class ShardingStrategyBeanDefinitionParser extends AbstractBeanDefi
     
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
-        return getBeanDefinitionByElement(element);
-    }
-    
-    private AbstractBeanDefinition getBeanDefinitionByElement(final Element element) {
         String type = element.getLocalName();
         switch (type) {
             case ShardingStrategyBeanDefinitionTag.STANDARD_STRATEGY_ROOT_TAG:
@@ -58,20 +54,20 @@ public final class ShardingStrategyBeanDefinitionParser extends AbstractBeanDefi
     private AbstractBeanDefinition getStandardShardingStrategyConfigBeanDefinition(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(StandardShardingStrategyConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(ShardingStrategyBeanDefinitionTag.SHARDING_COLUMN_ATTRIBUTE));
-        factory.addConstructorArgReference(element.getAttribute(ShardingStrategyBeanDefinitionTag.ALGORITHM_REF_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(ShardingStrategyBeanDefinitionTag.ALGORITHM_REF_ATTRIBUTE));
         return factory.getBeanDefinition();
     }
     
     private AbstractBeanDefinition getComplexShardingStrategyConfigBeanDefinition(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ComplexShardingStrategyConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(ShardingStrategyBeanDefinitionTag.SHARDING_COLUMNS_ATTRIBUTE));
-        factory.addConstructorArgReference(element.getAttribute(ShardingStrategyBeanDefinitionTag.ALGORITHM_REF_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(ShardingStrategyBeanDefinitionTag.ALGORITHM_REF_ATTRIBUTE));
         return factory.getBeanDefinition();
     }
     
     private AbstractBeanDefinition getHintShardingStrategyConfigBeanDefinition(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(HintShardingStrategyConfiguration.class);
-        factory.addConstructorArgReference(element.getAttribute(ShardingStrategyBeanDefinitionTag.ALGORITHM_REF_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(ShardingStrategyBeanDefinitionTag.ALGORITHM_REF_ATTRIBUTE));
         return factory.getBeanDefinition();
     }
     
