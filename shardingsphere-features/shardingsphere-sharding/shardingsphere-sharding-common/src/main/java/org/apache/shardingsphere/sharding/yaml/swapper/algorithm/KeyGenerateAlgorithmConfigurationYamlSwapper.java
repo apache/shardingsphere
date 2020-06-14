@@ -17,23 +17,23 @@
 
 package org.apache.shardingsphere.sharding.yaml.swapper.algorithm;
 
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
-import org.apache.shardingsphere.sharding.api.config.algorithm.KeyGenerateAlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
 /**
  * Key generate algorithm configuration YAML swapper.
  */
-public final class KeyGenerateAlgorithmConfigurationYamlSwapper implements YamlSwapper<YamlShardingSphereAlgorithmConfiguration, KeyGenerateAlgorithmConfiguration> {
+public final class KeyGenerateAlgorithmConfigurationYamlSwapper implements YamlSwapper<YamlShardingSphereAlgorithmConfiguration, ShardingSphereAlgorithmConfiguration> {
     
     static {
         ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
     }
     
     @Override
-    public YamlShardingSphereAlgorithmConfiguration swap(final KeyGenerateAlgorithmConfiguration data) {
+    public YamlShardingSphereAlgorithmConfiguration swap(final ShardingSphereAlgorithmConfiguration data) {
         YamlShardingSphereAlgorithmConfiguration result = new YamlShardingSphereAlgorithmConfiguration();
         result.setType(data.getType());
         result.setProps(data.getProps());
@@ -41,7 +41,7 @@ public final class KeyGenerateAlgorithmConfigurationYamlSwapper implements YamlS
     }
     
     @Override
-    public KeyGenerateAlgorithmConfiguration swap(final YamlShardingSphereAlgorithmConfiguration yamlConfiguration) {
-        return new KeyGenerateAlgorithmConfiguration(yamlConfiguration.getType(), yamlConfiguration.getProps());
+    public ShardingSphereAlgorithmConfiguration swap(final YamlShardingSphereAlgorithmConfiguration yamlConfiguration) {
+        return new ShardingSphereAlgorithmConfiguration(yamlConfiguration.getType(), yamlConfiguration.getProps());
     }
 }

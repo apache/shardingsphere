@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.api.config.algorithm;
+package org.apache.shardingsphere.infra.config.algorithm;
 
 import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
 
 import java.util.Properties;
 
 /**
- * Master-slave load balance algorithm configuration.
+ * ShardingSphere algorithm configuration.
  */
-public final class LoadBalanceAlgorithmConfiguration extends TypedSPIConfiguration {
+public final class ShardingSphereAlgorithmConfiguration extends TypedSPIConfiguration {
     
-    public LoadBalanceAlgorithmConfiguration(final String type, final Properties props) {
+    public ShardingSphereAlgorithmConfiguration(final String type, final Properties props) {
         super(type, props);
     }
 }

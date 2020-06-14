@@ -20,11 +20,11 @@ package org.apache.shardingsphere.example.orchestration.raw.jdbc.config.local;
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.driver.orchestration.api.OrchestrationShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.algorithm.EncryptAlgorithmConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 
@@ -61,9 +61,9 @@ public final class LocalEncryptConfiguration implements ExampleConfiguration {
         return new EncryptTableRuleConfiguration("t_order", Collections.singleton(encryptColumnRuleConfiguration));
     }
     
-    private EncryptAlgorithmConfiguration createEncryptAlgorithmConfiguration() {
+    private ShardingSphereAlgorithmConfiguration createEncryptAlgorithmConfiguration() {
         Properties props = new Properties();
         props.setProperty("aes.key.value", "123456");
-        return new EncryptAlgorithmConfiguration("AES", props);
+        return new ShardingSphereAlgorithmConfiguration("AES", props);
     }
 }

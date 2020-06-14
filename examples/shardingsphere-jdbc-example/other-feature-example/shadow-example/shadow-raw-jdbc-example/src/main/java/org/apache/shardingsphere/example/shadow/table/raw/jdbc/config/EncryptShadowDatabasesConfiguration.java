@@ -21,9 +21,9 @@ import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.algorithm.EncryptAlgorithmConfiguration;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 
 import javax.sql.DataSource;
@@ -61,12 +61,12 @@ public final class EncryptShadowDatabasesConfiguration implements ExampleConfigu
         return result;
     }
     
-    private Map<String, EncryptAlgorithmConfiguration> getEncryptAlgorithmConfigurations() {
-        Map<String, EncryptAlgorithmConfiguration> result = new LinkedHashMap<>(2, 1);
+    private Map<String, ShardingSphereAlgorithmConfiguration> getEncryptAlgorithmConfigurations() {
+        Map<String, ShardingSphereAlgorithmConfiguration> result = new LinkedHashMap<>(2, 1);
         Properties props = new Properties();
         props.setProperty("aes.key.value", "123456");
-        result.put("name_encryptor", new EncryptAlgorithmConfiguration("AES", props));
-        result.put("pwd_encryptor", new EncryptAlgorithmConfiguration("assistedTest", null));
+        result.put("name_encryptor", new ShardingSphereAlgorithmConfiguration("AES", props));
+        result.put("pwd_encryptor", new ShardingSphereAlgorithmConfiguration("assistedTest", null));
         return result;
     }
 }

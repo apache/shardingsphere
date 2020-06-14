@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.masterslave.yaml.swapper;
 
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.masterslave.api.config.algorithm.LoadBalanceAlgorithmConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
 import org.apache.shardingsphere.masterslave.constant.MasterSlaveOrder;
 import org.apache.shardingsphere.masterslave.yaml.config.YamlMasterSlaveRuleConfiguration;
@@ -60,7 +60,7 @@ public final class MasterSlaveRuleConfigurationYamlSwapper implements YamlRuleCo
         for (Entry<String, YamlMasterSlaveDataSourceRuleConfiguration> entry : yamlConfiguration.getDataSources().entrySet()) {
             dataSources.add(swap(entry.getKey(), entry.getValue()));
         }
-        Map<String, LoadBalanceAlgorithmConfiguration> loadBalancers = new LinkedHashMap<>(yamlConfiguration.getLoadBalancers().entrySet().size(), 1);
+        Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = new LinkedHashMap<>(yamlConfiguration.getLoadBalancers().entrySet().size(), 1);
         for (Entry<String, YamlShardingSphereAlgorithmConfiguration> entry : yamlConfiguration.getLoadBalancers().entrySet()) {
             loadBalancers.put(entry.getKey(), swap(entry.getValue()));
         }
@@ -72,8 +72,8 @@ public final class MasterSlaveRuleConfigurationYamlSwapper implements YamlRuleCo
                 yamlDataSourceRuleConfiguration.getMasterDataSourceName(), yamlDataSourceRuleConfiguration.getSlaveDataSourceNames(), yamlDataSourceRuleConfiguration.getLoadBalancerName());
     }
     
-    private LoadBalanceAlgorithmConfiguration swap(final YamlShardingSphereAlgorithmConfiguration yamlLoadBalanceAlgorithmConfiguration) {
-        return new LoadBalanceAlgorithmConfiguration(yamlLoadBalanceAlgorithmConfiguration.getType(), yamlLoadBalanceAlgorithmConfiguration.getProps());
+    private ShardingSphereAlgorithmConfiguration swap(final YamlShardingSphereAlgorithmConfiguration yamlLoadBalanceAlgorithmConfiguration) {
+        return new ShardingSphereAlgorithmConfiguration(yamlLoadBalanceAlgorithmConfiguration.getType(), yamlLoadBalanceAlgorithmConfiguration.getProps());
     }
     
     @Override
