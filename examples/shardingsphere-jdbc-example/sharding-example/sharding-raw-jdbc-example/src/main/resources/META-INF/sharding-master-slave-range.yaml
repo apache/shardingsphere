@@ -55,8 +55,7 @@ rules:
       tableStrategy: 
         standard:
           shardingColumn: order_id
-          shardingAlgorithm:
-            type: STANDARD_TEST_TBL
+          shardingAlgorithmName: standard_test_tbl
       keyGenerateStrategy:
         column: order_id
         keyGeneratorName: snowflake
@@ -65,8 +64,7 @@ rules:
       tableStrategy:
         standard:
           shardingColumn: order_id
-          shardingAlgorithm:
-            type: STANDARD_TEST_TBL
+          shardingAlgorithmName: standard_test_tbl
       keyGenerateStrategy:
         column: order_item_id
         keyGeneratorName: snowflake
@@ -77,8 +75,13 @@ rules:
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
-      shardingAlgorithm:
-        type: STANDARD_TEST_DB
+      shardingAlgorithmName: standard_test_db
+  
+  shardingAlgorithms:
+    standard_test_db:
+      type: STANDARD_TEST_DB
+    standard_test_tbl:
+      type: STANDARD_TEST_TBL
   
   keyGenerators:
     snowflake:

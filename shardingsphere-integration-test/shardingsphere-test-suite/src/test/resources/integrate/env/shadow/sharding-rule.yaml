@@ -28,23 +28,27 @@ rules:
       databaseStrategy:
         standard:
           shardingColumn: item_id
-          shardingAlgorithm:
-            type: INLINE
-            props:
-              algorithm.expression: db
+          shardingAlgorithmName: database_inline
       tableStrategy:
         standard:
           shardingColumn: item_id
-          shardingAlgorithm:
-            type: INLINE
-            props:
-              algorithm.expression: t_order_item
+          shardingAlgorithmName: table_inline
       keyGenerateStrategy:
         column: item_id
         keyGeneratorName: constant
   defaultTableStrategy:
     none:
-
+  
+  shardingAlgorithms:
+    database_inline:
+      type: INLINE
+      props:
+        algorithm.expression: db
+    table_inline:
+      type: INLINE
+      props:
+        algorithm.expression: t_order_item
+  
   keyGenerators:
     constant:
       type: Constant

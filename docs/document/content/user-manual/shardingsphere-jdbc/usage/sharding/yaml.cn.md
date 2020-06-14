@@ -45,21 +45,26 @@ rules:
       databaseStrategy:
         standard:
           shardingColumn: user_id
-          shardingAlgorithm:
-            type: INLINE
-            props:
-              algorithm.expression: ds${user_id % 2}
+          shardingAlgorithmName: database_inline
       # 配置分表策略
       tableStrategy:
         standard:
           shardingColumn: order_id
-            shardingAlgorithm:
-              type: INLINE
-                props:
-                  algorithm.expression: t_order${order_id % 2}
+          shardingAlgorithmName: table_inline
     t_order_item: 
     # 省略配置 t_order_item 表规则...
     # ...
+    
+  # 配置分片算法
+  shardingAlgorithms:
+    database_inline:
+      type: INLINE
+      props:
+        algorithm.expression: ds${user_id % 2}
+    table_inline:
+      type: INLINE
+      props:
+        algorithm.expression: t_order_${order_id % 2}
 ```
 
 ```java

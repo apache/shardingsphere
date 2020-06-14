@@ -30,8 +30,7 @@ rules:
       tableStrategy: 
         standard:
           shardingColumn: order_id
-          shardingAlgorithm:
-            type: STANDARD_TEST_TBL
+          shardingAlgorithmName: standard_test_tbl
       keyGenerateStrategy:
         column: order_id
         keyGeneratorName: snowflake
@@ -40,8 +39,7 @@ rules:
       tableStrategy:
         standard:
           shardingColumn: order_id
-          shardingAlgorithm:
-            type: STANDARD_TEST_TBL
+          shardingAlgorithmName: standard_test_tbl
       keyGenerateStrategy:
         column: order_item_id
         keyGeneratorName: snowflake
@@ -50,6 +48,10 @@ rules:
   broadcastTables:
     - t_address
   
+  shardingAlgorithms:
+    standard_test_tbl:
+      type: STANDARD_TEST_TBL
+    
   keyGenerators:
     snowflake:
       type: SNOWFLAKE

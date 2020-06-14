@@ -43,14 +43,18 @@ rules:
       databaseStrategy:
         standard:
           shardingColumn: user_id
-          shardingAlgorithm:
-            type: INLINE
-            props:
-              algorithm.expression: ds_${user_id % 2}
+          shardingAlgorithmName: database_inline
       tableStrategy:
         standard:
           shardingColumn: order_id
-          shardingAlgorithm:
-            type: INLINE
-            props:
-              algorithm.expression: t_order_${order_id % 2}
+          shardingAlgorithmName: table_inline
+  
+  shardingAlgorithms:
+    database_inline:
+      type: INLINE
+      props:
+        algorithm.expression: ds_${user_id % 2}
+    table_inline:
+      type: INLINE
+      props:
+        algorithm.expression: t_order_${order_id % 2}
