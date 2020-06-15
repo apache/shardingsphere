@@ -32,7 +32,7 @@ import java.util.Properties;
  * <p>
  * Standard range sharding algorithm is similar to the rule of partition table, but it can only be split by the same size.
  * User can specify the range by setting `range.lower`, `range.upper` and `sharding.volume` parameters.
- * The `sharding.volume` parameter determines the size of each partition.
+ * The `sharding.volume` parameter determines the size of each sharding.
  * </p>
  * <p>
  * For example: If the `range.lower` parameter is set to `10`, the `range.upper` parameter is set to `45`,

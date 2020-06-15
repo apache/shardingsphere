@@ -39,18 +39,18 @@ import java.util.Properties;
  * Datetime sharding algorithm.
  * 
  * <p>Shard by `y = floor(x/v)` algorithm, which means y begins from 0.
- * v is `PARTITION_SECONDS`, and the minimum time unit is 1 sec.
- * `DATETIME_LOWER` decides the beginning datetime to shard. On the other hand, `DATETIME_UPPER` decides the end datetime to shard.</p>
- * <p>Notice: Anytime less then `DATETIME_LOWER` will route to the first partition, and anytime great than `DATETIME_UPPER` will route to the last partition.</p>
+ * v is `sharding.seconds`, and the minimum time unit is 1 sec.
+ * `datetime.lower` decides the beginning datetime to shard. On the other hand, `datetime.upper` decides the end datetime to shard.</p>
+ * <p>Notice: Anytime less then `datetime.lower` will route to the first partition, and anytime great than `datetime.upper` will route to the last sharding.</p>
  */
 @Getter
 public final class DatetimeShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
     
-    private static final String DATETIME_LOWER = "datetime.lower";
+    public static final String DATETIME_LOWER = "datetime.lower";
     
-    private static final String DATETIME_UPPER = "datetime.upper";
+    public static final String DATETIME_UPPER = "datetime.upper";
     
-    private static final String PARTITION_SECONDS = "partition.seconds";
+    public static final String SHARDING_SECONDS_KEY = "sharding.seconds";
     
     private static final String DATETIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
     
@@ -63,7 +63,7 @@ public final class DatetimeShardingAlgorithm implements StandardShardingAlgorith
     
     @Override
     public void init() {
-        Preconditions.checkNotNull(props.get(PARTITION_SECONDS), "Sharding partition volume cannot be null.");
+        Preconditions.checkNotNull(props.get(SHARDING_SECONDS_KEY), "Sharding partition volume cannot be null.");
         Preconditions.checkState(null != props.get(DATETIME_LOWER) && checkDatetimePattern(props.get(DATETIME_LOWER).toString()), "%s pattern is required.", DATETIME_PATTERN);
         Preconditions.checkState(null != props.get(DATETIME_UPPER) && checkDatetimePattern(props.get(DATETIME_UPPER).toString()),
                 "%s pattern is required.", DATETIME_PATTERN);
@@ -128,7 +128,7 @@ public final class DatetimeShardingAlgorithm implements StandardShardingAlgorith
     }
     
     private long getPartitionValue() {
-        return Long.parseLong(props.get(PARTITION_SECONDS).toString());
+        return Long.parseLong(props.get(SHARDING_SECONDS_KEY).toString());
     }
     
     @Override

@@ -122,11 +122,11 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 
 可配置属性：
 
-| *属性名称*         | *数据类型* | *说明*                                          |
-| ----------------- | --------- | ----------------------------------------------- |
-| datetime.lower    | String    | 分片的起始时间范围，时间戳格式：yyyy-MM-dd HH:mm:ss |
-| datetime.upper    | String    | 分片的结束时间范围，时间戳格式：yyyy-MM-dd HH:mm:ss |
-| partition.seconds | long      | 单一分片所能承载的最大时间，单位：秒                |
+| *属性名称*        | *数据类型* | *说明*                                          |
+| ---------------- | --------- | ----------------------------------------------- |
+| datetime.lower   | String    | 分片的起始时间范围，时间戳格式：yyyy-MM-dd HH:mm:ss |
+| datetime.upper   | String    | 分片的结束时间范围，时间戳格式：yyyy-MM-dd HH:mm:ss |
+| sharding.seconds | long      | 单一分片所能承载的最大时间，单位：秒                |
 
 #### 自定义时间边界分片算法
 
