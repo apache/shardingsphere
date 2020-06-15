@@ -52,7 +52,7 @@ public abstract class AbstractRangeShardingAlgorithm implements StandardSharding
     @Override
     public final String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Long> shardingValue) {
         return availableTargetNames.stream().filter(each -> each.endsWith(getPartition(partitionRangeMap, shardingValue.getValue()) + ""))
-                .findFirst().orElseThrow(UnsupportedOperationException::new);
+                .findFirst().orElse(null);
     }
     
     @Override
