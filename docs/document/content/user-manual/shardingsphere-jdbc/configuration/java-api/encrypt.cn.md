@@ -9,10 +9,10 @@ weight = 3
 
 可配置属性：
 
-| *名称*          | *数据类型*                                    | *说明*             |
-| -------------- | -------------------------------------------- | ------------------ |
-| tables (+)     | Collection\<EncryptTableRuleConfiguration\>  | 加密表规则配置       |
-| encryptors (+) | Map\<String, EncryptAlgorithmConfiguration\> | 加解密算法名称和配置 |
+| *名称*          | *数据类型*                                           | *说明*             |
+| -------------- | --------------------------------------------------- | ------------------ |
+| tables (+)     | Collection\<EncryptTableRuleConfiguration\>         | 加密表规则配置       |
+| encryptors (+) | Map\<String, ShardingSphereAlgorithmConfiguration\> | 加解密算法名称和配置 |
 
 ## 加密表规则配置
 
@@ -41,7 +41,7 @@ weight = 3
 
 ## 加解密算法配置
 
-类名称：org.apache.shardingsphere.encrypt.api.config.strategy.EncryptAlgorithmConfiguration
+类名称：org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration
 
 可配置属性：
 

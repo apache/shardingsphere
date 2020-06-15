@@ -46,11 +46,11 @@ import java.util.Properties;
 @Getter
 public final class DatetimeShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
     
-    private static final String PARTITION_SECONDS = "partition.seconds";
-    
     private static final String DATETIME_LOWER = "datetime.lower";
     
     private static final String DATETIME_UPPER = "datetime.upper";
+    
+    private static final String PARTITION_SECONDS = "partition.seconds";
     
     private static final String DATETIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
     

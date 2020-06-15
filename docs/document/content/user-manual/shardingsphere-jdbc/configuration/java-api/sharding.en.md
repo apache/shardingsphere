@@ -9,14 +9,17 @@ Class name: org.apache.shardingsphere.sharding.api.config.ShardingRuleConfigurat
 
 Attributes:
 
-| *Name*                              | *DataType*                                   | *Description*                      | *Default Value* |
-| ----------------------------------- | -------------------------------------------- | ---------------------------------- | --------------- |
-| tables (+)                          | Collection\<ShardingTableRuleConfiguration\> | Sharding table rules               | -               |
-| bindingTableGroups (*)              | Collection\<String\>                         | Binding table rules                | Empty           |
-| broadcastTables (*)                 | Collection\<String\>                         | Broadcast table rules              | Empty           |
-| defaultDatabaseShardingStrategy (?) | ShardingStrategyConfiguration                | Default database sharding strategy | Not sharding    |
-| defaultTableShardingStrategy (?)    | ShardingStrategyConfiguration                | Default table sharding strategy    | Not sharding    |
-| defaultKeyGenerateStrategy (?)       | KeyGeneratorConfiguration                    | Default key generator              | Snowflake       |
+| *Name*                              | *DataType*                                          | *Description*                                  | *Default Value* |
+| ----------------------------------- | --------------------------------------------------- | ---------------------------------------------- | --------------- |
+| tables (+)                          | Collection\<ShardingTableRuleConfiguration\>        | Sharding table rules                           | -               |
+| autoTables (+)                      | Collection\<ShardingAutoTableRuleConfiguration\>    | Sharding automatic table rules                 | -               |
+| bindingTableGroups (*)              | Collection\<String\>                                | Binding table rules                            | Empty           |
+| broadcastTables (*)                 | Collection\<String\>                                | Broadcast table rules                          | Empty           |
+| defaultDatabaseShardingStrategy (?) | ShardingStrategyConfiguration                       | Default database sharding strategy             | Not sharding    |
+| defaultTableShardingStrategy (?)    | ShardingStrategyConfiguration                       | Default table sharding strategy                | Not sharding    |
+| defaultKeyGenerateStrategy (?)      | KeyGeneratorConfiguration                           | Default key generator                          | Snowflake       |
+| shardingAlgorithms (+)              | Map\<String, ShardingSphereAlgorithmConfiguration\> | Sharding algorithm name and configurations     | None            |
+| keyGenerators (?)                   | Map\<String, ShardingSphereAlgorithmConfiguration\> | Key generate algorithm name and configurations | None            |
 
 ## Sharding Table Configuration
 
@@ -24,13 +27,26 @@ Class name: org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfi
 
 Attributes:
 
-| *Name*                       | *DataType*                    | *Description*                                                                                                                         | *Default Value*                             |
-| ---------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| logicTable                   | String                        | Name of logic table                                                                                                                   | -                                           |
-| actualDataNodes (?)          | String                        | Describe data source names and actual tables, delimiter as point.<br /> Multiple data nodes split by comma, support inline expression | Broadcast table or databases sharding only. |
-| databaseShardingStrategy (?) | ShardingStrategyConfiguration | Databases sharding strategy                                                                                                           | Use default databases sharding strategy     |
-| tableShardingStrategy (?)    | ShardingStrategyConfiguration | Tables sharding strategy                                                                                                              | Use default tables sharding strategy        |
-| keyGenerateStrategy (?)             | KeyGeneratorConfiguration     | Key generator configuration                                                                                                           | Use default key generator                   |
+| *Name*                       | *DataType*                    | *Description*                                                                                                                         | *Default Value*                            |
+| ---------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| logicTable                   | String                        | Name of sharding logic table                                                                                                          | -                                          |
+| actualDataNodes (?)          | String                        | Describe data source names and actual tables, delimiter as point.<br /> Multiple data nodes split by comma, support inline expression | Broadcast table or databases sharding only |
+| databaseShardingStrategy (?) | ShardingStrategyConfiguration | Databases sharding strategy                                                                                                           | Use default databases sharding strategy    |
+| tableShardingStrategy (?)    | ShardingStrategyConfiguration | Tables sharding strategy                                                                                                              | Use default tables sharding strategy       |
+| keyGenerateStrategy (?)      | KeyGeneratorConfiguration     | Key generator configuration                                                                                                           | Use default key generator                  |
+
+## Sharding Automatic Table Configuration
+
+Class name: org.apache.shardingsphere.sharding.api.config.ShardingAutoTableRuleConfiguration
+
+Attributes:
+
+| *Name*                  | *DataType*                    | *Description*                                               | *Default Value*                 |
+| ----------------------- | ----------------------------- | ----------------------------------------------------------- | ------------------------------- |
+| logicTable              | String                        | Name of sharding logic table                                | -                               |
+| actualDataSources (?)   | String                        | Data source names.<br /> Multiple data nodes split by comma | Use all configured data sources |
+| shardingStrategy (?)    | ShardingStrategyConfiguration | Sharding strategy                                           | Use default sharding strategy   |
+| keyGenerateStrategy (?) | KeyGeneratorConfiguration     | Key generator configuration                                 | Use default key generator       |
 
 ## Sharding Strategy Configuration
 
@@ -40,10 +56,10 @@ Class name: org.apache.shardingsphere.sharding.api.config.strategy.StandardShard
 
 Attributes:
 
-| *Name*                     | *DataType*                | *Description*                                   |
-| -------------------------- | ------------------------- | ----------------------------------------------- |
-| shardingColumn             | String                    | Sharding column name                            |
-| shardingAlgorithm          | StandardShardingAlgorithm | Standard sharding algorithm class               |
+| *Name*                | *DataType* | *Description*           |
+| --------------------- | ---------- | ----------------------- |
+| shardingColumn        | String     | Sharding column name    |
+| shardingAlgorithmName | String     | Sharding algorithm name |
 
 Apache ShardingSphere built-in implemented classes of StandardShardingAlgorithm are:
 
@@ -86,8 +102,8 @@ Attributes:
 
 | *Name*           | *DataType* | *Description*                                            |
 | ---------------- | ---------- | -------------------------------------------------------- |
-| partition.lower  | long       | Range lower bound, throw exception if lower than bound   |
-| partition.upper  | long       | Range upper bound, throw exception if upper than bound   |
+| range.lower      | long       | Range lower bound, throw exception if lower than bound   |
+| range.upper      | long       | Range upper bound, throw exception if upper than bound   |
 | partition.volume | long       | Sharding volume                                          |
 
 #### Customized Range Sharding Algorithm
@@ -100,27 +116,15 @@ Attributes:
 | ---------------- | ---------- | ----------------------------------------------------------------- |
 | partition.ranges | String     | Range of sharding border, multiple boundaries separated by commas |
 
-#### Fixed Range Volume Sharding Algorithm
-
-Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.StandardRangeShardingAlgorithm
-
-Attributes:
-
-| *Name*           | *DataType* | *Description*                                                       |
-| ---------------- | ---------- | ------------------------------------------------------------------- |
-| partition.lower  | long       | Lower bound of range, data beyond the boundary will report an error |
-| partition.upper  | long       | Upper bound of range, data beyond the boundary will report an error |
-| partition.volume | long       | Range volume                                                        |
-
 #### Custom Range Bound Sharding Algorithm
 
 Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.CustomRangeShardingAlgorithm
 
 Attributes:
 
-| *Name*           | *DataType* | *Description*                                                       |
-| ---------------- | ---------- | --------------------------------- |
-| partition.ranges | String     | 分片的范围边界，多个范围边界以逗号分隔 |
+| *Name*           | *DataType* | *Description*                                                      |
+| ---------------- | ---------- | ------------------------------------------------------------------ |
+| partition.ranges | String     | Sharding range boundaries, multiple boundaries separated by commas |
 
 #### Fixed Time Range Sharding Algorithm
 
@@ -128,10 +132,11 @@ Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.Datet
 
 Attributes:
 
-| *Name*            | *DataType* | *Description*                                      |
-| ----------------- | ---------- | -------------------------------------------------- |
-| epoch             | String     | Shard datetime epoch, pattern: yyyy-MM-dd HH:mm:ss |
-| partition.seconds | long       | Max seconds for the data in one shard              |
+| *Name*            | *DataType* | *Description*                                               |
+| ----------------- | ---------- | ----------------------------------------------------------- |
+| datetime.lower    | String     | Shard datetime begin boundary, pattern: yyyy-MM-dd HH:mm:ss |
+| datetime.upper    | String     | Shard datetime end boundary, pattern: yyyy-MM-dd HH:mm:ss   |
+| partition.seconds | long       | Max seconds for the data in one shard                       |
 
 #### Custom Datetime Bound Sharding Algorithm
 
@@ -150,14 +155,14 @@ Attributes:
 
 ### Complex Sharding Strategy Configuration
 
-Class name: ComplexShardingStrategyConfiguration
+Class name: 类名称：org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration
 
 Attributes:
 
-| *Name*            | *DataType*                   | *Description*                             |
-| ----------------- | ---------------------------- | ----------------------------------------- |
-| shardingColumns   | String                       | Sharding column name, separated by commas |
-| shardingAlgorithm | ComplexKeysShardingAlgorithm | Complex sharding algorithm                |
+| *Name*                | *DataType* | *Description*                             |
+| --------------------- | ---------- | ----------------------------------------- |
+| shardingColumns       | String     | Sharding column name, separated by commas |
+| shardingAlgorithmName | String     | Sharding algorithm name                   |
 
 There is no built-in complex keys sharding algorithm implementation class in Apache ShardingSphere.
 
@@ -167,28 +172,28 @@ Class name: HintShardingStrategyConfiguration
 
 Attributes:
 
-| *Name*            | *DataType*            | *Description*           |
-| ----------------- | --------------------- | ----------------------- |
-| shardingAlgorithm | HintShardingAlgorithm | Hint sharding algorithm |
+| *Name*                | *DataType* | *Description*           |
+| --------------------- | ---------- | ----------------------- |
+| shardingAlgorithmName | String     | Sharding algorithm name |
 
 There is no built-in hint sharding algorithm implementation class in Apache ShardingSphere.
 
 ### None Sharding Strategy Configuration
 
-Class name: NoneShardingStrategyConfiguration
+Class name: org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration
 
 Attributes: None
 
 ## Key Generator Configuration
 
-Class name: KeyGeneratorConfiguration
+Class name: org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration
 
 Attributes:
 
-| *Name*    | *DataType*           | *Description*                |
-| --------- | -------------------- | ---------------------------- |
-| column    | String               | Column name of key generate  |
-| algorithm | KeyGenerateAlgorithm | Key generate algorithm class |
+| *Name*           | *DataType* | *Description*                |
+| ---------------- | ---------- | ---------------------------- |
+| column           | String     | Column name of key generate  |
+| keyGeneratorName | String     | key generate algorithm  name |
 
 Apache ShardingSphere built-in implemented classes of KeyGenerateAlgorithm are:
 

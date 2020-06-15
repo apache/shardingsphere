@@ -12,7 +12,7 @@ Attributes:
 | *Name*            | *DataType*                                           | *Description*                                                        |
 | ----------------- | ---------------------------------------------------- | -------------------------------------------------------------------- |
 | dataSources (+)   | Collection\<MasterSlaveDataSourceRuleConfiguration\> | Data sources of master and slaves                                    |
-| loadBalancers (*) | Map\<String, LoadBalanceAlgorithmConfiguration\>     | Load balance algorithm name and configurations of slave data sources |
+| loadBalancers (*) | Map\<String, ShardingSphereAlgorithmConfiguration\>  | Load balance algorithm name and configurations of slave data sources |
 
 ## Master Slave Data Source Configuration
 
@@ -20,14 +20,18 @@ Class name: org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDat
 
 Attributes:
 
-| *Name*               | *DataType*           | *Description*                                | *Default Value*                    |
-| -------------------- | -------------------- | -------------------------------------------- | ---------------------------------- |
-| name                 | String               | Read-write split data source name            | -                                  |
-| masterDataSourceName | String               | Master sources source name                   | -                                  |
-| slaveDataSourceNames | Collection\<String\> | Slave sources source name list               | -                                  |
-| loadBalancerName (?) | String               | Load balance algorithm name of slave sources | Round robin load balance algorithm |
+| *Name*                   | *DataType*           | *Description*                                | *Default Value*                    |
+| ------------------------ | -------------------- | -------------------------------------------- | ---------------------------------- |
+| name                     | String               | Read-write split data source name            | -                                  |
+| masterDataSourceName     | String               | Master sources source name                   | -                                  |
+| slaveDataSourceNames (+) | Collection\<String\> | Slave sources source name list               | -                                  |
+| loadBalancerName (?)     | String               | Load balance algorithm name of slave sources | Round robin load balance algorithm |
 
 ## Slave Data Sources Load Balance Algorithm Configuration
+
+Class name: org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration
+
+Attributes:
 
 | *Name*         | *DataType* | *Description*                                        | *Default Value* |
 | -------------- | ---------- | ---------------------------------------------------- | --------------- |
