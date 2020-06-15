@@ -24,7 +24,6 @@ import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
-import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
@@ -63,7 +62,7 @@ public final class EncryptInsertValueParameterRewriter extends EncryptParameterR
         int columnIndex = getColumnIndex(parameterBuilder, insertStatementContext, encryptLogicColumnName);
         int count = 0;
         for (List<Object> each : insertStatementContext.getGroupedParameters()) {
-            int paramterIndex = getParamterIndex(parameterBuilder, insertStatementContext, insertStatementContext.getInsertValueContexts().get(count), encryptLogicColumnName);
+            int paramterIndex = insertStatementContext.getInsertValueContexts().get(count).getParameterIndex(columnIndex);
             if (!each.isEmpty()) {
                 StandardParameterBuilder standardParameterBuilder = parameterBuilder.getParameterBuilders().get(count);
                 ExpressionSegment expressionSegment = insertStatementContext.getInsertValueContexts().get(count).getValueExpressions().get(columnIndex);
@@ -90,29 +89,6 @@ public final class EncryptInsertValueParameterRewriter extends EncryptParameterR
             columnNames = insertStatementContext.getColumnNames();
         }
         return columnNames.indexOf(encryptLogicColumnName);
-    }
-
-    private int getParamterIndex(final GroupedParameterBuilder parameterBuilder,
-                                 final InsertStatementContext insertStatementContext, final InsertValueContext insertValueContext, final String encryptLogicColumnName) {
-        List<String> columnNames;
-        if (parameterBuilder.getDerivedColumnName().isPresent()) {
-            columnNames = new ArrayList<>(insertStatementContext.getColumnNames());
-            columnNames.remove(parameterBuilder.getDerivedColumnName().get());
-        } else {
-            columnNames = insertStatementContext.getColumnNames();
-        }
-        int columnIndex = columnNames.indexOf(encryptLogicColumnName);
-        if (columnNames.size() != insertValueContext.getParametersCount()) {
-            List<ExpressionSegment> valueExpressions = insertValueContext.getValueExpressions();
-            int position = columnIndex;
-            for (int i = 0; i < position; i++) {
-                ExpressionSegment each = valueExpressions.get(i);
-                if (!(each instanceof ParameterMarkerExpressionSegment)) {
-                    columnIndex--;
-                }
-            }
-        }
-        return columnIndex;
     }
 
     private void encryptInsertValue(final EncryptAlgorithm encryptAlgorithm, final String tableName, final int paramterIndex,
