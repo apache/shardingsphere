@@ -100,11 +100,11 @@ Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range
 
 Attributes:
 
-| *Name*           | *DataType* | *Description*                                            |
-| ---------------- | ---------- | -------------------------------------------------------- |
-| range.lower      | long       | Range lower bound, throw exception if lower than bound   |
-| range.upper      | long       | Range upper bound, throw exception if upper than bound   |
-| partition.volume | long       | Sharding volume                                          |
+| *Name*          | *DataType* | *Description*                                          |
+| --------------- | ---------- | ------------------------------------------------------ |
+| range.lower     | long       | Range lower bound, throw exception if lower than bound |
+| range.upper     | long       | Range upper bound, throw exception if upper than bound |
+| sharding.volume | long       | Sharding volume                                        |
 
 #### Customized Range Sharding Algorithm
 
