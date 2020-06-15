@@ -5,25 +5,26 @@ weight = 3
 chapter = true
 +++
 
-The List in alphabet order.
-
 ## Members
 
 ### Project Management Committee
 
-| Name            | GitHub ID               |
-| :-------------- | :---------------------- |
-| Hao Cao         | haocao                  |
-| Hongjun Du      | codefairy08             |
-| Hongtao Gao     | hanahmily               |
-| Juan Pan        | tristaZero              |
-| Jun Zhao        | cherrylzhao             |
-| Liang Zhang     | terrymanu               |
-| QingYang Chen   | beckhampu               |
-| Sheng Wu        | wu-sheng                |
-| Xiaoguang Ma    | maxiaoguang64           |
-| Yang Yi         | KomachiSion             |
-| Yonglun Zhang   | tuohai666, zhangyonglun |
+| Name                | GitHub ID               |
+| :------------------ | :---------------------- |
+| Craig L Russell     | craiglrussell, clr      |
+| Hao Cao             | haocao                  |
+| Hongjun Du          | codefairy08             |
+| Hongtao Gao         | hanahmily               |
+| Juan Pan            | tristaZero              |
+| Jun Zhao            | cherrylzhao             |
+| Liang Zhang (Chair) | terrymanu               |
+| QingYang Chen       | beckhampu               |
+| Sheng Wu            | wu-sheng                |
+| vongosling          | vongosling              |
+| Willem Ning Jiang   | WillemJiang             |
+| Xiaoguang Ma        | maxiaoguang64           |
+| Yang Yi             | KomachiSion             |
+| Yonglun Zhang       | tuohai666, zhangyonglun |
 
 ### Committer
 
@@ -40,14 +41,6 @@ The List in alphabet order.
 | Xiaofeng Jiang  | SteNicholas             |
 | Ling Yue        | yue530tom               |
 | Kimm King       | kimmking                |
-
-## Mentors
-
-| Name              | GitHub ID             |
-| :---------------- | :-------------------- |
-| Craig L Russell   | craiglrussell, clr    |
-| vongosling        | vongosling            |
-| Willem Ning Jiang | WillemJiang           |
 
 ## Contributors
 
