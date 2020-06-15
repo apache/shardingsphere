@@ -18,14 +18,12 @@
 package org.apache.shardingsphere.sharding.yaml.swapper.strategy;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlHintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlNoneShardingStrategyConfiguration;
@@ -36,10 +34,6 @@ import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStan
  * Sharding strategy configuration YAML swapper.
  */
 public final class ShardingStrategyConfigurationYamlSwapper implements YamlSwapper<YamlShardingStrategyConfiguration, ShardingStrategyConfiguration> {
-    
-    static {
-        ShardingSphereServiceLoader.register(ShardingAlgorithm.class);
-    }
     
     @Override
     public YamlShardingStrategyConfiguration swapToYamlConfiguration(final ShardingStrategyConfiguration data) {
