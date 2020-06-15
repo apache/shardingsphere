@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
@@ -141,10 +142,19 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
     /**
      * Init metrics configuration to config center.
      *
-     * @param metricsConfiguration metrics configuration.
+     * @param metricsConfiguration metrics configuration
      */
     public void initMetricsConfiguration(final MetricsConfiguration metricsConfiguration) {
         configCenter.persistMetricsConfiguration(metricsConfiguration, isOverwrite);
+    }
+    
+    /**
+     * Init cluster configuration to config center.
+     *
+     * @param clusterConfiguration cluster configuration
+     */
+    public void initClusterConfiguration(final ClusterConfiguration clusterConfiguration) {
+        configCenter.persistClusterConfiguration(clusterConfiguration, isOverwrite);
     }
     
     @Override

@@ -21,6 +21,7 @@ import com.google.common.primitives.Ints;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
 import org.apache.shardingsphere.cluster.configuration.swapper.ClusterConfigurationYamlSwapper;
 import org.apache.shardingsphere.cluster.configuration.yaml.YamlClusterConfiguration;
 import org.apache.shardingsphere.cluster.facade.ClusterFacade;
@@ -124,7 +125,8 @@ public final class Bootstrap {
         Authentication authentication = new AuthenticationYamlSwapper().swapToObject(yamlAuthenticationConfig);
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap(ruleConfigs);
         Map<String, Collection<RuleConfiguration>> schemaRules = getRuleConfigurations(ruleConfigs);
-        initialize(authentication, properties, schemaDataSources, schemaRules, new MetricsConfigurationYamlSwapper().swapToObject(metricsConfiguration), clusterConfiguration, false);
+        initialize(authentication, properties, schemaDataSources, schemaRules, new MetricsConfigurationYamlSwapper().swapToObject(metricsConfiguration),
+                new ClusterConfigurationYamlSwapper().swapToObject(clusterConfiguration), false);
         ShardingSphereProxy.getInstance().start(port);
     }
     
@@ -138,14 +140,15 @@ public final class Bootstrap {
             Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap(shardingOrchestrationFacade);
             Map<String, Collection<RuleConfiguration>> schemaRules = getSchemaRules(shardingOrchestrationFacade);
             MetricsConfiguration metricsConfiguration = shardingOrchestrationFacade.getConfigCenter().loadMetricsConfiguration();
-            initialize(authentication, properties, schemaDataSources, schemaRules, metricsConfiguration, serverConfig.getCluster(), true);
+            ClusterConfiguration clusterConfiguration = shardingOrchestrationFacade.getConfigCenter().loadClusterConfiguration();
+            initialize(authentication, properties, schemaDataSources, schemaRules, metricsConfiguration, clusterConfiguration, true);
             ShardingSphereProxy.getInstance().start(port);
         }
     }
     
     private static void initialize(final Authentication authentication, final Properties properties, final Map<String, Map<String, DataSourceParameter>> schemaDataSources,
                                    final Map<String, Collection<RuleConfiguration>> schemaRules, final MetricsConfiguration metricsConfiguration,
-                                   final YamlClusterConfiguration cluster, final boolean isOrchestration) throws SQLException {
+                                   final ClusterConfiguration cluster, final boolean isOrchestration) throws SQLException {
         initProxySchemaContexts(schemaDataSources, schemaRules, authentication, properties, isOrchestration);
         log(authentication, properties);
         initMetrics(metricsConfiguration);
@@ -211,6 +214,8 @@ public final class Bootstrap {
                     getRuleConfigurations(ruleConfigs), new AuthenticationYamlSwapper().swapToObject(serverConfig.getAuthentication()), serverConfig.getProps());
         }
         shardingOrchestrationFacade.initMetricsConfiguration(new MetricsConfigurationYamlSwapper().swapToObject(serverConfig.getMetrics()));
+        shardingOrchestrationFacade.initClusterConfiguration(null == serverConfig.getCluster() ? null
+                : new ClusterConfigurationYamlSwapper().swapToObject(serverConfig.getCluster()));
     }
     
     private static void initOpenTracing() {
@@ -225,9 +230,9 @@ public final class Bootstrap {
         }
     }
     
-    private static void initCluster(final YamlClusterConfiguration clusterConfiguration) {
+    private static void initCluster(final ClusterConfiguration clusterConfiguration) {
         if (ProxySchemaContexts.getInstance().getSchemaContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_CLUSTER_ENABLED)) {
-            ClusterFacade.getInstance().init(new ClusterConfigurationYamlSwapper().swapToObject(clusterConfiguration));
+            ClusterFacade.getInstance().init(clusterConfiguration);
         }
     }
     

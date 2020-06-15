@@ -21,6 +21,9 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
+import org.apache.shardingsphere.cluster.configuration.swapper.ClusterConfigurationYamlSwapper;
+import org.apache.shardingsphere.cluster.configuration.yaml.YamlClusterConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.metrics.configuration.config.MetricsConfiguration;
@@ -71,7 +74,7 @@ public final class ConfigCenter {
      * @param ruleConfigurations rule configurations
      * @param authentication authentication
      * @param props sharding properties
-     * @param isOverwrite is overwrite registry center's configuration
+     * @param isOverwrite is overwrite config center's configuration
      */
     public void persistConfigurations(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs, final Collection<RuleConfiguration> ruleConfigurations,
                                       final Authentication authentication, final Properties props, final boolean isOverwrite) {
@@ -152,12 +155,28 @@ public final class ConfigCenter {
      * Persist metrics configuration.
      *
      * @param metricsConfiguration  metrics configuration.
-     * @param isOverwrite is overwrite registry center's configuration
+     * @param isOverwrite is overwrite config center's configuration
      */
     public void persistMetricsConfiguration(final MetricsConfiguration metricsConfiguration, final boolean isOverwrite) {
         if (null != metricsConfiguration && (isOverwrite || !hasMetricsConfiguration())) {
             repository.persist(node.getMetricsPath(), YamlEngine.marshal(new MetricsConfigurationYamlSwapper().swapToYamlConfiguration(metricsConfiguration)));
         }
+    }
+    
+    /**
+     * Persist cluster configuration.
+     *
+     * @param clusterConfiguration cluster configuration
+     * @param isOverwrite is overwrite config center's configuration
+     */
+    public void persistClusterConfiguration(final ClusterConfiguration clusterConfiguration, final boolean isOverwrite) {
+        if (null != clusterConfiguration && (isOverwrite || !hasClusterConfiguration())) {
+            repository.persist(node.getClusterPath(), YamlEngine.marshal(new ClusterConfigurationYamlSwapper().swapToYamlConfiguration(clusterConfiguration)));
+        }
+    }
+    
+    private boolean hasClusterConfiguration() {
+        return !Strings.isNullOrEmpty(repository.get(node.getMetricsPath()));
     }
     
     private boolean hasMetricsConfiguration() {
@@ -248,6 +267,15 @@ public final class ConfigCenter {
      */
     public Properties loadProperties() {
         return YamlEngine.unmarshalProperties(repository.get(node.getPropsPath()));
+    }
+    
+    /**
+     * Load cluster configuration.
+     *
+     * @return cluster configuration
+     */
+    public ClusterConfiguration loadClusterConfiguration() {
+        return new ClusterConfigurationYamlSwapper().swapToObject(YamlEngine.unmarshal(repository.get(node.getClusterPath()), YamlClusterConfiguration.class));
     }
     
     /**
