@@ -102,8 +102,8 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 
 | *属性名称*        | *数据类型* | *说明*                      |
 | ---------------- | --------- | -------------------------- |
-| partition.lower  | long      | 范围下界，超过边界的数据会报错 |
-| partition.upper  | long      | 范围上界，超过边界的数据会报错 |
+| range.lower      | long      | 范围下界，超过边界的数据会报错 |
+| range.upper      | long      | 范围上界，超过边界的数据会报错 |
 | partition.volume | long      | 分片容量                    |
 
 #### 自定义边界范围分片算法
@@ -124,7 +124,8 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 
 | *属性名称*         | *数据类型* | *说明*                                          |
 | ----------------- | --------- | ----------------------------------------------- |
-| epoch             | String    | 分片时间的起始纪元，时间戳格式：yyyy-MM-dd HH:mm:ss |
+| datetime.lower    | String    | 分片的起始时间范围，时间戳格式：yyyy-MM-dd HH:mm:ss |
+| datetime.upper    | String    | 分片的结束时间范围，时间戳格式：yyyy-MM-dd HH:mm:ss |
 | partition.seconds | long      | 单一分片所能承载的最大时间，单位：秒                |
 
 #### 自定义时间边界分片算法
