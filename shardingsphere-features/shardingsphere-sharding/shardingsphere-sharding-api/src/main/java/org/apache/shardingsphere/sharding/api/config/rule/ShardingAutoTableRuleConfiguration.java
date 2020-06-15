@@ -26,7 +26,6 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingS
 
 /**
  * Sharding auto table rule configuration.
- *
  */
 @Getter
 @Setter

@@ -27,13 +27,26 @@ Class name: org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfi
 
 Attributes:
 
-| *Name*                       | *DataType*                    | *Description*                                                                                                                         | *Default Value*                             |
-| ---------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| logicTable                   | String                        | Name of logic table                                                                                                                   | -                                           |
-| actualDataNodes (?)          | String                        | Describe data source names and actual tables, delimiter as point.<br /> Multiple data nodes split by comma, support inline expression | Broadcast table or databases sharding only. |
-| databaseShardingStrategy (?) | ShardingStrategyConfiguration | Databases sharding strategy                                                                                                           | Use default databases sharding strategy     |
-| tableShardingStrategy (?)    | ShardingStrategyConfiguration | Tables sharding strategy                                                                                                              | Use default tables sharding strategy        |
-| keyGenerateStrategy (?)             | KeyGeneratorConfiguration     | Key generator configuration                                                                                                           | Use default key generator                   |
+| *Name*                       | *DataType*                    | *Description*                                                                                                                         | *Default Value*                            |
+| ---------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| logicTable                   | String                        | Name of sharding logic table                                                                                                          | -                                          |
+| actualDataNodes (?)          | String                        | Describe data source names and actual tables, delimiter as point.<br /> Multiple data nodes split by comma, support inline expression | Broadcast table or databases sharding only |
+| databaseShardingStrategy (?) | ShardingStrategyConfiguration | Databases sharding strategy                                                                                                           | Use default databases sharding strategy    |
+| tableShardingStrategy (?)    | ShardingStrategyConfiguration | Tables sharding strategy                                                                                                              | Use default tables sharding strategy       |
+| keyGenerateStrategy (?)      | KeyGeneratorConfiguration     | Key generator configuration                                                                                                           | Use default key generator                  |
+
+## Sharding Automatic Table Configuration
+
+Class name: org.apache.shardingsphere.sharding.api.config.ShardingAutoTableRuleConfiguration
+
+Attributes:
+
+| *Name*                  | *DataType*                    | *Description*                                                                                                                         | *Default Value*                            |
+| ----------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| logicTable              | String                        | Name of sharding logic table                                                                                                          | -                                          |
+| actualDataNodes (?)     | String                        | Describe data source names and actual tables, delimiter as point.<br /> Multiple data nodes split by comma, support inline expression | Broadcast table or databases sharding only |
+| shardingStrategy (?)    | ShardingStrategyConfiguration | Sharding strategy                                                                                                                     | Use default sharding strategy              |
+| keyGenerateStrategy (?) | KeyGeneratorConfiguration     | Key generator configuration                                                                                                           | Use default key generator                  |
 
 ## Sharding Strategy Configuration
 
