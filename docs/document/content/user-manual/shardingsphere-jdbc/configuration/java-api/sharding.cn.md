@@ -128,9 +128,9 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 | datetime.upper   | String    | 分片的结束时间范围，时间戳格式：yyyy-MM-dd HH:mm:ss |
 | sharding.seconds | long      | 单一分片所能承载的最大时间，单位：秒                |
 
-#### 自定义时间边界分片算法
+#### 基于可变时间范围的分片算法
 
-类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.datetime.CustomDateTimeShardingAlgorithm
+类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.datetime.MutableIntervalShardingAlgorithm
 
 可配置属性：
 

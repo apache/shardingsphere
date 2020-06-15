@@ -17,7 +17,7 @@ chapter = true
 | ModShardingAlgorithm                | Modulo sharding algorithm               |
 | HashModShardingAlgorithm            | Hash modulo sharding algorithm          |
 | DatetimeShardingAlgorithm           | Datetime sharding algorithm             |
-| CustomDateTimeShardingAlgorithm     | Customized datetime sharding algorithm  |
+| MutableIntervalShardingAlgorithm    | Mutable interval sharding algorithm     |
 | VolumeBasedRangeShardingAlgorithm   | Volume based range sharding algorithm   |
 | BoundaryBasedRangeShardingAlgorithm | Boundary based range sharding algorithm |
 

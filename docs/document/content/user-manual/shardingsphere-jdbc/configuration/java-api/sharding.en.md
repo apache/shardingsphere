@@ -128,9 +128,9 @@ Attributes:
 | datetime.upper   | String     | Shard datetime end boundary, pattern: yyyy-MM-dd HH:mm:ss   |
 | sharding.seconds | long       | Max seconds for the data in one shard                       |
 
-#### Custom Datetime Bound Sharding Algorithm
+#### Mutable Interval Sharding Algorithm
 
-Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.datetime.CustomDateTimeShardingAlgorithm
+Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.datetime.MutableIntervalShardingAlgorithm
 
 Attributes:
 
