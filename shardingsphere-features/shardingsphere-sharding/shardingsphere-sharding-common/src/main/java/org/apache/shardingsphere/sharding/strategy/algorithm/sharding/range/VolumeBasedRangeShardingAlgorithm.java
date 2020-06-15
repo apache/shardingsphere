@@ -65,6 +65,6 @@ public final class VolumeBasedRangeShardingAlgorithm extends AbstractRangeShardi
     
     @Override
     public String getType() {
-        return "STANDARD_RANGE";
+        return "VOLUME_RANGE";
     }
 }
