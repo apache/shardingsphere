@@ -12,7 +12,7 @@ weight = 2
 | *名称*             | *数据类型*                                            | *说明*            |
 | ----------------- | ---------------------------------------------------- | ----------------- |
 | dataSources (+)   | Collection\<MasterSlaveDataSourceRuleConfiguration\> | 主从数据源配置      |
-| loadBalancers (*) | Map\<String, LoadBalanceAlgorithmConfiguration\>     | 从库负载均衡算法配置 |
+| loadBalancers (*) | Map\<String, ShardingSphereAlgorithmConfiguration\>  | 从库负载均衡算法配置 |
 
 ## 主从数据源配置
 
@@ -28,6 +28,10 @@ weight = 2
 | loadBalancerName (?)     | String               | 从库负载均衡算法名称 | 轮询负载均衡算法 |
 
 ## 从库负载均衡算法配置
+
+类名称：org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration
+
+可配置属性：
 
 | *名称*          | *数据类型*  | *说明*               | *默认值* |
 | -------------- | ---------- | -------------------- | ------- |
