@@ -41,12 +41,12 @@ Class name: org.apache.shardingsphere.sharding.api.config.ShardingAutoTableRuleC
 
 Attributes:
 
-| *Name*                  | *DataType*                    | *Description*                                                                                                                         | *Default Value*                            |
-| ----------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
-| logicTable              | String                        | Name of sharding logic table                                                                                                          | -                                          |
-| actualDataNodes (?)     | String                        | Describe data source names and actual tables, delimiter as point.<br /> Multiple data nodes split by comma, support inline expression | Broadcast table or databases sharding only |
-| shardingStrategy (?)    | ShardingStrategyConfiguration | Sharding strategy                                                                                                                     | Use default sharding strategy              |
-| keyGenerateStrategy (?) | KeyGeneratorConfiguration     | Key generator configuration                                                                                                           | Use default key generator                  |
+| *Name*                  | *DataType*                    | *Description*                                               | *Default Value*                 |
+| ----------------------- | ----------------------------- | ----------------------------------------------------------- | ------------------------------- |
+| logicTable              | String                        | Name of sharding logic table                                | -                               |
+| actualDataSources (?)   | String                        | Data source names.<br /> Multiple data nodes split by comma | Use all configured data sources |
+| shardingStrategy (?)    | ShardingStrategyConfiguration | Sharding strategy                                           | Use default sharding strategy   |
+| keyGenerateStrategy (?) | KeyGeneratorConfiguration     | Key generator configuration                                 | Use default key generator       |
 
 ## Sharding Strategy Configuration
 
