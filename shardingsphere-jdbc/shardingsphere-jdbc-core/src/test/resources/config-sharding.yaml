@@ -71,7 +71,7 @@ rules:
     mod:
       type: MOD
       props:
-        mod.value: 2
+        sharding.count: 2
   
   keyGenerators:
     increment:

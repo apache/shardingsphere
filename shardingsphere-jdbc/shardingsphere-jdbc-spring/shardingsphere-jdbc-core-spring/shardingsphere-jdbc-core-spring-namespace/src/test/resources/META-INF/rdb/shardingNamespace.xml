@@ -47,7 +47,7 @@
     </sharding:sharding-algorithm>
     <sharding:sharding-algorithm id="modStrategyShardingAlgorithm" type="MOD">
         <props>
-            <prop key="mod.value">4</prop>
+            <prop key="sharding.count">4</prop>
         </props>
     </sharding:sharding-algorithm>
     
