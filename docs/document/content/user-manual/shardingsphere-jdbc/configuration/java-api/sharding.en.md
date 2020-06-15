@@ -9,14 +9,17 @@ Class name: org.apache.shardingsphere.sharding.api.config.ShardingRuleConfigurat
 
 Attributes:
 
-| *Name*                              | *DataType*                                   | *Description*                      | *Default Value* |
-| ----------------------------------- | -------------------------------------------- | ---------------------------------- | --------------- |
-| tables (+)                          | Collection\<ShardingTableRuleConfiguration\> | Sharding table rules               | -               |
-| bindingTableGroups (*)              | Collection\<String\>                         | Binding table rules                | Empty           |
-| broadcastTables (*)                 | Collection\<String\>                         | Broadcast table rules              | Empty           |
-| defaultDatabaseShardingStrategy (?) | ShardingStrategyConfiguration                | Default database sharding strategy | Not sharding    |
-| defaultTableShardingStrategy (?)    | ShardingStrategyConfiguration                | Default table sharding strategy    | Not sharding    |
-| defaultKeyGenerateStrategy (?)       | KeyGeneratorConfiguration                    | Default key generator              | Snowflake       |
+| *Name*                              | *DataType*                                          | *Description*                                  | *Default Value* |
+| ----------------------------------- | --------------------------------------------------- | ---------------------------------------------- | --------------- |
+| tables (+)                          | Collection\<ShardingTableRuleConfiguration\>        | Sharding table rules                           | -               |
+| autoTables (+)                      | Collection\<ShardingAutoTableRuleConfiguration\>    | Sharding automatic table rules                 | -               |
+| bindingTableGroups (*)              | Collection\<String\>                                | Binding table rules                            | Empty           |
+| broadcastTables (*)                 | Collection\<String\>                                | Broadcast table rules                          | Empty           |
+| defaultDatabaseShardingStrategy (?) | ShardingStrategyConfiguration                       | Default database sharding strategy             | Not sharding    |
+| defaultTableShardingStrategy (?)    | ShardingStrategyConfiguration                       | Default table sharding strategy                | Not sharding    |
+| defaultKeyGenerateStrategy (?)      | KeyGeneratorConfiguration                           | Default key generator                          | Snowflake       |
+| shardingAlgorithms (+)              | Map\<String, ShardingSphereAlgorithmConfiguration\> | Sharding algorithm name and configurations     | None            |
+| keyGenerators (?)                   | Map\<String, ShardingSphereAlgorithmConfiguration\> | Key generate algorithm name and configurations | None            |
 
 ## Sharding Table Configuration
 
