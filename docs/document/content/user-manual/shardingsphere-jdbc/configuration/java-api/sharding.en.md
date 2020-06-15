@@ -80,9 +80,9 @@ Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.Modul
 
 Attributes:
 
-| *Name*    | *DataType* | *Description*  |
-| --------- | ---------- | -------------- |
-| mod.value | int        | Sharding count |
+| *Name*         | *DataType* | *Description*  |
+| -------------- | ---------- | -------------- |
+| sharding.count | int        | Sharding count |
 
 #### Hash Modulo Sharding Algorithm
 
@@ -90,9 +90,9 @@ Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.HashS
 
 Attributes:
 
-| *Name*    | *DataType* | *Description*  |
-| --------- | ---------- | -------------- |
-| mod.value | int        | Sharding count |
+| *Name*         | *DataType* | *Description*  |
+| -------------- | ---------- | -------------- |
+| sharding.count | int        | Sharding count |
 
 #### Volume Range Sharding Algorithm
 

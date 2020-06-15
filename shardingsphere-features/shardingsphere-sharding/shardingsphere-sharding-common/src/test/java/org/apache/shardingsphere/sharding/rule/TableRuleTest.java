@@ -91,7 +91,7 @@ public final class TableRuleTest {
         ShardingAutoTableRuleConfiguration tableRuleConfig = new ShardingAutoTableRuleConfiguration("LOGIC_TABLE", "ds0,ds1");
         tableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("col_1", "MOD"));
         ModuloShardingAlgorithm moduloShardingAlgorithm = new ModuloShardingAlgorithm();
-        moduloShardingAlgorithm.getProps().setProperty("mod.value", "4");
+        moduloShardingAlgorithm.getProps().setProperty(ModuloShardingAlgorithm.SHARDING_COUNT_KEY, "4");
         TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1", "ds2"), moduloShardingAlgorithm, null);
         assertThat(actual.getLogicTable(), is("logic_table"));
         assertThat(actual.getActualDataNodes().size(), is(4));
@@ -109,7 +109,7 @@ public final class TableRuleTest {
         ShardingAutoTableRuleConfiguration tableRuleConfig = new ShardingAutoTableRuleConfiguration("LOGIC_TABLE", null);
         tableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("col_1", "MOD"));
         ModuloShardingAlgorithm moduloShardingAlgorithm = new ModuloShardingAlgorithm();
-        moduloShardingAlgorithm.getProps().setProperty("mod.value", "4");
+        moduloShardingAlgorithm.getProps().setProperty(ModuloShardingAlgorithm.SHARDING_COUNT_KEY, "4");
         TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1", "ds2"), moduloShardingAlgorithm, null);
         assertThat(actual.getLogicTable(), is("logic_table"));
         assertThat(actual.getActualDataNodes().size(), is(4));
