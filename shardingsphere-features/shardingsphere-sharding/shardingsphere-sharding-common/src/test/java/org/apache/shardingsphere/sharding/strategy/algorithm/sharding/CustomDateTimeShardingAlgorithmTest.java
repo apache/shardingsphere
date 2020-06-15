@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.strategy.algorithm.sharding;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.datetime.CustomDateTimeShardingAlgorithm;
+import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.datetime.MutableIntervalShardingAlgorithm;
 import org.apache.shardingsphere.sharding.strategy.route.standard.StandardShardingStrategy;
 import org.apache.shardingsphere.sharding.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.sharding.strategy.route.value.RangeRouteValue;
@@ -125,7 +125,7 @@ public class CustomDateTimeShardingAlgorithmTest {
     }
     
     private void initShardStrategyByQuarter() {
-        CustomDateTimeShardingAlgorithm shardingAlgorithm = new CustomDateTimeShardingAlgorithm();
+        MutableIntervalShardingAlgorithm shardingAlgorithm = new MutableIntervalShardingAlgorithm();
         shardingAlgorithm.getProps().setProperty("datetime.format", "yyyy-MM-dd HH:mm:ss");
         shardingAlgorithm.getProps().setProperty("table.suffix.format", "yyyyQQ");
         shardingAlgorithm.getProps().setProperty("datetime.lower", "2016-01-01 00:00:00.000");
@@ -142,7 +142,7 @@ public class CustomDateTimeShardingAlgorithmTest {
     }
     
     private void initShardStrategyByMonth() {
-        CustomDateTimeShardingAlgorithm shardingAlgorithm = new CustomDateTimeShardingAlgorithm();
+        MutableIntervalShardingAlgorithm shardingAlgorithm = new MutableIntervalShardingAlgorithm();
         shardingAlgorithm.getProps().setProperty("datetime.format", "yyyy-MM-dd HH:mm:ss");
         shardingAlgorithm.getProps().setProperty("table.suffix.format", "yyyyMM");
         shardingAlgorithm.getProps().setProperty("datetime.lower", "2016-01-01 00:00:00.000");

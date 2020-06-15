@@ -37,7 +37,7 @@ import java.util.Properties;
 import java.util.Set;
 
 /**
- * Datetime sharding algorithm that adapt various shard method by define properties below.
+ * Mutable interval sharding algorithm that adapt various shard method by define properties below.
  *
  * <p>properties defined here:
  *
@@ -61,7 +61,7 @@ import java.util.Set;
  *
  * <p>examples: when shard by {@link IsoFields#QUARTER_OF_YEAR}, datetime.step.unit = Months and datetime.step.amount = 3 is a better choice.
  */
-public final class CustomDateTimeShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>> {
+public final class MutableIntervalShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>> {
     
     private static final String DATE_TIME_FORMAT = "datetime.format";
     
@@ -159,6 +159,6 @@ public final class CustomDateTimeShardingAlgorithm implements StandardShardingAl
     
     @Override
     public String getType() {
-        return "CUSTOM_DATE_TIME";
+        return "MUTABLE_INTERVAL";
     }
 }

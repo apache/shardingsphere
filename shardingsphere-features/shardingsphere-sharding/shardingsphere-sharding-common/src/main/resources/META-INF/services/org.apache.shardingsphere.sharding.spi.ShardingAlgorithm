@@ -21,4 +21,4 @@ org.apache.shardingsphere.sharding.strategy.algorithm.sharding.mod.HashModShardi
 org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.VolumeBasedRangeShardingAlgorithm
 org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.BoundaryBasedRangeShardingAlgorithm
 org.apache.shardingsphere.sharding.strategy.algorithm.sharding.datetime.DatetimeShardingAlgorithm
-org.apache.shardingsphere.sharding.strategy.algorithm.sharding.datetime.CustomDateTimeShardingAlgorithm
+org.apache.shardingsphere.sharding.strategy.algorithm.sharding.datetime.MutableIntervalShardingAlgorithm
