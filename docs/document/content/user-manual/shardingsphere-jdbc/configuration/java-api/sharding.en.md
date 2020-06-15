@@ -76,7 +76,7 @@ Attributes:
 
 #### Modulo Sharding Algorithm
 
-Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.ModShardingAlgorithm
+Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.mod.ModShardingAlgorithm
 
 Attributes:
 
@@ -86,7 +86,7 @@ Attributes:
 
 #### Hash Modulo Sharding Algorithm
 
-Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.HashModShardingAlgorithm
+Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.mod.HashModShardingAlgorithm
 
 Attributes:
 
@@ -118,7 +118,7 @@ Attributes:
 
 #### Fixed Time Range Sharding Algorithm
 
-Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.DatetimeShardingAlgorithm
+Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.datetime.DatetimeShardingAlgorithm
 
 Attributes:
 
@@ -130,7 +130,7 @@ Attributes:
 
 #### Custom Datetime Bound Sharding Algorithm
 
-Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.CustomDateTimeShardingAlgorithm
+Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.datetime.CustomDateTimeShardingAlgorithm
 
 Attributes:
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.strategy.algorithm.sharding;
+package org.apache.shardingsphere.sharding.strategy.algorithm.sharding.mod;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
@@ -26,19 +26,19 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingVal
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Properties;
 
 /**
- * Hash sharding algorithm.
+ * Modulo sharding algorithm.
  * 
  * <p>
- *     Shard by `y = z mod v` algorithm with z = hash(x), v is sharding count.
- *     All available targets will be returned if sharding value is {@code RangeShardingValue}.
+ *     Shard by `y = x mod v` algorithm, v is sharding count. 
  * </p>
  */
 @Getter
 @Setter
-public final class HashModShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
+public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
     
     public static final String SHARDING_COUNT_KEY = "sharding.count";
     
@@ -52,7 +52,7 @@ public final class HashModShardingAlgorithm implements StandardShardingAlgorithm
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         for (String each : availableTargetNames) {
-            if (each.endsWith(hashShardingValue(shardingValue.getValue()) % getModuloValue() + "")) {
+            if (each.endsWith(getLongValue(shardingValue.getValue()) % getModuloValue() + "")) {
                 return each;
             }
         }
@@ -61,11 +61,27 @@ public final class HashModShardingAlgorithm implements StandardShardingAlgorithm
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
-        return availableTargetNames;
+        if (isContainAllTargets(shardingValue)) {
+            return availableTargetNames;
+        }
+        return getAvailableTargetNames(availableTargetNames, shardingValue);
     }
     
-    private long hashShardingValue(final Comparable<?> shardingValue) {
-        return Math.abs((long) shardingValue.hashCode());
+    private boolean isContainAllTargets(final RangeShardingValue<Comparable<?>> shardingValue) {
+        return !shardingValue.getValueRange().hasUpperBound() || shardingValue.getValueRange().hasLowerBound()
+                && getLongValue(shardingValue.getValueRange().upperEndpoint()) - getLongValue(shardingValue.getValueRange().lowerEndpoint()) >= getModuloValue() - 1;
+    }
+    
+    private Collection<String> getAvailableTargetNames(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
+        Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
+        for (long i = getLongValue(shardingValue.getValueRange().lowerEndpoint()); i <= getLongValue(shardingValue.getValueRange().upperEndpoint()); i++) {
+            for (String each : availableTargetNames) {
+                if (each.endsWith(i % getModuloValue() + "")) {
+                    result.add(each);
+                }
+            }
+        }
+        return result;
     }
     
     private long getModuloValue() {
@@ -78,8 +94,12 @@ public final class HashModShardingAlgorithm implements StandardShardingAlgorithm
         return Integer.parseInt(props.get(SHARDING_COUNT_KEY).toString());
     }
     
+    private long getLongValue(final Comparable<?> value) {
+        return Long.parseLong(value.toString());
+    }
+    
     @Override
     public String getType() {
-        return "HASH_MOD";
+        return "MOD";
     }
 }

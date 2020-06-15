@@ -76,7 +76,7 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 
 #### 取模分片算法
 
-类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.ModShardingAlgorithm
+类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.mod.ModShardingAlgorithm
 
 可配置属性：
 
@@ -86,7 +86,7 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 
 #### 哈希取模分片算法
 
-类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.HashModShardingAlgorithm
+类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.mod.HashModShardingAlgorithm
 
 可配置属性：
 
@@ -118,7 +118,7 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 
 #### 定长时间段分片算法
 
-类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.DatetimeShardingAlgorithm
+类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.datetime.DatetimeShardingAlgorithm
 
 可配置属性：
 
@@ -130,7 +130,7 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 
 #### 自定义时间边界分片算法
 
-类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.CustomDateTimeShardingAlgorithm
+类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.datetime.CustomDateTimeShardingAlgorithm
 
 可配置属性：
 

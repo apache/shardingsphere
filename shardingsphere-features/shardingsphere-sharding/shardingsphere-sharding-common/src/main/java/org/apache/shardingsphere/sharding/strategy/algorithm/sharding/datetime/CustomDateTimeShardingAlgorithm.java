@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.strategy.algorithm.sharding;
+package org.apache.shardingsphere.sharding.strategy.algorithm.sharding.datetime;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;

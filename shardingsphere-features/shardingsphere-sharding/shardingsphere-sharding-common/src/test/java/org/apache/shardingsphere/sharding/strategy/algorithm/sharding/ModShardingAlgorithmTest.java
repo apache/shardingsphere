@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.strategy.algorithm.sharding;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.mod.ModShardingAlgorithm;
 import org.apache.shardingsphere.sharding.strategy.route.standard.StandardShardingStrategy;
 import org.apache.shardingsphere.sharding.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.sharding.strategy.route.value.RangeRouteValue;
