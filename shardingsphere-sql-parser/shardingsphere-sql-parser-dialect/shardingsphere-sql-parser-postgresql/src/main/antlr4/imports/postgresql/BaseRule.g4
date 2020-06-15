@@ -120,21 +120,6 @@ numberLiterals
    : MINUS_? NUMBER_ literalsType_?
    ;
 
-//hexadecimalLiterals
-//    : HEX_DIGIT_
-//    ;
-//
-//bitValueLiterals
-//    : BIT_NUM_
-//    ;
-//
-//booleanLiterals
-//    : TRUE | FALSE
-//    ;
-//
-//nullValueLiterals
-//    : NULL
-//    ;
 
 literalsType_
     : TYPE_CAST_ IDENTIFIER_
@@ -986,13 +971,13 @@ extractList
 	;
 
 extractArg
-    : identifier
-	| YEAR
-	| MONTH
-	| DAY
-	| HOUR
-	| MINUTE
-	| SECOND
+    : YEAR
+    | MONTH
+    | DAY
+    | HOUR
+    | MINUTE
+    | SECOND
+    | identifier
 	;
 
 genericType
@@ -1347,11 +1332,6 @@ func_type
 	| typeFunctionName attrs '%' TYPE
 	| SETOF typeFunctionName attrs '%' TYPE
 	;
-
-
-//regularFunctionName_
-//    : identifier | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | INTERVAL
-//    ;
 
 select_with_parens
     : 'Default does not match anything'
