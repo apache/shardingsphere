@@ -112,9 +112,9 @@ Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range
 
 Attributes:
 
-| *Name*           | *DataType* | *Description*                                                     |
-| ---------------- | ---------- | ----------------------------------------------------------------- |
-| partition.ranges | String     | Range of sharding border, multiple boundaries separated by commas |
+| *Name*          | *DataType* | *Description*                                                     |
+| --------------- | ---------- | ----------------------------------------------------------------- |
+| sharding.ranges | String     | Range of sharding border, multiple boundaries separated by commas |
 
 #### Custom Range Bound Sharding Algorithm
 
