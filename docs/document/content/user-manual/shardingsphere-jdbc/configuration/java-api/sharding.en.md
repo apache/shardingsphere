@@ -94,9 +94,9 @@ Attributes:
 | -------------- | ---------- | -------------- |
 | sharding.count | int        | Sharding count |
 
-#### Volume Range Sharding Algorithm
+#### Volume Based Range Sharding Algorithm
 
-Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.StandardRangeShardingAlgorithm
+Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.VolumeBasedRangeShardingAlgorithm
 
 Attributes:
 

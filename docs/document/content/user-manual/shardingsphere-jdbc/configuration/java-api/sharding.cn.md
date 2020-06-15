@@ -96,7 +96,7 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 
 #### 固定容量范围分片算法
 
-类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.StandardRangeShardingAlgorithm
+类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.VolumeBasedRangeShardingAlgorithm
 
 可配置属性：
 
