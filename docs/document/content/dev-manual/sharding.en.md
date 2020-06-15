@@ -15,7 +15,7 @@ chapter = true
 | ----------------------------------- | --------------------------------------- |
 | InlineShardingAlgorithm             | Inline sharding algorithm               |
 | ModuloShardingAlgorithm             | Modulo sharding algorithm               |
-| HashShardingAlgorithm               | Hash sharding algorithm                 |
+| HashModShardingAlgorithm            | Hash modulo sharding algorithm          |
 | DatetimeShardingAlgorithm           | Datetime sharding algorithm             |
 | CustomDateTimeShardingAlgorithm     | Customized datetime sharding algorithm  |
 | VolumeBasedRangeShardingAlgorithm   | Volume based range sharding algorithm   |

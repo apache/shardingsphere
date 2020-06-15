@@ -35,14 +35,14 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class HashShardingAlgorithmTest {
+public final class HashModShardingAlgorithmTest {
     
     private StandardShardingStrategy shardingStrategy;
     
     @Before
     public void setup() {
-        HashShardingAlgorithm shardingAlgorithm = new HashShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty(HashShardingAlgorithm.SHARDING_COUNT_KEY, "4");
+        HashModShardingAlgorithm shardingAlgorithm = new HashModShardingAlgorithm();
+        shardingAlgorithm.getProps().setProperty(HashModShardingAlgorithm.SHARDING_COUNT_KEY, "4");
         shardingAlgorithm.init();
         shardingStrategy = new StandardShardingStrategy("order_type", shardingAlgorithm);
     }

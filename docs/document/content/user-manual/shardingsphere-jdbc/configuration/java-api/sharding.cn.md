@@ -86,7 +86,7 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 
 #### 哈希取模分片算法
 
-类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.HashShardingAlgorithm
+类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.HashModShardingAlgorithm
 
 可配置属性：
 

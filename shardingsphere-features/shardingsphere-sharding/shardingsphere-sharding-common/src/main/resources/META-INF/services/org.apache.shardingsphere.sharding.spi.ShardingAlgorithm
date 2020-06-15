@@ -17,7 +17,7 @@
  
 org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.InlineShardingAlgorithm
 org.apache.shardingsphere.sharding.strategy.algorithm.sharding.ModuloShardingAlgorithm
-org.apache.shardingsphere.sharding.strategy.algorithm.sharding.HashShardingAlgorithm
+org.apache.shardingsphere.sharding.strategy.algorithm.sharding.HashModShardingAlgorithm
 org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.VolumeBasedRangeShardingAlgorithm
 org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.BoundaryBasedRangeShardingAlgorithm
 org.apache.shardingsphere.sharding.strategy.algorithm.sharding.DatetimeShardingAlgorithm
