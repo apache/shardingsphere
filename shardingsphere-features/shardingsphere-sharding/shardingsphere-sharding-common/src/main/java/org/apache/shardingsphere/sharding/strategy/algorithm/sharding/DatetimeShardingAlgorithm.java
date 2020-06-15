@@ -77,7 +77,7 @@ public final class DatetimeShardingAlgorithm implements StandardShardingAlgorith
                 return each;
             }
         }
-        throw new UnsupportedOperationException();
+        return null;
     }
     
     @Override
