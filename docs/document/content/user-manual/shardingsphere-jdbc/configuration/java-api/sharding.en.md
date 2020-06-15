@@ -56,10 +56,10 @@ Class name: org.apache.shardingsphere.sharding.api.config.strategy.StandardShard
 
 Attributes:
 
-| *Name*                     | *DataType*                | *Description*                                   |
-| -------------------------- | ------------------------- | ----------------------------------------------- |
-| shardingColumn             | String                    | Sharding column name                            |
-| shardingAlgorithm          | StandardShardingAlgorithm | Standard sharding algorithm class               |
+| *Name*                | *DataType* | *Description*           |
+| --------------------- | ---------- | ----------------------- |
+| shardingColumn        | String     | Sharding column name    |
+| shardingAlgorithmName | String     | Sharding algorithm name |
 
 Apache ShardingSphere built-in implemented classes of StandardShardingAlgorithm are:
 
@@ -166,14 +166,14 @@ Attributes:
 
 ### Complex Sharding Strategy Configuration
 
-Class name: ComplexShardingStrategyConfiguration
+Class name: 类名称：org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration
 
 Attributes:
 
-| *Name*            | *DataType*                   | *Description*                             |
-| ----------------- | ---------------------------- | ----------------------------------------- |
-| shardingColumns   | String                       | Sharding column name, separated by commas |
-| shardingAlgorithm | ComplexKeysShardingAlgorithm | Complex sharding algorithm                |
+| *Name*                | *DataType* | *Description*                             |
+| --------------------- | ---------- | ----------------------------------------- |
+| shardingColumns       | String     | Sharding column name, separated by commas |
+| shardingAlgorithmName | String     | Sharding algorithm name                   |
 
 There is no built-in complex keys sharding algorithm implementation class in Apache ShardingSphere.
 
@@ -183,28 +183,28 @@ Class name: HintShardingStrategyConfiguration
 
 Attributes:
 
-| *Name*            | *DataType*            | *Description*           |
-| ----------------- | --------------------- | ----------------------- |
-| shardingAlgorithm | HintShardingAlgorithm | Hint sharding algorithm |
+| *Name*                | *DataType* | *Description*           |
+| --------------------- | ---------- | ----------------------- |
+| shardingAlgorithmName | String     | Sharding algorithm name |
 
 There is no built-in hint sharding algorithm implementation class in Apache ShardingSphere.
 
 ### None Sharding Strategy Configuration
 
-Class name: NoneShardingStrategyConfiguration
+Class name: org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration
 
 Attributes: None
 
 ## Key Generator Configuration
 
-Class name: KeyGeneratorConfiguration
+Class name: org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration
 
 Attributes:
 
-| *Name*    | *DataType*           | *Description*                |
-| --------- | -------------------- | ---------------------------- |
-| column    | String               | Column name of key generate  |
-| algorithm | KeyGenerateAlgorithm | Key generate algorithm class |
+| *Name*           | *DataType* | *Description*                |
+| ---------------- | ---------- | ---------------------------- |
+| column           | String     | Column name of key generate  |
+| keyGeneratorName | String     | key generate algorithm  name |
 
 Apache ShardingSphere built-in implemented classes of KeyGenerateAlgorithm are:
 

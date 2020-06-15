@@ -56,10 +56,10 @@ weight = 1
 
 可配置属性：
 
-| *名称*             | *数据类型*                 | *说明*           |
-| ----------------- | ------------------------- | ---------------- |
-| shardingColumn    | String                    | 分片列名称        |
-| shardingAlgorithm | StandardShardingAlgorithm | 标准分片算法实现类 |
+| *名称*                 | *数据类型* | *说明*      |
+| --------------------- | ---------- | ---------- |
+| shardingColumn        | String     | 分片列名称   |
+| shardingAlgorithmName | String     | 分片算法名称 |
 
 Apache ShardingSphere 内置的标准分片算法实现类包括：
 
@@ -148,41 +148,41 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 
 可配置属性：
 
-| *名称*             | *数据类型*                    | *说明*                   |
-| ----------------- | ---------------------------- | ------------------------ |
-| shardingColumns   | String                       | 分片列名称，多个列以逗号分隔 |
-| shardingAlgorithm | ComplexKeysShardingAlgorithm | 复合分片算法实现类          |
+| *名称*                 | *数据类型* | *说明*                   |
+| --------------------- | ---------- | ------------------------ |
+| shardingColumns       | String     | 分片列名称，多个列以逗号分隔 |
+| shardingAlgorithmName | String     | 分片算法名称               |
 
 Apache ShardingSphere 暂无内置复合分片算法实现类。
 
 ### Hint 分片策略配置
 
-类名称：HintShardingStrategyConfiguration
+类名称：org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration
 
 可配置属性：
 
-| *名称*             | *数据类型*             | *说明*      |
-| ----------------- | --------------------- | ----------- |
-| shardingAlgorithm | HintShardingAlgorithm | Hint分片算法 |
+| *名称*                 | *数据类型*  | *说明*      |
+| --------------------- | ---------- | ----------- |
+| shardingAlgorithmName | String     | 分片算法名称  |
 
 Apache ShardingSphere 暂无内置复合分片算法实现类。
 
 ### 不分片策略配置
 
-类名称：NoneShardingStrategyConfiguration
+类名称：org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration
 
 可配置属性：无
 
 ## 自增主键策略配置
 
-类名称：KeyGeneratorConfiguration
+类名称：org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration
 
 可配置属性：
 
-| *名称*    | *数据类型*            | *说明*            |
-| --------- | -------------------- | ---------------- |
-| column    | String               | 自增列名称        |
-| algorithm | KeyGenerateAlgorithm | 自增主键算法实现类 |
+| *名称*           | *数据类型* | *说明*         |
+| ---------------- | -------- | -------------- |
+| column           | String   | 自增列名称      |
+| keyGeneratorName | String   | 自增主键算法名称 |
 
 Apache ShardingSphere 内置的自增主键算法实现类包括：
 
