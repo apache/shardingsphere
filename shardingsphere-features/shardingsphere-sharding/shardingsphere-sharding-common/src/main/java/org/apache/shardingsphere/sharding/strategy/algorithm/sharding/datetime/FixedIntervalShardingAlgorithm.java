@@ -48,11 +48,11 @@ import java.util.Properties;
 @Getter
 public final class FixedIntervalShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
     
-    public static final String DATETIME_LOWER = "datetime.lower";
+    private static final String DATETIME_LOWER = "datetime.lower";
     
-    public static final String DATETIME_UPPER = "datetime.upper";
+    private static final String DATETIME_UPPER = "datetime.upper";
     
-    public static final String SHARDING_SECONDS_KEY = "sharding.seconds";
+    private static final String SHARDING_SECONDS_KEY = "sharding.seconds";
     
     private static final String DATETIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
     

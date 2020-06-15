@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
  */
 public final class BoundaryBasedRangeShardingAlgorithm extends AbstractRangeShardingAlgorithm {
     
-    public static final String SHARDING_RANGES_KEY = "sharding.ranges";
+    private static final String SHARDING_RANGES_KEY = "sharding.ranges";
     
     @Override
     public Map<Integer, Range<Long>> createPartitionRangeMap(final Properties props) {

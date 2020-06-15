@@ -44,9 +44,9 @@ public final class FixedIntervalShardingAlgorithmTest {
     @Before
     public void setup() {
         FixedIntervalShardingAlgorithm shardingAlgorithm = new FixedIntervalShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty(FixedIntervalShardingAlgorithm.DATETIME_LOWER, "2020-01-01 00:00:00");
-        shardingAlgorithm.getProps().setProperty(FixedIntervalShardingAlgorithm.DATETIME_UPPER, "2020-01-01 00:00:16");
-        shardingAlgorithm.getProps().setProperty(FixedIntervalShardingAlgorithm.SHARDING_SECONDS_KEY, "4");
+        shardingAlgorithm.getProps().setProperty("datetime.lower", "2020-01-01 00:00:00");
+        shardingAlgorithm.getProps().setProperty("datetime.upper", "2020-01-01 00:00:16");
+        shardingAlgorithm.getProps().setProperty("sharding.seconds", "4");
         shardingAlgorithm.init();
         shardingStrategy = new StandardShardingStrategy("create_time", shardingAlgorithm);
     }
@@ -128,9 +128,9 @@ public final class FixedIntervalShardingAlgorithmTest {
     @Test
     public void assertGetAutoTablesAmount() {
         FixedIntervalShardingAlgorithm shardingAlgorithm = new FixedIntervalShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty(FixedIntervalShardingAlgorithm.DATETIME_LOWER, "2020-01-01 00:00:00");
-        shardingAlgorithm.getProps().setProperty(FixedIntervalShardingAlgorithm.DATETIME_UPPER, "2021-01-01 00:00:00");
-        shardingAlgorithm.getProps().setProperty(FixedIntervalShardingAlgorithm.SHARDING_SECONDS_KEY, "86400");
+        shardingAlgorithm.getProps().setProperty("datetime.lower", "2020-01-01 00:00:00");
+        shardingAlgorithm.getProps().setProperty("datetime.upper", "2021-01-01 00:00:00");
+        shardingAlgorithm.getProps().setProperty("sharding.seconds", "86400");
         shardingAlgorithm.init();
         assertThat(shardingAlgorithm.getAutoTablesAmount(), is(368));
     }

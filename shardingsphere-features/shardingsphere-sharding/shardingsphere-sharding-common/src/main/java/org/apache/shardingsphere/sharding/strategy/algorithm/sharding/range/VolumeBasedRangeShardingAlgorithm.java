@@ -38,11 +38,11 @@ import java.util.Properties;
  */
 public final class VolumeBasedRangeShardingAlgorithm extends AbstractRangeShardingAlgorithm {
     
-    public static final String RANGE_LOWER_KEY = "range.lower";
+    private static final String RANGE_LOWER_KEY = "range.lower";
     
-    public static final String RANGE_UPPER_KEY = "range.upper";
+    private static final String RANGE_UPPER_KEY = "range.upper";
     
-    public static final String SHARDING_VOLUME_KEY = "sharding.volume";
+    private static final String SHARDING_VOLUME_KEY = "sharding.volume";
     
     @Override
     public Map<Integer, Range<Long>> createPartitionRangeMap(final Properties props) {

@@ -63,17 +63,17 @@ import java.util.Set;
  */
 public final class MutableIntervalShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>> {
     
-    private static final String DATE_TIME_FORMAT = "datetime.format";
+    private static final String DATE_TIME_FORMAT_KEY = "datetime.format";
     
-    private static final String TABLE_SUFFIX_FORMAT = "table.suffix.format";
+    private static final String TABLE_SUFFIX_FORMAT_KEY = "table.suffix.format";
     
-    private static final String DEFAULT_LOWER = "datetime.lower";
+    private static final String DEFAULT_LOWER_KEY = "datetime.lower";
     
-    private static final String DEFAULT_UPPER = "datetime.upper";
+    private static final String DEFAULT_UPPER_KEY = "datetime.upper";
     
-    private static final String STEP_UNIT = "datetime.step.unit";
+    private static final String STEP_UNIT_KEY = "datetime.step.unit";
     
-    private static final String STEP_AMOUNT = "datetime.step.amount";
+    private static final String STEP_AMOUNT_KEY = "datetime.step.amount";
     
     private DateTimeFormatter datetimeFormatter;
     
@@ -87,16 +87,16 @@ public final class MutableIntervalShardingAlgorithm implements StandardShardingA
     
     @Override
     public void init() {
-        Preconditions.checkNotNull(props.getProperty(DATE_TIME_FORMAT));
-        Preconditions.checkNotNull(props.getProperty(TABLE_SUFFIX_FORMAT));
-        Preconditions.checkNotNull(props.getProperty(DEFAULT_LOWER));
-        stepUnit = null == props.getProperty(STEP_UNIT) ? ChronoUnit.DAYS : generateStepUnit();
-        stepAmount = Integer.parseInt(props.getProperty(STEP_AMOUNT, "1"));
-        datetimeFormatter = DateTimeFormatter.ofPattern(props.getProperty(DATE_TIME_FORMAT));
+        Preconditions.checkNotNull(props.getProperty(DATE_TIME_FORMAT_KEY));
+        Preconditions.checkNotNull(props.getProperty(TABLE_SUFFIX_FORMAT_KEY));
+        Preconditions.checkNotNull(props.getProperty(DEFAULT_LOWER_KEY));
+        stepUnit = null == props.getProperty(STEP_UNIT_KEY) ? ChronoUnit.DAYS : generateStepUnit();
+        stepAmount = Integer.parseInt(props.getProperty(STEP_AMOUNT_KEY, "1"));
+        datetimeFormatter = DateTimeFormatter.ofPattern(props.getProperty(DATE_TIME_FORMAT_KEY));
         try {
-            parseDateTimeForValue(props.getProperty(DEFAULT_LOWER));
-            if (props.getProperty(DEFAULT_UPPER) != null) {
-                parseDateTimeForValue(props.getProperty(DEFAULT_UPPER));
+            parseDateTimeForValue(props.getProperty(DEFAULT_LOWER_KEY));
+            if (props.getProperty(DEFAULT_UPPER_KEY) != null) {
+                parseDateTimeForValue(props.getProperty(DEFAULT_UPPER_KEY));
             }
         } catch (DateTimeParseException e) {
             throw new UnsupportedOperationException("can't apply shard value for default lower/upper values", e);
@@ -119,12 +119,12 @@ public final class MutableIntervalShardingAlgorithm implements StandardShardingA
         if (!hasStart && !hasEnd) {
             return availableTargetNames;
         }
-        LocalDateTime start = hasStart ? parseDateTimeForValue(shardingValue.getValueRange().lowerEndpoint().toString()) : parseDateTimeForValue(props.getProperty(DEFAULT_LOWER));
+        LocalDateTime start = hasStart ? parseDateTimeForValue(shardingValue.getValueRange().lowerEndpoint().toString()) : parseDateTimeForValue(props.getProperty(DEFAULT_LOWER_KEY));
         LocalDateTime end = hasEnd
                 ? parseDateTimeForValue(shardingValue.getValueRange().upperEndpoint().toString())
-                : props.getProperty(DEFAULT_UPPER) == null
+                : props.getProperty(DEFAULT_UPPER_KEY) == null
                 ? LocalDateTime.now()
-                : parseDateTimeForValue(props.getProperty(DEFAULT_UPPER));
+                : parseDateTimeForValue(props.getProperty(DEFAULT_UPPER_KEY));
         LocalDateTime tmp = start;
         while (!tmp.isAfter(end)) {
             mergeTableIfMatch(tmp, tables, availableTargetNames);
@@ -135,11 +135,11 @@ public final class MutableIntervalShardingAlgorithm implements StandardShardingA
     }
     
     private LocalDateTime parseDateTimeForValue(final String value) {
-        return LocalDateTime.parse(value.substring(0, props.getProperty(DATE_TIME_FORMAT).length()), datetimeFormatter);
+        return LocalDateTime.parse(value.substring(0, props.getProperty(DATE_TIME_FORMAT_KEY).length()), datetimeFormatter);
     }
     
     private String formatForDateTime(final LocalDateTime localDateTime) {
-        return localDateTime.format(DateTimeFormatter.ofPattern(props.get(TABLE_SUFFIX_FORMAT).toString()));
+        return localDateTime.format(DateTimeFormatter.ofPattern(props.get(TABLE_SUFFIX_FORMAT_KEY).toString()));
     }
     
     private void mergeTableIfMatch(final LocalDateTime dateTime, final Collection<String> tables, final Collection<String> availableTargetNames) {
@@ -149,12 +149,12 @@ public final class MutableIntervalShardingAlgorithm implements StandardShardingA
     
     private ChronoUnit generateStepUnit() {
         for (ChronoUnit unit : ChronoUnit.values()) {
-            if (unit.toString().equalsIgnoreCase(props.getProperty(STEP_UNIT))) {
+            if (unit.toString().equalsIgnoreCase(props.getProperty(STEP_UNIT_KEY))) {
                 return unit;
             }
         }
         throw new UnsupportedOperationException(
-                String.format("can't find step unit for specified datetime.step.unit prop: %s", props.getProperty(STEP_UNIT)));
+                String.format("can't find step unit for specified datetime.step.unit prop: %s", props.getProperty(STEP_UNIT_KEY)));
     }
     
     @Override
