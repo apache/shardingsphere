@@ -4,12 +4,12 @@ weight = 2
 chapter = true
 +++
 
-## Exploration and expansion of the Apache ShardingSphere community ##
+## Exploration and expansion of the Apache ShardingSphere community 
 
 
 The Apache ShardingSphere community was invited to participate in the event of "Apache Event——Entering the Apache Open Source Software Community" held at Tsinghua University on November 9. In the event, PPMC Zhang Liang of the Apache ShardingSphere community shared the topic of "Exploration and Expansion of the Apache ShardingSphere Community". Main content is as follows.
 
-### 01 Why open source? ###
+### 01 Why open source? 
 
 You can benefit from a better career and find enjoyment.
 
@@ -29,36 +29,36 @@ You can benefit from a better career and find enjoyment.
 
 2\.  A sense of accomplishment. Industry recognition will bring a huge sense of accomplishment. You will find happiness in your chosen career by self-growth and project improvement. Recognition for the project will make you feel a sense of accomplishment.
 
-### 02 Introduction to the Apache Software Foundation project ###
+### 02 Introduction to the Apache Software Foundation project 
 
 The Apache Software Foundation is a non-profit organization. In the last 20 years, countless projects affecting the software industry have been produced. Among the hundreds of Apache Software Foundation projects, we can see several very famous projects: Apache Tomcat, Apache Commons, Apache Maven, Apache Hadoop, Apache Kafka, Apache Spark, Apache Zookeeper, etc. The Apache Software Foundation's projects have become the cornerstone of developers' daily work. If you have not heard of any of the above projects, it is difficult to get company's Java backend or Big Data Offer.
 
 In recent years, there have been more and more Apache projects from China. By now, 19 projects from China have entered the Apache Software Foundation, 9 of which have graduated as top-level projects, and 10 of which have entered incubation. For those who have not multicultural experiences, the threshold for participating in an international open source project is a bit high. Therefore, the Apache Software Foundation projects from China benefit people who want to participate in open source projects. These projects can provide an opportunity for who are new to the community and cannot find a way to quickly enter the international open source community in native language. The Apache Software Foundation project from China is no different from the Apache Software Foundation project from the west in terms of processes, specifications, and legal affairs. The only difference is that you can find more Chinese-speaking people in the community. It will help you better understand the operation mode of the Apache community, to lay a solid foundation for future participation in other international projects.
 
-### 03 Introduction to Apache ShardingSphere ###
+### 03 Introduction to Apache ShardingSphere 
 
 Apache ShardingSphere is one of 19 Apache Software Foundation projects from China and is currently in the incubator. Apache ShardingSphere is a micro-kernel and highly scalable database middleware. Its core is small and stable, but it provides an infinitely extensible platform, so it is very suitable for growing with an open community and expanding its range of functions almost infinitely.
 
 Apache ShardingSphere has been open sourced for almost 4 years and its external use is quite extensive. Currently, more than 100 companies have clearly stated that they are in use. There are countless companies that have not stated but in fact in use. The companies that have been recorded cover all walks of life, including the Internet, Internet finance, online education, corporate services and even government agencies. Apache ShardingSphere is slightly different from the purely community-raised project. It is donated by the company to the Apache Software Foundation. It has been widely used within the company, covering Jingdong white bars, super accounts, urban computing, second-level monitoring, Jingdong Financial Cloud, JD Big Data, JD Overseas Mall and many other systems. A freely developing community also needs stability.
 
 
-### 04 Apache ShardingSphere Community Statistics ###
+### 04 Apache ShardingSphere Community Statistics 
 
 For an open source project, the community is as important as the project itself. Therefore, both the project and community are part of the Apache ShardingSphere. Apache ShardingSphere officially entered the Apache Software Foundation incubator on November 10, 2018. It has been exactly one year so far. In the past year, the data of community activity has changed significantly.
 
 \-1- Mailing list data changes
 
-Only the dev@shardingsphere.apache.org mailbox is counted here. The dev mailbox is the main way for community communication issues. In May 2019, there were 53 emails, 20 topics and 14 participants. The data include 15 emails forwarded by GitBox from GitHub, so the actual number of emails is 38. In September 2019 it has been significantly increased, including 148 emails, 34 topics and 37 participants. Besides, we have removed the GitBox forwarded mail from the dev mail group amd transferred to notification @ shardingsphere .apache.org mailbox.
+Only the dev@shardingsphere.apache.org mailbox is counted here. The dev mailbox is the main way for community communication issues. In May 2019, there were 53 emails, 20 topics and 14 participants. The data include 15 emails forwarded by GitBox from GitHub, so the actual number of emails is 38. In September 2019 it has been significantly increased, including 148 emails, 34 topics and 37 participants. Besides, we have removed the GitBox forwarded mail from the dev mail group amd transferred to notification@shardingsphere.apache.org mailbox.
 
 \-2- GitHub data changes
 
 From the beginning of the project to open source to the time around June 2018, the overall peak and trough of the data is almost in line with my personal submission data. This shows that before entering the Apache Software Foundation, the ShardingSphere project was a highly personal project. Its success and failure were tied to individuals and the risks of the project were completely taken by one or a few people. From October 2019 to November 2019, you can see that 33 people participated in the project, 100 pull requests were merged, 167 issues were closed, 36 issues were created, a total of changes 591 files were added, 12021 lines of code were added and that 6577 lines of code were deleted. It can be seen that Apache ShardingSphere has changed from a personal project to a community project. The project controlled by the community has less risk and make faster progress. The number of GitHub stars has increased by more than 4,000 in the past year, from 5000+ before entering the Apache Foundation to 9000+ now.
 
-\-3- Changes in community data
+\-3- Community data changes
 
 When entering the Apache incubator, ShardingSphere's project management committee had a total of 11 members. Except for the members of the project management committee, there were no official submitters in the community. After a year, the current project management committee members increased by 2 to 13 and there were 7 new official submitters. Over the past year, the number of contributors participating in the project has increased from 37 to 88. The number of participants is still growing. In the future, the ShardingSphere community will promote more official committers from these contributors and also promote more project management committee members from the official committers.
 
-### 05 The core ideas of the Apache ShardingSphere community  ###
+### 05 The core ideas of the Apache ShardingSphere community  
 
 1\. Community is better than code. This is something that the Apache community has repeatedly emphasized. Our concern is not just code. The best code is built by people. We hope to build an active community and the active community will work together to build an active code base. An active community will gradually improve the functionality and quality of the entire code. 
 
@@ -72,7 +72,7 @@ When entering the Apache incubator, ShardingSphere's project management committe
 
 The Apache Software Foundation provides a community maturity assessment model from the seven aspects of code, copyright, release, quality, community. unanimous resolution and product independence. At present, Apache ShardingSphere has completed the evaluation and passed the evaluation of all 34 sub-projects.
 
-### 06 Increase the activity of the Apache ShardingSphere community ###
+### 06 Increase the activity of the Apache ShardingSphere community 
 
 1\. Project structure adjustment. Apache ShardingSphere is composed of database protocol layer, SQL layer, distributed transaction layer and storage layer at the technical structure level. At the functional level it is composed of many functions such as sharding, high availability governance, data desensitization, and read-write separation. The current ShardingSphere architecture is being adjusted to a completely SPI-based architecture. Extending any technology or implementing any function will not affect other functions. For example, Apache ShardingSphere's support for SQL will be completely separated according to the dialect of the database. The changes of the parsing part of MySQL have no impact on other databases. Therefore, ShardingSphere can support many contributors to contribute code at the same time without conflicting with each other.
 
