@@ -37,7 +37,7 @@ public final class MySQLPacketPayloadTest {
     
     @Test
     public void assertReadInt1() {
-        when(byteBuf.readByte()).thenReturn((byte) 1);
+        when(byteBuf.readUnsignedByte()).thenReturn((short) 1);
         assertThat(new MySQLPacketPayload(byteBuf).readInt1(), is(1));
     }
     
@@ -49,7 +49,7 @@ public final class MySQLPacketPayloadTest {
     
     @Test
     public void assertReadInt2() {
-        when(byteBuf.readShortLE()).thenReturn((short) 1);
+        when(byteBuf.readUnsignedShortLE()).thenReturn(1);
         assertThat(new MySQLPacketPayload(byteBuf).readInt2(), is(1));
     }
     
@@ -61,7 +61,7 @@ public final class MySQLPacketPayloadTest {
     
     @Test
     public void assertReadInt3() {
-        when(byteBuf.readMediumLE()).thenReturn(1);
+        when(byteBuf.readUnsignedMediumLE()).thenReturn(1);
         assertThat(new MySQLPacketPayload(byteBuf).readInt3(), is(1));
     }
     
@@ -110,33 +110,33 @@ public final class MySQLPacketPayloadTest {
     
     @Test
     public void assertReadIntLenencWithOneByte() {
-        when(byteBuf.readByte()).thenReturn((byte) 1);
+        when(byteBuf.readUnsignedByte()).thenReturn((short) 1);
         assertThat(new MySQLPacketPayload(byteBuf).readIntLenenc(), is(1L));
     }
     
     @Test
     public void assertReadIntLenencWithZero() {
-        when(byteBuf.readByte()).thenReturn((byte) 0xfb);
+        when(byteBuf.readUnsignedByte()).thenReturn((short) 0xfb);
         assertThat(new MySQLPacketPayload(byteBuf).readIntLenenc(), is(0L));
     }
     
     @Test
     public void assertReadIntLenencWithTwoBytes() {
-        when(byteBuf.readByte()).thenReturn((byte) 0xfc);
-        when(byteBuf.readShortLE()).thenReturn((short) 100);
+        when(byteBuf.readUnsignedByte()).thenReturn((short) 0xfc);
+        when(byteBuf.readUnsignedShortLE()).thenReturn(100);
         assertThat(new MySQLPacketPayload(byteBuf).readIntLenenc(), is(100L));
     }
     
     @Test
     public void assertReadIntLenencWithThreeBytes() {
-        when(byteBuf.readByte()).thenReturn((byte) 0xfd);
-        when(byteBuf.readMediumLE()).thenReturn(99999);
+        when(byteBuf.readUnsignedByte()).thenReturn((short) 0xfd);
+        when(byteBuf.readUnsignedMediumLE()).thenReturn(99999);
         assertThat(new MySQLPacketPayload(byteBuf).readIntLenenc(), is(99999L));
     }
     
     @Test
     public void assertReadIntLenencWithFourBytes() {
-        when(byteBuf.readByte()).thenReturn((byte) 0xff);
+        when(byteBuf.readUnsignedByte()).thenReturn((short) 0xff);
         when(byteBuf.readLongLE()).thenReturn(Long.MAX_VALUE);
         assertThat(new MySQLPacketPayload(byteBuf).readIntLenenc(), is(Long.MAX_VALUE));
     }
@@ -170,13 +170,13 @@ public final class MySQLPacketPayloadTest {
     
     @Test
     public void assertReadStringLenenc() {
-        when(byteBuf.readByte()).thenReturn((byte) 0);
+        when(byteBuf.readUnsignedByte()).thenReturn((short) 0);
         assertThat(new MySQLPacketPayload(byteBuf).readStringLenenc(), is(""));
     }
     
     @Test
     public void assertReadStringLenencByBytes() {
-        when(byteBuf.readByte()).thenReturn((byte) 0);
+        when(byteBuf.readUnsignedByte()).thenReturn((short) 0);
         assertThat(new MySQLPacketPayload(byteBuf).readStringLenencByBytes(), is(new byte[] {}));
     }
     

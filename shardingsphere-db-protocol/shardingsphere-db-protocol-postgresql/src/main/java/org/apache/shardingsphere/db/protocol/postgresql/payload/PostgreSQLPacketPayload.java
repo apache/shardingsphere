@@ -39,7 +39,7 @@ public final class PostgreSQLPacketPayload implements PacketPayload {
      * @return 1 byte fixed length integer
      */
     public int readInt1() {
-        return byteBuf.readByte() & 0xff;
+        return byteBuf.readUnsignedByte();
     }
     
     /**
@@ -57,7 +57,7 @@ public final class PostgreSQLPacketPayload implements PacketPayload {
      * @return 2 byte fixed length integer
      */
     public int readInt2() {
-        return byteBuf.readShort() & 0xffff;
+        return byteBuf.readUnsignedShort();
     }
     
     /**
