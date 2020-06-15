@@ -76,7 +76,7 @@ Attributes:
 
 #### Modulo Sharding Algorithm
 
-Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.ModuloShardingAlgorithm
+Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.ModShardingAlgorithm
 
 Attributes:
 

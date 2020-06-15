@@ -14,7 +14,7 @@ chapter = true
 | *Implementation Class*              | *Description*                           |
 | ----------------------------------- | --------------------------------------- |
 | InlineShardingAlgorithm             | Inline sharding algorithm               |
-| ModuloShardingAlgorithm             | Modulo sharding algorithm               |
+| ModShardingAlgorithm                | Modulo sharding algorithm               |
 | HashModShardingAlgorithm            | Hash modulo sharding algorithm          |
 | DatetimeShardingAlgorithm           | Datetime sharding algorithm             |
 | CustomDateTimeShardingAlgorithm     | Customized datetime sharding algorithm  |

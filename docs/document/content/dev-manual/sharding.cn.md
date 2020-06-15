@@ -14,7 +14,7 @@ chapter = true
 | *已知实现类*                         | *详细说明*                    |
 | ----------------------------------- | ---------------------------- |
 | InlineShardingAlgorithm             | 基于行表达式的分片算法          |
-| ModuloShardingAlgorithm             | 基于取模的分片算法             |
+| ModShardingAlgorithm                | 基于取模的分片算法             |
 | HashModShardingAlgorithm            | 基于哈希取模的分片算法          |
 | DatetimeShardingAlgorithm           | 基于时间的分片算法             |
 | CustomDateTimeShardingAlgorithm     | 基于用户自定义时间格式的分片算法 |

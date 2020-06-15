@@ -33,13 +33,12 @@ import java.util.Properties;
  * Modulo sharding algorithm.
  * 
  * <p>
- *     Shard by `y = x mod v` algorithm. 
- *     v is sharding count. 
+ *     Shard by `y = x mod v` algorithm, v is sharding count. 
  * </p>
  */
 @Getter
 @Setter
-public final class ModuloShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
+public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
     
     public static final String SHARDING_COUNT_KEY = "sharding.count";
     
