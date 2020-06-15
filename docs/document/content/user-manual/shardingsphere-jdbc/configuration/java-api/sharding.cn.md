@@ -118,7 +118,7 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 
 #### 定长时间段分片算法
 
-类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.datetime.DatetimeShardingAlgorithm
+类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.datetime.FixedIntervalShardingAlgorithm
 
 可配置属性：
 

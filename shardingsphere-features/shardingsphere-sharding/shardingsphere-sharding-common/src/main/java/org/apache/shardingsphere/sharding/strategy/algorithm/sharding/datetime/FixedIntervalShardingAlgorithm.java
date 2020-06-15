@@ -36,15 +36,17 @@ import java.util.LinkedHashSet;
 import java.util.Properties;
 
 /**
- * Datetime sharding algorithm.
+ * Fixed interval sharding algorithm.
  * 
- * <p>Shard by `y = floor(x/v)` algorithm, which means y begins from 0.
- * v is `sharding.seconds`, and the minimum time unit is 1 sec.
- * `datetime.lower` decides the beginning datetime to shard. On the other hand, `datetime.upper` decides the end datetime to shard.</p>
- * <p>Notice: Anytime less then `datetime.lower` will route to the first partition, and anytime great than `datetime.upper` will route to the last sharding.</p>
+ * <p>
+ *     Shard by `y = floor(x/v)` algorithm, which means y begins from 0. v is `sharding.seconds`, and the minimum time unit is 1 sec.
+ *     `datetime.lower` decides the beginning datetime to shard. On the other hand, `datetime.upper` decides the end datetime to shard.
+ *     
+ *     Notice: Anytime less then `datetime.lower` will route to the first partition, and anytime great than `datetime.upper` will route to the last sharding.
+ * </p>
  */
 @Getter
-public final class DatetimeShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
+public final class FixedIntervalShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
     
     public static final String DATETIME_LOWER = "datetime.lower";
     
@@ -65,8 +67,7 @@ public final class DatetimeShardingAlgorithm implements StandardShardingAlgorith
     public void init() {
         Preconditions.checkNotNull(props.get(SHARDING_SECONDS_KEY), "Sharding partition volume cannot be null.");
         Preconditions.checkState(null != props.get(DATETIME_LOWER) && checkDatetimePattern(props.get(DATETIME_LOWER).toString()), "%s pattern is required.", DATETIME_PATTERN);
-        Preconditions.checkState(null != props.get(DATETIME_UPPER) && checkDatetimePattern(props.get(DATETIME_UPPER).toString()),
-                "%s pattern is required.", DATETIME_PATTERN);
+        Preconditions.checkState(null != props.get(DATETIME_UPPER) && checkDatetimePattern(props.get(DATETIME_UPPER).toString()), "%s pattern is required.", DATETIME_PATTERN);
         autoTablesAmount = (int) (Math.ceil(parseDate(props.get(DATETIME_UPPER).toString()) / getPartitionValue()) + 2);
     }
     

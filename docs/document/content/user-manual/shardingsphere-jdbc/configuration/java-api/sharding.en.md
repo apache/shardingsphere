@@ -118,7 +118,7 @@ Attributes:
 
 #### Fixed Time Range Sharding Algorithm
 
-Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.datetime.DatetimeShardingAlgorithm
+Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.datetime.FixedIntervalShardingAlgorithm
 
 Attributes:
 

@@ -16,7 +16,7 @@ chapter = true
 | InlineShardingAlgorithm             | 基于行表达式的分片算法      |
 | ModShardingAlgorithm                | 基于取模的分片算法         |
 | HashModShardingAlgorithm            | 基于哈希取模的分片算法      |
-| DatetimeShardingAlgorithm           | 基于时间的分片算法         |
+| FixedIntervalShardingAlgorithm      | 基于固定时间范围的分片算法  |
 | MutableIntervalShardingAlgorithm    | 基于可变时间范围的分片算法  |
 | VolumeBasedRangeShardingAlgorithm   | 基于分片容量的范围分片算法  |
 | BoundaryBasedRangeShardingAlgorithm | 基于分片边界的范围分片算法  |
