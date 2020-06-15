@@ -100,11 +100,11 @@ Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range
 
 Attributes:
 
-| *Name*           | *DataType* | *Description*                                            |
-| ---------------- | ---------- | -------------------------------------------------------- |
-| range.lower      | long       | Range lower bound, throw exception if lower than bound   |
-| range.upper      | long       | Range upper bound, throw exception if upper than bound   |
-| partition.volume | long       | Sharding volume                                          |
+| *Name*          | *DataType* | *Description*                                          |
+| --------------- | ---------- | ------------------------------------------------------ |
+| range.lower     | long       | Range lower bound, throw exception if lower than bound |
+| range.upper     | long       | Range upper bound, throw exception if upper than bound |
+| sharding.volume | long       | Sharding volume                                        |
 
 #### Customized Range Sharding Algorithm
 
@@ -112,19 +112,9 @@ Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range
 
 Attributes:
 
-| *Name*           | *DataType* | *Description*                                                     |
-| ---------------- | ---------- | ----------------------------------------------------------------- |
-| partition.ranges | String     | Range of sharding border, multiple boundaries separated by commas |
-
-#### Custom Range Bound Sharding Algorithm
-
-Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.CustomRangeShardingAlgorithm
-
-Attributes:
-
-| *Name*           | *DataType* | *Description*                                                      |
-| ---------------- | ---------- | ------------------------------------------------------------------ |
-| partition.ranges | String     | Sharding range boundaries, multiple boundaries separated by commas |
+| *Name*          | *DataType* | *Description*                                                     |
+| --------------- | ---------- | ----------------------------------------------------------------- |
+| sharding.ranges | String     | Range of sharding border, multiple boundaries separated by commas |
 
 #### Fixed Time Range Sharding Algorithm
 
@@ -132,11 +122,11 @@ Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.Datet
 
 Attributes:
 
-| *Name*            | *DataType* | *Description*                                               |
-| ----------------- | ---------- | ----------------------------------------------------------- |
-| datetime.lower    | String     | Shard datetime begin boundary, pattern: yyyy-MM-dd HH:mm:ss |
-| datetime.upper    | String     | Shard datetime end boundary, pattern: yyyy-MM-dd HH:mm:ss   |
-| partition.seconds | long       | Max seconds for the data in one shard                       |
+| *Name*           | *DataType* | *Description*                                               |
+| ---------------- | ---------- | ----------------------------------------------------------- |
+| datetime.lower   | String     | Shard datetime begin boundary, pattern: yyyy-MM-dd HH:mm:ss |
+| datetime.upper   | String     | Shard datetime end boundary, pattern: yyyy-MM-dd HH:mm:ss   |
+| sharding.seconds | long       | Max seconds for the data in one shard                       |
 
 #### Custom Datetime Bound Sharding Algorithm
 

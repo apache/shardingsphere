@@ -42,9 +42,9 @@ public final class StandardRangeShardingAlgorithmTest {
     @Before
     public void setUp() {
         StandardRangeShardingAlgorithm shardingAlgorithm = new StandardRangeShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("range.lower", "10");
-        shardingAlgorithm.getProps().setProperty("range.upper", "45");
-        shardingAlgorithm.getProps().setProperty("partition.volume", "10");
+        shardingAlgorithm.getProps().setProperty(StandardRangeShardingAlgorithm.RANGE_LOWER_KEY, "10");
+        shardingAlgorithm.getProps().setProperty(StandardRangeShardingAlgorithm.RANGE_UPPER_KEY, "45");
+        shardingAlgorithm.getProps().setProperty(StandardRangeShardingAlgorithm.SHARDING_VOLUME_KEY, "10");
         shardingAlgorithm.init();
         shardingStrategy = new StandardShardingStrategy("order_id", shardingAlgorithm);
     }
@@ -97,9 +97,9 @@ public final class StandardRangeShardingAlgorithmTest {
     @Test
     public void assertGetAutoTablesAmount() {
         StandardRangeShardingAlgorithm shardingAlgorithm = new StandardRangeShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty("range.lower", "10");
-        shardingAlgorithm.getProps().setProperty("range.upper", "45");
-        shardingAlgorithm.getProps().setProperty("partition.volume", "10");
+        shardingAlgorithm.getProps().setProperty(StandardRangeShardingAlgorithm.RANGE_LOWER_KEY, "10");
+        shardingAlgorithm.getProps().setProperty(StandardRangeShardingAlgorithm.RANGE_UPPER_KEY, "45");
+        shardingAlgorithm.getProps().setProperty(StandardRangeShardingAlgorithm.SHARDING_VOLUME_KEY, "10");
         shardingAlgorithm.init();
         assertThat(shardingAlgorithm.getAutoTablesAmount(), is(6));
     }
