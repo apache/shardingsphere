@@ -17,20 +17,14 @@
 
 package org.apache.shardingsphere.sharding.yaml.swapper.strategy;
 
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration;
 
 /**
  * Key generate strategy configuration YAML swapper.
  */
 public final class KeyGenerateStrategyConfigurationYamlSwapper implements YamlSwapper<YamlKeyGenerateStrategyConfiguration, KeyGenerateStrategyConfiguration> {
-    
-    static {
-        ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
-    }
     
     @Override
     public YamlKeyGenerateStrategyConfiguration swapToYamlConfiguration(final KeyGenerateStrategyConfiguration data) {

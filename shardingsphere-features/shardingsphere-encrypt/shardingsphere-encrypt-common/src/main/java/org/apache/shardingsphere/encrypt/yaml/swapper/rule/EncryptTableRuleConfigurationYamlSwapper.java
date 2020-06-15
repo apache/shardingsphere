@@ -32,13 +32,13 @@ import java.util.Map.Entry;
  */
 public final class EncryptTableRuleConfigurationYamlSwapper implements YamlSwapper<YamlEncryptTableRuleConfiguration, EncryptTableRuleConfiguration> {
     
-    private final EncryptColumnRuleConfigurationYamlSwapper encryptColumnRuleConfigurationYamlSwapper = new EncryptColumnRuleConfigurationYamlSwapper();
+    private final EncryptColumnRuleConfigurationYamlSwapper columnYamlSwapper = new EncryptColumnRuleConfigurationYamlSwapper();
     
     @Override
     public YamlEncryptTableRuleConfiguration swapToYamlConfiguration(final EncryptTableRuleConfiguration data) {
         YamlEncryptTableRuleConfiguration result = new YamlEncryptTableRuleConfiguration();
         for (EncryptColumnRuleConfiguration each : data.getColumns()) {
-            result.getColumns().put(each.getLogicColumn(), encryptColumnRuleConfigurationYamlSwapper.swapToYamlConfiguration(each));
+            result.getColumns().put(each.getLogicColumn(), columnYamlSwapper.swapToYamlConfiguration(each));
         }
         return result;
     }
@@ -49,7 +49,7 @@ public final class EncryptTableRuleConfigurationYamlSwapper implements YamlSwapp
         for (Entry<String, YamlEncryptColumnRuleConfiguration> entry : yamlConfiguration.getColumns().entrySet()) {
             YamlEncryptColumnRuleConfiguration yamlEncryptColumnRuleConfiguration = entry.getValue();
             yamlEncryptColumnRuleConfiguration.setLogicColumn(entry.getKey());
-            columns.add(encryptColumnRuleConfigurationYamlSwapper.swapToObject(yamlEncryptColumnRuleConfiguration));
+            columns.add(columnYamlSwapper.swapToObject(yamlEncryptColumnRuleConfiguration));
         }
         return new EncryptTableRuleConfiguration(yamlConfiguration.getName(), columns);
     }
