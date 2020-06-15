@@ -68,6 +68,6 @@ public final class BoundaryBasedRangeShardingAlgorithm extends AbstractRangeShar
     
     @Override
     public String getType() {
-        return "CUSTOM_RANGE";
+        return "BOUNDARY_RANGE";
     }
 }
