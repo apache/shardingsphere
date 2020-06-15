@@ -20,12 +20,12 @@ Class name: org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDat
 
 Attributes:
 
-| *Name*               | *DataType*           | *Description*                                | *Default Value*                    |
-| -------------------- | -------------------- | -------------------------------------------- | ---------------------------------- |
-| name                 | String               | Read-write split data source name            | -                                  |
-| masterDataSourceName | String               | Master sources source name                   | -                                  |
-| slaveDataSourceNames | Collection\<String\> | Slave sources source name list               | -                                  |
-| loadBalancerName (?) | String               | Load balance algorithm name of slave sources | Round robin load balance algorithm |
+| *Name*                   | *DataType*           | *Description*                                | *Default Value*                    |
+| ------------------------ | -------------------- | -------------------------------------------- | ---------------------------------- |
+| name                     | String               | Read-write split data source name            | -                                  |
+| masterDataSourceName     | String               | Master sources source name                   | -                                  |
+| slaveDataSourceNames (+) | Collection\<String\> | Slave sources source name list               | -                                  |
+| loadBalancerName (?)     | String               | Load balance algorithm name of slave sources | Round robin load balance algorithm |
 
 ## Slave Data Sources Load Balance Algorithm Configuration
 
