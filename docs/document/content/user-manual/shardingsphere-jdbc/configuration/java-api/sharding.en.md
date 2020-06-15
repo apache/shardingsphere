@@ -106,9 +106,9 @@ Attributes:
 | range.upper     | long       | Range upper bound, throw exception if upper than bound |
 | sharding.volume | long       | Sharding volume                                        |
 
-#### Customized Range Sharding Algorithm
+#### Boundary Based Range Sharding Algorithm
 
-Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.CustomRangeShardingAlgorithm
+Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.BoundaryBasedRangeShardingAlgorithm
 
 Attributes:
 

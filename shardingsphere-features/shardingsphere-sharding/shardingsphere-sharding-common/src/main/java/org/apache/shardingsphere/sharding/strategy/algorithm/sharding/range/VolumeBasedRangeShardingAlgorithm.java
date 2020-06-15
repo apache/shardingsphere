@@ -33,7 +33,7 @@ import java.util.Properties;
  *     This algorithm is similar to the rule of partition table, but it can only be split by the same size.
  *     
  *     For example: If the `range.lower` parameter is set to `10`, the `range.upper` parameter is set to `45`, and the `sharding.volume` parameter is set to `10`. 
- *     The values in range [10, 45] will be split to different partitions with [10, 20), [20, 30), [30, 40), [40, 45), and other values will be split to (-∞, 10) and [45, +∞).
+ *     The values in range [10, 45] will be split to different partitions with [10, 20), [20, 30), [30, 40), [40, 45), and other values will throw exception.
  * </p>
  */
 public final class VolumeBasedRangeShardingAlgorithm extends AbstractRangeShardingAlgorithm {
@@ -46,13 +46,13 @@ public final class VolumeBasedRangeShardingAlgorithm extends AbstractRangeShardi
     
     @Override
     public Map<Integer, Range<Long>> createPartitionRangeMap(final Properties props) {
-        Preconditions.checkNotNull(props.get(RANGE_LOWER_KEY), "Standard range sharding algorithm partition lower cannot be null.");
-        Preconditions.checkNotNull(props.get(RANGE_UPPER_KEY), "Standard range sharding algorithm partition upper cannot be null.");
-        Preconditions.checkNotNull(props.get(SHARDING_VOLUME_KEY), "Standard range sharding algorithm partition volume cannot be null.");
+        Preconditions.checkNotNull(props.get(RANGE_LOWER_KEY), "Lower range cannot be null.");
+        Preconditions.checkNotNull(props.get(RANGE_UPPER_KEY), "Upper range cannot be null.");
+        Preconditions.checkNotNull(props.get(SHARDING_VOLUME_KEY), "Sharding volume cannot be null.");
         long lower = Long.parseLong(props.get(RANGE_LOWER_KEY).toString());
         long upper = Long.parseLong(props.get(RANGE_UPPER_KEY).toString());
         long volume = Long.parseLong(props.get(SHARDING_VOLUME_KEY).toString());
-        Preconditions.checkArgument(upper - lower >= volume, "Standard range sharding algorithm partition range can not be smaller than volume.");
+        Preconditions.checkArgument(upper - lower >= volume, "Range can not be smaller than volume.");
         int partitionSize = Math.toIntExact(LongMath.divide(upper - lower, volume, RoundingMode.CEILING));
         Map<Integer, Range<Long>> result = Maps.newHashMapWithExpectedSize(partitionSize + 2);
         result.put(0, Range.lessThan(lower));

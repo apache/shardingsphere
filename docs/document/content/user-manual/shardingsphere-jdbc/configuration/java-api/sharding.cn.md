@@ -94,7 +94,7 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 | -------------- | --------- | ------- |
 | sharding.count | int       | 分片数量 |
 
-#### 固定容量范围分片算法
+#### 基于分片容量的范围分片算法
 
 类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.VolumeBasedRangeShardingAlgorithm
 
@@ -106,9 +106,9 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 | range.upper     | long      | 范围上界，超过边界的数据会报错 |
 | sharding.volume | long      | 分片容量                    |
 
-#### 自定义边界范围分片算法
+#### 基于分片边界的范围分片算法
 
-类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.CustomRangeShardingAlgorithm
+类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.BoundaryBasedRangeShardingAlgorithm
 
 可配置属性：
 
