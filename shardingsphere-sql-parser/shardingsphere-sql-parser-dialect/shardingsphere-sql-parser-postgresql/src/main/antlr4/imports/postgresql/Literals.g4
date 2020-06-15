@@ -24,7 +24,7 @@ IDENTIFIER_
     |  DQ_ ~'"'+ DQ_
     ;
 
-STRING_ 
+STRING_
     : SQ_ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ_
     ;
 
