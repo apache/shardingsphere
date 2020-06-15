@@ -40,19 +40,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-/**
- * datetime sharding algorithm test.
- */
-public class CustomDateTimeShardingAlgorithmTest {
-
+public final class MutableIntervalShardingAlgorithmTest {
+    
     private final List<String> availableTablesForMonthStrategy = new ArrayList<>();
-
+    
     private final List<String> availableTablesForQuarterStrategy = new ArrayList<>();
-
+    
     private StandardShardingStrategy shardingStrategyByMonth;
-
+    
     private StandardShardingStrategy shardingStrategyByQuarter;
-
+    
     @Before
     public void setup() {
         initShardStrategyByMonth();
