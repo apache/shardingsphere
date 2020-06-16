@@ -30,29 +30,26 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * Custom range sharding algorithm.
+ * Boundary based range sharding algorithm.
+ * 
  * <p>
- * Custom range sharding algorithm is similar to the rule of partition table.
- * User can specify the range by setting the `sharding.ranges` parameter.
- * The `sharding.ranges` parameter is an ordered list of numbers, separated by commas.
- * </p>
- * <p>
- * For example: If the `sharding.ranges` parameter is set to `1,5,10`,
- * the parameter will split all values into four intervals——(-∞, 1), [1,5), [5,10), [10, +∞),
- * which corresponding to partition_0, partition_1, partition_2, partition_3.
- * The sharding values will be divided into different partition by its value.
+ *     This algorithm is similar to the rule of partition table.
+ *     
+ *     For example: If the `sharding.ranges` parameter is set to `1, 5, 10`, the parameter will split all values into four intervals with (-∞, 1), [1, 5), [5, 10), [10, +∞), 
+ *     which corresponding to partition_0, partition_1, partition_2, partition_3.
+ *     The sharding values will be divided into different sharding by its value.
  * </p>
  */
-public final class CustomRangeShardingAlgorithm extends AbstractRangeShardingAlgorithm {
+public final class BoundaryBasedRangeShardingAlgorithm extends AbstractRangeShardingAlgorithm {
     
-    public static final String SHARDING_RANGES_KEY = "sharding.ranges";
+    private static final String SHARDING_RANGES_KEY = "sharding.ranges";
     
     @Override
     public Map<Integer, Range<Long>> createPartitionRangeMap(final Properties props) {
-        Preconditions.checkNotNull(props.get(SHARDING_RANGES_KEY), "Custom range sharding algorithm partition ranges cannot be null.");
+        Preconditions.checkNotNull(props.get(SHARDING_RANGES_KEY), "Sharding ranges cannot be null.");
         List<Long> partitionRanges = Splitter.on(",").trimResults().splitToList(props.get(SHARDING_RANGES_KEY).toString())
                 .stream().map(Longs::tryParse).filter(Objects::nonNull).sorted().collect(Collectors.toList());
-        Preconditions.checkArgument(CollectionUtils.isNotEmpty(partitionRanges), "Custom range sharding algorithm partition ranges is not valid.");
+        Preconditions.checkArgument(CollectionUtils.isNotEmpty(partitionRanges), "Sharding ranges is not valid.");
         Map<Integer, Range<Long>> result = Maps.newHashMapWithExpectedSize(partitionRanges.size() + 1);
         for (int i = 0; i < partitionRanges.size(); i++) {
             Long rangeValue = partitionRanges.get(i);
@@ -71,6 +68,6 @@ public final class CustomRangeShardingAlgorithm extends AbstractRangeShardingAlg
     
     @Override
     public String getType() {
-        return "CUSTOM_RANGE";
+        return "BOUNDARY_RANGE";
     }
 }

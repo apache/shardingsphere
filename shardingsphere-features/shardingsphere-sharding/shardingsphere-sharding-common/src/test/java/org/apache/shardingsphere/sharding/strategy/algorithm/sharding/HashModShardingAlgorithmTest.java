@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.strategy.algorithm.sharding;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.mod.HashModShardingAlgorithm;
 import org.apache.shardingsphere.sharding.strategy.route.standard.StandardShardingStrategy;
 import org.apache.shardingsphere.sharding.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.sharding.strategy.route.value.RangeRouteValue;
@@ -35,14 +36,14 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class HashShardingAlgorithmTest {
+public final class HashModShardingAlgorithmTest {
     
     private StandardShardingStrategy shardingStrategy;
     
     @Before
     public void setup() {
-        HashShardingAlgorithm shardingAlgorithm = new HashShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty(HashShardingAlgorithm.SHARDING_COUNT_KEY, "4");
+        HashModShardingAlgorithm shardingAlgorithm = new HashModShardingAlgorithm();
+        shardingAlgorithm.getProps().setProperty("sharding.count", "4");
         shardingAlgorithm.init();
         shardingStrategy = new StandardShardingStrategy("order_type", shardingAlgorithm);
     }

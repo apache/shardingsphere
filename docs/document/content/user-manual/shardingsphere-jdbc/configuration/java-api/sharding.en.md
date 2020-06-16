@@ -76,7 +76,7 @@ Attributes:
 
 #### Modulo Sharding Algorithm
 
-Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.ModuloShardingAlgorithm
+Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.mod.ModShardingAlgorithm
 
 Attributes:
 
@@ -86,7 +86,7 @@ Attributes:
 
 #### Hash Modulo Sharding Algorithm
 
-Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.HashShardingAlgorithm
+Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.mod.HashModShardingAlgorithm
 
 Attributes:
 
@@ -94,9 +94,9 @@ Attributes:
 | -------------- | ---------- | -------------- |
 | sharding.count | int        | Sharding count |
 
-#### Volume Range Sharding Algorithm
+#### Volume Based Range Sharding Algorithm
 
-Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.StandardRangeShardingAlgorithm
+Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.VolumeBasedRangeShardingAlgorithm
 
 Attributes:
 
@@ -106,9 +106,9 @@ Attributes:
 | range.upper     | long       | Range upper bound, throw exception if upper than bound |
 | sharding.volume | long       | Sharding volume                                        |
 
-#### Customized Range Sharding Algorithm
+#### Boundary Based Range Sharding Algorithm
 
-Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.CustomRangeShardingAlgorithm
+Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.BoundaryBasedRangeShardingAlgorithm
 
 Attributes:
 
@@ -118,7 +118,7 @@ Attributes:
 
 #### Fixed Time Range Sharding Algorithm
 
-Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.DatetimeShardingAlgorithm
+Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.datetime.FixedIntervalShardingAlgorithm
 
 Attributes:
 
@@ -128,9 +128,9 @@ Attributes:
 | datetime.upper   | String     | Shard datetime end boundary, pattern: yyyy-MM-dd HH:mm:ss   |
 | sharding.seconds | long       | Max seconds for the data in one shard                       |
 
-#### Custom Datetime Bound Sharding Algorithm
+#### Mutable Interval Sharding Algorithm
 
-Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.CustomDateTimeShardingAlgorithm
+Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.datetime.MutableIntervalShardingAlgorithm
 
 Attributes:
 

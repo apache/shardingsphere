@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.strategy.algorithm.sharding;
+package org.apache.shardingsphere.sharding.strategy.algorithm.sharding.mod;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
@@ -31,15 +31,16 @@ import java.util.Properties;
 /**
  * Hash sharding algorithm.
  * 
- * <p>Shard by `y = z mod v` algorithm with z = hash(x). 
- * v is sharding count.
- * All available targets will be returned if sharding value is `RangeShardingValue`</p>
+ * <p>
+ *     Shard by `y = z mod v` algorithm with z = hash(x), v is sharding count.
+ *     All available targets will be returned if sharding value is {@code RangeShardingValue}.
+ * </p>
  */
 @Getter
 @Setter
-public final class HashShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
+public final class HashModShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
     
-    public static final String SHARDING_COUNT_KEY = "sharding.count";
+    private static final String SHARDING_COUNT_KEY = "sharding.count";
     
     private Properties props = new Properties();
     

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerate
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.ModuloShardingAlgorithm;
+import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.mod.ModShardingAlgorithm;
 import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.InlineShardingAlgorithm;
 import org.apache.shardingsphere.sharding.strategy.route.none.NoneShardingStrategy;
 import org.junit.BeforeClass;
@@ -90,9 +90,9 @@ public final class TableRuleTest {
         ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
         ShardingAutoTableRuleConfiguration tableRuleConfig = new ShardingAutoTableRuleConfiguration("LOGIC_TABLE", "ds0,ds1");
         tableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("col_1", "MOD"));
-        ModuloShardingAlgorithm moduloShardingAlgorithm = new ModuloShardingAlgorithm();
-        moduloShardingAlgorithm.getProps().setProperty(ModuloShardingAlgorithm.SHARDING_COUNT_KEY, "4");
-        TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1", "ds2"), moduloShardingAlgorithm, null);
+        ModShardingAlgorithm shardingAlgorithm = new ModShardingAlgorithm();
+        shardingAlgorithm.getProps().setProperty("sharding.count", "4");
+        TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1", "ds2"), shardingAlgorithm, null);
         assertThat(actual.getLogicTable(), is("logic_table"));
         assertThat(actual.getActualDataNodes().size(), is(4));
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", "logic_table_0")));
@@ -108,9 +108,9 @@ public final class TableRuleTest {
         ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
         ShardingAutoTableRuleConfiguration tableRuleConfig = new ShardingAutoTableRuleConfiguration("LOGIC_TABLE", null);
         tableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("col_1", "MOD"));
-        ModuloShardingAlgorithm moduloShardingAlgorithm = new ModuloShardingAlgorithm();
-        moduloShardingAlgorithm.getProps().setProperty(ModuloShardingAlgorithm.SHARDING_COUNT_KEY, "4");
-        TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1", "ds2"), moduloShardingAlgorithm, null);
+        ModShardingAlgorithm shardingAlgorithm = new ModShardingAlgorithm();
+        shardingAlgorithm.getProps().setProperty("sharding.count", "4");
+        TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1", "ds2"), shardingAlgorithm, null);
         assertThat(actual.getLogicTable(), is("logic_table"));
         assertThat(actual.getActualDataNodes().size(), is(4));
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", "logic_table_0")));

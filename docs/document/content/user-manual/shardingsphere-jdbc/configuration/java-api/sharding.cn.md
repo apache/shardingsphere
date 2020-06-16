@@ -76,7 +76,7 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 
 #### 取模分片算法
 
-类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.ModuloShardingAlgorithm
+类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.mod.ModShardingAlgorithm
 
 可配置属性：
 
@@ -86,7 +86,7 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 
 #### 哈希取模分片算法
 
-类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.HashShardingAlgorithm
+类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.mod.HashModShardingAlgorithm
 
 可配置属性：
 
@@ -94,9 +94,9 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 | -------------- | --------- | ------- |
 | sharding.count | int       | 分片数量 |
 
-#### 固定容量范围分片算法
+#### 基于分片容量的范围分片算法
 
-类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.StandardRangeShardingAlgorithm
+类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.VolumeBasedRangeShardingAlgorithm
 
 可配置属性：
 
@@ -106,9 +106,9 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 | range.upper     | long      | 范围上界，超过边界的数据会报错 |
 | sharding.volume | long      | 分片容量                    |
 
-#### 自定义边界范围分片算法
+#### 基于分片边界的范围分片算法
 
-类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.CustomRangeShardingAlgorithm
+类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.BoundaryBasedRangeShardingAlgorithm
 
 可配置属性：
 
@@ -118,7 +118,7 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 
 #### 定长时间段分片算法
 
-类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.DatetimeShardingAlgorithm
+类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.datetime.FixedIntervalShardingAlgorithm
 
 可配置属性：
 
@@ -128,9 +128,9 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 | datetime.upper   | String    | 分片的结束时间范围，时间戳格式：yyyy-MM-dd HH:mm:ss |
 | sharding.seconds | long      | 单一分片所能承载的最大时间，单位：秒                |
 
-#### 自定义时间边界分片算法
+#### 基于可变时间范围的分片算法
 
-类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.CustomDateTimeShardingAlgorithm
+类名称：org.apache.shardingsphere.sharding.strategy.algorithm.sharding.datetime.MutableIntervalShardingAlgorithm
 
 可配置属性：
 

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.strategy.algorithm.sharding;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.datetime.MutableIntervalShardingAlgorithm;
 import org.apache.shardingsphere.sharding.strategy.route.standard.StandardShardingStrategy;
 import org.apache.shardingsphere.sharding.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.sharding.strategy.route.value.RangeRouteValue;
@@ -39,19 +40,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-/**
- * datetime sharding algorithm test.
- */
-public class CustomDateTimeShardingAlgorithmTest {
-
+public final class MutableIntervalShardingAlgorithmTest {
+    
     private final List<String> availableTablesForMonthStrategy = new ArrayList<>();
-
+    
     private final List<String> availableTablesForQuarterStrategy = new ArrayList<>();
-
+    
     private StandardShardingStrategy shardingStrategyByMonth;
-
+    
     private StandardShardingStrategy shardingStrategyByQuarter;
-
+    
     @Before
     public void setup() {
         initShardStrategyByMonth();
@@ -124,7 +122,7 @@ public class CustomDateTimeShardingAlgorithmTest {
     }
     
     private void initShardStrategyByQuarter() {
-        CustomDateTimeShardingAlgorithm shardingAlgorithm = new CustomDateTimeShardingAlgorithm();
+        MutableIntervalShardingAlgorithm shardingAlgorithm = new MutableIntervalShardingAlgorithm();
         shardingAlgorithm.getProps().setProperty("datetime.format", "yyyy-MM-dd HH:mm:ss");
         shardingAlgorithm.getProps().setProperty("table.suffix.format", "yyyyQQ");
         shardingAlgorithm.getProps().setProperty("datetime.lower", "2016-01-01 00:00:00.000");
@@ -141,7 +139,7 @@ public class CustomDateTimeShardingAlgorithmTest {
     }
     
     private void initShardStrategyByMonth() {
-        CustomDateTimeShardingAlgorithm shardingAlgorithm = new CustomDateTimeShardingAlgorithm();
+        MutableIntervalShardingAlgorithm shardingAlgorithm = new MutableIntervalShardingAlgorithm();
         shardingAlgorithm.getProps().setProperty("datetime.format", "yyyy-MM-dd HH:mm:ss");
         shardingAlgorithm.getProps().setProperty("table.suffix.format", "yyyyMM");
         shardingAlgorithm.getProps().setProperty("datetime.lower", "2016-01-01 00:00:00.000");

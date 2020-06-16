@@ -35,14 +35,14 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class CustomRangeShardingAlgorithmTest {
+public final class BoundaryBasedRangeShardingAlgorithmTest {
     
     private StandardShardingStrategy shardingStrategy;
     
     @Before
     public void setUp() {
-        CustomRangeShardingAlgorithm shardingAlgorithm = new CustomRangeShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty(CustomRangeShardingAlgorithm.SHARDING_RANGES_KEY, "1,5,10");
+        BoundaryBasedRangeShardingAlgorithm shardingAlgorithm = new BoundaryBasedRangeShardingAlgorithm();
+        shardingAlgorithm.getProps().setProperty("sharding.ranges", "1,5,10");
         shardingAlgorithm.init();
         shardingStrategy = new StandardShardingStrategy("order_id", shardingAlgorithm);
     }
@@ -71,8 +71,8 @@ public final class CustomRangeShardingAlgorithmTest {
     
     @Test
     public void assertGetAutoTablesAmount() {
-        CustomRangeShardingAlgorithm shardingAlgorithm = new CustomRangeShardingAlgorithm();
-        shardingAlgorithm.getProps().setProperty(CustomRangeShardingAlgorithm.SHARDING_RANGES_KEY, "1,5,10");
+        BoundaryBasedRangeShardingAlgorithm shardingAlgorithm = new BoundaryBasedRangeShardingAlgorithm();
+        shardingAlgorithm.getProps().setProperty("sharding.ranges", "1,5,10");
         shardingAlgorithm.init();
         assertThat(shardingAlgorithm.getAutoTablesAmount(), is(4));
     }
