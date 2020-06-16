@@ -49,9 +49,9 @@ public final class MutableIntervalShardingAlgorithm implements StandardShardingA
     
     private static final String TABLE_SUFFIX_FORMAT_KEY = "table.suffix.pattern";
     
-    private static final String STEP_AMOUNT_KEY = "datetime.interval.amount";
+    private static final String INTERVAL_AMOUNT_KEY = "datetime.interval.amount";
     
-    private static final String STEP_UNIT_KEY = "datetime.interval.amount";
+    private static final String INTERVAL_UNIT_KEY = "datetime.interval.unit";
     
     @Getter
     @Setter
@@ -79,8 +79,8 @@ public final class MutableIntervalShardingAlgorithm implements StandardShardingA
         dateTimeLower = getDateTimeLower(dateTimePattern);
         dateTimeUpper = getDateTimeUpper(dateTimePattern);
         tableSuffixPattern = getTableSuffixPattern();
-        stepAmount = Integer.parseInt(props.getOrDefault(STEP_AMOUNT_KEY, 1).toString());
-        stepUnit = props.containsKey(STEP_UNIT_KEY) ? getStepUnit(props.getProperty(STEP_UNIT_KEY)) : ChronoUnit.DAYS;
+        stepAmount = Integer.parseInt(props.getOrDefault(INTERVAL_AMOUNT_KEY, 1).toString());
+        stepUnit = props.containsKey(INTERVAL_UNIT_KEY) ? getStepUnit(props.getProperty(INTERVAL_UNIT_KEY)) : ChronoUnit.DAYS;
     }
     
     private String getDateTimePattern() {
@@ -116,7 +116,7 @@ public final class MutableIntervalShardingAlgorithm implements StandardShardingA
                 return each;
             }
         }
-        throw new UnsupportedOperationException(String.format("Cannot find step unit for specified %s property: `%s`", STEP_UNIT_KEY, stepUnit));
+        throw new UnsupportedOperationException(String.format("Cannot find step unit for specified %s property: `%s`", INTERVAL_UNIT_KEY, stepUnit));
     }
     
     @Override
