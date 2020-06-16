@@ -50,13 +50,13 @@ Sharding-Sphere支持的结果归并从功能上分为遍历、排序、分组�
 
 Sharding-Sphere在对排序的查询进行归并时，将每个结果集的当前数据值进行比较（通过实现Java的Comparable接口完成），并将其放入优先级队列。每次获取下一条数据时，只需将队列顶端结果集的游标下移，并根据新游标重新进入优先级排序队列找到自己的位置即可。通过一个例子来说明Sharding-Sphere的排序归并，下图是一个通过分数进行排序的示例图。
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/result1.jpg)
+![](https://shardingsphere.apache.org/blog/img/result1.jpg)
 
 示例中展示了3张表返回的数据结果集，每个数据结果集已经根据分数排序完毕，但是3个数据结果集之间是无序的。将3个数据结果集的当前游标指向的数据值进行排序，并放入优先级队列，t_score_0的第一个数据值最大，t_score_2的第一个数据值次之，t_score_1的第一个数据值最小，因此优先级队列根据t_score_0，t_score_2和t_score_1的方式排序队列。
 
 下图则展现了进行next调用的时候，排序归并是如何进行的。
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/result2.jpg)
+![](https://shardingsphere.apache.org/blog/img/result2.jpg)
 
 通过图中我们可以看到，当进行第一次next调用时，排在队列首位的t\_score\_0将会被弹出队列，并且将当前游标指向的数据值（也就是100）返回至查询客户端，并且将游标下移一位之后，重新放入优先级队列。而优先级队列也会根据t\_score\_0的当前数据结果集指向游标的数据值（这里是90）进行排序，根据当前数值，t\_score\_0排列在队列的最后一位。之前队列中排名第二的t\_score\_2的数据结果集则自动排在了队列首位。
 
@@ -84,15 +84,15 @@ Sharding-Sphere在对排序的查询进行归并时，将每个结果集的当�
 
 举例说明，假设根据科目分片，表结构中包含考生的姓名（为了简单起见，不考虑重名的情况）和分数。通过SQL获取每位考生的总分，可通过如下SQL：
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/result3.jpg)
+![](https://shardingsphere.apache.org/blog/img/result3.jpg)
 
 在分组项与排序项完全一致的情况下，取得的数据是连续的，分组所需的数据全数存在于各个数据结果集的当前游标所指向的数据值，因此可以采用流式归并。如下图所示。
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/result4.jpg)
+![](https://shardingsphere.apache.org/blog/img/result4.jpg)
 
 进行归并时，逻辑与排序归并类似。下图展现了进行next调用的时候，流式分组归并是如何进行的。
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/result5.jpg)
+![](https://shardingsphere.apache.org/blog/img/result5.jpg)
 
 
 通过图中我们可以看到，当进行第一次next调用时，排在队列首位的t\_score\_java将会被弹出队列，并且将分组值同为“Jetty”的其他结果集中的数据一同弹出队列。在获取了所有的姓名为“Jetty”的同学的分数之后，进行累加操作，那么，在第一次next调用结束后，取出的结果集是“Jetty”的分数总和。于此同时，所有的数据结果集中的游标都将下移至数据值“Jetty”的下一个不同的数据值，并且根据数据结果集当前游标指向的值进行重排序。因此，包含名字顺着第二位的“John”的相关数据结果集则排在的队列的前列。
@@ -111,7 +111,7 @@ Sharding-Sphere在对排序的查询进行归并时，将每个结果集的当�
 
 对于分组项与排序项不一致的情况，由于需要获取分组的相关的数据值并非连续的，因此无法使用流式归并，需要将所有的结果集数据加载至内存中进行分组和聚合。例如，若通过以下SQL获取每位考生的总分并按照分数从高至低排序：
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/result6.jpg)
+![](https://shardingsphere.apache.org/blog/img/result6.jpg)
 
 
 那么各个数据结果集中取出的数据与分数进行排序示例图的上半部分的表结构的原始数据一致，是无法进行流式归并的。
@@ -148,18 +148,18 @@ Sharding-Sphere的分页功能比较容易让使用者误解，用户通常认�
 
 但同时需要注意的是，由于排序的需要，大量的数据仍然需要传输到Sharding-Sphere的内存空间。因此，采用LIMIT这种方式分页，并非最佳实践。 由于LIMIT并不能通过索引查询数据，因此如果可以保证ID的连续性，通过ID进行分页是比较好的解决方案，例如：
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/result7.jpg)
+![](https://shardingsphere.apache.org/blog/img/result7.jpg)
 
 
 或通过记录上次查询结果的最后一条记录的ID进行下一页的查询，例如：
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/result8.jpg)
+![](https://shardingsphere.apache.org/blog/img/result8.jpg)
 
 ### 小结
 
 归并引擎的整体结构划分如下图所示。
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/result9.jpg)
+![](https://shardingsphere.apache.org/blog/img/result9.jpg)
 
 
 

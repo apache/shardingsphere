@@ -160,7 +160,7 @@ Apache ShardingSphere（Incubating）能够自动将XADataSource作为数据库�
 XA模块的架构图如下：
 
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/solution1.jpg)
+![](https://shardingsphere.apache.org/blog/img/solution1.jpg)
 
 #### Saga事务—跨越柔性事务限制，实现自动补偿
 
@@ -194,7 +194,7 @@ Apache ShardingSphere（Incubating）采用反向SQL技术，将对数据库进�
 
 Saga模块的架构图如下：
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/solution2.jpg)
+![](https://shardingsphere.apache.org/blog/img/solution2.jpg)
 
 #### 接入端—面向原生事务接口的分布式事务
 
@@ -242,6 +242,6 @@ Apache ShardingSphere（Incubating）的两个接入端Sharding-JDBC和Sharding-
 Apache ShardingSphere（Incubating）提供的分布式事务能力可以通过下表总结一下，读者不妨与文章开始时的表格对比一下，看看ShardingSphere的分布式事务模块所带来的变化。
 
  
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/solution3.jpg)
+![](https://shardingsphere.apache.org/blog/img/solution3.jpg)
 
 在高速发展的Apache ShardingSphere（Incubating）中，分布式事务的雏形已成，我们会尽快将其打造为可用的产品，并持续为社区提供优质解决方案。对于一篇不算短的文章，阅读完此文的您，相信一定对这个领域有一定兴趣。不妨先尝试一下，是否满足您的预期？或者干脆加入我们的社区，一起打造更完善的分布式事务方案。 

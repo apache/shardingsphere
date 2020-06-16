@@ -169,7 +169,7 @@ SELECT id, name FROM t_user WHERE status = 'ACTIVE' AND age > 18
 
   
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/ANTLR1.jpg)
+![](https://shardingsphere.apache.org/blog/img/ANTLR1.jpg)
 
   
 
@@ -288,7 +288,7 @@ WS:  [ ] + ->skip;
 
   
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/ANTLR2.jpg)
+![](https://shardingsphere.apache.org/blog/img/ANTLR2.jpg)
 
   
 

@@ -88,13 +88,13 @@ A: 在概念介绍部分，我们介绍了主角-自动化执行引擎。也谈�
 
 整个自动化执行引擎的执行流程如下图所示。
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/engine1.jpg)
+![](https://shardingsphere.apache.org/blog/img/engine1.jpg)
 
   
 
 在路由改写完成后，我们会得到路由结果(SQLRouteResult)，这个结果集主要包含了SQL、SQL的参数集、数据库等信息。其数据结构如下图所示：
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/engine2.jpg)
+![](https://shardingsphere.apache.org/blog/img/engine2.jpg)
 
 执行引擎的执行过程分为准备、执行两个阶段。
 
@@ -117,7 +117,7 @@ A: 在概念介绍部分，我们介绍了主角-自动化执行引擎。也谈�
 
 - 通过下图的公式获得每个数据库实例在maxConnectionSizePerQuery的允许范围内，每个数据库连接需要执行的SQL路由结果组，并演算出本次请求最优的连接模式。
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/engine3.jpg)
+![](https://shardingsphere.apache.org/blog/img/engine3.jpg)
 
 在maxConnectionSizePerQuery允许的范围内，当一个连接需要执行的请求数量大于1时，意味着当前的数据库连接无法持有相应的数据结果集，则必须采用内存归并；反之，当一个连接需要执行的请求数量等于1时，意味着当前的数据库连接可以持有相应的数据结果集，则可以采用流式归并。
 
@@ -139,7 +139,7 @@ A: 在概念介绍部分，我们介绍了主角-自动化执行引擎。也谈�
 
 举个栗子，假设一次查询需要在某一数据库上获取2个数据库连接，用于路由至一库的2个分表查询。有可能出现查询A已获取到该数据库的1个数据库连接，并等待获取另一个数据库连接；而查询B则也已经获得了该数据库上的1个数据库连接，并同样等待另一个数据库连接的获取。如果数据库连接池的允许最大连接数是2，那么这2个查询请求将永远孤独地等待着彼此，图绘版的解释可能会更便于大家理解：
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/engine4.jpg)
+![](https://shardingsphere.apache.org/blog/img/engine4.jpg)
 
 为了避免死锁的出现，Sharding-Sphere在获取数据库连接时进行了同步处理。它在创建执行单元时，以原子性的方式一次性获取本次SQL请求所需的全部数据库连接，杜绝了每次查询请求获取到部分资源的可能。这种加锁做法确实可以解决死锁问题，只是，同时会带来一定程度并发性能的损失。为了展示我们不一样！有啥不一样呢？
 

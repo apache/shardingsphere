@@ -39,19 +39,19 @@ Apache ShardingSphere 是一套开源的分布式数据库中间件解决方案�
 
 定位为轻量级 Java 框架，在 Java 的 JDBC 层提供的额外服务。它使用客户端直连数据库，以 jar 包形式提供服务，无需额外部署和依赖，可理解为增强版的 JDBC 驱动，完全兼容 JDBC 和各种 ORM 框架。
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/database1.jpg)
+![](https://shardingsphere.apache.org/blog/img/database1.jpg)
 
 **Sharding-Proxy**
 
 定位为透明化的数据库代理端，提供封装了数据库二进制协议的服务端版本，用于完成对异构语言的支持。目前已提供 MySQL 和 PostgreSQL 版本，它可以使用任何兼容 MySQL 和 PostgreSQL 协议的访问客户端 (如：MySQL Command Client, MySQL Workbench, Navicat 等) 操作数据，对 DBA 更加友好。
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/database2.jpg)
+![](https://shardingsphere.apache.org/blog/img/database2.jpg)
 
 **Sharding-Sidecar（规划中）**
 
 定位为 Kubernetes 的云原生数据库代理，以 Sidecar 的形式代理所有对数据库的访问。通过无中心、零侵入的方案提供与数据库交互的的啮合层，即 Database Mesh，又可称数据库网格。
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/database3.jpg)
+![](https://shardingsphere.apache.org/blog/img/database3.jpg)
 
 **计算存储分离的混合架构**
 
@@ -59,11 +59,11 @@ Sharding-JDBC 采用无中心化架构，适用于 Java 开发的高性能的轻
 
 每种架构方案都有其各自的优缺点，下面表格对比了各种架构模型的在不同场景下的优劣：
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/database4.jpg)
+![](https://shardingsphere.apache.org/blog/img/database4.jpg)
 
 Apache ShardingSphere 是多接入端共同组成的生态圈。通过混合使用 Sharding-JDBC 和 Sharding-Proxy，并采用同一配置中心统一配置分片策略，能够灵活的搭建适用于各种场景的应用系统，使得架构师更加自由的调整适合与当前业务的最佳系统架构。
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/database5.jpg)
+![](https://shardingsphere.apache.org/blog/img/database5.jpg)
 
 Apache ShardingSphere 采用 Share Nothing 架构，它的 JDBC 和 Proxy 接入端均采用无状态设计。作为计算节点，Apache ShardingSphere 负责对获取的数据进行最终的计算汇总。由于本身并不存储数据，因此 Apache ShardingSphere 可以将计算下推至数据节点，以充分利用数据库自身的计算能力。Apache ShardingSphere 可以通过增加部署节点数量来增加计算能力；增加数据库节点数量来增加存储能力。
 
@@ -77,7 +77,7 @@ Apache ShardingSphere 采用 Share Nothing 架构，它的 JDBC 和 Proxy 接入
 
 它可以将 SQL 根据用户预置的分片算法自动路由至相应的数据节点，以达到操作多个数据库的目的。用户可以像使用单机数据库一样使用被 Apache ShardingSphere 所管理的多个数据库。目前支持 MySQL、PostgreSQL、Oracle、SQLServer 以及任何支持 SQL92 标准和 JDBC 标准协议的数据库。数据分片的内核流程见下图：
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/database6.jpg)
+![](https://shardingsphere.apache.org/blog/img/database6.jpg)
 
 主要流程如下：
 
@@ -106,7 +106,7 @@ Apache ShardingSphere 采用 Share Nothing 架构，它的 JDBC 和 Proxy 接入
 
 Apache ShardingSphere 为本地事务、两阶段事务和柔性事务提供了统一的适配接口，并对接了大量的现有第三方的成熟解决方案。通过标准接口，开发者可以轻松的将其他整合方案融入到 Apache ShardingSphere 平台中。
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/database7.jpg)
+![](https://shardingsphere.apache.org/blog/img/database7.jpg)
 
 然而，融合大量第三方解决方案，却不能覆盖所有分布式事务需求分支。各种解决方案均有各自的适合及不适合场景。各解决方案间是互斥的，无法将它们的优点叠加使用。针对于当前最常见 2PC（两阶段提交）和柔性事务，分别存在着以下的优势和不足：
 
@@ -117,7 +117,7 @@ Apache ShardingSphere 为本地事务、两阶段事务和柔性事务提供了�
 
 基于 ACID 的两阶段事务和基于 BASE 的最终一致性事务都不是银弹，可通过下表详细对比它们之间的区别。
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/database8.jpg)
+![](https://shardingsphere.apache.org/blog/img/database8.jpg)
 
 缺乏并发度保障的两阶段事务不能称之为完善的分布式事务解决方案；而缺乏对 ACID 原义支持的柔性事务都甚至不能称之为数据库事务，它更适合服务层的事务处理。
 
@@ -129,7 +129,7 @@ JDTX 是京东数科自研的分布式事务中间件，尚未开源。它的设
 
 JDTX 通过完全自研的事务处理引擎，将 SQL 操作的事务中数据转化为 KV（键值对），并在其基础上实现了 MVCC（多版本快照）的事务可见性引擎，以及与数据库设计理念类似的 WAL（预写日志系统）存储引擎。可以通过下面的架构图来了解一下 JDTX 的构成：
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/database9.jpg)
+![](https://shardingsphere.apache.org/blog/img/database9.jpg)
 
 它的设计特点是将在事务中的数据（称之为活跃数据）和不在事务中的数据（称之为落盘数据）分离。活跃数据在落盘至 WAL 之后，再以 KV 的形态保存至 MVCC 内存引擎中。落盘数据则是通过异步刷盘的方式，将 WAL 中的 REDO 日志，以流量可控的方式同步至最终的存储介质中（如：关系型数据库）。事务内存查询引擎负责使用 SQL 从 KV 格式的活跃数据中检索到相关数据，与落盘数据合并，并根据事务隔离级别获取符合当前事务可见的数据版本。
 
@@ -159,7 +159,7 @@ WAL 和 MVCC 引擎均可以通过主备 + 分片的方式维持高可用和水�
 
 通过 Apache ShardingSphere 提供的分布式事务统一适配接口，可以将 JDTX 像其他第三方分布式事务解决方案一样轻松地融入 Apache ShardingSphere 生态，将数据分片与分布式事务无缝结合，使它们具备组成分布式数据库基础设施的能力。架设在产品最前端的 Apache ShardingSphere 用于 SQL 解析、数据库协议和数据分片；位于中层的 JDTX 用于通过 KV 和 MVCC 的方式处理事务活跃数据；最底层的数据库则仅作为最终的数据存储端。下图是 ShardingSphere + JDTX 的架构图。
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/database10.jpg)
+![](https://shardingsphere.apache.org/blog/img/database10.jpg)
 
 可以说，JDTX 的存在，使得 Apache ShardingSphere 打破了稳定型的数据库中间件的定位，在保持稳定的同时，逐步向进取型 NewSQL 发展。
 
@@ -173,7 +173,7 @@ WAL 和 MVCC 引擎均可以通过主备 + 分片的方式维持高可用和水�
 
 数据迁移是面向用户定制分片策略的标准扩缩容方案。在迁移过程中，需要准备两套数据节点。原数据节点在继续提供服务的同时，将数据以存量和增量的方式，分别写入新数据节点。整个迁移过程无需停止对外服务，可以平顺的过渡新旧数据节点。Apache ShardingSphere 还将提供工作流界面，让迁移过程完全自主可控。弹性迁移的架构图如下：
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/database11.jpg)
+![](https://shardingsphere.apache.org/blog/img/database11.jpg)
 
 具体流程如下：
 
@@ -200,7 +200,7 @@ WAL 和 MVCC 引擎均可以通过主备 + 分片的方式维持高可用和水�
 
 使用范围扩容的用户，只需向 Apache ShardingSphere 提供数据库资源池。容量巡检器会在表容量到达阈值时，从资源池中依次寻找下一个数据节点，并在新数据节点创建新表之后，修改分片策略的范围元数据。当资源池中没有新数据节点后，Apache ShardingSphere 会按照同样的顺序，在已经创建过表的数据库中增加新表。当表数据大量删除时，之前的数据节点的数据将不再紧凑，垃圾回收器会定时压缩表范围，以释放更多的碎片空间。范围扩容的结构如下：
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/database12.jpg)
+![](https://shardingsphere.apache.org/blog/img/database12.jpg)
 
 Apache ShardingSphere 为不同的应用场景，提供了更加灵活的弹性伸缩策略。目前仍在孵化中的两个弹性伸缩相关的项目，也力争尽快提供试用版本。
 
@@ -250,7 +250,7 @@ Apache ShardingSphere 可以在系统进行全链路压测时，自动将用户�
 
 可插拔平台会将 Apache ShardingSphere 从技术和功能两方面完全拆开。Apache ShardingSphere 的全景图如下所示：
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/database13.jpg)
+![](https://shardingsphere.apache.org/blog/img/database13.jpg)
 
 Apache ShardingSphere 会根据技术架构横向分为 4 层，分别是接入层、SQL 解析层、内核处理层和存储访问层；并且将功能以可插拔的形态融入至 4 层架构中。
 
