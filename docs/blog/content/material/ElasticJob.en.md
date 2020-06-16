@@ -1,7 +1,7 @@
 
 +++
-title = "ElasticJob"
-weight = 2
+title = "News! The distributed scheduling project ElasticJob is about to restart"
+weight = 7
 chapter = true
 +++
 

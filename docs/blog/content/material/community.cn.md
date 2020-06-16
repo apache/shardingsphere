@@ -1,6 +1,6 @@
 +++
-title = "社区探索与拓展"
-weight = 2
+title = "Apache ShardingSphere社区的探索与拓展"
+weight = 3
 chapter = true
 +++
 

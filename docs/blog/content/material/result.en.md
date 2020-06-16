@@ -1,6 +1,6 @@
 +++
-title = "result_merge"
-weight = 2
+title = "How to merge the child resultsets"
+weight = 14
 chapter = true
 +++
 
