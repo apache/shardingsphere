@@ -37,6 +37,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Mutable interval sharding algorithm that adapt various shard method by define properties below.
@@ -162,10 +163,10 @@ public final class MutableIntervalShardingAlgorithm implements StandardShardingA
         LocalDateTime calculateTime = startTime;
         Set<String> result = new HashSet<>();
         while (!calculateTime.isAfter(endTime)) {
-            mergeTableIfMatch(calculateTime, result, availableTargetNames);
+            result.addAll(getMatchedTables(calculateTime, availableTargetNames));
             calculateTime = calculateTime.plus(stepAmount, stepUnit);
         }
-        mergeTableIfMatch(endTime, result, availableTargetNames);
+        result.addAll(getMatchedTables(endTime, availableTargetNames));
         return result;
     }
     
@@ -173,9 +174,9 @@ public final class MutableIntervalShardingAlgorithm implements StandardShardingA
         return LocalDateTime.parse(value.substring(0, dateTimePatternLength), dateTimeFormatter);
     }
     
-    private void mergeTableIfMatch(final LocalDateTime dateTime, final Collection<String> tables, final Collection<String> availableTargetNames) {
+    private Collection<String> getMatchedTables(final LocalDateTime dateTime, final Collection<String> availableTargetNames) {
         String tableSuffix = dateTime.format(tableSuffixPattern);
-        availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).findAny().map(tables::add);
+        return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).collect(Collectors.toSet());
     }
     
     @Override
