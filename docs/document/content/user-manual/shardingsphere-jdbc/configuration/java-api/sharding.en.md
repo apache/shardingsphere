@@ -52,7 +52,7 @@ Attributes:
 
 ### Standard Sharding Strategy Configuration
 
-Class name: org.apache.shardingsphere.sharding.api.config.strategy.StandardShardingStrategyConfiguration
+Class name: org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration
 
 Attributes:
 
@@ -61,11 +61,55 @@ Attributes:
 | shardingColumn        | String     | Sharding column name    |
 | shardingAlgorithmName | String     | Sharding algorithm name |
 
-Apache ShardingSphere built-in implemented classes of StandardShardingAlgorithm are:
+### Complex Sharding Strategy Configuration
+
+Class name: org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration
+
+Attributes:
+
+| *Name*                | *DataType* | *Description*                             |
+| --------------------- | ---------- | ----------------------------------------- |
+| shardingColumns       | String     | Sharding column name, separated by commas |
+| shardingAlgorithmName | String     | Sharding algorithm name                   |
+
+### Hint Sharding Strategy Configuration
+
+Class name: org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration
+
+Attributes:
+
+| *Name*                | *DataType* | *Description*           |
+| --------------------- | ---------- | ----------------------- |
+| shardingAlgorithmName | String     | Sharding algorithm name |
+
+### None Sharding Strategy Configuration
+
+Class name: org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration
+
+Attributes: None
+
+## Key Generate Strategy Configuration
+
+Class name: org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration
+
+Attributes:
+
+| *Name*           | *DataType* | *Description*               |
+| ---------------- | ---------- | --------------------------- |
+| column           | String     | Column name of key generate |
+| keyGeneratorName | String     | key generate algorithm name |
+
+## Sharding Algorithm Configuration
+
+Class name: org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration
+
+### Standard Sharding Algorithm Configuration
+
+Apache ShardingSphere built-in standard sharding algorithm are:
 
 #### Inline Sharding Algorithm
 
-Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.InlineShardingAlgorithm
+Type: INLINE
 
 Attributes:
 
@@ -76,7 +120,7 @@ Attributes:
 
 #### Modulo Sharding Algorithm
 
-Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.mod.ModShardingAlgorithm
+Type: MOD
 
 Attributes:
 
@@ -86,7 +130,7 @@ Attributes:
 
 #### Hash Modulo Sharding Algorithm
 
-Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.mod.HashModShardingAlgorithm
+Type: HASH_MOD
 
 Attributes:
 
@@ -96,7 +140,7 @@ Attributes:
 
 #### Volume Based Range Sharding Algorithm
 
-Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.VolumeBasedRangeShardingAlgorithm
+Type: VOLUME_RANGE
 
 Attributes:
 
@@ -108,7 +152,7 @@ Attributes:
 
 #### Boundary Based Range Sharding Algorithm
 
-Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.BoundaryBasedRangeShardingAlgorithm
+Type: BOUNDARY_RANGE
 
 Attributes:
 
@@ -118,7 +162,7 @@ Attributes:
 
 #### Fixed Time Range Sharding Algorithm
 
-Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.datetime.FixedIntervalShardingAlgorithm
+Type: FIXED_INTERVAL
 
 Attributes:
 
@@ -130,7 +174,7 @@ Attributes:
 
 #### Mutable Interval Sharding Algorithm
 
-Class name: org.apache.shardingsphere.sharding.strategy.algorithm.sharding.datetime.MutableIntervalShardingAlgorithm
+Type: MUTABLE_INTERVAL
 
 Attributes:
 
@@ -143,53 +187,21 @@ Attributes:
 | datetime.step.unit   | String     | TODO                                           |
 | datetime.step.amount | String     | TODO                                           |
 
-### Complex Sharding Strategy Configuration
+### Complex Sharding Algorithm Configuration
 
-Class name: 类名称：org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration
+There is no built-in complex sharding algorithm in Apache ShardingSphere.
 
-Attributes:
+### Hint Sharding Algorithm Configuration
 
-| *Name*                | *DataType* | *Description*                             |
-| --------------------- | ---------- | ----------------------------------------- |
-| shardingColumns       | String     | Sharding column name, separated by commas |
-| shardingAlgorithmName | String     | Sharding algorithm name                   |
+There is no built-in hint sharding algorithm in Apache ShardingSphere.
 
-There is no built-in complex keys sharding algorithm implementation class in Apache ShardingSphere.
+## Key Generate Algorithm Configuration
 
-### Hint Sharding Strategy Configuration
-
-Class name: HintShardingStrategyConfiguration
-
-Attributes:
-
-| *Name*                | *DataType* | *Description*           |
-| --------------------- | ---------- | ----------------------- |
-| shardingAlgorithmName | String     | Sharding algorithm name |
-
-There is no built-in hint sharding algorithm implementation class in Apache ShardingSphere.
-
-### None Sharding Strategy Configuration
-
-Class name: org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration
-
-Attributes: None
-
-## Key Generator Configuration
-
-Class name: org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration
-
-Attributes:
-
-| *Name*           | *DataType* | *Description*                |
-| ---------------- | ---------- | ---------------------------- |
-| column           | String     | Column name of key generate  |
-| keyGeneratorName | String     | key generate algorithm  name |
-
-Apache ShardingSphere built-in implemented classes of KeyGenerateAlgorithm are:
+Apache ShardingSphere built-in key generate algorithm are:
 
 ### Snowflake
 
-Class name: org.apache.shardingsphere.sharding.strategy.algorithm.keygen.SnowflakeKeyGenerateAlgorithm
+Type: SNOWFLAKE
 
 Attributes:
 
@@ -201,6 +213,6 @@ Attributes:
 
 ### UUID
 
-Class name: org.apache.shardingsphere.sharding.strategy.algorithm.keygen.UUIDKeyGenerateAlgorithm
+Type: UUID
 
 Attributes: None
