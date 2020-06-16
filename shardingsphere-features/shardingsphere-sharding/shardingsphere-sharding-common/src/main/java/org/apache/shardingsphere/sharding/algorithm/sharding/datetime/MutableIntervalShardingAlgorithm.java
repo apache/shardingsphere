@@ -67,46 +67,83 @@ public final class MutableIntervalShardingAlgorithm implements StandardShardingA
     
     private static final String TABLE_SUFFIX_FORMAT_KEY = "table.suffix.format";
     
-    private static final String DEFAULT_LOWER_KEY = "datetime.lower";
+    private static final String DATE_TIME_LOWER_KEY = "datetime.lower";
     
-    private static final String DEFAULT_UPPER_KEY = "datetime.upper";
+    private static final String DATE_TIME_UPPER_KEY = "datetime.upper";
     
     private static final String STEP_UNIT_KEY = "datetime.step.unit";
     
     private static final String STEP_AMOUNT_KEY = "datetime.step.amount";
     
-    private DateTimeFormatter datetimeFormatter;
+    @Getter
+    @Setter
+    private Properties props = new Properties();
+    
+    private String datetimeFormat;
+    
+    private DateTimeFormatter tableSuffixFormat;
+    
+    private String dateTimeLower;
+    
+    private String dateTimeUpper;
     
     private ChronoUnit stepUnit;
     
     private int stepAmount;
     
-    @Getter
-    @Setter
-    private Properties props = new Properties();
+    private DateTimeFormatter datetimeFormatter;
     
     @Override
     public void init() {
-        Preconditions.checkNotNull(props.getProperty(DATE_TIME_FORMAT_KEY));
-        Preconditions.checkNotNull(props.getProperty(TABLE_SUFFIX_FORMAT_KEY));
-        Preconditions.checkNotNull(props.getProperty(DEFAULT_LOWER_KEY));
-        stepUnit = null == props.getProperty(STEP_UNIT_KEY) ? ChronoUnit.DAYS : generateStepUnit();
+        datetimeFormat = getDatetimeFormat();
+        tableSuffixFormat = getTableSuffixFormat();
+        dateTimeLower = getDateTimeLower();
+        dateTimeUpper = getDateTimeUpper();
+        stepUnit = null == props.getProperty(STEP_UNIT_KEY) ? ChronoUnit.DAYS : generateStepUnit(props.getProperty(STEP_UNIT_KEY));
         stepAmount = Integer.parseInt(props.getProperty(STEP_AMOUNT_KEY, "1"));
-        datetimeFormatter = DateTimeFormatter.ofPattern(props.getProperty(DATE_TIME_FORMAT_KEY));
+        datetimeFormatter = DateTimeFormatter.ofPattern(datetimeFormat);
         try {
-            parseDateTimeForValue(props.getProperty(DEFAULT_LOWER_KEY));
-            if (props.getProperty(DEFAULT_UPPER_KEY) != null) {
-                parseDateTimeForValue(props.getProperty(DEFAULT_UPPER_KEY));
+            parseDateTimeForValue(dateTimeLower);
+            if (null != dateTimeUpper) {
+                parseDateTimeForValue(props.getProperty(dateTimeUpper));
             }
-        } catch (DateTimeParseException e) {
-            throw new UnsupportedOperationException("can't apply shard value for default lower/upper values", e);
+        } catch (final DateTimeParseException ex) {
+            throw new UnsupportedOperationException("Cannot apply shard value for default lower/upper values", ex);
         }
+    }
+    
+    private String getDatetimeFormat() {
+        Preconditions.checkNotNull(props.getProperty(DATE_TIME_FORMAT_KEY));
+        return props.getProperty(DATE_TIME_FORMAT_KEY);
+    }
+    
+    private DateTimeFormatter getTableSuffixFormat() {
+        Preconditions.checkNotNull(props.getProperty(TABLE_SUFFIX_FORMAT_KEY));
+        return DateTimeFormatter.ofPattern(props.getProperty(TABLE_SUFFIX_FORMAT_KEY));
+    }
+    
+    private String getDateTimeLower() {
+        Preconditions.checkNotNull(props.getProperty(DATE_TIME_LOWER_KEY));
+        return props.getProperty(DATE_TIME_LOWER_KEY);
+    }
+    
+    private String getDateTimeUpper() {
+        return props.getProperty(DATE_TIME_UPPER_KEY);
+    }
+    
+    private ChronoUnit generateStepUnit(final String stepUnit) {
+        for (ChronoUnit unit : ChronoUnit.values()) {
+            if (unit.toString().equalsIgnoreCase(stepUnit)) {
+                return unit;
+            }
+        }
+        throw new UnsupportedOperationException(String.format("Cannot find step unit for specified datetime.step.unit prop: `%s`", stepUnit));
     }
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         return availableTargetNames.stream()
-                .filter(tableName -> tableName.endsWith(formatForDateTime(parseDateTimeForValue(shardingValue.getValue().toString()))))
+                .filter(tableName -> tableName.endsWith(parseDateTimeForValue(shardingValue.getValue().toString()).format(tableSuffixFormat)))
                 .findFirst().orElseThrow(() -> new UnsupportedOperationException(
                         String.format("failed to shard value %s, and availableTables %s", shardingValue, availableTargetNames)));
     }
@@ -119,12 +156,12 @@ public final class MutableIntervalShardingAlgorithm implements StandardShardingA
         if (!hasStart && !hasEnd) {
             return availableTargetNames;
         }
-        LocalDateTime start = hasStart ? parseDateTimeForValue(shardingValue.getValueRange().lowerEndpoint().toString()) : parseDateTimeForValue(props.getProperty(DEFAULT_LOWER_KEY));
+        LocalDateTime start = hasStart ? parseDateTimeForValue(shardingValue.getValueRange().lowerEndpoint().toString()) : parseDateTimeForValue(dateTimeLower);
         LocalDateTime end = hasEnd
                 ? parseDateTimeForValue(shardingValue.getValueRange().upperEndpoint().toString())
-                : props.getProperty(DEFAULT_UPPER_KEY) == null
+                : dateTimeUpper == null
                 ? LocalDateTime.now()
-                : parseDateTimeForValue(props.getProperty(DEFAULT_UPPER_KEY));
+                : parseDateTimeForValue(dateTimeUpper);
         LocalDateTime tmp = start;
         while (!tmp.isAfter(end)) {
             mergeTableIfMatch(tmp, tables, availableTargetNames);
@@ -135,26 +172,12 @@ public final class MutableIntervalShardingAlgorithm implements StandardShardingA
     }
     
     private LocalDateTime parseDateTimeForValue(final String value) {
-        return LocalDateTime.parse(value.substring(0, props.getProperty(DATE_TIME_FORMAT_KEY).length()), datetimeFormatter);
-    }
-    
-    private String formatForDateTime(final LocalDateTime localDateTime) {
-        return localDateTime.format(DateTimeFormatter.ofPattern(props.get(TABLE_SUFFIX_FORMAT_KEY).toString()));
+        return LocalDateTime.parse(value.substring(0, datetimeFormat.length()), datetimeFormatter);
     }
     
     private void mergeTableIfMatch(final LocalDateTime dateTime, final Collection<String> tables, final Collection<String> availableTargetNames) {
-        String suffix = formatForDateTime(dateTime);
+        String suffix = dateTime.format(tableSuffixFormat);
         availableTargetNames.parallelStream().filter(tableName -> tableName.endsWith(suffix)).findAny().map(tables::add);
-    }
-    
-    private ChronoUnit generateStepUnit() {
-        for (ChronoUnit unit : ChronoUnit.values()) {
-            if (unit.toString().equalsIgnoreCase(props.getProperty(STEP_UNIT_KEY))) {
-                return unit;
-            }
-        }
-        throw new UnsupportedOperationException(
-                String.format("can't find step unit for specified datetime.step.unit prop: %s", props.getProperty(STEP_UNIT_KEY)));
     }
     
     @Override

@@ -49,15 +49,15 @@ import java.util.Properties;
 @Getter
 public final class FixedIntervalShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
     
-    private static final String DATETIME_LOWER_KEY = "datetime.lower";
+    private static final String DATE_TIME_LOWER_KEY = "datetime.lower";
     
-    private static final String DATETIME_UPPER_KEY = "datetime.upper";
+    private static final String DATE_TIME_UPPER_KEY = "datetime.upper";
     
     private static final String SHARDING_SECONDS_KEY = "sharding.seconds";
     
-    private static final String DATETIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
+    private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
     
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern(DATETIME_PATTERN);
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
     
     @Setter
     private Properties props = new Properties();
@@ -75,17 +75,17 @@ public final class FixedIntervalShardingAlgorithm implements StandardShardingAlg
         dateTimeLower = getDateTimeLower();
         dateTimeUpper = getDateTimeUpper();
         shardingSeconds = getShardingSeconds();
-        autoTablesAmount = (int) (Math.ceil(parseDate(props.get(DATETIME_UPPER_KEY).toString()) / shardingSeconds) + 2);
+        autoTablesAmount = (int) (Math.ceil(parseDate(props.getProperty(DATE_TIME_UPPER_KEY)) / shardingSeconds) + 2);
     }
     
     private LocalDateTime getDateTimeLower() {
-        Preconditions.checkState(null != props.get(DATETIME_LOWER_KEY) && checkDatetimePattern(props.get(DATETIME_LOWER_KEY).toString()), "%s pattern is required.", DATETIME_PATTERN);
-        return LocalDateTime.parse(props.get(DATETIME_LOWER_KEY).toString(), DATE_FORMAT);
+        Preconditions.checkState(null != props.getProperty(DATE_TIME_LOWER_KEY) && checkDatetimePattern(props.getProperty(DATE_TIME_LOWER_KEY)), "%s pattern is required.", DATE_TIME_PATTERN);
+        return LocalDateTime.parse(props.getProperty(DATE_TIME_LOWER_KEY), DATE_FORMAT);
     }
     
     private LocalDateTime getDateTimeUpper() {
-        Preconditions.checkState(null != props.get(DATETIME_UPPER_KEY) && checkDatetimePattern(props.get(DATETIME_UPPER_KEY).toString()), "%s pattern is required.", DATETIME_PATTERN);
-        return LocalDateTime.parse(props.get(DATETIME_UPPER_KEY).toString(), DATE_FORMAT);
+        Preconditions.checkState(null != props.getProperty(DATE_TIME_UPPER_KEY) && checkDatetimePattern(props.getProperty(DATE_TIME_UPPER_KEY)), "%s pattern is required.", DATE_TIME_PATTERN);
+        return LocalDateTime.parse(props.getProperty(DATE_TIME_UPPER_KEY), DATE_FORMAT);
     }
     
     private long getShardingSeconds() {
