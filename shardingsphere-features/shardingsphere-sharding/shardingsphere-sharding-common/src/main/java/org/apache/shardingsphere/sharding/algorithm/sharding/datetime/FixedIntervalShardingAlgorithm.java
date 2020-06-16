@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Range;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAlgorithmException;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
@@ -48,9 +49,9 @@ import java.util.Properties;
 @Getter
 public final class FixedIntervalShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
     
-    private static final String DATETIME_LOWER = "datetime.lower";
+    private static final String DATETIME_LOWER_KEY = "datetime.lower";
     
-    private static final String DATETIME_UPPER = "datetime.upper";
+    private static final String DATETIME_UPPER_KEY = "datetime.upper";
     
     private static final String SHARDING_SECONDS_KEY = "sharding.seconds";
     
@@ -58,17 +59,38 @@ public final class FixedIntervalShardingAlgorithm implements StandardShardingAlg
     
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern(DATETIME_PATTERN);
     
-    private int autoTablesAmount;
-    
     @Setter
     private Properties props = new Properties();
     
+    private LocalDateTime dateTimeLower;
+    
+    private LocalDateTime dateTimeUpper;
+    
+    private long shardingSeconds;
+    
+    private int autoTablesAmount;
+    
     @Override
     public void init() {
-        Preconditions.checkNotNull(props.get(SHARDING_SECONDS_KEY), "Sharding partition volume cannot be null.");
-        Preconditions.checkState(null != props.get(DATETIME_LOWER) && checkDatetimePattern(props.get(DATETIME_LOWER).toString()), "%s pattern is required.", DATETIME_PATTERN);
-        Preconditions.checkState(null != props.get(DATETIME_UPPER) && checkDatetimePattern(props.get(DATETIME_UPPER).toString()), "%s pattern is required.", DATETIME_PATTERN);
-        autoTablesAmount = (int) (Math.ceil(parseDate(props.get(DATETIME_UPPER).toString()) / getPartitionValue()) + 2);
+        dateTimeLower = getDateTimeLower();
+        dateTimeUpper = getDateTimeUpper();
+        shardingSeconds = getShardingSeconds();
+        autoTablesAmount = (int) (Math.ceil(parseDate(props.get(DATETIME_UPPER_KEY).toString()) / shardingSeconds) + 2);
+    }
+    
+    private LocalDateTime getDateTimeLower() {
+        Preconditions.checkState(null != props.get(DATETIME_LOWER_KEY) && checkDatetimePattern(props.get(DATETIME_LOWER_KEY).toString()), "%s pattern is required.", DATETIME_PATTERN);
+        return LocalDateTime.parse(props.get(DATETIME_LOWER_KEY).toString(), DATE_FORMAT);
+    }
+    
+    private LocalDateTime getDateTimeUpper() {
+        Preconditions.checkState(null != props.get(DATETIME_UPPER_KEY) && checkDatetimePattern(props.get(DATETIME_UPPER_KEY).toString()), "%s pattern is required.", DATETIME_PATTERN);
+        return LocalDateTime.parse(props.get(DATETIME_UPPER_KEY).toString(), DATE_FORMAT);
+    }
+    
+    private long getShardingSeconds() {
+        Preconditions.checkNotNull(props.getProperty(SHARDING_SECONDS_KEY), "Sharding seconds cannot be null.");
+        return Long.parseLong(props.getProperty(SHARDING_SECONDS_KEY));
     }
     
     @Override
@@ -78,7 +100,7 @@ public final class FixedIntervalShardingAlgorithm implements StandardShardingAlg
                 return each;
             }
         }
-        return null;
+        throw new ShardingAlgorithmException("Sharding failure, cannot find target name via `%s`", shardingValue);
     }
     
     @Override
@@ -101,7 +123,7 @@ public final class FixedIntervalShardingAlgorithm implements StandardShardingAlg
     
     private int doSharding(final long shardingValue) {
         DecimalFormat decimalFormat = new DecimalFormat("0.00");
-        String position = decimalFormat.format((float) shardingValue / getPartitionValue());
+        String position = decimalFormat.format((float) shardingValue / shardingSeconds);
         return Math.min(Math.max(0, (int) Math.ceil(Float.parseFloat(position))), autoTablesAmount - 1);
     }
     
@@ -124,12 +146,7 @@ public final class FixedIntervalShardingAlgorithm implements StandardShardingAlg
     
     private long parseDate(final Comparable<?> shardingValue) {
         LocalDateTime dateValue = LocalDateTime.parse(shardingValue.toString(), DATE_FORMAT);
-        LocalDateTime sinceDate = LocalDateTime.parse(props.get(DATETIME_LOWER).toString(), DATE_FORMAT);
-        return Duration.between(sinceDate, dateValue).toMillis() / 1000;
-    }
-    
-    private long getPartitionValue() {
-        return Long.parseLong(props.get(SHARDING_SECONDS_KEY).toString());
+        return Duration.between(dateTimeLower, dateValue).toMillis() / 1000;
     }
     
     @Override
