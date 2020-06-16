@@ -81,7 +81,7 @@ public final class ClusterFacade {
     }
     
     /**
-     * Re init cluster facade.
+     * ReInit cluster facade.
      *
      * @param event cluster configuration changed event
      */
