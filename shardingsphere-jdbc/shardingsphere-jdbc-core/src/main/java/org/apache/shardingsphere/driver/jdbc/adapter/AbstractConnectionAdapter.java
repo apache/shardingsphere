@@ -73,7 +73,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     private volatile boolean closed;
     
     private int transactionIsolation = TRANSACTION_READ_UNCOMMITTED;
-
+    
     protected AbstractConnectionAdapter(final Map<String, DataSource> dataSourceMap, final SchemaContexts schemaContexts) {
         this.dataSourceMap = dataSourceMap;
         this.schemaContexts = schemaContexts;

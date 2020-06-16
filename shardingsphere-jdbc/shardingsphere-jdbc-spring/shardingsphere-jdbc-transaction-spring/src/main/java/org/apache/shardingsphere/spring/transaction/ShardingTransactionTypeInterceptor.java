@@ -44,7 +44,7 @@ public final class ShardingTransactionTypeInterceptor implements MethodIntercept
             return methodInvocation.proceed();
         } finally {
             TransactionTypeHolder.clear();
-            if (preTransactionType != null) {
+            if (null != preTransactionType) {
                 TransactionTypeHolder.set(preTransactionType);
             }
         }
