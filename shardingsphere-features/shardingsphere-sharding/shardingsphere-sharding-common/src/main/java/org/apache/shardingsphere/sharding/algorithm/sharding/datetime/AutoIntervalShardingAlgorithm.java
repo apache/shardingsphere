@@ -37,10 +37,10 @@ import java.util.LinkedHashSet;
 import java.util.Properties;
 
 /**
- * Fixed interval sharding algorithm.
+ * Auto interval sharding algorithm.
  */
 @Getter
-public final class FixedIntervalShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
+public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
     
     private static final String DATE_TIME_LOWER_KEY = "datetime.lower";
     
@@ -134,6 +134,6 @@ public final class FixedIntervalShardingAlgorithm implements StandardShardingAlg
     
     @Override
     public String getType() {
-        return "FIXED_INTERVAL";
+        return "AUTO_INTERVAL";
     }
 }

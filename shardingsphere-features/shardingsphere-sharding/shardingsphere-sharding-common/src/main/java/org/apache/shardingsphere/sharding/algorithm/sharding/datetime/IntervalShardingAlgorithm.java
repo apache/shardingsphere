@@ -37,9 +37,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Mutable interval sharding algorithm.
+ * Interval sharding algorithm.
  */
-public final class MutableIntervalShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>> {
+public final class IntervalShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>> {
     
     private static final String DATE_TIME_PATTERN_KEY = "datetime.pattern";
     
@@ -47,7 +47,7 @@ public final class MutableIntervalShardingAlgorithm implements StandardShardingA
     
     private static final String DATE_TIME_UPPER_KEY = "datetime.upper";
     
-    private static final String TABLE_SUFFIX_FORMAT_KEY = "table.suffix.pattern";
+    private static final String SHARDING_SUFFIX_FORMAT_KEY = "sharding.suffix.pattern";
     
     private static final String INTERVAL_AMOUNT_KEY = "datetime.interval.amount";
     
@@ -106,8 +106,8 @@ public final class MutableIntervalShardingAlgorithm implements StandardShardingA
     }
     
     private DateTimeFormatter getTableSuffixPattern() {
-        Preconditions.checkArgument(props.containsKey(TABLE_SUFFIX_FORMAT_KEY), "% can not be null.", TABLE_SUFFIX_FORMAT_KEY);
-        return DateTimeFormatter.ofPattern(props.getProperty(TABLE_SUFFIX_FORMAT_KEY));
+        Preconditions.checkArgument(props.containsKey(SHARDING_SUFFIX_FORMAT_KEY), "% can not be null.", SHARDING_SUFFIX_FORMAT_KEY);
+        return DateTimeFormatter.ofPattern(props.getProperty(SHARDING_SUFFIX_FORMAT_KEY));
     }
     
     private ChronoUnit getStepUnit(final String stepUnit) {
@@ -156,6 +156,6 @@ public final class MutableIntervalShardingAlgorithm implements StandardShardingA
     
     @Override
     public String getType() {
-        return "MUTABLE_INTERVAL";
+        return "INTERVAL";
     }
 }

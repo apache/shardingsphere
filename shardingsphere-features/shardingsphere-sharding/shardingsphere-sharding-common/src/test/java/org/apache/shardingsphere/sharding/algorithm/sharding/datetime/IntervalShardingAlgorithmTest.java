@@ -40,7 +40,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class MutableIntervalShardingAlgorithmTest {
+public final class IntervalShardingAlgorithmTest {
     
     private final List<String> availableTablesForMonthStrategy = new ArrayList<>();
     
@@ -57,11 +57,11 @@ public final class MutableIntervalShardingAlgorithmTest {
     }
     
     private void initShardStrategyByQuarter() {
-        MutableIntervalShardingAlgorithm shardingAlgorithm = new MutableIntervalShardingAlgorithm();
+        IntervalShardingAlgorithm shardingAlgorithm = new IntervalShardingAlgorithm();
         shardingAlgorithm.getProps().setProperty("datetime.pattern", "yyyy-MM-dd HH:mm:ss");
-        shardingAlgorithm.getProps().setProperty("table.suffix.pattern", "yyyyQQ");
         shardingAlgorithm.getProps().setProperty("datetime.lower", "2016-01-01 00:00:00");
         shardingAlgorithm.getProps().setProperty("datetime.upper", "2021-12-31 00:00:00");
+        shardingAlgorithm.getProps().setProperty("sharding.suffix.pattern", "yyyyQQ");
         shardingAlgorithm.getProps().setProperty("datetime.interval.amount", "3");
         shardingAlgorithm.getProps().setProperty("datetime.interval.unit", "Months");
         shardingAlgorithm.init();
@@ -74,11 +74,11 @@ public final class MutableIntervalShardingAlgorithmTest {
     }
     
     private void initShardStrategyByMonth() {
-        MutableIntervalShardingAlgorithm shardingAlgorithm = new MutableIntervalShardingAlgorithm();
+        IntervalShardingAlgorithm shardingAlgorithm = new IntervalShardingAlgorithm();
         shardingAlgorithm.getProps().setProperty("datetime.pattern", "yyyy-MM-dd HH:mm:ss");
-        shardingAlgorithm.getProps().setProperty("table.suffix.pattern", "yyyyMM");
         shardingAlgorithm.getProps().setProperty("datetime.lower", "2016-01-01 00:00:00");
         shardingAlgorithm.getProps().setProperty("datetime.upper", "2021-12-31 00:00:00");
+        shardingAlgorithm.getProps().setProperty("sharding.suffix.pattern", "yyyyMM");
         shardingAlgorithm.getProps().setProperty("datetime.interval.amount", "1");
         shardingAlgorithm.getProps().setProperty("datetime.interval.unit", "Months");
         shardingAlgorithm.init();
