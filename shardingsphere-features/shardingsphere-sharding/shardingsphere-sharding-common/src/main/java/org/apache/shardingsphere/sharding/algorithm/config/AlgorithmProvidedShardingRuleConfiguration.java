@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.keygen.config;
+package org.apache.shardingsphere.sharding.algorithm.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
