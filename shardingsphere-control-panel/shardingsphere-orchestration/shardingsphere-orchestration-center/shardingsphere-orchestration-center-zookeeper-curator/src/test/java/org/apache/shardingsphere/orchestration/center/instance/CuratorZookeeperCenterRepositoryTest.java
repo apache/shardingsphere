@@ -136,7 +136,7 @@ public final class CuratorZookeeperCenterRepositoryTest {
         props.setProperty(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS.getKey(), "1000");
         props.setProperty(ZookeeperPropertyKey.MAX_RETRIES.getKey(), "1");
         props.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "1000");
-        props.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "1000");
+        props.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "2000");
         CenterConfiguration configuration = new CenterConfiguration(customCenterRepository.getType(), new Properties());
         configuration.setServerLists(serverLists);
         customCenterRepository.setProps(props);
@@ -144,7 +144,7 @@ public final class CuratorZookeeperCenterRepositoryTest {
         assertThat(customCenterRepository.getProps().getProperty(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS.getKey()), is("1000"));
         assertThat(customCenterRepository.getProps().getProperty(ZookeeperPropertyKey.MAX_RETRIES.getKey()), is("1"));
         assertThat(customCenterRepository.getProps().getProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey()), is("1000"));
-        assertThat(customCenterRepository.getProps().getProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey()), is("1000"));
+        assertThat(customCenterRepository.getProps().getProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey()), is("2000"));
         customCenterRepository.persist("/test/children/build/1", "value1");
         assertThat(customCenterRepository.get("/test/children/build/1"), is("value1"));
     }

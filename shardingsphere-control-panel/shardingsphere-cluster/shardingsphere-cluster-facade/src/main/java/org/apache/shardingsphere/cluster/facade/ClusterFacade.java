@@ -19,8 +19,7 @@ package org.apache.shardingsphere.cluster.facade;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
 import org.apache.shardingsphere.cluster.heartbeat.ClusterHeartbeatInstance;
 import org.apache.shardingsphere.cluster.heartbeat.response.HeartbeatResponse;
@@ -30,6 +29,8 @@ import org.apache.shardingsphere.cluster.state.DataSourceState;
 import org.apache.shardingsphere.cluster.state.InstanceState;
 import org.apache.shardingsphere.cluster.state.enums.NodeState;
 import org.apache.shardingsphere.kernel.context.SchemaContext;
+import org.apache.shardingsphere.orchestration.core.common.event.ClusterConfigurationChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -38,12 +39,15 @@ import java.util.Map;
 /**
  * Cluster facade.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ClusterFacade {
     
     private ClusterHeartbeatInstance clusterHeartbeatInstance;
     
     private ClusterStateInstance clusterStateInstance;
+    
+    private ClusterFacade() {
+        ShardingOrchestrationEventBus.getInstance().register(this);
+    }
     
     /**
      * Init cluster facade.
@@ -74,6 +78,21 @@ public final class ClusterFacade {
     public void detectHeartbeat(final Map<String, SchemaContext> schemaContexts) {
         HeartbeatResponse heartbeatResponse = clusterHeartbeatInstance.detect(schemaContexts);
         reportHeartbeat(heartbeatResponse);
+    }
+    
+    /**
+     * Renew cluster facade.
+     *
+     * @param event cluster configuration changed event
+     */
+    @Subscribe
+    public void renew(final ClusterConfigurationChangedEvent event) {
+        stop();
+        init(event.getClusterConfiguration());
+    }
+    
+    private void stop() {
+        clusterHeartbeatInstance.close();
     }
     
     private InstanceState buildInstanceState(final HeartbeatResponse heartbeatResponse) {

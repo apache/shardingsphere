@@ -54,6 +54,8 @@ public final class HeartbeatHandler {
     
     private Collection<String> disabledDataSources = Collections.emptyList();
     
+    private ExecutorService executorService;
+    
     /**
      * Init heartbeat handler.
      *
@@ -82,7 +84,7 @@ public final class HeartbeatHandler {
      */
     public HeartbeatResponse handle(final Map<String, SchemaContext> schemaContexts, final Collection<String> disabledDataSources) {
         this.disabledDataSources = disabledDataSources;
-        ExecutorService executorService = Executors.newFixedThreadPool(configuration.getThreadCount());
+        executorService = Executors.newFixedThreadPool(configuration.getThreadCount());
         List<Future<Map<String, HeartbeatResult>>> futureTasks = new ArrayList<>();
         schemaContexts.forEach((key, value) -> value.getSchema().getDataSources().forEach((innerKey, innerValue) -> {
             futureTasks.add(executorService.submit(new HeartbeatDetect(key, innerKey, innerValue, configuration, isDisabled(key, innerKey))));
@@ -90,6 +92,13 @@ public final class HeartbeatHandler {
         HeartbeatResponse heartbeatResponse = buildHeartbeatResponse(futureTasks);
         closeExecutor(executorService);
         return heartbeatResponse;
+    }
+    
+    /**
+     * Close heartbeat handler.
+     */
+    public void close() {
+        closeExecutor(executorService);
     }
     
     private HeartbeatResponse buildHeartbeatResponse(final List<Future<Map<String, HeartbeatResult>>> futureTasks) {
