@@ -75,6 +75,7 @@ public class OrchestrationShardingSphereDataSource extends AbstractOrchestration
         dataSource = new ShardingSphereDataSource(DataSourceConverter.getDataSourceMap(dataSourceConfigurations), configurations, configService.loadProperties());
         initShardingOrchestrationFacade();
         persistMetaData(dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getMetaData().getSchema());
+        initCluster();
     }
     
     public OrchestrationShardingSphereDataSource(final ShardingSphereDataSource shardingSphereDataSource, final OrchestrationConfiguration orchestrationConfig) {
@@ -83,6 +84,7 @@ public class OrchestrationShardingSphereDataSource extends AbstractOrchestration
         initShardingOrchestrationFacade(Collections.singletonMap(DefaultSchema.LOGIC_NAME, DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap())),
                 getRuleConfigurationMap(), dataSource.getSchemaContexts().getProps().getProps());
         persistMetaData(dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getMetaData().getSchema());
+        initCluster();
     }
     
     public OrchestrationShardingSphereDataSource(final OrchestrationConfiguration orchestrationConfig, final ClusterConfiguration clusterConfiguration) throws SQLException {
@@ -92,9 +94,9 @@ public class OrchestrationShardingSphereDataSource extends AbstractOrchestration
         Preconditions.checkState(!configurations.isEmpty(), "Missing the sharding rule configuration on registry center");
         Map<String, DataSourceConfiguration> dataSourceConfigurations = configService.loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME);
         dataSource = new ShardingSphereDataSource(DataSourceConverter.getDataSourceMap(dataSourceConfigurations), configurations, configService.loadProperties());
-        initShardingOrchestrationFacade();
-        ClusterFacade.getInstance().init(clusterConfiguration);
+        initShardingOrchestrationFacade(clusterConfiguration);
         persistMetaData(dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getMetaData().getSchema());
+        initCluster();
     }
     
     public OrchestrationShardingSphereDataSource(final ShardingSphereDataSource shardingSphereDataSource,
@@ -102,9 +104,9 @@ public class OrchestrationShardingSphereDataSource extends AbstractOrchestration
         super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(DefaultSchema.LOGIC_NAME)));
         dataSource = shardingSphereDataSource;
         initShardingOrchestrationFacade(Collections.singletonMap(DefaultSchema.LOGIC_NAME, DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap())),
-                getRuleConfigurationMap(), dataSource.getSchemaContexts().getProps().getProps());
-        ClusterFacade.getInstance().init(clusterConfiguration);
+                getRuleConfigurationMap(), dataSource.getSchemaContexts().getProps().getProps(), clusterConfiguration);
         persistMetaData(dataSource.getSchemaContexts().getDefaultSchemaContext().getSchema().getMetaData().getSchema());
+        initCluster();
     }
     
     private Map<String, Collection<RuleConfiguration>> getRuleConfigurationMap() {
