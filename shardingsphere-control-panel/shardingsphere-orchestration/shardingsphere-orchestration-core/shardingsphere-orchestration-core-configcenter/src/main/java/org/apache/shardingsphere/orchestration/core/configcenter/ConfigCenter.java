@@ -275,7 +275,7 @@ public final class ConfigCenter {
      * @return cluster configuration
      */
     public ClusterConfiguration loadClusterConfiguration() {
-        return repository.get(node.getClusterPath()) == null ? null
+        return Strings.isNullOrEmpty(repository.get(node.getClusterPath())) ? null
                 : new ClusterConfigurationYamlSwapper().swapToObject(YamlEngine.unmarshal(repository.get(node.getClusterPath()), YamlClusterConfiguration.class));
     }
     
