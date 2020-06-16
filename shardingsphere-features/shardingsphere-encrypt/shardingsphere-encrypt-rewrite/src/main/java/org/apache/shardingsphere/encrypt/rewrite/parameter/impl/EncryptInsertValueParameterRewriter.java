@@ -70,10 +70,6 @@ public final class EncryptInsertValueParameterRewriter extends EncryptParameterR
                     encryptInsertValue(
                             encryptAlgorithm, tableName, paramterIndex, insertStatementContext.getInsertValueContexts().get(count).getValue(columnIndex),
                             standardParameterBuilder, encryptLogicColumnName);
-                } else {
-                    encryptInsertValueLiteral(
-                            encryptAlgorithm, tableName, paramterIndex, insertStatementContext.getInsertValueContexts().get(count).getValue(columnIndex),
-                            standardParameterBuilder, encryptLogicColumnName);
                 }
             }
             count++;
@@ -107,26 +103,7 @@ public final class EncryptInsertValueParameterRewriter extends EncryptParameterR
             if (!parameterBuilder.getAddedIndexAndParameters().containsKey(paramterIndex + 1)) {
                 parameterBuilder.getAddedIndexAndParameters().put(paramterIndex + 1, new LinkedList<>());
             }
-            ((List<Object>) parameterBuilder.getAddedIndexAndParameters().get(paramterIndex + 1)).addAll(0, addedParameters);
-        }
-    }
-
-    private void encryptInsertValueLiteral(final EncryptAlgorithm encryptAlgorithm, final String tableName, final int paramterIndex,
-                                           final Object originalValue, final StandardParameterBuilder parameterBuilder, final String encryptLogicColumnName) {
-        Collection<Object> addedParameters = new LinkedList<>();
-        if (encryptAlgorithm instanceof QueryAssistedEncryptAlgorithm) {
-            Optional<String> assistedColumnName = getEncryptRule().findAssistedQueryColumn(tableName, encryptLogicColumnName);
-            Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
-            addedParameters.add(((QueryAssistedEncryptAlgorithm) encryptAlgorithm).queryAssistedEncrypt(originalValue.toString()));
-        }
-        if (getEncryptRule().findPlainColumn(tableName, encryptLogicColumnName).isPresent()) {
-            addedParameters.add(originalValue);
-        }
-        if (!addedParameters.isEmpty()) {
-            if (!parameterBuilder.getAddedIndexAndParameters().containsKey(paramterIndex)) {
-                parameterBuilder.getAddedIndexAndParameters().put(paramterIndex, new LinkedList<>());
-            }
-            ((List<Object>) parameterBuilder.getAddedIndexAndParameters().get(paramterIndex)).addAll(0, addedParameters);
+            parameterBuilder.getAddedIndexAndParameters().get(paramterIndex + 1).addAll(addedParameters);
         }
     }
 }
