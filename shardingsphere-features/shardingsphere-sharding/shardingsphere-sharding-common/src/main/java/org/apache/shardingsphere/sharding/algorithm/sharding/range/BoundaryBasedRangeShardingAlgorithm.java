@@ -31,14 +31,6 @@ import java.util.stream.Collectors;
 
 /**
  * Boundary based range sharding algorithm.
- * 
- * <p>
- *     This algorithm is similar to the rule of partition table.
- *     
- *     For example: If the `sharding.ranges` parameter is set to `1, 5, 10`, the parameter will split all values into four intervals with (-∞, 1), [1, 5), [5, 10), [10, +∞), 
- *     which corresponding to partition_0, partition_1, partition_2, partition_3.
- *     The sharding values will be divided into different sharding by its value.
- * </p>
  */
 public final class BoundaryBasedRangeShardingAlgorithm extends AbstractRangeShardingAlgorithm {
     

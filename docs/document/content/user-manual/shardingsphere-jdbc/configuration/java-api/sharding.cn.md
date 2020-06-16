@@ -103,20 +103,7 @@ weight = 1
 
 类名称：org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration
 
-### 标准分片算法配置
-
-Apache ShardingSphere 内置的标准分片算法实现类包括：
-
-#### 行表达式分片算法
-
-类型：INLINE
-
-可配置属性：
-
-| *属性名称*                                 | *数据类型* | *说明*                                              | *默认值* |
-| ----------------------------------------- | --------- | --------------------------------------------------- | ------- |
-| algorithm.expression                      | String    | 分片算法的行表达式                                    | -       |
-| allow.range.query.with.inline.sharding (?)| boolean   | 是否允许范围查询。注意：范围查询会无视分片策略，进行全路由 | false   |
+### 自动分片算法配置
 
 #### 取模分片算法
 
@@ -160,9 +147,9 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 | --------------- | --------- | --------------------------------- |
 | sharding.ranges | String    | 分片的范围边界，多个范围边界以逗号分隔 |
 
-#### 定长时间段分片算法
+#### 自动时间段分片算法
 
-类型：FIXED_INTERVAL
+类型：AUTO_INTERVAL
 
 可配置属性：
 
@@ -172,20 +159,35 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 | datetime.upper   | String    | 分片的结束时间范围，时间戳格式：yyyy-MM-dd HH:mm:ss |
 | sharding.seconds | long      | 单一分片所能承载的最大时间，单位：秒                |
 
-#### 基于可变时间范围的分片算法
+### 标准分片算法配置
 
-类型：MUTABLE_INTERVAL
+Apache ShardingSphere 内置的标准分片算法实现类包括：
+
+#### 行表达式分片算法
+
+类型：INLINE
 
 可配置属性：
 
-| *属性名称*            | *数据类型* | *说明*                              |
-| -------------------- | --------- | ----------------------------------- |
-| datetime.format      | String    | 时间戳格式，例如：yyyy-MM-dd HH:mm:ss |
-| table.suffix.format  | String    | TODO                                |
-| datetime.lower       | String    | TODO                                |
-| datetime.upper       | String    | TODO                                |
-| datetime.step.unit   | String    | TODO                                |
-| datetime.step.amount | String    | TODO                                |
+| *属性名称*                                 | *数据类型* | *说明*                                              | *默认值* |
+| ----------------------------------------- | --------- | --------------------------------------------------- | ------- |
+| algorithm.expression                      | String    | 分片算法的行表达式                                    | -       |
+| allow.range.query.with.inline.sharding (?)| boolean   | 是否允许范围查询。注意：范围查询会无视分片策略，进行全路由 | false   |
+
+#### 时间范围分片算法
+
+类型：INTERVAL
+
+可配置属性：
+
+| *属性名称*                    | *数据类型* | *说明*                                                                           | *默认值* |
+| ---------------------------- | --------- | -------------------------------------------------------------------------------- | ------- |
+| datetime.pattern             | String    | 分片键的时间戳格式，必须遵循 Java DateTimeFormatter 的格式。例如：yyyy-MM-dd HH:mm:ss | -       |
+| datetime.lower               | String    | 时间分片下界值，格式与 `datetime.pattern` 定义的时间戳格式一致                        | -       |
+| datetime.upper (?)           | String    | 时间分片上界值，格式与 `datetime.pattern` 定义的时间戳格式一致                        | 当前时间 |
+| sharding.suffix.pattern      | String    | 分片数据源或真实表的后缀格式，必须遵循 Java DateTimeFormatter 的格式。例如：yyyyMM     | -       |
+| datetime.interval.amount (?) | int       | 分片键时间间隔，超过该时间间隔将进入下一分片                                          | 1       |
+| datetime.interval.unit (?)   | String    | 分片键时间间隔单位，必须遵循 Java ChronoUnit 的枚举值。例如：MONTHS                   | DAYS    |
 
 ### 复合分片算法配置
 

@@ -103,20 +103,7 @@ Attributes:
 
 Class name: org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration
 
-### Standard Sharding Algorithm Configuration
-
-Apache ShardingSphere built-in standard sharding algorithm are:
-
-#### Inline Sharding Algorithm
-
-Type: INLINE
-
-Attributes:
-
-| *Name*                                    | *DataType* | *Description*                                                                                            | *Default Value* |
-| ----------------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------- | --------------- |
-| algorithm.expression                      | String     | Inline expression sharding algorithm                                                                     | -               |
-| allow.range.query.with.inline.sharding (?)| boolean    | Whether range query is allowed. Note: range query will ignore sharding strategy and conduct full routing | false           |
+### Auto Sharding Algorithm Configuration
 
 #### Modulo Sharding Algorithm
 
@@ -160,9 +147,9 @@ Attributes:
 | --------------- | ---------- | ----------------------------------------------------------------- |
 | sharding.ranges | String     | Range of sharding border, multiple boundaries separated by commas |
 
-#### Fixed Time Range Sharding Algorithm
+#### Auto Interval Sharding Algorithm
 
-Type: FIXED_INTERVAL
+Type: AUTO_INTERVAL
 
 Attributes:
 
@@ -172,20 +159,35 @@ Attributes:
 | datetime.upper   | String     | Shard datetime end boundary, pattern: yyyy-MM-dd HH:mm:ss   |
 | sharding.seconds | long       | Max seconds for the data in one shard                       |
 
-#### Mutable Interval Sharding Algorithm
+### Standard Sharding Algorithm Configuration
 
-Type: MUTABLE_INTERVAL
+Apache ShardingSphere built-in standard sharding algorithm are:
+
+#### Inline Sharding Algorithm
+
+Type: INLINE
 
 Attributes:
 
-| *Name*               | *DataType* | *Description*                                  |
-| -------------------- | ---------- | ---------------------------------------------- |
-| datetime.format      | String     | Datetime pattern, example: yyyy-MM-dd HH:mm:ss |
-| table.suffix.format  | String     | TODO                                           |
-| datetime.lower       | String     | TODO                                           |
-| datetime.upper       | String     | TODO                                           |
-| datetime.step.unit   | String     | TODO                                           |
-| datetime.step.amount | String     | TODO                                           |
+| *Name*                                    | *DataType* | *Description*                                                                                            | *Default Value* |
+| ----------------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------- | --------------- |
+| algorithm.expression                      | String     | Inline expression sharding algorithm                                                                     | -               |
+| allow.range.query.with.inline.sharding (?)| boolean    | Whether range query is allowed. Note: range query will ignore sharding strategy and conduct full routing | false           |
+
+#### Interval Sharding Algorithm
+
+Type: INTERVAL
+
+Attributes:
+
+| *Name*                       | *DataType* | *Description*                                                                                                         | *Default Value* |
+| ---------------------------- | ---------- | --------------------------------------------------------------------------------------------------------------------- | --------------- |
+| datetime.pattern             | String     | Timestamp pattern of sharding value, must can be transformed to Java LocalDateTime. For example: yyyy-MM-dd HH:mm:ss  | -               |
+| datetime.lower               | String     | Datetime sharding lower boundary, pattern is defined `datetime.pattern`                                               | -               |
+| datetime.upper (?)           | String     | Datetime sharding upper boundary, pattern is defined `datetime.pattern`                                               | Now             |
+| sharding.suffix.pattern      | String     | Suffix pattern of sharding data sources or tables, must can be transformed to Java LocalDateTime. For example: yyyyMM | -               |
+| datetime.interval.amount (?) | int        | Interval of sharding value                                                                                            | 1               |
+| datetime.interval.unit (?)   | String     | Unit of sharding value interval, must can be transformed to Java ChronoUnit's Enum value. For example: MONTHS         | DAYS            |
 
 ### Complex Sharding Algorithm Configuration
 

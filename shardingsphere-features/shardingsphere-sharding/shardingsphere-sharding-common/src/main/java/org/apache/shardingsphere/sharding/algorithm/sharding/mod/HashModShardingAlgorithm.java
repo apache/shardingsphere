@@ -30,11 +30,6 @@ import java.util.Properties;
 
 /**
  * Hash sharding algorithm.
- * 
- * <p>
- *     Shard by `y = z mod v` algorithm with z = hash(x), v is sharding count.
- *     All available targets will be returned if sharding value is {@code RangeShardingValue}.
- * </p>
  */
 @Getter
 @Setter

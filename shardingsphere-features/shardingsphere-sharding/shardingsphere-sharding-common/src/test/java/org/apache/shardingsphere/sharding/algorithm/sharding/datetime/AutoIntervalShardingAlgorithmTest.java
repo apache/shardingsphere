@@ -36,13 +36,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class FixedIntervalShardingAlgorithmTest {
+public final class AutoIntervalShardingAlgorithmTest {
     
     private StandardShardingStrategy shardingStrategy;
     
     @Before
     public void setup() {
-        FixedIntervalShardingAlgorithm shardingAlgorithm = new FixedIntervalShardingAlgorithm();
+        AutoIntervalShardingAlgorithm shardingAlgorithm = new AutoIntervalShardingAlgorithm();
         shardingAlgorithm.getProps().setProperty("datetime.lower", "2020-01-01 00:00:00");
         shardingAlgorithm.getProps().setProperty("datetime.upper", "2020-01-01 00:00:16");
         shardingAlgorithm.getProps().setProperty("sharding.seconds", "4");
@@ -126,7 +126,7 @@ public final class FixedIntervalShardingAlgorithmTest {
     
     @Test
     public void assertGetAutoTablesAmount() {
-        FixedIntervalShardingAlgorithm shardingAlgorithm = new FixedIntervalShardingAlgorithm();
+        AutoIntervalShardingAlgorithm shardingAlgorithm = new AutoIntervalShardingAlgorithm();
         shardingAlgorithm.getProps().setProperty("datetime.lower", "2020-01-01 00:00:00");
         shardingAlgorithm.getProps().setProperty("datetime.upper", "2021-01-01 00:00:00");
         shardingAlgorithm.getProps().setProperty("sharding.seconds", "86400");
