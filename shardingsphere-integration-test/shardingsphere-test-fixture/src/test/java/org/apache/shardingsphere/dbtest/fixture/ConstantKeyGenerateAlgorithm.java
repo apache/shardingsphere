@@ -30,6 +30,10 @@ public final class ConstantKeyGenerateAlgorithm implements KeyGenerateAlgorithm 
     private Properties props = new Properties();
     
     @Override
+    public void init() {
+    }
+    
+    @Override
     public Comparable<?> generateKey() {
         return 1;
     }
