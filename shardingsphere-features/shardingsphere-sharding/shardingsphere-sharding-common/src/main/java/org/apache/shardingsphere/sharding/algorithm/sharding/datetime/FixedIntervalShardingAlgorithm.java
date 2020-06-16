@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Range;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAlgorithmException;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
@@ -79,18 +78,18 @@ public final class FixedIntervalShardingAlgorithm implements StandardShardingAlg
     }
     
     private LocalDateTime getDateTimeLower() {
-        Preconditions.checkState(null != props.getProperty(DATE_TIME_LOWER_KEY) && checkDatetimePattern(props.getProperty(DATE_TIME_LOWER_KEY)), "%s pattern is required.", DATE_TIME_PATTERN);
+        Preconditions.checkState(props.containsKey(DATE_TIME_LOWER_KEY) && checkDatetimePattern(props.getProperty(DATE_TIME_LOWER_KEY)), "%s pattern is required.", DATE_TIME_PATTERN);
         return LocalDateTime.parse(props.getProperty(DATE_TIME_LOWER_KEY), DATE_FORMAT);
     }
     
     private LocalDateTime getDateTimeUpper() {
-        Preconditions.checkState(null != props.getProperty(DATE_TIME_UPPER_KEY) && checkDatetimePattern(props.getProperty(DATE_TIME_UPPER_KEY)), "%s pattern is required.", DATE_TIME_PATTERN);
+        Preconditions.checkState(props.containsKey(DATE_TIME_UPPER_KEY) && checkDatetimePattern(props.getProperty(DATE_TIME_UPPER_KEY)), "%s pattern is required.", DATE_TIME_PATTERN);
         return LocalDateTime.parse(props.getProperty(DATE_TIME_UPPER_KEY), DATE_FORMAT);
     }
     
     private long getShardingSeconds() {
-        Preconditions.checkNotNull(props.getProperty(SHARDING_SECONDS_KEY), "Sharding seconds cannot be null.");
-        return Long.parseLong(props.getProperty(SHARDING_SECONDS_KEY));
+        Preconditions.checkArgument(props.containsKey(SHARDING_SECONDS_KEY), "Sharding seconds cannot be null.");
+        return Long.parseLong(props.get(SHARDING_SECONDS_KEY).toString());
     }
     
     @Override
@@ -100,7 +99,9 @@ public final class FixedIntervalShardingAlgorithm implements StandardShardingAlg
                 return each;
             }
         }
-        throw new ShardingAlgorithmException("Sharding failure, cannot find target name via `%s`", shardingValue);
+        // TODO check if return null
+        return null;
+        //        throw new ShardingAlgorithmException("Sharding failure, cannot find target name via `%s`", shardingValue);
     }
     
     @Override

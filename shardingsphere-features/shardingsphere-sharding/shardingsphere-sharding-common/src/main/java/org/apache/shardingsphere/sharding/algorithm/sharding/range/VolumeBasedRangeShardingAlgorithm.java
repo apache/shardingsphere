@@ -46,9 +46,9 @@ public final class VolumeBasedRangeShardingAlgorithm extends AbstractRangeShardi
     
     @Override
     public Map<Integer, Range<Long>> calculatePartitionRange(final Properties props) {
-        Preconditions.checkNotNull(props.get(RANGE_LOWER_KEY), "Lower range cannot be null.");
-        Preconditions.checkNotNull(props.get(RANGE_UPPER_KEY), "Upper range cannot be null.");
-        Preconditions.checkNotNull(props.get(SHARDING_VOLUME_KEY), "Sharding volume cannot be null.");
+        Preconditions.checkState(props.containsKey(RANGE_LOWER_KEY), "Lower range cannot be null.");
+        Preconditions.checkState(props.containsKey(RANGE_UPPER_KEY), "Upper range cannot be null.");
+        Preconditions.checkState(props.containsKey(SHARDING_VOLUME_KEY), "Sharding volume cannot be null.");
         long lower = Long.parseLong(props.get(RANGE_LOWER_KEY).toString());
         long upper = Long.parseLong(props.get(RANGE_UPPER_KEY).toString());
         long volume = Long.parseLong(props.get(SHARDING_VOLUME_KEY).toString());

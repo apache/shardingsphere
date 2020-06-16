@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.mod;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAlgorithmException;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
@@ -53,7 +52,7 @@ public final class HashModShardingAlgorithm implements StandardShardingAlgorithm
     }
     
     private int getShardingCount() {
-        Preconditions.checkNotNull(props.getProperty(SHARDING_COUNT_KEY), "Sharding count cannot be null.");
+        Preconditions.checkArgument(props.containsKey(SHARDING_COUNT_KEY), "Sharding count cannot be null.");
         return Integer.parseInt(props.getProperty(SHARDING_COUNT_KEY));
     }
     
@@ -64,7 +63,9 @@ public final class HashModShardingAlgorithm implements StandardShardingAlgorithm
                 return each;
             }
         }
-        throw new ShardingAlgorithmException("Sharding failure, cannot find target name via `%s`", shardingValue);
+        // TODO check if return null
+        return null;
+        //        throw new ShardingAlgorithmException("Sharding failure, cannot find target name via `%s`", shardingValue);
     }
     
     @Override

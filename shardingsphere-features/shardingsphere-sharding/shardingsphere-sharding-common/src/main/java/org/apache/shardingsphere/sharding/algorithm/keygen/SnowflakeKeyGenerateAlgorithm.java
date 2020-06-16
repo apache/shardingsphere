@@ -41,11 +41,11 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     
     public static final long EPOCH;
     
-    private static final String WORKER_ID_PROPERTY_KEY = "worker.id";
+    private static final String WORKER_ID_KEY = "worker.id";
     
-    private static final String MAX_VIBRATION_OFFSET_PROPERTY_KEY = "max.vibration.offset";
+    private static final String MAX_VIBRATION_OFFSET_KEY = "max.vibration.offset";
     
-    private static final String MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS_PROPERTY_KEY = "max.tolerate.time.difference.milliseconds";
+    private static final String MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS_KEY = "max.tolerate.time.difference.milliseconds";
     
     private static final long SEQUENCE_BITS = 12L;
     
@@ -102,19 +102,19 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     }
     
     private long getWorkerId() {
-        long result = Long.valueOf(props.getProperty(WORKER_ID_PROPERTY_KEY, String.valueOf(WORKER_ID)));
+        long result = Long.valueOf(props.getOrDefault(WORKER_ID_KEY, WORKER_ID).toString());
         Preconditions.checkArgument(result >= 0L && result < WORKER_ID_MAX_VALUE, "Illegal worker id.");
         return result;
     }
     
     private int getMaxVibrationOffset() {
-        int result = Integer.parseInt(props.getProperty(MAX_VIBRATION_OFFSET_PROPERTY_KEY, String.valueOf(DEFAULT_VIBRATION_VALUE)));
+        int result = Integer.parseInt(props.getOrDefault(MAX_VIBRATION_OFFSET_KEY, DEFAULT_VIBRATION_VALUE).toString());
         Preconditions.checkArgument(result >= 0 && result <= SEQUENCE_MASK, "Illegal max vibration offset.");
         return result;
     }
     
     private int getMaxTolerateTimeDifferenceMilliseconds() {
-        return Integer.valueOf(props.getProperty(MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS_PROPERTY_KEY, String.valueOf(MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS)));
+        return Integer.valueOf(props.getOrDefault(MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS_KEY, MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS).toString());
     }
     
     @Override

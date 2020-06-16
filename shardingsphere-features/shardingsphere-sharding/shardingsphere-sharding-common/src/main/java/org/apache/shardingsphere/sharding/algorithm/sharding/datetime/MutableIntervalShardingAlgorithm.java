@@ -105,7 +105,7 @@ public final class MutableIntervalShardingAlgorithm implements StandardShardingA
         try {
             parseDateTimeForValue(dateTimeLower);
             if (null != dateTimeUpper) {
-                parseDateTimeForValue(props.getProperty(dateTimeUpper));
+                parseDateTimeForValue(dateTimeUpper);
             }
         } catch (final DateTimeParseException ex) {
             throw new UnsupportedOperationException("Cannot apply shard value for default lower/upper values", ex);
@@ -113,17 +113,17 @@ public final class MutableIntervalShardingAlgorithm implements StandardShardingA
     }
     
     private String getDatetimeFormat() {
-        Preconditions.checkNotNull(props.getProperty(DATE_TIME_FORMAT_KEY));
+        Preconditions.checkArgument(props.containsKey(DATE_TIME_FORMAT_KEY));
         return props.getProperty(DATE_TIME_FORMAT_KEY);
     }
     
     private DateTimeFormatter getTableSuffixFormat() {
-        Preconditions.checkNotNull(props.getProperty(TABLE_SUFFIX_FORMAT_KEY));
+        Preconditions.checkArgument(props.containsKey(TABLE_SUFFIX_FORMAT_KEY));
         return DateTimeFormatter.ofPattern(props.getProperty(TABLE_SUFFIX_FORMAT_KEY));
     }
     
     private String getDateTimeLower() {
-        Preconditions.checkNotNull(props.getProperty(DATE_TIME_LOWER_KEY));
+        Preconditions.checkArgument(props.containsKey(DATE_TIME_LOWER_KEY));
         return props.getProperty(DATE_TIME_LOWER_KEY);
     }
     

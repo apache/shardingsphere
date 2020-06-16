@@ -105,8 +105,8 @@ public final class TableRule {
         checkRule(dataNodes);
     }
     
-    public TableRule(final ShardingAutoTableRuleConfiguration tableRuleConfig, final Collection<String> dataSourceNames, 
-                     final ShardingAlgorithm shardingAlgorithm, final String defaultGenerateKeyColumn) {
+    public TableRule(final ShardingAutoTableRuleConfiguration tableRuleConfig, 
+                     final Collection<String> dataSourceNames, final ShardingAlgorithm shardingAlgorithm, final String defaultGenerateKeyColumn) {
         logicTable = tableRuleConfig.getLogicTable().toLowerCase();
         databaseShardingStrategy = new NoneShardingStrategy();
         tableShardingStrategy = createShardingStrategy(tableRuleConfig.getShardingStrategy(), shardingAlgorithm);

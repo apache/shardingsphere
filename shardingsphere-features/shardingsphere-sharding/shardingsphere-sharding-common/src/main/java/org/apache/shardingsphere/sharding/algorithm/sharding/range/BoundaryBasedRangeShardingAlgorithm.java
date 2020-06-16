@@ -46,8 +46,8 @@ public final class BoundaryBasedRangeShardingAlgorithm extends AbstractRangeShar
     
     @Override
     public Map<Integer, Range<Long>> calculatePartitionRange(final Properties props) {
-        Preconditions.checkNotNull(props.get(SHARDING_RANGES_KEY), "Sharding ranges cannot be null.");
-        List<Long> partitionRanges = Splitter.on(",").trimResults().splitToList(props.get(SHARDING_RANGES_KEY).toString())
+        Preconditions.checkState(props.containsKey(SHARDING_RANGES_KEY), "Sharding ranges cannot be null.");
+        List<Long> partitionRanges = Splitter.on(",").trimResults().splitToList(props.getProperty(SHARDING_RANGES_KEY))
                 .stream().map(Longs::tryParse).filter(Objects::nonNull).sorted().collect(Collectors.toList());
         Preconditions.checkArgument(CollectionUtils.isNotEmpty(partitionRanges), "Sharding ranges is not valid.");
         Map<Integer, Range<Long>> result = Maps.newHashMapWithExpectedSize(partitionRanges.size() + 1);

@@ -158,7 +158,7 @@ public final class DataSourceConfiguration {
     public void addAlias(final String... alias) {
         Object value = null;
         for (String each : alias) {
-            if (null != props.get(each)) {
+            if (props.containsKey(each)) {
                 value = props.get(each);
             }
         }

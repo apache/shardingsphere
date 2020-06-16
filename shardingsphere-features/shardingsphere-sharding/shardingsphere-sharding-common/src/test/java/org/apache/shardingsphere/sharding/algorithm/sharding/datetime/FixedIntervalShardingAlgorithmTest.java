@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.sharding;
+package org.apache.shardingsphere.sharding.algorithm.sharding.datetime;
 
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.sharding.algorithm.sharding.datetime.FixedIntervalShardingAlgorithm;
 import org.apache.shardingsphere.sharding.strategy.standard.StandardShardingStrategy;
 import org.apache.shardingsphere.sharding.strategy.value.ListRouteValue;
 import org.apache.shardingsphere.sharding.strategy.value.RangeRouteValue;
