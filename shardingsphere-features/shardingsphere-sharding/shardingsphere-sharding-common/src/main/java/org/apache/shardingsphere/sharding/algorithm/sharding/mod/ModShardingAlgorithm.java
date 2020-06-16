@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.mod;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAlgorithmException;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
@@ -44,39 +45,43 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     
     private Properties props = new Properties();
     
+    private int shardingCount;
+    
     @Override
     public void init() {
-        Preconditions.checkNotNull(props.get(SHARDING_COUNT_KEY), "Modulo value cannot be null.");
+        shardingCount = getShardingCount();
+    }
+    
+    private int getShardingCount() {
+        Preconditions.checkNotNull(props.getProperty(SHARDING_COUNT_KEY), "Sharding count cannot be null.");
+        return Integer.parseInt(props.getProperty(SHARDING_COUNT_KEY));
     }
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         for (String each : availableTargetNames) {
-            if (each.endsWith(getLongValue(shardingValue.getValue()) % getModuloValue() + "")) {
+            if (each.endsWith(getLongValue(shardingValue.getValue()) % shardingCount + "")) {
                 return each;
             }
         }
-        return null;
+        throw new ShardingAlgorithmException("Sharding failure, cannot find target name via `%s`", shardingValue);
     }
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
-        if (isContainAllTargets(shardingValue)) {
-            return availableTargetNames;
-        }
-        return getAvailableTargetNames(availableTargetNames, shardingValue);
+        return isContainAllTargets(shardingValue) ? availableTargetNames : getAvailableTargetNames(availableTargetNames, shardingValue);
     }
     
     private boolean isContainAllTargets(final RangeShardingValue<Comparable<?>> shardingValue) {
         return !shardingValue.getValueRange().hasUpperBound() || shardingValue.getValueRange().hasLowerBound()
-                && getLongValue(shardingValue.getValueRange().upperEndpoint()) - getLongValue(shardingValue.getValueRange().lowerEndpoint()) >= getModuloValue() - 1;
+                && getLongValue(shardingValue.getValueRange().upperEndpoint()) - getLongValue(shardingValue.getValueRange().lowerEndpoint()) >= shardingCount - 1;
     }
     
     private Collection<String> getAvailableTargetNames(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
         for (long i = getLongValue(shardingValue.getValueRange().lowerEndpoint()); i <= getLongValue(shardingValue.getValueRange().upperEndpoint()); i++) {
             for (String each : availableTargetNames) {
-                if (each.endsWith(i % getModuloValue() + "")) {
+                if (each.endsWith(i % shardingCount + "")) {
                     result.add(each);
                 }
             }
@@ -84,18 +89,13 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
         return result;
     }
     
-    private long getModuloValue() {
-        return Long.parseLong(props.get(SHARDING_COUNT_KEY).toString());
+    private long getLongValue(final Comparable<?> value) {
+        return Long.parseLong(value.toString());
     }
     
     @Override
     public int getAutoTablesAmount() {
-        Preconditions.checkNotNull(props.get(SHARDING_COUNT_KEY), "Modulo value cannot be null.");
-        return Integer.parseInt(props.get(SHARDING_COUNT_KEY).toString());
-    }
-    
-    private long getLongValue(final Comparable<?> value) {
-        return Long.parseLong(value.toString());
+        return shardingCount;
     }
     
     @Override
