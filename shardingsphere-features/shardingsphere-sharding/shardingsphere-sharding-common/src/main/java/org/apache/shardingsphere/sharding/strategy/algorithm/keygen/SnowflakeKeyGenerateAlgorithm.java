@@ -100,11 +100,6 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     }
     
     @Override
-    public String getType() {
-        return "SNOWFLAKE";
-    }
-    
-    @Override
     public synchronized Comparable<?> generateKey() {
         long currentMilliseconds = timeService.getCurrentMillis();
         if (waitTolerateTimeDifferenceIfNeed(currentMilliseconds)) {
@@ -160,5 +155,10 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     
     private void vibrateSequenceOffset() {
         sequenceOffset = sequenceOffset >= getMaxVibrationOffset() ? 0 : sequenceOffset + 1;
+    }
+    
+    @Override
+    public String getType() {
+        return "SNOWFLAKE";
     }
 }

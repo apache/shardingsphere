@@ -134,6 +134,6 @@ public final class FixedIntervalShardingAlgorithm implements StandardShardingAlg
     
     @Override
     public String getType() {
-        return "DATETIME";
+        return "FIXED_INTERVAL";
     }
 }
