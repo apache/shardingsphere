@@ -35,10 +35,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public final class ConnectionAdapterTest extends AbstractShardingSphereDataSourceForShardingTest {
     
@@ -170,6 +167,17 @@ public final class ConnectionAdapterTest extends AbstractShardingSphereDataSourc
         assertTrue(actual.isClosed());
         Multimap<String, Connection> cachedConnections = getCachedConnections(actual);
         assertTrue(cachedConnections.isEmpty());
+    }
+    
+    @Test
+    public void assertCloseShouldNotClearTransactionType() throws SQLException {
+        TransactionTypeHolder.set(TransactionType.XA);
+        TransactionType currentTransactionType = TransactionTypeHolder.get();
+        try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
+            actual.createStatement().executeQuery(sql);
+            actual.close();
+        }
+        assertEquals(currentTransactionType, TransactionTypeHolder.get());
     }
     
     @Test

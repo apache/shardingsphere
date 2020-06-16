@@ -20,6 +20,7 @@ package org.apache.shardingsphere.spring.transaction;
 import org.apache.shardingsphere.spring.transaction.fixture.FixtureSpringConfiguration;
 import org.apache.shardingsphere.spring.transaction.fixture.MockService;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -41,5 +43,16 @@ public class ShardingTransactionTypeScannerTest {
         assertThat(mockService.executeLocal(), is(TransactionType.LOCAL));
         assertThat(mockService.executeBase(), is(TransactionType.BASE));
         assertThat(mockService.execute(), is(TransactionType.XA));
+    }
+    
+    @Test
+    public void assertShardingTransactionType() {
+        TransactionType preTransactionType = TransactionTypeHolder.get();
+        mockService.executeLocal();
+        assertEquals(preTransactionType, TransactionTypeHolder.get());
+        mockService.executeBase();
+        assertEquals(preTransactionType, TransactionTypeHolder.get());
+        mockService.execute();
+        assertEquals(preTransactionType, TransactionTypeHolder.get());
     }
 }
