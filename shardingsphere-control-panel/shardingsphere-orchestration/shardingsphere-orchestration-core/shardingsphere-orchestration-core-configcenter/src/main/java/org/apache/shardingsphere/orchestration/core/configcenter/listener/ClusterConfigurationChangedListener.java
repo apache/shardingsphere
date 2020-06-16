@@ -31,7 +31,7 @@ import java.util.Collections;
 /**
  * Cluster configuration changed listener.
  */
-public class ClusterConfigurationChangedListener extends PostShardingCenterRepositoryEventListener {
+public final class ClusterConfigurationChangedListener extends PostShardingCenterRepositoryEventListener {
     
     public ClusterConfigurationChangedListener(final String name, final ConfigCenterRepository configCenterRepository) {
         super(configCenterRepository, Collections.singletonList(new ConfigCenterNode(name).getClusterPath()));
