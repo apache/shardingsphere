@@ -103,20 +103,7 @@ Attributes:
 
 Class name: org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration
 
-### Standard Sharding Algorithm Configuration
-
-Apache ShardingSphere built-in standard sharding algorithm are:
-
-#### Inline Sharding Algorithm
-
-Type: INLINE
-
-Attributes:
-
-| *Name*                                    | *DataType* | *Description*                                                                                            | *Default Value* |
-| ----------------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------- | --------------- |
-| algorithm.expression                      | String     | Inline expression sharding algorithm                                                                     | -               |
-| allow.range.query.with.inline.sharding (?)| boolean    | Whether range query is allowed. Note: range query will ignore sharding strategy and conduct full routing | false           |
+### Auto Sharding Algorithm Configuration
 
 #### Modulo Sharding Algorithm
 
@@ -160,7 +147,7 @@ Attributes:
 | --------------- | ---------- | ----------------------------------------------------------------- |
 | sharding.ranges | String     | Range of sharding border, multiple boundaries separated by commas |
 
-#### Fixed Time Range Sharding Algorithm
+#### Auto Interval Sharding Algorithm
 
 Type: AUTO_INTERVAL
 
@@ -172,7 +159,22 @@ Attributes:
 | datetime.upper   | String     | Shard datetime end boundary, pattern: yyyy-MM-dd HH:mm:ss   |
 | sharding.seconds | long       | Max seconds for the data in one shard                       |
 
-#### Mutable Interval Sharding Algorithm
+### Standard Sharding Algorithm Configuration
+
+Apache ShardingSphere built-in standard sharding algorithm are:
+
+#### Inline Sharding Algorithm
+
+Type: INLINE
+
+Attributes:
+
+| *Name*                                    | *DataType* | *Description*                                                                                            | *Default Value* |
+| ----------------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------- | --------------- |
+| algorithm.expression                      | String     | Inline expression sharding algorithm                                                                     | -               |
+| allow.range.query.with.inline.sharding (?)| boolean    | Whether range query is allowed. Note: range query will ignore sharding strategy and conduct full routing | false           |
+
+#### Interval Sharding Algorithm
 
 Type: INTERVAL
 
