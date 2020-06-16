@@ -1,6 +1,6 @@
 +++
-title = "分布式数据库"
-weight = 2
+title = "我们是怎样打造一款分布式数据库的"
+weight = 6
 chapter = true
 +++
 

@@ -21,3 +21,9 @@ languageName = "Chinese"
   themeVariant = "black"
   # Disable search function. It will hide search bar
   disableSearch = true
+
+[markup]
+[markup.tableOfContents]
+endLevel = 3
+ordered = false
+startLevel = 2

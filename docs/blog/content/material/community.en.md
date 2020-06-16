@@ -1,6 +1,6 @@
 +++
 title = "Exploration and expansion of the community"
-weight = 2
+weight = 3
 chapter = true
 +++
 

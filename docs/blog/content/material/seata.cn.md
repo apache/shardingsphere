@@ -1,6 +1,6 @@
 +++
-title = "整合Seata AT分布式事务"
-weight = 2
+title = "Apache ShardingSphere整合Seata AT分布式事务"
+weight = 11
 chapter = true
 +++
 
