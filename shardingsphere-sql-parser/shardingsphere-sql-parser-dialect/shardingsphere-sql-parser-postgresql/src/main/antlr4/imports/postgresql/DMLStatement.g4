@@ -69,8 +69,8 @@ setClauseList
 	;
 
 setClause
-    : setTarget '=' aExpr
-	| LP_ setTargetList RP_ '=' aExpr
+    : setTarget EQ_ aExpr
+	| LP_ setTargetList RP_ EQ_ aExpr
 	;
 
 setTarget
@@ -216,8 +216,6 @@ qualifiedNameList
 qualifiedName
     : colId | colId indirection
 	;
-
-
 
 selectLimit
     : limitClause offsetClause

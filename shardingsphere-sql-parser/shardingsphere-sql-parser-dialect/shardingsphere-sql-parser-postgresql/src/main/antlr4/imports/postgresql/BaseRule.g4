@@ -651,7 +651,6 @@ caseArg
     : aExpr
 	;
 
-
 columnref
     : colId
 	| colId indirection
@@ -691,7 +690,6 @@ mathOperator
 	| GTE_
 	| NEQ_
 	;
-
 
 qualAllOp
     : allOp
