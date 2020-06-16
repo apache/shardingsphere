@@ -38,16 +38,16 @@ Attributes:
 | type           | String     | Slave data sources load balance algorithm type       | -               |
 | properties (?) | Properties | Slave data sources load balance algorithm Properties | Empty           |
 
-Apache ShardingSphere built-in implemented classes of MasterSlaveLoadBalanceAlgorithm are:
+Apache ShardingSphere built-in load balance algorithm are:
 
 ### Round Robin Algorithm
 
-Class name: org.apache.shardingsphere.masterslave.algorithm.RoundRobinMasterSlaveLoadBalanceAlgorithm
+Type: ROUND_ROBIN
 
 Attributes: None
 
 ### Random Algorithm
 
-Class name: org.apache.shardingsphere.masterslave.algorithm.RandomMasterSlaveLoadBalanceAlgorithm
+Type: RANDOM
 
 Attributes: None

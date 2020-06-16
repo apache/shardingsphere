@@ -38,16 +38,16 @@ weight = 2
 | type           | String     | 从库负载均衡算法类型    | -       |
 | properties (?) | Properties | 从库负载均衡算法属性配置 | 空      |
 
-Apache ShardingSphere 内置的从库负载均衡算法实现类包括：
+Apache ShardingSphere 内置的从库负载均衡算法包括：
 
 ### 轮询算法
 
-类名称：org.apache.shardingsphere.masterslave.algorithm.RoundRobinMasterSlaveLoadBalanceAlgorithm
+类型：ROUND_ROBIN
 
 可配置属性：无
 
 ### 随机访问算法
 
-类名称：org.apache.shardingsphere.masterslave.algorithm.RandomMasterSlaveLoadBalanceAlgorithm
+类型：RANDOM
 
 可配置属性：无
