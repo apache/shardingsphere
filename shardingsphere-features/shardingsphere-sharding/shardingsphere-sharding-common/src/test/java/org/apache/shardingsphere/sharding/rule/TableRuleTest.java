@@ -27,9 +27,9 @@ import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerate
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.mod.ModShardingAlgorithm;
-import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.InlineShardingAlgorithm;
-import org.apache.shardingsphere.sharding.strategy.route.none.NoneShardingStrategy;
+import org.apache.shardingsphere.sharding.algorithm.sharding.mod.ModShardingAlgorithm;
+import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm;
+import org.apache.shardingsphere.sharding.strategy.none.NoneShardingStrategy;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

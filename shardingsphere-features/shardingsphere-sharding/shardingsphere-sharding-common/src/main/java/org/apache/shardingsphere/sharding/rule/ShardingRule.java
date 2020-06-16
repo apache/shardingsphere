@@ -33,11 +33,11 @@ import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerate
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-import org.apache.shardingsphere.sharding.strategy.algorithm.keygen.config.AlgorithmProvidedShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.InlineExpressionParser;
-import org.apache.shardingsphere.sharding.strategy.route.ShardingStrategy;
-import org.apache.shardingsphere.sharding.strategy.route.ShardingStrategyFactory;
-import org.apache.shardingsphere.sharding.strategy.route.none.NoneShardingStrategy;
+import org.apache.shardingsphere.sharding.algorithm.keygen.config.AlgorithmProvidedShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
+import org.apache.shardingsphere.sharding.strategy.ShardingStrategy;
+import org.apache.shardingsphere.sharding.strategy.ShardingStrategyFactory;
+import org.apache.shardingsphere.sharding.strategy.none.NoneShardingStrategy;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;

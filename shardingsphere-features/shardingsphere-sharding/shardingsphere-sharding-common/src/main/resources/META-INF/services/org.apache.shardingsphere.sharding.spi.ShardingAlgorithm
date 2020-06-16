@@ -15,10 +15,10 @@
 # limitations under the License.
 #
  
-org.apache.shardingsphere.sharding.strategy.algorithm.sharding.inline.InlineShardingAlgorithm
-org.apache.shardingsphere.sharding.strategy.algorithm.sharding.mod.ModShardingAlgorithm
-org.apache.shardingsphere.sharding.strategy.algorithm.sharding.mod.HashModShardingAlgorithm
-org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.VolumeBasedRangeShardingAlgorithm
-org.apache.shardingsphere.sharding.strategy.algorithm.sharding.range.BoundaryBasedRangeShardingAlgorithm
-org.apache.shardingsphere.sharding.strategy.algorithm.sharding.datetime.FixedIntervalShardingAlgorithm
-org.apache.shardingsphere.sharding.strategy.algorithm.sharding.datetime.MutableIntervalShardingAlgorithm
+org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm
+org.apache.shardingsphere.sharding.algorithm.sharding.mod.ModShardingAlgorithm
+org.apache.shardingsphere.sharding.algorithm.sharding.mod.HashModShardingAlgorithm
+org.apache.shardingsphere.sharding.algorithm.sharding.range.VolumeBasedRangeShardingAlgorithm
+org.apache.shardingsphere.sharding.algorithm.sharding.range.BoundaryBasedRangeShardingAlgorithm
+org.apache.shardingsphere.sharding.algorithm.sharding.datetime.FixedIntervalShardingAlgorithm
+org.apache.shardingsphere.sharding.algorithm.sharding.datetime.MutableIntervalShardingAlgorithm
