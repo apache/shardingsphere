@@ -551,3 +551,11 @@ NUMERIC
 TEXT
     : T E X T
     ;
+
+ROW_NUMBER
+    : R O W UL_ N U M B E R
+    ;
+
+PG_GET_EXPR
+    : P G UL_ G E T UL_ E X P R
+    ;

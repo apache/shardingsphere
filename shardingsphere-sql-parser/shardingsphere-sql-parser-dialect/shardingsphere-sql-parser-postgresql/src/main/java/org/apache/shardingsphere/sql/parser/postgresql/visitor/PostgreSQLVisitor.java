@@ -25,6 +25,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementBaseVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SystemFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.BitExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.BitValueLiteralsContext;
@@ -58,7 +59,6 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Su
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.UnreservedWordContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WindowFunctionContext;
 import org.apache.shardingsphere.sql.parser.sql.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.predicate.PredicateBuilder;
@@ -410,6 +410,9 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
     
     @Override
     public final ASTNode visitFunctionCall(final FunctionCallContext ctx) {
+        if (null != ctx.systemFunction()) {
+            return visit(ctx.systemFunction());
+        }
         if (null != ctx.aggregationFunction()) {
             return visit(ctx.aggregationFunction());
         }
@@ -421,7 +424,13 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
         }
         throw new IllegalStateException("FunctionCallContext must have aggregationFunction, regularFunction or specialFunction.");
     }
-    
+
+    @Override
+    public final ASTNode visitSystemFunction(final SystemFunctionContext ctx) {
+        calculateParameterCount(ctx.expr());
+        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+    }
+
     @Override
     public final ASTNode visitAggregationFunction(final AggregationFunctionContext ctx) {
         String aggregationType = ctx.aggregationFunctionName().getText();
@@ -448,21 +457,12 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
     
     @Override
     public final ASTNode visitSpecialFunction(final SpecialFunctionContext ctx) {
-        if (null != ctx.windowFunction()) {
-            return visit(ctx.windowFunction());
-        }
         if (null != ctx.castFunction()) {
             return visit(ctx.castFunction());
         }
         return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
-    
-    @Override
-    public final ASTNode visitWindowFunction(final WindowFunctionContext ctx) {
-        calculateParameterCount(ctx.expr());
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
-    }
-    
+
     @Override
     public final ASTNode visitCastFunction(final CastFunctionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));

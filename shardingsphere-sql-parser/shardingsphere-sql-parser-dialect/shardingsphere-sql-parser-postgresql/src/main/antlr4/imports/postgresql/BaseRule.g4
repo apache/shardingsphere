@@ -208,15 +208,23 @@ simpleExpr
     ;
 
 functionCall
-    : aggregationFunction | specialFunction | regularFunction 
+    : systemFunction | aggregationFunction | specialFunction | regularFunction
+    ;
+
+systemFunction
+    : schemaName DOT_ systemFunctionName LP_ (expr (COMMA_ expr)*)? RP_
+    ;
+
+systemFunctionName
+    : PG_GET_EXPR
     ;
 
 aggregationFunction
-    : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_ filterClause_?
+    : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_ filterClause_? (OVER windowDefinition_)?
     ;
 
 aggregationFunctionName
-    : MAX | MIN | SUM | COUNT | AVG
+    : MAX | MIN | SUM | COUNT | AVG | ROW_NUMBER
     ;
 
 distinct
@@ -227,12 +235,8 @@ filterClause_
     : FILTER LP_ WHERE expr RP_
     ;
 
-windowFunction
-    : identifier LP_ expr (COMMA_ expr)* RP_ filterClause_ OVER identifier? windowDefinition_
-    ;
-
 windowDefinition_
-    : pratitionClause_? orderByClause? frameClause_?
+    : LP_ pratitionClause_? orderByClause? frameClause_? RP_
     ;
 
 pratitionClause_
@@ -256,7 +260,7 @@ frameBetween_
     ;
 
 specialFunction
-    : windowFunction | castFunction  | charFunction
+    : castFunction  | charFunction
     ;
 
 castFunction
