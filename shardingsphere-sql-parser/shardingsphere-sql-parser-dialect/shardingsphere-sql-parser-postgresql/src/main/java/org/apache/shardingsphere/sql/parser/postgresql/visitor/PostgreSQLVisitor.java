@@ -23,12 +23,12 @@ import lombok.Getter;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementBaseVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.A_exprContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AexprConstContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Asc_descContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AscDescContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AttrNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.B_exprContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.C_exprContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.BExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnrefContext;
@@ -36,16 +36,16 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Da
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DataTypeLengthContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DataTypeNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.FuncApplicationContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Func_exprContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.FuncExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.FunctionExprCommonSubexprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.IdentifierContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.In_exprContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.InExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.IndexNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NumberLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.OwnerContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ParameterMarkerContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SchemaNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Sort_clauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SortClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SortbyContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableNamesContext;
@@ -172,9 +172,9 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
     }
     
     @Override
-    public ASTNode visitA_expr(final A_exprContext ctx) {
-        if (null != ctx.c_expr()) {
-            return visit(ctx.c_expr());
+    public ASTNode visitAExpr(final AExprContext ctx) {
+        if (null != ctx.cExpr()) {
+            return visit(ctx.cExpr());
         }
         
         if (null != ctx.BETWEEN() && null == ctx.NOT()) {
@@ -185,32 +185,32 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
         }
         
         if (null != ctx.comparisonOperator()) {
-            ASTNode left = visit(ctx.a_expr(0));
+            ASTNode left = visit(ctx.aExpr(0));
             if (left instanceof ColumnSegment) {
                 ColumnSegment columnSegment = (ColumnSegment) left;
-                ASTNode right = visit(ctx.a_expr(1));
+                ASTNode right = visit(ctx.aExpr(1));
                 PredicateRightValue value = right instanceof ColumnSegment ? (PredicateRightValue) right
                         : new PredicateCompareRightValue(ctx.comparisonOperator().getText(), (ExpressionSegment) right);
                 PredicateSegment predicate = new PredicateSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), columnSegment, value);
                 return predicate;
             }
-            visit(ctx.a_expr(1));
+            visit(ctx.aExpr(1));
             return new LiteralExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
         }
         
         if (null != ctx.logicalOperator()) {
-            return new PredicateBuilder(visit(ctx.a_expr(0)), visit(ctx.a_expr(1)), ctx.logicalOperator().getText()).mergePredicate();
+            return new PredicateBuilder(visit(ctx.aExpr(0)), visit(ctx.aExpr(1)), ctx.logicalOperator().getText()).mergePredicate();
         }
         
-        if (null != ctx.opt_indirection()) {
-            return visit(ctx.a_expr(0));
+        if (null != ctx.optIndirection()) {
+            return visit(ctx.aExpr(0));
         }
-        super.visitA_expr(ctx);
+        super.visitAExpr(ctx);
         return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
     
     @Override
-    public ASTNode visitC_expr(final C_exprContext ctx) {
+    public ASTNode visitCExpr(final CExprContext ctx) {
         if (null != ctx.columnref()) {
             return visit(ctx.columnref());
         }
@@ -225,7 +225,7 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
             }
             return astNode;
         }
-        super.visitC_expr(ctx);
+        super.visitCExpr(ctx);
         return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
     }
     
@@ -249,7 +249,7 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
     @Override
     public ASTNode visitColumnref(final ColumnrefContext ctx) {
         if (null != ctx.indirection()) {
-            AttrNameContext attrName = ctx.indirection().indirection_el().attrName();
+            AttrNameContext attrName = ctx.indirection().indirectionEl().attrName();
             ColumnSegment result = new ColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(attrName.getText()));
             OwnerSegment owner = new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()));
             result.setOwner(owner);
@@ -259,51 +259,51 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
         return result;
     }
     
-    private PredicateSegment createInSegment(final A_exprContext ctx) {
-        ColumnSegment column = (ColumnSegment) visit(ctx.a_expr(0).c_expr().columnref());
-        PredicateBracketValue predicateBracketValue = createBracketValue(ctx.in_expr());
+    private PredicateSegment createInSegment(final AExprContext ctx) {
+        ColumnSegment column = (ColumnSegment) visit(ctx.aExpr(0).cExpr().columnref());
+        PredicateBracketValue predicateBracketValue = createBracketValue(ctx.inExpr());
         return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateInRightValue(predicateBracketValue, getExpressionSegments(ctx)));
     }
     
-    private Collection<ExpressionSegment> getExpressionSegments(final A_exprContext ctx) {
+    private Collection<ExpressionSegment> getExpressionSegments(final AExprContext ctx) {
         Collection<ExpressionSegment> result = new LinkedList<>();
-//        if (null != ctx.c_expr() && null != ctx.c_expr().select_with_parens()) {
-//            Select_with_parensContext subquery = ctx.c_expr().select_with_parens();
+//        if (null != ctx.cExpr() && null != ctx.cExpr().select_with_parens()) {
+//            Select_with_parensContext subquery = ctx.cExpr().select_with_parens();
 //            result.add(new SubqueryExpressionSegment(new SubquerySegment(subquery.getStart().getStartIndex(), subquery.getStop().getStopIndex(),
-//                    (SelectStatement) visit(ctx.c_expr().select_with_parens()))));
+//                    (SelectStatement) visit(ctx.cExpr().select_with_parens()))));
 //            return result;
 //        }
-//        for (A_exprContext each : ctx.a_expr()) {
+//        for (AExprContext each : ctx.aExpr()) {
 //            result.add(new CommonExpressionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), each.getText()));
 //        }
         return result;
     }
     
-    private PredicateBracketValue createBracketValue(final In_exprContext ctx) {
+    private PredicateBracketValue createBracketValue(final InExprContext ctx) {
         PredicateLeftBracketValue predicateLeftBracketValue = new PredicateLeftBracketValue(ctx.LP_().getSymbol().getStartIndex(), ctx.LP_().getSymbol().getStopIndex());
         PredicateRightBracketValue predicateRightBracketValue = new PredicateRightBracketValue(ctx.RP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex());
         visit(ctx);
         return new PredicateBracketValue(predicateLeftBracketValue, predicateRightBracketValue);
     }
 
-    private PredicateSegment createBetweenSegment(final A_exprContext ctx) {
-        ColumnSegment column = (ColumnSegment) visit(ctx.a_expr().get(0));
-        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateBetweenRightValue((ExpressionSegment) visit(ctx.b_expr()),
-                (ExpressionSegment) visit(ctx.a_expr(1))));
+    private PredicateSegment createBetweenSegment(final AExprContext ctx) {
+        ColumnSegment column = (ColumnSegment) visit(ctx.aExpr().get(0));
+        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateBetweenRightValue((ExpressionSegment) visit(ctx.bExpr()),
+                (ExpressionSegment) visit(ctx.aExpr(1))));
     }
     
     @Override
-    public ASTNode visitB_expr(final B_exprContext ctx) {
-        if (null != ctx.c_expr()) {
-            return visit(ctx.c_expr());
+    public ASTNode visitBExpr(final BExprContext ctx) {
+        if (null != ctx.cExpr()) {
+            return visit(ctx.cExpr());
         }
-        for (B_exprContext each : ctx.b_expr()) {
+        for (BExprContext each : ctx.bExpr()) {
             visit(each);
         }
         return new LiteralExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
     }
     
-    protected ProjectionSegment generateProjectFromFuncExpr(final Func_exprContext ctx) {
+    protected ProjectionSegment generateProjectFromFuncExpr(final FuncExprContext ctx) {
         if (null != ctx.funcApplication()) {
             return generateProjectFromFuncApplication(ctx.funcApplication());
         }
@@ -335,9 +335,9 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
 
     private String getDistinctExpression(final FuncApplicationContext ctx) {
         StringBuilder result = new StringBuilder();
-        result.append(ctx.func_arg_list().getText());
-        if (null != ctx.sort_clause()) {
-            result.append(ctx.sort_clause().getText());
+        result.append(ctx.funcArgList().getText());
+        if (null != ctx.sortClause()) {
+            result.append(ctx.sortClause().getText());
         }
         return result.toString();
     }
@@ -356,9 +356,9 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
     }
     
     @Override
-    public final ASTNode visitSort_clause(final Sort_clauseContext ctx) {
+    public final ASTNode visitSortClause(final SortClauseContext ctx) {
         Collection<OrderByItemSegment> items = new LinkedList<>();
-        for (SortbyContext each : ctx.sortby_list().sortby()) {
+        for (SortbyContext each : ctx.sortbyList().sortby()) {
             items.add((OrderByItemSegment) visit(each));
         }
         return new OrderBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
@@ -367,8 +367,8 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
     @Override
     public final ASTNode visitSortby(final SortbyContext ctx) {
         
-        OrderDirection orderDirection = null != ctx.asc_desc() ? generateOrderDirection(ctx.asc_desc()) : OrderDirection.ASC;
-        ASTNode astNode = visit(ctx.a_expr());
+        OrderDirection orderDirection = null != ctx.ascDesc() ? generateOrderDirection(ctx.ascDesc()) : OrderDirection.ASC;
+        ASTNode astNode = visit(ctx.aExpr());
         if (astNode instanceof ColumnSegment) {
             ColumnSegment column = (ColumnSegment) astNode;
             return new ColumnOrderByItemSegment(column, orderDirection);
@@ -378,10 +378,10 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
             return new IndexOrderByItemSegment(index.getStartIndex(), index.getStopIndex(),
                     Integer.valueOf(index.getLiterals().toString()), orderDirection);
         }
-        return new ExpressionOrderByItemSegment(ctx.a_expr().getStart().getStartIndex(), ctx.a_expr().getStop().getStopIndex(), ctx.a_expr().getText(), orderDirection);
+        return new ExpressionOrderByItemSegment(ctx.aExpr().getStart().getStartIndex(), ctx.aExpr().getStop().getStopIndex(), ctx.aExpr().getText(), orderDirection);
     }
     
-    private OrderDirection generateOrderDirection(final Asc_descContext ctx) {
+    private OrderDirection generateOrderDirection(final AscDescContext ctx) {
         OrderDirection result = null != ctx.DESC() ? OrderDirection.DESC : OrderDirection.ASC;
         return result;
     }

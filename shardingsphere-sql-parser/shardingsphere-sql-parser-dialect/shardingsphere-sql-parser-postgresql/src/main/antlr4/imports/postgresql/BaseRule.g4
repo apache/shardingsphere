@@ -103,23 +103,9 @@ reserved_keyword
 	| WITH
 	;
 
-//literals
-//    : stringLiterals
-//    | numberLiterals
-//    | hexadecimalLiterals
-//    | bitValueLiterals
-//    | booleanLiterals
-//    | nullValueLiterals
-//    ;
-
-//stringLiterals
-//    : unicodeEscapes_? STRING_ literalsType_? uescape_?
-//    ;
-
 numberLiterals
    : MINUS_? NUMBER_ literalsType_?
    ;
-
 
 literalsType_
     : TYPE_CAST_ IDENTIFIER_
@@ -439,7 +425,7 @@ unreservedWord
 	| ZONE
 	;
 
-type_func_name_keyword
+typeFuncNameKeyword
     : AUTHORIZATION
 	| BINARY
 	| COLLATION
@@ -486,11 +472,11 @@ name
     ;
 
 tableNames
-    : '('? tableName (COMMA_ tableName)* ')'?
+    : LP_? tableName (COMMA_ tableName)* RP_?
     ;
 
 columnNames
-    : '(' columnName (COMMA_ columnName)* ')'
+    : LP_ columnName (COMMA_ columnName)* RP_
     ;
 
 collationName
@@ -518,151 +504,151 @@ comparisonOperator
     ;
 
 
-cursor_name
+cursorName
     : name
 	;
 
-a_expr
-    : c_expr
-	| a_expr TYPE_CAST_ typeName
-	| a_expr COLLATE anyName
-	| a_expr AT TIME ZONE a_expr
-	| '+' a_expr
-	| '-' a_expr
-	| a_expr '+' a_expr
-	| a_expr '-' a_expr
-	| a_expr '*' a_expr
-	| a_expr '/' a_expr
-	| a_expr '%' a_expr
-	| a_expr '^' a_expr
-	| a_expr comparisonOperator a_expr
-    | '(' a_expr ')' opt_indirection
-	| a_expr qual_Op a_expr
-	| qual_Op a_expr
-	| a_expr qual_Op
-	| NOT a_expr
-	| a_expr LIKE a_expr
-	| a_expr LIKE a_expr ESCAPE a_expr
-	| a_expr NOT LIKE a_expr
-	| a_expr NOT LIKE a_expr ESCAPE a_expr
-	| a_expr ILIKE a_expr
-	| a_expr ILIKE a_expr ESCAPE a_expr
-	| a_expr NOT ILIKE a_expr
-	| a_expr NOT ILIKE a_expr ESCAPE a_expr
-	| a_expr SIMILAR TO a_expr
-	| a_expr SIMILAR TO a_expr ESCAPE a_expr
-	| a_expr NOT SIMILAR TO a_expr
-	| a_expr NOT SIMILAR TO a_expr ESCAPE a_expr
-	| a_expr IS NULL
-	| a_expr ISNULL
-	| a_expr IS NOT NULL
-	| a_expr NOTNULL
+aExpr
+    : cExpr
+	| aExpr TYPE_CAST_ typeName
+	| aExpr COLLATE anyName
+	| aExpr AT TIME ZONE aExpr
+	| PLUS_ aExpr
+	| MINUS_ aExpr
+	| aExpr PLUS_ aExpr
+	| aExpr MINUS_ aExpr
+	| aExpr ASTERISK_ aExpr
+	| aExpr SLASH_ aExpr
+	| aExpr MOD_ aExpr
+	| aExpr CARET_ aExpr
+	| aExpr comparisonOperator aExpr
+    | LP_ aExpr RP_ optIndirection
+	| aExpr qualOp aExpr
+	| qualOp aExpr
+	| aExpr qualOp
+	| NOT aExpr
+	| aExpr LIKE aExpr
+	| aExpr LIKE aExpr ESCAPE aExpr
+	| aExpr NOT LIKE aExpr
+	| aExpr NOT LIKE aExpr ESCAPE aExpr
+	| aExpr ILIKE aExpr
+	| aExpr ILIKE aExpr ESCAPE aExpr
+	| aExpr NOT ILIKE aExpr
+	| aExpr NOT ILIKE aExpr ESCAPE aExpr
+	| aExpr SIMILAR TO aExpr
+	| aExpr SIMILAR TO aExpr ESCAPE aExpr
+	| aExpr NOT SIMILAR TO aExpr
+	| aExpr NOT SIMILAR TO aExpr ESCAPE aExpr
+	| aExpr IS NULL
+	| aExpr ISNULL
+	| aExpr IS NOT NULL
+	| aExpr NOTNULL
 	| row OVERLAPS row
-	| a_expr IS TRUE
-	| a_expr IS NOT TRUE
-	| a_expr IS FALSE
-	| a_expr IS NOT FALSE
-	| a_expr IS UNKNOWN
-	| a_expr IS NOT UNKNOWN
-	| a_expr IS DISTINCT FROM a_expr
-	| a_expr IS NOT DISTINCT FROM a_expr
-	| a_expr IS OF '(' type_list ')'
-	| a_expr IS NOT OF '(' type_list ')'
-	| a_expr BETWEEN ASYMMETRIC? b_expr AND a_expr
-	| a_expr NOT BETWEEN ASYMMETRIC? b_expr AND a_expr
-	| a_expr BETWEEN SYMMETRIC b_expr AND a_expr
-	| a_expr NOT BETWEEN SYMMETRIC b_expr AND a_expr
-	| a_expr IN in_expr
-	| a_expr NOT IN in_expr
-	| a_expr subquery_Op sub_type select_with_parens
-	| a_expr subquery_Op sub_type '(' a_expr ')'
-	| UNIQUE select_with_parens
-	| a_expr IS DOCUMENT
-	| a_expr IS NOT DOCUMENT
-	| a_expr IS NORMALIZED
-	| a_expr IS unicodeNormalForm NORMALIZED
-	| a_expr IS NOT NORMALIZED
-	| a_expr IS NOT unicodeNormalForm NORMALIZED
-	| a_expr logicalOperator a_expr
+	| aExpr IS TRUE
+	| aExpr IS NOT TRUE
+	| aExpr IS FALSE
+	| aExpr IS NOT FALSE
+	| aExpr IS UNKNOWN
+	| aExpr IS NOT UNKNOWN
+	| aExpr IS DISTINCT FROM aExpr
+	| aExpr IS NOT DISTINCT FROM aExpr
+	| aExpr IS OF LP_ typeList RP_
+	| aExpr IS NOT OF LP_ typeList RP_
+	| aExpr BETWEEN ASYMMETRIC? bExpr AND aExpr
+	| aExpr NOT BETWEEN ASYMMETRIC? bExpr AND aExpr
+	| aExpr BETWEEN SYMMETRIC bExpr AND aExpr
+	| aExpr NOT BETWEEN SYMMETRIC bExpr AND aExpr
+	| aExpr IN inExpr
+	| aExpr NOT IN inExpr
+	| aExpr subqueryOp subType selectWithParens
+	| aExpr subqueryOp subType LP_ aExpr RP_
+	| UNIQUE selectWithParens
+	| aExpr IS DOCUMENT
+	| aExpr IS NOT DOCUMENT
+	| aExpr IS NORMALIZED
+	| aExpr IS unicodeNormalForm NORMALIZED
+	| aExpr IS NOT NORMALIZED
+	| aExpr IS NOT unicodeNormalForm NORMALIZED
+	| aExpr logicalOperator aExpr
 	| DEFAULT
 	;
 
-b_expr
-    : c_expr
-	| b_expr TYPE_CAST_ typeName
-	| '+' b_expr
-	| '-' b_expr
-	| b_expr qual_Op b_expr
-	| qual_Op b_expr
-	| b_expr qual_Op
-	| b_expr IS DISTINCT FROM b_expr
-	| b_expr IS NOT DISTINCT FROM b_expr
-	| b_expr IS OF '(' type_list ')'
-	| b_expr IS NOT OF '(' type_list ')'
-	| b_expr IS DOCUMENT
-	| b_expr IS NOT DOCUMENT
+bExpr
+    : cExpr
+	| bExpr TYPE_CAST_ typeName
+	| PLUS_ bExpr
+	| MINUS_ bExpr
+	| bExpr qualOp bExpr
+	| qualOp bExpr
+	| bExpr qualOp
+	| bExpr IS DISTINCT FROM bExpr
+	| bExpr IS NOT DISTINCT FROM bExpr
+	| bExpr IS OF LP_ typeList RP_
+	| bExpr IS NOT OF LP_ typeList RP_
+	| bExpr IS DOCUMENT
+	| bExpr IS NOT DOCUMENT
 	;
 
-c_expr
+cExpr
     : parameterMarker
     | columnref
 	| aexprConst
-	| PARAM indirection_el?
-	| case_expr
-	| func_expr
-	| select_with_parens
-	| select_with_parens indirection
-	| EXISTS select_with_parens
-	| ARRAY select_with_parens
-	| ARRAY array_expr
-	| explicit_row
-	| implicit_row
-	| GROUPING '(' exprList ')'
+	| PARAM indirectionEl?
+	| caseExpr
+	| funcExpr
+	| selectWithParens
+	| selectWithParens indirection
+	| EXISTS selectWithParens
+	| ARRAY selectWithParens
+	| ARRAY arrayExpr
+	| explicitRow
+	| implicitRow
+	| GROUPING LP_ exprList RP_
 	;
 
 indirection
-    : indirection_el
-	| indirection indirection_el
+    : indirectionEl
+	| indirection indirectionEl
 	;
 
-opt_indirection
-    : opt_indirection indirection_el |
+optIndirection
+    : optIndirection indirectionEl |
 	;
 
-indirection_el
-    : '.' attrName
-	| '.' '*'
-	| '[' a_expr ']'
-	| '[' slice_bound? ':' slice_bound? ']'
+indirectionEl
+    : DOT_ attrName
+	| DOT_ ASTERISK_
+	| LBT_ aExpr RBT_
+	| LBT_ sliceBound? COLON_ sliceBound? RBT_
 	;
 
-slice_bound
-    : a_expr
+sliceBound
+    : aExpr
 	;
 
-in_expr
-    : select_with_parens | '(' exprList ')'
+inExpr
+    : selectWithParens | LP_ exprList RP_
 	;
 
-case_expr
-    : CASE case_arg? when_clause_list case_default? END
+caseExpr
+    : CASE caseArg? whenClauseList caseDefault? END
 	;
 
-when_clause_list
-    : when_clause
-	| when_clause_list when_clause
+whenClauseList
+    : whenClause
+	| whenClauseList whenClause
 	;
 
-when_clause
-    : WHEN a_expr THEN a_expr
+whenClause
+    : WHEN aExpr THEN aExpr
 	;
 
-case_default
-    : ELSE a_expr
+caseDefault
+    : ELSE aExpr
 	;
 
-case_arg
-    : a_expr
+caseArg
+    : aExpr
 	;
 
 
@@ -671,75 +657,75 @@ columnref
 	| colId indirection
 	;
 
-qual_Op
+qualOp
     : mathOperator
     | TILDE_TILDE_
     | NOT_TILDE_TILDE_
-    | OPERATOR '(' any_operator ')'
+    | OPERATOR LP_ anyOperator RP_
 	;
 
-subquery_Op
-    : all_Op
-	| OPERATOR '(' any_operator ')'
+subqueryOp
+    : allOp
+	| OPERATOR LP_ anyOperator RP_
 	| LIKE
 	| NOT LIKE
 	| ILIKE
 	| NOT ILIKE
 	;
 
-all_Op
+allOp
     : mathOperator
 	;
 
 mathOperator
-    : '+'
-	| '-'
-	| '*'
-	| '/'
-	| '%'
-	| '^'
-	| '<'
-	| '>'
-	| '='
+    : PLUS_
+	| MINUS_
+	| ASTERISK_
+	| SLASH_
+	| MOD_
+	| CARET_
+	| LT_
+	| GT_
+	| EQ_
 	| LTE_
 	| GTE_
 	| NEQ_
 	;
 
 
-qual_all_Op
-    : all_Op
-	| OPERATOR '(' any_operator ')'
+qualAllOp
+    : allOp
+	| OPERATOR LP_ anyOperator RP_
 	;
 
-asc_desc
+ascDesc
     : ASC | DESC
 	;
 
-any_operator
-    : all_Op | colId '.' any_operator
+anyOperator
+    : allOp | colId DOT_ anyOperator
 	;
 
-frame_clause
-    : RANGE frame_extent window_exclusion_clause?
-	| ROWS frame_extent window_exclusion_clause?
-	| GROUPS frame_extent window_exclusion_clause?
+frameClause
+    : RANGE frameExtent windowExclusionClause?
+	| ROWS frameExtent windowExclusionClause?
+	| GROUPS frameExtent windowExclusionClause?
 	;
 
-frame_extent
-    : frame_bound
-	| BETWEEN frame_bound AND frame_bound
+frameExtent
+    : frameBound
+	| BETWEEN frameBound AND frameBound
 	;
 
-frame_bound
+frameBound
     : UNBOUNDED PRECEDING
 	| UNBOUNDED FOLLOWING
 	| CURRENT ROW
-	| a_expr PRECEDING
-	| a_expr FOLLOWING
+	| aExpr PRECEDING
+	| aExpr FOLLOWING
 	;
 
-window_exclusion_clause
+windowExclusionClause
     : EXCLUDE CURRENT ROW
 	| EXCLUDE GROUP
 	| EXCLUDE TIES
@@ -747,62 +733,62 @@ window_exclusion_clause
 	;
 
 row
-    : ROW '(' exprList ')'
-	| ROW '(' ')'
-	| '(' exprList ',' a_expr ')'
+    : ROW LP_ exprList RP_
+	| ROW LP_ RP_
+	| LP_ exprList COMMA_ aExpr RP_
 	;
 
-explicit_row
-    : ROW '(' exprList ')'
-	| ROW '(' ')'
+explicitRow
+    : ROW LP_ exprList RP_
+	| ROW LP_ RP_
 	;
 
-implicit_row
-    : '(' exprList ',' a_expr ')'
+implicitRow
+    : LP_ exprList COMMA_ aExpr RP_
 	;
 
-sub_type
+subType
     : ANY | SOME | ALL
 	;
 
-array_expr
-    : '[' exprList ']'
-	| '[' array_expr_list ']'
-	| '[' ']'
+arrayExpr
+    : LBT_ exprList RBT_
+	| LBT_ arrayExprList RBT_
+	| LBT_ RBT_
 	;
 
-array_expr_list
-    : array_expr | array_expr_list ',' array_expr
+arrayExprList
+    : arrayExpr | arrayExprList COMMA_ arrayExpr
 	;
 
-func_arg_list
-    : func_arg_expr
-	| func_arg_list ',' func_arg_expr
+funcArgList
+    : funcArgExpr
+	| funcArgList COMMA_ funcArgExpr
 	;
 
-param_name
+paramName
     : typeFunctionName
 	;
 
-func_arg_expr
-    : a_expr
-	| param_name CQ_ a_expr
-	| param_name GTE_ a_expr
+funcArgExpr
+    : aExpr
+	| paramName CQ_ aExpr
+	| paramName GTE_ aExpr
 	;
 
-type_list
+typeList
     : typeName
-	| type_list ',' typeName
+	| typeList COMMA_ typeName
 	;
 
 funcApplication
-    : funcName '(' ')'
-    | funcName '(' func_arg_list sort_clause? ')'
-    | funcName '(' VARIADIC func_arg_expr sort_clause? ')'
-    | funcName '(' func_arg_list ',' VARIADIC func_arg_expr sort_clause? ')'
-    | funcName '(' ALL func_arg_list sort_clause? ')'
-    | funcName '(' DISTINCT func_arg_list sort_clause? ')'
-    | funcName '(' '*' ')'
+    : funcName LP_ RP_
+    | funcName LP_ funcArgList sortClause? RP_
+    | funcName LP_ VARIADIC funcArgExpr sortClause? RP_
+    | funcName LP_ funcArgList COMMA_ VARIADIC funcArgExpr sortClause? RP_
+    | funcName LP_ ALL funcArgList sortClause? RP_
+    | funcName LP_ DISTINCT funcArgList sortClause? RP_
+    | funcName LP_ ASTERISK_ RP_
     ;
 
 funcName
@@ -813,7 +799,7 @@ aexprConst
     : NUMBER_
 	| STRING_
 	| funcName STRING_
-	| funcName '(' func_arg_list sort_clause? ')' STRING_
+	| funcName LP_ funcArgList sortClause? RP_ STRING_
 	| TRUE
 	| FALSE
 	| NULL
@@ -828,22 +814,22 @@ colId
     ;
 
 typeFunctionName
-    : identifier | unreservedWord |type_func_name_keyword
+    : identifier | unreservedWord | typeFuncNameKeyword
     ;
 
 functionTable
     : functionExprWindowless optOrdinality
-    | ROWS FROM '(' rowsFromList ')' optOrdinality
+    | ROWS FROM LP_ rowsFromList RP_ optOrdinality
     ;
 
 xmlTable
-    : XMLTABLE '(' c_expr xmlExistsArgument COLUMNS xmlTableColumnList ')'
-	| XMLTABLE '(' XMLNAMESPACES '(' xmlNamespaceList ')' ',' c_expr xmlExistsArgument COLUMNS xmlTableColumnList ')'
+    : XMLTABLE LP_ cExpr xmlExistsArgument COLUMNS xmlTableColumnList RP_
+	| XMLTABLE LP_ XMLNAMESPACES LP_ xmlNamespaceList RP_ COMMA_ cExpr xmlExistsArgument COLUMNS xmlTableColumnList RP_
 	;
 
 xmlTableColumnList
     : xmlTableColumnEl
-	| xmlTableColumnList ',' xmlTableColumnEl
+	| xmlTableColumnList COMMA_ xmlTableColumnEl
 	;
 
 xmlTableColumnEl
@@ -858,33 +844,33 @@ xmlTableColumnOptionList
 	;
 
 xmlTableColumnOptionEl
-    : identifier b_expr
-	| DEFAULT b_expr
+    : identifier bExpr
+	| DEFAULT bExpr
 	| NOT NULL
 	| NULL
 	;
 
 xmlNamespaceList
     : xmlNamespaceEl
-	| xmlNamespaceList ',' xmlNamespaceEl
+	| xmlNamespaceList COMMA_ xmlNamespaceEl
 	;
 
 xmlNamespaceEl
-    : b_expr AS identifier
-	| DEFAULT b_expr
+    : bExpr AS identifier
+	| DEFAULT bExpr
 	;
 
-func_expr
-    : funcApplication within_group_clause? filter_clause? over_clause?
+funcExpr
+    : funcApplication withinGroupClause? filterClause? overClause?
 	| functionExprCommonSubexpr
 	;
 
-within_group_clause
-    : WITHIN GROUP '(' sort_clause ')'
+withinGroupClause
+    : WITHIN GROUP LP_ sortClause RP_
 	;
 
-filter_clause
-    : FILTER '(' WHERE a_expr ')'
+filterClause
+    : FILTER LP_ WHERE aExpr RP_
 	;
 
 functionExprWindowless
@@ -896,57 +882,57 @@ optOrdinality
     ;
 
 functionExprCommonSubexpr
-    : COLLATION FOR '(' a_expr ')'
+    : COLLATION FOR LP_ aExpr RP_
     | CURRENT_DATE
     | CURRENT_TIME
-    | CURRENT_TIME '(' NUMBER_ ')'
+    | CURRENT_TIME LP_ NUMBER_ RP_
     | CURRENT_TIMESTAMP
-    | CURRENT_TIMESTAMP '(' NUMBER_ ')'
+    | CURRENT_TIMESTAMP LP_ NUMBER_ RP_
     | LOCALTIME
-    | LOCALTIME '(' NUMBER_ ')'
+    | LOCALTIME LP_ NUMBER_ RP_
     | LOCALTIMESTAMP
-    | LOCALTIMESTAMP '(' NUMBER_ ')'
+    | LOCALTIMESTAMP LP_ NUMBER_ RP_
     | CURRENT_ROLE
     | CURRENT_USER
     | SESSION_USER
     | USER
     | CURRENT_CATALOG
     | CURRENT_SCHEMA
-    | CAST '(' a_expr AS typeName ')'
-    | EXTRACT '(' extractList? ')'
-    | NORMALIZE '(' a_expr ')'
-    | NORMALIZE '(' a_expr COMMA_ unicodeNormalForm ')'
-    | OVERLAY '(' overlayList ')'
-    | POSITION '(' positionList ')'
-    | SUBSTRING '(' substrList ')'
-    | TREAT '(' a_expr AS typeName ')'
-    | TRIM '(' BOTH trimList ')'
-    | TRIM '(' LEADING trimList ')'
-    | TRIM '(' TRAILING trimList ')'
-    | TRIM '(' trimList ')'
-    | NULLIF '(' a_expr COMMA_ a_expr ')'
-    | COALESCE '(' exprList ')'
-    | GREATEST '(' exprList ')'
-    | LEAST '(' exprList ')'
-    | XMLCONCAT '(' exprList ')'
-    | XMLELEMENT '(' NAME identifier ')'
-    | XMLELEMENT '(' NAME identifier COMMA_ xmlAttributes ')'
-    | XMLELEMENT '(' NAME identifier COMMA_ exprList ')'
-    | XMLELEMENT '(' NAME identifier COMMA_ xmlAttributes COMMA_ exprList ')'
-    | XMLEXISTS '(' c_expr xmlExistsArgument ')'
-    | XMLFOREST '(' xmlAttributeList ')'
-    | XMLPARSE '(' documentOrContent a_expr xmlWhitespaceOption ')'
-    | XMLPI '(' NAME identifier ')'
-    | XMLPI '(' NAME identifier COMMA_ a_expr ')'
-    | XMLROOT '(' a_expr COMMA_ xmlRootVersion optXmlRootStandalone ')'
-    | XMLSERIALIZE '(' documentOrContent a_expr AS simpleTypeName ')'
+    | CAST LP_ aExpr AS typeName RP_
+    | EXTRACT LP_ extractList? RP_
+    | NORMALIZE LP_ aExpr RP_
+    | NORMALIZE LP_ aExpr COMMA_ unicodeNormalForm RP_
+    | OVERLAY LP_ overlayList RP_
+    | POSITION LP_ positionList RP_
+    | SUBSTRING LP_ substrList RP_
+    | TREAT LP_ aExpr AS typeName RP_
+    | TRIM LP_ BOTH trimList RP_
+    | TRIM LP_ LEADING trimList RP_
+    | TRIM LP_ TRAILING trimList RP_
+    | TRIM LP_ trimList RP_
+    | NULLIF LP_ aExpr COMMA_ aExpr RP_
+    | COALESCE LP_ exprList RP_
+    | GREATEST LP_ exprList RP_
+    | LEAST LP_ exprList RP_
+    | XMLCONCAT LP_ exprList RP_
+    | XMLELEMENT LP_ NAME identifier RP_
+    | XMLELEMENT LP_ NAME identifier COMMA_ xmlAttributes RP_
+    | XMLELEMENT LP_ NAME identifier COMMA_ exprList RP_
+    | XMLELEMENT LP_ NAME identifier COMMA_ xmlAttributes COMMA_ exprList RP_
+    | XMLEXISTS LP_ cExpr xmlExistsArgument RP_
+    | XMLFOREST LP_ xmlAttributeList RP_
+    | XMLPARSE LP_ documentOrContent aExpr xmlWhitespaceOption RP_
+    | XMLPI LP_ NAME identifier RP_
+    | XMLPI LP_ NAME identifier COMMA_ aExpr RP_
+    | XMLROOT LP_ aExpr COMMA_ xmlRootVersion optXmlRootStandalone RP_
+    | XMLSERIALIZE LP_ documentOrContent aExpr AS simpleTypeName RP_
     ;
 
 typeName
     : simpleTypeName optArrayBounds
 	| SETOF simpleTypeName optArrayBounds
-	| simpleTypeName ARRAY '[' NUMBER_ ']'
-	| SETOF simpleTypeName ARRAY '[' NUMBER_ ']'
+	| simpleTypeName ARRAY LBT_ NUMBER_ RBT_
+	| SETOF simpleTypeName ARRAY LBT_ NUMBER_ RBT_
 	| simpleTypeName ARRAY
 	| SETOF simpleTypeName ARRAY
 	;
@@ -958,16 +944,16 @@ simpleTypeName
 	| character
 	| constDatetime
 	| constInterval optInterval
-	| constInterval '(' NUMBER_ ')'
+	| constInterval LP_ NUMBER_ RP_
 	;
 
 exprList
-    : a_expr
-    | exprList ',' a_expr
+    : aExpr
+    | exprList COMMA_ aExpr
     ;
 
 extractList
-    : extractArg FROM a_expr
+    : extractArg FROM aExpr
 	;
 
 extractArg
@@ -985,7 +971,7 @@ genericType
     ;
 
 typeModifiers
-    : '(' exprList ')'
+    : LP_ exprList RP_
     ;
 
 numeric
@@ -993,9 +979,9 @@ numeric
 	;
 
 constDatetime
-    : TIMESTAMP '(' NUMBER_ ')' optTimezone
+    : TIMESTAMP LP_ NUMBER_ RP_ optTimezone
 	| TIMESTAMP optTimezone
-	| TIME '(' NUMBER_ ')' optTimezone
+	| TIME LP_ NUMBER_ RP_ optTimezone
 	| TIME optTimezone
     ;
 
@@ -1010,7 +996,7 @@ character
 	;
 
 characterWithLength
-    : characterClause '(' NUMBER_ ')'
+    : characterClause LP_ NUMBER_ RP_
 	;
 
 characterWithoutLength
@@ -1027,7 +1013,7 @@ characterClause
 	;
 
 optFloat
-    : '(' NUMBER_ ')' |
+    : LP_ NUMBER_ RP_ |
     ;
 
 attrs
@@ -1047,7 +1033,7 @@ bit
     ;
 
 bitWithLength
-    : BIT VARYING? '(' exprList ')'
+    : BIT VARYING? LP_ exprList RP_
 	;
 
 bitWithoutLength
@@ -1076,14 +1062,14 @@ optInterval
 	;
 
 optArrayBounds
-    : optArrayBounds '[' ']'
-    | optArrayBounds '[' NUMBER_ ']'
+    : optArrayBounds LBT_ RBT_
+    | optArrayBounds LBT_ NUMBER_ RBT_
     |
     ;
 
 intervalSecond
     : SECOND
-	| SECOND '(' NUMBER_ ')'
+	| SECOND LP_ NUMBER_ RP_
 	;
 
 unicodeNormalForm
@@ -1091,59 +1077,59 @@ unicodeNormalForm
 	;
 
 trimList
-    : a_expr FROM exprList
+    : aExpr FROM exprList
 	| FROM exprList
 	| exprList
 	;
 
 overlayList
-    : a_expr overlayPlacing substrFrom substrFor
-    | a_expr overlayPlacing substrFrom
+    : aExpr overlayPlacing substrFrom substrFor
+    | aExpr overlayPlacing substrFrom
     ;
 
 overlayPlacing
-    : PLACING a_expr
+    : PLACING aExpr
     ;
 
 substrFrom
-    : FROM a_expr
+    : FROM aExpr
     ;
 
 substrFor
-    : FOR a_expr
+    : FOR aExpr
     ;
 
 positionList
-    : b_expr IN b_expr |
+    : bExpr IN bExpr |
 	;
 
 substrList
-    : a_expr substrFrom substrFor
-	| a_expr substrFor substrFrom
-	| a_expr substrFrom
-	| a_expr substrFor
+    : aExpr substrFrom substrFor
+	| aExpr substrFor substrFrom
+	| aExpr substrFrom
+	| aExpr substrFor
 	| exprList
 	|
 	;
 
 xmlAttributes
-    : XMLATTRIBUTES '(' xmlAttributeList ')'
+    : XMLATTRIBUTES LP_ xmlAttributeList RP_
 	;
 
 xmlAttributeList
     : xmlAttributeEl
-	| xmlAttributeList ',' xmlAttributeEl
+	| xmlAttributeList COMMA_ xmlAttributeEl
 	;
 
 xmlAttributeEl
-    : a_expr AS identifier | a_expr
+    : aExpr AS identifier | aExpr
 	;
 
 xmlExistsArgument
-    : PASSING c_expr
-	| PASSING c_expr xmlPassingMech
-	| PASSING xmlPassingMech c_expr
-	| PASSING xmlPassingMech c_expr xmlPassingMech
+    : PASSING cExpr
+	| PASSING cExpr xmlPassingMech
+	| PASSING xmlPassingMech cExpr
+	| PASSING xmlPassingMech cExpr xmlPassingMech
 	;
 
 xmlPassingMech
@@ -1159,14 +1145,14 @@ xmlWhitespaceOption
 	;
 
 xmlRootVersion
-    : VERSION a_expr
+    : VERSION aExpr
 	| VERSION NO VALUE
 	;
 
 optXmlRootStandalone
-    : ',' STANDALONE YES
-	| ',' STANDALONE NO
-	| ',' STANDALONE NO VALUE
+    : COMMA_ STANDALONE YES
+	| COMMA_ STANDALONE NO
+	| COMMA_ STANDALONE NO VALUE
 	|
 	;
 
@@ -1176,16 +1162,16 @@ rowsFromItem
 
 rowsFromList
     : rowsFromItem
-	| rowsFromList ',' rowsFromItem
+	| rowsFromList COMMA_ rowsFromItem
 	;
 
 optColumnDefList
-    : AS '(' tableFuncElementList ')'
+    : AS LP_ tableFuncElementList RP_
 	;
 
 tableFuncElementList
     : tableFuncElement
-    | tableFuncElementList ',' tableFuncElement
+    | tableFuncElementList COMMA_ tableFuncElement
 	;
 
 tableFuncElement
@@ -1201,144 +1187,144 @@ anyName
 	;
 
 aliasClause
-    : AS colId '(' nameList ')'
+    : AS colId LP_ nameList RP_
 	| AS colId
-	| colId '(' nameList ')'
+	| colId LP_ nameList RP_
 	| colId
 	;
 
 nameList
-    : name | nameList ',' name
+    : name | nameList COMMA_ name
 	;
 
 funcAliasClause
     : aliasClause
-	| AS '(' tableFuncElementList ')'
-	| AS colId '(' tableFuncElementList ')'
-	| colId '(' tableFuncElementList ')'
+	| AS LP_ tableFuncElementList RP_
+	| AS colId LP_ tableFuncElementList RP_
+	| colId LP_ tableFuncElementList RP_
 	;
 
 tablesampleClause
-    : TABLESAMPLE funcName '(' exprList ')' repeatableClause?
+    : TABLESAMPLE funcName LP_ exprList RP_ repeatableClause?
 	;
 
 repeatableClause
-    : REPEATABLE '(' a_expr ')'
+    : REPEATABLE LP_ aExpr RP_
 	;
 
-all_or_distinct
+allOrDistinct
     : ALL | DISTINCT
 	;
 
-sort_clause
-    : ORDER BY sortby_list
+sortClause
+    : ORDER BY sortbyList
 	;
 
-sortby_list
-    : sortby (',' sortby)*
+sortbyList
+    : sortby (COMMA_ sortby)*
 	;
 
 sortby
-    : a_expr USING qual_all_Op nulls_order?
-	| a_expr asc_desc? nulls_order?
+    : aExpr USING qualAllOp nullsOrder?
+	| aExpr ascDesc? nullsOrder?
 	;
 
-nulls_order
+nullsOrder
     : NULLS FIRST
 	| NULLS LAST
 	;
 
-distinct_clause
+distinctClause
     : DISTINCT
-	| DISTINCT ON '(' exprList ')'
+	| DISTINCT ON LP_ exprList RP_
 	;
 
 distinct
     : DISTINCT
     ;
 
-over_clause
-    : OVER window_specification
+overClause
+    : OVER windowSpecification
 	| OVER colId
 	;
 
-window_specification
-    : '(' window_name? partition_clause? sort_clause? frame_clause? ')'
+windowSpecification
+    : LP_ windowName? partitionClause? sortClause? frameClause? RP_
 	;
 
-window_name
+windowName
     : colId
 	;
 
-partition_clause
+partitionClause
     : PARTITION BY exprList
 	;
 
-index_params
-    : index_elem
-	| index_params ',' index_elem
+indexParams
+    : indexElem
+	| indexParams COMMA_ indexElem
 	;
 
-index_elem_options
-    : collate? opt_class asc_desc? nulls_order?
-	| collate? anyName reloptions asc_desc? nulls_order?
+indexElemOptions
+    : collate? optClass ascDesc? nullsOrder?
+	| collate? anyName reloptions ascDesc? nullsOrder?
 	;
 
-index_elem
-    : colId index_elem_options
-	| functionExprWindowless index_elem_options
-	| '(' a_expr ')' index_elem_options
+indexElem
+    : colId indexElemOptions
+	| functionExprWindowless indexElemOptions
+	| LP_ aExpr RP_ indexElemOptions
 	;
 
 collate
     : COLLATE anyName
 	;
 
-opt_class
+optClass
     : anyName |
 	;
 
 reloptions
-    : '(' reloption_list ')'
+    : LP_ reloptionList RP_
 	;
 
-opt_reloptions
+optReloptions
     : WITH reloptions |
 	;
 
-reloption_list
-    : reloption_elem
-	| reloption_list ',' reloption_elem
+reloptionList
+    : reloptionElem
+	| reloptionList COMMA_ reloptionElem
 	;
 
-reloption_elem
-    : alias '=' def_arg
+reloptionElem
+    : alias EQ_ defArg
 	| alias
-	| alias '.' alias '=' def_arg
-	| alias '.' alias
+	| alias DOT_ alias EQ_ defArg
+	| alias DOT_ alias
 	;
 
-def_arg
-    : func_type
+defArg
+    : funcType
 	| reserved_keyword
-	| qual_all_Op
+	| qualAllOp
 	| NUMBER_
 	| STRING_
 	| NONE
 	;
 
-func_type
+funcType
     : typeName
-	| typeFunctionName attrs '%' TYPE
-	| SETOF typeFunctionName attrs '%' TYPE
+	| typeFunctionName attrs MOD_ TYPE
+	| SETOF typeFunctionName attrs MOD_ TYPE
 	;
 
-select_with_parens
+selectWithParens
     : 'Default does not match anything'
     ;
 
 dataType
-    : dataTypeName dataTypeLength? characterSet_? collateClause_? | dataTypeName '(' STRING_ (COMMA_ STRING_)* ')' characterSet_? collateClause_?
+    : dataTypeName dataTypeLength? characterSet_? collateClause_? | dataTypeName LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet_? collateClause_?
     ;
 
 dataTypeName
@@ -1349,7 +1335,7 @@ dataTypeName
     ;
 
 dataTypeLength
-    : '(' NUMBER_ (COMMA_ NUMBER_)? ')'
+    : LP_ NUMBER_ (COMMA_ NUMBER_)? RP_
     ;
 
 characterSet_

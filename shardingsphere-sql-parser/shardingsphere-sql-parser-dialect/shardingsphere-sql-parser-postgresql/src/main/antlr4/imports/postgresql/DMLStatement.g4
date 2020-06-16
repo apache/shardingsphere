@@ -20,156 +20,156 @@ grammar DMLStatement;
 import Symbol, Keyword, PostgreSQLKeyword, Literals, BaseRule;
 
 insert
-    : withClause? INSERT INTO insert_target insert_rest opt_on_conflict? returning_clause?
+    : withClause? INSERT INTO insertTarget insertRest optOnConflict? returningClause?
     ;
 
-insert_target
-    : qualified_name | qualified_name AS colId
+insertTarget
+    : qualifiedName | qualifiedName AS colId
 	;
 
-insert_rest
+insertRest
     : select
-	| OVERRIDING override_kind VALUE select
-	| '(' insert_column_list ')' select
-	| '(' insert_column_list ')' OVERRIDING override_kind VALUE select
+	| OVERRIDING overrideKind VALUE select
+	| LP_ insertColumnList RP_ select
+	| LP_ insertColumnList RP_ OVERRIDING overrideKind VALUE select
 	| DEFAULT VALUES
 	;
 
-override_kind
+overrideKind
     : USER | SYSTEM
 	;
 
-insert_column_list
-    : insert_column_item
-	| insert_column_list ',' insert_column_item
+insertColumnList
+    : insertColumnItem
+	| insertColumnList COMMA_ insertColumnItem
 	;
 
-insert_column_item
-    : colId opt_indirection
+insertColumnItem
+    : colId optIndirection
 	;
 
-opt_on_conflict
-    : ON CONFLICT opt_conf_expr DO UPDATE SET set_clause_list whereClause?
-	| ON CONFLICT opt_conf_expr DO NOTHING
+optOnConflict
+    : ON CONFLICT optConfExpr DO UPDATE SET setClauseList whereClause?
+	| ON CONFLICT optConfExpr DO NOTHING
 	;
 
-opt_conf_expr
-    : '(' index_params ')' whereClause?
+optConfExpr
+    : LP_ indexParams RP_ whereClause?
 	| ON CONSTRAINT name
 	|
 	;
 
 update
-    : withClause? UPDATE relation_expr_opt_alias SET set_clause_list fromClause? where_or_current_clause? returning_clause?
+    : withClause? UPDATE relationExprOptAlias SET setClauseList fromClause? whereOrCurrentClause? returningClause?
     ;
 
-set_clause_list
-    : set_clause
-	| set_clause_list ',' set_clause
+setClauseList
+    : setClause
+	| setClauseList COMMA_ setClause
 	;
 
-set_clause
-    : set_target '=' a_expr
-	| '(' set_target_list ')' '=' a_expr
+setClause
+    : setTarget '=' aExpr
+	| LP_ setTargetList RP_ '=' aExpr
 	;
 
-set_target
-    : colId opt_indirection
+setTarget
+    : colId optIndirection
 	;
 
-set_target_list
-    : set_target
-	| set_target_list ',' set_target
+setTargetList
+    : setTarget
+	| setTargetList COMMA_ setTarget
 	;
 
-returning_clause
-    : RETURNING target_list
+returningClause
+    : RETURNING targetList
 	;
 
 delete
-    : withClause? DELETE FROM relation_expr_opt_alias using_clause? where_or_current_clause? returning_clause?
+    : withClause? DELETE FROM relationExprOptAlias usingClause? whereOrCurrentClause? returningClause?
     ;
 
-relation_expr_opt_alias
+relationExprOptAlias
     : relationExpr
 	| relationExpr colId
 	| relationExpr AS colId
 	;
 
-using_clause
+usingClause
     : USING fromList
 	;
 
 select
-    : select_no_parens | select_with_parens
+    : selectNoParens | selectWithParens
     ;
 
-select_with_parens
-    : '(' select_no_parens ')' | '(' select_with_parens ')'
+selectWithParens
+    : LP_ selectNoParens RP_ | LP_ selectWithParens RP_
 	;
 
-select_no_parens
+selectNoParens
     : selectClauseN
-    | selectClauseN sort_clause
-	| selectClauseN sort_clause? for_locking_clause select_limit?
-	| selectClauseN sort_clause? select_limit for_locking_clause?
+    | selectClauseN sortClause
+	| selectClauseN sortClause? forLockingClause selectLimit?
+	| selectClauseN sortClause? selectLimit forLockingClause?
 	| withClause selectClauseN
-	| withClause selectClauseN sort_clause
-	| withClause selectClauseN sort_clause? for_locking_clause select_limit?
-	| withClause selectClauseN sort_clause? select_limit for_locking_clause?
+	| withClause selectClauseN sortClause
+	| withClause selectClauseN sortClause? forLockingClause selectLimit?
+	| withClause selectClauseN sortClause? selectLimit forLockingClause?
 	;
 
 selectClauseN
-    : simple_select
-    | select_with_parens
-    | selectClauseN UNION all_or_distinct selectClauseN
-    | selectClauseN INTERSECT all_or_distinct selectClauseN
-    | selectClauseN EXCEPT all_or_distinct selectClauseN
+    : simpleSelect
+    | selectWithParens
+    | selectClauseN UNION allOrDistinct selectClauseN
+    | selectClauseN INTERSECT allOrDistinct selectClauseN
+    | selectClauseN EXCEPT allOrDistinct selectClauseN
 	;
 
-simple_select
-    : SELECT ALL? target_list? into_clause? fromClause? whereClause? group_clause? havingClause? window_clause?
-	| SELECT distinct_clause target_list into_clause? fromClause? whereClause? group_clause? havingClause? window_clause?
-	| values_clause
+simpleSelect
+    : SELECT ALL? targetList? intoClause? fromClause? whereClause? groupClause? havingClause? windowClause?
+	| SELECT distinctClause targetList intoClause? fromClause? whereClause? groupClause? havingClause? windowClause?
+	| valuesClause
 	| TABLE relationExpr
 	;
 
 withClause
-    : WITH cte_list
-	| WITH RECURSIVE cte_list
+    : WITH cteList
+	| WITH RECURSIVE cteList
 	;
 
-into_clause
+intoClause
     : INTO optTempTableName
 	;
 
 optTempTableName
-    : TEMPORARY TABLE? qualified_name
-	| TEMP TABLE? qualified_name
-	| LOCAL TEMPORARY TABLE? qualified_name
-	| LOCAL TEMP TABLE? qualified_name
-	| GLOBAL TEMPORARY TABLE? qualified_name
-	| GLOBAL TEMP TABLE? qualified_name
-	| UNLOGGED TABLE? qualified_name
-	| TABLE? qualified_name
-	| qualified_name
+    : TEMPORARY TABLE? qualifiedName
+	| TEMP TABLE? qualifiedName
+	| LOCAL TEMPORARY TABLE? qualifiedName
+	| LOCAL TEMP TABLE? qualifiedName
+	| GLOBAL TEMPORARY TABLE? qualifiedName
+	| GLOBAL TEMP TABLE? qualifiedName
+	| UNLOGGED TABLE? qualifiedName
+	| TABLE? qualifiedName
+	| qualifiedName
 	;
 
-cte_list
-    : common_table_expr
-	| cte_list ',' common_table_expr
+cteList
+    : commonTableExpr
+	| cteList COMMA_ commonTableExpr
 	;
 
-common_table_expr
-    :  name optNameList AS opt_materialized '(' preparableStmt ')'
+commonTableExpr
+    :  name optNameList AS optMaterialized LP_ preparableStmt RP_
 	;
 
-opt_materialized
+optMaterialized
     : MATERIALIZED | NOT MATERIALIZED |
 	;
 
 optNameList
-    :'(' nameList ')' |
+    :LP_ nameList RP_ |
 	;
 
 preparableStmt
@@ -179,185 +179,185 @@ preparableStmt
 	| delete
 	;
 
-for_locking_clause
-    : for_locking_items | FOR READ ONLY
+forLockingClause
+    : forLockingItems | FOR READ ONLY
 	;
 
-for_locking_items
-    : for_locking_item
-	| for_locking_items for_locking_item
+forLockingItems
+    : forLockingItem
+	| forLockingItems forLockingItem
 	;
 
-for_locking_item
-    : for_locking_strength locked_rels_list? nowait_or_skip?
+forLockingItem
+    : forLockingStrength lockedRelsList? nowaitOrSkip?
 	;
 
-nowait_or_skip
+nowaitOrSkip
     : NOWAIT
 	| 'skip' LOCKED
 	;
 
-for_locking_strength
+forLockingStrength
     : FOR UPDATE
 	| FOR NO KEY UPDATE
 	| FOR SHARE
 	| FOR KEY SHARE
 	;
 
-locked_rels_list
-    : OF qualified_name_list
+lockedRelsList
+    : OF qualifiedNameList
 	;
 
-qualified_name_list
-    : qualified_name
-	| qualified_name_list ',' qualified_name
+qualifiedNameList
+    : qualifiedName
+	| qualifiedNameList COMMA_ qualifiedName
 	;
 
-qualified_name
+qualifiedName
     : colId | colId indirection
 	;
 
 
 
-select_limit
-    : limit_clause offset_clause
-	| offset_clause limit_clause
-	| limit_clause
-	| offset_clause
+selectLimit
+    : limitClause offsetClause
+	| offsetClause limitClause
+	| limitClause
+	| offsetClause
 	;
 
-values_clause
-    : VALUES '(' exprList ')'
-	| values_clause ',' '(' exprList ')'
+valuesClause
+    : VALUES LP_ exprList RP_
+	| valuesClause COMMA_ LP_ exprList RP_
 	;
 
-limit_clause
-    : LIMIT select_limit_value
-	| LIMIT select_limit_value ',' select_offset_value
-	| FETCH first_or_next select_fetch_first_value row_or_rows ONLY
-	| FETCH first_or_next select_fetch_first_value row_or_rows WITH TIES
-	| FETCH first_or_next row_or_rows ONLY
-	| FETCH first_or_next row_or_rows WITH TIES
+limitClause
+    : LIMIT selectLimitValue
+	| LIMIT selectLimitValue COMMA_ selectOffsetValue
+	| FETCH firstOrNext selectFetchFirstValue rowOrRows ONLY
+	| FETCH firstOrNext selectFetchFirstValue rowOrRows WITH TIES
+	| FETCH firstOrNext rowOrRows ONLY
+	| FETCH firstOrNext rowOrRows WITH TIES
 	;
 
-offset_clause
-    : OFFSET select_offset_value
-	| OFFSET select_fetch_first_value row_or_rows
+offsetClause
+    : OFFSET selectOffsetValue
+	| OFFSET selectFetchFirstValue rowOrRows
 	;
 
-select_limit_value
-    : a_expr
+selectLimitValue
+    : aExpr
 	| ALL
 	;
 
-select_offset_value
-    : a_expr
+selectOffsetValue
+    : aExpr
 	;
 
-select_fetch_first_value
-    : c_expr
-	| '+' NUMBER_
-	| '-' NUMBER_
+selectFetchFirstValue
+    : cExpr
+	| PLUS_ NUMBER_
+	| MINUS_ NUMBER_
 	;
 
-row_or_rows
+rowOrRows
     : ROW | ROWS
 	;
 
-first_or_next
+firstOrNext
     : FIRST | NEXT
 	;
 
-target_list
-    : target_el
-	| target_list ',' target_el
+targetList
+    : targetEl
+	| targetList COMMA_ targetEl
 	;
 
-target_el
+targetEl
     : colId DOT_ASTERISK_
-    | a_expr AS identifier
-	| a_expr identifier
-	| a_expr
-	| '*'
+    | aExpr AS identifier
+	| aExpr identifier
+	| aExpr
+	| ASTERISK_
 	;
 
-group_clause
-    : GROUP BY group_by_list
+groupClause
+    : GROUP BY groupByList
 	;
 
-group_by_list
-    : group_by_item (',' group_by_item)*
+groupByList
+    : groupByItem (COMMA_ groupByItem)*
 	;
 
-group_by_item
-    : a_expr
-	| empty_grouping_set
-	| cube_clause
-	| rollup_clause
-	| grouping_sets_clause
+groupByItem
+    : aExpr
+	| emptyGroupingSet
+	| cubeClause
+	| rollupClause
+	| groupingSetsClause
 	;
 
-empty_grouping_set
-    : '(' ')'
+emptyGroupingSet
+    : LP_ RP_
 	;
 
-rollup_clause
-    : ROLLUP '(' exprList ')'
+rollupClause
+    : ROLLUP LP_ exprList RP_
 	;
 
-cube_clause
-    : CUBE '(' exprList ')'
+cubeClause
+    : CUBE LP_ exprList RP_
 	;
 
-grouping_sets_clause
-    : GROUPING SETS '(' group_by_list ')'
+groupingSetsClause
+    : GROUPING SETS LP_ groupByList RP_
 	;
 
-window_clause
-    : WINDOW window_definition_list
+windowClause
+    : WINDOW windowDefinitionList
 	;
 
-window_definition_list
-    : window_definition
-	| window_definition_list ',' window_definition
+windowDefinitionList
+    : windowDefinition
+	| windowDefinitionList COMMA_ windowDefinition
 	;
 
-window_definition
-    : colId AS window_specification
+windowDefinition
+    : colId AS windowSpecification
 	;
 
-window_specification
-    : '(' existing_window_name? partition_clause? sort_clause? frame_clause? ')'
+windowSpecification
+    : LP_ existingWindowName? partitionClause? sortClause? frameClause? RP_
 	;
 
-existing_window_name
+existingWindowName
     : colId
 	;
 
-partition_clause
+partitionClause
     : PARTITION BY exprList
 	;
 
-frame_clause
-    : RANGE frame_extent opt_window_exclusion_clause
-	| ROWS frame_extent opt_window_exclusion_clause
-	| GROUPS frame_extent opt_window_exclusion_clause
+frameClause
+    : RANGE frameExtent optWindowExclusionClause
+	| ROWS frameExtent optWindowExclusionClause
+	| GROUPS frameExtent optWindowExclusionClause
 	;
 
-frame_extent
-    : frame_bound
-	| BETWEEN frame_bound AND frame_bound
+frameExtent
+    : frameBound
+	| BETWEEN frameBound AND frameBound
 	;
 
-frame_bound
+frameBound
     : UNBOUNDED PRECEDING
 	| UNBOUNDED FOLLOWING
 	| CURRENT ROW
-	| a_expr PRECEDING
-	| a_expr FOLLOWING
+	| aExpr PRECEDING
+	| aExpr FOLLOWING
 	;
 
-opt_window_exclusion_clause
+optWindowExclusionClause
     : EXCLUDE CURRENT ROW
 	| EXCLUDE GROUP
 	| EXCLUDE TIES
@@ -374,7 +374,7 @@ fromClause
     ;
 
 fromList
-    : tableReference | fromList ',' tableReference
+    : tableReference | fromList COMMA_ tableReference
     ;
 
 tableReference
@@ -384,34 +384,34 @@ tableReference
 	| LATERAL functionTable funcAliasClause?
 	| xmlTable aliasClause?
 	| LATERAL xmlTable aliasClause?
-	| select_with_parens aliasClause?
-	| LATERAL select_with_parens aliasClause?
-	| tableReference joined_table
-	| tableReference '(' joined_table ')' aliasClause
+	| selectWithParens aliasClause?
+	| LATERAL selectWithParens aliasClause?
+	| tableReference joinedTable
+	| tableReference LP_ joinedTable RP_ aliasClause
 	;
 
-joined_table
+joinedTable
     : CROSS JOIN tableReference
-	| join_type JOIN tableReference join_qual
-	| JOIN tableReference join_qual
-	| NATURAL join_type JOIN tableReference
+	| joinType JOIN tableReference joinQual
+	| JOIN tableReference joinQual
+	| NATURAL joinType JOIN tableReference
 	| NATURAL JOIN tableReference
 	;
 
-join_type
-    : FULL join_outer?
-	| LEFT join_outer?
-	| RIGHT join_outer?
+joinType
+    : FULL joinOuter?
+	| LEFT joinOuter?
+	| RIGHT joinOuter?
 	| INNER
 	;
 
-join_outer
+joinOuter
     : OUTER
 	;
 
-join_qual
-    : USING '(' nameList ')'
-	| ON a_expr
+joinQual
+    : USING LP_ nameList RP_
+	| ON aExpr
 	;
 
 
@@ -423,15 +423,15 @@ relationExpr
     ;
 
 whereClause
-    : WHERE a_expr
+    : WHERE aExpr
     ;
 
-where_or_current_clause
+whereOrCurrentClause
     : whereClause
-	| WHERE CURRENT OF cursor_name
+	| WHERE CURRENT OF cursorName
 	;
 
 
 havingClause
-    : HAVING a_expr
+    : HAVING aExpr
     ;

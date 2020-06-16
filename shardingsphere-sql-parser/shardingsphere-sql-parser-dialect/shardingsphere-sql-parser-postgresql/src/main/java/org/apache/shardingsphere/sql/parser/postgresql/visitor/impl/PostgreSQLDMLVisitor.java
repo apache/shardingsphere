@@ -20,46 +20,48 @@ package org.apache.shardingsphere.sql.parser.postgresql.visitor.impl;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.DMLVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Insert_targetContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Insert_restContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Qualified_nameContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColIdContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AttrNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Insert_column_listContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Values_clauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Insert_column_itemContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ExprListContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Set_clause_listContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Set_clauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Set_targetContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Relation_expr_opt_aliasContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Set_target_listContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Select_no_parensContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Select_with_parensContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SelectClauseNContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Simple_selectContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Group_clauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Group_by_itemContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Target_listContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Target_elContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnrefContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Joined_tableContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Join_qualContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NameListContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AliasClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AttrNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColIdContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnrefContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DeleteContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ExprListContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.FromClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.GroupByItemContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.GroupClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.InsertColumnItemContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.InsertColumnListContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.InsertContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.InsertRestContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.InsertTargetContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.JoinQualContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.JoinedTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.LimitClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NameListContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.QualifiedNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RelationExprContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Select_limitContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Select_limit_valueContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Select_offset_valueContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DeleteContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.FromClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.InsertContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RelationExprOptAliasContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SelectClauseNContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SelectContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SelectLimitContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SelectLimitValueContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SelectNoParensContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SelectOffsetValueContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SelectWithParensContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetClauseListContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetTargetContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetTargetListContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SimpleSelectContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableReferenceContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TargetElContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TargetListContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.UpdateContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WhereClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WhereOrCurrentClauseContext;
 import org.apache.shardingsphere.sql.parser.postgresql.visitor.PostgreSQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
@@ -126,22 +128,22 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     public ASTNode visitInsert(final InsertContext ctx) {
         // TODO :FIXME, since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
         // TODO :deal with insert select
-        InsertStatement result = (InsertStatement) visit(ctx.insert_rest());
-        result.setTable((SimpleTableSegment) visit(ctx.insert_target()));
+        InsertStatement result = (InsertStatement) visit(ctx.insertRest());
+        result.setTable((SimpleTableSegment) visit(ctx.insertTarget()));
         result.setParameterCount(getCurrentParameterIndex());
         return result;
     }
     
     @Override
-    public ASTNode visitInsert_target(final Insert_targetContext ctx) {
-        Qualified_nameContext qualifiedName = ctx.qualified_name();
+    public ASTNode visitInsertTarget(final InsertTargetContext ctx) {
+        QualifiedNameContext qualifiedName = ctx.qualifiedName();
         OwnerSegment owner = null;
         TableNameSegment tableName;
         if (null != qualifiedName.indirection()) {
             ColIdContext colId = ctx.colId();
     
             owner = new OwnerSegment(colId.start.getStartIndex(), colId.stop.getStopIndex(), new IdentifierValue(colId.getText()));
-            AttrNameContext attrName = qualifiedName.indirection().indirection_el().attrName();
+            AttrNameContext attrName = qualifiedName.indirection().indirectionEl().attrName();
             tableName = new TableNameSegment(attrName.start.getStartIndex(), attrName.stop.getStopIndex(), new IdentifierValue(attrName.getText()));
         } else {
             tableName = new TableNameSegment(qualifiedName.colId().start.getStartIndex(), qualifiedName.colId().stop.getStopIndex(), new IdentifierValue(qualifiedName.colId().getText()));
@@ -156,37 +158,37 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     }
     
     @Override
-    public ASTNode visitInsert_rest(final Insert_restContext ctx) {
+    public ASTNode visitInsertRest(final InsertRestContext ctx) {
         InsertStatement result = new InsertStatement();
-        if (null != ctx.insert_column_list()) {
-            Insert_column_listContext insertColumns = ctx.insert_column_list();
+        if (null != ctx.insertColumnList()) {
+            InsertColumnListContext insertColumns = ctx.insertColumnList();
             CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(insertColumns);
             InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(insertColumns.start.getStartIndex() - 1, insertColumns.stop.getStopIndex() + 1, columns.getValue());
             result.setInsertColumns(insertColumnsSegment);
         } else {
             result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
         }
-        Values_clauseContext valuesClause = ctx.select().select_no_parens().selectClauseN().simple_select().values_clause();
+        ValuesClauseContext valuesClause = ctx.select().selectNoParens().selectClauseN().simpleSelect().valuesClause();
         Collection<InsertValuesSegment> insertValuesSegments = createInsertValuesSegments(valuesClause);
         result.getValues().addAll(insertValuesSegments);
         return result;
     }
     
     @Override
-    public ASTNode visitInsert_column_list(final Insert_column_listContext ctx) {
+    public ASTNode visitInsertColumnList(final InsertColumnListContext ctx) {
         CollectionValue<ColumnSegment> result = new CollectionValue<>();
-        if (null != ctx.insert_column_list()) {
-            result.getValue().addAll(((CollectionValue<ColumnSegment>) visit(ctx.insert_column_list())).getValue());
+        if (null != ctx.insertColumnList()) {
+            result.getValue().addAll(((CollectionValue<ColumnSegment>) visit(ctx.insertColumnList())).getValue());
         }
-        result.getValue().add((ColumnSegment) visit(ctx.insert_column_item()));
+        result.getValue().add((ColumnSegment) visit(ctx.insertColumnItem()));
         return result;
     }
     
     @Override
-    public ASTNode visitInsert_column_item(final Insert_column_itemContext ctx) {
-        if (null != ctx.opt_indirection().indirection_el()) {
-            ColumnSegment columnSegment = new ColumnSegment(ctx.colId().start.getStartIndex(), ctx.opt_indirection().stop.getStopIndex(),
-                    new IdentifierValue(ctx.opt_indirection().indirection_el().attrName().getText()));
+    public ASTNode visitInsertColumnItem(final InsertColumnItemContext ctx) {
+        if (null != ctx.optIndirection().indirectionEl()) {
+            ColumnSegment columnSegment = new ColumnSegment(ctx.colId().start.getStartIndex(), ctx.optIndirection().stop.getStopIndex(),
+                    new IdentifierValue(ctx.optIndirection().indirectionEl().attrName().getText()));
             columnSegment.setOwner(new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText())));
             return columnSegment;
     
@@ -196,10 +198,10 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
         }
     }
     
-    private Collection<InsertValuesSegment> createInsertValuesSegments(final Values_clauseContext ctx) {
+    private Collection<InsertValuesSegment> createInsertValuesSegments(final ValuesClauseContext ctx) {
         Collection<InsertValuesSegment> result = new LinkedList<>();
-        if (null != ctx.values_clause()) {
-            Collection<InsertValuesSegment> expressions = createInsertValuesSegments(ctx.values_clause());
+        if (null != ctx.valuesClause()) {
+            Collection<InsertValuesSegment> expressions = createInsertValuesSegments(ctx.valuesClause());
             result.addAll(expressions);
         }
         Collection<ExpressionSegment> expressions = createInsertValuesSegments(ctx.exprList());
@@ -215,39 +217,39 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
             Collection<ExpressionSegment> tmpResult = createInsertValuesSegments(ctx.exprList());
             result.addAll(tmpResult);
         }
-        visit(ctx.a_expr());
-        CommonExpressionSegment expressionSegment = new CommonExpressionSegment(ctx.a_expr().start.getStartIndex(), ctx.a_expr().stop.getStopIndex(), ctx.a_expr().getText());
+        visit(ctx.aExpr());
+        CommonExpressionSegment expressionSegment = new CommonExpressionSegment(ctx.aExpr().start.getStartIndex(), ctx.aExpr().stop.getStopIndex(), ctx.aExpr().getText());
         result.add(expressionSegment);
         return result;
     }
     
-    private Collection<AssignmentSegment> generateAssignmentSegments(final Set_clause_listContext ctx) {
+    private Collection<AssignmentSegment> generateAssignmentSegments(final SetClauseListContext ctx) {
         Collection<AssignmentSegment> result = new LinkedList<>();
-        if (null != ctx.set_clause_list()) {
-            Collection<AssignmentSegment> tmpResult = generateAssignmentSegments(ctx.set_clause_list());
+        if (null != ctx.setClauseList()) {
+            Collection<AssignmentSegment> tmpResult = generateAssignmentSegments(ctx.setClauseList());
             result.addAll(tmpResult);
         }
-        AssignmentSegment assignmentSegment = (AssignmentSegment) visit(ctx.set_clause());
+        AssignmentSegment assignmentSegment = (AssignmentSegment) visit(ctx.setClause());
         result.add(assignmentSegment);
         return result;
     }
     
     @Override
-    public ASTNode visitSet_clause(final Set_clauseContext ctx) {
-        ColumnSegment columnSegment = (ColumnSegment) visit(ctx.set_target());
-        SQLSegment sqlSegment = (SQLSegment) visit(ctx.a_expr());
+    public ASTNode visitSetClause(final SetClauseContext ctx) {
+        ColumnSegment columnSegment = (ColumnSegment) visit(ctx.setTarget());
+        SQLSegment sqlSegment = (SQLSegment) visit(ctx.aExpr());
         ExpressionSegment expressionSegment = new CommonExpressionSegment(sqlSegment.getStartIndex(), sqlSegment.getStopIndex(), sqlSegment.toString());
         AssignmentSegment result = new AssignmentSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), columnSegment, expressionSegment);
         return result;
     }
     
     @Override
-    public ASTNode visitSet_target(final Set_targetContext ctx) {
+    public ASTNode visitSetTarget(final SetTargetContext ctx) {
         OwnerSegment owner = null;
         IdentifierValue identifierValue;
-        if (null != ctx.opt_indirection().indirection_el()) {
+        if (null != ctx.optIndirection().indirectionEl()) {
             owner = new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()));
-            identifierValue = new IdentifierValue(ctx.opt_indirection().getText());
+            identifierValue = new IdentifierValue(ctx.optIndirection().getText());
         } else {
             identifierValue = new IdentifierValue(ctx.colId().getText());
         }
@@ -257,7 +259,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     }
     
     @Override
-    public ASTNode visitRelation_expr_opt_alias(final Relation_expr_opt_aliasContext ctx) {
+    public ASTNode visitRelationExprOptAlias(final RelationExprOptAliasContext ctx) {
         SimpleTableSegment result;
         if (null != ctx.colId()) {
             ColIdContext colId = ctx.relationExpr().qualifiedName().colId();
@@ -274,96 +276,96 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
         UpdateStatement result = new UpdateStatement();
-        SimpleTableSegment tableSegment = (SimpleTableSegment) visit(ctx.relation_expr_opt_alias());
+        SimpleTableSegment tableSegment = (SimpleTableSegment) visit(ctx.relationExprOptAlias());
         result.getTables().add(tableSegment);
-        result.setSetAssignment((SetAssignmentSegment) visit(ctx.set_clause_list()));
-        if (null != ctx.where_or_current_clause()) {
-            result.setWhere((WhereSegment) visit(ctx.where_or_current_clause()));
+        result.setSetAssignment((SetAssignmentSegment) visit(ctx.setClauseList()));
+        if (null != ctx.whereOrCurrentClause()) {
+            result.setWhere((WhereSegment) visit(ctx.whereOrCurrentClause()));
         }
         result.setParameterCount(getCurrentParameterIndex());
         return result;
     }
     
     @Override
-    public ASTNode visitSet_clause_list(final Set_clause_listContext ctx) {
+    public ASTNode visitSetClauseList(final SetClauseListContext ctx) {
         Collection<AssignmentSegment> assignments = generateAssignmentSegments(ctx);
         SetAssignmentSegment result = new SetAssignmentSegment(ctx.start.getStartIndex() - 4, ctx.stop.getStopIndex(), assignments);
         return result;
     }
     
     @Override
-    public ASTNode visitSet_target_list(final Set_target_listContext ctx) {
-        return super.visitSet_target_list(ctx);
+    public ASTNode visitSetTargetList(final SetTargetListContext ctx) {
+        return super.visitSetTargetList(ctx);
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
         DeleteStatement result = new DeleteStatement();
-        SimpleTableSegment tableSegment = (SimpleTableSegment) visit(ctx.relation_expr_opt_alias());
+        SimpleTableSegment tableSegment = (SimpleTableSegment) visit(ctx.relationExprOptAlias());
         result.getTables().add(tableSegment);
-        if (null != ctx.where_or_current_clause()) {
-            result.setWhere((WhereSegment) visit(ctx.where_or_current_clause()));
+        if (null != ctx.whereOrCurrentClause()) {
+            result.setWhere((WhereSegment) visit(ctx.whereOrCurrentClause()));
         }
         result.setParameterCount(getCurrentParameterIndex());
         return result;
     }
     
     @Override
-    public ASTNode visitWhere_or_current_clause(final PostgreSQLStatementParser.Where_or_current_clauseContext ctx) {
+    public ASTNode visitWhereOrCurrentClause(final WhereOrCurrentClauseContext ctx) {
         return visit(ctx.whereClause());
     }
     
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
         // TODO :Unsupported for withClause.
-        SelectStatement result = (SelectStatement) visit(ctx.select_no_parens());
+        SelectStatement result = (SelectStatement) visit(ctx.selectNoParens());
         result.setParameterCount(getCurrentParameterIndex());
         return result;
     }
     
     @Override
-    public ASTNode visitSelect_no_parens(final Select_no_parensContext ctx) {
+    public ASTNode visitSelectNoParens(final SelectNoParensContext ctx) {
         SelectStatement result = (SelectStatement) visit(ctx.selectClauseN());
-        if (null != ctx.sort_clause()) {
-            OrderBySegment orderBySegment = (OrderBySegment) visit(ctx.sort_clause());
+        if (null != ctx.sortClause()) {
+            OrderBySegment orderBySegment = (OrderBySegment) visit(ctx.sortClause());
             result.setOrderBy(orderBySegment);
         }
-        if (null != ctx.select_limit()) {
-            LimitSegment limitSegment = (LimitSegment) visit(ctx.select_limit());
+        if (null != ctx.selectLimit()) {
+            LimitSegment limitSegment = (LimitSegment) visit(ctx.selectLimit());
             result.setLimit(limitSegment);
         }
-        if (null != ctx.for_locking_clause()) {
-            LockSegment lockSegment = (LockSegment) visit(ctx.for_locking_clause());
+        if (null != ctx.forLockingClause()) {
+            LockSegment lockSegment = (LockSegment) visit(ctx.forLockingClause());
             result.setLock(lockSegment);
         }
         return result;
     }
     
     @Override
-    public ASTNode visitSelect_with_parens(final Select_with_parensContext ctx) {
+    public ASTNode visitSelectWithParens(final SelectWithParensContext ctx) {
         
-        if (null != ctx.select_with_parens()) {
-            return visit(ctx.select_with_parens());
+        if (null != ctx.selectWithParens()) {
+            return visit(ctx.selectWithParens());
         }
-        return visit(ctx.select_no_parens());
+        return visit(ctx.selectNoParens());
     }
     
     @Override
     public ASTNode visitSelectClauseN(final SelectClauseNContext ctx) {
-        if (null != ctx.simple_select()) {
-            SelectStatement result = (SelectStatement) visit(ctx.simple_select());
+        if (null != ctx.simpleSelect()) {
+            SelectStatement result = (SelectStatement) visit(ctx.simpleSelect());
             return result;
         }
         return new SelectStatement();
     }
     
     @Override
-    public ASTNode visitSimple_select(final Simple_selectContext ctx) {
+    public ASTNode visitSimpleSelect(final SimpleSelectContext ctx) {
         SelectStatement result = new SelectStatement();
-        if (null != ctx.target_list()) {
-            ProjectionsSegment projects = (ProjectionsSegment) visit(ctx.target_list());
-            if (null != ctx.distinct_clause()) {
+        if (null != ctx.targetList()) {
+            ProjectionsSegment projects = (ProjectionsSegment) visit(ctx.targetList());
+            if (null != ctx.distinctClause()) {
                 projects.setDistinctRow(true);
             }
             result.setProjections(projects);
@@ -377,16 +379,16 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
-        if (null != ctx.group_clause()) {
-            result.setGroupBy((GroupBySegment) visit(ctx.group_clause()));
+        if (null != ctx.groupClause()) {
+            result.setGroupBy((GroupBySegment) visit(ctx.groupClause()));
         }
         return result;
     }
     
     @Override
-    public ASTNode visitGroup_clause(final Group_clauseContext ctx) {
+    public ASTNode visitGroupClause(final GroupClauseContext ctx) {
         Collection<OrderByItemSegment> items = new LinkedList<>();
-        for (PostgreSQLStatementParser.Group_by_itemContext each : ctx.group_by_list().group_by_item()) {
+        for (GroupByItemContext each : ctx.groupByList().groupByItem()) {
             items.add((OrderByItemSegment) visit(each));
         }
         GroupBySegment result = new GroupBySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), items);
@@ -394,9 +396,9 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     }
     
     @Override
-    public ASTNode visitGroup_by_item(final Group_by_itemContext ctx) {
-        if (null != ctx.a_expr()) {
-            ASTNode astNode = visit(ctx.a_expr());
+    public ASTNode visitGroupByItem(final GroupByItemContext ctx) {
+        if (null != ctx.aExpr()) {
+            ASTNode astNode = visit(ctx.aExpr());
             if (astNode instanceof ColumnSegment) {
                 OrderByItemSegment result = new ColumnOrderByItemSegment((ColumnSegment) astNode, OrderDirection.ASC);
                 return result;
@@ -412,19 +414,19 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     }
     
     @Override
-    public ASTNode visitTarget_list(final Target_listContext ctx) {
+    public ASTNode visitTargetList(final TargetListContext ctx) {
         ProjectionsSegment result = new ProjectionsSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        if (null != ctx.target_list()) {
-            ProjectionsSegment projecs = (ProjectionsSegment) visit(ctx.target_list());
+        if (null != ctx.targetList()) {
+            ProjectionsSegment projecs = (ProjectionsSegment) visit(ctx.targetList());
             result.getProjections().addAll(projecs.getProjections());
         }
-        ProjectionSegment projection = (ProjectionSegment) visit(ctx.target_el());
+        ProjectionSegment projection = (ProjectionSegment) visit(ctx.targetEl());
         result.getProjections().add(projection);
         return result;
     }
     
     @Override
-    public ASTNode visitTarget_el(final Target_elContext ctx) {
+    public ASTNode visitTargetEl(final TargetElContext ctx) {
         if (null != ctx.ASTERISK_()) {
             return new ShorthandProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
         }
@@ -433,17 +435,17 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
             shorthandProjection.setOwner(new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText())));
             return shorthandProjection;
         }
-        PostgreSQLStatementParser.A_exprContext expr = ctx.a_expr();
-        if (null != expr.c_expr() && null != expr.c_expr().columnref()) {
-            ColumnProjectionSegment projection = generateColumnProjection(expr.c_expr().columnref());
+        AExprContext expr = ctx.aExpr();
+        if (null != expr.cExpr() && null != expr.cExpr().columnref()) {
+            ColumnProjectionSegment projection = generateColumnProjection(expr.cExpr().columnref());
             AliasSegment alias = null != ctx.identifier()
                     ? new AliasSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), new IdentifierValue(ctx.identifier().getText())) : null;
             projection.setAlias(alias);
             return projection;
         }
-        if (null != expr.c_expr() && null != expr.c_expr().func_expr()) {
-            super.visit(expr.c_expr().func_expr());
-            ProjectionSegment projection = generateProjectFromFuncExpr(expr.c_expr().func_expr());
+        if (null != expr.cExpr() && null != expr.cExpr().funcExpr()) {
+            super.visit(expr.cExpr().funcExpr());
+            ProjectionSegment projection = generateProjectFromFuncExpr(expr.cExpr().funcExpr());
             AliasSegment alias = null != ctx.identifier()
                     ? new AliasSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), new IdentifierValue(ctx.identifier().getText())) : null;
             if (projection instanceof AggregationProjectionSegment) {
@@ -455,9 +457,9 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
             return projection;
         }
         
-        if (null != expr.c_expr() && null != expr.c_expr().select_with_parens()) {
-            SelectStatement select = (SelectStatement) visit(expr.c_expr().select_with_parens());
-            SubquerySegment subquery = new SubquerySegment(expr.c_expr().select_with_parens().start.getStartIndex(), expr.c_expr().select_with_parens().stop.getStopIndex(), select);
+        if (null != expr.cExpr() && null != expr.cExpr().selectWithParens()) {
+            SelectStatement select = (SelectStatement) visit(expr.cExpr().selectWithParens());
+            SubquerySegment subquery = new SubquerySegment(expr.cExpr().selectWithParens().start.getStartIndex(), expr.cExpr().selectWithParens().stop.getStopIndex(), select);
             SubqueryProjectionSegment projection = new SubqueryProjectionSegment(subquery);
             AliasSegment alias = null != ctx.identifier()
                     ? new AliasSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), new IdentifierValue(ctx.identifier().getText())) : null;
@@ -475,7 +477,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     
     private ColumnProjectionSegment generateColumnProjection(final ColumnrefContext ctx) {
         if (null != ctx.indirection()) {
-            PostgreSQLStatementParser.AttrNameContext attrName = ctx.indirection().indirection_el().attrName();
+            PostgreSQLStatementParser.AttrNameContext attrName = ctx.indirection().indirectionEl().attrName();
             ColumnSegment columnSegment = new ColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(attrName.getText()));
             OwnerSegment owner = new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()));
             columnSegment.setOwner(owner);
@@ -508,8 +510,8 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
         if (null != ctx.tableReference()) {
     
             TableReferenceSegment result = (TableReferenceSegment) visit(ctx.tableReference());
-            if (null != ctx.joined_table()) {
-                result.getJoinedTables().add((JoinedTableSegment) visit(ctx.joined_table()));
+            if (null != ctx.joinedTable()) {
+                result.getJoinedTables().add((JoinedTableSegment) visit(ctx.joinedTable()));
             }
             return result;
         }
@@ -524,10 +526,10 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
             result.setTableFactor(tableFactorSegment);
             return result;
         }
-        if (null != ctx.select_with_parens()) {
+        if (null != ctx.selectWithParens()) {
             TableReferenceSegment result = new TableReferenceSegment();
-            SelectStatement select = (SelectStatement) visit(ctx.select_with_parens());
-            SubquerySegment subquery = new SubquerySegment(ctx.select_with_parens().start.getStartIndex(), ctx.select_with_parens().stop.getStopIndex(), select);
+            SelectStatement select = (SelectStatement) visit(ctx.selectWithParens());
+            SubquerySegment subquery = new SubquerySegment(ctx.selectWithParens().start.getStartIndex(), ctx.selectWithParens().stop.getStopIndex(), select);
             AliasSegment alias = null != ctx.aliasClause() ? (AliasSegment) visit(ctx.aliasClause()) : null;
             SubqueryTableSegment subqueryTable = new SubqueryTableSegment(subquery);
             subqueryTable.setAlias(alias);
@@ -541,21 +543,21 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     }
     
     @Override
-    public ASTNode visitJoined_table(final Joined_tableContext ctx) {
+    public ASTNode visitJoinedTable(final JoinedTableContext ctx) {
         JoinedTableSegment result = new JoinedTableSegment();
         result.setTableFactor(((TableReferenceSegment) visit(ctx.tableReference())).getTableFactor());
-        if (null != ctx.join_qual()) {
-            JoinSpecificationSegment joinSpecification = (JoinSpecificationSegment) visit(ctx.join_qual());
+        if (null != ctx.joinQual()) {
+            JoinSpecificationSegment joinSpecification = (JoinSpecificationSegment) visit(ctx.joinQual());
             result.setJoinSpecification(joinSpecification);
         }
         return result;
     }
     
     @Override
-    public ASTNode visitJoin_qual(final Join_qualContext ctx) {
+    public ASTNode visitJoinQual(final JoinQualContext ctx) {
         JoinSpecificationSegment result = new JoinSpecificationSegment();
         if (null != ctx.ON()) {
-            ASTNode segment = visit(ctx.a_expr());
+            ASTNode segment = visit(ctx.aExpr());
             if (segment instanceof OrPredicateSegment) {
                 result.getAndPredicates().addAll(((OrPredicateSegment) segment).getAndPredicates());
             } else if (segment instanceof PredicateSegment) {
@@ -599,7 +601,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
         QualifiedNameContext qualifiedName = ctx.qualifiedName();
     
         if (null != qualifiedName.indirection()) {
-            AttrNameContext tableName = qualifiedName.indirection().indirection_el().attrName();
+            AttrNameContext tableName = qualifiedName.indirection().indirectionEl().attrName();
             SimpleTableSegment table = new SimpleTableSegment(tableName.start.getStartIndex(), tableName.stop.getStopIndex(), new IdentifierValue(tableName.getText()));
             table.setOwner(new OwnerSegment(qualifiedName.colId().start.getStartIndex(), qualifiedName.colId().stop.getStopIndex(), new IdentifierValue(qualifiedName.colId().getText())));
             return table;
@@ -610,7 +612,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     @Override
     public ASTNode visitWhereClause(final WhereClauseContext ctx) {
         WhereSegment result = new WhereSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
-        ASTNode segment = visit(ctx.a_expr());
+        ASTNode segment = visit(ctx.aExpr());
         if (segment instanceof OrPredicateSegment) {
             result.getAndPredicates().addAll(((OrPredicateSegment) segment).getAndPredicates());
         } else if (segment instanceof PredicateSegment) {
@@ -622,19 +624,19 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     }
     
     @Override
-    public ASTNode visitSelect_limit(final Select_limitContext ctx) {
-        if (null != ctx.limit_clause() && null != ctx.offset_clause()) {
+    public ASTNode visitSelectLimit(final SelectLimitContext ctx) {
+        if (null != ctx.limitClause() && null != ctx.offsetClause()) {
             return createLimitSegmentWhenLimitAndOffset(ctx);
         }
         return createLimitSegmentWhenRowCountOrOffsetAbsent(ctx);
     }
     
     @Override
-    public ASTNode visitSelect_limit_value(final Select_limit_valueContext ctx) {
+    public ASTNode visitSelectLimitValue(final SelectLimitValueContext ctx) {
         if (null != ctx.ALL()) {
             return null;
         }
-        ASTNode astNode = visit(ctx.a_expr());
+        ASTNode astNode = visit(ctx.aExpr());
         if (astNode instanceof ParameterMarkerExpressionSegment) {
             return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerExpressionSegment) astNode).getParameterMarkerIndex());
         }
@@ -644,8 +646,8 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     }
     
     @Override
-    public ASTNode visitSelect_offset_value(final Select_offset_valueContext ctx) {
-        ASTNode astNode = visit(ctx.a_expr());
+    public ASTNode visitSelectOffsetValue(final SelectOffsetValueContext ctx) {
+        ASTNode astNode = visit(ctx.aExpr());
         if (astNode instanceof ParameterMarkerExpressionSegment) {
             return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerExpressionSegment) astNode).getParameterMarkerIndex());
         }
@@ -654,35 +656,35 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
         return result;
     }
     
-    private LimitSegment createLimitSegmentWhenLimitAndOffset(final Select_limitContext ctx) {
+    private LimitSegment createLimitSegmentWhenLimitAndOffset(final SelectLimitContext ctx) {
         ParseTree astNode0 = ctx.getChild(0);
         LimitValueSegment rowCount = null;
         LimitValueSegment offset = null;
-        if (astNode0 instanceof PostgreSQLStatementParser.Limit_clauseContext) {
-            rowCount = null == ctx.limit_clause().select_limit_value() ? null : (LimitValueSegment) visit(ctx.limit_clause().select_limit_value());
+        if (astNode0 instanceof LimitClauseContext) {
+            rowCount = null == ctx.limitClause().selectLimitValue() ? null : (LimitValueSegment) visit(ctx.limitClause().selectLimitValue());
         } else {
-            offset = (LimitValueSegment) visit(ctx.offset_clause().select_offset_value());
+            offset = (LimitValueSegment) visit(ctx.offsetClause().selectOffsetValue());
         }
         ParseTree astNode1 = ctx.getChild(1);
-        if (astNode1 instanceof PostgreSQLStatementParser.Limit_clauseContext) {
-            rowCount = null == ctx.limit_clause().select_limit_value() ? null : (LimitValueSegment) visit(ctx.limit_clause().select_limit_value());
+        if (astNode1 instanceof LimitClauseContext) {
+            rowCount = null == ctx.limitClause().selectLimitValue() ? null : (LimitValueSegment) visit(ctx.limitClause().selectLimitValue());
         } else {
-            offset = (LimitValueSegment) visit(ctx.offset_clause().select_offset_value());
+            offset = (LimitValueSegment) visit(ctx.offsetClause().selectOffsetValue());
         }
         return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, rowCount);
     }
 
-    private LimitSegment createLimitSegmentWhenRowCountOrOffsetAbsent(final Select_limitContext ctx) {
-        if (null != ctx.limit_clause()) {
-            if (null != ctx.limit_clause().select_offset_value()) {
-                LimitValueSegment limit = (LimitValueSegment) visit(ctx.limit_clause().select_limit_value());
-                LimitValueSegment offset = (LimitValueSegment) visit(ctx.limit_clause().select_offset_value());
+    private LimitSegment createLimitSegmentWhenRowCountOrOffsetAbsent(final SelectLimitContext ctx) {
+        if (null != ctx.limitClause()) {
+            if (null != ctx.limitClause().selectOffsetValue()) {
+                LimitValueSegment limit = (LimitValueSegment) visit(ctx.limitClause().selectLimitValue());
+                LimitValueSegment offset = (LimitValueSegment) visit(ctx.limitClause().selectOffsetValue());
                 return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, limit);
             }
-            LimitValueSegment limit = (LimitValueSegment) visit(ctx.limit_clause().select_limit_value());
+            LimitValueSegment limit = (LimitValueSegment) visit(ctx.limitClause().selectLimitValue());
             return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null, limit);
         }
-        LimitValueSegment offset = (LimitValueSegment) visit(ctx.offset_clause().select_offset_value());
+        LimitValueSegment offset = (LimitValueSegment) visit(ctx.offsetClause().selectOffsetValue());
     
         return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, null);
     }
