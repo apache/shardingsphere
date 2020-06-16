@@ -29,10 +29,7 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.StandardSharding
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.IsoFields;
-import java.time.temporal.TemporalField;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Properties;
@@ -40,29 +37,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Mutable interval sharding algorithm that adapt various shard method by define properties below.
- *
- * <p>properties defined here:
- *
- * <p>datetime.pattern: the datetime format used by applications, must can be transformed to {@link LocalDateTime},
- * used by {@link LocalDateTime#parse(CharSequence, DateTimeFormatter)}.
- *
- * <p>table.suffix.pattern: suffix for sharded tables, used by {@link LocalDateTime#format(DateTimeFormatter)},
- * examples:
- * suffix=yyyyQQ means shard by {@link IsoFields#QUARTER_OF_YEAR};
- * suffix=yyyyMM means shard by {@link ChronoUnit#MONTHS};
- * suffix=yyyyMMdd means shard by {@link ChronoField#DAY_OF_YEAR}.
- *
- * <p>detail explain for each char in datetime.pattern and table.suffix.pattern can refer {@link TemporalField}.
- *
- * <p>datetime.lower and datetime.upper: if app query with only half bound, lower and upper helps to build other half bound,
- * datetime.lower must be specified and datetime.upper has a default value to {@link LocalDateTime#now}
- * (default value of datetime.upper could only be used when query sql needn't get result that time larger than query time).
- *
- * <p>datetime.step.unit and datetime.step.amount used for calculate tables for range shard, datetime.step.unit is name of
- * {@link ChronoUnit}, default unit is Days and amount is 1, amount + unit should not be larger than but close to your shard range.
- *
- * <p>examples: when shard by {@link IsoFields#QUARTER_OF_YEAR}, datetime.step.unit = Months and datetime.step.amount = 3 is a better choice.
+ * Mutable interval sharding algorithm.
  */
 public final class MutableIntervalShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>> {
     
@@ -74,9 +49,9 @@ public final class MutableIntervalShardingAlgorithm implements StandardShardingA
     
     private static final String TABLE_SUFFIX_FORMAT_KEY = "table.suffix.pattern";
     
-    private static final String STEP_AMOUNT_KEY = "datetime.step.amount";
+    private static final String STEP_AMOUNT_KEY = "datetime.interval.amount";
     
-    private static final String STEP_UNIT_KEY = "datetime.step.unit";
+    private static final String STEP_UNIT_KEY = "datetime.interval.amount";
     
     @Getter
     @Setter
