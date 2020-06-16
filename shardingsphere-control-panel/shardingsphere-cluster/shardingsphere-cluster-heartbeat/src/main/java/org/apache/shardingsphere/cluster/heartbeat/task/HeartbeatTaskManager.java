@@ -45,4 +45,13 @@ public final class HeartbeatTaskManager {
         Preconditions.checkNotNull(heartbeatTask, "task can not be null");
         executorService.scheduleAtFixedRate(heartbeatTask, 0L, interval, TimeUnit.SECONDS);
     }
+    
+    /**
+     * Close heartbeat task manager.
+     */
+    public void close() {
+        if (null != executorService && !executorService.isShutdown()) {
+            executorService.shutdown();
+        }
+    }
 }
