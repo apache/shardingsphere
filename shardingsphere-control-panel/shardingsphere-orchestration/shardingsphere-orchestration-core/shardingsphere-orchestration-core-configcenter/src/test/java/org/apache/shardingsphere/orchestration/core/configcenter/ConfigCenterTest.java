@@ -17,7 +17,11 @@
 
 package org.apache.shardingsphere.orchestration.core.configcenter;
 
+import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
+import org.apache.shardingsphere.cluster.configuration.swapper.ClusterConfigurationYamlSwapper;
+import org.apache.shardingsphere.cluster.configuration.yaml.YamlClusterConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.yaml.config.YamlAuthenticationConfiguration;
@@ -43,6 +47,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -54,6 +60,8 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -215,6 +223,8 @@ public final class ConfigCenterTest {
             + "    connectionInitSqls:\n"
             + "        - set names utf8mb4;\n"
             + "        - set names utf8;\n";
+    
+    private static final String DATA_CLUSTER_YAML = "yaml/data-cluster.yaml";
     
     @Mock
     private ConfigCenterRepository configCenterRepository;
@@ -573,6 +583,30 @@ public final class ConfigCenterTest {
         assertDataSourceConfigurationWithConnectionInitSqls(actual.get("ds_1"), createDataSourceConfiguration(createDataSourceWithConnectionInitSqls("ds_1")));
     }
     
+    @Test
+    public void assertPersistClusterConfiguration() {
+        ClusterConfiguration clusterConfiguration = new ClusterConfigurationYamlSwapper()
+                .swapToObject(YamlEngine.unmarshal(readYAML(DATA_CLUSTER_YAML), YamlClusterConfiguration.class));
+        ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
+        configurationService.persistClusterConfiguration(clusterConfiguration, true);
+        verify(configCenterRepository, times(0)).persist(eq("/test/config/cluster"), eq(readYAML(DATA_CLUSTER_YAML)));
+    }
+    
+    @Test
+    public void loadClusterConfiguration() {
+        when(configCenterRepository.get("/test/config/cluster")).thenReturn(readYAML(DATA_CLUSTER_YAML));
+        ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
+        ClusterConfiguration clusterConfiguration = configurationService.loadClusterConfiguration();
+        assertNotNull(clusterConfiguration);
+        assertNotNull(clusterConfiguration.getHeartbeat());
+        assertThat(clusterConfiguration.getHeartbeat().getSql(), is("select 1"));
+        assertThat(clusterConfiguration.getHeartbeat().getThreadCount(), is(1));
+        assertThat(clusterConfiguration.getHeartbeat().getInterval(), is(60));
+        assertFalse(clusterConfiguration.getHeartbeat().getRetryEnable());
+        assertThat(clusterConfiguration.getHeartbeat().getRetryMaximum(), is(3));
+        assertThat(clusterConfiguration.getHeartbeat().getRetryInterval(), is(3));
+    }
+    
     private DataSource createDataSourceWithConnectionInitSqls(final String name) {
         BasicDataSource result = new BasicDataSource();
         result.setDriverClassName("com.mysql.jdbc.Driver");
@@ -589,5 +623,10 @@ public final class ConfigCenterTest {
         assertThat(actual.getProps().get("username"), is(expected.getProps().get("username")));
         assertThat(actual.getProps().get("password"), is(expected.getProps().get("password")));
         assertThat(actual.getProps().get("connectionInitSqls"), is(expected.getProps().get("connectionInitSqls")));
+    }
+    
+    @SneakyThrows
+    private String readYAML(final String yamlFile) {
+        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI())).stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
 }

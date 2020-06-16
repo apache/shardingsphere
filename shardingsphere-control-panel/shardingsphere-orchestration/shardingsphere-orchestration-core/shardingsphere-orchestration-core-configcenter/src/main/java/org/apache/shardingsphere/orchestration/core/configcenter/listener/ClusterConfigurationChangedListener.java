@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.ClusterConfigurationChangedEvent;
-import org.apache.shardingsphere.orchestration.core.common.event.ShardingOrchestrationEvent;
 import org.apache.shardingsphere.orchestration.core.common.listener.PostShardingCenterRepositoryEventListener;
 import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenterNode;
 
@@ -39,7 +38,7 @@ public class ClusterConfigurationChangedListener extends PostShardingCenterRepos
     }
     
     @Override
-    protected ShardingOrchestrationEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
+    protected ClusterConfigurationChangedEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
         return new ClusterConfigurationChangedEvent(new ClusterConfigurationYamlSwapper()
                 .swapToObject(YamlEngine.unmarshal(event.getValue(), YamlClusterConfiguration.class)));
     }
