@@ -56,7 +56,7 @@ public final class LocalShardingTablesConfiguration implements ExampleConfigurat
         result.getBindingTableGroups().add("t_order, t_order_item");
         result.getBroadcastTables().add("t_address");
         result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "standard_test_tbl"));
-        result.getShardingAlgorithms() .put("standard_test_tbl", new ShardingSphereAlgorithmConfiguration("STANDARD_TEST_TBL", new Properties()));
+        result.getShardingAlgorithms().put("standard_test_tbl", new ShardingSphereAlgorithmConfiguration("STANDARD_TEST_TBL", new Properties()));
         result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", getProperties()));
         return result;
     }
