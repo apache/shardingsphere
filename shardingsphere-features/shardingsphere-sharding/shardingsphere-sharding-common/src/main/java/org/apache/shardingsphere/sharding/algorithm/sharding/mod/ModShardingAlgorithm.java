@@ -31,10 +31,6 @@ import java.util.Properties;
 
 /**
  * Modulo sharding algorithm.
- * 
- * <p>
- *     Shard by `y = x mod v` algorithm, v is sharding count. 
- * </p>
  */
 @Getter
 @Setter

@@ -38,13 +38,6 @@ import java.util.Properties;
 
 /**
  * Fixed interval sharding algorithm.
- * 
- * <p>
- *     Shard by `y = floor(x/v)` algorithm, which means y begins from 0. v is `sharding.seconds`, and the minimum time unit is 1 sec.
- *     `datetime.lower` decides the beginning datetime to shard. On the other hand, `datetime.upper` decides the end datetime to shard.
- *     
- *     Notice: Anytime less then `datetime.lower` will route to the first partition, and anytime great than `datetime.upper` will route to the last sharding.
- * </p>
  */
 @Getter
 public final class FixedIntervalShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
