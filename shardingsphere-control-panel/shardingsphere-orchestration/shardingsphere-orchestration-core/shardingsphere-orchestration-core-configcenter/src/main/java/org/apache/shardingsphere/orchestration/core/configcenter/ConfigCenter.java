@@ -176,7 +176,7 @@ public final class ConfigCenter {
     }
     
     private boolean hasClusterConfiguration() {
-        return !Strings.isNullOrEmpty(repository.get(node.getMetricsPath()));
+        return !Strings.isNullOrEmpty(repository.get(node.getClusterPath()));
     }
     
     private boolean hasMetricsConfiguration() {
