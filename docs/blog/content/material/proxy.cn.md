@@ -29,11 +29,11 @@ Sharding-Proxy定位为透明化的数据库代理端，提供封装了数据库
 *   适用于任何兼容MySQL协议的客户端。
     
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/proxy1.jpg)
+![](https://shardingsphere.apache.org/blog/img/proxy1.jpg)
 
 与其他两个产品（Sharding-JDBC、Sharding-Sidecar）的对比：
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/proxy2.jpg)
+![](https://shardingsphere.apache.org/blog/img/proxy2.jpg)
 
 它们既可以独立使用，也可以相互配合，以不同的架构模型、不同的切入点，实现相同的功能目标。而其核心功能，如数据分片、读写分离、柔性事务等，都是同一套实现代码。
 
@@ -41,7 +41,7 @@ Sharding-Proxy定位为透明化的数据库代理端，提供封装了数据库
 
 #### 2\. Sharding-Proxy架构
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/proxy3.jpg)
+![](https://shardingsphere.apache.org/blog/img/proxy3.jpg)
 
 整个架构可以分为前端、后端和核心组件三部分来看：
 
@@ -52,7 +52,7 @@ Sharding-Proxy定位为透明化的数据库代理端，提供封装了数据库
 *   后端（Backend）与真实数据库的交互暂时借助基于BIO的Hikari连接池。BIO的方式在数据库集群规模很大，或者一主多从的情况下，性能会有所下降。所以未来我们还会提供NIO的方式连接真实数据库。
     
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/proxy4.jpg)
+![](https://shardingsphere.apache.org/blog/img/proxy4.jpg)
 
 这种方式下Proxy的吞吐量将得到极大提高，能够有效应对大规模数据库集群。
 
@@ -66,11 +66,11 @@ Sharding-Proxy定位为透明化的数据库代理端，提供封装了数据库
 
 示例代码如下：
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/proxy5.jpg)
+![](https://shardingsphere.apache.org/blog/img/proxy5.jpg)
 
 代码很容易理解，使用PreparedStatement执行两次查询操作，每次都把参数user_id设置为10。分析抓到的包，JDBC和MySQL之间的协议消息交互如下：
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/proxy6.jpg)
+![](https://shardingsphere.apache.org/blog/img/proxy6.jpg)
 
 JDBC向MySQL进行了两次查询（Query），MySQL返回给JDBC两次结果（Response），第一条消息不是我们期望的PreparedStatement，SELECT里面也没有问号，这就说明prepare没有生效，至少对MySQL服务来说没有生效。
 
@@ -82,7 +82,7 @@ jdbc:mysql://127.0.0.1:3306/demo_ds?useServerPrepStmts=true
 
 交互过程变成了这样：
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/proxy7.jpg)
+![](hhttps://shardingsphere.apache.org/blog/img/proxy7.jpg)
 
 初看这是一个正确的流程，第1条消息是PreparedStatement，SELECT里也带问号了，通知MySQL对SQL进行预编译；第2条消息MySQL告诉JDBC准备成功；第3条消息JDBC把参数设置为10；第4条消息MySQL返回查询结果。然而到了第5条，JDBC怎么又发了一遍PreparedStatement？
 
@@ -99,7 +99,7 @@ useServerPrepStmts=true&cachePrepStmts=true
 
 果然得到了我们预期的消息流程，而且经过测试，速度也比普通查询快了：
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/proxy8.jpg)
+![](https://shardingsphere.apache.org/blog/img/proxy8.jpg)
 
 从第5条消息开始，每次查询只传参数值就可以了，终于达到了一次编译多次运行的效果，MySQL的效率得到了提高。而且由于ExecuteStatement只传了参数的值，消息长度上比完整的SQL短了很多，网络IO的效率也得到了提升。
 
@@ -120,7 +120,7 @@ Proxy在收到Client的PreparedStatement的时候，并不会把这条消息转�
 
 加上两个参数后，消息内容发生了变化，ExecuteStatement在发送第二次的时候，消息体里只有参数值而没有参数类型，Proxy不知道类型就不能正确的取出值。所以Proxy需要做的优化就是在PreparedStatement开始的时候缓存参数类型。
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/proxy9.jpg)
+![](https://shardingsphere.apache.org/blog/img/proxy9.jpg)
 
 完成以上优化后，Client-Proxy和Proxy-MySQL两侧的消息交互都变成了最后这张图的流程，从第9步开始高效查询。
 
@@ -142,7 +142,7 @@ http://www.dailymotion.com/video/x2s8uec
 
 当然，也不是那么简单地让连接数等于CPU数就行了，还要考虑网络IO和磁盘IO的影响。当发生IO时，线程被阻塞，此时操作系统可以将那个空闲的CPU核心用于服务其他线程。所以，由于线程总是在I/O上阻塞，我们可以让线程（连接）数比CPU核心多一些，这样能够在同样的时间内完成更多的工作。到底应该多多少呢？PostgreSQL进行了一个benchmark测试：
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/proxy10.jpg)
+![](https://shardingsphere.apache.org/blog/img/proxy10.jpg)
 
 TPS的增长速度从50个连接的时候开始变慢。根据这个结果，PostgreSQL给出了如下公式：
 
@@ -160,7 +160,7 @@ connections=((core_count*2)+effective_spindle_count)
 
 我们先看看优化前Proxy的内存表现。使用5个客户端连接Proxy，每个客户端查询出15万条数据。结果如下图：
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/proxy11.jpg)
+![](https://shardingsphere.apache.org/blog/img/proxy11.jpg)
 
 
 可以看到，Proxy的内存在一直增长，即时GC也回收不掉的。这是因为ResultSet会阻塞住next()，直到查询回来的所有数据都保存到内存中。这是ResultSet默认提取数据的方式，大量占用内存。
@@ -187,13 +187,13 @@ stmt.setFetchSize(Integer.MIN_VALUE);
 
 这样就完成了。这样Proxy就可以在查询指令后立即通过next()消费数据了，数据也可以在下次GC的时候被清理掉。当然，Proxy在对结果做归并的时候，也需要优化成即时归并，而不再是把所有数据都取出来再进行归并，Sharding-Core提供即时归并的接口，这里就不详细介绍了。下面看看优化后的效果，如下图：
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/proxy12.jpg)
+![](https://shardingsphere.apache.org/blog/img/proxy12.jpg)
 
 
 
 数据在内存中停留时间缩短，每次GC都回收掉了数据，内存效率大幅提升。看到这里，好像已经大功告成了，然而水还很深，请大家穿上潜水服继续跟我探索。图2是在最理想的情况产生的，即Client从Proxy消费数据的速度，大于等于Proxy从MySQL消费数据的速度。
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/proxy13.jpg)
+![](https://shardingsphere.apache.org/blog/img/proxy13.jpg)
 
 如果Client由于某种原因消费变慢了，或者干脆不消费了，会发生什么呢？通过测试发现，内存使用量直线拉升，比图1更强劲，最后将内存耗尽，Proxy被KO。
 
@@ -206,7 +206,7 @@ stmt.setFetchSize(Integer.MIN_VALUE);
 *   ChannelOutboundBuffer是Netty写缓存。
     
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/proxy14.jpg)
+![](https://shardingsphere.apache.org/blog/img/proxy14.jpg)
 
 当Client阻塞的时候，它的SO_RCVBUF会被瞬间打满，然后通过滑动窗口机制通知Proxy不要再发送数据了，同时Proxy的SO_SNDBUF也会瞬间被Netty打满。
 
@@ -293,5 +293,5 @@ https://m.qlchat.com/topic/details?topicId=2000001395952730&minimal=1
 
 **听听京东金融数据研发负责人张亮老师的解析**
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/proxy15.jpg)
+![](https://shardingsphere.apache.org/blog/img/proxy15.jpg)
 

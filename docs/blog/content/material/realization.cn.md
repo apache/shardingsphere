@@ -57,7 +57,7 @@ CAP理论指出，对于分布式的应用而言，不可能同时满足C（一�
 
 一味的追求强一致性，并非最佳方案。对于分布式应用来说，刚柔并济是更加合理的设计方案，即在本地服务中采用强一致事务，在跨系统调用中采用最终一致性。如何权衡系统的性能与一致性，是十分考验架构师与开发者的设计功力的。
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/realization1.jpg)
+![](https://shardingsphere.apache.org/blog/img/realization1.jpg)
 
 ### 业界方法
 
@@ -77,12 +77,12 @@ com.mysql.jdbc.jdbc2.optional.MysqlXAConnection。
 
 **一阶段提交：弱XA**
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/realization2.jpg)
+![](https://shardingsphere.apache.org/blog/img/realization2.jpg)
 弱XA通过去掉XA的Prepare阶段，以达到减少资源锁定范围而提升并发性能的效果。典型的实现为在一个业务线程中，遍历所有的数据库连接，依次做commit或者rollback。弱XA同本地事务相比，性能损耗低，但在事务提交的执行过程中，若出现网络故障、数据库宕机等预期之外的异常，将会造成数据不一致，且无法进行回滚。基于弱XA的事务无需额外的实现成本，因此Sharding-Sphere默认支持。
 
 **二阶段提交：2PC**
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/realization3.jpg)
+![](https://shardingsphere.apache.org/blog/img/realization3.jpg)
 
 二阶段提交是XA的标准实现。它将分布式事务的提交拆分为2个阶段：prepare和commit/rollback。
 
@@ -102,7 +102,7 @@ Sharding-Sphere支持基于XA的强一致性事务解决方案，可以通过SPI
 
 这种策略的优点是无锁定资源时间，性能损耗小。缺点是尝试多次提交失败后，无法回滚，它仅适用于事务最终一定能够成功的业务场景。因此BED是通过事务回滚功能上的妥协，来换取性能的提升。
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/realization4.jpg)
+![](https://shardingsphere.apache.org/blog/img/realization4.jpg)
 
 **TCC： Try-Confirm-Cancel**  
 
@@ -139,7 +139,7 @@ TCC模型是把锁的粒度完全交给业务处理，它需要每个子事务�
 
 下面对TCC模式下，A账户往B账户汇款100元为例子，对业务的改造进行详细的分析：
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/realization5.jpg)
+![](https://shardingsphere.apache.org/blog/img/realization5.jpg)
 
 汇款服务和收款服务分别需要实现，Try-Confirm-Cancel接口，并在业务初始化阶段将其注入到TCC事务管理器中。
 
@@ -187,7 +187,7 @@ TCC模型是把锁的粒度完全交给业务处理，它需要每个子事务�
 
 **消息驱动**
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/realization6.jpg)
+![](https://shardingsphere.apache.org/blog/img/realization6.jpg)
 
 消息一致性方案是通过消息中间件保证上下游应用数据操作的一致性。基本思路是将本地操作和发送消息放在一个事务中，下游应用向消息系统订阅该消息，收到消息后执行相应操作。本质上是依靠消息的重试机制，达到最终一致性。消息驱动的缺点是：耦合度高，需要在业务系统中引入MQ，导致系统复杂度增加。
 
@@ -242,7 +242,7 @@ Sharding-Sphere同时支持XA和柔性事务，它允许每次对数据库的访
 
 #### 事务模型
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/realization7.jpg)
+![](https://shardingsphere.apache.org/blog/img/realization7.jpg)
 
 Sharding-Sphere事务管理器集成了XA和柔性事务模型：
 
@@ -253,7 +253,7 @@ Sharding-Sphere事务管理器集成了XA和柔性事务模型：
 
 下面将Sharding-Sphere内部如何用事件驱动方式，将事务从分片主流程中解耦进行详细说明：
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/realization8.jpg)
+![](https://shardingsphere.apache.org/blog/img/realization8.jpg)
 
 从图可以看出在Sharding-core在调用执行引擎时，会根据SQL的种类产生事件进行分发。事务监听线程在收到符合要求的事件后，再调用对应的事务处理器进行处理。
 
@@ -261,17 +261,17 @@ Sharding-Sphere事务管理器集成了XA和柔性事务模型：
 
 Sharding-Proxy是基于netty开发的数据库中间代理层，实现了标准的MySQL协议，可以看做是一个实现了数据分片的数据库。Sharding-Proxy已经实现了基于Atomikos的XA事务，为了保证所有的子事务都处于同一个线程之中，整个Proxy的线程模型进行了如下的调整：
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/realization9.jpg)
+![](https://shardingsphere.apache.org/blog/img/realization9.jpg)
 
 当开启事务后，Proxy后端的SQL命令执行引擎将采用一通道一线程的模式，此事务线程的生命周期同通道保持一致。事务处理的具体过程与Proxy彻底解耦，即Proxy将发布事务类型的事件，然后Sharding-Sphere-TM根据传入的事务消息，选择具体的TM进行处理。
 
 压测结果表明：XA事务的插入和更新的性能，基本上同跨库的个数呈线性关系，查询的性能基本不受影响，建议在并发量不大，每次事务涉及的库在10个以内时，可以使用XA。
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/realization10.jpg)
+![](https://shardingsphere.apache.org/blog/img/realization10.jpg)
 
 Atomikos事务管理器原理分析
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/realization11.jpg)
+![](https://shardingsphere.apache.org/blog/img/realization11.jpg)
 
 Atomikos的事务管理器可以内嵌到业务进程中，当应用调用TransactionManager.begin时，将会创建本次XA事务，并且与当前线程关联。同时Atomikos也对DataSource中的connection做了二次封装，代理connection中含有本次事务相关信息的状态，并且拦截了connection的JDBC操作。
 
@@ -289,7 +289,7 @@ https://github.com/apache/incubator-servicecomb-saga
 
 Service Comb 集中式事务协调器
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/realization12.jpg)
+![](https://shardingsphere.apache.org/blog/img/realization12.jpg)
 
 集中式的协调器，包含了Saga调用请求接收、分析、执行以及结果查询的内容。任务代理模块需要预先知道Saga事务调用关系图，执行模块根据生成的调用图产生调用任务，调用相关微服务服务接口。如果服务调用执行出错，会调用服务的相关的补偿方法回滚。
 
@@ -297,7 +297,7 @@ Saga执行模块通过分析请求的JSON数据，来构建一个调用关系图
 
 Sharding-Sphere内嵌Saga事务管理器
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/realization13.jpg)
+![](https://shardingsphere.apache.org/blog/img/realization13.jpg)
 
 Saga以jar包的形式提供分布式事务治理能力。
 
@@ -324,7 +324,7 @@ Saga以jar包的形式提供分布式事务治理能力。
 
 如果前面的分享太过冗长，那么千言万语汇聚成一张表格，欢迎阅读。
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/realization14.jpg)
+![](https://shardingsphere.apache.org/blog/img/realization14.jpg)
 
 未来，我们将不断优化当前的特性，陆续推出大家关注的柔性事务、数据治理等更多新特性。如果有什么想法、意见和建议，也欢迎留言交流，更欢迎加入到Sharding-Sphere的开源项目中：
 

@@ -30,7 +30,7 @@ Apache软件基金会如今已成为现代开源软件生态系统的基石。
 
 想象一下，小伙伴们浏览Apache网站时看到了你的名字，或者和面试官发邮件时，他们会不会有种不明觉厉的感觉，形象瞬间就高大上了有木有！
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/committer1.jpg)
+![](https://shardingsphere.apache.org/blog/img/committer1.jpg)
 
 ### 如何成为官方认可的committer？
 

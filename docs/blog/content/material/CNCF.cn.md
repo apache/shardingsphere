@@ -18,7 +18,7 @@ CNCF将云原生的生态圈横向划分为五层，并且针对它们又纵向�
 
 -- 以上内容摘自书籍《未来架构:从服务化到云原生》
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/CNCF1.jpg)
+![](https://shardingsphere.apache.org/blog/img/CNCF1.jpg)
 
 ### ShardingSphere
 
@@ -28,8 +28,8 @@ Apache ShardingSphere在开源领域及云原生领域会持续拓展，不断�
 
 我们也希望有更多开源及云原生社区的爱好者能加入我们，共同前进，促进Apache ShardingSphere社区及贡献者们共同成长！
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/CNCF2.jpg)
+![](https://shardingsphere.apache.org/blog/img/CNCF2.jpg)
 
-![](https://github.com/apache/shardingsphere/tree/master/docs/blog/static/img/CNCF3.jpg)
+![](https://shardingsphere.apache.org/blog/img/CNCF3.jpg)
 
 Apache ShardingSphere（Incubating）自2016开源以来，不断精进、不断发展，被越来越多的企业和个人认可：Github上收获8000+的stars，近百家公司企业的成功案例。此外，越来越多的企业和个人也加入到Apache ShardingSphere（Incubating）的开源项目中，为它的成长和发展贡献了巨大力量。
