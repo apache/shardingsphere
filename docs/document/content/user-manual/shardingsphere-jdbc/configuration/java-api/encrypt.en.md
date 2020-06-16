@@ -51,17 +51,17 @@ Attributes:
 | type       | String     | Encrypt algorithm type       |
 | properties | Properties | Encrypt algorithm properties |
 
-Apache ShardingSphere built-in implemented classes of encrypt algorithm are:
+Apache ShardingSphere built-in encrypt algorithm are:
 
 ### MD5 Encrypt Algorithm
 
-Class name: org.apache.shardingsphere.encrypt.algorithm.MD5EncryptAlgorithm
+Type: MD5
 
 Attributes: None
 
 ### AES Encrypt Algorithm
 
-Class name: org.apache.shardingsphere.encrypt.algorithm.AESEncryptAlgorithm
+Type: AES
 
 Attributes:
 
@@ -71,7 +71,7 @@ Attributes:
 
 ### RC4 Encrypt Algorithm
 
-Class name: org.apache.shardingsphere.encrypt.algorithm.RC4EncryptAlgorithm
+Type: RC4
 
 Attributes:
 
