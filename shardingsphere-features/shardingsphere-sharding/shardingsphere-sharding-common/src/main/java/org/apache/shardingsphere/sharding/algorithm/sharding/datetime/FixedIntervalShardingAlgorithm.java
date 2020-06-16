@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Range;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
@@ -54,9 +55,7 @@ public final class FixedIntervalShardingAlgorithm implements StandardShardingAlg
     
     private static final String SHARDING_SECONDS_KEY = "sharding.seconds";
     
-    private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
-    
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
+    private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
     @Setter
     private Properties props = new Properties();
@@ -71,24 +70,24 @@ public final class FixedIntervalShardingAlgorithm implements StandardShardingAlg
     
     @Override
     public void init() {
-        dateTimeLower = getDateTimeLower();
-        dateTimeUpper = getDateTimeUpper();
+        dateTimeLower = getDateTime(DATE_TIME_LOWER_KEY);
+        dateTimeUpper = getDateTime(DATE_TIME_UPPER_KEY);
         shardingSeconds = getShardingSeconds();
         autoTablesAmount = (int) (Math.ceil(parseDate(props.getProperty(DATE_TIME_UPPER_KEY)) / shardingSeconds) + 2);
     }
     
-    private LocalDateTime getDateTimeLower() {
-        Preconditions.checkState(props.containsKey(DATE_TIME_LOWER_KEY) && checkDatetimePattern(props.getProperty(DATE_TIME_LOWER_KEY)), "%s pattern is required.", DATE_TIME_PATTERN);
-        return LocalDateTime.parse(props.getProperty(DATE_TIME_LOWER_KEY), DATE_FORMAT);
-    }
-    
-    private LocalDateTime getDateTimeUpper() {
-        Preconditions.checkState(props.containsKey(DATE_TIME_UPPER_KEY) && checkDatetimePattern(props.getProperty(DATE_TIME_UPPER_KEY)), "%s pattern is required.", DATE_TIME_PATTERN);
-        return LocalDateTime.parse(props.getProperty(DATE_TIME_UPPER_KEY), DATE_FORMAT);
+    private LocalDateTime getDateTime(final String dateTimeKey) {
+        String value = props.getProperty(dateTimeKey);
+        Preconditions.checkNotNull(value, "%s cannot be null.", dateTimeKey);
+        try {
+            return LocalDateTime.parse(value, DATE_TIME_FORMAT);
+        } catch (final DateTimeParseException ex) {
+            throw new ShardingSphereConfigurationException("Invalid %s, datetime pattern should be `yyyy-MM-dd HH:mm:ss`, value is `%s`", dateTimeKey, value);
+        }
     }
     
     private long getShardingSeconds() {
-        Preconditions.checkArgument(props.containsKey(SHARDING_SECONDS_KEY), "Sharding seconds cannot be null.");
+        Preconditions.checkArgument(props.containsKey(SHARDING_SECONDS_KEY), "%s cannot be null.", SHARDING_SECONDS_KEY);
         return Long.parseLong(props.get(SHARDING_SECONDS_KEY).toString());
     }
     
@@ -123,8 +122,7 @@ public final class FixedIntervalShardingAlgorithm implements StandardShardingAlg
     }
     
     private int doSharding(final long shardingValue) {
-        DecimalFormat decimalFormat = new DecimalFormat("0.00");
-        String position = decimalFormat.format((float) shardingValue / shardingSeconds);
+        String position = new DecimalFormat("0.00").format((float) shardingValue / shardingSeconds);
         return Math.min(Math.max(0, (int) Math.ceil(Float.parseFloat(position))), autoTablesAmount - 1);
     }
     
@@ -136,17 +134,8 @@ public final class FixedIntervalShardingAlgorithm implements StandardShardingAlg
         return valueRange.hasUpperBound() ? doSharding(parseDate(valueRange.upperEndpoint())) : autoTablesAmount - 1;
     }
     
-    private boolean checkDatetimePattern(final String datetime) {
-        try {
-            DATE_FORMAT.parse(datetime);
-            return true;
-        } catch (final DateTimeParseException ex) {
-            return false;
-        }
-    }
-    
     private long parseDate(final Comparable<?> shardingValue) {
-        LocalDateTime dateValue = LocalDateTime.parse(shardingValue.toString(), DATE_FORMAT);
+        LocalDateTime dateValue = LocalDateTime.parse(shardingValue.toString(), DATE_TIME_FORMAT);
         return Duration.between(dateTimeLower, dateValue).toMillis() / 1000;
     }
     
