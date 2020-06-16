@@ -34,11 +34,13 @@ import java.util.Properties;
  */
 public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>> {
     
-    private static final String ALGORITHM_EXPRESSION = "algorithm.expression";
+    private static final String ALGORITHM_EXPRESSION_KEY = "algorithm.expression";
     
-    private static final String ALLOW_RANGE_QUERY = "allow.range.query.with.inline.sharding";
+    private static final String ALLOW_RANGE_QUERY_KEY = "allow.range.query.with.inline.sharding";
     
     private Closure<?> closure;
+    
+    private boolean allowRangeQuery;
     
     @Getter
     @Setter
@@ -46,11 +48,21 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     
     @Override
     public void init() {
-        Preconditions.checkNotNull(props.get(ALGORITHM_EXPRESSION), "Inline sharding algorithm expression cannot be null.");
-        String algorithmExpression = InlineExpressionParser.handlePlaceHolder(props.get(ALGORITHM_EXPRESSION).toString().trim());
-        Closure<?> closure = new InlineExpressionParser(algorithmExpression).evaluateClosure();
-        this.closure = closure.rehydrate(new Expando(), null, null);
-        this.closure.setResolveStrategy(Closure.DELEGATE_ONLY);
+        closure = createClosure();
+        allowRangeQuery = isAllowRangeQuery();
+    }
+    
+    private Closure<?> createClosure() {
+        String expression = props.getProperty(ALGORITHM_EXPRESSION_KEY);
+        Preconditions.checkNotNull(expression, "Inline sharding algorithm expression cannot be null.");
+        String algorithmExpression = InlineExpressionParser.handlePlaceHolder(expression.trim());
+        Closure<?> result = new InlineExpressionParser(algorithmExpression).evaluateClosure().rehydrate(new Expando(), null, null);
+        result.setResolveStrategy(Closure.DELEGATE_ONLY);
+        return result;
+    }
+    
+    private boolean isAllowRangeQuery() {
+        return Boolean.valueOf(props.getProperty(ALLOW_RANGE_QUERY_KEY, Boolean.FALSE.toString()));
     }
     
     @Override
@@ -61,14 +73,10 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
-        if (isAllowRangeQuery()) {
+        if (allowRangeQuery) {
             return availableTargetNames;
         }
         throw new UnsupportedOperationException("Since the property of `allow.range.query.with.inline.sharding` is false, inline sharding algorithm can not tackle with range query.");
-    }
-    
-    private boolean isAllowRangeQuery() {
-        return null != props.get(ALLOW_RANGE_QUERY) && Boolean.parseBoolean(props.get(ALLOW_RANGE_QUERY).toString());
     }
     
     @Override
