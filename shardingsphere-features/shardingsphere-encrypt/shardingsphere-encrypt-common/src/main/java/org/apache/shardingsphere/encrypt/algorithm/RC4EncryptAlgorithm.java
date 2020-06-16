@@ -52,7 +52,7 @@ public final class RC4EncryptAlgorithm implements EncryptAlgorithm {
     @SneakyThrows
     public void init() {
         reset();
-        setKey(StringUtils.getBytesUtf8(props.get(RC4_KEY).toString()));
+        setKey(StringUtils.getBytesUtf8(props.getProperty(RC4_KEY)));
     }
     
     @Override
