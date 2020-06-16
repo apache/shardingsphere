@@ -81,12 +81,12 @@ public final class ClusterFacade {
     }
     
     /**
-     * ReInit cluster facade.
+     * Renew cluster facade.
      *
      * @param event cluster configuration changed event
      */
     @Subscribe
-    public void reInit(final ClusterConfigurationChangedEvent event) {
+    public void renew(final ClusterConfigurationChangedEvent event) {
         stop();
         init(event.getClusterConfiguration());
     }
