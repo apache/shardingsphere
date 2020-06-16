@@ -33,6 +33,10 @@ public final class DecrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     private Properties props = new Properties();
     
     @Override
+    public void init() {
+    }
+    
+    @Override
     public Comparable<?> generateKey() {
         return sequence.decrementAndGet();
     }

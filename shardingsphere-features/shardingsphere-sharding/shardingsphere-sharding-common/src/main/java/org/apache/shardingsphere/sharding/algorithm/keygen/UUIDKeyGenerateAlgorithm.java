@@ -34,6 +34,10 @@ public final class UUIDKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     private Properties props = new Properties();
     
     @Override
+    public void init() {
+    }
+    
+    @Override
     public synchronized Comparable<?> generateKey() {
         return UUID.randomUUID().toString().replaceAll("-", "");
     }

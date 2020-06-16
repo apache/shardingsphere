@@ -33,6 +33,10 @@ public final class IncrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     private Properties props = new Properties();
     
     @Override
+    public void init() {
+    }
+    
+    @Override
     public Comparable<?> generateKey() {
         return SEQUENCE.incrementAndGet();
     }
