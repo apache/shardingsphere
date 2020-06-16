@@ -36,7 +36,7 @@ import java.util.Properties;
  */
 public abstract class AbstractRangeShardingAlgorithm implements StandardShardingAlgorithm<Long>, ShardingAutoTableAlgorithm {
     
-    private Map<Integer, Range<Long>> partitionRangeMap;
+    private volatile Map<Integer, Range<Long>> partitionRange;
     
     @Getter
     @Setter
@@ -44,15 +44,14 @@ public abstract class AbstractRangeShardingAlgorithm implements StandardSharding
     
     @Override
     public final void init() {
-        partitionRangeMap = createPartitionRangeMap(props);
+        partitionRange = calculatePartitionRange(props);
     }
     
-    abstract Map<Integer, Range<Long>> createPartitionRangeMap(Properties props);
+    protected abstract Map<Integer, Range<Long>> calculatePartitionRange(Properties props);
     
     @Override
     public final String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Long> shardingValue) {
-        return availableTargetNames.stream().filter(each -> each.endsWith(getPartition(partitionRangeMap, shardingValue.getValue()) + ""))
-                .findFirst().orElse(null);
+        return availableTargetNames.stream().filter(each -> each.endsWith(getPartition(shardingValue.getValue()) + "")).findFirst().orElse(null);
     }
     
     @Override
@@ -71,15 +70,15 @@ public abstract class AbstractRangeShardingAlgorithm implements StandardSharding
     }
     
     private int getFirstPartition(final Range<Long> valueRange) {
-        return valueRange.hasLowerBound() ? getPartition(partitionRangeMap, valueRange.lowerEndpoint()) : 0;
+        return valueRange.hasLowerBound() ? getPartition(valueRange.lowerEndpoint()) : 0;
     }
     
     private int getLastPartition(final Range<Long> valueRange) {
-        return valueRange.hasUpperBound() ? getPartition(partitionRangeMap, valueRange.upperEndpoint()) : partitionRangeMap.size() - 1;
+        return valueRange.hasUpperBound() ? getPartition(valueRange.upperEndpoint()) : partitionRange.size() - 1;
     }
     
-    private Integer getPartition(final Map<Integer, Range<Long>> partitionRangeMap, final Long value) {
-        for (Entry<Integer, Range<Long>> entry : partitionRangeMap.entrySet()) {
+    private Integer getPartition(final Long value) {
+        for (Entry<Integer, Range<Long>> entry : partitionRange.entrySet()) {
             if (entry.getValue().contains(value)) {
                 return entry.getKey();
             }
@@ -89,6 +88,6 @@ public abstract class AbstractRangeShardingAlgorithm implements StandardSharding
     
     @Override
     public final int getAutoTablesAmount() {
-        return partitionRangeMap.size();
+        return partitionRange.size();
     }
 }
