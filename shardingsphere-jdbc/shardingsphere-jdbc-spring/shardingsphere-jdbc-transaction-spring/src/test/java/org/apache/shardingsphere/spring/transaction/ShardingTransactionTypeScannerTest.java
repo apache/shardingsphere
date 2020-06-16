@@ -28,7 +28,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -49,10 +48,10 @@ public class ShardingTransactionTypeScannerTest {
     public void assertShardingTransactionType() {
         TransactionType preTransactionType = TransactionTypeHolder.get();
         mockService.executeLocal();
-        assertEquals(preTransactionType, TransactionTypeHolder.get());
+        assertThat(TransactionTypeHolder.get(), is(preTransactionType));
         mockService.executeBase();
-        assertEquals(preTransactionType, TransactionTypeHolder.get());
+        assertThat(TransactionTypeHolder.get(), is(preTransactionType));
         mockService.execute();
-        assertEquals(preTransactionType, TransactionTypeHolder.get());
+        assertThat(TransactionTypeHolder.get(), is(preTransactionType));
     }
 }

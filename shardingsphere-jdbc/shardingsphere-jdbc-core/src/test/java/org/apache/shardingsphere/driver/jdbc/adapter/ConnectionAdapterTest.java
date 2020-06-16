@@ -35,7 +35,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class ConnectionAdapterTest extends AbstractShardingSphereDataSourceForShardingTest {
     
@@ -175,9 +178,8 @@ public final class ConnectionAdapterTest extends AbstractShardingSphereDataSourc
         TransactionType currentTransactionType = TransactionTypeHolder.get();
         try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
             actual.createStatement().executeQuery(sql);
-            actual.close();
         }
-        assertEquals(currentTransactionType, TransactionTypeHolder.get());
+        assertThat(TransactionTypeHolder.get(), is(currentTransactionType));
     }
     
     @Test
