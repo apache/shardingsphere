@@ -180,12 +180,12 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 
 | *属性名称*            | *数据类型* | *说明*                              |
 | -------------------- | --------- | ----------------------------------- |
-| datetime.format      | String    | 时间戳格式，例如：yyyy-MM-dd HH:mm:ss |
-| table.suffix.format  | String    | TODO                                |
+| datetime.pattern     | String    | 时间戳格式，例如：yyyy-MM-dd HH:mm:ss |
+| table.suffix.pattern | String    | TODO                                |
 | datetime.lower       | String    | TODO                                |
 | datetime.upper       | String    | TODO                                |
-| datetime.step.unit   | String    | TODO                                |
 | datetime.step.amount | String    | TODO                                |
+| datetime.step.unit   | String    | TODO                                |
 
 ### 复合分片算法配置
 

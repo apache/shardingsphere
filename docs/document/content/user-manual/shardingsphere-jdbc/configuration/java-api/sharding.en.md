@@ -178,14 +178,14 @@ Type: MUTABLE_INTERVAL
 
 Attributes:
 
-| *Name*               | *DataType* | *Description*                                  |
-| -------------------- | ---------- | ---------------------------------------------- |
-| datetime.format      | String     | Datetime pattern, example: yyyy-MM-dd HH:mm:ss |
-| table.suffix.format  | String     | TODO                                           |
-| datetime.lower       | String     | TODO                                           |
-| datetime.upper       | String     | TODO                                           |
-| datetime.step.unit   | String     | TODO                                           |
-| datetime.step.amount | String     | TODO                                           |
+| *Name*               | *DataType* | *Description*                                   |
+| -------------------- | ---------- | ----------------------------------------------- |
+| datetime.pattern     | String     | Date time pattern, example: yyyy-MM-dd HH:mm:ss |
+| table.suffix.pattern | String     | TODO                                            |
+| datetime.lower       | String     | TODO                                            |
+| datetime.upper       | String     | TODO                                            |
+| datetime.step.amount | String     | TODO                                            |
+| datetime.step.unit   | String     | TODO                                            |
 
 ### Complex Sharding Algorithm Configuration
 
