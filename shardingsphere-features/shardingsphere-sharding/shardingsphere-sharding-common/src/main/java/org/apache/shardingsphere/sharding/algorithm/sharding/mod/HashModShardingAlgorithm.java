@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.mod;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAlgorithmException;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
@@ -44,19 +45,26 @@ public final class HashModShardingAlgorithm implements StandardShardingAlgorithm
     
     private Properties props = new Properties();
     
+    private int shardingCount;
+    
     @Override
     public void init() {
-        Preconditions.checkNotNull(props.get(SHARDING_COUNT_KEY), "Modulo value cannot be null.");
+        shardingCount = getShardingCount();
+    }
+    
+    private int getShardingCount() {
+        Preconditions.checkNotNull(props.getProperty(SHARDING_COUNT_KEY), "Sharding count cannot be null.");
+        return Integer.parseInt(props.getProperty(SHARDING_COUNT_KEY));
     }
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         for (String each : availableTargetNames) {
-            if (each.endsWith(hashShardingValue(shardingValue.getValue()) % getModuloValue() + "")) {
+            if (each.endsWith(hashShardingValue(shardingValue.getValue()) % shardingCount + "")) {
                 return each;
             }
         }
-        return null;
+        throw new ShardingAlgorithmException("Sharding failure, cannot find target name via `%s`", shardingValue);
     }
     
     @Override
@@ -68,14 +76,9 @@ public final class HashModShardingAlgorithm implements StandardShardingAlgorithm
         return Math.abs((long) shardingValue.hashCode());
     }
     
-    private long getModuloValue() {
-        return Long.parseLong(props.get(SHARDING_COUNT_KEY).toString());
-    }
-    
     @Override
     public int getAutoTablesAmount() {
-        Preconditions.checkNotNull(props.get(SHARDING_COUNT_KEY), "Modulo value cannot be null.");
-        return Integer.parseInt(props.get(SHARDING_COUNT_KEY).toString());
+        return shardingCount;
     }
     
     @Override
