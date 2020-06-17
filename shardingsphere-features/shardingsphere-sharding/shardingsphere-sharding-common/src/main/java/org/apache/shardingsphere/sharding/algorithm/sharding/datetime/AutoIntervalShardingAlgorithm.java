@@ -55,8 +55,6 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     
     private LocalDateTime dateTimeLower;
     
-    private LocalDateTime dateTimeUpper;
-    
     private long shardingSeconds;
     
     private int autoTablesAmount;
@@ -64,7 +62,6 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     @Override
     public void init() {
         dateTimeLower = getDateTime(DATE_TIME_LOWER_KEY);
-        dateTimeUpper = getDateTime(DATE_TIME_UPPER_KEY);
         shardingSeconds = getShardingSeconds();
         autoTablesAmount = (int) (Math.ceil(parseDate(props.getProperty(DATE_TIME_UPPER_KEY)) / shardingSeconds) + 2);
     }
