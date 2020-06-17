@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
@@ -191,8 +193,33 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     private Collection<DataNode> route0(final ShardingRule shardingRule, final TableRule tableRule, final List<RouteValue> databaseShardingValues, final List<RouteValue> tableShardingValues) {
         Collection<String> routedDataSources = routeDataSources(shardingRule, tableRule, databaseShardingValues);
         Collection<DataNode> result = new LinkedList<>();
+        List<RouteValue> copiedTableShardingValues = tableShardingValues;
         for (String each : routedDataSources) {
-            result.addAll(routeTables(shardingRule, tableRule, each, tableShardingValues));
+            if (databaseShardingValues.get(0).getColumnName().equals(tableShardingValues.get(0).getColumnName())) {
+                Collection<Object> relateValueList = Lists.newArrayList();
+
+                ListRouteValue tableRouteValue = (ListRouteValue) tableShardingValues.get(0);
+                Collection<Object> tablueRouteValues = tableRouteValue.getValues();
+
+                for (Object eachRouteValues : tablueRouteValues) {
+                    RouteValue routeValue = new ListRouteValue(tableRouteValue.getColumnName(), tableRouteValue.getTableName(), Lists.newArrayList(eachRouteValues));
+
+                    Collection<String> reRouteDbRoute = routeDataSources(shardingRule, tableRule, Lists.newArrayList(routeValue));
+
+                    if (CollectionUtils.isNotEmpty(reRouteDbRoute) && reRouteDbRoute.contains(each)) {
+                        relateValueList.add(eachRouteValues);
+                    }
+                }
+
+                if (CollectionUtils.isNotEmpty(relateValueList)) {
+                    RouteValue replaceListRoute = new ListRouteValue(tableRouteValue.getColumnName(), tableRouteValue.getTableName(), relateValueList);
+                    copiedTableShardingValues = Lists.newArrayList(replaceListRoute);
+                }
+                result.addAll(routeTables(shardingRule, tableRule, each, copiedTableShardingValues));
+
+            } else {
+                result.addAll(routeTables(shardingRule, tableRule, each, tableShardingValues));
+            }
         }
         return result;
     }
