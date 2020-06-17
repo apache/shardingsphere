@@ -45,10 +45,12 @@ public final class ClusterBeanDefinitionParser extends AbstractBeanDefinitionPar
     
     private static final String PROPERTY_RETRY_INTERVAL = "retryInterval";
     
+    private static final String PROPERTY_HEARTBEAT = "heartbeat";
+    
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ClusterConfiguration.class);
-        factory.addPropertyValue("heartbeat", getHeartbeatConfiguration(element));
+        factory.addPropertyValue(PROPERTY_HEARTBEAT, getHeartbeatConfiguration(element));
         return factory.getBeanDefinition();
     }
     
