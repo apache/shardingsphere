@@ -18,31 +18,20 @@
 
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:beans="http://www.springframework.org/schema/beans"
-            xmlns="http://shardingsphere.apache.org/schema/shardingsphere/orchestration"
-            targetNamespace="http://shardingsphere.apache.org/schema/shardingsphere/orchestration"
+            xmlns="http://shardingsphere.apache.org/schema/shardingsphere/cluster"
+            targetNamespace="http://shardingsphere.apache.org/schema/shardingsphere/cluster"
             elementFormDefault="qualified">
     <xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd" />
     
-    <xsd:element name="data-source">
+    <xsd:element name="heartbeat">
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required" />
-            <xsd:attribute name="data-source-ref" type="xsd:string" />
-            <xsd:attribute name="instance-ref" type="xsd:string" use="required" />
-            <xsd:attribute name="overwrite" type="xsd:string" default="false" />
-            <xsd:attribute name="cluster-ref" type="xsd:string"/>
-        </xsd:complexType>
-    </xsd:element>
-    
-    <xsd:element name="instance">
-        <xsd:complexType>
-            <xsd:all>
-                <xsd:element ref="beans:props" minOccurs="0" />
-            </xsd:all>
-            <xsd:attribute name="id" type="xsd:string" use="required" />
-            <xsd:attribute name="orchestration-type" type="xsd:string" use="required" />
-            <xsd:attribute name="instance-type" type="xsd:string" use="required" />
-            <xsd:attribute name="server-lists" type="xsd:string" use="required"/>
-            <xsd:attribute name="namespace" type="xsd:string"/>
+            <xsd:attribute name="sql" type="xsd:string" use="required"/>
+            <xsd:attribute name="threadCount" type="xsd:string" use="required" />
+            <xsd:attribute name="interval" type="xsd:string" use="required"/>
+            <xsd:attribute name="retryMaximum" type="xsd:string"/>
+            <xsd:attribute name="retryInterval" type="xsd:string"/>
+            <xsd:attribute name="retryEnable" type="xsd:string" use="optional" default="false" />
         </xsd:complexType>
     </xsd:element>
 </xsd:schema>

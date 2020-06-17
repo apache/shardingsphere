@@ -31,4 +31,6 @@ public final class DataSourceBeanDefinitionTag {
     public static final String DATA_SOURCE_REF_TAG = "data-source-ref";
     
     public static final String INSTANCE_REF_TAG = "instance-ref";
+    
+    public static final String CLUSTER_REF_TAG = "cluster-ref";
 }

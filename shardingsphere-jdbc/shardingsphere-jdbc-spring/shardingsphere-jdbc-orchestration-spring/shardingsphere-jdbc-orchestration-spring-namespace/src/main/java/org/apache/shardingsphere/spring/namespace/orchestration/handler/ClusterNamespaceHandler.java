@@ -15,26 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.namespace.orchestration.constants;
+package org.apache.shardingsphere.spring.namespace.orchestration.handler;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.spring.namespace.orchestration.constants.ClusterBeanDefinitionTag;
+import org.apache.shardingsphere.spring.namespace.orchestration.parser.ClusterBeanDefinitionParser;
+import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
- * Orchestration instance bean definition tag.
+ * Cluster spring namespace handler.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class InstanceBeanDefinitionTag {
-    
-    public static final String ROOT_TAG = "instance";
-    
-    public static final String TYPE_TAG = "instance-type";
-    
-    public static final String ORCHESTRATION_TYPE_TAG = "orchestration-type";
-    
-    public static final String SERVER_LISTS_TAG = "server-lists";
-    
-    public static final String NAMESPACE_TAG = "namespace";
-    
-    public static final String PROP_TAG = "props";
+public final class ClusterNamespaceHandler extends NamespaceHandlerSupport {
+    @Override
+    public void init() {
+        registerBeanDefinitionParser(ClusterBeanDefinitionTag.ROOT_TAG, new ClusterBeanDefinitionParser());
+    }
 }
