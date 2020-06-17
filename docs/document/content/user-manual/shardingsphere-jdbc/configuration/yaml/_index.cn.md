@@ -55,7 +55,7 @@ try (
 }
 ```
 
-## YAML 配置
+## YAML 配置项
 
 ### 数据源配置
 
@@ -65,7 +65,7 @@ try (
 
 #### 单数据源配置
 
-配置示例：
+##### 配置示例
 
 ```yaml
 dataSource: !!org.apache.commons.dbcp2.BasicDataSource
@@ -75,7 +75,7 @@ dataSource: !!org.apache.commons.dbcp2.BasicDataSource
   password: root
 ```
 
-配置项说明：
+##### 配置项说明
 
 ```yaml
 dataSource: # <!!数据库连接池实现类> `!!`表示实例化该类

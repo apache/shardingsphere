@@ -9,12 +9,12 @@ weight = 20
 
 ```yaml
 dataSources:
-  ds0: !!org.apache.commons.dbcp.BasicDataSource
+  ds0: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ds0
     username: root
     password: 
-  ds1: !!org.apache.commons.dbcp.BasicDataSource
+  ds1: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ds1
     username: root
@@ -65,17 +65,17 @@ props:
 
 ```yaml
 dataSources:
-  ds_master: !!org.apache.commons.dbcp.BasicDataSource
+  ds_master: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ds_master
     username: root
     password: 
-  ds_slave0: !!org.apache.commons.dbcp.BasicDataSource
+  ds_slave0: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ds_slave0
     username: root
     password: 
-  ds_slave1: !!org.apache.commons.dbcp.BasicDataSource
+  ds_slave1: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ds_slave1
     username: root
