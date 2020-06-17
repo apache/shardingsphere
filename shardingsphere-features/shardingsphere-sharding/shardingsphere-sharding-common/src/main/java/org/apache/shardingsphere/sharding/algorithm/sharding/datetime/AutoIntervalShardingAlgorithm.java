@@ -88,9 +88,7 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
                 return each;
             }
         }
-        // TODO check if return null
         return null;
-        //        throw new ShardingAlgorithmException("Sharding failure, cannot find target name via `%s`", shardingValue);
     }
     
     @Override

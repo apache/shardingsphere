@@ -59,9 +59,7 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
                 return each;
             }
         }
-        // TODO check if return null
         return null;
-//        throw new ShardingAlgorithmException("Sharding failure, cannot find target name via `%s`", shardingValue);
     }
     
     @Override
