@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.spring.namespace.orchestration;
 
+import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
@@ -35,5 +36,14 @@ public final class OrchestrationSpringShardingSphereDataSource extends Orchestra
     
     public OrchestrationSpringShardingSphereDataSource(final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         super(orchestrationConfig);
+    }
+    
+    public OrchestrationSpringShardingSphereDataSource(final DataSource dataSource,
+                                                       final OrchestrationConfiguration orchestrationConfig, final ClusterConfiguration clusterConfiguration) {
+        super((ShardingSphereDataSource) dataSource, orchestrationConfig, clusterConfiguration);
+    }
+    
+    public OrchestrationSpringShardingSphereDataSource(final OrchestrationConfiguration orchestrationConfig, final ClusterConfiguration clusterConfiguration) throws SQLException {
+        super(orchestrationConfig, clusterConfiguration);
     }
 }

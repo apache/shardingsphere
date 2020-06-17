@@ -21,20 +21,22 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Orchestration instance bean definition tag.
+ * Cluster bean definition tag.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class InstanceBeanDefinitionTag {
+public final class ClusterBeanDefinitionTag {
     
-    public static final String ROOT_TAG = "instance";
+    public static final String ROOT_TAG = "heartbeat";
     
-    public static final String TYPE_TAG = "instance-type";
+    public static final String SQL_TAG = "sql";
     
-    public static final String ORCHESTRATION_TYPE_TAG = "orchestration-type";
+    public static final String THREAD_COUNT_TAG = "threadCount";
     
-    public static final String SERVER_LISTS_TAG = "server-lists";
+    public static final String INTERVAL_TAG = "interval";
     
-    public static final String NAMESPACE_TAG = "namespace";
+    public static final String RETRY_MAXIMUM_TAG = "retryMaximum";
     
-    public static final String PROP_TAG = "props";
+    public static final String RETRY_INTERVAL_TAG = "retryInterval";
+    
+    public static final String RETRY_ENABLE_TAG = "retryEnable";
 }
