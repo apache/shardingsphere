@@ -25,6 +25,7 @@ import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
  * Cluster spring namespace handler.
  */
 public final class ClusterNamespaceHandler extends NamespaceHandlerSupport {
+    
     @Override
     public void init() {
         registerBeanDefinitionParser(ClusterBeanDefinitionTag.ROOT_TAG, new ClusterBeanDefinitionParser());
