@@ -27,27 +27,4 @@ Attributes:
 | slaveDataSourceNames (+) | Collection\<String\> | Slave sources source name list               | -                                  |
 | loadBalancerName (?)     | String               | Load balance algorithm name of slave sources | Round robin load balance algorithm |
 
-## Slave Data Sources Load Balance Algorithm Configuration
-
-Class name: org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration
-
-Attributes:
-
-| *Name*         | *DataType* | *Description*                                        | *Default Value* |
-| -------------- | ---------- | ---------------------------------------------------- | --------------- |
-| type           | String     | Slave data sources load balance algorithm type       | -               |
-| properties (?) | Properties | Slave data sources load balance algorithm Properties | Empty           |
-
-Apache ShardingSphere built-in load balance algorithm are:
-
-### Round Robin Algorithm
-
-Type: ROUND_ROBIN
-
-Attributes: None
-
-### Random Algorithm
-
-Type: RANDOM
-
-Attributes: None
+Please refer to [Built-in Load Balance Algorithm List](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/load-balance) for more details about type of algorithm.

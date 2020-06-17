@@ -51,30 +51,4 @@ Attributes:
 | type       | String     | Encrypt algorithm type       |
 | properties | Properties | Encrypt algorithm properties |
 
-Apache ShardingSphere built-in encrypt algorithm are:
-
-### MD5 Encrypt Algorithm
-
-Type: MD5
-
-Attributes: None
-
-### AES Encrypt Algorithm
-
-Type: AES
-
-Attributes:
-
-| *Name*        | *DataType* | *Description* |
-| ------------- | ---------- | ------------- |
-| aes.key.value | String     | AES KEY       |
-
-### RC4 Encrypt Algorithm
-
-Type: RC4
-
-Attributes:
-
-| *Name*        | *DataType* | *Description* |
-| ------------- | ---------- | ------------- |
-| rc4.key.value | String     | RC4 KEY       |
+Please refer to [Built-in Encrypt Algorithm List](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/encrypt) for more details about type of algorithm.
