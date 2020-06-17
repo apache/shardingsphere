@@ -1,6 +1,6 @@
 +++
 title = "Yaml配置"
-weight = 2
+weight = 20
 +++
 
 ## 配置示例
