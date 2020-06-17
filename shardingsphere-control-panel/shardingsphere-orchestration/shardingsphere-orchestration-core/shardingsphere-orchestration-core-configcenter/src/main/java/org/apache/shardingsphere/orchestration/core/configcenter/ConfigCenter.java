@@ -176,7 +176,7 @@ public final class ConfigCenter {
     }
     
     private boolean hasClusterConfiguration() {
-        return !Strings.isNullOrEmpty(repository.get(node.getMetricsPath()));
+        return !Strings.isNullOrEmpty(repository.get(node.getClusterPath()));
     }
     
     private boolean hasMetricsConfiguration() {
@@ -275,7 +275,8 @@ public final class ConfigCenter {
      * @return cluster configuration
      */
     public ClusterConfiguration loadClusterConfiguration() {
-        return new ClusterConfigurationYamlSwapper().swapToObject(YamlEngine.unmarshal(repository.get(node.getClusterPath()), YamlClusterConfiguration.class));
+        return Strings.isNullOrEmpty(repository.get(node.getClusterPath())) ? null
+                : new ClusterConfigurationYamlSwapper().swapToObject(YamlEngine.unmarshal(repository.get(node.getClusterPath()), YamlClusterConfiguration.class));
     }
     
     /**

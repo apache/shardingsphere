@@ -21,6 +21,8 @@ import com.google.common.collect.Maps;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.cluster.configuration.config.ClusterConfiguration;
+import org.apache.shardingsphere.cluster.facade.ClusterFacade;
 import org.apache.shardingsphere.cluster.heartbeat.eventbus.HeartbeatEventBus;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
@@ -90,9 +92,24 @@ public abstract class AbstractOrchestrationDataSource extends AbstractUnsupporte
         dataSourceConfigurations.putAll(shardingOrchestrationFacade.getConfigCenter().loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME));
     }
     
+    protected final void initShardingOrchestrationFacade(final ClusterConfiguration clusterConfiguration) {
+        shardingOrchestrationFacade.init();
+        shardingOrchestrationFacade.initClusterConfiguration(clusterConfiguration);
+        dataSourceConfigurations.putAll(shardingOrchestrationFacade.getConfigCenter().loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME));
+    }
+    
     protected final void initShardingOrchestrationFacade(
-            final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigurations, final Map<String, Collection<RuleConfiguration>> schemaRules, final Properties props) {
+            final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigurations,
+            final Map<String, Collection<RuleConfiguration>> schemaRules, final Properties props) {
         shardingOrchestrationFacade.init(dataSourceConfigurations, schemaRules, null, props);
+        this.dataSourceConfigurations.putAll(dataSourceConfigurations.get(DefaultSchema.LOGIC_NAME));
+    }
+    
+    protected final void initShardingOrchestrationFacade(
+            final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigurations,
+            final Map<String, Collection<RuleConfiguration>> schemaRules, final Properties props, final ClusterConfiguration clusterConfiguration) {
+        shardingOrchestrationFacade.init(dataSourceConfigurations, schemaRules, null, props);
+        shardingOrchestrationFacade.initClusterConfiguration(clusterConfiguration);
         this.dataSourceConfigurations.putAll(dataSourceConfigurations.get(DefaultSchema.LOGIC_NAME));
     }
     
@@ -126,5 +143,12 @@ public abstract class AbstractOrchestrationDataSource extends AbstractUnsupporte
     
     protected final void persistMetaData(final RuleSchemaMetaData ruleSchemaMetaData) {
         ShardingOrchestrationFacade.getInstance().getMetaDataCenter().persistMetaDataCenterNode(DefaultSchema.LOGIC_NAME, ruleSchemaMetaData);
+    }
+    
+    protected final void initCluster() {
+        ClusterConfiguration clusterConfiguration = shardingOrchestrationFacade.getConfigCenter().loadClusterConfiguration();
+        if (null != clusterConfiguration && null != clusterConfiguration.getHeartbeat()) {
+            ClusterFacade.getInstance().init(clusterConfiguration);
+        }
     }
 }
