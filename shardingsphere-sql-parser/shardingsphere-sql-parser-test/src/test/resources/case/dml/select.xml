@@ -1097,12 +1097,17 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="0" start-index="35" stop-index="42" />
-                        <literal-expression value="{&quot;rule2&quot;:&quot;null2&quot;}'::json" start-index="35" stop-index="60" />
+                        <literal-expression value="'{&quot;rule2&quot;:&quot;null2&quot;}'::jsonb" start-index="35" stop-index="60" />
+                        <common-expression literal-text="'{&quot;rule2&quot;:&quot;null2&quot;}'::jsonb" start-index="35" stop-index="60" />
                     </compare-right-value>
                 </predicate>
                 <predicate start-index="48" stop-index="115" literal-start-index="66" literal-stop-index="137">
                     <column-left-value name="start_point" start-index="48" stop-index="58" literal-start-index="66" literal-stop-index="76" />
                     <operator type="=" />
+                    <compare-right-value>
+                        <common-expression literal-start-index="78" literal-stop-index="137" start-index="60" stop-index="115" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')"/>
+                        <literal-expression start-index="78" stop-index="137" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')"/>
+                    </compare-right-value>
                     <!-- TODO assert expression -->
                 </predicate>
                 <predicate start-index="121" stop-index="131" literal-start-index="143" literal-stop-index="153">
@@ -1148,6 +1153,9 @@
                 <predicate start-index="61" stop-index="128" literal-start-index="97" literal-stop-index="168">
                     <column-left-value name="start_point" start-index="61" stop-index="71" literal-start-index="97" literal-stop-index="107" />
                     <operator type="=" />
+                    <compare-right-value>
+                        <common-expression literal-start-index="109" literal-stop-index="168" start-index="73" stop-index="128" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')"/>
+                    </compare-right-value>
                     <!-- TODO assert expr -->
                 </predicate>
                 <predicate start-index="134" stop-index="144" literal-start-index="174" literal-stop-index="184">
@@ -1185,15 +1193,20 @@
                     <column-left-value name="rule" start-index="28" stop-index="31" />
                     <between-right-value>
                         <between-parameter-marker-expression value="0"  start-index="41" stop-index="48" literal-start-index="48" literal-stop-index="55" />
-                        <between-literal-expression value="{&quot;rule2&quot;:&quot;null2&quot;}'::json" start-index="41" stop-index="66" />
+                        <between-literal-expression value="'{&quot;rule2&quot;:&quot;null2&quot;}'::jsonb" start-index="41" stop-index="66" />
+                        <between-common-expression value="'{&quot;rule2&quot;:&quot;null2&quot;}'::jsonb" start-index="41" stop-index="66" />
                         <and-parameter-marker-expression value="1" start-index="54" stop-index="61" />
-                        <and-literal-expression value="{&quot;rule3&quot;:&quot;null3&quot;}'::json" start-index="72" stop-index="97" />
+                        <and-literal-expression value="'{&quot;rule3&quot;:&quot;null3&quot;}'::jsonb" start-index="72" stop-index="97" />
+                        <and-common-expression literal-text="'{&quot;rule3&quot;:&quot;null3&quot;}'::jsonb" start-index="72" stop-index="97" />
                     </between-right-value>
                 </predicate>
                 <predicate start-index="67" stop-index="134" literal-start-index="103" literal-stop-index="174">
                     <column-left-value name="start_point" start-index="67" stop-index="77" literal-start-index="103" literal-stop-index="113" />
                     <operator type="=" />
                     <!-- TODO assert right value -->
+                    <compare-right-value>
+                        <common-expression literal-start-index="115" literal-stop-index="174" start-index="79" stop-index="134" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')"/>
+                    </compare-right-value>
                 </predicate>
                 <predicate start-index="140" stop-index="151" literal-start-index="180" literal-stop-index="191">
                     <column-left-value name="order_id" start-index="140" stop-index="147" literal-start-index="180" literal-stop-index="187" />

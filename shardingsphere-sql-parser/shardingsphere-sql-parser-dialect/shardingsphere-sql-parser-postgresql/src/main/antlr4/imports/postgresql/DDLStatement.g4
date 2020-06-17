@@ -86,11 +86,11 @@ columnConstraintOption
     ;
 
 checkOption
-    : CHECK expr (NO INHERIT)?
+    : CHECK aExpr (NO INHERIT)?
     ;
 
 defaultExpr
-    : CURRENT_TIMESTAMP | expr
+    : CURRENT_TIMESTAMP | aExpr
     ;
 
 sequenceOptions
@@ -241,8 +241,8 @@ columnExistClause_
     ;
     
 modifyColumnSpecification
-    : modifyColumn (SET DATA)? TYPE dataType collateClause_? (USING simpleExpr)?
-    | modifyColumn SET DEFAULT expr
+    : modifyColumn (SET DATA)? TYPE dataType collateClause_? (USING aExpr)?
+    | modifyColumn SET DEFAULT aExpr
     | modifyColumn DROP DEFAULT
     | modifyColumn (SET | DROP) NOT NULL
     | modifyColumn ADD GENERATED (ALWAYS | (BY DEFAULT)) AS IDENTITY (LP_ sequenceOptions RP_)?
@@ -267,7 +267,7 @@ attributeOptions
     ;
 
 attributeOption
-    : IDENTIFIER_ EQ_ simpleExpr
+    : IDENTIFIER_ EQ_ aExpr
     ;
 
 addConstraintSpecification
@@ -279,7 +279,7 @@ tableConstraintUsingIndex
     ;
 
 storageParameterWithValue
-    : storageParameter EQ_ simpleExpr
+    : storageParameter EQ_ aExpr
     ;
 
 storageParameter
