@@ -535,14 +535,6 @@ NOW
     : N O W
     ;
 
-OFFLINE
-    : O F F L I N E
-    ;
-
-ONLINE
-    : O N L I N E
-    ;
-
 OPTIMIZE
     : O P T I M I Z E
     ;
