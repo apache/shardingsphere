@@ -57,7 +57,7 @@ try (
 }
 ```
 
-## YAML Configuration
+## YAML Configuration Item
 
 ### Data Source Configuration
 
