@@ -19,6 +19,7 @@ package org.apache.shardingsphere.spring.boot.orchestration;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.cluster.configuration.swapper.ClusterConfigurationYamlSwapper;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.orchestration.internal.datasource.OrchestrationShardingSphereDataSource;
 import org.apache.shardingsphere.spring.boot.orchestration.common.OrchestrationSpringBootRootConfiguration;
@@ -106,7 +107,9 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     public DataSource localShardingSphereDataSource(final OrchestrationConfiguration orchestrationConfiguration, final ObjectProvider<Collection<YamlRuleConfiguration>> rules) throws SQLException {
         Collection<RuleConfiguration> ruleConfigurations = new YamlRuleConfigurationSwapperEngine()
                 .swapToRuleConfigurations(Optional.ofNullable(rules.getIfAvailable()).orElse(Collections.emptyList()));
-        return new OrchestrationShardingSphereDataSource(new ShardingSphereDataSource(dataSourceMap, ruleConfigurations, root.getProps()), orchestrationConfiguration);
+        return null == root.getCluster() ? new OrchestrationShardingSphereDataSource(new ShardingSphereDataSource(dataSourceMap, ruleConfigurations, root.getProps()), orchestrationConfiguration)
+                : new OrchestrationShardingSphereDataSource(new ShardingSphereDataSource(dataSourceMap, ruleConfigurations, root.getProps()), orchestrationConfiguration,
+                new ClusterConfigurationYamlSwapper().swapToObject(root.getCluster()));
     }
     
     /**
@@ -119,7 +122,8 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @Bean
     @ConditionalOnMissingBean(DataSource.class)
     public DataSource dataSource(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
-        return new OrchestrationShardingSphereDataSource(orchestrationConfiguration);
+        return null == root.getCluster() ? new OrchestrationShardingSphereDataSource(orchestrationConfiguration)
+                : new OrchestrationShardingSphereDataSource(orchestrationConfiguration, new ClusterConfigurationYamlSwapper().swapToObject(root.getCluster()));
     }
     
     @Override
