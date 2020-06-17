@@ -1,6 +1,6 @@
 +++
 title = "Yaml Configuration"
-weight = 2
+weight = 20
 +++
 
 ## Configuration Instance

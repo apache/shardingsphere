@@ -1,0 +1,80 @@
++++
+title = "Encryption"
+weight = 3
++++
+
+## Root Configuration
+
+Class name: org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration
+
+Attributes:
+
+| *Name*         | *DataType*                                          | *Description*                             |
+| -------------- | --------------------------------------------------- | ----------------------------------------- |
+| tables (+)     | Collection\<EncryptTableRuleConfiguration\>         | Encrypt table rule configurations         |
+| encryptors (+) | Map\<String, ShardingSphereAlgorithmConfiguration\> | Encrypt algorithm name and configurations |
+
+## Encrypt Table Rule Configuration
+
+Class name: org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration
+
+Attributes:
+
+| *Name*      | *DataType*                                   | *Description*                      |
+| ----------- | -------------------------------------------- | ---------------------------------- |
+| name        | String                                       | Table name                         |
+| columns (+) | Collection\<EncryptColumnRuleConfiguration\> | Encrypt column rule configurations |
+
+### Encrypt Column Rule Configuration
+
+Class name: org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration
+
+Attributes:
+
+| *Name*                  | *DataType* | *Description*              |
+| ----------------------- | ---------- | -------------------------- |
+| logicColumn             | String     | Logic column name          |
+| cipherColumn            | String     | Cipher column name         |
+| assistedQueryColumn (?) | String     | Assisted query column name |
+| plainColumn (?)         | String     | Plain column name          |
+| encryptorName           | String     | Encrypt algorithm name     |
+
+## Encrypt Algorithm Configuration
+
+Class name: org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration
+
+Attributes:
+
+| *Name*     | *DataType* | *Description*                |
+| ---------- | ---------- | ---------------------------- |
+| name       | String     | Encrypt algorithm name       |
+| type       | String     | Encrypt algorithm type       |
+| properties | Properties | Encrypt algorithm properties |
+
+Apache ShardingSphere built-in encrypt algorithm are:
+
+### MD5 Encrypt Algorithm
+
+Type: MD5
+
+Attributes: None
+
+### AES Encrypt Algorithm
+
+Type: AES
+
+Attributes:
+
+| *Name*        | *DataType* | *Description* |
+| ------------- | ---------- | ------------- |
+| aes.key.value | String     | AES KEY       |
+
+### RC4 Encrypt Algorithm
+
+Type: RC4
+
+Attributes:
+
+| *Name*        | *DataType* | *Description* |
+| ------------- | ---------- | ------------- |
+| rc4.key.value | String     | RC4 KEY       |

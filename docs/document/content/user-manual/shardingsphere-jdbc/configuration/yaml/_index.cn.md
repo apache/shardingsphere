@@ -55,7 +55,110 @@ try (
 }
 ```
 
-## YAML 语法说明
+## YAML 配置
+
+### 数据源配置
+
+分为单数据源配置和多数据源配置。
+单数据源配置用于数据加密规则；多数据源配置用于分片、读写分离等规则。
+如果加密和分片等功能混合使用，则应该使用多数据源配置。
+
+#### 单数据源配置
+
+配置示例：
+
+```yaml
+dataSource: !!org.apache.commons.dbcp2.BasicDataSource
+  driverClassName: com.mysql.jdbc.Driver
+  url: jdbc:mysql://127.0.0.1:3306/ds_name
+  username: root
+  password: root
+```
+
+配置项说明：
+
+```yaml
+dataSource: # <!!数据库连接池实现类> `!!`表示实例化该类
+  driverClassName: # 数据库驱动类名
+  url: # 数据库 URL 连接
+  username: # 数据库用户名
+  password: # 数据库密码
+  # ... 数据库连接池的其它属性
+```
+
+#### 多数据源配置
+
+##### 配置示例
+
+```yaml
+dataSources:
+  ds_0: !!org.apache.commons.dbcp2.BasicDataSource
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:ds_m;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    username: sa
+    password:
+  ds_1: !!org.apache.commons.dbcp2.BasicDataSource
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:ds_s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    username: sa
+    password:
+```
+
+##### 配置项说明
+
+```yaml
+dataSources: # 数据源配置，可配置多个 <data_source_name>
+  <data_source_name>: # <!!数据库连接池实现类>，`!!` 表示实例化该类
+    driverClassName: # 数据库驱动类名
+    url: # 数据库 URL 连接
+    username: # 数据库用户名
+    password: # 数据库密码
+    # ... 数据库连接池的其它属性
+```
+
+### 规则配置
+
+以规则别名开启配置，可配置多个规则。
+
+#### 配置示例
+
+```yaml
+rules:
+-! XXX_RULE_0
+  xxx
+-! XXX_RULE_1
+  xxx
+```
+
+#### 配置项说明
+
+```yaml
+rules:
+-! XXX_RULE # 规则别名，`-` 表示可配置多个规则
+  # ... 具体的规则配置
+```
+
+更多详细配置请参见具体的规则配置部分。
+
+### 属性配置
+
+#### 配置示例
+
+```yaml
+props:
+  xxx: xxx
+```
+
+#### 配置项说明
+
+```yaml
+props:
+  xxx: xxx # 属性名称以及对应的值
+```
+
+更多详细配置请参见具体的规则配置部分。
+
+### 语法说明
 
 `!!` 表示实例化该类
 

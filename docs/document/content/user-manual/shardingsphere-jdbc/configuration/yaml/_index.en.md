@@ -57,7 +57,110 @@ try (
 }
 ```
 
-## YAML Syntax Explanation
+## YAML Configuration
+
+### Data Source Configuration
+
+It is divided into single data source configuration and multi data source configuration.
+Single data source configuration is used for data encryption rules; and multi data source configuration is used for fragmentation, read-write separation and other rules.
+If features such as encryption and sharding are used in combination, a multi data source configuration should be used.
+
+#### Single Data Source Configuration
+
+##### Configuration Example
+
+```yaml
+dataSource: !!org.apache.commons.dbcp2.BasicDataSource
+  driverClassName: com.mysql.jdbc.Driver
+  url: jdbc:mysql://127.0.0.1:3306/ds_name
+  username: root
+  password: root
+```
+
+##### Configuration Item Explanation
+
+```yaml
+dataSource: # <!!Data source pool implementation class> `!!` means class instantiation
+  driverClassName: # Class name of database driver
+  url: # Database URL
+  username: # Database username
+  password: # Database password
+    # ... Other properties for data source pool
+```
+
+#### Multi Data Source Configuration
+
+##### Configuration Example
+
+```yaml
+dataSources:
+  ds_0: !!org.apache.commons.dbcp2.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/ds_0
+    username: sa
+    password:
+  ds_1: !!org.apache.commons.dbcp2.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/ds_1
+    username: sa
+    password:
+```
+
+##### Configuration Item Explanation
+
+```yaml
+dataSources: # Data sources configuration, multiple <data_source_name> available
+  <data_source_name>: # <!!Data source pool implementation class> `!!` means class instantiation
+    driverClassName: # Class name of database driver
+    url: # Database URL
+    username: # Database username
+    password: # Database password
+    # ... Other properties for data source pool
+```
+
+### Rule Configuration
+
+Begin to configure with the rule alias to configure multiple rules.
+
+#### Configuration Example
+
+```yaml
+rules:
+-! XXX_RULE_0
+  xxx
+-! XXX_RULE_1
+  xxx
+```
+
+#### Configuration Item Explanation
+
+```yaml
+rules:
+-! XXX_RULE # Rule alias, `-` means can configure multi rules
+  # ... Specific rule configurations
+```
+
+Please refer to specific rule configuration for more details.
+
+### Properties Configuration
+
+#### Configuration Example
+
+```yaml
+props:
+  xxx: xxx
+```
+
+#### Configuration Item Explanation
+
+```yaml
+props:
+  xxx: xxx # Properties key and value
+```
+
+Please refer to specific rule configuration for more details.
+
+### YAML Syntax Explanation
 
 `!!` means instantiation of that class
 
