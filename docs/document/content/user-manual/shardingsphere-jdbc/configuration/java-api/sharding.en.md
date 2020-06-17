@@ -88,6 +88,8 @@ Class name: org.apache.shardingsphere.sharding.api.config.strategy.sharding.None
 
 Attributes: None
 
+Please refer to [Built-in Sharding Algorithm List](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/sharding) for more details about type of algorithm.
+
 ## Key Generate Strategy Configuration
 
 Class name: org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration
@@ -99,122 +101,4 @@ Attributes:
 | column           | String     | Column name of key generate |
 | keyGeneratorName | String     | key generate algorithm name |
 
-## Sharding Algorithm Configuration
-
-Class name: org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration
-
-### Auto Sharding Algorithm Configuration
-
-#### Modulo Sharding Algorithm
-
-Type: MOD
-
-Attributes:
-
-| *Name*         | *DataType* | *Description*  |
-| -------------- | ---------- | -------------- |
-| sharding.count | int        | Sharding count |
-
-#### Hash Modulo Sharding Algorithm
-
-Type: HASH_MOD
-
-Attributes:
-
-| *Name*         | *DataType* | *Description*  |
-| -------------- | ---------- | -------------- |
-| sharding.count | int        | Sharding count |
-
-#### Volume Based Range Sharding Algorithm
-
-Type: VOLUME_RANGE
-
-Attributes:
-
-| *Name*          | *DataType* | *Description*                                          |
-| --------------- | ---------- | ------------------------------------------------------ |
-| range.lower     | long       | Range lower bound, throw exception if lower than bound |
-| range.upper     | long       | Range upper bound, throw exception if upper than bound |
-| sharding.volume | long       | Sharding volume                                        |
-
-#### Boundary Based Range Sharding Algorithm
-
-Type: BOUNDARY_RANGE
-
-Attributes:
-
-| *Name*          | *DataType* | *Description*                                                     |
-| --------------- | ---------- | ----------------------------------------------------------------- |
-| sharding.ranges | String     | Range of sharding border, multiple boundaries separated by commas |
-
-#### Auto Interval Sharding Algorithm
-
-Type: AUTO_INTERVAL
-
-Attributes:
-
-| *Name*           | *DataType* | *Description*                                               |
-| ---------------- | ---------- | ----------------------------------------------------------- |
-| datetime.lower   | String     | Shard datetime begin boundary, pattern: yyyy-MM-dd HH:mm:ss |
-| datetime.upper   | String     | Shard datetime end boundary, pattern: yyyy-MM-dd HH:mm:ss   |
-| sharding.seconds | long       | Max seconds for the data in one shard                       |
-
-### Standard Sharding Algorithm Configuration
-
-Apache ShardingSphere built-in standard sharding algorithm are:
-
-#### Inline Sharding Algorithm
-
-Type: INLINE
-
-Attributes:
-
-| *Name*                                    | *DataType* | *Description*                                                                                            | *Default Value* |
-| ----------------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------- | --------------- |
-| algorithm.expression                      | String     | Inline expression sharding algorithm                                                                     | -               |
-| allow.range.query.with.inline.sharding (?)| boolean    | Whether range query is allowed. Note: range query will ignore sharding strategy and conduct full routing | false           |
-
-#### Interval Sharding Algorithm
-
-Type: INTERVAL
-
-Attributes:
-
-| *Name*                       | *DataType* | *Description*                                                                                                         | *Default Value* |
-| ---------------------------- | ---------- | --------------------------------------------------------------------------------------------------------------------- | --------------- |
-| datetime.pattern             | String     | Timestamp pattern of sharding value, must can be transformed to Java LocalDateTime. For example: yyyy-MM-dd HH:mm:ss  | -               |
-| datetime.lower               | String     | Datetime sharding lower boundary, pattern is defined `datetime.pattern`                                               | -               |
-| datetime.upper (?)           | String     | Datetime sharding upper boundary, pattern is defined `datetime.pattern`                                               | Now             |
-| sharding.suffix.pattern      | String     | Suffix pattern of sharding data sources or tables, must can be transformed to Java LocalDateTime. For example: yyyyMM | -               |
-| datetime.interval.amount (?) | int        | Interval of sharding value                                                                                            | 1               |
-| datetime.interval.unit (?)   | String     | Unit of sharding value interval, must can be transformed to Java ChronoUnit's Enum value. For example: MONTHS         | DAYS            |
-
-### Complex Sharding Algorithm Configuration
-
-There is no built-in complex sharding algorithm in Apache ShardingSphere.
-
-### Hint Sharding Algorithm Configuration
-
-There is no built-in hint sharding algorithm in Apache ShardingSphere.
-
-## Key Generate Algorithm Configuration
-
-Apache ShardingSphere built-in key generate algorithm are:
-
-### Snowflake
-
-Type: SNOWFLAKE
-
-Attributes:
-
-| *Name*                                        | *DataType* | *Description*                                                                | *Default Value* |
-| --------------------------------------------- | ---------- | ---------------------------------------------------------------------------- | --------------- |
-| worker.id (?)                                 | long       | The unique ID for working machine                                            | 0               |
-| max.tolerate.time.difference.milliseconds (?) | long       | The max tolerate time for different server's time difference in milliseconds | 10 milliseconds |
-| max.vibration.offset (?)                      | int        | The max upper limit value of vibrate number, range `[0, 4096)`. Notice: To use the generated value of this algorithm as sharding value, it is recommended to configure this property. The algorithm generates key mod `2^n` (`2^n` is usually the sharding amount of tables or databases) in different milliseconds and the result is always `0` or `1`. To prevent the above sharding problem, it is recommended to configure this property, its value is `(2^n)-1`| 1 |
-
-### UUID
-
-Type: UUID
-
-Attributes: None
+Please refer to [Built-in Key Generate Algorithm List](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/keygen) for more details about type of algorithm.

@@ -88,133 +88,17 @@ weight = 1
 
 可配置属性：无
 
-## 自增主键策略配置
+算法类型的详情，请参见[内置分片算法列表](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/sharding)。
+
+## 分布式序列策略配置
 
 类名称：org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration
 
 可配置属性：
 
-| *名称*           | *数据类型* | *说明*         |
-| ---------------- | -------- | -------------- |
-| column           | String   | 自增列名称      |
-| keyGeneratorName | String   | 自增主键算法名称 |
+| *名称*           | *数据类型* | *说明*           |
+| ---------------- | -------- | ---------------- |
+| column           | String   | 分布式序列列名称   |
+| keyGeneratorName | String   | 分布式序列算法名称 |
 
-## 分片算法配置
-
-类名称：org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration
-
-### 自动分片算法配置
-
-#### 取模分片算法
-
-类型：MOD
-
-可配置属性：
-
-| *属性名称*      | *数据类型* | *说明*  |
-| -------------- | --------- | ------- |
-| sharding.count | int       | 分片数量 |
-
-#### 哈希取模分片算法
-
-类型：HASH_MOD
-
-可配置属性：
-
-| *属性名称*      | *数据类型* | *说明*  |
-| -------------- | --------- | ------- |
-| sharding.count | int       | 分片数量 |
-
-#### 基于分片容量的范围分片算法
-
-类型：VOLUME_RANGE
-
-可配置属性：
-
-| *属性名称*       | *数据类型* | *说明*                      |
-| --------------- | --------- | -------------------------- |
-| range.lower     | long      | 范围下界，超过边界的数据会报错 |
-| range.upper     | long      | 范围上界，超过边界的数据会报错 |
-| sharding.volume | long      | 分片容量                    |
-
-#### 基于分片边界的范围分片算法
-
-类型：BOUNDARY_RANGE
-
-可配置属性：
-
-| *属性名称*       | *数据类型* | *说明*                            |
-| --------------- | --------- | --------------------------------- |
-| sharding.ranges | String    | 分片的范围边界，多个范围边界以逗号分隔 |
-
-#### 自动时间段分片算法
-
-类型：AUTO_INTERVAL
-
-可配置属性：
-
-| *属性名称*        | *数据类型* | *说明*                                          |
-| ---------------- | --------- | ----------------------------------------------- |
-| datetime.lower   | String    | 分片的起始时间范围，时间戳格式：yyyy-MM-dd HH:mm:ss |
-| datetime.upper   | String    | 分片的结束时间范围，时间戳格式：yyyy-MM-dd HH:mm:ss |
-| sharding.seconds | long      | 单一分片所能承载的最大时间，单位：秒                |
-
-### 标准分片算法配置
-
-Apache ShardingSphere 内置的标准分片算法实现类包括：
-
-#### 行表达式分片算法
-
-类型：INLINE
-
-可配置属性：
-
-| *属性名称*                                 | *数据类型* | *说明*                                              | *默认值* |
-| ----------------------------------------- | --------- | --------------------------------------------------- | ------- |
-| algorithm.expression                      | String    | 分片算法的行表达式                                    | -       |
-| allow.range.query.with.inline.sharding (?)| boolean   | 是否允许范围查询。注意：范围查询会无视分片策略，进行全路由 | false   |
-
-#### 时间范围分片算法
-
-类型：INTERVAL
-
-可配置属性：
-
-| *属性名称*                    | *数据类型* | *说明*                                                                           | *默认值* |
-| ---------------------------- | --------- | -------------------------------------------------------------------------------- | ------- |
-| datetime.pattern             | String    | 分片键的时间戳格式，必须遵循 Java DateTimeFormatter 的格式。例如：yyyy-MM-dd HH:mm:ss | -       |
-| datetime.lower               | String    | 时间分片下界值，格式与 `datetime.pattern` 定义的时间戳格式一致                        | -       |
-| datetime.upper (?)           | String    | 时间分片上界值，格式与 `datetime.pattern` 定义的时间戳格式一致                        | 当前时间 |
-| sharding.suffix.pattern      | String    | 分片数据源或真实表的后缀格式，必须遵循 Java DateTimeFormatter 的格式。例如：yyyyMM     | -       |
-| datetime.interval.amount (?) | int       | 分片键时间间隔，超过该时间间隔将进入下一分片                                          | 1       |
-| datetime.interval.unit (?)   | String    | 分片键时间间隔单位，必须遵循 Java ChronoUnit 的枚举值。例如：MONTHS                   | DAYS    |
-
-### 复合分片算法配置
-
-Apache ShardingSphere 暂无内置复合分片算法。
-
-### Hint 分片算法配置
-
-Apache ShardingSphere 暂无内置 Hint 分片算法。
-
-## 自增主键算法配置
-
-Apache ShardingSphere 内置的自增主键算法包括：
-
-### 雪花算法
-
-类型：SNOWFLAKE
-
-可配置属性：
-
-| *属性名称*                                     | *数据类型* | *说明*                                                                                                                                                                                         | *默认值* |
-| --------------------------------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| worker.id (?)                                 | long      | 工作机器唯一标识                                                                                                                                                                                 | 0      |
-| max.vibration.offset (?)                      | int       | 最大抖动上限值，范围[0, 4096)。注：若使用此算法生成值作分片值，建议配置此属性。此算法在不同毫秒内所生成的 key 取模 2^n (2^n一般为分库或分表数) 之后结果总为 0 或 1。为防止上述分片问题，建议将此属性值配置为 (2^n)-1 | 1      |
-| max.tolerate.time.difference.milliseconds (?) | long      | 最大容忍时钟回退时间，单位：毫秒                                                                                                                                                                   | 10 毫秒 |
-
-### UUID
-
-类型：UUID
-
-可配置属性：无
+算法类型的详情，请参见[内置分布式序列算法列表](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/keygen)。

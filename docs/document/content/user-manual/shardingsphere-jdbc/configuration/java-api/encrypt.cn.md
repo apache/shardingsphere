@@ -51,30 +51,4 @@ weight = 3
 | type       | String     | 加解密算法类型     |
 | properties | Properties | 加解密算法属性配置 |
 
-Apache ShardingSphere 内置的加解密算法包括：
-
-### MD5 加解密算法
-
-类型：MD5
-
-可配置属性：无
-
-### AES 加解密算法
-
-类型：AES
-
-可配置属性：
-
-| *名称*         | *数据类型* | *说明*        |
-| ------------- | --------- | ------------- |
-| aes.key.value | String    | AES 使用的 KEY |
-
-### RC4 加解密算法
-
-类型：RC4
-
-可配置属性：
-
-| *名称*         | *数据类型* | *说明*        |
-| ------------- | --------- | ------------- |
-| rc4.key.value | String    | RC4 使用的 KEY |
+算法类型的详情，请参见[内置加密算法列表](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/encrypt)。
