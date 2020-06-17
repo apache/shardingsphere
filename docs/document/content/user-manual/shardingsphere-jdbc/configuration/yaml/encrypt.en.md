@@ -3,78 +3,60 @@ title = "Encryption"
 weight = 3
 +++
 
-## Root Configuration
+## Configuration Example
 
-Class name: org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration
+```yaml
+dataSource: !!org.apache.commons.dbcp2.BasicDataSource
+  driverClassName: com.mysql.jdbc.Driver
+  url: jdbc:mysql://127.0.0.1:3306/ds_name
+  username: root
+  password: root
 
-Attributes:
+rules:
+- !ENCRYPT
+  tables:
+    t_user:
+      columns:
+        pwd:
+          cipherColumn: pwd_cipher
+          plainColumn: pwd_plain
+          encryptorName: aes_encryptor
+        phone:
+          cipherColumn: phone_cipher
+          encryptorName: md5_encryptor
+  encryptors:
+    aes_encryptor:
+      type: AES
+      props:
+        aes.key.value: 123456
+    md5_encryptor:
+      type: MD5
 
-| *Name*         | *DataType*                                          | *Description*                             |
-| -------------- | --------------------------------------------------- | ----------------------------------------- |
-| tables (+)     | Collection\<EncryptTableRuleConfiguration\>         | Encrypt table rule configurations         |
-| encryptors (+) | Map\<String, ShardingSphereAlgorithmConfiguration\> | Encrypt algorithm name and configurations |
+props:
+  query.with.cipher.column: true
+```
 
-## Encrypt Table Rule Configuration
+## Configuration Item Explanation
 
-Class name: org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration
+```yaml
+dataSource: # Ignore data source configuration
 
-Attributes:
+rules:
+- !ENCRYPT
+  tables:
+    <table_name> (+): # Encrypt table name
+      columns:
+        <column_name> (+): # Encrypt logic column name
+          cipherColumn: # Cipher column name
+          assistedQueryColumn (?):  # Assisted query column name
+          plainColumn (?): # Plain column name
+          encryptorName: # Encrypt algorithm name
+  encryptors:
+    <encryptor_name> (+): # Encrypt algorithm name
+      type: # Encrypt algorithm type
+      props: # Encrypt algorithm properties
+        # ...
 
-| *Name*      | *DataType*                                   | *Description*                      |
-| ----------- | -------------------------------------------- | ---------------------------------- |
-| name        | String                                       | Table name                         |
-| columns (+) | Collection\<EncryptColumnRuleConfiguration\> | Encrypt column rule configurations |
-
-### Encrypt Column Rule Configuration
-
-Class name: org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration
-
-Attributes:
-
-| *Name*                  | *DataType* | *Description*              |
-| ----------------------- | ---------- | -------------------------- |
-| logicColumn             | String     | Logic column name          |
-| cipherColumn            | String     | Cipher column name         |
-| assistedQueryColumn (?) | String     | Assisted query column name |
-| plainColumn (?)         | String     | Plain column name          |
-| encryptorName           | String     | Encrypt algorithm name     |
-
-## Encrypt Algorithm Configuration
-
-Class name: org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration
-
-Attributes:
-
-| *Name*     | *DataType* | *Description*                |
-| ---------- | ---------- | ---------------------------- |
-| name       | String     | Encrypt algorithm name       |
-| type       | String     | Encrypt algorithm type       |
-| properties | Properties | Encrypt algorithm properties |
-
-Apache ShardingSphere built-in encrypt algorithm are:
-
-### MD5 Encrypt Algorithm
-
-Type: MD5
-
-Attributes: None
-
-### AES Encrypt Algorithm
-
-Type: AES
-
-Attributes:
-
-| *Name*        | *DataType* | *Description* |
-| ------------- | ---------- | ------------- |
-| aes.key.value | String     | AES KEY       |
-
-### RC4 Encrypt Algorithm
-
-Type: RC4
-
-Attributes:
-
-| *Name*        | *DataType* | *Description* |
-| ------------- | ---------- | ------------- |
-| rc4.key.value | String     | RC4 KEY       |
+props:
+  query.with.cipher.column: true # Query with cipher or not
+```
