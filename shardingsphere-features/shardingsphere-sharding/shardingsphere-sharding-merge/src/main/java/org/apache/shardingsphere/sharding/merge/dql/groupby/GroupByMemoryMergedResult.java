@@ -107,7 +107,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
 
     private void checkNullAndSetDataMapForAggregation(final SelectStatementContext selectStatementContext, final Map<GroupByValue, MemoryQueryResultRow> dataMap,
                                                 final Map<GroupByValue, Map<AggregationProjection, AggregationUnit>> aggregationMap, final List<QueryResult> queryResults) throws SQLException {
-        if (dataMap.size() == 0) {
+        if (0 == dataMap.size()) {
             Map<AggregationProjection, AggregationUnit> map = Maps.toMap(selectStatementContext.getProjectionsContext().getAggregationProjections(),
                 input -> AggregationUnitFactory.create(input.getType(), input instanceof AggregationDistinctProjection));
             GroupByValue groupByValue = new GroupByValue(queryResults.get(0), selectStatementContext.getGroupByContext().getItems());
