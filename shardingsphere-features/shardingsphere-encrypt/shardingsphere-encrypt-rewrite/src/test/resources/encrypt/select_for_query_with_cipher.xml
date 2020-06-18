@@ -68,6 +68,11 @@
         <input sql="SELECT a.* FROM t_account a" />
         <output sql="SELECT a.account_id, a.cipher_certificate_number AS certificate_number, a.cipher_password AS password, a.cipher_amount AS amount, a.status FROM t_account a" />
     </rewrite-assertion>
+
+    <rewrite-assertion id="test">
+        <input sql="SELECT a.* FROM t_account a, t_order b where a.password = b.password" />
+        <output sql="SELECT a.account_id, a.cipher_certificate_number AS certificate_number, a.cipher_password AS password, a.cipher_amount AS amount, a.status FROM t_account a" />
+    </rewrite-assertion>
     
     <rewrite-assertion id="select_with_mix_qualified_shorthand_and_other_projection">
         <input sql="SELECT a.*, account_id, 1+1 FROM t_account a" />
