@@ -90,11 +90,11 @@ spring.shardingsphere.sharding.default-table-strategy.xxx= # Default strategy fo
 spring.shardingsphere.sharding.default-key-generate-strategy.xxx= # Default Key generator strategy
 
 # Sharding algorithm configuration
-spring.shardingsphere.rules.sharding.sharding-algorithms.<sharding_algorithm_name>.type= # Sharding algorithm name
+spring.shardingsphere.rules.sharding.sharding-algorithms.<sharding_algorithm_name>.type= # Sharding algorithm type
 spring.shardingsphere.rules.sharding.sharding-algorithms.<sharding_algorithm_name>.props.xxx=# Sharding algorithm properties
 
 # Key generate algorithm configuration
-spring.shardingsphere.rules.sharding.key-generators.<sharding_algorithm_name>.type= # Key generate algorithm name
+spring.shardingsphere.rules.sharding.key-generators.<sharding_algorithm_name>.type= # Key generate algorithm type
 spring.shardingsphere.rules.sharding.key-generators.<sharding_algorithm_name>.props.xxx= # Key generate algorithm properties
 ```
 

@@ -90,11 +90,11 @@ spring.shardingsphere.sharding.default-table-strategy.xxx= # 默认表分片策�
 spring.shardingsphere.sharding.default-key-generate-strategy.xxx= # 默认分布式序列策略
 
 # 分片算法配置
-spring.shardingsphere.rules.sharding.sharding-algorithms.<sharding_algorithm_name>.type= # 分片算法名称
+spring.shardingsphere.rules.sharding.sharding-algorithms.<sharding_algorithm_name>.type= # 分片算法类型
 spring.shardingsphere.rules.sharding.sharding-algorithms.<sharding_algorithm_name>.props.xxx=# 分片算法属性配置
 
 # 分布式序列算法配置
-spring.shardingsphere.rules.sharding.key-generators.<sharding_algorithm_name>.type= # 分布式序列算法名称
+spring.shardingsphere.rules.sharding.key-generators.<sharding_algorithm_name>.type= # 分布式序列算法类型
 spring.shardingsphere.rules.sharding.key-generators.<sharding_algorithm_name>.props.xxx= # 分布式序列算法属性配置
 ```
 
