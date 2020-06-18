@@ -12,7 +12,7 @@ rules:
 - !SHARDING
   tables: # Sharding rule configuration
     <logic-table-name> (+): # Logic table name
-      actualDataNodes (?): # Describe data source names and actual tables, delimiter as point, multiple data nodes separated with comma, support inline expression. Absent means sharding databases only. Example: ds${0..7}.tbl${0..7}
+      actualDataNodes (?): # Describe data source names and actual tables, delimiter as point, multiple data nodes separated with comma, support inline expression. Absent means sharding databases only.
       databaseStrategy (?): # Databases sharding strategy, use default databases sharding strategy if absent. sharding strategy below can choose only one.
         standard: # For single sharding column scenario
           shardingColumn: # Sharding column name

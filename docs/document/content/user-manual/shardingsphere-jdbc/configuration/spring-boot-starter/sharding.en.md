@@ -8,7 +8,7 @@ weight = 1
 ```properties
 spring.shardingsphere.datasource.names= # Omit data source configuration
 
-spring.shardingsphere.rules.sharding.tables.<table-name>.actual-data-nodes= # Describe data source names and actual tables, delimiter as point, multiple data nodes separated with comma, support inline expression. Absent means sharding databases only. Example: ds${0..7}.tbl${0..7}
+spring.shardingsphere.rules.sharding.tables.<table-name>.actual-data-nodes= # Describe data source names and actual tables, delimiter as point, multiple data nodes separated with comma, support inline expression. Absent means sharding databases only.
 
 # Databases sharding strategy, use default databases sharding strategy if absent. sharding strategy below can choose only one.
 
