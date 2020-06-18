@@ -1,16 +1,7 @@
 +++
-pre = "<b>4.2.1. </b>"
 title = "Usage"
 weight = 1
 +++
-
-## Proxy Initialization
-
-1. Download the latest version of ShardingSphere-Proxy.
-2. If users use docker, they can implement `docker pull shardingsphere/shardingsphere-proxy` to get the clone. Please refer to [Docker Clone](/en/user-manual/shardingsphere-proxy/docker/) for more details.
-3. After the decompression, revise `conf/server.yaml` and documents begin with `config-` prefix, `conf/config-xxx.yaml` for example, to configure sharding rules and read-write split rules. Please refer to [Configuration Manual](/en/user-manual/shardingsphere-proxy/configuration/) for the configuration method.
-4. Please run `bin/start.sh` for Linux operating system; run `bin/start.bat` for Windows operating system to start ShardingSphere-Proxy. To configure start port and document location, please refer to [Quick Start](/en/quick-start/shardingsphere-proxy-quick-start/).
-5. Use any PostgreSQL server client end to connect, such as `psql -U root -h 127.0.0.1 -p 3307`.
 
 ## Use of Registry Center
 
@@ -25,10 +16,6 @@ If users want to use the database orchestration function of ShardingSphere-Proxy
 1. Delete`shardingsphere-orchestration-reg-zookeeper-curator-${shardingsphere.version}.jar` under the lib catalog of ShardingSphere-Proxy.
 2. Use SPI methods in logic coding and put the generated jar package to the lib catalog of ShardingSphere-Proxy.
 3. Follow [Configuration Rules](/en/user-manual/shardingsphere-proxy/configuration/) to set the registry center and use it.
-
-### Use of user-defined sharding algorithm class
-
-TODO
 
 ## Distributed Transactions
 ShardingSphere-Proxy supports LOCAL, XA, BASE transactions, LOCAL transaction is default value, it is original transaction of relational database.
@@ -61,9 +48,3 @@ SCTL supports modify and query the state of Sharing-Proxy at runtime. The curren
 |sctl:hint show table status              | For current TCP connection, query sharding values of logic tables                                                    | sctl:hint show table status                    |
 
 ShardingSphere-Proxy does not support hint by default, to support it, set the `properties` property `proxy.hint.enabled` to true in conf/server.yaml.In ShardingSphere-Proxy. In ShardingSphere-Proxy, the generic of HintShardingAlgorithm can only be a String type.
-
-## Notices
-
-1. ShardingSphere-Proxy uses 3307 port in default. Users can start the script parameter as the start port number, like `bin/start.sh 3308`.
-2. ShardingSphere-Proxy uses `conf/server.yaml` to configure the registry center, authentication information and public properties.
-3. ShardingSphere-Proxy supports multi-logic data source, with each yaml configuration document named by `config-` prefix as a logic data source.

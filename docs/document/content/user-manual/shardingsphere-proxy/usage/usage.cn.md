@@ -1,5 +1,4 @@
 +++
-pre = "<b>4.2.1. </b>"
 title = "使用手册"
 weight = 1
 +++
@@ -26,15 +25,6 @@ weight = 1
 1. 将ShardingSphere-Proxy的lib目录下的`shardingsphere-orchestration-reg-zookeeper-curator-${shardingsphere.version}.jar`文件删除。
 1. 使用SPI方式实现相关逻辑编码，并将生成的jar包放到ShardingSphere-Proxy的lib目录下。
 1. 按照[配置规则](/cn/user-manual/shardingsphere-proxy/configuration/)进行注册中心的配置，即可使用。
-
-## 使用自定义分片算法
-
-当用户需要使用自定义的分片算法类时，无法再通过简单的inline表达式在yaml文件进行配置。可通过以下方式配置使用自定义分片算法。
-
-1. 实现ShardingAlgorithm接口定义的算法实现类。
-1. 将上述java文件打包成jar包。
-1. 将上述jar包拷贝至ShardingProxy解压后的conf/lib目录下。
-1. 将上述自定义算法实现类的java文件引用配置在yaml文件里tableRule的`algorithmClassName`属性上，具体可参考[配置规则](/cn/user-manual/shardingsphere-proxy/configuration/)。
 
 ## 分布式事务
 
@@ -69,11 +59,3 @@ SCTL为ShardingSphere-Proxy特有的控制语句，可以在运行时修改和�
 |sctl:hint show table status              | 针对当前TCP连接，查询逻辑表的hint分片值                                                               |
 
 ShardingSphere-Proxy 默认不支持hint，如需支持，请在conf/server.yaml中，将`properties`的属性`proxy.hint.enabled`设置为true。在ShardingSphere-Proxy中，HintShardingAlgorithm的泛型只能是String类型。
-
-
-
-## 注意事项
-
-1. ShardingSphere-Proxy默认使用3307端口，可以通过启动脚本追加参数作为启动端口号。如: `bin/start.sh 3308`
-1. ShardingSphere-Proxy使用conf/server.yaml配置注册中心、认证信息以及公用属性。
-1. ShardingSphere-Proxy支持多逻辑数据源，每个以config-前缀命名的yaml配置文件，即为一个逻辑数据源。

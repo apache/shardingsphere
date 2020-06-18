@@ -1,7 +1,6 @@
 +++
-pre = "<b>4.2.2. </b>"
 title = "Configuration Manual"
-weight = 2
+weight = 1
 +++
 
 ## Data Source and Sharding Configuration Instance
