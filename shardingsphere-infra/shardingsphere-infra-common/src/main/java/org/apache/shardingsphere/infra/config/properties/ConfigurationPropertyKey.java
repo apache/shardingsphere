@@ -99,7 +99,7 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     PROXY_METRICS_ENABLED("proxy.metrics.enabled", String.valueOf(Boolean.FALSE), boolean.class),
     
     /**
-     * Enable hint for ShardingSphere-Proxy.
+     * Whether enable hint for ShardingSphere-Proxy.
      */
     PROXY_HINT_ENABLED("proxy.hint.enabled", String.valueOf(Boolean.FALSE), boolean.class),
     

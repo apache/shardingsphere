@@ -1,6 +1,6 @@
 +++
 title = "Distributed Transaction"
-weight = 1
+weight = 3
 +++
 
 ShardingSphere-Proxy supports LOCAL, XA, BASE transactions, LOCAL transaction is default value, it is original transaction of relational database.
