@@ -11,3 +11,5 @@ This chapter is a configuration manual for ShardingSphere-Proxy, which can also 
 
 ShardingSphere-Proxy only provided YAML configuration. 
 By configuration, application developers can flexibly use data sharding, read-write splitting, multi replica, data encryption, shadow database or the combination of them.
+
+Rule configuration keeps consist with YAML configuration of ShardingSphere-JDBC.

@@ -10,3 +10,5 @@ weight = 2
 
 ShardingSphere-Proxy 只提供基于 YAML 的配置方式。
 通过配置，应用开发者可以灵活的使用数据分片、读写分离、多副本、数据加密、影子库等功能，并且能够叠加使用。
+
+规则配置部分与 ShardingSphere-JDBC 的 YAML 配置完全一致。
