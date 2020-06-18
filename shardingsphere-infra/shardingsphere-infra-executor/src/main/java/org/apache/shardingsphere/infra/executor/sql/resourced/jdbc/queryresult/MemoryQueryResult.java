@@ -124,12 +124,12 @@ public final class MemoryQueryResult implements QueryResult {
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) {
-        return currentRow.get(columnIndex - 1);
+        return null == currentRow ? null : currentRow.get(columnIndex - 1);
     }
     
     @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
-        return currentRow.get(columnIndex - 1);
+        return null == currentRow ? null : currentRow.get(columnIndex - 1);
     }
     
     @Override
