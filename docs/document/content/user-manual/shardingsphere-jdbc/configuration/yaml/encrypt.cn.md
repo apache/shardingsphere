@@ -3,39 +3,6 @@ title = "数据加密"
 weight = 3
 +++
 
-## 配置示例
-
-```yaml
-dataSource: !!org.apache.commons.dbcp2.BasicDataSource
-  driverClassName: com.mysql.jdbc.Driver
-  url: jdbc:mysql://127.0.0.1:3306/ds_name
-  username: root
-  password: root
-
-rules:
-- !ENCRYPT
-  tables:
-    t_user:
-      columns:
-        pwd:
-          cipherColumn: pwd_cipher
-          plainColumn: pwd_plain
-          encryptorName: aes_encryptor
-        phone:
-          cipherColumn: phone_cipher
-          encryptorName: md5_encryptor
-  encryptors:
-    aes_encryptor:
-      type: AES
-      props:
-        aes.key.value: 123456
-    md5_encryptor:
-      type: MD5
-
-props:
-  query.with.cipher.column: true
-```
-
 ## 配置项说明
 
 ```yaml

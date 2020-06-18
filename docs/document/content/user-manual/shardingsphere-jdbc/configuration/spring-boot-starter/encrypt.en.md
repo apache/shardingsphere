@@ -3,26 +3,6 @@ title = "Encryption"
 weight = 3
 +++
 
-## Configuration Example
-
-```properties
-spring.shardingsphere.datasource.names=ds
-
-spring.shardingsphere.datasource.ds.type=org.apache.commons.dbcp2.BasicDataSource
-spring.shardingsphere.datasource.ds.driver-class-name=com.mysql.jdbc.Driver
-spring.shardingsphere.datasource.ds.url=jdbc:mysql://localhost:3306/ds
-spring.shardingsphere.datasource.ds.username=root
-spring.shardingsphere.datasource.ds.password=root
-
-spring.shardingsphere.rules.encrypt.tables.t_order.columns.user_id.cipher-column=user_encrypt
-spring.shardingsphere.rules.encrypt.tables.t_order.columns.user_id.assisted-query-column=user_assisted
-spring.shardingsphere.rules.encrypt.tables.t_order.columns.user_id.plain-column=user_decrypt
-spring.shardingsphere.rules.encrypt.tables.t_order.columns.user_id.encryptor-name=aes_encryptor
-
-spring.shardingsphere.rules.encrypt.encryptors.aes_encryptor.type=AES
-spring.shardingsphere.rules.encrypt.encryptors.aes_encryptor.props.aes.key.value=123456
-```
-
 ## Configuration Item Explanation
 
 ```properties

@@ -3,44 +3,6 @@ title = "Read-write Split"
 weight = 2
 +++
 
-## Configuration Example
-
-```yaml
-dataSources:
-  master_ds: !!org.apache.commons.dbcp2.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/master_ds
-    username: root
-    password: root
-  slave_ds0: !!org.apache.commons.dbcp2.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/slave_ds0
-    username: root
-    password: root
-  slave_ds1: !!org.apache.commons.dbcp2.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/slave_ds1
-    username: root
-    password: root
-
-rules:
-- !MASTER_SLAVE
-  dataSources:
-    master_slave_ds:
-      masterDataSourceName: master_ds
-      slaveDataSourceNames:
-        - slave_ds0
-        - slave_ds1
-      loadBalancerName: roundRobin
-  
-  loadBalancers:
-    roundRobin:
-      type: ROUND_ROBIN
-
-props:
-  sql.show: true
-```
-
 ## Configuration Item Explanation
 
 ```yaml
