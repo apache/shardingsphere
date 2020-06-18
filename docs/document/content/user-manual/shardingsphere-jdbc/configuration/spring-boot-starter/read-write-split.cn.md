@@ -3,36 +3,6 @@ title = "读写分离"
 weight = 2
 +++
 
-## 配置示例
-
-```properties
-spring.shardingsphere.datasource.names=master_ds,slave_ds0,slave_ds1
-
-spring.shardingsphere.datasource.master_ds.type=org.apache.commons.dbcp2.BasicDataSource
-spring.shardingsphere.datasource.master_ds.driver-class-name=com.mysql.jdbc.Driver
-spring.shardingsphere.datasource.master_ds.url=jdbc:mysql://localhost:3306/master_ds
-spring.shardingsphere.datasource.master_ds.username=root
-spring.shardingsphere.datasource.master_ds.password=root
-
-spring.shardingsphere.datasource.slave_ds0.type=org.apache.commons.dbcp2.BasicDataSource
-spring.shardingsphere.datasource.slave_ds0.driver-class-name=com.mysql.jdbc.Driver
-spring.shardingsphere.datasource.slave_ds0.url=jdbc:mysql://localhost:3306/slave_ds0
-spring.shardingsphere.datasource.slave_ds0.username=root
-spring.shardingsphere.datasource.slave_ds0.password=root
-
-spring.shardingsphere.datasource.slave_ds1.type=org.apache.commons.dbcp2.BasicDataSource
-spring.shardingsphere.datasource.slave_ds1.driver-class-name=com.mysql.jdbc.Driver
-spring.shardingsphere.datasource.slave_ds1.url=jdbc:mysql://localhost:3306/slave_ds1
-spring.shardingsphere.datasource.slave_ds1.username=root
-spring.shardingsphere.datasource.slave_ds1.password=root
-
-spring.shardingsphere.rules.master-slave.data-sources.ms_ds.master-data-source-name=master_ds
-spring.shardingsphere.rules.master-slave.data-sources.ms_ds.slave-data-source-names=slave_ds0,slave_ds1
-spring.shardingsphere.rules.master-slave.data-sources.ms_ds.load-balancer-name=random
-
-spring.shardingsphere.rules.master-slave.load-balancers.random.type=RANDOM
-```
-
 ## 配置项说明
 
 ```properties

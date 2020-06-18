@@ -3,10 +3,6 @@ title = "Read-write Split"
 weight = 2
 +++
 
-## Configuration Example
-
-TODO
-
 ## Configuration Item Explanation
 
 TODO

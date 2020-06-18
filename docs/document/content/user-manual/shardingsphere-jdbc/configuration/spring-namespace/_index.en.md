@@ -37,7 +37,11 @@ ShardingSphere-JDBC provides official Spring namespace to make convenient for de
     <!-- Rule configurations, please refer to specific rule configuration for more details. -->
     <!-- ... -->
     
-    <shardingsphere:data-source id="shardingDataSource" data-source-names="ds0,ds1" rule-refs="..." />
+    <shardingsphere:data-source id="shardingDataSource" data-source-names="ds0,ds1" rule-refs="..." >
+        <props>
+            <prop key="xxx.xxx">${xxx.xxx}</prop>
+        </props>
+    </shardingsphere:data-source>
 </beans>
 ```
 

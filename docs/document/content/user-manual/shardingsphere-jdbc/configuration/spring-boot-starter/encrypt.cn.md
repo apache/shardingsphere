@@ -3,26 +3,6 @@ title = "数据加密"
 weight = 3
 +++
 
-## 配置示例
-
-```properties
-spring.shardingsphere.datasource.names=ds
-
-spring.shardingsphere.datasource.ds.type=org.apache.commons.dbcp2.BasicDataSource
-spring.shardingsphere.datasource.ds.driver-class-name=com.mysql.jdbc.Driver
-spring.shardingsphere.datasource.ds.url=jdbc:mysql://localhost:3306/ds
-spring.shardingsphere.datasource.ds.username=root
-spring.shardingsphere.datasource.ds.password=root
-
-spring.shardingsphere.rules.encrypt.tables.t_order.columns.user_id.cipher-column=encrypt_user
-spring.shardingsphere.rules.encrypt.tables.t_order.columns.user_id.assisted-query-column=assisted_user
-spring.shardingsphere.rules.encrypt.tables.t_order.columns.user_id.plain-column=plain_user
-spring.shardingsphere.rules.encrypt.tables.t_order.columns.user_id.encryptor-name=aes_encryptor
-
-spring.shardingsphere.rules.encrypt.encryptors.aes_encryptor.type=AES
-spring.shardingsphere.rules.encrypt.encryptors.aes_encryptor.props.aes.key.value=123456
-```
-
 ## 配置项说明
 
 ```properties

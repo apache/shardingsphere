@@ -92,9 +92,9 @@
     </encrypt:rule>
     
     <shardingsphere:data-source id="simpleShardingDataSource" data-source-names="dbtbl_0" rule-refs="simpleShardingDataSourceShardingRule, simpleShardingDataSourceEncryptRule" />
-
+    
     <shardingsphere:data-source id="autoShardingDataSource" data-source-names="dbtbl_0, dbtbl_1" rule-refs="autoShardingDataSourceWithAutoTableRule" />
-
+    
     <sharding:rule id="masterSlaveShardingDataSourceByDefaultStrategyShardingRule" default-key-generate-strategy-ref="defaultKeyGenerateStrategy">
         <sharding:table-rules>
             <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" key-generate-strategy-ref="orderKeyGenerator" />

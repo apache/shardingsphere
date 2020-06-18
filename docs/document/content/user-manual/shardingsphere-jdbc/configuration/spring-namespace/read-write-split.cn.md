@@ -3,10 +3,6 @@ title = "读写分离"
 weight = 2
 +++
 
-## 配置示例
-
-TODO
-
 ## 配置项说明
 
 TODO
