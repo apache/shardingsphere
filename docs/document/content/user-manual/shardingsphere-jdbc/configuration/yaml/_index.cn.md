@@ -107,8 +107,8 @@ dataSources:
 ##### 配置项说明
 
 ```yaml
-dataSources: # 数据源配置，可配置多个 <data_source_name>
-  <data_source_name>: # <!!数据库连接池实现类>，`!!` 表示实例化该类
+dataSources: # 数据源配置，可配置多个 <data-source-name>
+  <data-source-name>: # <!!数据库连接池实现类>，`!!` 表示实例化该类
     driverClassName: # 数据库驱动类名
     url: # 数据库 URL 连接
     username: # 数据库用户名

@@ -109,8 +109,8 @@ dataSources:
 ##### Configuration Item Explanation
 
 ```yaml
-dataSources: # Data sources configuration, multiple <data_source_name> available
-  <data_source_name>: # <!!Data source pool implementation class> `!!` means class instantiation
+dataSources: # Data sources configuration, multiple <data-source-name> available
+  <data-source-name>: # <!!Data source pool implementation class> `!!` means class instantiation
     driverClassName: # Class name of database driver
     url: # Database URL
     username: # Database username

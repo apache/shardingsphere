@@ -55,27 +55,27 @@ spring.shardingsphere.sharding.key-generators.snowflake.props.worder.id=123
 ```properties
 spring.shardingsphere.datasource.names= # 省略数据源配置
 
-spring.shardingsphere.rules.sharding.tables.<table_name>.actual-data-nodes= # 由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。缺省表示使用已知数据源与逻辑表名称生成数据节点，用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况
+spring.shardingsphere.rules.sharding.tables.<table-name>.actual-data-nodes= # 由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。缺省表示使用已知数据源与逻辑表名称生成数据节点，用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况
 
 # 分库策略，缺省表示使用默认分库策略，以下的分片策略只能选其一
 
 # 用于单分片键的标准分片场景
-spring.shardingsphere.rules.sharding.tables.<table_name>.database-strategy.standard.<sharding_algorithm_name>.sharding-column= # 分片列名称
-spring.shardingsphere.rules.sharding.tables.<table_name>.database-strategy.standard.<sharding_algorithm_name>.sharding-algorithm-name= # 分片算法名称
+spring.shardingsphere.rules.sharding.tables.<table-name>.database-strategy.standard.<sharding-algorithm-name>.sharding-column= # 分片列名称
+spring.shardingsphere.rules.sharding.tables.<table-name>.database-strategy.standard.<sharding-algorithm-name>.sharding-algorithm-name= # 分片算法名称
 
 # 用于多分片键的复合分片场景
-spring.shardingsphere.rules.sharding.tables.<table_name>.database-strategy.complex.<sharding_algorithm_name>.sharding-columns= # 分片列名称，多个列以逗号分隔
-spring.shardingsphere.rules.sharding.tables.<table_name>.database-strategy.complex.<sharding_algorithm_name>.sharding-algorithm-name= # 分片算法名称
+spring.shardingsphere.rules.sharding.tables.<table-name>.database-strategy.complex.<sharding-algorithm-name>.sharding-columns= # 分片列名称，多个列以逗号分隔
+spring.shardingsphere.rules.sharding.tables.<table-name>.database-strategy.complex.<sharding-algorithm-name>.sharding-algorithm-name= # 分片算法名称
 
 # 用于Hint 的分片策略
-spring.shardingsphere.rules.sharding.tables.<table_name>.database-strategy.hint.<sharding_algorithm_name>.sharding-algorithm-name= # 分片算法名称
+spring.shardingsphere.rules.sharding.tables.<table-name>.database-strategy.hint.<sharding-algorithm-name>.sharding-algorithm-name= # 分片算法名称
 
 # 分表策略，同分库策略
-spring.shardingsphere.rules.sharding.tables.<table_name>.table-strategy.xxx= # 省略
+spring.shardingsphere.rules.sharding.tables.<table-name>.table-strategy.xxx= # 省略
 
 # 分布式序列策略配置
-spring.shardingsphere.rules.sharding.tables.<table_name>.key-generate-strategy.column= # 分布式序列列名称
-spring.shardingsphere.rules.sharding.tables.<table_name>.key-generate-strategy.key-generator-name= # 分布式序列算法名称
+spring.shardingsphere.rules.sharding.tables.<table-name>.key-generate-strategy.column= # 分布式序列列名称
+spring.shardingsphere.rules.sharding.tables.<table-name>.key-generate-strategy.key-generator-name= # 分布式序列算法名称
 
 spring.shardingsphere.rules.sharding.binding-tables[0]= # 绑定表规则列表
 spring.shardingsphere.rules.sharding.binding-tables[1]= # 绑定表规则列表
@@ -90,12 +90,12 @@ spring.shardingsphere.sharding.default-table-strategy.xxx= # 默认表分片策�
 spring.shardingsphere.sharding.default-key-generate-strategy.xxx= # 默认分布式序列策略
 
 # 分片算法配置
-spring.shardingsphere.rules.sharding.sharding-algorithms.<sharding_algorithm_name>.type= # 分片算法类型
-spring.shardingsphere.rules.sharding.sharding-algorithms.<sharding_algorithm_name>.props.xxx=# 分片算法属性配置
+spring.shardingsphere.rules.sharding.sharding-algorithms.<sharding-algorithm-name>.type= # 分片算法类型
+spring.shardingsphere.rules.sharding.sharding-algorithms.<sharding-algorithm-name>.props.xxx=# 分片算法属性配置
 
 # 分布式序列算法配置
-spring.shardingsphere.rules.sharding.key-generators.<sharding_algorithm_name>.type= # 分布式序列算法类型
-spring.shardingsphere.rules.sharding.key-generators.<sharding_algorithm_name>.props.xxx= # 分布式序列算法属性配置
+spring.shardingsphere.rules.sharding.key-generators.<key-generate-algorithm-name>.type= # 分布式序列算法类型
+spring.shardingsphere.rules.sharding.key-generators.<key-generate-algorithm-name>.props.xxx= # 分布式序列算法属性配置
 ```
 
 ## 注意事项

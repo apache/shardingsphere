@@ -49,15 +49,15 @@ dataSources: # 省略数据源配置
 rules:
 - !MASTER_SLAVE
   dataSources:
-    <data_source_name> (+): # 读写分离逻辑数据源名称
+    <data-source-name> (+): # 读写分离逻辑数据源名称
       masterDataSourceName: # 主库数据源名称
       slaveDataSourceNames: 
-        - <slave_data_source_name> (+) # 从库数据源名称
+        - <slave-data_source-name> (+) # 从库数据源名称
       loadBalancerName: # 负载均衡算法名称
   
   # 负载均衡算法配置
   loadBalancers:
-    <load_balancer_name> (+): # 负载均衡算法名称
+    <load-balancer-name> (+): # 负载均衡算法名称
       type: # 负载均衡算法类型
       props: # 负载均衡算法属性配置
         # ...

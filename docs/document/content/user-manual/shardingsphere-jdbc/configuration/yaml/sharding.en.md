@@ -76,7 +76,7 @@ dataSources: # Omit data source configuration
 rules:
 - !SHARDING
   tables: # Sharding rule configuration
-    <logic_table_name> (+): # Logic table name
+    <logic-table-name> (+): # Logic table name
       actualDataNodes (?): # Describe data source names and actual tables, delimiter as point, multiple data nodes separated with comma, support inline expression. Absent means sharding databases only. Example: ds${0..7}.tbl${0..7}
       databaseStrategy (?): # Databases sharding strategy, use default databases sharding strategy if absent. sharding strategy below can choose only one.
         standard: # For single sharding column scenario
@@ -95,21 +95,21 @@ rules:
   bindingTables (+): # Binding tables
     - <logic_table_name_1, logic_table_name_2, ...> 
   broadcastTables (+): # Broadcast tables
-    - <table_name>
+    - <table-name>
   defaultDatabaseStrategy: # Default strategy for database sharding
   defaultTableStrategy: # Default strategy for table sharding
   defaultKeyGenerateStrategy: # Default Key generator strategy
 
   # Sharding algorithm configuration
   shardingAlgorithms:
-    <sharding_algorithm_name> (+): # Sharding algorithm name
+    <sharding-algorithm-name> (+): # Sharding algorithm name
       type: # Sharding algorithm type
       props: # Sharding algorithm properties
       # ...
   
   # Key generate algorithm configuration
   keyGenerators:
-    <key_generate_algorithm_name> (+): # Key generate algorithm name
+    <key-generate-algorithm-name> (+): # Key generate algorithm name
       type: # Key generate algorithm type
       props: # Key generate algorithm properties
       # ...

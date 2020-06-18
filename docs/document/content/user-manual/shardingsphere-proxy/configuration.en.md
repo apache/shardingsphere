@@ -370,7 +370,7 @@ props:
 schemaName: #Logic data schema name
 
 dataSources: #Data source configuration, which can be multiple data_source_name
-  <data_source_name>: #Different from ShardingSphere-JDBC configuration, it does not need to be configured with database connection pool
+  <data-source-name>: #Different from ShardingSphere-JDBC configuration, it does not need to be configured with database connection pool
     url: #Database url connection
     username: #Database username
     password: #Database password
