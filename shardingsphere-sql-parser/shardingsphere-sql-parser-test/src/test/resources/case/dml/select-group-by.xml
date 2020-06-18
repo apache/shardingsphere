@@ -128,11 +128,11 @@
     <select sql-case-id="select_group_by_without_grouped_column" parameters="1, 2, 9, 10">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="o" start-index="36" stop-index="42" />
+                <table name="t_order" alias="o" start-index="36" stop-index="44" />
             </table-factor>
             <join-table>
                 <table-factor>
-                    <table name="t_order_item" alias="i" start-index="51" stop-index="62"/>
+                    <table name="t_order_item" alias="i" start-index="51" stop-index="64"/>
                 </table-factor>
                 <joinSpecification>
                     <and-predicate>
@@ -236,7 +236,7 @@
     <select sql-case-id="select_with_item_alias_match_order_by_and_group_by_items">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="o" start-index="26" stop-index="32" />
+                <table name="t_order" alias="o" start-index="26" stop-index="34" />
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="19">

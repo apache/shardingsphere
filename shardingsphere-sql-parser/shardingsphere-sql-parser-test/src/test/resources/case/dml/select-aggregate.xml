@@ -119,12 +119,12 @@
     <select sql-case-id="select_count_with_binding_tables_without_join" parameters="1, 2, 9, 10">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="o" start-index="36" stop-index="42" />
+                <table name="t_order" alias="o" start-index="36" stop-index="44" />
             </table-factor>
         </table-reference>
         <table-reference>
             <table-factor>
-                <table name="t_order_item" alias="i" start-index="47" stop-index="58" />
+                <table name="t_order_item" alias="i" start-index="47" stop-index="60" />
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="29">
@@ -177,11 +177,11 @@
     <select sql-case-id="select_count_with_binding_tables_with_join" parameters="1, 2, 9, 10">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="o" start-index="36" stop-index="42" />
+                <table name="t_order" alias="o" start-index="36" stop-index="44" />
             </table-factor>
             <join-table>
                 <table-factor>
-                    <table name="t_order_item" alias="i" start-index="51" stop-index="62" />
+                    <table name="t_order_item" alias="i" start-index="51" stop-index="64" />
                 </table-factor>
                 <joinSpecification>
                     <and-predicate>

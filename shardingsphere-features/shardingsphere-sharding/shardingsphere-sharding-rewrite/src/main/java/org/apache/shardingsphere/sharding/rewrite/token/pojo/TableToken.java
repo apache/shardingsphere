@@ -19,14 +19,14 @@ package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
 import com.google.common.base.Joiner;
 import lombok.Getter;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.RouteUnitAware;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -40,25 +40,30 @@ public final class TableToken extends SQLToken implements Substitutable, RouteUn
     @Getter
     private final int stopIndex;
     
-    private final IdentifierValue identifier;
+    private final SimpleTableSegment tableSegment;
     
     private final SQLStatementContext sqlStatementContext;
     
     private final ShardingRule shardingRule;
     
-    public TableToken(final int startIndex, final int stopIndex, final IdentifierValue identifier, final SQLStatementContext sqlStatementContext, final ShardingRule shardingRule) {
+    public TableToken(final int startIndex, final int stopIndex, final SimpleTableSegment tableSegment, final SQLStatementContext sqlStatementContext, final ShardingRule shardingRule) {
         super(startIndex);
         this.stopIndex = stopIndex;
-        this.identifier = identifier;
+        this.tableSegment = tableSegment;
         this.sqlStatementContext = sqlStatementContext;
         this.shardingRule = shardingRule;
     }
     
     @Override
     public String toString(final RouteUnit routeUnit) {
-        String actualTableName = getLogicAndActualTables(routeUnit).get(identifier.getValue().toLowerCase());
-        actualTableName = null == actualTableName ? identifier.getValue().toLowerCase() : actualTableName;
-        return Joiner.on("").join(identifier.getQuoteCharacter().getStartDelimiter(), actualTableName, identifier.getQuoteCharacter().getEndDelimiter());
+        String actualTableName = getLogicAndActualTables(routeUnit).get(tableSegment.getTableName().getIdentifier().getValue().toLowerCase());
+        actualTableName = null == actualTableName ? tableSegment.getTableName().getIdentifier().getValue().toLowerCase() : actualTableName;
+        String owner = tableSegment.getOwner().isPresent()
+                ? Joiner.on("").join(tableSegment.getOwner().get().getIdentifier().getQuoteCharacter().getStartDelimiter(),
+                        tableSegment.getOwner().get().getIdentifier().getValue(), tableSegment.getOwner().get().getIdentifier().getQuoteCharacter().getEndDelimiter(), ".") : "";
+        String alias = tableSegment.getAlias().isPresent() ? " " + tableSegment.getAlias().get() : "";
+        return Joiner.on("").join(owner, tableSegment.getTableName().getIdentifier().getQuoteCharacter().getStartDelimiter(),
+                actualTableName, tableSegment.getTableName().getIdentifier().getQuoteCharacter().getEndDelimiter(), alias);
     }
     
     private Map<String, String> getLogicAndActualTables(final RouteUnit routeUnit) {

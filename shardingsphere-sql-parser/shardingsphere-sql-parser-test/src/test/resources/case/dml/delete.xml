@@ -112,7 +112,7 @@
 
     <delete sql-case-id="delete_with_alias" parameters="'init'">
         <table name="o" start-index="7" stop-index="7" />
-        <table name="t_order" alias="o" start-index="14" stop-index="20" />
+        <table name="t_order" alias="o" start-index="14" stop-index="25" />
         <where start-index="27" stop-index="40" literal-stop-index="46">
             <and-predicate>
                 <predicate start-index="33" stop-index="40" literal-stop-index="45">
