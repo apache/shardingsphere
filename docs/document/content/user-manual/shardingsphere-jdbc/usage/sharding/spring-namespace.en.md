@@ -27,14 +27,14 @@ weight = 4
                         ">
     <!-- Configure actual data sources -->
     <!-- Configure the first data source -->
-    <bean id="ds0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="ds0" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://localhost:3306/ds0" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
     <!-- Configure the second data source -->
-    <bean id="ds1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="ds1" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://localhost:3306/ds1" />
         <property name="username" value="root" />

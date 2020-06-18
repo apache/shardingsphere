@@ -371,7 +371,7 @@ props:
 schemaName: #逻辑数据源名称
 
 dataSources: #数据源配置，可配置多个data_source_name
-  <data_source_name>: #与ShardingSphere-JDBC配置不同，无需配置数据库连接池
+  <data-source-name>: #与ShardingSphere-JDBC配置不同，无需配置数据库连接池
     url: #数据库url连接
     username: #数据库用户名
     password: #数据库密码

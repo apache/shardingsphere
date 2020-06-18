@@ -14,13 +14,13 @@ weight = 3
 ```properties
 spring.shardingsphere.datasource.names=ds0,ds1
 
-spring.shardingsphere.datasource.ds0.type=org.apache.commons.dbcp.BasicDataSource
+spring.shardingsphere.datasource.ds0.type=org.apache.commons.dbcp2.BasicDataSource
 spring.shardingsphere.datasource.ds0.driver-class-name=com.mysql.jdbc.Driver
 spring.shardingsphere.datasource.ds0.url=jdbc:mysql://localhost:3306/ds0
 spring.shardingsphere.datasource.ds0.username=root
 spring.shardingsphere.datasource.ds0.password=
 
-spring.shardingsphere.datasource.ds1.type=org.apache.commons.dbcp.BasicDataSource
+spring.shardingsphere.datasource.ds1.type=org.apache.commons.dbcp2.BasicDataSource
 spring.shardingsphere.datasource.ds1.driver-class-name=com.mysql.jdbc.Driver
 spring.shardingsphere.datasource.ds1.url=jdbc:mysql://localhost:3306/ds1
 spring.shardingsphere.datasource.ds1.username=root
@@ -54,19 +54,19 @@ spring.shardingsphere.sharding.key-generators.snowflake.type=SNOWFLAKE
 ```properties
 spring.shardingsphere.datasource.names=master,slave0,slave1
 
-spring.shardingsphere.datasource.master.type=org.apache.commons.dbcp.BasicDataSource
+spring.shardingsphere.datasource.master.type=org.apache.commons.dbcp2.BasicDataSource
 spring.shardingsphere.datasource.master.driver-class-name=com.mysql.jdbc.Driver
 spring.shardingsphere.datasource.master.url=jdbc:mysql://localhost:3306/master
 spring.shardingsphere.datasource.master.username=root
 spring.shardingsphere.datasource.master.password=
 
-spring.shardingsphere.datasource.slave0.type=org.apache.commons.dbcp.BasicDataSource
+spring.shardingsphere.datasource.slave0.type=org.apache.commons.dbcp2.BasicDataSource
 spring.shardingsphere.datasource.slave0.driver-class-name=com.mysql.jdbc.Driver
 spring.shardingsphere.datasource.slave0.url=jdbc:mysql://localhost:3306/slave0
 spring.shardingsphere.datasource.slave0.username=root
 spring.shardingsphere.datasource.slave0.password=
 
-spring.shardingsphere.datasource.slave1.type=org.apache.commons.dbcp.BasicDataSource
+spring.shardingsphere.datasource.slave1.type=org.apache.commons.dbcp2.BasicDataSource
 spring.shardingsphere.datasource.slave1.driver-class-name=com.mysql.jdbc.Driver
 spring.shardingsphere.datasource.slave1.url=jdbc:mysql://localhost:3306/slave1
 spring.shardingsphere.datasource.slave1.username=root
@@ -109,35 +109,35 @@ spring.shardingsphere.properties.query.with.cipher.column=true
 ```properties
 spring.shardingsphere.datasource.names=master0,master1,master0slave0,master0slave1,master1slave0,master1slave1
 
-spring.shardingsphere.datasource.master0.type=org.apache.commons.dbcp.BasicDataSource
+spring.shardingsphere.datasource.master0.type=org.apache.commons.dbcp2.BasicDataSource
 spring.shardingsphere.datasource.master0.driver-class-name=com.mysql.jdbc.Driver
 spring.shardingsphere.datasource.master0.url=jdbc:mysql://localhost:3306/master0
 spring.shardingsphere.datasource.master0.username=root
 spring.shardingsphere.datasource.master0.password=
 
-spring.shardingsphere.datasource.master0slave0.type=org.apache.commons.dbcp.BasicDataSource
+spring.shardingsphere.datasource.master0slave0.type=org.apache.commons.dbcp2.BasicDataSource
 spring.shardingsphere.datasource.master0slave0.driver-class-name=com.mysql.jdbc.Driver
 spring.shardingsphere.datasource.master0slave0.url=jdbc:mysql://localhost:3306/master0slave0
 spring.shardingsphere.datasource.master0slave0.username=root
 spring.shardingsphere.datasource.master0slave0.password=
-spring.shardingsphere.datasource.master0slave1.type=org.apache.commons.dbcp.BasicDataSource
+spring.shardingsphere.datasource.master0slave1.type=org.apache.commons.dbcp2.BasicDataSource
 spring.shardingsphere.datasource.master0slave1.driver-class-name=com.mysql.jdbc.Driver
 spring.shardingsphere.datasource.master0slave1.url=jdbc:mysql://localhost:3306/master0slave1
 spring.shardingsphere.datasource.master0slave1.username=root
 spring.shardingsphere.datasource.master0slave1.password=
 
-spring.shardingsphere.datasource.master1.type=org.apache.commons.dbcp.BasicDataSource
+spring.shardingsphere.datasource.master1.type=org.apache.commons.dbcp2.BasicDataSource
 spring.shardingsphere.datasource.master1.driver-class-name=com.mysql.jdbc.Driver
 spring.shardingsphere.datasource.master1.url=jdbc:mysql://localhost:3306/master1
 spring.shardingsphere.datasource.master1.username=root
 spring.shardingsphere.datasource.master1.password=
 
-spring.shardingsphere.datasource.master1slave0.type=org.apache.commons.dbcp.BasicDataSource
+spring.shardingsphere.datasource.master1slave0.type=org.apache.commons.dbcp2.BasicDataSource
 spring.shardingsphere.datasource.master1slave0.driver-class-name=com.mysql.jdbc.Driver
 spring.shardingsphere.datasource.master1slave0.url=jdbc:mysql://localhost:3306/master1slave0
 spring.shardingsphere.datasource.master1slave0.username=root
 spring.shardingsphere.datasource.master1slave0.password=
-spring.shardingsphere.datasource.master1slave1.type=org.apache.commons.dbcp.BasicDataSource
+spring.shardingsphere.datasource.master1slave1.type=org.apache.commons.dbcp2.BasicDataSource
 spring.shardingsphere.datasource.master1slave1.driver-class-name=com.mysql.jdbc.Driver
 spring.shardingsphere.datasource.master1slave1.url=jdbc:mysql://localhost:3306/master1slave1
 spring.shardingsphere.datasource.master1slave1.username=root
@@ -219,19 +219,19 @@ spring.shardingsphere.sharding.key-generators.snowflake.type=SNOWFLAKE
 
 ```properties
 spring.shardingsphere.datasource.names=ds,ds0,ds1
-spring.shardingsphere.datasource.ds.type=org.apache.commons.dbcp.BasicDataSource
+spring.shardingsphere.datasource.ds.type=org.apache.commons.dbcp2.BasicDataSource
 spring.shardingsphere.datasource.ds.driver-class-name=org.h2.Driver
 spring.shardingsphere.datasource.ds.url=jdbc:mysql://localhost:3306/ds
 spring.shardingsphere.datasource.ds.username=root
 spring.shardingsphere.datasource.ds.password=
 
-spring.shardingsphere.datasource.ds0.type=org.apache.commons.dbcp.BasicDataSource
+spring.shardingsphere.datasource.ds0.type=org.apache.commons.dbcp2.BasicDataSource
 spring.shardingsphere.datasource.ds0.driver-class-name=com.mysql.jdbc.Driver
 spring.shardingsphere.datasource.ds0.url=jdbc:mysql://localhost:3306/ds0
 spring.shardingsphere.datasource.ds0.username=root
 spring.shardingsphere.datasource.ds0.password=
 
-spring.shardingsphere.datasource.ds1.type=org.apache.commons.dbcp.BasicDataSource
+spring.shardingsphere.datasource.ds1.type=org.apache.commons.dbcp2.BasicDataSource
 spring.shardingsphere.datasource.ds1.driver-class-name=com.mysql.jdbc.Driver
 spring.shardingsphere.datasource.ds1.url=jdbc:mysql://localhost:3306/ds1
 spring.shardingsphere.datasource.ds1.username=root

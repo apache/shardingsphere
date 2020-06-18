@@ -39,20 +39,22 @@ props:
 ## Configuration Item Explanation
 
 ```yaml
-dataSource: # Ignore data source configuration
+dataSource: # Omit data source configuration
 
 rules:
 - !ENCRYPT
   tables:
-    <table_name> (+): # Encrypt table name
+    <table-name> (+): # Encrypt table name
       columns:
-        <column_name> (+): # Encrypt logic column name
+        <column-name> (+): # Encrypt logic column name
           cipherColumn: # Cipher column name
           assistedQueryColumn (?):  # Assisted query column name
           plainColumn (?): # Plain column name
           encryptorName: # Encrypt algorithm name
+  
+  # Encrypt algorithm configuration
   encryptors:
-    <encryptor_name> (+): # Encrypt algorithm name
+    <encrypt-algorithm-name> (+): # Encrypt algorithm name
       type: # Encrypt algorithm type
       props: # Encrypt algorithm properties
         # ...

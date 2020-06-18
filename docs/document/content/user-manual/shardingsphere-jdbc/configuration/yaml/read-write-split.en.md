@@ -44,18 +44,20 @@ props:
 ## Configuration Item Explanation
 
 ```yaml
-dataSource: # Ignore data source configuration
+dataSource: # Omit data source configuration
 
 rules:
 - !MASTER_SLAVE
   dataSources:
-    <data_source_name> (+): # Logic data source name of master slave
+    <data-source-name> (+): # Logic data source name of master slave
       masterDataSourceName: # Master data source name
       slaveDataSourceNames: 
-        - <slave_data_source_name> (+) # Slave data source name
+        - <slave-data-source-name> (+) # Slave data source name
       loadBalancerName: # Load balance algorithm name
+  
+  # Load balance algorithm configuration
   loadBalancers:
-    <load_balancer_name> (+): # Load balance algorithm name
+    <load-balancer-name> (+): # Load balance algorithm name
       type: # Load balance algorithm type
       props: # Load balance algorithm properties
         # ...

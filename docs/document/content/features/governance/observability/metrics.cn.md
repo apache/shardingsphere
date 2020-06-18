@@ -54,7 +54,7 @@ props:
 
 ```yaml
 scrape_configs:
-  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  # The job name is added as a label `job=<job-name>` to any time series scraped from this config.
   - job_name: 'shardingSphere-proxy'
     # metrics_path defaults to '/metrics'
     # scheme defaults to 'http'.

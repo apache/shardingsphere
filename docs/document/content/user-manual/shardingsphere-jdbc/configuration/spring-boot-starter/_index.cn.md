@@ -34,11 +34,11 @@ spring.shardingsphere.datasource.ds1.password=root
 ```properties
 spring.shardingsphere.datasource.names= # 数据源名称，多数据源以逗号分隔
 
-spring.shardingsphere.datasource.<datasource_name>.type= # 数据库连接池类名称
-spring.shardingsphere.datasource.<datasource_name>.driver-class-name= # 数据库驱动类名
-spring.shardingsphere.datasource.<datasource_name>.url= # 数据库 URL 连接
-spring.shardingsphere.datasource.<datasource_name>.username= # 数据库用户名
-spring.shardingsphere.datasource.<datasource_name>.password= # 数据库密码
+spring.shardingsphere.datasource.<datasource-name>.type= # 数据库连接池类名称
+spring.shardingsphere.datasource.<datasource-name>.driver-class-name= # 数据库驱动类名
+spring.shardingsphere.datasource.<datasource-name>.url= # 数据库 URL 连接
+spring.shardingsphere.datasource.<datasource-name>.username= # 数据库用户名
+spring.shardingsphere.datasource.<datasource-name>.password= # 数据库密码
 spring.shardingsphere.datasource.<data-source-name>.xxx= # 数据库连接池的其它属性
 ```
 
