@@ -12,7 +12,9 @@ spring.shardingsphere.rules.master-slave.data-sources.<master-slave-data-source-
 spring.shardingsphere.rules.master-slave.data-sources.<master-slave-data-source-name>.slave-data-source-names= # 从数据源名称，多个从数据源用逗号分隔
 spring.shardingsphere.rules.master-slave.data-sources.<master-slave-data-source-name>.load-balancer-name= # 负载均衡算法名称
 
+# 负载均衡算法配置
 spring.shardingsphere.rules.master-slave.load-balancers.<load-balance-algorithm-name>.type= # 负载均衡算法类型
+spring.shardingsphere.rules.master-slave.load-balancers.<load-balance-algorithm-name>.props.xxx= # 负载均衡算法属性配置
 ```
 
 算法类型的详情，请参见[内置负载均衡算法列表](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/load-balance)。
