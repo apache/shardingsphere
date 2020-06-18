@@ -116,7 +116,6 @@ public final class RegistryCenter {
      */
     public Collection<String> loadDisabledDataSources() {
         return loadAllDataSourcesNodes().stream().filter(each -> !Strings.isNullOrEmpty(getDataSourcesNodeData(each))
-                && RegistryCenterNodeStatus.DISABLED.toString().equalsIgnoreCase(getDataSourcesNodeData(each)))
-        .collect(Collectors.toList());
+                && RegistryCenterNodeStatus.DISABLED.toString().equalsIgnoreCase(getDataSourcesNodeData(each))).collect(Collectors.toList());
     }
 }
