@@ -3,29 +3,6 @@ title = "使用手册"
 weight = 1
 +++
 
-## Proxy启动
-
-1. 下载ShardingSphere-Proxy的最新发行版。
-1. 如果使用docker，可以执行`docker pull shardingsphere/shardingsphere-proxy`获取镜像。详细信息请参考[Docker镜像](/cn/user-manual/shardingsphere-proxy/docker/)。
-1. 解压缩后修改conf/server.yaml和以config-前缀开头的文件，如：conf/config-xxx.yaml文件，进行分片规则、读写分离规则配置. 配置方式请参考[配置手册](/cn/user-manual/shardingsphere-proxy/configuration/)。
-1. Linux操作系统请运行`bin/start.sh`，Windows操作系统请运行`bin/start.bat`启动ShardingSphere-Proxy。如需配置启动端口、配置文件位置，可参考[快速入门](/cn/quick-start/shardingsphere-proxy-quick-start/)
-进行启动。
-1. 使用任何PostgreSQL的客户端连接。如: `psql -U root -h 127.0.0.1 -p 3307`
-
-## 注册中心使用
-
-若想使用ShardingSphere-Proxy的数据库治理功能，则需要使用注册中心实现实例熔断和从库禁用功能。详情请参考[支持的注册中心](/cn/features/orchestration/supported-registry-repo/)。
-
-### Zookeeper
-
-1. ShardingSphere-Proxy默认提供了Zookeeper的注册中心解决方案。您只需按照[配置规则](/cn/user-manual/shardingsphere-proxy/configuration/)进行注册中心的配置，即可使用。
-
-### 其他第三方注册中心
-
-1. 将ShardingSphere-Proxy的lib目录下的`shardingsphere-orchestration-reg-zookeeper-curator-${shardingsphere.version}.jar`文件删除。
-1. 使用SPI方式实现相关逻辑编码，并将生成的jar包放到ShardingSphere-Proxy的lib目录下。
-1. 按照[配置规则](/cn/user-manual/shardingsphere-proxy/configuration/)进行注册中心的配置，即可使用。
-
 ## 分布式事务
 
 ShardingSphere-Proxy接入的分布式事务API同ShardingSphere-JDBC保持一致，支持LOCAL，XA，BASE类型的事务。
