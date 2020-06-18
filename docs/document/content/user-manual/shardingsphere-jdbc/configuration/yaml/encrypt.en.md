@@ -39,7 +39,7 @@ props:
 ## Configuration Item Explanation
 
 ```yaml
-dataSource: # Ignore data source configuration
+dataSource: # Omit data source configuration
 
 rules:
 - !ENCRYPT
@@ -51,6 +51,8 @@ rules:
           assistedQueryColumn (?):  # Assisted query column name
           plainColumn (?): # Plain column name
           encryptorName: # Encrypt algorithm name
+  
+  # Encrypt algorithm configuration
   encryptors:
     <encryptor_name> (+): # Encrypt algorithm name
       type: # Encrypt algorithm type

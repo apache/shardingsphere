@@ -54,6 +54,8 @@ rules:
       slaveDataSourceNames: 
         - <slave_data_source_name> (+) # 从库数据源名称
       loadBalancerName: # 负载均衡算法名称
+  
+  # 负载均衡算法配置
   loadBalancers:
     <load_balancer_name> (+): # 负载均衡算法名称
       type: # 负载均衡算法类型

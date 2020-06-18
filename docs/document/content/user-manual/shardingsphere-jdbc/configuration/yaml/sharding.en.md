@@ -46,7 +46,9 @@ rules:
         keyGeneratorName: snowflake
   bindingTables:
     - t_order,t_order_item
-  
+  broadcastTables:
+      - t_config
+
   shardingAlgorithms:
     db_inline:
       type: INLINE
@@ -69,7 +71,7 @@ rules:
 ## Configuration Item Explanation
 
 ```yaml
-dataSources: # Ignore data source configuration
+dataSources: # Omit data source configuration
 
 rules:
 - !SHARDING
@@ -81,7 +83,7 @@ rules:
           shardingColumn: # Sharding column name
           shardingAlgorithmName: # Sharding algorithm name
         complex: # For multiple sharding columns scenario
-          shardingColumns: # Sharding column names
+          shardingColumns: # Sharding column names, multiple columns separated with comma
           shardingAlgorithmName: # Sharding algorithm name
         hint: # Sharding by hint
           shardingAlgorithmName: # Sharding algorithm name
@@ -90,13 +92,27 @@ rules:
       keyGenerateStrategy: # Key generator strategy
         column: # Column name of key generator
         keyGeneratorName: # Key generator name
-  bindingTables (+): # Binding table rule configurations
+  bindingTables (+): # Binding tables
     - <logic_table_name_1, logic_table_name_2, ...> 
-  broadcastTables (+): # Broadcast table rule configurations
+  broadcastTables (+): # Broadcast tables
     - <table_name>
   defaultDatabaseStrategy: # Default strategy for database sharding
   defaultTableStrategy: # Default strategy for table sharding
-  defaultKeyGenerateStrategy: # Key generator strategy
+  defaultKeyGenerateStrategy: # Default Key generator strategy
+
+  # Sharding algorithm configuration
+  shardingAlgorithms:
+    <sharding_algorithm_name> (+): # Sharding algorithm name
+      type: # Sharding algorithm type
+      props: # Sharding algorithm properties
+      # ...
+  
+  # Key generate algorithm configuration
+  keyGenerators:
+    <key_generate_algorithm_name> (+): # Key generate algorithm name
+      type: # Key generate algorithm type
+      props: # Key generate algorithm properties
+      # ...
 
 props:
   # ...

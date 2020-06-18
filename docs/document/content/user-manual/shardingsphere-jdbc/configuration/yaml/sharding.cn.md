@@ -46,6 +46,8 @@ rules:
         keyGeneratorName: snowflake
   bindingTables:
     - t_order,t_order_item
+  broadcastTables:
+    - t_config
   
   shardingAlgorithms:
     db_inline:
@@ -97,6 +99,20 @@ rules:
   defaultDatabaseStrategy: # 默认数据库分片策略
   defaultTableStrategy: # 默认表分片策略
   defaultKeyGenerateStrategy: # 默认的分布式序列策略
+  
+  # 分片算法配置
+  shardingAlgorithms:
+    <sharding_algorithm_name> (+): # 分片算法名称
+      type: # 分片算法类型
+      props: # 分片算法属性配置
+      # ...
+  
+  # 分布式序列算法配置
+  keyGenerators:
+    <sharding_algorithm_name> (+): # 分布式序列算法名称
+      type: # 分布式序列算法类型
+      props: # 分布式序列算法属性配置
+      # ...
 
 props:
   # ...

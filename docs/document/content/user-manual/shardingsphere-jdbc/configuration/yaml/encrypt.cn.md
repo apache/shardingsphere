@@ -51,6 +51,8 @@ rules:
           assistedQueryColumn (?):  # 查询辅助列名称
           plainColumn (?): # 原文列名称
           encryptorName: # 加密算法名称
+  
+  # 加密算法配置
   encryptors:
     <encryptor_name> (+): # 加解密算法名称
       type: # 加解密算法类型
