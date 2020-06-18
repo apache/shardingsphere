@@ -72,3 +72,5 @@ spring.shardingsphere.props.xxx.xxx=xxx
 ```properties
 spring.shardingsphere.props.xxx.xxx= # 具体的属性配置
 ```
+
+详情请参见[属性配置](/cn/user-manual/shardingsphere-jdbc/configuration/props)。

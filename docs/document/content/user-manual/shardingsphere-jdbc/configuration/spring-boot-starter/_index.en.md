@@ -72,3 +72,5 @@ spring.shardingsphere.props.xxx.xxx=xxx
 ```properties
 spring.shardingsphere.props.xxx.xxx= # Properties key and value
 ```
+
+Please refer to [Properties Configuration](/en/user-manual/shardingsphere-jdbc/configuration/props) for more details about type of algorithm.

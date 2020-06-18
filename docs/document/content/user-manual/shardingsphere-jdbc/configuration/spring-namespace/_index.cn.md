@@ -9,66 +9,47 @@ ShardingSphere-JDBC 提供官方的 Spring 命名空间配置，使开发者可�
 
 ## Spring 命名空间配置项
 
-### 数据源配置
+### 配置示例
 
-#### 配置示例
-
-```properties
-spring.shardingsphere.datasource.names=ds0,ds1
-
-spring.shardingsphere.datasource.ds0.type=org.apache.commons.dbcp2.BasicDataSource
-spring.shardingsphere.datasource.ds0.driver-class-name=com.mysql.jdbc.Driver
-spring.shardingsphere.datasource.ds0.url=jdbc:mysql://localhost:3306/ds0
-spring.shardingsphere.datasource.ds0.username=root
-spring.shardingsphere.datasource.ds0.password=root
-
-spring.shardingsphere.datasource.ds1.type=org.apache.commons.dbcp2.BasicDataSource
-spring.shardingsphere.datasource.ds1.driver-class-name=com.mysql.jdbc.Driver
-spring.shardingsphere.datasource.ds1.url=jdbc:mysql://localhost:3306/ds1
-spring.shardingsphere.datasource.ds1.username=root
-spring.shardingsphere.datasource.ds1.password=root
+```xml
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                           http://www.springframework.org/schema/beans/spring-beans.xsd 
+                           http://shardingsphere.apache.org/schema/shardingsphere/datasource
+                           http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
+                           ">
+    <bean id="ds0" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="url" value="jdbc:mysql://localhost:3306/ds0" />
+        <property name="username" value="root" />
+        <property name="password" value="" />
+    </bean>
+    
+    <bean id="ds1" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="url" value="jdbc:mysql://localhost:3306/ds1" />
+        <property name="username" value="root" />
+        <property name="password" value="" />
+    </bean>
+    
+    <!-- 配置规则，更多详细配置请参见具体的规则配置部分。 -->
+    <!-- ... -->
+    
+    <shardingsphere:data-source id="shardingDataSource" data-source-names="ds0,ds1" rule-refs="..." />
+</beans>
 ```
 
-#### 配置项说明
+### 配置项说明
 
-```properties
-spring.shardingsphere.datasource.names= # 数据源名称，多数据源以逗号分隔
+命名空间：http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
 
-spring.shardingsphere.datasource.<datasource-name>.type= # 数据库连接池类名称
-spring.shardingsphere.datasource.<datasource-name>.driver-class-name= # 数据库驱动类名
-spring.shardingsphere.datasource.<datasource-name>.url= # 数据库 URL 连接
-spring.shardingsphere.datasource.<datasource-name>.username= # 数据库用户名
-spring.shardingsphere.datasource.<datasource-name>.password= # 数据库密码
-spring.shardingsphere.datasource.<data-source-name>.xxx= # 数据库连接池的其它属性
-```
+\<shardingsphere:data-source />
 
-### 规则配置
-
-#### 配置示例
-
-```properties
-spring.shardingsphere.rules.sharding.xxx=xxx
-```
-
-#### 配置项说明
-
-```properties
-spring.shardingsphere.rules.<rule-type>.xxx= # 规则配置
-  # ... 具体的规则配置
-```
-
-更多详细配置请参见具体的规则配置部分。
-
-### 属性配置
-
-#### 配置示例
-
-```properties
-spring.shardingsphere.props.xxx.xxx=xxx
-```
-
-#### 配置项说明
-
-```properties
-spring.shardingsphere.props.xxx.xxx= # 具体的属性配置
-```
+| *名称*            | *类型* | *说明*                       |
+| ----------------- | ----- | --------------------------- |
+| id                | 属性  | Spring Bean Id               |
+| data-source-names | 标签  | 数据源名称，多个数据源以逗号分隔 |
+| rule-refs         | 标签  | 规则名称，多个规则以逗号分隔     |
+| props (?)         | 标签  | 属性配置，详情请参见[属性配置](/cn/user-manual/shardingsphere-jdbc/configuration/props) |

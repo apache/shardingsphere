@@ -9,66 +9,47 @@ ShardingSphere-JDBC provides official Spring namespace to make convenient for de
 
 ## Spring Namespace Configuration Item
 
-### Data Source Configuration
+### Configuration Example
 
-#### Configuration Example
-
-```properties
-spring.shardingsphere.datasource.names=ds0,ds1
-
-spring.shardingsphere.datasource.ds0.type=org.apache.commons.dbcp2.BasicDataSource
-spring.shardingsphere.datasource.ds0.driver-class-name=com.mysql.jdbc.Driver
-spring.shardingsphere.datasource.ds0.url=jdbc:mysql://localhost:3306/ds0
-spring.shardingsphere.datasource.ds0.username=root
-spring.shardingsphere.datasource.ds0.password=root
-
-spring.shardingsphere.datasource.ds1.type=org.apache.commons.dbcp2.BasicDataSource
-spring.shardingsphere.datasource.ds1.driver-class-name=com.mysql.jdbc.Driver
-spring.shardingsphere.datasource.ds1.url=jdbc:mysql://localhost:3306/ds1
-spring.shardingsphere.datasource.ds1.username=root
-spring.shardingsphere.datasource.ds1.password=root
+```xml
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                           http://www.springframework.org/schema/beans/spring-beans.xsd 
+                           http://shardingsphere.apache.org/schema/shardingsphere/datasource
+                           http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
+                           ">
+    <bean id="ds0" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="url" value="jdbc:mysql://localhost:3306/ds0" />
+        <property name="username" value="root" />
+        <property name="password" value="" />
+    </bean>
+    
+    <bean id="ds1" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="url" value="jdbc:mysql://localhost:3306/ds1" />
+        <property name="username" value="root" />
+        <property name="password" value="" />
+    </bean>
+    
+    <!-- Rule configurations, please refer to specific rule configuration for more details. -->
+    <!-- ... -->
+    
+    <shardingsphere:data-source id="shardingDataSource" data-source-names="ds0,ds1" rule-refs="..." />
+</beans>
 ```
 
-#### Configuration Item Explanation
+### Configuration Item Explanation
 
-```properties
-spring.shardingsphere.datasource.names= # Data source name, multiple data sources are separated by commas
+Namespace: http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
 
-spring.shardingsphere.datasource.<datasource-name>.type= # Database connection pool type name
-spring.shardingsphere.datasource.<datasource-name>.driver-class-name= # Database driver class name
-spring.shardingsphere.datasource.<datasource-name>.url= # Database URL connection
-spring.shardingsphere.datasource.<datasource-name>.username= # Database username
-spring.shardingsphere.datasource.<datasource-name>.password= # Database password
-spring.shardingsphere.datasource.<data-source-name>.xxx= # Other properties of database connection pool
-```
+\<shardingsphere:data-source />
 
-### Rule Configuration
-
-#### Configuration Example
-
-```properties
-spring.shardingsphere.rules.sharding.xxx=xxx
-```
-
-#### Configuration Item Explanation
-
-```properties
-spring.shardingsphere.rules.<rule-type>.xxx= # rule configurations
-  # ... Specific rule configurations
-```
-
-Please refer to specific rule configuration for more details.
-
-### Properties Configuration
-
-#### Configuration Example
-
-```properties
-spring.shardingsphere.props.xxx.xxx=xxx
-```
-
-#### Configuration Item Explanation
-
-```properties
-spring.shardingsphere.props.xxx.xxx= # Properties key and value
-```
+| *Name*            | *Type*    | *Description*                                                        |
+| ----------------- | --------- | -------------------------------------------------------------------- |
+| id                | Attribute | Spring Bean Id                                                       |
+| data-source-names | Attribute | Data source name, multiple data source names are separated by commas |
+| rule-refs         | Attribute | Rule name, multiple rule names are separated by commas               |
+| props (?)         | Tag       | Properties configuration, Please refer to [Properties Configuration](/en/user-manual/shardingsphere-jdbc/configuration/props) for more details |
