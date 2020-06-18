@@ -30,7 +30,6 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>shardingsphere-ui-frontend</module>
         <module>shardingsphere-ui-backend</module>
         <module>shardingsphere-ui-distribution</module>
     </modules>
@@ -41,7 +40,6 @@
         
         <apache-rat-plugin.version>0.12</apache-rat-plugin.version>
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
-        <frontend-maven-plugin.version>1.6</frontend-maven-plugin.version>
         <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
         <takari-maven-plugin.version>0.6.1</takari-maven-plugin.version>
         
@@ -83,7 +81,6 @@
                     </configuration>
                     <version>${maven-compiler-plugin.version}</version>
                 </plugin>
-                <!-- mvn -N io.takari:maven:wrapper -Dmaven=3.5.4 -->
                 <plugin>
                     <groupId>io.takari</groupId>
                     <artifactId>maven</artifactId>
