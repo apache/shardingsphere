@@ -58,7 +58,7 @@ rules:
         # ...
 
 props:
-  query.with.cipher.column: true # 是否使用密文列查询
+  # ...
 ```
 
 算法类型的详情，请参见[内置加密算法列表](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/encrypt)。

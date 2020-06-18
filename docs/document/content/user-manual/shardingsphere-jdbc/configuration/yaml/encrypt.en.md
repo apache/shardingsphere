@@ -58,7 +58,7 @@ rules:
         # ...
 
 props:
-  query.with.cipher.column: true # Query with cipher or not
+  # ...
 ```
 
 Please refer to [Built-in Encrypt Algorithm List](/en/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/encrypt) for more details about type of algorithm.
