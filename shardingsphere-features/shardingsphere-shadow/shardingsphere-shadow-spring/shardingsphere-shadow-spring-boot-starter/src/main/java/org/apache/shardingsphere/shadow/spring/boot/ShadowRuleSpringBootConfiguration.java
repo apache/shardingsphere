@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.shadow.spring.boot;
 
-import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.shadow.spring.boot.condition.ShadowSpringBootCondition;
 import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.yaml.swapper.ShadowRuleConfigurationYamlSwapper;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -30,7 +31,11 @@ import org.springframework.context.annotation.Configuration;
  * Shadow rule configuration for spring boot.
  */
 @Configuration
+@ConditionalOnClass(YamlShadowRuleConfiguration.class)
+@Conditional(ShadowSpringBootCondition.class)
 public class ShadowRuleSpringBootConfiguration {
+    
+    private final ShadowRuleConfigurationYamlSwapper swapper = new ShadowRuleConfigurationYamlSwapper();
     
     /**
      * Shadow YAML rule spring boot configuration.
@@ -39,9 +44,18 @@ public class ShadowRuleSpringBootConfiguration {
      */
     @Bean
     @ConfigurationProperties(prefix = "spring.shardingsphere.rules.shadow")
-    @ConditionalOnClass(YamlShadowRuleConfiguration.class)
-    @Conditional(ShadowSpringBootCondition.class)
-    public YamlRuleConfiguration shadow() {
+    public YamlShadowRuleConfiguration shadow() {
         return new YamlShadowRuleConfiguration();
+    }
+    
+    /**
+     * Shadow rule configuration.
+     *
+     * @param yamlShadowRuleConfiguration YAML shadow rule configuration
+     * @return shadow rule configuration
+     */
+    @Bean
+    public RuleConfiguration shadowRuleConfiguration(final YamlShadowRuleConfiguration yamlShadowRuleConfiguration) {
+        return swapper.swapToObject(yamlShadowRuleConfiguration);
     }
 }
