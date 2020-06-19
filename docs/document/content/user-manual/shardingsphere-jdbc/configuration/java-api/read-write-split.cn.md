@@ -27,27 +27,4 @@ weight = 2
 | slaveDataSourceNames (+) | Collection\<String\> | 从库数据源名称列表   | -              |
 | loadBalancerName (?)     | String               | 从库负载均衡算法名称 | 轮询负载均衡算法 |
 
-## 从库负载均衡算法配置
-
-类名称：org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration
-
-可配置属性：
-
-| *名称*          | *数据类型*  | *说明*               | *默认值* |
-| -------------- | ---------- | -------------------- | ------- |
-| type           | String     | 从库负载均衡算法类型    | -       |
-| properties (?) | Properties | 从库负载均衡算法属性配置 | 空      |
-
-Apache ShardingSphere 内置的从库负载均衡算法包括：
-
-### 轮询算法
-
-类型：ROUND_ROBIN
-
-可配置属性：无
-
-### 随机访问算法
-
-类型：RANDOM
-
-可配置属性：无
+算法类型的详情，请参见[内置负载均衡算法列表](/cn/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/load-balance)。

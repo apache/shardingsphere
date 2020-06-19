@@ -41,8 +41,6 @@ public final class ConfigurationPropertiesTest {
         props.setProperty(ConfigurationPropertyKey.PROXY_TRANSACTION_TYPE.getKey(), "XA");
         props.setProperty(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED.getKey(), Boolean.TRUE.toString());
         props.setProperty(ConfigurationPropertyKey.PROXY_HINT_ENABLED.getKey(), Boolean.TRUE.toString());
-        props.setProperty(ConfigurationPropertyKey.PROXY_BACKEND_MAX_CONNECTIONS.getKey(), "20");
-        props.setProperty(ConfigurationPropertyKey.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS.getKey(), "20");
         props.setProperty(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED.getKey(), Boolean.TRUE.toString());
         ConfigurationProperties actual = new ConfigurationProperties(props);
         assertTrue(actual.getValue(ConfigurationPropertyKey.SQL_SHOW));
@@ -55,8 +53,6 @@ public final class ConfigurationPropertiesTest {
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_TRANSACTION_TYPE), is("XA"));
         assertTrue(actual.getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED));
         assertTrue(actual.getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED));
-        assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_BACKEND_MAX_CONNECTIONS), is(20));
-        assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS), is(20));
         assertTrue(actual.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED));
     }
     
@@ -73,8 +69,6 @@ public final class ConfigurationPropertiesTest {
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_TRANSACTION_TYPE), is("LOCAL"));
         assertFalse(actual.getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED));
         assertFalse(actual.getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED));
-        assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_BACKEND_MAX_CONNECTIONS), is(8));
-        assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS), is(60));
         assertFalse(actual.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED));
     }
 }

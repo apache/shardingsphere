@@ -29,6 +29,7 @@
             <xsd:attribute name="data-source-ref" type="xsd:string" />
             <xsd:attribute name="instance-ref" type="xsd:string" use="required" />
             <xsd:attribute name="overwrite" type="xsd:string" default="false" />
+            <xsd:attribute name="cluster-ref" type="xsd:string"/>
         </xsd:complexType>
     </xsd:element>
     

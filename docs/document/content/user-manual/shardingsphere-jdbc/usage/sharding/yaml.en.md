@@ -23,13 +23,13 @@ whose databases take module and split according to `order_id`, tables take modul
 # Configure actual data sources
 dataSources:
   # Configure the first data source
-  ds0: !!org.apache.commons.dbcp.BasicDataSource
+  ds0: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ds0
     username: root
     password:
   # Configure the second data source
-  ds1: !!org.apache.commons.dbcp.BasicDataSource
+  ds1: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ds1
     username: root

@@ -43,9 +43,9 @@
      <xsd:element name="column">
         <xsd:complexType>
             <xsd:attribute name="logic-column" type="xsd:string" use="required" />
-            <xsd:attribute name="plain-column" type="xsd:string" />
             <xsd:attribute name="cipher-column" type="xsd:string" use="required" />
             <xsd:attribute name="assisted-query-column" type="xsd:string" />
+            <xsd:attribute name="plain-column" type="xsd:string" />
             <xsd:attribute name="encrypt-algorithm-ref" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>
