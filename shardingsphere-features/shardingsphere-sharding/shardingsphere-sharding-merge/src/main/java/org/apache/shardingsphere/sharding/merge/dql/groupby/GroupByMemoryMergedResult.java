@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.imp
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.infra.executor.sql.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryMergedResult;
@@ -39,6 +40,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -65,7 +67,6 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
                 aggregate(selectStatementContext, each, groupByValue, aggregationMap);
             }
         }
-        checkNullAndSetDataMapForAggregation(selectStatementContext, dataMap, aggregationMap, queryResults);
         setAggregationValueToMemoryRow(selectStatementContext, dataMap, aggregationMap);
         List<Boolean> valueCaseSensitive = queryResults.isEmpty() ? Collections.emptyList() : getValueCaseSensitive(queryResults.iterator().next(), selectStatementContext, schemaMetaData);
         return getMemoryResultSetRows(selectStatementContext, dataMap, valueCaseSensitive);
@@ -104,17 +105,6 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
         Preconditions.checkState(null == result || result instanceof Comparable, "Aggregation value must implements Comparable");
         return (Comparable<?>) result;
     }
-
-    private void checkNullAndSetDataMapForAggregation(final SelectStatementContext selectStatementContext, final Map<GroupByValue, MemoryQueryResultRow> dataMap,
-                                                final Map<GroupByValue, Map<AggregationProjection, AggregationUnit>> aggregationMap, final List<QueryResult> queryResults) throws SQLException {
-        if (dataMap.isEmpty()) {
-            Map<AggregationProjection, AggregationUnit> map = Maps.toMap(selectStatementContext.getProjectionsContext().getAggregationProjections(),
-                input -> AggregationUnitFactory.create(input.getType(), input instanceof AggregationDistinctProjection));
-            GroupByValue groupByValue = new GroupByValue(queryResults.get(0), selectStatementContext.getGroupByContext().getItems());
-            aggregationMap.put(groupByValue, map);
-            dataMap.put(groupByValue, new MemoryQueryResultRow(queryResults.get(0)));
-        }
-    }
     
     private void setAggregationValueToMemoryRow(final SelectStatementContext selectStatementContext, 
                                                 final Map<GroupByValue, MemoryQueryResultRow> dataMap, final Map<GroupByValue, Map<AggregationProjection, AggregationUnit>> aggregationMap) {
@@ -146,9 +136,19 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
         }
         return false;
     }
-    
-    private List<MemoryQueryResultRow> getMemoryResultSetRows(final SelectStatementContext selectStatementContext, 
-                                                              final Map<GroupByValue, MemoryQueryResultRow> dataMap, final List<Boolean> valueCaseSensitive) {
+
+    private List<MemoryQueryResultRow> getMemoryResultSetRows(final SelectStatementContext selectStatementContext, final Map<GroupByValue, MemoryQueryResultRow> dataMap, final List<Boolean> valueCaseSensitive) {
+        if (dataMap.isEmpty()) {
+            List projections = new LinkedList(selectStatementContext.getProjectionsContext().getProjections());
+            Object[] data = new Object[projections.size()];
+            for (int i = 0; i < projections.size(); i++) {
+                if (projections.get(i) instanceof AggregationProjection && ((AggregationProjection) projections.get(i)).getType() == AggregationType.COUNT) {
+                    data[i] = 0;
+                }
+            }
+            return Collections.singletonList(new MemoryQueryResultRow(data));
+        }
+        
         List<MemoryQueryResultRow> result = new ArrayList<>(dataMap.values());
         result.sort(new GroupByRowComparator(selectStatementContext, valueCaseSensitive));
         return result;
