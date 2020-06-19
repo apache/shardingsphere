@@ -1,6 +1,6 @@
 +++
 title = "YAML Syntax"
-weight = 3
+weight = 4
 +++
 
 `!!` means instantiation of that class

@@ -1,6 +1,6 @@
 +++
 title = "YAML 语法说明"
-weight = 3
+weight = 4
 +++
 
 `!!` 表示实例化该类
