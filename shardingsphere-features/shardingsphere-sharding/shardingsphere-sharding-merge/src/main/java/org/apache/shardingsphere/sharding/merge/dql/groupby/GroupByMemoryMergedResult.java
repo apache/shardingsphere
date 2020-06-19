@@ -137,12 +137,13 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
         return false;
     }
 
-    private List<MemoryQueryResultRow> getMemoryResultSetRows(final SelectStatementContext selectStatementContext, final Map<GroupByValue, MemoryQueryResultRow> dataMap, final List<Boolean> valueCaseSensitive) {
+    private List<MemoryQueryResultRow> getMemoryResultSetRows(final SelectStatementContext selectStatementContext,
+                                                              final Map<GroupByValue, MemoryQueryResultRow> dataMap, final List<Boolean> valueCaseSensitive) {
         if (dataMap.isEmpty()) {
             List projections = new LinkedList(selectStatementContext.getProjectionsContext().getProjections());
             Object[] data = new Object[projections.size()];
             for (int i = 0; i < projections.size(); i++) {
-                if (projections.get(i) instanceof AggregationProjection && ((AggregationProjection) projections.get(i)).getType() == AggregationType.COUNT) {
+                if (projections.get(i) instanceof AggregationProjection && AggregationType.COUNT == ((AggregationProjection) projections.get(i)).getType()) {
                     data[i] = 0;
                 }
             }
