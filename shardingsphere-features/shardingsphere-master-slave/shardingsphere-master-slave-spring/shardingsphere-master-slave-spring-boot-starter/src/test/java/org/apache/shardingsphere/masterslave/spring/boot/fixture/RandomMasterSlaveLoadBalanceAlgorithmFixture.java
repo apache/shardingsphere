@@ -15,36 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.config.algorithm;
+package org.apache.shardingsphere.masterslave.spring.boot.fixture;
 
+import java.util.List;
+import java.util.Properties;
+import java.util.concurrent.ThreadLocalRandom;
+import javax.annotation.Resource;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.spi.type.TypedSPI;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
+import org.springframework.core.env.Environment;
 
-import java.util.Properties;
-
-/**
- * ShardingSphere algorithm configuration for YAML.
- */
 @Getter
 @Setter
-public final class YamlShardingSphereAlgorithmConfiguration implements YamlConfiguration {
-    
-    private String type;
+public final class RandomMasterSlaveLoadBalanceAlgorithmFixture implements MasterSlaveLoadBalanceAlgorithm {
     
     private Properties props = new Properties();
     
-    /**
-     * Build by typed spi.
-     *
-     * @param value typedSPI
-     * @return YAML sharding sphere algorithm configuration
-     */
-    public static YamlShardingSphereAlgorithmConfiguration buildByTypedSPI(final TypedSPI value) {
-        YamlShardingSphereAlgorithmConfiguration result = new YamlShardingSphereAlgorithmConfiguration();
-        result.setType(value.getType());
-        result.setProps(value.getProps());
-        return result;
+    @Resource
+    private Environment environment;
+    
+    @Override
+    public String getDataSource(final String name, final String masterDataSourceName, final List<String> slaveDataSourceNames) {
+        return slaveDataSourceNames.get(ThreadLocalRandom.current().nextInt(slaveDataSourceNames.size()));
+    }
+    
+    @Override
+    public String getType() {
+        return "FIXTURE";
     }
 }

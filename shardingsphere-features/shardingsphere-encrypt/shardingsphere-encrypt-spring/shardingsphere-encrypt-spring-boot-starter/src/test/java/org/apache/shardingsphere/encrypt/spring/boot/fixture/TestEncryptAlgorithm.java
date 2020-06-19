@@ -15,36 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.config.algorithm;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.spi.type.TypedSPI;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+package org.apache.shardingsphere.encrypt.spring.boot.fixture;
 
 import java.util.Properties;
+import javax.annotation.Resource;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.springframework.core.env.Environment;
 
-/**
- * ShardingSphere algorithm configuration for YAML.
- */
 @Getter
 @Setter
-public final class YamlShardingSphereAlgorithmConfiguration implements YamlConfiguration {
-    
-    private String type;
+public final class TestEncryptAlgorithm implements EncryptAlgorithm {
     
     private Properties props = new Properties();
     
-    /**
-     * Build by typed spi.
-     *
-     * @param value typedSPI
-     * @return YAML sharding sphere algorithm configuration
-     */
-    public static YamlShardingSphereAlgorithmConfiguration buildByTypedSPI(final TypedSPI value) {
-        YamlShardingSphereAlgorithmConfiguration result = new YamlShardingSphereAlgorithmConfiguration();
-        result.setType(value.getType());
-        result.setProps(value.getProps());
-        return result;
+    @Resource
+    private Environment environment;
+    
+    @Override
+    public void init() {
+    }
+    
+    @Override
+    public String encrypt(final Object plaintext) {
+        return "encryptValue";
+    }
+    
+    @Override
+    public Object decrypt(final String ciphertext) {
+        return "decryptValue";
+    }
+    
+    @Override
+    public String getType() {
+        return "test";
     }
 }

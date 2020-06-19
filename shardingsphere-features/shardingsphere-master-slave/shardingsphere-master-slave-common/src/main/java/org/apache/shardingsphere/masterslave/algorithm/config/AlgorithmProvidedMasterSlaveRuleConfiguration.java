@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.masterslave.algorithm.config;
 
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.masterslave.api.config.rule.MasterSlaveDataSourceRuleConfiguration;
 import org.apache.shardingsphere.masterslave.spi.MasterSlaveLoadBalanceAlgorithm;
@@ -29,11 +31,20 @@ import java.util.Map;
 /**
  * Algorithm provided master-slave rule configuration.
  */
-@RequiredArgsConstructor
 @Getter
+@Setter
 public final class AlgorithmProvidedMasterSlaveRuleConfiguration implements RuleConfiguration {
     
-    private final Collection<MasterSlaveDataSourceRuleConfiguration> dataSources;
+    private Collection<MasterSlaveDataSourceRuleConfiguration> dataSources = new LinkedList<>();
     
-    private final Map<String, MasterSlaveLoadBalanceAlgorithm> loadBalanceAlgorithms;
+    private Map<String, MasterSlaveLoadBalanceAlgorithm> loadBalanceAlgorithms = new LinkedHashMap<>();
+    
+    public AlgorithmProvidedMasterSlaveRuleConfiguration() {
+    }
+    
+    public AlgorithmProvidedMasterSlaveRuleConfiguration(final Collection<MasterSlaveDataSourceRuleConfiguration> dataSources,
+                                                         final Map<String, MasterSlaveLoadBalanceAlgorithm> loadBalanceAlgorithms) {
+        this.dataSources = dataSources;
+        this.loadBalanceAlgorithms = loadBalanceAlgorithms;
+    }
 }

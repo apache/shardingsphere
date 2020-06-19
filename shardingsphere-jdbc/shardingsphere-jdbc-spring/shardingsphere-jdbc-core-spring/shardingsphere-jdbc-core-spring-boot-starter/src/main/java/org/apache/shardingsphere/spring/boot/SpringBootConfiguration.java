@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.spring.boot;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.spring.boot.datasource.DataSourceMapSetter;
 import org.apache.shardingsphere.spring.boot.prop.SpringBootPropertiesConfiguration;
 import org.apache.shardingsphere.spring.transaction.ShardingTransactionTypeScanner;
@@ -63,15 +62,14 @@ public class SpringBootConfiguration implements EnvironmentAware {
     /**
      * Get ShardingSphere data source bean.
      *
-     * @param rules YAML rules configuration
+     * @param rules rules configuration
      * @return data source bean
      * @throws SQLException SQL exception
      */
     @Bean
     @Autowired(required = false)
-    public DataSource shardingSphereDataSource(final ObjectProvider<Collection<YamlRuleConfiguration>> rules) throws SQLException {
-        Collection<RuleConfiguration> ruleConfigurations = new YamlRuleConfigurationSwapperEngine()
-                .swapToRuleConfigurations(Optional.ofNullable(rules.getIfAvailable()).orElse(Collections.emptyList()));
+    public DataSource shardingSphereDataSource(final ObjectProvider<List<RuleConfiguration>> rules) throws SQLException {
+        Collection<RuleConfiguration> ruleConfigurations = Optional.ofNullable(rules.getIfAvailable()).orElse(Collections.emptyList());
         return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, ruleConfigurations, props.getProps());
     }
     

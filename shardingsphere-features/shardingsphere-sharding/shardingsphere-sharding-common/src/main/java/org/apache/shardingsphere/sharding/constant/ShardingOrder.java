@@ -30,4 +30,9 @@ public final class ShardingOrder {
      * Sharding order.
      */
     public static final int ORDER = 0;
+    
+    /**
+     * Algorithm provider sharding order.
+     */
+    public static final int ALGORITHM_PROVIDER_SHARDING_ORDER = 1;
 }

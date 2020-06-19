@@ -15,36 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.config.algorithm;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.spi.type.TypedSPI;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+package org.apache.shardingsphere.sharding.spring.boot.fixture;
 
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.Resource;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import org.springframework.core.env.Environment;
 
-/**
- * ShardingSphere algorithm configuration for YAML.
- */
-@Getter
-@Setter
-public final class YamlShardingSphereAlgorithmConfiguration implements YamlConfiguration {
+public final class IncrementKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
     
-    private String type;
+    private final AtomicInteger count = new AtomicInteger();
     
+    @Getter
+    @Setter
     private Properties props = new Properties();
     
-    /**
-     * Build by typed spi.
-     *
-     * @param value typedSPI
-     * @return YAML sharding sphere algorithm configuration
-     */
-    public static YamlShardingSphereAlgorithmConfiguration buildByTypedSPI(final TypedSPI value) {
-        YamlShardingSphereAlgorithmConfiguration result = new YamlShardingSphereAlgorithmConfiguration();
-        result.setType(value.getType());
-        result.setProps(value.getProps());
-        return result;
+    @Resource
+    @Getter
+    private Environment environment;
+    
+    @Override
+    public void init() {
+    }
+    
+    @Override
+    public Comparable<?> generateKey() {
+        return count.incrementAndGet();
+    }
+    
+    @Override
+    public String getType() {
+        return "EXTEND_INCREMENT";
     }
 }

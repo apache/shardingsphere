@@ -30,4 +30,9 @@ public final class MasterSlaveOrder {
      * Master-slave order.
      */
     public static final int ORDER = 10;
+    
+    /**
+     * Algorithm provider master-slave order.
+     */
+    public static final int ALGORITHM_PROVIDER_MASTER_SLAVE_ORDER = 11;
 }

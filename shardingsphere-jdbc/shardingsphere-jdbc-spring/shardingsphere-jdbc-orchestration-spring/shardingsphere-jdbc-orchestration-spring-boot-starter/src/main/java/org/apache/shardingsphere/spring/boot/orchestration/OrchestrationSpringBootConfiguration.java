@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.spring.boot.orchestration;
 
 import com.google.common.base.Preconditions;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.cluster.configuration.swapper.ClusterConfigurationYamlSwapper;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
@@ -25,8 +26,6 @@ import org.apache.shardingsphere.driver.orchestration.internal.datasource.Orches
 import org.apache.shardingsphere.spring.boot.orchestration.common.OrchestrationSpringBootRootConfiguration;
 import org.apache.shardingsphere.spring.boot.orchestration.rule.LocalRulesCondition;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
@@ -49,7 +48,6 @@ import org.springframework.util.CollectionUtils;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -96,17 +94,16 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     /**
      * Get orchestration ShardingSphere data source bean by local configuration.
      *
+     * @param rules rules configuration
      * @param orchestrationConfiguration orchestration configuration
-     * @param rules YAML rules configuration
      * @return orchestration sharding data source bean
      * @throws SQLException SQL exception
      */
     @Bean
     @Conditional(LocalRulesCondition.class)
     @Autowired(required = false)
-    public DataSource localShardingSphereDataSource(final OrchestrationConfiguration orchestrationConfiguration, final ObjectProvider<Collection<YamlRuleConfiguration>> rules) throws SQLException {
-        Collection<RuleConfiguration> ruleConfigurations = new YamlRuleConfigurationSwapperEngine()
-                .swapToRuleConfigurations(Optional.ofNullable(rules.getIfAvailable()).orElse(Collections.emptyList()));
+    public DataSource localShardingSphereDataSource(final ObjectProvider<List<RuleConfiguration>> rules, final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
+        List<RuleConfiguration> ruleConfigurations = Optional.ofNullable(rules.getIfAvailable()).orElse(Collections.emptyList());
         return null == root.getCluster() ? new OrchestrationShardingSphereDataSource(new ShardingSphereDataSource(dataSourceMap, ruleConfigurations, root.getProps()), orchestrationConfiguration)
                 : new OrchestrationShardingSphereDataSource(new ShardingSphereDataSource(dataSourceMap, ruleConfigurations, root.getProps()), orchestrationConfiguration,
                 new ClusterConfigurationYamlSwapper().swapToObject(root.getCluster()));
