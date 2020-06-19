@@ -53,6 +53,7 @@ public final class GroupByMemoryMergedResultTest {
     public void assertNextForResultSetsAllEmpty() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
         MergedResult actual = resultMerger.merge(Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult()), createSelectStatementContext(), null);
+        assertTrue(actual.next());
         assertFalse(actual.next());
     }
     
