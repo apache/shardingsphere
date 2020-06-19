@@ -149,7 +149,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
         return result;
     }
 
-    private Object[] generateReturnData(SelectStatementContext selectStatementContext) {
+    private Object[] generateReturnData(final SelectStatementContext selectStatementContext) {
         List projections = new LinkedList(selectStatementContext.getProjectionsContext().getProjections());
         Object[] data = new Object[projections.size()];
         for (int i = 0; i < projections.size(); i++) {
