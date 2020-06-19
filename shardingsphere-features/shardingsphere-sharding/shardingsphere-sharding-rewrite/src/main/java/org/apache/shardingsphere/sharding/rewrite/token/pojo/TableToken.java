@@ -58,12 +58,13 @@ public final class TableToken extends SQLToken implements Substitutable, RouteUn
     public String toString(final RouteUnit routeUnit) {
         String actualTableName = getLogicAndActualTables(routeUnit).get(tableSegment.getTableName().getIdentifier().getValue().toLowerCase());
         actualTableName = null == actualTableName ? tableSegment.getTableName().getIdentifier().getValue().toLowerCase() : actualTableName;
-        String owner = tableSegment.getOwner().isPresent()
-                ? Joiner.on("").join(tableSegment.getOwner().get().getIdentifier().getQuoteCharacter().getStartDelimiter(),
-                        tableSegment.getOwner().get().getIdentifier().getValue(), tableSegment.getOwner().get().getIdentifier().getQuoteCharacter().getEndDelimiter(), ".") : "";
-        String alias = tableSegment.getAlias().isPresent() ? " " + tableSegment.getAlias().get() : "";
+        String owner = "";
+        if (tableSegment.getOwner().isPresent() && routeUnit.getDataSourceMapper().getLogicName().equals(tableSegment.getOwner().get().getIdentifier().getValue())) {
+            owner = tableSegment.getOwner().get().getIdentifier().getQuoteCharacter().getStartDelimiter() + routeUnit.getDataSourceMapper().getActualName()
+                    + tableSegment.getOwner().get().getIdentifier().getQuoteCharacter().getEndDelimiter() + ".";
+        }
         return Joiner.on("").join(owner, tableSegment.getTableName().getIdentifier().getQuoteCharacter().getStartDelimiter(),
-                actualTableName, tableSegment.getTableName().getIdentifier().getQuoteCharacter().getEndDelimiter(), alias);
+                actualTableName, tableSegment.getTableName().getIdentifier().getQuoteCharacter().getEndDelimiter());
     }
     
     private Map<String, String> getLogicAndActualTables(final RouteUnit routeUnit) {
