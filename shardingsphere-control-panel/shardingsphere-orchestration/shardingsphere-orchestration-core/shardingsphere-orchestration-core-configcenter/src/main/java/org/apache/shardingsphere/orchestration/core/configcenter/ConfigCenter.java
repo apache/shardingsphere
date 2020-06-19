@@ -72,17 +72,25 @@ public final class ConfigCenter {
      * @param shardingSchemaName sharding schema name
      * @param dataSourceConfigs data source configuration map
      * @param ruleConfigurations rule configurations
-     * @param authentication authentication
-     * @param props sharding properties
      * @param isOverwrite is overwrite config center's configuration
      */
-    public void persistConfigurations(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs, final Collection<RuleConfiguration> ruleConfigurations,
-                                      final Authentication authentication, final Properties props, final boolean isOverwrite) {
+    public void persistConfigurations(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs,
+                                      final Collection<RuleConfiguration> ruleConfigurations, final boolean isOverwrite) {
         persistDataSourceConfiguration(shardingSchemaName, dataSourceConfigs, isOverwrite);
         persistRuleConfigurations(shardingSchemaName, ruleConfigurations, isOverwrite);
+        persistShardingSchemaName(shardingSchemaName);
+    }
+    
+    /**
+     * Persist global configuration.
+     *
+     * @param authentication authentication
+     * @param props properties
+     * @param isOverwrite is overwrite config center's configuration
+     */
+    public void persistGlobalConfiguration(final Authentication authentication, final Properties props, final boolean isOverwrite) {
         persistAuthentication(authentication, isOverwrite);
         persistProperties(props, isOverwrite);
-        persistShardingSchemaName(shardingSchemaName);
     }
     
     private void persistDataSourceConfiguration(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final boolean isOverwrite) {
