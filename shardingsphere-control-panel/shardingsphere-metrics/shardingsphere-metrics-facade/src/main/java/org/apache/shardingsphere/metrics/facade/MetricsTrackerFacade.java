@@ -74,6 +74,7 @@ public final class MetricsTrackerFacade {
      * @param metricsConfiguration metrics configuration
      */
     public void init(final MetricsConfiguration metricsConfiguration) {
+        Preconditions.checkNotNull(metricsConfiguration, "metrics configuration can not be null.");
         metricsTrackerManager = findMetricsTrackerManager(metricsConfiguration.getMetricsName());
         Preconditions.checkNotNull(metricsTrackerManager, "Can not find metrics tracker manager with metrics name in metrics configuration.");
         metricsTrackerManager.start(metricsConfiguration);

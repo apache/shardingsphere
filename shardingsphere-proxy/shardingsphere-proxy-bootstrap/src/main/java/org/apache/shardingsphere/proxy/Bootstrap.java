@@ -66,6 +66,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -125,8 +126,8 @@ public final class Bootstrap {
         Authentication authentication = new AuthenticationYamlSwapper().swapToObject(yamlAuthenticationConfig);
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap(ruleConfigs);
         Map<String, Collection<RuleConfiguration>> schemaRules = getRuleConfigurations(ruleConfigs);
-        initialize(authentication, properties, schemaDataSources, schemaRules, new MetricsConfigurationYamlSwapper().swapToObject(metricsConfiguration),
-                new ClusterConfigurationYamlSwapper().swapToObject(clusterConfiguration), false);
+        initialize(authentication, properties, schemaDataSources, schemaRules, getMetricsConfiguration(metricsConfiguration),
+                getClusterConfiguration(clusterConfiguration), false);
         ShardingSphereProxy.getInstance().start(port);
     }
     
@@ -278,6 +279,14 @@ public final class Bootstrap {
         result.setReadOnly(yamlDataSourceParameter.isReadOnly());
         result.setUrl(yamlDataSourceParameter.getUrl());
         return result;
+    }
+    
+    private static MetricsConfiguration getMetricsConfiguration(final YamlMetricsConfiguration yamlMetricsConfiguration) {
+        return Optional.ofNullable(yamlMetricsConfiguration).map(new MetricsConfigurationYamlSwapper()::swapToObject).orElse(null);
+    }
+    
+    private static ClusterConfiguration getClusterConfiguration(final YamlClusterConfiguration yamlClusterConfiguration) {
+        return Optional.ofNullable(yamlClusterConfiguration).map(new ClusterConfigurationYamlSwapper()::swapToObject).orElse(null);
     }
     
     /**
