@@ -140,18 +140,23 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
     private List<MemoryQueryResultRow> getMemoryResultSetRows(final SelectStatementContext selectStatementContext,
                                                               final Map<GroupByValue, MemoryQueryResultRow> dataMap, final List<Boolean> valueCaseSensitive) {
         if (dataMap.isEmpty()) {
-            List projections = new LinkedList(selectStatementContext.getProjectionsContext().getProjections());
-            Object[] data = new Object[projections.size()];
-            for (int i = 0; i < projections.size(); i++) {
-                if (projections.get(i) instanceof AggregationProjection && AggregationType.COUNT == ((AggregationProjection) projections.get(i)).getType()) {
-                    data[i] = 0;
-                }
-            }
+            Object[] data = generateReturnData(selectStatementContext);
             return Collections.singletonList(new MemoryQueryResultRow(data));
         }
         
         List<MemoryQueryResultRow> result = new ArrayList<>(dataMap.values());
         result.sort(new GroupByRowComparator(selectStatementContext, valueCaseSensitive));
         return result;
+    }
+
+    private Object[] generateReturnData(SelectStatementContext selectStatementContext) {
+        List projections = new LinkedList(selectStatementContext.getProjectionsContext().getProjections());
+        Object[] data = new Object[projections.size()];
+        for (int i = 0; i < projections.size(); i++) {
+            if (projections.get(i) instanceof AggregationProjection && AggregationType.COUNT == ((AggregationProjection) projections.get(i)).getType()) {
+                data[i] = 0;
+            }
+        }
+        return data;
     }
 }
