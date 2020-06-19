@@ -36,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromCla
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GroupByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InsertContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InsertValuesClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ReplaceValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.JoinSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.JoinedTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LimitClauseContext;
@@ -156,22 +157,6 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
     
     @SuppressWarnings("unchecked")
     @Override
-    public ASTNode visitReplace(final ReplaceContext ctx) {
-        // TODO :FIXME, since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
-        ReplaceStatement result;
-        if (null != ctx.insertValuesClause()) {
-            result = (ReplaceStatement) visit(ctx.insertValuesClause());
-        } else {
-            result = new ReplaceStatement();
-            result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
-        }
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.setParameterCount(getCurrentParameterIndex());
-        return result;
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
         InsertStatement result = new InsertStatement();
         if (null != ctx.columnNames()) {
@@ -201,6 +186,45 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
             visit(each.assignmentValue());
         }
         return new OnDuplicateKeyColumnsSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columns);
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitReplace(final ReplaceContext ctx) {
+        // TODO :FIXME, since there is no segment for replaceValuesClause, ReplaceStatement is created by sub rule.
+        ReplaceStatement result;
+        if (null != ctx.replaceValuesClause()) {
+            result = (ReplaceStatement) visit(ctx.replaceValuesClause());
+        } else {
+            result = new ReplaceStatement();
+            result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
+        }
+        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        result.setParameterCount(getCurrentParameterIndex());
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitReplaceValuesClause(final ReplaceValuesClauseContext ctx) {
+        ReplaceStatement result = new ReplaceStatement();
+        if (null != ctx.columnNames()) {
+            ColumnNamesContext columnNames = ctx.columnNames();
+            CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(columnNames);
+            result.setReplaceColumns(new InsertColumnsSegment(columnNames.start.getStartIndex(), columnNames.stop.getStopIndex(), columnSegments.getValue()));
+        } else {
+            result.setReplaceColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
+        }
+        result.getValues().addAll(createReplaceValuesSegments(ctx.assignmentValues()));
+        return result;
+    }
+    
+    private Collection<InsertValuesSegment> createReplaceValuesSegments(final Collection<AssignmentValuesContext> assignmentValuesContexts) {
+        Collection<InsertValuesSegment> result = new LinkedList<>();
+        for (AssignmentValuesContext each : assignmentValuesContexts) {
+            result.add((InsertValuesSegment) visit(each));
+        }
+        return result;
     }
     
     @SuppressWarnings("unchecked")
