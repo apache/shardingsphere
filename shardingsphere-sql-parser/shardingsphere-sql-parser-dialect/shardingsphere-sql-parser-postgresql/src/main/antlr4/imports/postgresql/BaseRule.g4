@@ -23,85 +23,85 @@ parameterMarker
     : QUESTION_ literalsType_?
     ;
 
-reserved_keyword
+reservedKeyword
     : ALL
-	| ANALYSE
-	| ANALYZE
-	| AND
-	| ANY
-	| ARRAY
-	| AS
-	| ASC
-	| ASYMMETRIC
-	| BOTH
-	| CASE
-	| CAST
-	| CHECK
-	| COLLATE
-	| COLUMN
-	| CONSTRAINT
-	| CREATE
-	| CURRENT_CATALOG
-	| CURRENT_DATE
-	| CURRENT_ROLE
-	| CURRENT_TIME
-	| CURRENT_TIMESTAMP
-	| CURRENT_USER
-	| DEFAULT
-	| DEFERRABLE
-	| DESC
-	| DISTINCT
-	| DO
-	| ELSE
-	| END
-	| EXCEPT
-	| FALSE
-	| FETCH
-	| FOR
-	| FOREIGN
-	| FROM
-	| GRANT
-	| GROUP
-	| HAVING
-	| IN
-	| INITIALLY
-	| INTERSECT
-	| INTO
-	| LATERAL
-	| LEADING
-	| LIMIT
-	| LOCALTIME
-	| LOCALTIMESTAMP
-	| NOT
-	| NULL
-	| OFFSET
-	| ON
-	| ONLY
-	| OR
-	| ORDER
-	| PLACING
-	| PRIMARY
-	| REFERENCES
-	| RETURNING
-	| SELECT
-	| SESSION_USER
-	| SOME
-	| SYMMETRIC
-	| TABLE
-	| THEN
-	| TO
-	| TRAILING
-	| TRUE
-	| UNION
-	| UNIQUE
-	| USER
-	| USING
-	| VARIADIC
-	| WHEN
-	| WHERE
-	| WINDOW
-	| WITH
-	;
+    | ANALYSE
+    | ANALYZE
+    | AND
+    | ANY
+    | ARRAY
+    | AS
+    | ASC
+    | ASYMMETRIC
+    | BOTH
+    | CASE
+    | CAST
+    | CHECK
+    | COLLATE
+    | COLUMN
+    | CONSTRAINT
+    | CREATE
+    | CURRENT_CATALOG
+    | CURRENT_DATE
+    | CURRENT_ROLE
+    | CURRENT_TIME
+    | CURRENT_TIMESTAMP
+    | CURRENT_USER
+    | DEFAULT
+    | DEFERRABLE
+    | DESC
+    | DISTINCT
+    | DO
+    | ELSE
+    | END
+    | EXCEPT
+    | FALSE
+    | FETCH
+    | FOR
+    | FOREIGN
+    | FROM
+    | GRANT
+    | GROUP
+    | HAVING
+    | IN
+    | INITIALLY
+    | INTERSECT
+    | INTO
+    | LATERAL
+    | LEADING
+    | LIMIT
+    | LOCALTIME
+    | LOCALTIMESTAMP
+    | NOT
+    | NULL
+    | OFFSET
+    | ON
+    | ONLY
+    | OR
+    | ORDER
+    | PLACING
+    | PRIMARY
+    | REFERENCES
+    | RETURNING
+    | SELECT
+    | SESSION_USER
+    | SOME
+    | SYMMETRIC
+    | TABLE
+    | THEN
+    | TO
+    | TRAILING
+    | TRUE
+    | UNION
+    | UNIQUE
+    | USER
+    | USING
+    | VARIADIC
+    | WHEN
+    | WHERE
+    | WINDOW
+    | WITH
+    ;
 
 numberLiterals
    : MINUS_? NUMBER_ literalsType_?
@@ -125,331 +125,331 @@ uescape_
     
 unreservedWord
     : ABORT
-	| ABSOLUTE
-	| ACCESS
-	| ACTION
-	| ADD
-	| ADMIN
-	| AFTER
-	| AGGREGATE
-	| ALSO
-	| ALTER
-	| ALWAYS
-	| ASSERTION
-	| ASSIGNMENT
-	| AT
-	| ATTACH
-	| ATTRIBUTE
-	| BACKWARD
-	| BEFORE
-	| BEGIN
-	| BY
-	| CACHE
-	| CALL
-	| CALLED
-	| CASCADE
-	| CASCADED
-	| CATALOG
-	| CHAIN
-	| CHARACTERISTICS
-	| CHECKPOINT
-	| CLASS
-	| CLOSE
-	| CLUSTER
-	| COLUMNS
-	| COMMENT
-	| COMMENTS
-	| COMMIT
-	| COMMITTED
-	| CONFIGURATION
-	| CONFLICT
-	| CONNECTION
-	| CONSTRAINTS
-	| CONTENT
-	| CONTINUE
-	| CONVERSION
-	| COPY
-	| COST
-	| CSV
-	| CUBE
-	| CURRENT
-	| CURSOR
-	| CYCLE
-	| DATA
-	| DATABASE
-	| DAY
-	| DEALLOCATE
-	| DECLARE
-	| DEFAULTS
-	| DEFERRED
-	| DEFINER
-	| DELETE
-	| DELIMITER
-	| DELIMITERS
-	| DEPENDS
-	| DETACH
-	| DICTIONARY
-	| DISABLE
-	| DISCARD
-	| DOCUMENT
-	| DOMAIN
-	| DOUBLE
-	| DROP
-	| EACH
-	| ENABLE
-	| ENCODING
-	| ENCRYPTED
-	| ENUM
-	| ESCAPE
-	| EVENT
-	| EXCLUDE
-	| EXCLUDING
-	| EXCLUSIVE
-	| EXECUTE
-	| EXPLAIN
-	| EXPRESSION
-	| EXTENSION
-	| EXTERNAL
-	| FAMILY
-	| FILTER
-	| FIRST
-	| FOLLOWING
-	| FORCE
-	| FORWARD
-	| FUNCTION
-	| FUNCTIONS
-	| GENERATED
-	| GLOBAL
-	| GRANTED
-	| GROUPS
-	| HANDLER
-	| HEADER
-	| HOLD
-	| HOUR
-	| IDENTITY
-	| IF
-	| IMMEDIATE
-	| IMMUTABLE
-	| IMPLICIT
-	| IMPORT
-	| INCLUDE
-	| INCLUDING
-	| INCREMENT
-	| INDEX
-	| INDEXES
-	| INHERIT
-	| INHERITS
-	| INLINE
-	| INPUT
-	| INSENSITIVE
-	| INSERT
-	| INSTEAD
-	| INVOKER
-	| ISOLATION
-	| KEY
-	| LABEL
-	| LANGUAGE
-	| LARGE
-	| LAST
-	| LEAKPROOF
-	| LEVEL
-	| LISTEN
-	| LOAD
-	| LOCAL
-	| LOCATION
-	| LOCK
-	| LOCKED
-	| LOGGED
-	| MAPPING
-	| MATCH
-	| MATERIALIZED
-	| MAXVALUE
-	| METHOD
-	| MINUTE
-	| MINVALUE
-	| MODE
-	| MONTH
-	| MOVE
-	| NAME
-	| NAMES
-	| NEW
-	| NEXT
-	| NFC
-	| NFD
-	| NFKC
-	| NFKD
-	| NO
-	| NORMALIZED
-	| NOTHING
-	| NOTIFY
-	| NOWAIT
-	| NULLS
-	| OBJECT
-	| OF
-	| OFF
-	| OIDS
-	| OLD
-	| OPERATOR
-	| OPTION
-	| OPTIONS
-	| ORDINALITY
-	| OTHERS
-	| OVER
-	| OVERRIDING
-	| OWNED
-	| OWNER
-	| PARALLEL
-	| PARSER
-	| PARTIAL
-	| PARTITION
-	| PASSING
-	| PASSWORD
-	| PLANS
-	| POLICY
-	| PRECEDING
-	| PREPARE
-	| PREPARED
-	| PRESERVE
-	| PRIOR
-	| PRIVILEGES
-	| PROCEDURAL
-	| PROCEDURE
-	| PROCEDURES
-	| PROGRAM
-	| PUBLICATION
-	| QUOTE
-	| RANGE
-	| READ
-	| REASSIGN
-	| RECHECK
-	| RECURSIVE
-	| REF
-	| REFERENCING
-	| REFRESH
-	| REINDEX
-	| RELATIVE
-	| RELEASE
-	| RENAME
-	| REPEATABLE
-	| REPLACE
-	| REPLICA
-	| RESET
-	| RESTART
-	| RESTRICT
-	| RETURNS
-	| REVOKE
-	| ROLE
-	| ROLLBACK
-	| ROLLUP
-	| ROUTINE
-	| ROUTINES
-	| ROWS
-	| RULE
-	| SAVEPOINT
-	| SCHEMA
-	| SCHEMAS
-	| SCROLL
-	| SEARCH
-	| SECOND
-	| SECURITY
-	| SEQUENCE
-	| SEQUENCES
-	| SERIALIZABLE
-	| SERVER
-	| SESSION
-	| SET
-	| SETS
-	| SHARE
-	| SHOW
-	| SIMPLE
-//	| SKIP
-	| SNAPSHOT
-	| SQL
-	| STABLE
-	| STANDALONE
-	| START
-	| STATEMENT
-	| STATISTICS
-	| STDIN
-	| STDOUT
-	| STORAGE
-	| STORED
-	| STRICT
-	| STRIP
-	| SUBSCRIPTION
-	| SUPPORT
-	| SYSID
-	| SYSTEM
-	| TABLES
-	| TABLESPACE
-	| TEMP
-	| TEMPLATE
-	| TEMPORARY
-	| TEXT
-	| TIES
-	| TRANSACTION
-	| TRANSFORM
-	| TRIGGER
-	| TRUNCATE
-	| TRUSTED
-	| TYPE
-	| TYPES
-	| UESCAPE
-	| UNBOUNDED
-	| UNCOMMITTED
-	| UNENCRYPTED
-	| UNKNOWN
-	| UNLISTEN
-	| UNLOGGED
-	| UNTIL
-	| UPDATE
-	| VACUUM
-	| VALID
-	| VALIDATE
-	| VALIDATOR
-	| VALUE
-	| VARYING
-	| VERSION
-	| VIEW
-	| VIEWS
-	| VOLATILE
-	| WHITESPACE
-	| WITHIN
-	| WITHOUT
-	| WORK
-	| WRAPPER
-	| WRITE
-	| XML
-	| YEAR
-	| YES
-	| ZONE
-	;
+    | ABSOLUTE
+    | ACCESS
+    | ACTION
+    | ADD
+    | ADMIN
+    | AFTER
+    | AGGREGATE
+    | ALSO
+    | ALTER
+    | ALWAYS
+    | ASSERTION
+    | ASSIGNMENT
+    | AT
+    | ATTACH
+    | ATTRIBUTE
+    | BACKWARD
+    | BEFORE
+    | BEGIN
+    | BY
+    | CACHE
+    | CALL
+    | CALLED
+    | CASCADE
+    | CASCADED
+    | CATALOG
+    | CHAIN
+    | CHARACTERISTICS
+    | CHECKPOINT
+    | CLASS
+    | CLOSE
+    | CLUSTER
+    | COLUMNS
+    | COMMENT
+    | COMMENTS
+    | COMMIT
+    | COMMITTED
+    | CONFIGURATION
+    | CONFLICT
+    | CONNECTION
+    | CONSTRAINTS
+    | CONTENT
+    | CONTINUE
+    | CONVERSION
+    | COPY
+    | COST
+    | CSV
+    | CUBE
+    | CURRENT
+    | CURSOR
+    | CYCLE
+    | DATA
+    | DATABASE
+    | DAY
+    | DEALLOCATE
+    | DECLARE
+    | DEFAULTS
+    | DEFERRED
+    | DEFINER
+    | DELETE
+    | DELIMITER
+    | DELIMITERS
+    | DEPENDS
+    | DETACH
+    | DICTIONARY
+    | DISABLE
+    | DISCARD
+    | DOCUMENT
+    | DOMAIN
+    | DOUBLE
+    | DROP
+    | EACH
+    | ENABLE
+    | ENCODING
+    | ENCRYPTED
+    | ENUM
+    | ESCAPE
+    | EVENT
+    | EXCLUDE
+    | EXCLUDING
+    | EXCLUSIVE
+    | EXECUTE
+    | EXPLAIN
+    | EXPRESSION
+    | EXTENSION
+    | EXTERNAL
+    | FAMILY
+    | FILTER
+    | FIRST
+    | FOLLOWING
+    | FORCE
+    | FORWARD
+    | FUNCTION
+    | FUNCTIONS
+    | GENERATED
+    | GLOBAL
+    | GRANTED
+    | GROUPS
+    | HANDLER
+    | HEADER
+    | HOLD
+    | HOUR
+    | IDENTITY
+    | IF
+    | IMMEDIATE
+    | IMMUTABLE
+    | IMPLICIT
+    | IMPORT
+    | INCLUDE
+    | INCLUDING
+    | INCREMENT
+    | INDEX
+    | INDEXES
+    | INHERIT
+    | INHERITS
+    | INLINE
+    | INPUT
+    | INSENSITIVE
+    | INSERT
+    | INSTEAD
+    | INVOKER
+    | ISOLATION
+    | KEY
+    | LABEL
+    | LANGUAGE
+    | LARGE
+    | LAST
+    | LEAKPROOF
+    | LEVEL
+    | LISTEN
+    | LOAD
+    | LOCAL
+    | LOCATION
+    | LOCK
+    | LOCKED
+    | LOGGED
+    | MAPPING
+    | MATCH
+    | MATERIALIZED
+    | MAXVALUE
+    | METHOD
+    | MINUTE
+    | MINVALUE
+    | MODE
+    | MONTH
+    | MOVE
+    | NAME
+    | NAMES
+    | NEW
+    | NEXT
+    | NFC
+    | NFD
+    | NFKC
+    | NFKD
+    | NO
+    | NORMALIZED
+    | NOTHING
+    | NOTIFY
+    | NOWAIT
+    | NULLS
+    | OBJECT
+    | OF
+    | OFF
+    | OIDS
+    | OLD
+    | OPERATOR
+    | OPTION
+    | OPTIONS
+    | ORDINALITY
+    | OTHERS
+    | OVER
+    | OVERRIDING
+    | OWNED
+    | OWNER
+    | PARALLEL
+    | PARSER
+    | PARTIAL
+    | PARTITION
+    | PASSING
+    | PASSWORD
+    | PLANS
+    | POLICY
+    | PRECEDING
+    | PREPARE
+    | PREPARED
+    | PRESERVE
+    | PRIOR
+    | PRIVILEGES
+    | PROCEDURAL
+    | PROCEDURE
+    | PROCEDURES
+    | PROGRAM
+    | PUBLICATION
+    | QUOTE
+    | RANGE
+    | READ
+    | REASSIGN
+    | RECHECK
+    | RECURSIVE
+    | REF
+    | REFERENCING
+    | REFRESH
+    | REINDEX
+    | RELATIVE
+    | RELEASE
+    | RENAME
+    | REPEATABLE
+    | REPLACE
+    | REPLICA
+    | RESET
+    | RESTART
+    | RESTRICT
+    | RETURNS
+    | REVOKE
+    | ROLE
+    | ROLLBACK
+    | ROLLUP
+    | ROUTINE
+    | ROUTINES
+    | ROWS
+    | RULE
+    | SAVEPOINT
+    | SCHEMA
+    | SCHEMAS
+    | SCROLL
+    | SEARCH
+    | SECOND
+    | SECURITY
+    | SEQUENCE
+    | SEQUENCES
+    | SERIALIZABLE
+    | SERVER
+    | SESSION
+    | SET
+    | SETS
+    | SHARE
+    | SHOW
+    | SIMPLE
+//    | SKIP
+    | SNAPSHOT
+    | SQL
+    | STABLE
+    | STANDALONE
+    | START
+    | STATEMENT
+    | STATISTICS
+    | STDIN
+    | STDOUT
+    | STORAGE
+    | STORED
+    | STRICT
+    | STRIP
+    | SUBSCRIPTION
+    | SUPPORT
+    | SYSID
+    | SYSTEM
+    | TABLES
+    | TABLESPACE
+    | TEMP
+    | TEMPLATE
+    | TEMPORARY
+    | TEXT
+    | TIES
+    | TRANSACTION
+    | TRANSFORM
+    | TRIGGER
+    | TRUNCATE
+    | TRUSTED
+    | TYPE
+    | TYPES
+    | UESCAPE
+    | UNBOUNDED
+    | UNCOMMITTED
+    | UNENCRYPTED
+    | UNKNOWN
+    | UNLISTEN
+    | UNLOGGED
+    | UNTIL
+    | UPDATE
+    | VACUUM
+    | VALID
+    | VALIDATE
+    | VALIDATOR
+    | VALUE
+    | VARYING
+    | VERSION
+    | VIEW
+    | VIEWS
+    | VOLATILE
+    | WHITESPACE
+    | WITHIN
+    | WITHOUT
+    | WORK
+    | WRAPPER
+    | WRITE
+    | XML
+    | YEAR
+    | YES
+    | ZONE
+    ;
 
 typeFuncNameKeyword
     : AUTHORIZATION
-	| BINARY
-	| COLLATION
-	| CONCURRENTLY
-	| CROSS
-	| CURRENT_SCHEMA
-	| FREEZE
-	| FULL
-	| ILIKE
-	| INNER
-	| IS
-	| ISNULL
-	| JOIN
-	| LEFT
-	| LIKE
-	| NATURAL
-	| NOTNULL
-	| OUTER
-	| OVERLAPS
-	| RIGHT
-	| SIMILAR
-	| TABLESAMPLE
-	| VERBOSE
-	;
+    | BINARY
+    | COLLATION
+    | CONCURRENTLY
+    | CROSS
+    | CURRENT_SCHEMA
+    | FREEZE
+    | FULL
+    | ILIKE
+    | INNER
+    | IS
+    | ISNULL
+    | JOIN
+    | LEFT
+    | LIKE
+    | NATURAL
+    | NOTNULL
+    | OUTER
+    | OVERLAPS
+    | RIGHT
+    | SIMILAR
+    | TABLESAMPLE
+    | VERBOSE
+    ;
 
 schemaName
     : identifier
@@ -506,240 +506,240 @@ comparisonOperator
 
 cursorName
     : name
-	;
+    ;
 
 aExpr
     : cExpr
-	| aExpr TYPE_CAST_ typeName
-	| aExpr COLLATE anyName
-	| aExpr AT TIME ZONE aExpr
-	| PLUS_ aExpr
-	| MINUS_ aExpr
-	| aExpr PLUS_ aExpr
-	| aExpr MINUS_ aExpr
-	| aExpr ASTERISK_ aExpr
-	| aExpr SLASH_ aExpr
-	| aExpr MOD_ aExpr
-	| aExpr CARET_ aExpr
-	| aExpr comparisonOperator aExpr
+    | aExpr TYPE_CAST_ typeName
+    | aExpr COLLATE anyName
+    | aExpr AT TIME ZONE aExpr
+    | PLUS_ aExpr
+    | MINUS_ aExpr
+    | aExpr PLUS_ aExpr
+    | aExpr MINUS_ aExpr
+    | aExpr ASTERISK_ aExpr
+    | aExpr SLASH_ aExpr
+    | aExpr MOD_ aExpr
+    | aExpr CARET_ aExpr
+    | aExpr comparisonOperator aExpr
     | LP_ aExpr RP_ optIndirection
-	| aExpr qualOp aExpr
-	| qualOp aExpr
-	| aExpr qualOp
-	| NOT aExpr
-	| aExpr LIKE aExpr
-	| aExpr LIKE aExpr ESCAPE aExpr
-	| aExpr NOT LIKE aExpr
-	| aExpr NOT LIKE aExpr ESCAPE aExpr
-	| aExpr ILIKE aExpr
-	| aExpr ILIKE aExpr ESCAPE aExpr
-	| aExpr NOT ILIKE aExpr
-	| aExpr NOT ILIKE aExpr ESCAPE aExpr
-	| aExpr SIMILAR TO aExpr
-	| aExpr SIMILAR TO aExpr ESCAPE aExpr
-	| aExpr NOT SIMILAR TO aExpr
-	| aExpr NOT SIMILAR TO aExpr ESCAPE aExpr
-	| aExpr IS NULL
-	| aExpr ISNULL
-	| aExpr IS NOT NULL
-	| aExpr NOTNULL
-	| row OVERLAPS row
-	| aExpr IS TRUE
-	| aExpr IS NOT TRUE
-	| aExpr IS FALSE
-	| aExpr IS NOT FALSE
-	| aExpr IS UNKNOWN
-	| aExpr IS NOT UNKNOWN
-	| aExpr IS DISTINCT FROM aExpr
-	| aExpr IS NOT DISTINCT FROM aExpr
-	| aExpr IS OF LP_ typeList RP_
-	| aExpr IS NOT OF LP_ typeList RP_
-	| aExpr BETWEEN ASYMMETRIC? bExpr AND aExpr
-	| aExpr NOT BETWEEN ASYMMETRIC? bExpr AND aExpr
-	| aExpr BETWEEN SYMMETRIC bExpr AND aExpr
-	| aExpr NOT BETWEEN SYMMETRIC bExpr AND aExpr
-	| aExpr IN inExpr
-	| aExpr NOT IN inExpr
-	| aExpr subqueryOp subType selectWithParens
-	| aExpr subqueryOp subType LP_ aExpr RP_
-	| UNIQUE selectWithParens
-	| aExpr IS DOCUMENT
-	| aExpr IS NOT DOCUMENT
-	| aExpr IS NORMALIZED
-	| aExpr IS unicodeNormalForm NORMALIZED
-	| aExpr IS NOT NORMALIZED
-	| aExpr IS NOT unicodeNormalForm NORMALIZED
-	| aExpr logicalOperator aExpr
-	| DEFAULT
-	;
+    | aExpr qualOp aExpr
+    | qualOp aExpr
+    | aExpr qualOp
+    | NOT aExpr
+    | aExpr LIKE aExpr
+    | aExpr LIKE aExpr ESCAPE aExpr
+    | aExpr NOT LIKE aExpr
+    | aExpr NOT LIKE aExpr ESCAPE aExpr
+    | aExpr ILIKE aExpr
+    | aExpr ILIKE aExpr ESCAPE aExpr
+    | aExpr NOT ILIKE aExpr
+    | aExpr NOT ILIKE aExpr ESCAPE aExpr
+    | aExpr SIMILAR TO aExpr
+    | aExpr SIMILAR TO aExpr ESCAPE aExpr
+    | aExpr NOT SIMILAR TO aExpr
+    | aExpr NOT SIMILAR TO aExpr ESCAPE aExpr
+    | aExpr IS NULL
+    | aExpr ISNULL
+    | aExpr IS NOT NULL
+    | aExpr NOTNULL
+    | row OVERLAPS row
+    | aExpr IS TRUE
+    | aExpr IS NOT TRUE
+    | aExpr IS FALSE
+    | aExpr IS NOT FALSE
+    | aExpr IS UNKNOWN
+    | aExpr IS NOT UNKNOWN
+    | aExpr IS DISTINCT FROM aExpr
+    | aExpr IS NOT DISTINCT FROM aExpr
+    | aExpr IS OF LP_ typeList RP_
+    | aExpr IS NOT OF LP_ typeList RP_
+    | aExpr BETWEEN ASYMMETRIC? bExpr AND aExpr
+    | aExpr NOT BETWEEN ASYMMETRIC? bExpr AND aExpr
+    | aExpr BETWEEN SYMMETRIC bExpr AND aExpr
+    | aExpr NOT BETWEEN SYMMETRIC bExpr AND aExpr
+    | aExpr IN inExpr
+    | aExpr NOT IN inExpr
+    | aExpr subqueryOp subType selectWithParens
+    | aExpr subqueryOp subType LP_ aExpr RP_
+    | UNIQUE selectWithParens
+    | aExpr IS DOCUMENT
+    | aExpr IS NOT DOCUMENT
+    | aExpr IS NORMALIZED
+    | aExpr IS unicodeNormalForm NORMALIZED
+    | aExpr IS NOT NORMALIZED
+    | aExpr IS NOT unicodeNormalForm NORMALIZED
+    | aExpr logicalOperator aExpr
+    | DEFAULT
+    ;
 
 bExpr
     : cExpr
-	| bExpr TYPE_CAST_ typeName
-	| PLUS_ bExpr
-	| MINUS_ bExpr
-	| bExpr qualOp bExpr
-	| qualOp bExpr
-	| bExpr qualOp
-	| bExpr IS DISTINCT FROM bExpr
-	| bExpr IS NOT DISTINCT FROM bExpr
-	| bExpr IS OF LP_ typeList RP_
-	| bExpr IS NOT OF LP_ typeList RP_
-	| bExpr IS DOCUMENT
-	| bExpr IS NOT DOCUMENT
-	;
+    | bExpr TYPE_CAST_ typeName
+    | PLUS_ bExpr
+    | MINUS_ bExpr
+    | bExpr qualOp bExpr
+    | qualOp bExpr
+    | bExpr qualOp
+    | bExpr IS DISTINCT FROM bExpr
+    | bExpr IS NOT DISTINCT FROM bExpr
+    | bExpr IS OF LP_ typeList RP_
+    | bExpr IS NOT OF LP_ typeList RP_
+    | bExpr IS DOCUMENT
+    | bExpr IS NOT DOCUMENT
+    ;
 
 cExpr
     : parameterMarker
     | columnref
-	| aexprConst
-	| PARAM indirectionEl?
-	| caseExpr
-	| funcExpr
-	| selectWithParens
-	| selectWithParens indirection
-	| EXISTS selectWithParens
-	| ARRAY selectWithParens
-	| ARRAY arrayExpr
-	| explicitRow
-	| implicitRow
-	| GROUPING LP_ exprList RP_
-	;
+    | aexprConst
+    | PARAM indirectionEl?
+    | caseExpr
+    | funcExpr
+    | selectWithParens
+    | selectWithParens indirection
+    | EXISTS selectWithParens
+    | ARRAY selectWithParens
+    | ARRAY arrayExpr
+    | explicitRow
+    | implicitRow
+    | GROUPING LP_ exprList RP_
+    ;
 
 indirection
     : indirectionEl
-	| indirection indirectionEl
-	;
+    | indirection indirectionEl
+    ;
 
 optIndirection
     : optIndirection indirectionEl |
-	;
+    ;
 
 indirectionEl
     : DOT_ attrName
-	| DOT_ ASTERISK_
-	| LBT_ aExpr RBT_
-	| LBT_ sliceBound? COLON_ sliceBound? RBT_
-	;
+    | DOT_ ASTERISK_
+    | LBT_ aExpr RBT_
+    | LBT_ sliceBound? COLON_ sliceBound? RBT_
+    ;
 
 sliceBound
     : aExpr
-	;
+    ;
 
 inExpr
     : selectWithParens | LP_ exprList RP_
-	;
+    ;
 
 caseExpr
     : CASE caseArg? whenClauseList caseDefault? END
-	;
+    ;
 
 whenClauseList
     : whenClause
-	| whenClauseList whenClause
-	;
+    | whenClauseList whenClause
+    ;
 
 whenClause
     : WHEN aExpr THEN aExpr
-	;
+    ;
 
 caseDefault
     : ELSE aExpr
-	;
+    ;
 
 caseArg
     : aExpr
-	;
+    ;
 
 columnref
     : colId
-	| colId indirection
-	;
+    | colId indirection
+    ;
 
 qualOp
     : mathOperator
     | TILDE_TILDE_
     | NOT_TILDE_TILDE_
     | OPERATOR LP_ anyOperator RP_
-	;
+    ;
 
 subqueryOp
     : allOp
-	| OPERATOR LP_ anyOperator RP_
-	| LIKE
-	| NOT LIKE
-	| ILIKE
-	| NOT ILIKE
-	;
+    | OPERATOR LP_ anyOperator RP_
+    | LIKE
+    | NOT LIKE
+    | ILIKE
+    | NOT ILIKE
+    ;
 
 allOp
     : mathOperator
-	;
+    ;
 
 mathOperator
     : PLUS_
-	| MINUS_
-	| ASTERISK_
-	| SLASH_
-	| MOD_
-	| CARET_
-	| LT_
-	| GT_
-	| EQ_
-	| LTE_
-	| GTE_
-	| NEQ_
-	;
+    | MINUS_
+    | ASTERISK_
+    | SLASH_
+    | MOD_
+    | CARET_
+    | LT_
+    | GT_
+    | EQ_
+    | LTE_
+    | GTE_
+    | NEQ_
+    ;
 
 qualAllOp
     : allOp
-	| OPERATOR LP_ anyOperator RP_
-	;
+    | OPERATOR LP_ anyOperator RP_
+    ;
 
 ascDesc
     : ASC | DESC
-	;
+    ;
 
 anyOperator
     : allOp | colId DOT_ anyOperator
-	;
+    ;
 
 frameClause
     : RANGE frameExtent windowExclusionClause?
-	| ROWS frameExtent windowExclusionClause?
-	| GROUPS frameExtent windowExclusionClause?
-	;
+    | ROWS frameExtent windowExclusionClause?
+    | GROUPS frameExtent windowExclusionClause?
+    ;
 
 frameExtent
     : frameBound
-	| BETWEEN frameBound AND frameBound
-	;
+    | BETWEEN frameBound AND frameBound
+    ;
 
 frameBound
     : UNBOUNDED PRECEDING
-	| UNBOUNDED FOLLOWING
-	| CURRENT ROW
-	| aExpr PRECEDING
-	| aExpr FOLLOWING
-	;
+    | UNBOUNDED FOLLOWING
+    | CURRENT ROW
+    | aExpr PRECEDING
+    | aExpr FOLLOWING
+    ;
 
 windowExclusionClause
     : EXCLUDE CURRENT ROW
-	| EXCLUDE GROUP
-	| EXCLUDE TIES
-	| EXCLUDE NO OTHERS
-	;
+    | EXCLUDE GROUP
+    | EXCLUDE TIES
+    | EXCLUDE NO OTHERS
+    ;
 
 row
     : ROW LP_ exprList RP_
-	| ROW LP_ RP_
-	| LP_ exprList COMMA_ aExpr RP_
-	;
+    | ROW LP_ RP_
+    | LP_ exprList COMMA_ aExpr RP_
+    ;
 
 explicitRow
     : ROW LP_ exprList RP_
-	| ROW LP_ RP_
-	;
+    | ROW LP_ RP_
+    ;
 
 implicitRow
     : LP_ exprList COMMA_ aExpr RP_
@@ -747,37 +747,37 @@ implicitRow
 
 subType
     : ANY | SOME | ALL
-	;
+    ;
 
 arrayExpr
     : LBT_ exprList RBT_
-	| LBT_ arrayExprList RBT_
-	| LBT_ RBT_
-	;
+    | LBT_ arrayExprList RBT_
+    | LBT_ RBT_
+    ;
 
 arrayExprList
     : arrayExpr | arrayExprList COMMA_ arrayExpr
-	;
+    ;
 
 funcArgList
     : funcArgExpr
-	| funcArgList COMMA_ funcArgExpr
-	;
+    | funcArgList COMMA_ funcArgExpr
+    ;
 
 paramName
     : typeFunctionName
-	;
+;
 
 funcArgExpr
     : aExpr
-	| paramName CQ_ aExpr
-	| paramName GTE_ aExpr
-	;
+    | paramName CQ_ aExpr
+    | paramName GTE_ aExpr
+    ;
 
 typeList
     : typeName
-	| typeList COMMA_ typeName
-	;
+    | typeList COMMA_ typeName
+    ;
 
 funcApplication
     : funcName LP_ RP_
@@ -795,13 +795,13 @@ funcName
 
 aexprConst
     : NUMBER_
-	| STRING_
-	| funcName STRING_
-	| funcName LP_ funcArgList sortClause? RP_ STRING_
-	| TRUE
-	| FALSE
-	| NULL
-	;
+    | STRING_
+    | funcName STRING_
+    | funcName LP_ funcArgList sortClause? RP_ STRING_
+    | TRUE
+    | FALSE
+    | NULL
+    ;
 
 qualifiedName
     : colId | colId indirection
@@ -822,54 +822,54 @@ functionTable
 
 xmlTable
     : XMLTABLE LP_ cExpr xmlExistsArgument COLUMNS xmlTableColumnList RP_
-	| XMLTABLE LP_ XMLNAMESPACES LP_ xmlNamespaceList RP_ COMMA_ cExpr xmlExistsArgument COLUMNS xmlTableColumnList RP_
-	;
+    | XMLTABLE LP_ XMLNAMESPACES LP_ xmlNamespaceList RP_ COMMA_ cExpr xmlExistsArgument COLUMNS xmlTableColumnList RP_
+    ;
 
 xmlTableColumnList
     : xmlTableColumnEl
-	| xmlTableColumnList COMMA_ xmlTableColumnEl
-	;
+    | xmlTableColumnList COMMA_ xmlTableColumnEl
+    ;
 
 xmlTableColumnEl
     : colId typeName
-	| colId typeName xmlTableColumnOptionList
-	| colId FOR ORDINALITY
-	;
+    | colId typeName xmlTableColumnOptionList
+    | colId FOR ORDINALITY
+    ;
 
 xmlTableColumnOptionList
     : xmlTableColumnOptionEl
-	| xmlTableColumnOptionList xmlTableColumnOptionEl
-	;
+    | xmlTableColumnOptionList xmlTableColumnOptionEl
+    ;
 
 xmlTableColumnOptionEl
     : identifier bExpr
-	| DEFAULT bExpr
-	| NOT NULL
-	| NULL
-	;
+    | DEFAULT bExpr
+    | NOT NULL
+    | NULL
+    ;
 
 xmlNamespaceList
     : xmlNamespaceEl
-	| xmlNamespaceList COMMA_ xmlNamespaceEl
-	;
+    | xmlNamespaceList COMMA_ xmlNamespaceEl
+    ;
 
 xmlNamespaceEl
     : bExpr AS identifier
-	| DEFAULT bExpr
-	;
+    | DEFAULT bExpr
+    ;
 
 funcExpr
     : funcApplication withinGroupClause? filterClause? overClause?
-	| functionExprCommonSubexpr
-	;
+    | functionExprCommonSubexpr
+    ;
 
 withinGroupClause
     : WITHIN GROUP LP_ sortClause RP_
-	;
+    ;
 
 filterClause
     : FILTER LP_ WHERE aExpr RP_
-	;
+    ;
 
 functionExprWindowless
     : funcApplication | functionExprCommonSubexpr
@@ -928,12 +928,12 @@ functionExprCommonSubexpr
 
 typeName
     : simpleTypeName optArrayBounds
-	| SETOF simpleTypeName optArrayBounds
-	| simpleTypeName ARRAY LBT_ NUMBER_ RBT_
-	| SETOF simpleTypeName ARRAY LBT_ NUMBER_ RBT_
-	| simpleTypeName ARRAY
-	| SETOF simpleTypeName ARRAY
-	;
+    | SETOF simpleTypeName optArrayBounds
+    | simpleTypeName ARRAY LBT_ NUMBER_ RBT_
+    | SETOF simpleTypeName ARRAY LBT_ NUMBER_ RBT_
+    | simpleTypeName ARRAY
+    | SETOF simpleTypeName ARRAY
+    ;
 
 simpleTypeName
 	: genericType
@@ -952,7 +952,7 @@ exprList
 
 extractList
     : extractArg FROM aExpr
-	;
+    ;
 
 extractArg
     : YEAR
@@ -962,7 +962,7 @@ extractArg
     | MINUTE
     | SECOND
     | identifier
-	;
+    ;
 
 genericType
     :    typeFunctionName typeModifiers? | typeFunctionName attrs typeModifiers?
@@ -978,36 +978,36 @@ numeric
 
 constDatetime
     : TIMESTAMP LP_ NUMBER_ RP_ optTimezone
-	| TIMESTAMP optTimezone
-	| TIME LP_ NUMBER_ RP_ optTimezone
-	| TIME optTimezone
+    | TIMESTAMP optTimezone
+    | TIME LP_ NUMBER_ RP_ optTimezone
+    | TIME optTimezone
     ;
 
 optTimezone
     : WITH TIME ZONE
-	| WITHOUT TIME ZONE
-	|
-	;
+    | WITHOUT TIME ZONE
+    |
+    ;
 
 character
     : characterWithLength | characterWithoutLength
-	;
+    ;
 
 characterWithLength
     : characterClause LP_ NUMBER_ RP_
-	;
+    ;
 
 characterWithoutLength
     : characterClause
-	;
+    ;
 
 characterClause
     : CHARACTER VARYING?
-	| CHAR VARYING?
-	| VARCHAR
+    | CHAR VARYING?
+    | VARCHAR
     | NATIONAL CHARACTER VARYING?
-	| NATIONAL CHAR VARYING?
-	| NCHAR VARYING?
+    | NATIONAL CHAR VARYING?
+    | NCHAR VARYING?
 	;
 
 optFloat
@@ -1032,11 +1032,11 @@ bit
 
 bitWithLength
     : BIT VARYING? LP_ exprList RP_
-	;
+    ;
 
 bitWithoutLength
     : BIT VARYING?
-	;
+    ;
 
 constInterval
     : INTERVAL
@@ -1044,20 +1044,20 @@ constInterval
 
 optInterval
     : YEAR
-	| MONTH
-	| DAY
-	| HOUR
-	| MINUTE
-	| intervalSecond
-	| YEAR TO MONTH
-	| DAY TO HOUR
-	| DAY TO MINUTE
-	| DAY TO intervalSecond
-	| HOUR TO MINUTE
-	| HOUR TO intervalSecond
-	| MINUTE TO intervalSecond
-	|
-	;
+    | MONTH
+    | DAY
+    | HOUR
+    | MINUTE
+    | intervalSecond
+    | YEAR TO MONTH
+    | DAY TO HOUR
+    | DAY TO MINUTE
+    | DAY TO intervalSecond
+    | HOUR TO MINUTE
+    | HOUR TO intervalSecond
+    | MINUTE TO intervalSecond
+    |
+    ;
 
 optArrayBounds
     : optArrayBounds LBT_ RBT_
@@ -1067,18 +1067,18 @@ optArrayBounds
 
 intervalSecond
     : SECOND
-	| SECOND LP_ NUMBER_ RP_
-	;
+    | SECOND LP_ NUMBER_ RP_
+    ;
 
 unicodeNormalForm
     : NFC | NFD | NFKC | NFKD
-	;
+    ;
 
 trimList
     : aExpr FROM exprList
-	| FROM exprList
-	| exprList
-	;
+    | FROM exprList
+    | exprList
+    ;
 
 overlayList
     : aExpr overlayPlacing substrFrom substrFor
@@ -1099,78 +1099,78 @@ substrFor
 
 positionList
     : bExpr IN bExpr |
-	;
+    ;
 
 substrList
     : aExpr substrFrom substrFor
-	| aExpr substrFor substrFrom
-	| aExpr substrFrom
-	| aExpr substrFor
-	| exprList
-	|
-	;
+    | aExpr substrFor substrFrom
+    | aExpr substrFrom
+    | aExpr substrFor
+    | exprList
+    |
+    ;
 
 xmlAttributes
     : XMLATTRIBUTES LP_ xmlAttributeList RP_
-	;
+    ;
 
 xmlAttributeList
     : xmlAttributeEl
-	| xmlAttributeList COMMA_ xmlAttributeEl
-	;
+    | xmlAttributeList COMMA_ xmlAttributeEl
+    ;
 
 xmlAttributeEl
     : aExpr AS identifier | aExpr
-	;
+    ;
 
 xmlExistsArgument
     : PASSING cExpr
-	| PASSING cExpr xmlPassingMech
-	| PASSING xmlPassingMech cExpr
-	| PASSING xmlPassingMech cExpr xmlPassingMech
-	;
+    | PASSING cExpr xmlPassingMech
+    | PASSING xmlPassingMech cExpr
+    | PASSING xmlPassingMech cExpr xmlPassingMech
+    ;
 
 xmlPassingMech
     : BY REF | BY VALUE
-	;
+    ;
 
 documentOrContent
     : DOCUMENT | CONTENT
-	;
+    ;
 
 xmlWhitespaceOption
     : PRESERVE WHITESPACE | STRIP WHITESPACE |
-	;
+    ;
 
 xmlRootVersion
     : VERSION aExpr
-	| VERSION NO VALUE
-	;
+    | VERSION NO VALUE
+    ;
 
 optXmlRootStandalone
     : COMMA_ STANDALONE YES
-	| COMMA_ STANDALONE NO
-	| COMMA_ STANDALONE NO VALUE
-	|
-	;
+    | COMMA_ STANDALONE NO
+    | COMMA_ STANDALONE NO VALUE
+    |
+    ;
 
 rowsFromItem
     : functionExprWindowless optColumnDefList
-	;
+    ;
 
 rowsFromList
     : rowsFromItem
 	| rowsFromList COMMA_ rowsFromItem
-	;
+    ;
 
 optColumnDefList
     : AS LP_ tableFuncElementList RP_
-	;
+    ;
 
 tableFuncElementList
     : tableFuncElement
     | tableFuncElementList COMMA_ tableFuncElement
-	;
+    ;
 
 tableFuncElement
     :  typeName optCollateClause
@@ -1182,60 +1182,60 @@ optCollateClause
 
 anyName
     : colId | colId attrs
-	;
+    ;
 
 aliasClause
     : AS colId LP_ nameList RP_
-	| AS colId
-	| colId LP_ nameList RP_
-	| colId
-	;
+    | AS colId
+    | colId LP_ nameList RP_
+    | colId
+    ;
 
 nameList
     : name | nameList COMMA_ name
-	;
+    ;
 
 funcAliasClause
     : aliasClause
-	| AS LP_ tableFuncElementList RP_
-	| AS colId LP_ tableFuncElementList RP_
-	| colId LP_ tableFuncElementList RP_
-	;
+    | AS LP_ tableFuncElementList RP_
+    | AS colId LP_ tableFuncElementList RP_
+    | colId LP_ tableFuncElementList RP_
+    ;
 
 tablesampleClause
     : TABLESAMPLE funcName LP_ exprList RP_ repeatableClause?
-	;
+    ;
 
 repeatableClause
     : REPEATABLE LP_ aExpr RP_
-	;
+    ;
 
 allOrDistinct
     : ALL | DISTINCT
-	;
+    ;
 
 sortClause
     : ORDER BY sortbyList
-	;
+    ;
 
 sortbyList
     : sortby (COMMA_ sortby)*
-	;
+    ;
 
 sortby
     : aExpr USING qualAllOp nullsOrder?
-	| aExpr ascDesc? nullsOrder?
-	;
+    | aExpr ascDesc? nullsOrder?
+    ;
 
 nullsOrder
     : NULLS FIRST
-	| NULLS LAST
-	;
+    | NULLS LAST
+    ;
 
 distinctClause
     : DISTINCT
-	| DISTINCT ON LP_ exprList RP_
-	;
+    | DISTINCT ON LP_ exprList RP_
+    ;
 
 distinct
     : DISTINCT
@@ -1243,79 +1243,79 @@ distinct
 
 overClause
     : OVER windowSpecification
-	| OVER colId
-	;
+    | OVER colId
+    ;
 
 windowSpecification
     : LP_ windowName? partitionClause? sortClause? frameClause? RP_
-	;
+    ;
 
 windowName
     : colId
-	;
+    ;
 
 partitionClause
     : PARTITION BY exprList
-	;
+    ;
 
 indexParams
     : indexElem
-	| indexParams COMMA_ indexElem
-	;
+    | indexParams COMMA_ indexElem
+    ;
 
 indexElemOptions
     : collate? optClass ascDesc? nullsOrder?
-	| collate? anyName reloptions ascDesc? nullsOrder?
-	;
+    | collate? anyName reloptions ascDesc? nullsOrder?
+    ;
 
 indexElem
     : colId indexElemOptions
-	| functionExprWindowless indexElemOptions
-	| LP_ aExpr RP_ indexElemOptions
-	;
+    | functionExprWindowless indexElemOptions
+    | LP_ aExpr RP_ indexElemOptions
+    ;
 
 collate
     : COLLATE anyName
-	;
+    ;
 
 optClass
     : anyName |
-	;
+    ;
 
 reloptions
     : LP_ reloptionList RP_
-	;
+    ;
 
 optReloptions
     : WITH reloptions |
-	;
+    ;
 
 reloptionList
     : reloptionElem
-	| reloptionList COMMA_ reloptionElem
+    | reloptionList COMMA_ reloptionElem
 	;
 
 reloptionElem
     : alias EQ_ defArg
-	| alias
-	| alias DOT_ alias EQ_ defArg
-	| alias DOT_ alias
+    | alias
+    | alias DOT_ alias EQ_ defArg
+    | alias DOT_ alias
 	;
 
 defArg
     : funcType
-	| reserved_keyword
-	| qualAllOp
-	| NUMBER_
-	| STRING_
-	| NONE
-	;
+    | reservedKeyword
+    | qualAllOp
+    | NUMBER_
+    | STRING_
+    | NONE
+    ;
 
 funcType
     : typeName
-	| typeFunctionName attrs MOD_ TYPE
-	| SETOF typeFunctionName attrs MOD_ TYPE
-	;
+    | typeFunctionName attrs MOD_ TYPE
+    | SETOF typeFunctionName attrs MOD_ TYPE
+    ;
 
 selectWithParens
     : 'Default does not match anything'

@@ -29,11 +29,11 @@ insertTarget
 
 insertRest
     : select
-	| OVERRIDING overrideKind VALUE select
-	| LP_ insertColumnList RP_ select
-	| LP_ insertColumnList RP_ OVERRIDING overrideKind VALUE select
-	| DEFAULT VALUES
-	;
+    | OVERRIDING overrideKind VALUE select
+    | LP_ insertColumnList RP_ select
+    | LP_ insertColumnList RP_ OVERRIDING overrideKind VALUE select
+    | DEFAULT VALUES
+    ;
 
 overrideKind
     : USER | SYSTEM
