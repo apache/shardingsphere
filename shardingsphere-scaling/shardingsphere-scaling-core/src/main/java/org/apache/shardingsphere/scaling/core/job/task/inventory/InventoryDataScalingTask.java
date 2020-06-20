@@ -92,6 +92,7 @@ public final class InventoryDataScalingTask implements ScalingTask {
     
             @Override
             public void onFailure(final Throwable throwable) {
+                log.error("get an error when migrating the inventory data", throwable);
                 dumper.stop();
             }
         });
