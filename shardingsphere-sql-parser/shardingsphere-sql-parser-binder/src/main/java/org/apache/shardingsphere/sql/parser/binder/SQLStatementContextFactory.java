@@ -38,6 +38,7 @@ import org.apache.shardingsphere.sql.parser.binder.statement.ddl.DropTableStatem
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.TruncateStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.DeleteStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.ReplaceStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
@@ -61,6 +62,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.ReplaceStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
 
@@ -110,6 +112,9 @@ public final class SQLStatementContextFactory {
         }
         if (sqlStatement instanceof InsertStatement) {
             return new InsertStatementContext(schemaMetaData, parameters, (InsertStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof ReplaceStatement) {
+            return new ReplaceStatementContext(schemaMetaData, parameters, (ReplaceStatement) sqlStatement);
         }
         throw new UnsupportedOperationException(String.format("Unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName()));
     }

@@ -20,28 +20,28 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl.keygen;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.GeneratedKeyInsertColumnToken;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen.GeneratedKeyContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.ReplaceStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.ReplaceStatement;
 
 import java.util.Optional;
 
 /**
- * Generated key insert column token generator.
+ * Generated key replace column token generator.
  */
-public final class GeneratedKeyInsertColumnTokenGenerator extends BaseGeneratedKeyInsertTokenGenerator {
+public final class GeneratedKeyReplaceColumnTokenGenerator extends BaseGeneratedKeyReplaceTokenGenerator {
     
     @Override
-    protected boolean isGenerateSQLToken(final InsertStatement insertStatement) {
-        Optional<InsertColumnsSegment> sqlSegment = insertStatement.getInsertColumns();
+    protected boolean isGenerateSQLToken(final ReplaceStatement replaceStatement) {
+        Optional<InsertColumnsSegment> sqlSegment = replaceStatement.getReplaceColumns();
         return sqlSegment.isPresent() && !sqlSegment.get().getColumns().isEmpty();
     }
     
     @Override
-    public GeneratedKeyInsertColumnToken generateSQLToken(final InsertStatementContext insertStatementContext) {
-        Optional<GeneratedKeyContext> generatedKey = insertStatementContext.getGeneratedKeyContext();
+    public GeneratedKeyInsertColumnToken generateSQLToken(final ReplaceStatementContext replaceStatementContext) {
+        Optional<GeneratedKeyContext> generatedKey = replaceStatementContext.getGeneratedKeyContext();
         Preconditions.checkState(generatedKey.isPresent());
-        Optional<InsertColumnsSegment> sqlSegment = insertStatementContext.getSqlStatement().getInsertColumns();
+        Optional<InsertColumnsSegment> sqlSegment = replaceStatementContext.getSqlStatement().getReplaceColumns();
         Preconditions.checkState(sqlSegment.isPresent());
         return new GeneratedKeyInsertColumnToken(sqlSegment.get().getStopIndex(), generatedKey.get().getColumnName());
     }

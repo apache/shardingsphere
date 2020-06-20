@@ -23,30 +23,26 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDat
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen.engine.GeneratedKeyContextEngine;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.InsertValueContext;
-import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.OnDuplicateUpdateContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.ReplaceStatement;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Insert SQL statement context.
+ * Replace SQL statement context.
  */
 @Getter
 @ToString(callSuper = true)
-public final class InsertStatementContext extends CommonSQLStatementContext<InsertStatement> implements TableAvailable {
+public final class ReplaceStatementContext extends CommonSQLStatementContext<ReplaceStatement> implements TableAvailable {
     
     private final TablesContext tablesContext;
     
@@ -54,18 +50,15 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     private final List<InsertValueContext> insertValueContexts;
     
-    private final OnDuplicateUpdateContext onDuplicateKeyUpdateValueContext;
-    
     private final GeneratedKeyContext generatedKeyContext;
     
-    public InsertStatementContext(final SchemaMetaData schemaMetaData, final List<Object> parameters, final InsertStatement sqlStatement) {
+    public ReplaceStatementContext(final SchemaMetaData schemaMetaData, final List<Object> parameters, final ReplaceStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTable());
         columnNames = sqlStatement.useDefaultColumns() ? schemaMetaData.getAllColumnNames(sqlStatement.getTable().getTableName().getIdentifier().getValue()) : sqlStatement.getColumnNames();
         AtomicInteger parametersOffset = new AtomicInteger(0);
         insertValueContexts = getInsertValueContexts(parameters, parametersOffset);
-        onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null);
-        generatedKeyContext = new GeneratedKeyContextEngine(schemaMetaData).createInsertGenerateKeyContext(parameters, sqlStatement).orElse(null);
+        generatedKeyContext = new GeneratedKeyContextEngine(schemaMetaData).createReplaceGenerateKeyContext(parameters, sqlStatement).orElse(null);
     }
     
     private List<InsertValueContext> getInsertValueContexts(final List<Object> parameters, final AtomicInteger parametersOffset) {
@@ -76,25 +69,6 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
             parametersOffset.addAndGet(insertValueContext.getParametersCount());
         }
         return result;
-    }
-    
-    private Optional<OnDuplicateUpdateContext> getOnDuplicateKeyUpdateValueContext(final List<Object> parameters, final AtomicInteger parametersOffset) {
-        if (!getSqlStatement().getOnDuplicateKeyColumns().isPresent()) {
-            return Optional.empty();
-        }
-        Collection<AssignmentSegment> onDuplicateKeyColumns = getSqlStatement().getOnDuplicateKeyColumns().get().getColumns();
-        OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(onDuplicateKeyColumns, parameters, parametersOffset.get());
-        parametersOffset.addAndGet(onDuplicateUpdateContext.getParametersCount());
-        return Optional.of(onDuplicateUpdateContext);
-    }
-    
-    /**
-     * Get column names for descending order.
-     *
-     * @return column names for descending order
-     */
-    public Iterator<String> getDescendingColumnNames() {
-        return new LinkedList<>(columnNames).descendingIterator();
     }
     
     /**
@@ -108,18 +82,6 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
             result.add(each.getParameters());
         }
         return result;
-    }
-    
-    /**
-     * Get on duplicate key update parameters.
-     *
-     * @return on duplicate key update parameters
-     */
-    public List<Object> getOnDuplicateKeyUpdateParameters() {
-        if (null == onDuplicateKeyUpdateValueContext) {
-            return new ArrayList<>(0);
-        }
-        return onDuplicateKeyUpdateValueContext.getParameters();
     }
     
     /**

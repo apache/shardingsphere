@@ -23,9 +23,9 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 
 /**
- * Base generated key token generator.
+ * Base generated key token generator for insert clause.
  */
-public abstract class BaseGeneratedKeyTokenGenerator implements OptionalSQLTokenGenerator<InsertStatementContext> {
+public abstract class BaseGeneratedKeyInsertTokenGenerator implements OptionalSQLTokenGenerator<InsertStatementContext> {
     
     @Override
     public final boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {

@@ -29,8 +29,10 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.ReplaceStatementContext;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -63,6 +65,8 @@ public final class SQLRewriteContext {
         addSQLTokenGenerators(new DefaultTokenGeneratorBuilder().getSQLTokenGenerators());
         parameterBuilder = sqlStatementContext instanceof InsertStatementContext
                 ? new GroupedParameterBuilder(((InsertStatementContext) sqlStatementContext).getGroupedParameters(), ((InsertStatementContext) sqlStatementContext).getOnDuplicateKeyUpdateParameters())
+                : sqlStatementContext instanceof ReplaceStatementContext
+                ? new GroupedParameterBuilder(((ReplaceStatementContext) sqlStatementContext).getGroupedParameters(), Collections.emptyList())
                 : new StandardParameterBuilder(parameters);
     }
     

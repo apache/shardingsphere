@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.parameter;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sharding.rewrite.parameter.impl.ShardingGeneratedKeyReplaceValueParameterRewriter;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.aware.ShardingRuleAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.RouteContextAware;
@@ -54,6 +55,7 @@ public final class ShardingParameterRewriterBuilder implements ParameterRewriter
     private static Collection<ParameterRewriter> getParameterRewriters() {
         Collection<ParameterRewriter> result = new LinkedList<>();
         result.add(new ShardingGeneratedKeyInsertValueParameterRewriter());
+        result.add(new ShardingGeneratedKeyReplaceValueParameterRewriter());
         result.add(new ShardingPaginationParameterRewriter());
         return result;
     }

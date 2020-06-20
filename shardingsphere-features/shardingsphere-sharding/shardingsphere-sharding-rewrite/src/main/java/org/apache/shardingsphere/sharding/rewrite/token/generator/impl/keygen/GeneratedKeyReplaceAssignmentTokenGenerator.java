@@ -19,36 +19,36 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl.keygen;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.ParametersAware;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.GeneratedKeyAssignmentToken;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.LiteralGeneratedKeyAssignmentToken;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.ParameterMarkerGeneratedKeyAssignmentToken;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen.GeneratedKeyContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.ParametersAware;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.ReplaceStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.ReplaceStatement;
 
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Generated key assignment token generator.
+ * Generated key replace assignment token generator.
  */
 @Setter
-public final class GeneratedKeyAssignmentTokenGenerator extends BaseGeneratedKeyTokenGenerator implements ParametersAware {
+public final class GeneratedKeyReplaceAssignmentTokenGenerator extends BaseGeneratedKeyReplaceTokenGenerator implements ParametersAware {
     
     private List<Object> parameters;
     
     @Override
-    protected boolean isGenerateSQLToken(final InsertStatement insertStatement) {
-        return insertStatement.getSetAssignment().isPresent();
+    protected boolean isGenerateSQLToken(final ReplaceStatement replaceStatement) {
+        return replaceStatement.getSetAssignment().isPresent();
     }
     
     @Override
-    public GeneratedKeyAssignmentToken generateSQLToken(final InsertStatementContext insertStatementContext) {
-        Optional<GeneratedKeyContext> generatedKey = insertStatementContext.getGeneratedKeyContext();
+    public GeneratedKeyAssignmentToken generateSQLToken(final ReplaceStatementContext replaceStatementContext) {
+        Optional<GeneratedKeyContext> generatedKey = replaceStatementContext.getGeneratedKeyContext();
         Preconditions.checkState(generatedKey.isPresent());
-        Preconditions.checkState(insertStatementContext.getSqlStatement().getSetAssignment().isPresent());
-        int startIndex = insertStatementContext.getSqlStatement().getSetAssignment().get().getStopIndex() + 1;
+        Preconditions.checkState(replaceStatementContext.getSqlStatement().getSetAssignment().isPresent());
+        int startIndex = replaceStatementContext.getSqlStatement().getSetAssignment().get().getStopIndex() + 1;
         return parameters.isEmpty() ? new LiteralGeneratedKeyAssignmentToken(startIndex, generatedKey.get().getColumnName(), generatedKey.get().getGeneratedValues().getLast())
                 : new ParameterMarkerGeneratedKeyAssignmentToken(startIndex, generatedKey.get().getColumnName());
     }

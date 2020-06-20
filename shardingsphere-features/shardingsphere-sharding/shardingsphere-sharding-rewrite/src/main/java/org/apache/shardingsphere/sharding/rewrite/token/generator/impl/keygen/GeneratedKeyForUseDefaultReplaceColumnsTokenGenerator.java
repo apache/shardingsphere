@@ -20,35 +20,35 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl.keygen;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.UseDefaultInsertColumnsToken;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen.GeneratedKeyContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.ReplaceStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.ReplaceStatement;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Generated key for use default insert columns token generator.
+ * Generated key for use default replace columns token generator.
  */
-public final class GeneratedKeyForUseDefaultInsertColumnsTokenGenerator extends BaseGeneratedKeyInsertTokenGenerator {
+public final class GeneratedKeyForUseDefaultReplaceColumnsTokenGenerator extends BaseGeneratedKeyReplaceTokenGenerator {
     
     @Override
-    protected boolean isGenerateSQLToken(final InsertStatement insertStatement) {
-        return insertStatement.useDefaultColumns();
+    protected boolean isGenerateSQLToken(final ReplaceStatement replaceStatement) {
+        return replaceStatement.useDefaultColumns();
     }
     
     @Override
-    public UseDefaultInsertColumnsToken generateSQLToken(final InsertStatementContext insertStatementContext) {
-        Optional<InsertColumnsSegment> insertColumnsSegment = insertStatementContext.getSqlStatement().getInsertColumns();
-        Preconditions.checkState(insertColumnsSegment.isPresent());
-        return new UseDefaultInsertColumnsToken(insertColumnsSegment.get().getStopIndex(), getColumnNames(insertStatementContext));
+    public UseDefaultInsertColumnsToken generateSQLToken(final ReplaceStatementContext replaceStatementContext) {
+        Optional<InsertColumnsSegment> replaceColumnsSegment = replaceStatementContext.getSqlStatement().getReplaceColumns();
+        Preconditions.checkState(replaceColumnsSegment.isPresent());
+        return new UseDefaultInsertColumnsToken(replaceColumnsSegment.get().getStopIndex(), getColumnNames(replaceStatementContext));
     }
     
-    private List<String> getColumnNames(final InsertStatementContext insertStatementContext) {
-        Optional<GeneratedKeyContext> generatedKey = insertStatementContext.getGeneratedKeyContext();
+    private List<String> getColumnNames(final ReplaceStatementContext replaceStatementContext) {
+        Optional<GeneratedKeyContext> generatedKey = replaceStatementContext.getGeneratedKeyContext();
         Preconditions.checkState(generatedKey.isPresent());
-        List<String> result = new ArrayList<>(insertStatementContext.getColumnNames());
+        List<String> result = new ArrayList<>(replaceStatementContext.getColumnNames());
         result.remove(generatedKey.get().getColumnName());
         result.add(generatedKey.get().getColumnName());
         return result;

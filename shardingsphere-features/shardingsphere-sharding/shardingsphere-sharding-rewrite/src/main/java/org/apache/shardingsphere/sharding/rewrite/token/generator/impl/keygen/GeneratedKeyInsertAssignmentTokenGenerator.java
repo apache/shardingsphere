@@ -18,39 +18,38 @@
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl.keygen;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.UseDefaultInsertColumnsToken;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.ParametersAware;
+import org.apache.shardingsphere.sharding.rewrite.token.pojo.GeneratedKeyAssignmentToken;
+import org.apache.shardingsphere.sharding.rewrite.token.pojo.LiteralGeneratedKeyAssignmentToken;
+import org.apache.shardingsphere.sharding.rewrite.token.pojo.ParameterMarkerGeneratedKeyAssignmentToken;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Generated key for use default insert columns token generator.
+ * Generated key insert assignment token generator.
  */
-public final class GeneratedKeyForUseDefaultInsertColumnsTokenGenerator extends BaseGeneratedKeyInsertTokenGenerator {
+@Setter
+public final class GeneratedKeyInsertAssignmentTokenGenerator extends BaseGeneratedKeyInsertTokenGenerator implements ParametersAware {
+    
+    private List<Object> parameters;
     
     @Override
     protected boolean isGenerateSQLToken(final InsertStatement insertStatement) {
-        return insertStatement.useDefaultColumns();
+        return insertStatement.getSetAssignment().isPresent();
     }
     
     @Override
-    public UseDefaultInsertColumnsToken generateSQLToken(final InsertStatementContext insertStatementContext) {
-        Optional<InsertColumnsSegment> insertColumnsSegment = insertStatementContext.getSqlStatement().getInsertColumns();
-        Preconditions.checkState(insertColumnsSegment.isPresent());
-        return new UseDefaultInsertColumnsToken(insertColumnsSegment.get().getStopIndex(), getColumnNames(insertStatementContext));
-    }
-    
-    private List<String> getColumnNames(final InsertStatementContext insertStatementContext) {
+    public GeneratedKeyAssignmentToken generateSQLToken(final InsertStatementContext insertStatementContext) {
         Optional<GeneratedKeyContext> generatedKey = insertStatementContext.getGeneratedKeyContext();
         Preconditions.checkState(generatedKey.isPresent());
-        List<String> result = new ArrayList<>(insertStatementContext.getColumnNames());
-        result.remove(generatedKey.get().getColumnName());
-        result.add(generatedKey.get().getColumnName());
-        return result;
+        Preconditions.checkState(insertStatementContext.getSqlStatement().getSetAssignment().isPresent());
+        int startIndex = insertStatementContext.getSqlStatement().getSetAssignment().get().getStopIndex() + 1;
+        return parameters.isEmpty() ? new LiteralGeneratedKeyAssignmentToken(startIndex, generatedKey.get().getColumnName(), generatedKey.get().getGeneratedValues().getLast())
+                : new ParameterMarkerGeneratedKeyAssignmentToken(startIndex, generatedKey.get().getColumnName());
     }
 }

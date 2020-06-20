@@ -28,37 +28,37 @@ import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.InsertV
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.expression.DerivedLiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.expression.DerivedParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.expression.DerivedSimpleExpressionSegment;
-import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.ReplaceStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.ReplaceStatement;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Insert values token generator for sharding.
+ * Replace values token generator for sharding.
  */
 @Setter
-public final class GeneratedKeyInsertValuesTokenGenerator extends BaseGeneratedKeyInsertTokenGenerator implements PreviousSQLTokensAware {
+public final class GeneratedKeyReplaceValuesTokenGenerator extends BaseGeneratedKeyReplaceTokenGenerator implements PreviousSQLTokensAware {
     
     private List<SQLToken> previousSQLTokens;
     
     @Override
-    protected boolean isGenerateSQLToken(final InsertStatement insertStatement) {
-        return !insertStatement.getValues().isEmpty();
+    protected boolean isGenerateSQLToken(final ReplaceStatement replaceStatement) {
+        return !replaceStatement.getValues().isEmpty();
     }
     
     @Override
-    public SQLToken generateSQLToken(final InsertStatementContext insertStatementContext) {
+    public SQLToken generateSQLToken(final ReplaceStatementContext replaceStatementContext) {
         Optional<InsertValuesToken> result = findPreviousSQLToken();
         Preconditions.checkState(result.isPresent());
-        Optional<GeneratedKeyContext> generatedKey = insertStatementContext.getGeneratedKeyContext();
+        Optional<GeneratedKeyContext> generatedKey = replaceStatementContext.getGeneratedKeyContext();
         Preconditions.checkState(generatedKey.isPresent());
         Iterator<Comparable<?>> generatedValues = generatedKey.get().getGeneratedValues().descendingIterator();
         int count = 0;
-        for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
+        for (InsertValueContext each : replaceStatementContext.getInsertValueContexts()) {
             InsertValue insertValueToken = result.get().getInsertValues().get(count);
-            DerivedSimpleExpressionSegment expressionSegment = isToAddDerivedLiteralExpression(insertStatementContext, count)
+            DerivedSimpleExpressionSegment expressionSegment = isToAddDerivedLiteralExpression(replaceStatementContext, count)
                     ? new DerivedLiteralExpressionSegment(generatedValues.next()) : new DerivedParameterMarkerExpressionSegment(each.getParametersCount());
             insertValueToken.getValues().add(expressionSegment);
             count++;
@@ -75,7 +75,7 @@ public final class GeneratedKeyInsertValuesTokenGenerator extends BaseGeneratedK
         return Optional.empty();
     }
     
-    private boolean isToAddDerivedLiteralExpression(final InsertStatementContext insertStatementContext, final int insertValueCount) {
-        return insertStatementContext.getGroupedParameters().get(insertValueCount).isEmpty();
+    private boolean isToAddDerivedLiteralExpression(final ReplaceStatementContext replaceStatementContext, final int replaceValueCount) {
+        return replaceStatementContext.getGroupedParameters().get(replaceValueCount).isEmpty();
     }
 }
