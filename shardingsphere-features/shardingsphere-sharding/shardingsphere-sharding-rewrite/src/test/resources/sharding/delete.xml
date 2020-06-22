@@ -28,14 +28,14 @@
     </rewrite-assertion>
     
     <rewrite-assertion id="delete_without_sharding_value_for_parameters">
-        <input sql="DELETE FROM sharding_db.t_account WHERE status = ?" parameters="OK" />
-        <output sql="DELETE FROM t_account_0 WHERE status = ?" parameters="OK" />
-        <output sql="DELETE FROM t_account_1 WHERE status = ?" parameters="OK" />
+        <input sql="DELETE FROM db.t_account WHERE status = ?" parameters="OK" />
+        <output sql="DELETE FROM db.t_account_0 WHERE status = ?" parameters="OK" />
+        <output sql="DELETE FROM db.t_account_1 WHERE status = ?" parameters="OK" />
     </rewrite-assertion>
     
     <rewrite-assertion id="delete_without_sharding_value_for_literals">
-        <input sql="DELETE FROM sharding_db.t_account WHERE status = 'OK'" />
-        <output sql="DELETE FROM t_account_0 WHERE status = 'OK'" />
-        <output sql="DELETE FROM t_account_1 WHERE status = 'OK'" />
+        <input sql="DELETE FROM db.t_account WHERE status = 'OK'" />
+        <output sql="DELETE FROM db.t_account_0 WHERE status = 'OK'" />
+        <output sql="DELETE FROM db.t_account_1 WHERE status = 'OK'" />
     </rewrite-assertion>
 </rewrite-assertions>

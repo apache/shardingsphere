@@ -32,7 +32,7 @@
     <select sql-case-id="select_with_same_table_name_and_alias" parameters="1, 1">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="t_order" start-index="22" stop-index="28" />
+                <table name="t_order" alias="t_order" start-index="22" stop-index="36" />
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="15">
@@ -65,7 +65,7 @@
     <select sql-case-id="select_with_same_table_name_and_alias_column_with_owner" parameters="1, 1">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="t_order" start-index="52" stop-index="58" />
+                <table name="t_order" alias="t_order" start-index="52" stop-index="66" />
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="45">
@@ -431,7 +431,7 @@
     <select sql-case-id="select_count_like_concat" parameters="'init', 1, 2, 9, 10">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="o" start-index="37" stop-index="43" />
+                <table name="t_order" alias="o" start-index="37" stop-index="45" />
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="30">
@@ -474,7 +474,7 @@
     <select sql-case-id="select_count_tilde_concat" parameters="'init', 1, 2, 9, 10">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="o" start-index="37" stop-index="43" />
+                <table name="t_order" alias="o" start-index="37" stop-index="45" />
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="30">
@@ -517,11 +517,11 @@
     <select sql-case-id="select_sharding_route_with_binding_tables" parameters="1, 2, 9, 10">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="o" start-index="16" stop-index="22" />
+                <table name="t_order" alias="o" start-index="16" stop-index="24" />
             </table-factor>
             <join-table>
                 <table-factor>
-                    <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+                    <table name="t_order_item" alias="i" start-index="31" stop-index="44" />
                 </table-factor>
                 <joinSpecification>
                     <and-predicate>
@@ -586,11 +586,11 @@
     <select sql-case-id="select_full_route_with_binding_tables">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="o" start-index="16" stop-index="22" />
+                <table name="t_order" alias="o" start-index="16" stop-index="24" />
             </table-factor>
             <join-table>
                 <table-factor>
-                    <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+                    <table name="t_order_item" alias="i" start-index="31" stop-index="44" />
                 </table-factor>
                 <joinSpecification>
                     <and-predicate>
@@ -629,11 +629,11 @@
     <select sql-case-id="select_sharding_route_with_broadcast_table" parameters="1, 2, 9, 10, 'init'">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="o" start-index="16" stop-index="22" />
+                <table name="t_order" alias="o" start-index="16" stop-index="24" />
             </table-factor>
             <join-table>
                 <table-factor>
-                    <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+                    <table name="t_order_item" alias="i" start-index="31" stop-index="44" />
                 </table-factor>
                 <joinSpecification>
                     <and-predicate>
@@ -658,7 +658,7 @@
             </join-table>
             <join-table>
                 <table-factor>
-                    <table name="t_broadcast_table" alias="c" start-index="104" stop-index="120" />
+                    <table name="t_broadcast_table" alias="c" start-index="104" stop-index="122" />
                 </table-factor>
                 <joinSpecification>
                     <and-predicate>
@@ -725,11 +725,11 @@
     <select sql-case-id="select_keyword_table_name_with_back_quotes" parameters="1, 2, 9, 10, 'init'">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="o" start-index="16" stop-index="22" />
+                <table name="t_order" alias="o" start-index="16" stop-index="24" />
             </table-factor>
             <join-table>
                 <table-factor>
-                    <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+                    <table name="t_order_item" alias="i" start-index="31" stop-index="44" />
                 </table-factor>
                 <joinSpecification>
                     <and-predicate>
@@ -754,7 +754,7 @@
             </join-table>
             <join-table>
                 <table-factor>
-                    <table name="select" alias="c" start-delimiter="`" end-delimiter="`" start-index="104" stop-index="111" />
+                    <table name="select" alias="c" start-delimiter="`" end-delimiter="`" start-index="104" stop-index="113" />
                 </table-factor>
                 <joinSpecification>
                     <and-predicate>
@@ -821,11 +821,11 @@
     <select sql-case-id="select_keyword_table_name_with_double_quotes" parameters="1, 2, 9, 10, 'init'">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="o" start-index="16" stop-index="22" />
+                <table name="t_order" alias="o" start-index="16" stop-index="24" />
             </table-factor>
             <join-table>
                 <table-factor>
-                    <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+                    <table name="t_order_item" alias="i" start-index="31" stop-index="44" />
                 </table-factor>
                 <joinSpecification>
                     <and-predicate>
@@ -850,7 +850,7 @@
             </join-table>
             <join-table>
                 <table-factor>
-                    <table name="select" alias="c" start-delimiter="&quot;" end-delimiter="&quot;" start-index="104" stop-index="111" />
+                    <table name="select" alias="c" start-delimiter="&quot;" end-delimiter="&quot;" start-index="104" stop-index="113" />
                 </table-factor>
                 <joinSpecification>
                     <and-predicate>
@@ -917,11 +917,11 @@
     <select sql-case-id="select_keyword_table_name_with_square_brackets" parameters="1, 2, 9, 10, 'init'">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="o" start-index="16" stop-index="22" />
+                <table name="t_order" alias="o" start-index="16" stop-index="24" />
             </table-factor>
             <join-table>
                 <table-factor>
-                    <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+                    <table name="t_order_item" alias="i" start-index="31" stop-index="44" />
                 </table-factor>
                 <joinSpecification>
                     <and-predicate>
@@ -946,7 +946,7 @@
             </join-table>
             <join-table>
                 <table-factor>
-                    <table name="select" alias="c" start-delimiter="[" end-delimiter="]" start-index="104" stop-index="111" />
+                    <table name="select" alias="c" start-delimiter="[" end-delimiter="]" start-index="104" stop-index="113" />
                 </table-factor>
                 <joinSpecification>
                     <and-predicate>
@@ -1013,7 +1013,7 @@
     <select sql-case-id="select_alias_as_keyword" parameters="1">
         <table-reference>
             <table-factor>
-                <table name="t_order_item" alias="length" start-index="36" stop-index="47" />
+                <table name="t_order_item" alias="length" start-index="36" stop-index="54" />
             </table-factor>
         </table-reference>
         <projections start-index="7" stop-index="29">
@@ -1040,11 +1040,11 @@
     <select sql-case-id="select_with_force_index_join" parameters="1000">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="o" start-index="16" stop-index="22" />
+                <table name="t_order" alias="o" start-index="16" stop-index="24" />
             </table-factor>
             <join-table>
                 <table-factor>
-                    <table name="t_order_item" alias="i" start-index="56" stop-index="67" />
+                    <table name="t_order_item" alias="i" start-index="56" stop-index="69" />
                 </table-factor>
                 <joinSpecification>
                     <and-predicate>
