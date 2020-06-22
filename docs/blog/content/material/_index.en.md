@@ -6,7 +6,7 @@ chapter = true
 
 Welcome to pick up some of article selections to read. Moreover look forward to your contribution!
 
-1. [Congratulations on graduation of Apache ShardingSphere as a Top-Level Project!](/en/material/graduate/).
+1. [Congratulations on graduation of Apache ShardingSphere as a Top-Level Project](/en/material/graduate/).
 
 2. [Exploration and expansion of the community](/en/material/community/)。
 
