@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -40,7 +41,9 @@ public final class TableToken extends SQLToken implements Substitutable, RouteUn
     @Getter
     private final int stopIndex;
     
-    private final SimpleTableSegment tableSegment;
+    private final IdentifierValue tablename;
+    
+    private final IdentifierValue owner;
     
     private final SQLStatementContext sqlStatementContext;
     
@@ -49,22 +52,21 @@ public final class TableToken extends SQLToken implements Substitutable, RouteUn
     public TableToken(final int startIndex, final int stopIndex, final SimpleTableSegment tableSegment, final SQLStatementContext sqlStatementContext, final ShardingRule shardingRule) {
         super(startIndex);
         this.stopIndex = stopIndex;
-        this.tableSegment = tableSegment;
+        this.tablename = tableSegment.getTableName().getIdentifier();
         this.sqlStatementContext = sqlStatementContext;
+        this.owner = tableSegment.getOwner().isPresent() ? tableSegment.getOwner().get().getIdentifier() : null;
         this.shardingRule = shardingRule;
     }
     
     @Override
     public String toString(final RouteUnit routeUnit) {
-        String actualTableName = getLogicAndActualTables(routeUnit).get(tableSegment.getTableName().getIdentifier().getValue().toLowerCase());
-        actualTableName = null == actualTableName ? tableSegment.getTableName().getIdentifier().getValue().toLowerCase() : actualTableName;
+        String actualTableName = getLogicAndActualTables(routeUnit).get(tablename.getValue().toLowerCase());
+        actualTableName = null == actualTableName ? tablename.getValue().toLowerCase() : actualTableName;
         String owner = "";
-        if (tableSegment.getOwner().isPresent() && routeUnit.getDataSourceMapper().getLogicName().equals(tableSegment.getOwner().get().getIdentifier().getValue())) {
-            owner = tableSegment.getOwner().get().getIdentifier().getQuoteCharacter().getStartDelimiter() + routeUnit.getDataSourceMapper().getActualName()
-                    + tableSegment.getOwner().get().getIdentifier().getQuoteCharacter().getEndDelimiter() + ".";
+        if (null != this.owner && routeUnit.getDataSourceMapper().getLogicName().equals(this.owner.getValue())) {
+            owner = this.owner.getQuoteCharacter().getStartDelimiter() + routeUnit.getDataSourceMapper().getActualName() + this.owner.getQuoteCharacter().getEndDelimiter() + ".";
         }
-        return Joiner.on("").join(owner, tableSegment.getTableName().getIdentifier().getQuoteCharacter().getStartDelimiter(),
-                actualTableName, tableSegment.getTableName().getIdentifier().getQuoteCharacter().getEndDelimiter());
+        return Joiner.on("").join(owner, tablename.getQuoteCharacter().getStartDelimiter(), actualTableName, tablename.getQuoteCharacter().getEndDelimiter());
     }
     
     private Map<String, String> getLogicAndActualTables(final RouteUnit routeUnit) {
