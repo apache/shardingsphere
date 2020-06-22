@@ -46,7 +46,7 @@ For an open source project, the community is as important as the project itself.
 
 1. Mailing list data changes
 
-Only the dev@shardingsphere.apache.org mailbox is counted here. The dev mailbox is the main way for community communication issues. In May 2019, there were 53 emails, 20 topics and 14 participants. The data include 15 emails forwarded by GitBox from GitHub, so the actual number of emails is 38. In September 2019 it has been significantly increased, including 148 emails, 34 topics and 37 participants. Besides, we have removed the GitBox forwarded mail from the dev mail group amd transferred to notification @ shardingsphere .apache.org mailbox.
+Only the dev@shardingsphere.apache.org mailbox is counted here. The dev mailbox is the main way for community communication issues. In May 2019, there were 53 emails, 20 topics and 14 participants. The data include 15 emails forwarded by GitBox from GitHub, so the actual number of emails is 38. In September 2019 it has been significantly increased, including 148 emails, 34 topics and 37 participants. Besides, we have removed the GitBox forwarded mail from the dev mail group amd transferred to notification@shardingsphere.apache.org mailbox.
 
 2. GitHub data changes
 
