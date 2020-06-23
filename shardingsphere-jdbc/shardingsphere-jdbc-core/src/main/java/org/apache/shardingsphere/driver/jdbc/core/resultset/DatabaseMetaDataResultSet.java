@@ -67,12 +67,12 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     
     public DatabaseMetaDataResultSet(final ResultSet resultSet, final Collection<ShardingSphereRule> rules) throws SQLException {
         this.resultSet = resultSet;
-        this.type = resultSet.getType();
-        this.concurrency = resultSet.getConcurrency();
         this.rules = rules;
-        this.resultSetMetaData = resultSet.getMetaData();
-        this.columnLabelIndexMap = initIndexMap();
-        this.databaseMetaDataObjectIterator = initIterator(resultSet);
+        type = resultSet.getType();
+        concurrency = resultSet.getConcurrency();
+        resultSetMetaData = resultSet.getMetaData();
+        columnLabelIndexMap = initIndexMap();
+        databaseMetaDataObjectIterator = initIterator(resultSet);
     }
     
     private Map<String, Integer> initIndexMap() throws SQLException {
@@ -379,7 +379,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
         private final ArrayList<Object> objects;
         
         private DatabaseMetaDataObject(final int columnCount) {
-            this.objects = new ArrayList<>(columnCount);
+            objects = new ArrayList<>(columnCount);
         }
         
         public void addObject(final Object object) {
