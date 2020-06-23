@@ -28,7 +28,7 @@
                 <xsd:element ref="mappings" />
             </xsd:all>
             <xsd:attribute name="id" type="xsd:string" use="required" />
-            <xsd:attribute name="column" type="xsd:string" />
+            <xsd:attribute name="column" type="xsd:string" use="required" />
         </xsd:complexType>
     </xsd:element>
     
