@@ -143,7 +143,6 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
             Object[] data = generateReturnData(selectStatementContext);
             return Collections.singletonList(new MemoryQueryResultRow(data));
         }
-        
         List<MemoryQueryResultRow> result = new ArrayList<>(dataMap.values());
         result.sort(new GroupByRowComparator(selectStatementContext, valueCaseSensitive));
         return result;
