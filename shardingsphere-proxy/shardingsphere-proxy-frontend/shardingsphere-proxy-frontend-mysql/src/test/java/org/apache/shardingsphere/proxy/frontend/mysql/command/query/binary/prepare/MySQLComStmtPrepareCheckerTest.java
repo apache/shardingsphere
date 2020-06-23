@@ -62,7 +62,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.CallStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.ReplaceStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.rl.ChangeMasterStatement;
@@ -87,7 +86,7 @@ public final class MySQLComStmtPrepareCheckerTest {
             new CreateDatabaseStatement(), new DropDatabaseStatement(), new CreateTableStatement(mock(SimpleTableSegment.class)), new DropTableStatement(), new CreateUserStatement(),
             new RenameUserStatement(), new DropUserStatement(), new CreateViewStatement(), new DropViewStatement(), new DeleteStatement(), new DoStatement(), new FlushStatement(),
             new GrantStatement(), new InsertStatement(), new InstallPluginStatement(), new KillStatement(), new LoadIndexInfoStatement(), new OptimizeTableStatement(), new RenameTableStatement(),
-            new RepairTableStatement(), new ReplaceStatement(), new ResetStatement(), new RevokeStatement(), new SelectStatement(), new SetStatement(), new ShowWarningsStatement(),
+            new RepairTableStatement(), new ResetStatement(), new RevokeStatement(), new SelectStatement(), new SetStatement(), new ShowWarningsStatement(),
             new ShowErrorsStatement(), new ShowBinlogStatement(), new ShowCreateProcedureStatement(), new ShowCreateFunctionStatement(), new ShowCreateEventStatement(),
             new ShowCreateTableStatement(), new ShowCreateViewStatement(), new ShowBinaryLogsStatement(), new ShowStatusStatement(), new StartSlaveStatement(), new StopSlaveStatement(),
             new TruncateStatement(), new UninstallPluginStatement(), new UpdateStatement());
