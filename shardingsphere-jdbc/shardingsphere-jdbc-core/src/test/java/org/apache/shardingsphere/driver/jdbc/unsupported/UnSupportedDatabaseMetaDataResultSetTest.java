@@ -112,26 +112,6 @@ public final class UnSupportedDatabaseMetaDataResultSetTest {
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertSetFetchDirection() throws SQLException {
-        databaseMetaDataResultSet.setFetchDirection(ResultSet.FETCH_FORWARD);
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetFetchDirection() throws SQLException {
-        databaseMetaDataResultSet.getFetchDirection();
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertSetFetchSize() throws SQLException {
-        databaseMetaDataResultSet.setFetchSize(1);
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetFetchSize() throws SQLException {
-        databaseMetaDataResultSet.getFetchSize();
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetStatement() throws SQLException {
         databaseMetaDataResultSet.getStatement();
     }
