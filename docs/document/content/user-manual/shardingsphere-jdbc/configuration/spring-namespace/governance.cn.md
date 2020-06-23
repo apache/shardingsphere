@@ -38,12 +38,12 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/orchestration
 
 | *名称*                              | *类型* | *说明*                                                                                    |
 | ----------------------------------- | ----- | ------------------------------------------------------------------------------------------|
-| id                                  | 属性  | 治理实例 ID                                                                   |
-| orchestration-type                  | 属性  | 治理类型，例如 config_center, registry_center, metadata_center                       |
+| id                                  | 属性  | 治理实例名称                                                                 |
+| orchestration-type                  | 属性  | 治理类型，多个类型用逗号分隔，例如 config_center, registry_center, metadata_center                       |
 | instance-type                       | 属性  | 治理实例类型。如：zookeeper, etcd, apollo, nacos                                                           |
 | server-lists                        | 属性  | 治理服务列表。包括 IP 地址和端口号。多个地址用逗号分隔。如: host1:2181,host2:2181   |
 | namespace (?)                       | 属性  | 治理命名空间                                                                         |
-| props (?)                       | 属性  | 其它属性                                                                           |
+| props (?)                       | 属性  | 配置本实例需要的其他参数，例如 ZooKeeper 的连接参数等                                                                           |
 
 ### 集群管理
 
