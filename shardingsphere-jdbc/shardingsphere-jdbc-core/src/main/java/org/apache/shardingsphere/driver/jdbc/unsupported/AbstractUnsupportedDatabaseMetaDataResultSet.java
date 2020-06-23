@@ -109,26 +109,6 @@ public abstract class AbstractUnsupportedDatabaseMetaDataResultSet extends Abstr
     }
     
     @Override
-    public final void setFetchDirection(final int direction) throws SQLException {
-        throw new SQLFeatureNotSupportedException("setFetchDirection");
-    }
-    
-    @Override
-    public final int getFetchDirection() throws SQLException {
-        throw new SQLFeatureNotSupportedException("getFetchDirection");
-    }
-    
-    @Override
-    public final void setFetchSize(final int rows) throws SQLException {
-        throw new SQLFeatureNotSupportedException("setFetchSize");
-    }
-    
-    @Override
-    public final int getFetchSize() throws SQLException {
-        throw new SQLFeatureNotSupportedException("getFetchSize");
-    }
-    
-    @Override
     public final Statement getStatement() throws SQLException {
         throw new SQLFeatureNotSupportedException("getStatement");
     }

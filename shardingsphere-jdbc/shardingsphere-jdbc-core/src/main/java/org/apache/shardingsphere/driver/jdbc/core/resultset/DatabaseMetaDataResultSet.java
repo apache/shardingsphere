@@ -59,11 +59,14 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     
     private final Iterator<DatabaseMetaDataObject> databaseMetaDataObjectIterator;
     
+    private final ResultSet resultSet;
+    
     private volatile boolean closed;
     
     private DatabaseMetaDataObject currentDatabaseMetaDataObject;
     
     public DatabaseMetaDataResultSet(final ResultSet resultSet, final Collection<ShardingSphereRule> rules) throws SQLException {
+        this.resultSet = resultSet;
         this.type = resultSet.getType();
         this.concurrency = resultSet.getConcurrency();
         this.rules = rules;
@@ -331,6 +334,26 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     public int getConcurrency() throws SQLException {
         checkClosed();
         return concurrency;
+    }
+    
+    @Override
+    public void setFetchDirection(final int direction) throws SQLException {
+        resultSet.setFetchDirection(direction);
+    }
+    
+    @Override
+    public int getFetchDirection() throws SQLException {
+        return resultSet.getFetchDirection();
+    }
+    
+    @Override
+    public int getFetchSize() throws SQLException {
+        return resultSet.getFetchSize();
+    }
+    
+    @Override
+    public void setFetchSize(final int rows) throws SQLException {
+        resultSet.setFetchSize(rows);
     }
     
     @Override
