@@ -49,7 +49,7 @@ Apache ShardingSphere 是一套开源的分布式数据库中间件解决方案�
 
 **Sharding-Sidecar（规划中）**
 
-定位为 Kubernetes 的云原生数据库代理，以 Sidecar 的形式代理所有对数据库的访问。通过无中心、零侵入的方案提供与数据库交互的的啮合层，即 Database Mesh，又可称数据库网格。
+定位为 Kubernetes 的云原生数据库代理，以 Sidecar 的形式代理所有对数据库的访问。通过无中心、零侵入的方案提供与数据库交互的的啮合层，即 `Database Mesh`，又可称数据库网格。
 
 ![](https://shardingsphere.apache.org/blog/img/database3.jpg)
 
@@ -61,7 +61,7 @@ Sharding-JDBC 采用无中心化架构，适用于 Java 开发的高性能的轻
 
 ![](https://shardingsphere.apache.org/blog/img/database4.jpg)
 
-Apache ShardingSphere 是多接入端共同组成的生态圈。通过混合使用 Sharding-JDBC 和 Sharding-Proxy，并采用同一配置中心统一配置分片策略，能够灵活的搭建适用于各种场景的应用系统，使得架构师更加自由的调整适合与当前业务的最佳系统架构。
+Apache ShardingSphere 是多接入端共同组成的生态圈。通过混合使用 Sharding-JDBC 和 Sharding-Proxy，并采用同一配置中心统一配置分片策略，能够灵活的搭建适用于各种场景的应用系统，使得架构师更加自由地调整适合与当前业务的最佳系统架构。
 
 ![](https://shardingsphere.apache.org/blog/img/database5.jpg)
 
@@ -268,7 +268,7 @@ Apache ShardingSphere 对数据库类型的支持将完全开放，除了关系�
 
 上文中提到的 Sharding-Sidecar 接入端，是 Apache ShardingSphere 未来的第三个接入端形态，旨在更好的与 Kubernetes 配合，打造云原生数据库。
 
-Database Mesh 的关注重点在于如何将分布式的数据访问应用与数据库有机串联起来，它更加关注的是交互，是将杂乱无章的应用与数据库之间的交互有效的梳理。使用 Database Mesh，访问数据库的应用和数据库终将形成一个巨大的网格体系，应用和数据库只需在网格体系中对号入座即可，它们都是被啮合层所治理的对象。
+Database Mesh 的关注重点在于如何将分布式的数据访问应用与数据库有机串联起来，它更加关注的是交互，是将杂乱无章的应用与数据库之间的交互进行有效地梳理。使用 Database Mesh，访问数据库的应用和数据库终将形成一个巨大的网格体系，应用和数据库只需在网格体系中对号入座即可，它们都是被啮合层所治理的对象。
 
 #### Data Federation
 
