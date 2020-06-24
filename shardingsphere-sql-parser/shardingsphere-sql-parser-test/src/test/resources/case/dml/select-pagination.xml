@@ -20,11 +20,11 @@
     <select sql-case-id="select_pagination_with_offset" parameters="1, 2, 9, 10, 5">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="o" start-index="16" stop-index="22" />
+                <table name="t_order" alias="o" start-index="16" stop-index="24" />
             </table-factor>
             <join-table>
                 <table-factor>
-                    <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+                    <table name="t_order_item" alias="i" start-index="31" stop-index="44" />
                 </table-factor>
                 <joinSpecification>
                     <and-predicate>
@@ -93,11 +93,11 @@
     <select sql-case-id="select_pagination_with_row_count" parameters="1, 2, 9, 10, 5">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="o" start-index="16" stop-index="22" />
+                <table name="t_order" alias="o" start-index="16" stop-index="24" />
             </table-factor>
             <join-table>
                 <table-factor>
-                    <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+                    <table name="t_order_item" alias="i" start-index="31" stop-index="44" />
                 </table-factor>
                 <joinSpecification>
                     <and-predicate>
@@ -166,11 +166,11 @@
     <select sql-case-id="select_pagination_with_limit_with_back_quotes" parameters="1, 2, 9, 10, 5, 3">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="o" start-delimiter="`" end-delimiter="`" start-index="16" stop-index="24" />
+                <table name="t_order" alias="o" start-delimiter="`" end-delimiter="`" start-index="16" stop-index="26" />
             </table-factor>
             <join-table>
                 <table-factor>
-                    <table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="33" stop-index="46" />
+                    <table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="33" stop-index="48" />
                 </table-factor>
                 <joinSpecification>
                     <and-predicate>
@@ -239,11 +239,11 @@
     <select sql-case-id="select_pagination_with_limit_and_offset_keyword" parameters="1, 2, 9, 10, 3, 5">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="o" start-delimiter="`" end-delimiter="`" start-index="16" stop-index="24" />
+                <table name="t_order" alias="o" start-delimiter="`" end-delimiter="`" start-index="16" stop-index="26" />
             </table-factor>
             <join-table>
                 <table-factor>
-                    <table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="33" stop-index="46" />
+                    <table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="33" stop-index="48" />
                 </table-factor>
                 <joinSpecification>
                     <and-predicate>
@@ -368,11 +368,11 @@
     <select sql-case-id="select_pagination_with_offset_and_limit" parameters="1, 2, 9, 10, 5, 3">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="o" start-index="16" stop-index="22" />
+                <table name="t_order" alias="o" start-index="16" stop-index="24" />
             </table-factor>
             <join-table>
                 <table-factor>
-                    <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+                    <table name="t_order_item" alias="i" start-index="31" stop-index="44" />
                 </table-factor>
                 <joinSpecification>
                     <and-predicate>
@@ -442,11 +442,11 @@
     <select sql-case-id="select_pagination_with_offset_and_limit_all" parameters="1, 2, 9, 10, 5">
         <table-reference>
             <table-factor>
-                <table name="t_order" alias="o" start-index="16" stop-index="22" />
+                <table name="t_order" alias="o" start-index="16" stop-index="24" />
             </table-factor>
             <join-table>
                 <table-factor>
-                    <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+                    <table name="t_order_item" alias="i" start-index="31" stop-index="44" />
                 </table-factor>
                 <joinSpecification>
                     <and-predicate>
@@ -636,11 +636,11 @@
                                                 </projections>
                                                 <table-reference>
                                                     <table-factor>
-                                                        <table start-index="146" stop-index="152" name="t_order" alias="order0_" />
+                                                        <table start-index="146" stop-index="160" name="t_order" alias="order0_" />
                                                     </table-factor>
                                                     <join-table>
                                                         <table-factor>
-                                                            <table start-index="167" stop-index="178" name="t_order_item" alias="i" />
+                                                            <table start-index="167" stop-index="180" name="t_order_item" alias="i" />
                                                         </table-factor>
                                                         <joinSpecification>
                                                             <and-predicate>
@@ -755,11 +755,11 @@
                                                 </projections>
                                                 <table-reference>
                                                     <table-factor>
-                                                        <table start-index="146" stop-index="152" name="t_order" alias="order0_" />
+                                                        <table start-index="146" stop-index="160" name="t_order" alias="order0_" />
                                                     </table-factor>
                                                     <join-table>
                                                         <table-factor>
-                                                            <table start-index="167" stop-index="178" name="t_order_item" alias="i" />
+                                                            <table start-index="167" stop-index="180" name="t_order_item" alias="i" />
                                                         </table-factor>
                                                         <joinSpecification>
                                                             <and-predicate>
@@ -886,11 +886,11 @@
                                                 </projections>
                                                 <table-reference>
                                                     <table-factor>
-                                                        <table start-index="146" stop-index="152" name="t_order" alias="order0_" />
+                                                        <table start-index="146" stop-index="160" name="t_order" alias="order0_" />
                                                     </table-factor>
                                                     <join-table>
                                                         <table-factor>
-                                                            <table start-index="167" stop-index="178" name="t_order_item" alias="i" />
+                                                            <table start-index="167" stop-index="180" name="t_order_item" alias="i" />
                                                         </table-factor>
                                                         <joinSpecification>
                                                             <and-predicate>
